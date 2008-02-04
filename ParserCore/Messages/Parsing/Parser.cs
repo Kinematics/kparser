@@ -270,6 +270,15 @@ namespace WaywardGamers.KParser.Parsing
         /// <param name="message">The message to parse.</param>
         private static void ParseAction(Message message)
         {
+            // An action is an automatically generated message.  As such, it will
+            // always end in a period or exclamation point.  If it does not, then
+            // this is only part of the message line and we shouldn't bother trying
+            // to analyze the text at this point.  Return it as incomplete.
+
+            if ((message.CurrentMessageText.EndsWith(".") == false) &&
+                (message.CurrentMessageText.EndsWith("!") == false))
+                return;
+
             // Determine type of action message
             switch (message.MessageCode)
             {
@@ -1464,7 +1473,64 @@ namespace WaywardGamers.KParser.Parsing
             string currentMessageText = message.CurrentMessageText;
             NewTargetDetails target = null;
 
-            // Player casts Drain/Aspir.
+            // First check for prepping spells or abilities
+            // eg: Player starts casting Drain on the Mandragora.
+            combatMatch = ParseExpressions.PrepSpell.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                msgCombatDetails.IsPreparing = true;
+                msgCombatDetails.ActionSource = ActionSourceType.Spell;
+                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
+                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                message.ParseSuccessful = true;
+                return;
+            }
+            combatMatch = ParseExpressions.PrepAbility.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                msgCombatDetails.IsPreparing = true;
+                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
+                    msgCombatDetails.ActionSource = ActionSourceType.Weaponskill;
+                else
+                    msgCombatDetails.ActionSource = ActionSourceType.Ability;
+                message.ParseSuccessful = true;
+                return;
+            }
+
+
+            // Then check for lines where the action is activated
+            combatMatch = ParseExpressions.CastSpell.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                msgCombatDetails.ActionSource = ActionSourceType.Spell;
+                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
+                message.ParseSuccessful = true;
+                return;
+            }
+            combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                msgCombatDetails.ActionSource = ActionSourceType.Ability;
+                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                message.ParseSuccessful = true;
+                return;
+            }
+            combatMatch = ParseExpressions.UseAbilityOn.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                msgCombatDetails.ActionSource = ActionSourceType.Ability;
+                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                target.SuccessLevel = SuccessType.Successful;
+                message.ParseSuccessful = true;
+                return;
+            }
 
 
             // Player drains XXX HP/MP from target.
@@ -1472,8 +1538,6 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.DrainHP.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
-                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                msgCombatDetails.ActionName = "Drain";
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                 target.SuccessLevel = SuccessType.Successful;
                 target.Damage = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
@@ -1487,12 +1551,10 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.DrainMP.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
-                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                msgCombatDetails.ActionName = "Aspir";
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                 target.SuccessLevel = SuccessType.Successful;
                 target.Damage = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
-                target.RecoveryType = RecoveryType.RecoverHP;
+                target.RecoveryType = RecoveryType.RecoverMP;
                 msgCombatDetails.SuccessLevel = SuccessType.Successful;
 
                 message.ParseSuccessful = true;

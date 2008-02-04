@@ -148,8 +148,8 @@ namespace WaywardGamers.KParser
         #endregion
 
 
-        public static readonly Regex DrainHP = new Regex(string.Format("^{0} drains {2} HP from {1}\\.$", name, target, damage));
-        public static readonly Regex DrainMP = new Regex(string.Format("^{0} drains {2} MP from {1}\\.$", name, target, damage));
+        public static readonly Regex DrainHP = new Regex(string.Format("^{0} HP drained from {1}\\.$", damage, target));
+        public static readonly Regex DrainMP = new Regex(string.Format("^{0} MP drained from {1}\\.$", damage, target));
 
     }
 }
