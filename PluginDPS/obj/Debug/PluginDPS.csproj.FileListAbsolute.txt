@@ -1,9 +1,0 @@
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginDPS\bin\Debug\WaywardGamers.KParser.Plugin.DPS.dll
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginDPS\bin\Debug\WaywardGamers.KParser.Plugin.DPS.pdb
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginDPS\bin\Debug\WaywardGamers.KParser.ParserCore.dll
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginDPS\bin\Debug\WaywardGamers.KParser.ParserCore.pdb
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginDPS\obj\Debug\ResolveAssemblyReference.cache
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginDPS\obj\Debug\WaywardGamers.KParser.Plugin.DPSPlugin.resources
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginDPS\obj\Debug\PluginDPS.csproj.GenerateResource.Cache
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginDPS\obj\Debug\WaywardGamers.KParser.Plugin.DPS.dll
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginDPS\obj\Debug\WaywardGamers.KParser.Plugin.DPS.pdb

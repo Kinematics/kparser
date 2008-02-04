@@ -1,8 +1,0 @@
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\Chat.Plugin\bin\Release\ChatPlugin.dll
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\Chat.Plugin\bin\Release\ChatPlugin.pdb
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\Chat.Plugin\bin\Release\ParserCore.dll
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\Chat.Plugin\obj\Release\ResolveAssemblyReference.cache
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\Chat.Plugin\obj\Release\ChatPlugin.csproj.GenerateResource.Cache
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\Chat.Plugin\obj\Release\ChatPlugin.dll
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\Chat.Plugin\obj\Release\ChatPlugin.pdb
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\Chat.Plugin\obj\Release\WaywardGamers.KParser.ChatPlugin.resources

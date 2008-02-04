@@ -1,7 +1,0 @@
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginExperience\obj\Debug\ResolveAssemblyReference.cache
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginExperience\bin\Debug\WaywardGamers.KParser.Plugin.Experience.dll
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginExperience\bin\Debug\WaywardGamers.KParser.Plugin.Experience.pdb
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginExperience\bin\Debug\WaywardGamers.KParser.ParserCore.dll
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginExperience\bin\Debug\WaywardGamers.KParser.ParserCore.pdb
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginExperience\obj\Debug\WaywardGamers.KParser.Plugin.Experience.dll
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginExperience\obj\Debug\WaywardGamers.KParser.Plugin.Experience.pdb

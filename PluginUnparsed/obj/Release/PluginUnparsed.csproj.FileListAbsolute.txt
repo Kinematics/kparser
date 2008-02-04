@@ -1,4 +1,0 @@
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginUnparsed\obj\Release\ResolveAssemblyReference.cache
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginUnparsed\bin\Release\WaywardGamers.KParser.Plugin.Unparsed.dll
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginUnparsed\bin\Release\WaywardGamers.KParser.ParserCore.dll
-C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginUnparsed\obj\Release\WaywardGamers.KParser.Plugin.Unparsed.dll
