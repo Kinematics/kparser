@@ -116,7 +116,7 @@ namespace WaywardGamers.KParser
 
                 Message msg = Parser.Parse(messageLine);
 
-                NewUpdateEntityCollection(msg);
+                UpdateEntityCollection(msg);
 
                 lock (messageCollection)
                 {
@@ -288,19 +288,19 @@ namespace WaywardGamers.KParser
         /// don't have to continually reevaluate them at the message level.
         /// </summary>
         /// <param name="message">The message to add to the entity collection.</param>
-        private void NewUpdateEntityCollection(Message newMsg)
+        private void UpdateEntityCollection(Message msg)
         {
-            if (newMsg == null)
+            if (msg == null)
                 return;
 
-            if (newMsg.ActionDetails == null)
+            if (msg.ActionDetails == null)
                 return;
 
-            if (newMsg.ActionDetails.CombatDetails == null)
+            if (msg.ActionDetails.CombatDetails == null)
                 return;
 
             // Update base actor name
-            string name = newMsg.ActionDetails.CombatDetails.ActorName;
+            string name = msg.ActionDetails.CombatDetails.ActorName;
             bool update = true;
 
             if (name != string.Empty)
@@ -313,13 +313,13 @@ namespace WaywardGamers.KParser
                         // of that same named mob as a mob, enter it as a mob and add the special
                         // version name as a pet.
                         if ((entityCollection[name] == EntityType.Pet) &&
-                            (newMsg.ActionDetails.CombatDetails.ActorEntityType == EntityType.Mob))
+                            (msg.ActionDetails.CombatDetails.ActorEntityType == EntityType.Mob))
                         {
                             entityCollection[name] = EntityType.Mob;
                             AddPetEntity(name);
                         }
                         else if ((entityCollection[name] == EntityType.Mob) &&
-                            (newMsg.ActionDetails.CombatDetails.ActorEntityType == EntityType.Pet))
+                            (msg.ActionDetails.CombatDetails.ActorEntityType == EntityType.Pet))
                         {
                             AddPetEntity(name);
                         }
@@ -329,11 +329,11 @@ namespace WaywardGamers.KParser
                 }
 
                 if (update == true)
-                    entityCollection[name] = newMsg.ActionDetails.CombatDetails.ActorEntityType;
+                    entityCollection[name] = msg.ActionDetails.CombatDetails.ActorEntityType;
             }
 
             // Update all target names
-            foreach (NewTargetDetails target in newMsg.ActionDetails.CombatDetails.Targets)
+            foreach (NewTargetDetails target in msg.ActionDetails.CombatDetails.Targets)
             {
                 name = target.Name;
                 update = true;
@@ -368,8 +368,6 @@ namespace WaywardGamers.KParser
                 }
             }
         }
-
-
 
         /// <summary>
         /// Explicitly add an entity name as a pet.  Called when the parse
