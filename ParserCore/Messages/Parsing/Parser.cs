@@ -212,6 +212,8 @@ namespace WaywardGamers.KParser.Parsing
                     break;
                 case ChatMessageType.Emote:
                     chatName = ParseExpressions.ChatEmote.Match(message.CurrentMessageText);
+                    if (chatName.Success == false)
+                        chatName = ParseExpressions.ChatEmoteA.Match(message.CurrentMessageText);
                     break;
                 case ChatMessageType.Tell:
                     chatName = ParseExpressions.ChatTell.Match(message.CurrentMessageText);
@@ -356,7 +358,7 @@ namespace WaywardGamers.KParser.Parsing
                             {
                                 message.ActionDetails.LootDetails.IsFoundMessage = true;
                                 message.ActionDetails.LootDetails.ItemName = loot.Groups[ParseFields.Item].Value;
-                                message.ActionDetails.LootDetails.MobName = loot.Groups[ParseFields.Name].Value;
+                                message.ActionDetails.LootDetails.MobName = loot.Groups[ParseFields.Target].Value;
                                 message.ParseSuccessful = true;
                                 break;
                             }

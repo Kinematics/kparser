@@ -129,8 +129,8 @@
     <Compile Include="ReferenceValues\Enumerations.cs" />
     <Compile Include="ReferenceValues\LinqExtensions.cs" />
     <Compile Include="ReferenceValues\Magic.cs" />
-    <Compile Include="ReferenceValues\Names.cs" />
-    <Compile Include="ReferenceValues\ParseExpressions.cs" />
+    <Compile Include="Messages\Parsing\Names.cs" />
+    <Compile Include="Messages\Parsing\ParseExpressions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
