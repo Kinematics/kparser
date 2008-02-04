@@ -294,7 +294,7 @@ namespace WaywardGamers.KParser.Plugin
                             sb.Append(" ");
 
                             // Crit %
-                            sb.Append(0.ToString("P2").PadLeft(10));
+                            sb.Append(0.ToString("P2").PadLeft(9));
                             sb.Append(" ");
                         }
                     }
@@ -548,7 +548,7 @@ namespace WaywardGamers.KParser.Plugin
             if (spellHeader == null)
                 spellHeader = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10}\n",
                 "Player".PadRight(16), "Spell Dmg".PadLeft(10), "Total Dmg".PadLeft(10), "Spell %".PadLeft(9),
-                "Dmg Share %".PadLeft(11), "#Spells".PadLeft(8), "S.Low/Hi".PadLeft(9), "S.Avg".PadLeft(7),
+                "Dmg Share %".PadLeft(12), "#Spells".PadLeft(8), "S.Low/Hi".PadLeft(9), "S.Avg".PadLeft(7),
                 "#MagicBurst".PadLeft(12), "MB.Low/Hi".PadLeft(10), "MB.Avg".PadLeft(8));
 
             AppendBoldUnderText(spellHeader, Color.Black);
