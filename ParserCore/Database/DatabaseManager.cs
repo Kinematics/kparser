@@ -386,10 +386,12 @@ namespace WaywardGamers.KParser
         private void InitializeNewDatabase()
         {
             // Insert version information
-            localDB.Version.AddVersionRow(databaseVersion, assemblyVersionString);
+            if (localDB.Version.Rows.Count == 0)
+                localDB.Version.AddVersionRow(databaseVersion, assemblyVersionString);
 
             // Insert default battle row
-            localDB.Battles.AddBattlesRow(null, DateTime.Now, DateTime.Now, 0, false, null, 0, 0, true);
+            if (localDB.Battles.Rows.Count == 0)
+                localDB.Battles.AddBattlesRow(null, DateTime.Now, DateTime.Now, 0, false, null, 0, 0, true);
 
             UpdateDatabase();
         }
