@@ -102,8 +102,6 @@
     </Compile>
     <Compile Include="Database\DatabaseManager.cs" />
     <Compile Include="Messages\ChatLine.cs" />
-    <Compile Include="Messages\Message.cs" />
-    <Compile Include="Messages\MessageDetail\CombatDetails.cs" />
     <Compile Include="Messages\MessageDetail\LootDetails.cs" />
     <Compile Include="Messages\MessageDetail\NewActionDetails.cs" />
     <Compile Include="Messages\MessageDetail\NewChatDetails.cs" />
@@ -111,8 +109,6 @@
     <Compile Include="Messages\MessageDetail\NewExperienceDetails.cs" />
     <Compile Include="Messages\MessageDetail\NewSystemDetails.cs" />
     <Compile Include="Messages\MessageDetail\NewTargetDetails.cs" />
-    <Compile Include="Messages\MessageDetail\TargetDetailCollection.cs" />
-    <Compile Include="Messages\MessageDetail\TargetDetails.cs" />
     <Compile Include="Messages\MessageLine.cs" />
     <Compile Include="Messages\MessageDetail\ParseCodes.cs" />
     <Compile Include="Messages\NewMessage.cs" />

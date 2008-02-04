@@ -45,7 +45,6 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Member Variables
-        List<OldMessage> oldMessageCollection = new List<OldMessage>();
         List<Message> messageCollection = new List<Message>();
         Dictionary<string, EntityType> entityCollection = new Dictionary<string, EntityType>();
 
@@ -161,20 +160,6 @@ namespace WaywardGamers.KParser
         /// </summary>
         /// <param name="code">The code to look for.</param>
         /// <returns>The message, if found.</returns>
-        internal OldMessage FindLastOldMessageWithCode(uint code)
-        {
-            OldMessage msg;
-
-            lock (messageCollection)
-            {
-                // Reverse search the collection list
-                msg = oldMessageCollection.FindLast(m =>
-                    ((m.MessageCode == code) && (m.CombatDetails != null) && (m.CombatDetails.ActorName != string.Empty)));
-            }
-
-            return msg;
-        }
-
         internal Message FindLastMessageWithCode(uint code)
         {
             Message msg;
@@ -303,84 +288,6 @@ namespace WaywardGamers.KParser
         /// don't have to continually reevaluate them at the message level.
         /// </summary>
         /// <param name="message">The message to add to the entity collection.</param>
-        private void UpdateEntityCollection(OldMessage message)
-        {
-            if (message == null)
-                return;
-
-            if (message.CombatDetails == null)
-                return;
-
-            // Update base actor name
-            string name = message.CombatDetails.ActorName;
-            bool update = true;
-
-            if (name != string.Empty)
-            {
-                if (entityCollection.ContainsKey(name))
-                {
-                    if (entityCollection[name] != EntityType.Unknown)
-                    {
-                        // If a chamed mob name has been entered as a pet, and we receive notice
-                        // of that same named mob as a mob, enter it as a mob and add the special
-                        // version name as a pet.
-                        if ((entityCollection[name] == EntityType.Pet) &&
-                            (message.CombatDetails.ActorEntityType == EntityType.Mob))
-                        {
-                            entityCollection[name] = EntityType.Mob;
-                            AddPetEntity(name);
-                        }
-                        else if ((entityCollection[name] == EntityType.Mob) &&
-                            (message.CombatDetails.ActorEntityType == EntityType.Pet))
-                        {
-                            AddPetEntity(name);
-                        }
-
-                        update = false;
-                    }
-                }
-
-                if (update == true)
-                    entityCollection[name] = message.CombatDetails.ActorEntityType;
-            }
-
-            // Update all target names
-            foreach (TargetDetails target in message.CombatDetails.Targets)
-            {
-                name = target.Name;
-                update = true;
-
-                if (name != string.Empty)
-                {
-                    if (entityCollection.ContainsKey(name))
-                    {
-                        if (entityCollection[name] != EntityType.Unknown)
-                        {
-                            // If a chamed mob name has been entered as a pet, and we receive notice
-                            // of that same named mob as a mob, enter it as a mob and add the special
-                            // version name as a pet.
-                            if ((entityCollection[name] == EntityType.Pet) &&
-                                (target.EntityType == EntityType.Mob))
-                            {
-                                entityCollection[name] = EntityType.Mob;
-                                AddPetEntity(name);
-                            }
-                            else if ((entityCollection[name] == EntityType.Mob) &&
-                                     (target.EntityType == EntityType.Pet))
-                            {
-                                AddPetEntity(name);
-                            }
-
-                            update = false;
-                        }
-                    }
-
-                    if (update == true)
-                        entityCollection[name] = target.EntityType;
-                }
-            }
-        }
-
         private void NewUpdateEntityCollection(Message newMsg)
         {
             if (newMsg == null)
