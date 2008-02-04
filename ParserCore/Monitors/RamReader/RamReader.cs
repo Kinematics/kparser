@@ -7,6 +7,11 @@ using WaywardGamers.KParser.Monitoring.Memory;
 
 namespace WaywardGamers.KParser.Monitoring
 {
+    /// <summary>
+    /// Class to handle interfacing with system RAM reading
+    /// in order to monitor the FFXI process space and read
+    /// log info to be parsed.
+    /// </summary>
     internal class RamReader
     {
         #region Singleton Constructor
@@ -31,32 +36,27 @@ namespace WaywardGamers.KParser.Monitoring
         private RamReader()
 		{
             memoryWatcher = new MemoryAccess();
-
             appSettings = new WaywardGamers.KParser.Properties.Settings();
-
-            
         }
 		#endregion
 
         #region Member Variables
-        List<string> saveList = new List<string>();
         MemoryAccess memoryWatcher;
-        Thread readerThread;
-
-        bool isRunning;
-
         Properties.Settings appSettings;
+        Thread readerThread;
+        #endregion
+
+        #region Properties
+        internal bool IsRunning { get; private set; }
         #endregion
 
         #region Control Methods
         /// <summary>
         /// Start a thread that reads log files for parsing.
         /// </summary>
-        /// <param name="settings">The program settings for the thread to use.</param>
-        /// <param name="fileName">The name of the file that data is going to be output to.</param>
-        internal void Run(string outputFileName)
+        internal void Run()
         {
-            isRunning = true;
+            IsRunning = true;
 
             try
             {
@@ -66,30 +66,29 @@ namespace WaywardGamers.KParser.Monitoring
                     readerThread.Abort();
                 }
 
-                readerThread = new Thread(memoryWatcher.Monitor);
-                readerThread.IsBackground = true;
-                readerThread.Name = "Memory Monitor Thread";
-
-                // Create the output database
-                DatabaseManager.Instance.CreateDatabase(outputFileName);
+                // Make sure we have the latest version of the app settings data.
+                appSettings.Reload();
 
                 // Add the event handler
                 memoryWatcher.RamDataChanged += new RamWatchEventHandler(MonitorRam);
 
-                // Make sure we have the latest version of the app settings data.
-                appSettings.Reload();
-
                 // Update the memory offset of the thread class before starting.
                 memoryWatcher.InitialMemoryOffset = appSettings.MemoryOffset;
 
-                MessageManager.Instance.StartParsing();
-
                 // Begin the thread
+                readerThread = new Thread(memoryWatcher.Monitor);
+                readerThread.IsBackground = true;
+                readerThread.Name = "Memory Monitor Thread";
                 readerThread.Start();
+
+                // Notify MessageManager that we're starting.
+                MessageManager.Instance.StartParsing();
             }
             catch (Exception)
             {
-                isRunning = false;
+                IsRunning = false;
+                memoryWatcher.RamDataChanged -= new RamWatchEventHandler(MonitorRam);
+                MessageManager.Instance.StopParsing();
                 throw;
             }
         }
@@ -106,15 +105,7 @@ namespace WaywardGamers.KParser.Monitoring
             // Notify MessageManager that we're done so it can turn off its timer loop.
             MessageManager.Instance.StopParsing();
 
-            isRunning = false;
-        }
-
-        internal bool IsRunning
-        {
-            get
-            {
-                return isRunning;
-            }
+            IsRunning = false;
         }
 
         /// <summary>

@@ -13,14 +13,6 @@ namespace WaywardGamers.KParser.Monitoring
     /// </summary>
     internal class LogReader
     {
-        #region Member Variables
-        Properties.Settings appSettings;
-
-        FileSystemWatcher fileSystemWatcher;
-
-        bool isRunning;
-        #endregion
-
         #region Singleton Constructor
         // Make the class a singleton
         private static readonly LogReader instance = new LogReader();
@@ -41,7 +33,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// Private constructor ensures singleton purity.
         /// </summary>
         private LogReader()
-		{
+        {
             fileSystemWatcher = new FileSystemWatcher();
             fileSystemWatcher.Filter = "*.log";
             fileSystemWatcher.NotifyFilter = NotifyFilters.LastWrite;
@@ -50,24 +42,29 @@ namespace WaywardGamers.KParser.Monitoring
 
             appSettings = new WaywardGamers.KParser.Properties.Settings();
         }
-		#endregion
+        #endregion
+
+        #region Member Variables
+        Properties.Settings appSettings;
+
+        FileSystemWatcher fileSystemWatcher;
+        #endregion
+
+        #region Properties
+        internal bool IsRunning { get; private set; }
+        #endregion
 
         #region internal Control Methods
         /// <summary>
         /// Activate the file system watcher so that we can catch events when files change.
         /// If the option to parse existing files is true, run the parsing code on them.
         /// </summary>
-        /// <param name="settings">The program settings for the thread to use.</param>
-        /// <param name="fileName">The name of the file that data is going to be output to.</param>
-        internal void Run(string outputFileName)
+        internal void Run()
         {
-            isRunning = true;
+            IsRunning = true;
 
             try
             {
-                // Create the output database
-                DatabaseManager.Instance.CreateDatabase(outputFileName);
-
                 // Get the settings so that we know where to look for the log files.
                 appSettings.Reload();
 
@@ -89,7 +86,9 @@ namespace WaywardGamers.KParser.Monitoring
             }
             catch (Exception)
             {
-                isRunning = false;
+                IsRunning = false;
+                fileSystemWatcher.EnableRaisingEvents = false;
+                MessageManager.Instance.StopParsing();
                 throw;
             }
         }
@@ -105,15 +104,7 @@ namespace WaywardGamers.KParser.Monitoring
             // Notify MessageManager that we're done so it can turn off its timer loop.
             MessageManager.Instance.StopParsing();
 
-            isRunning = false;
-        }
-
-        internal bool IsRunning
-        {
-            get
-            {
-                return isRunning;
-            }
+            IsRunning = false;
         }
 
         #endregion
@@ -224,7 +215,7 @@ namespace WaywardGamers.KParser.Monitoring
             char[] delimiter = delimStr.ToCharArray();
 
             // Split the text up into individual lines.
-            fileLines = fileText.Split(delimiter);
+            fileLines = fileText.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
 
             if (fileLines.Length > 0)
             {

@@ -9,27 +9,33 @@ namespace WaywardGamers.KParser
     /// </summary>
     public class Monitor
     {
-        static DataSource parseMode = DataSource.Ram;
+        static Properties.Settings settings = new Properties.Settings();
 
+        /// <summary>
+        /// Initiate monitoring of FFXI RAM/logs for data to be parsed.
+        /// </summary>
+        /// <param name="outputFileName">The name of the database file
+        /// that will be stored to.</param>
         public static void Start(string outputFileName)
         {
             if (LogReader.Instance.IsRunning == true ||
                 RamReader.Instance.IsRunning == true)
                 throw new InvalidOperationException("A monitor is already running.");
 
-            Properties.Settings settings;
-            settings = new Properties.Settings();
+            // Only reload settings values on Start.  Other calls between
+            // Starts will return whatever the original setting was.
             settings.Reload();
 
-            parseMode = settings.ParseMode;
+            // Create the output database
+            DatabaseManager.Instance.CreateDatabase(outputFileName);
 
-            if (parseMode == DataSource.Log)
+            if (settings.ParseMode == DataSource.Log)
             {
-                LogReader.Instance.Run(outputFileName);
+                LogReader.Instance.Run();
             }
             else
             {
-                RamReader.Instance.Run(outputFileName);
+                RamReader.Instance.Run();
             }
         }
 
@@ -50,7 +56,7 @@ namespace WaywardGamers.KParser
         {
             get
             {
-                if (parseMode == DataSource.Log)
+                if (settings.ParseMode == DataSource.Log)
                 {
                     return LogReader.Instance.IsRunning;
                 }
@@ -63,7 +69,7 @@ namespace WaywardGamers.KParser
 
         public static DataSource ParseMode
         {
-            get { return parseMode; }
+            get { return settings.ParseMode; }
         }
     }
 }
