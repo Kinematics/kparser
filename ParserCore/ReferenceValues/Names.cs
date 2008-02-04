@@ -86,7 +86,8 @@ namespace WaywardGamers.KParser
         };
 
         /// <summary>
-        /// Short list for only those names that may also match certain mob names.
+        /// Short list for only those names that contain characters normally
+        /// indicative of mob names.
         /// </summary>
         public static readonly List<string> ShortNamesList = new List<string>(4)
         {
@@ -122,7 +123,8 @@ namespace WaywardGamers.KParser
         };
 
         /// <summary>
-        /// Short list for only those names that may also match certain mob names.
+        /// Short list for only those names that contain characters normally
+        /// indicative of mob names.
         /// </summary>
         public static readonly List<string> ShortNamesList = new List<string>(5)
         {
@@ -151,7 +153,8 @@ namespace WaywardGamers.KParser
         };
 
         /// <summary>
-        /// Short list for only those names that may also match certain mob names.
+        /// Short list for only those names that contain characters normally
+        /// indicative of mob names.
         /// </summary>
         public static readonly List<string> ShortNamesList = new List<string>(16)
         {
