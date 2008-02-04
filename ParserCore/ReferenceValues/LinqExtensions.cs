@@ -5,38 +5,12 @@ using System.Text;
 
 namespace WaywardGamers.KParser
 {
+    /// <summary>
+    /// Static class for adding general utility extension functions
+    /// to IEnumerable classes.
+    /// </summary>
     static class LinqExtensions
     {
-        /*
-        public static V OriginalMax<T, V>(this IEnumerable<T> source,
-                                     Func<T, int> comparisonMap,
-                                     Func<T, V> selectMap)
-        {
-            int maxValue = 0;
-            V maxElement = default(V);
-            bool gotAny = false;
-            using (IEnumerator<T> enumerator = source.GetEnumerator())
-            {
-                while (enumerator.MoveNext())
-                {
-                    T sourceValue = enumerator.Current;
-                    int value = comparisonMap(sourceValue);
-                    if (!gotAny || value > maxValue)
-                    {
-                        maxValue = value;
-                        maxElement = selectMap(sourceValue);
-                        gotAny = true;
-                    }
-                }
-            }
-            if (!gotAny)
-            {
-                throw new EmptySequenceException();
-            }
-            return maxElement;
-        }
-        */
-        
         /// <summary>
         /// Gets the maximum element of an IEnumerable source based on a provided comparison
         /// delegate and a selection delegate.
@@ -117,6 +91,5 @@ namespace WaywardGamers.KParser
 
             return maxElement;
         }
-
     }
 }
