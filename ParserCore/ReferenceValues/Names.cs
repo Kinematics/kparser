@@ -11,37 +11,54 @@ namespace WaywardGamers.KParser
     /// </summary>
     public static class Weaponskills
     {
-        public static readonly List<string> NamesList = new List<string>(253)
+        public static readonly List<string> NamesList = new List<string>(145)
         {
+            // Archery
+            "Flaming Arrow", "Piercing Arrow", "Dulling Arrow", "Sidewinder", "Blast Arrow",
+            "Arching Arrow", "Empyreal Arrow", "Namas Arrow",
+            // Axes
+            "Raging Axe", "Smash Axe", "Gale Axe", "Avalanche Axe", "Spinning Axe", "Rampage",
+            "Calamity", "Mistral Axe", "Decimation", "Onslaught",
+            // Clubs
+            "Shining Strike", "Seraph Strike", "Brainshaker", "Starlight", "Moonlight", 
+            "Skullbreaker", "True Strike", "Judgment", "Hexastrike", "Black Halo", "Randgrith",
+            // Daggers
+            "Wasp Sting", "Gust Slash", "Shadowstitch", "Viper Bite", "Cyclone", "Dancing Edge",
+            "Shark Bite", "Evisceration", "Mercy Stroke",
+            // Great Axes
+            "Shield Break", "Iron Tempest", "Sturmwind", "Armor Break", "Keen Edge",
+            "Weapon Break", "Raging Rush", "Full Break", "Steel Cyclone", "Metatron Torment",
+            // Great Katana
+            "Tachi: Enpi", "Tachi: Hobaku", "Tachi: Goten", "Tachi: Kagero", "Tachi: Jinpu",
+            "Tachi: Koki", "Tachi: Yukikaze", "Tachi: Gekko", "Tachi: Kasha", "Tachi: Kaiten",
+            // Great Swords
+            "Hard Slash", "Power Slash", "Frost Bite", "Freeze Bite", "Shockwave", "Crescent Moon",
+            "Sickle Moon", "Spinning Slash", "Ground Strike", "Scourge",
+            // Hand-to-Hand
             "Combo", "Shoulder Tackle", "One Inch Punch", "Backhand Blow", "Raging Fists",
             "Spinning Attack", "Howling Fist", "Dragon Kick", "Asuran Fists", "Final Heaven",
-            "Wasp Sting", "Shadowstitch", "Viper Bite", "Gust Slash", "Cyclone", "Dancing Edge",
-            "Shark Bite", "Evisceration", "Mercy Stroke",
+            // Katana
+            "Blade: Rin", "Blade: Retsu", "Blade: Teki", "Blade: To", "Blade: Chi", "Blade: Ei",
+            "Blade: Jin", "Blade: Ten", "Blade: Ku", "Blade: Metsu",
+            // Marksmanship
+            "Hot Shot", "Split Shot", "Sniper Shot", "Slug Shot", "Blast Shot", "Heavy Shot",
+            "Detonator", "Coronach",
+            // Polearms
+            "Double Thrust", "Thunder Thrust", "Raiden Thrust", "Leg Sweep", "Penta Thrust",
+            "Vorpal Thrust", "Skewer", "Wheeling Thrust", "Impulse Drive", "Geirskogul",
+            // Scythes
+            "Slice", "Dark Harvest", "Shadow of Death", "Nightmare Scythe", "Spinning Scythe",
+            "Vorpal Scythe", "Guillotine", "Cross Reaper", "Spiral Hell", "Catastrophe",
+            // Staves
+            "Heavy Swing", "Rock Crusher", "Shellcrusher", "Earth Crusher", "Star Burst", "Sun Burst",
+            "Full Swing", "Spirit Taker", "Retribution", "Gate of Tartarus",
+            // Swords
             "Fast Blade", "Flat Blade", "Burning Blade", "Red Lotus Blade", "Circle Blade",
             "Shining Blade", "Seraph Blade", "Spirits Within", "Vorpal Blade", "Swift Blade",
             "Savage Blade", "Knights of Round",
-            "Hard Slash", "Power Slash", "Frost Bite", "Freeze Bite", "Shockwave", "Crescent Moon",
-            "Sickle Moon", "Spinning Slash", "Ground Strike", "Scourge",
-            "Slice", "Dark Harvest", "Shadow of Death", "Nightmare Scythe", "Spinning Scythe",
-            "Vorpal Scythe", "Guillotine", "Cross Reaper", "Spiral Hell", "Catastrophe",
-            "Double Thrust", "Thunder Thrust", "Raiden Thrust", "Leg Sweep", "Penta Thrust",
-            "Vorpal Thrust", "Skewer", "Wheeling Thrust", "Impulse Drive", "Geirskogul",
-            "Raging Axe", "Smash Axe", "Gale Axe", "Avalanche Axe", "Spinning Axe", "Rampage",
-            "Calamity", "Mistral Axe", "Decimation", "Onslaught",
-            "Shield Break", "Iron Tempest", "Sturmwind", "Armor Break", "Keen Edge",
-            "Weapon Break", "Raging Rush", "Full Break", "Steel Cyclone", "Metatron Torment",
-            "Brainshaker", "Skullbreaker", "Shining Strike", "Seraph Strike", "True Strike",
-            "Starlight", "Moonlight", "Judgment", "Hexastrike", "Black Halo", "Randgrith",
-            "Heavy Swing", "Rock Crusher", "Shellcrusher", "Earth Crusher", "Star Burst", "Sun Burst",
-            "Full Swing", "Spirit Taker", "Retribution", "Gate of Tartarus",
-            "Blade: Rin", "Blade: Retsu", "Blade: Teki", "Blade: To", "Blade: Chi", "Blade: Ei",
-            "Blade: Jin", "Blade: Ten", "Blade: Ku", "Blade: Metsu",
-            "Tachi: Enpi", "Tachi: Hobaku", "Tachi: Goten", "Tachi: Kagero", "Tachi: Jinpu",
-            "Tachi: Koki", "Tachi: Yukikaze", "Tachi: Gekko", "Tachi: Kasha", "Tachi: Kaiten",
-            "Flaming Arrow", "Piercing Arrow", "Dulling Arrow", "Sidewinder", "Blast Arrow",
-            "Arching Arrow", "Empyrial Arrow", "Namas Arrow",
-            "Hot Shot", "Split Shot", "Sniper Shot", "Slug Shot", "Blast Shot", "Heavy Shot",
-            "Detonator", "Coronach",
+            // Automaton
+            "Slapstick", "Arcuballista", "String Clipper", "Chimera Ripper", "Knockout", "Daze",
+            "Cannibal Blade",
         };
     }
 
