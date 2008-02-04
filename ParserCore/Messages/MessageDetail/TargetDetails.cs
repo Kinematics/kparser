@@ -32,12 +32,9 @@ namespace WaywardGamers.KParser
         {
             get
             {
-                if (targetName != string.Empty)
+                if (targetName.StartsWith("The ") || targetName.StartsWith("the "))
                 {
-                    if (targetName.StartsWith("The ") || targetName.StartsWith("the "))
-                    {
-                        return targetName.Substring(4);
-                    }
+                    return targetName.Substring(4);
                 }
 
                 return targetName;
@@ -47,7 +44,7 @@ namespace WaywardGamers.KParser
                 if (value != null)
                 {
                     targetName = value;
-                    DetermineEntityType();
+                    EntityType = Parsing.ClassifyEntity.Classify(targetName);
                 }
             }
         }
@@ -76,85 +73,6 @@ namespace WaywardGamers.KParser
 
         internal DamageModifier DamageModifier { get; set; }
 
-        #endregion
-
-        #region Methods
-        private void DetermineEntityType()
-        {
-            if ((targetName == null) || (targetName == string.Empty))
-            {
-                EntityType = EntityType.Unknown;
-                return;
-            }
-
-            // Check if we already have this name in the entity list.  If so, use that.
-            EntityType = MessageManager.Instance.LookupEntity(targetName);
-            if (EntityType != EntityType.Unknown)
-                return;
-
-            // If the targetName starts with 'the' it's a mob, though possibly a charmed one.
-            if (targetName.StartsWith("The") || targetName.StartsWith("the"))
-            {
-                EntityType = EntityType.Mob;
-                return;
-            }
-
-            // Check for characters that only show up in mob names and some sublists.
-            Match targetNameMatch = ParseExpressions.MobNameTest.Match(targetName);
-
-            if (targetNameMatch.Success == true)
-            {
-                // Probably a mob, but possibly a pet.  Check the short names lists.
-                if (Puppets.ShortNamesList.Contains(targetName))
-                    EntityType = EntityType.Pet;
-                else if (Wyverns.ShortNamesList.Contains(targetName))
-                    EntityType = EntityType.Pet;
-                else if (NPCFellows.ShortNamesList.Contains(targetName))
-                    EntityType = EntityType.Fellow;
-                else
-                    EntityType = EntityType.Mob;
-
-                return;
-            }
-
-            // Check for the pattern of beastmaster jug pet targetNames.
-            targetNameMatch = ParseExpressions.BstJugPetName.Match(targetName);
-            if (targetNameMatch.Success == true)
-            {
-                EntityType = EntityType.Pet;
-                return;
-            }
-
-            // Check known pet lists
-            if (Avatars.NamesList.Contains(targetName))
-            {
-                EntityType = EntityType.Pet;
-                return;
-            }
-
-            if (Wyverns.NamesList.Contains(targetName))
-            {
-                EntityType = EntityType.Pet;
-                return;
-            }
-
-            if (Puppets.NamesList.Contains(targetName))
-            {
-                EntityType = EntityType.Pet;
-                return;
-            }
-
-            // Check known NPC fellows
-            if (NPCFellows.NamesList.Contains(targetName))
-            {
-                EntityType = EntityType.Fellow;
-                return;
-            }
-
-
-            // Anything else must be a player.
-            EntityType = EntityType.Player;
-        }
         #endregion
 
         #region Overrides

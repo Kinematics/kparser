@@ -43,12 +43,9 @@ namespace WaywardGamers.KParser
         {
             get
             {
-                if (actorName != string.Empty)
+                if (actorName.StartsWith("The ") || actorName.StartsWith("the "))
                 {
-                    if (actorName.StartsWith("The ") || actorName.StartsWith("the "))
-                    {
-                        return actorName.Substring(4);
-                    }
+                    return actorName.Substring(4);
                 }
 
                 return actorName;
@@ -58,7 +55,7 @@ namespace WaywardGamers.KParser
                 if (value != null)
                 {
                     actorName = value;
-                    DetermineEntityType();
+                    ActorEntityType = Parsing.ClassifyEntity.Classify(actorName);
                 }
             }
         }
@@ -98,83 +95,6 @@ namespace WaywardGamers.KParser
             CurrentTarget = new NewTargetDetails(targetName);
             Targets.Add(CurrentTarget);
             return CurrentTarget;
-        }
-
-        private void DetermineEntityType()
-        {
-            if ((actorName == null) || (actorName == string.Empty))
-            {
-                ActorEntityType = EntityType.Unknown;
-                return;
-            }
-
-            // Check if we already have this name in the entity list.  If so, use that.
-            ActorEntityType = MessageManager.Instance.LookupEntity(ActorName);
-            if (ActorEntityType != EntityType.Unknown)
-                return;
-
-            // If the actorName starts with 'the' it's a mob, though possibly a charmed one.
-            if (actorName.StartsWith("The") || actorName.StartsWith("the"))
-            {
-                ActorEntityType = EntityType.Mob;
-                return;
-            }
-
-            // Check for characters that only show up in mob names and some sublists.
-            Match actorNameMatch = ParseExpressions.MobNameTest.Match(actorName);
-
-            if (actorNameMatch.Success == true)
-            {
-                // Probably a mob, but possibly a pet.  Check the short names lists.
-                if (Puppets.ShortNamesList.Contains(actorName))
-                    ActorEntityType = EntityType.Pet;
-                else if (Wyverns.ShortNamesList.Contains(actorName))
-                    ActorEntityType = EntityType.Pet;
-                else if (NPCFellows.ShortNamesList.Contains(actorName))
-                    ActorEntityType = EntityType.Fellow;
-                else
-                    ActorEntityType = EntityType.Mob;
-
-                return;
-            }
-
-            // Check for the pattern of beastmaster jug pet actorNames.
-            actorNameMatch = ParseExpressions.BstJugPetName.Match(actorName);
-            if (actorNameMatch.Success == true)
-            {
-                ActorEntityType = EntityType.Pet;
-                return;
-            }
-
-            // Check known pet lists
-            if (Avatars.NamesList.Contains(actorName))
-            {
-                ActorEntityType = EntityType.Pet;
-                return;
-            }
-
-            if (Wyverns.NamesList.Contains(actorName))
-            {
-                ActorEntityType = EntityType.Pet;
-                return;
-            }
-
-            if (Puppets.NamesList.Contains(actorName))
-            {
-                ActorEntityType = EntityType.Pet;
-                return;
-            }
-
-            // Check known NPC fellows
-            if (NPCFellows.NamesList.Contains(actorName))
-            {
-                ActorEntityType = EntityType.Fellow;
-                return;
-            }
-
-
-            // Anything else must be a player.
-            ActorEntityType = EntityType.Player;
         }
         #endregion
 

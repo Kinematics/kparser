@@ -110,6 +110,7 @@
     <Compile Include="Messages\MessageDetail\SystemDetails.cs" />
     <Compile Include="Messages\MessageDetail\TargetDetails.cs" />
     <Compile Include="Messages\MessageLine.cs" />
+    <Compile Include="Messages\Parsing\ClassifyEntity.cs" />
     <Compile Include="Messages\Parsing\ParseCodes.cs" />
     <Compile Include="Messages\Message.cs" />
     <Compile Include="Messages\MessageManager.cs" />
