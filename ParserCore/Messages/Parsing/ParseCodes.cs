@@ -39,6 +39,7 @@ namespace WaywardGamers.KParser
             combatCategoryLookup[0x19] = CombatActionType.Attack;
             combatCategoryLookup[0x1c] = CombatActionType.Attack;
             combatCategoryLookup[0x28] = CombatActionType.Attack;
+            combatCategoryLookup[0x2a] = CombatActionType.Attack;
             // Unsuccessful attacks
             combatCategoryLookup[0x15] = CombatActionType.Attack;
             combatCategoryLookup[0x1a] = CombatActionType.Attack;
@@ -75,8 +76,11 @@ namespace WaywardGamers.KParser
             combatCategoryLookup[0x3c] = CombatActionType.Buff;
             combatCategoryLookup[0x40] = CombatActionType.Buff;
             // Recovery
-            combatCategoryLookup[0x1f] = CombatActionType.Buff;
+            combatCategoryLookup[0x1e] = CombatActionType.Buff; // drain samba
+            combatCategoryLookup[0x1f] = CombatActionType.Buff; // cures
             combatCategoryLookup[0x2b] = CombatActionType.Buff;
+
+            combatCategoryLookup[0x5a] = CombatActionType.Buff; // item use
 
 
             // Prep spell of unknown type (buff)?
@@ -114,8 +118,11 @@ namespace WaywardGamers.KParser
             buffTypeLookup[0x6a] = BuffType.Enhance;
             buffTypeLookup[0x6f] = BuffType.Enhance;
 
+            buffTypeLookup[0x1e] = BuffType.Recovery; // drain samba
             buffTypeLookup[0x1f] = BuffType.Recovery;
             buffTypeLookup[0x2b] = BuffType.Recovery;
+
+            buffTypeLookup[0x5a] = BuffType.Item;
         }
 
         private void InitAttackTypeLookup()
@@ -127,6 +134,7 @@ namespace WaywardGamers.KParser
             attackTypeLookup[0x19] = AttackType.Damage;
             attackTypeLookup[0x1c] = AttackType.Damage;
             attackTypeLookup[0x28] = AttackType.Damage;
+            attackTypeLookup[0x2a] = AttackType.Drain;
             // Unsuccessful attacks
             attackTypeLookup[0x15] = AttackType.Damage;
             attackTypeLookup[0x1a] = AttackType.Damage;
@@ -170,6 +178,7 @@ namespace WaywardGamers.KParser
             successTypeLookup[0x19] = SuccessType.Successful;
             successTypeLookup[0x1c] = SuccessType.Successful;
             successTypeLookup[0x28] = SuccessType.Successful;
+            successTypeLookup[0x2a] = SuccessType.Successful;
 
             // Unsucessful damage attempts
             successTypeLookup[0x15] = SuccessType.Unsuccessful;
@@ -190,8 +199,12 @@ namespace WaywardGamers.KParser
             successTypeLookup[0x70] = SuccessType.Successful;
 
             // Recovery
+            successTypeLookup[0x1e] = SuccessType.Successful;
             successTypeLookup[0x1f] = SuccessType.Successful;
             successTypeLookup[0x2b] = SuccessType.Successful;
+
+            // Item use
+            successTypeLookup[0x5a] = SuccessType.Successful;
 
 
             // Resisted enfeebles

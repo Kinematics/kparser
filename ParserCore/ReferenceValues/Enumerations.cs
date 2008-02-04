@@ -86,6 +86,7 @@ namespace WaywardGamers.KParser
         Unknown,
         Enhance,
         Recovery,
+        Item,
     }
 
     public enum RecoveryType : byte
