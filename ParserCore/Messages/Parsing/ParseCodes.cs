@@ -54,8 +54,9 @@ namespace WaywardGamers.KParser
             // Resisted enfeebles
             combatCategoryLookup[0x3b] = CombatActionType.Attack;
             combatCategoryLookup[0x3f] = CombatActionType.Attack;
-            combatCategoryLookup[0x44] = CombatActionType.Attack;
             combatCategoryLookup[0x43] = CombatActionType.Attack;
+            combatCategoryLookup[0x44] = CombatActionType.Attack;
+            combatCategoryLookup[0x45] = CombatActionType.Attack;
             // Ability moves that miss
             combatCategoryLookup[0x68] = CombatActionType.Attack;
             combatCategoryLookup[0x72] = CombatActionType.Attack;
@@ -144,6 +145,7 @@ namespace WaywardGamers.KParser
             attackTypeLookup[0x3b] = AttackType.Enfeeble;
             attackTypeLookup[0x3f] = AttackType.Enfeeble;
             attackTypeLookup[0x44] = AttackType.Enfeeble;
+            attackTypeLookup[0x45] = AttackType.Enfeeble;
             // No effect
             attackTypeLookup[0x43] = AttackType.Enfeeble;
             // Ability moves that miss
@@ -196,6 +198,7 @@ namespace WaywardGamers.KParser
             successTypeLookup[0x3b] = SuccessType.Unsuccessful;
             successTypeLookup[0x3f] = SuccessType.Unsuccessful;
             successTypeLookup[0x44] = SuccessType.Unsuccessful;
+            successTypeLookup[0x45] = SuccessType.Unsuccessful;
 
             // Failed enfeeble
             successTypeLookup[0x43] = SuccessType.Failed;
