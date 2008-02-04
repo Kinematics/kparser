@@ -1,0 +1,17 @@
+Monday, February 04, 2008 12:59 AM
+WaywardGamers.KParser.ParserCore, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+Error severity level: Error
+
+System.IO.IOException
+
+System.IO.IOException: The process cannot access the file 'C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\bin\Debug\SaveLogs\KPDatabaseActive.sdf' because it is being used by another process.
+   at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+   at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy)
+   at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share, Int32 bufferSize, FileOptions options)
+   at System.IO.File.Create(String path, Int32 bufferSize)
+   at WaywardGamers.KParser.DatabaseManager.CreateDatabase(String newDatabaseFilename) in C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\ParserCore\Database\DatabaseManager.cs:line 189
+   at WaywardGamers.KParser.Monitoring.RamReader.Run(String outputFileName) in C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\ParserCore\Monitors\RamReader\RamReader.cs:line 93
+   at WaywardGamers.KParser.Monitor.Start(String outputFileName) in C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\ParserCore\Monitors\Monitor.cs:line 32
+   at WaywardGamers.KParser.ParserWindow.StartParsing(String outputFileName) in C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\ParserWindow.cs:line 445
+---------------------------------------------------------------
+

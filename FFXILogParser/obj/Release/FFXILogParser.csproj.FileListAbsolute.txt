@@ -1,0 +1,15 @@
+C:\Documents and Settings\David\My Documents\Visual Studio 2005\Projects\FFXILogParser\FFXILogParser\obj\Release\KParser.exe
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\obj\Release\KParser.exe
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\bin\Release\KParser.exe
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\obj\Release\WaywardGamers.KParser.Options.resources
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\obj\Release\WaywardGamers.KParser.ParserWindow.resources
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\obj\Release\FFXILogParser.csproj.GenerateResource.Cache
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\bin\Release\KParser.exe.config
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\obj\Release\WaywardGamers.KParser.AboutBox.resources
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\bin\Release\WaywardGamers.KParser.Plugin.Chat.dll
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\bin\Release\WaywardGamers.KParser.ParserCore.dll
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\bin\Release\WaywardGamers.KParser.Plugin.Treasure.dll
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\bin\Release\WaywardGamers.KParser.Plugin.Melee.dll
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\bin\Release\WaywardGamers.KParser.Plugin.Experience.dll
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\bin\Release\WaywardGamers.KParser.Plugin.Debugging.dll

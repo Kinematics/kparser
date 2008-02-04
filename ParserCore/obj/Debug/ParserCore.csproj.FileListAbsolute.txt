@@ -1,0 +1,11 @@
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\ParserCore\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\ParserCore\bin\Debug\WaywardGamers.KParser.ParserCore.dll.config
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\ParserCore\bin\Debug\WaywardGamers.KParser.ParserCore.dll
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\ParserCore\bin\Debug\WaywardGamers.KParser.ParserCore.pdb
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\ParserCore\obj\Debug\WaywardGamers.KParser.ParserCore.dll
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\ParserCore\obj\Debug\WaywardGamers.KParser.ParserCore.pdb
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\ParserCore\obj\Debug\ParserCore.csproj.GenerateResource.Cache
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\ParserCore\obj\Debug\WaywardGamers.KParser.Plugin.BasePluginControl.resources
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\ParserCore\obj\Debug\WaywardGamers.KParser.Plugin.BasePluginControlWithRadio.resources
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\ParserCore\obj\Debug\WaywardGamers.KParser.Plugin.BasePluginControlWithDropdown.resources
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\ParserCore\obj\Debug\WaywardGamers.KParser.Plugin.BasePluginControlListView.resources

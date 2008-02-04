@@ -1,0 +1,7 @@
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginTreasure\bin\Debug\WaywardGamers.KParser.ParserCore.dll
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginTreasure\bin\Debug\WaywardGamers.KParser.ParserCore.pdb
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginTreasure\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginTreasure\bin\Debug\WaywardGamers.KParser.Plugin.Treasure.dll
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginTreasure\bin\Debug\WaywardGamers.KParser.Plugin.Treasure.pdb
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginTreasure\obj\Debug\WaywardGamers.KParser.Plugin.Treasure.dll
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginTreasure\obj\Debug\WaywardGamers.KParser.Plugin.Treasure.pdb

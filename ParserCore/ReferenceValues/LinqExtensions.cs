@@ -1,0 +1,122 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace WaywardGamers.KParser
+{
+    static class LinqExtensions
+    {
+        /*
+        public static V OriginalMax<T, V>(this IEnumerable<T> source,
+                                     Func<T, int> comparisonMap,
+                                     Func<T, V> selectMap)
+        {
+            int maxValue = 0;
+            V maxElement = default(V);
+            bool gotAny = false;
+            using (IEnumerator<T> enumerator = source.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    T sourceValue = enumerator.Current;
+                    int value = comparisonMap(sourceValue);
+                    if (!gotAny || value > maxValue)
+                    {
+                        maxValue = value;
+                        maxElement = selectMap(sourceValue);
+                        gotAny = true;
+                    }
+                }
+            }
+            if (!gotAny)
+            {
+                throw new EmptySequenceException();
+            }
+            return maxElement;
+        }
+        */
+        
+        /// <summary>
+        /// Gets the maximum element of an IEnumerable source based on a provided comparison
+        /// delegate and a selection delegate.
+        /// </summary>
+        /// <typeparam name="T">The type of IEnumerable list.</typeparam>
+        /// <typeparam name="C">The type of value to be compared.  Must be IComparable.</typeparam>
+        /// <typeparam name="V">The individual element type of the IEnumerable list.</typeparam>
+        /// <param name="source">The IEnumerable list.</param>
+        /// <param name="comparisonMap">The comparison delegate.</param>
+        /// <param name="selectMap">The selection delegate.</param>
+        /// <returns>The element V that is determined to have the maximum value of the list.</returns>
+        public static V MaxEntry<T, C, V>(this IEnumerable<T> source,
+                            Func<T, C> comparisonMap,
+                            Func<T, V> selectMap)
+        {
+            if ((source == null) || (source.Count() == 0))
+                return default(V);
+
+            C maxValueC = comparisonMap(source.First());
+
+            if ((maxValueC is IComparable) == false)
+                throw new InvalidOperationException("ComparisonMap must return an IComparable type object.");
+
+            V maxElement = selectMap(source.First());
+
+            foreach (T sourceElement in source)
+            {
+                C value = comparisonMap(sourceElement);
+                IComparable<C> cValue = value as IComparable<C>;
+
+                if (cValue.CompareTo(maxValueC) > 0)
+                {
+                    maxValueC = value;
+                    maxElement = selectMap(sourceElement);
+                }
+            }
+
+            return maxElement;
+        }
+
+
+        /// <summary>
+        /// Gets the minimum element of an IEnumerable source based on a provided comparison
+        /// delegate and a selection delegate.
+        /// </summary>
+        /// <typeparam name="T">The type of IEnumerable list.</typeparam>
+        /// <typeparam name="C">The type of value to be compared.  Must be IComparable.</typeparam>
+        /// <typeparam name="V">The individual element type of the IEnumerable list.</typeparam>
+        /// <param name="source">The IEnumerable list.</param>
+        /// <param name="comparisonMap">The comparison delegate.</param>
+        /// <param name="selectMap">The selection delegate.</param>
+        /// <returns>The element V that is determined to have the minimum value of the list.</returns>
+        public static V MinEntry<T, C, V>(this IEnumerable<T> source,
+                    Func<T, C> comparisonMap,
+                    Func<T, V> selectMap)
+        {
+            if ((source == null) || (source.Count() == 0))
+                return default(V);
+
+            C maxValueC = comparisonMap(source.First());
+
+            if ((maxValueC is IComparable) == false)
+                throw new InvalidOperationException("ComparisonMap must return an IComparable type object.");
+
+            V maxElement = selectMap(source.First());
+
+            foreach (T sourceElement in source)
+            {
+                C value = comparisonMap(sourceElement);
+                IComparable<C> cValue = value as IComparable<C>;
+
+                if (cValue.CompareTo(maxValueC) < 0)
+                {
+                    maxValueC = value;
+                    maxElement = selectMap(sourceElement);
+                }
+            }
+
+            return maxElement;
+        }
+
+    }
+}

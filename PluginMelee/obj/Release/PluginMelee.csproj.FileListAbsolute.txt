@@ -1,0 +1,4 @@
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginMelee\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginMelee\bin\Release\WaywardGamers.KParser.Plugin.Melee.dll
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginMelee\bin\Release\WaywardGamers.KParser.ParserCore.dll
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\PluginMelee\obj\Release\WaywardGamers.KParser.Plugin.Melee.dll

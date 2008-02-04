@@ -1,0 +1,210 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{626318E4-447D-4BD7-BC3A-294A8E37B07F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WaywardGamers.KParser</RootNamespace>
+    <AssemblyName>WaywardGamers.KParser.ParserCore</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.SqlServerCe, Version=3.5.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ErrorHandling\ErrorLog.cs" />
+    <Compile Include="ErrorHandling\KAppException.cs" />
+    <Compile Include="Interface\BasePluginControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Interface\BasePluginControl.Designer.cs">
+      <DependentUpon>BasePluginControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interface\BasePluginControlWithRadio.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Interface\BasePluginControlWithRadio.Designer.cs">
+      <DependentUpon>BasePluginControlWithRadio.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interface\BasePluginControlWithDropdown.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Interface\BasePluginControlWithDropdown.Designer.cs">
+      <DependentUpon>BasePluginControlWithDropdown.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interface\BasePluginControlListView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Interface\BasePluginControlListView.Designer.cs">
+      <DependentUpon>BasePluginControlListView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interface\PluginInterface.cs" />
+    <Compile Include="KPDatabaseDataSet.cs">
+      <DependentUpon>KPDatabaseDataSet.xsd</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="KPDatabaseDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>KPDatabaseDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Database\DatabaseManager.cs" />
+    <Compile Include="Messages\ChatLine.cs" />
+    <Compile Include="Messages\Message.cs" />
+    <Compile Include="Messages\MessageDetail\CombatDetails.cs" />
+    <Compile Include="Messages\MessageDetail\LootDetails.cs" />
+    <Compile Include="Messages\MessageDetail\NewActionDetails.cs" />
+    <Compile Include="Messages\MessageDetail\NewChatDetails.cs" />
+    <Compile Include="Messages\MessageDetail\NewCombatDetails.cs" />
+    <Compile Include="Messages\MessageDetail\NewExperienceDetails.cs" />
+    <Compile Include="Messages\MessageDetail\NewSystemDetails.cs" />
+    <Compile Include="Messages\MessageDetail\NewTargetDetails.cs" />
+    <Compile Include="Messages\MessageDetail\TargetDetailCollection.cs" />
+    <Compile Include="Messages\MessageDetail\TargetDetails.cs" />
+    <Compile Include="Messages\MessageLine.cs" />
+    <Compile Include="Messages\MessageDetail\ParseCodes.cs" />
+    <Compile Include="Messages\NewMessage.cs" />
+    <Compile Include="Messages\MessageManager.cs" />
+    <Compile Include="Messages\Parser.cs" />
+    <Compile Include="Monitors\LogReader\LogReader.cs" />
+    <Compile Include="Monitors\Monitor.cs" />
+    <Compile Include="Monitors\RamReader\MemoryAccess.cs" />
+    <Compile Include="Monitors\RamReader\PInvoke.cs" />
+    <Compile Include="Monitors\RamReader\RamReader.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="ReferenceValues\Enumerations.cs" />
+    <Compile Include="ReferenceValues\LinqExtensions.cs" />
+    <Compile Include="ReferenceValues\Magic.cs" />
+    <Compile Include="ReferenceValues\Names.cs" />
+    <Compile Include="ReferenceValues\ParseExpressions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="KPDatabaseDataSet.xsc">
+      <DependentUpon>KPDatabaseDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="KPDatabaseDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>KPDatabaseDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="KPDatabaseDataSet.xss">
+      <DependentUpon>KPDatabaseDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Interface\BasePluginControl.resx">
+      <DependentUpon>BasePluginControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interface\BasePluginControlWithRadio.resx">
+      <DependentUpon>BasePluginControlWithRadio.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interface\BasePluginControlWithDropdown.resx">
+      <DependentUpon>BasePluginControlWithDropdown.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interface\BasePluginControlListView.resx">
+      <DependentUpon>BasePluginControlListView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="KPDatabase.sdf" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.SQL.Server.Compact.3.5">
+      <Visible>False</Visible>
+      <ProductName>SQL Server Compact 3.5</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

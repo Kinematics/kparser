@@ -1,0 +1,4 @@
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\Chat.Plugin\bin\Release\WaywardGamers.KParser.Plugin.Chat.dll
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\Chat.Plugin\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\Chat.Plugin\obj\Release\WaywardGamers.KParser.Plugin.Chat.dll
+C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\Chat.Plugin\bin\Release\WaywardGamers.KParser.ParserCore.dll

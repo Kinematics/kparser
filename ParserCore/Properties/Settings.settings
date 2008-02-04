@@ -1,0 +1,44 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="WaywardGamers.KParser.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="KPDatabaseConnectionString" Type="(Connection string)" Scope="Application">
+      <DesignTimeValue Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;SerializableConnectionString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;ConnectionString&gt;Data Source=|DataDirectory|\KPDatabase.sdf&lt;/ConnectionString&gt;
+  &lt;ProviderName&gt;Microsoft.SqlServerCe.Client.3.5&lt;/ProviderName&gt;
+&lt;/SerializableConnectionString&gt;</DesignTimeValue>
+      <Value Profile="(Default)">Data Source=|DataDirectory|\KPDatabase.sdf</Value>
+    </Setting>
+    <Setting Name="DBResourceName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">KPDatabase.sdf</Value>
+    </Setting>
+    <Setting Name="ParseMode" Type="WaywardGamers.KParser.DataSource" Scope="User">
+      <Value Profile="(Default)">Ram</Value>
+    </Setting>
+    <Setting Name="MemoryOffset" Type="System.UInt32" Scope="User">
+      <Value Profile="(Default)">5678984</Value>
+    </Setting>
+    <Setting Name="FFXILogDirectory" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Program Files\PlayOnline\SquareEnix\FINAL FANTASY XI\TEMP</Value>
+    </Setting>
+    <Setting Name="DefaultSaveSubdirectory" Type="System.String" Scope="User">
+      <Value Profile="(Default)">SaveLogs</Value>
+    </Setting>
+    <Setting Name="ParseExistingLogs" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="DefaultUnnamedDBFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">KPDatabaseActive.sdf</Value>
+    </Setting>
+    <Setting Name="dumpDebugTextToFile" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="DaysToRetainErrorLogs" Type="System.UInt32" Scope="User">
+      <Value Profile="(Default)">7</Value>
+    </Setting>
+    <Setting Name="ErrorLoggingLevel" Type="WaywardGamers.KParser.ErrorLevel" Scope="User">
+      <Value Profile="(Default)">Debug</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
