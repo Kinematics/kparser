@@ -151,5 +151,8 @@ namespace WaywardGamers.KParser
         public static readonly Regex DrainHP = new Regex(string.Format("^{0} HP drained from {1}\\.$", damage, target));
         public static readonly Regex DrainMP = new Regex(string.Format("^{0} MP drained from {1}\\.$", damage, target));
 
+        public static readonly Regex DrainSamba = new Regex(string.Format("^Additional effect: {0} HP drained from {1}\\.$", damage, target));
+        public static readonly Regex AspirSamba = new Regex(string.Format("^Additional effect: {0} MP drained from {1}\\.$", damage, target));
+
     }
 }
