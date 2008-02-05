@@ -8,20 +8,6 @@ using System.Drawing;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    internal class AttackGroup
-    {
-        internal ActionSourceType ActionSource { get; set; }
-        internal IEnumerable<IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.CombatDetailsRow>>
-            CombatGroup { get; set; }
-
-        public AttackGroup(ActionSourceType key,
-            IEnumerable<IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.CombatDetailsRow>> grouping)
-        {
-            ActionSource = key;
-            CombatGroup = grouping;
-        }
-    }
-
     public class OffensePlugin : BasePluginControlWithDropdown
     {
         #region IPlugin Overrides
@@ -42,6 +28,7 @@ namespace WaywardGamers.KParser.Plugin
             {
                 comboBox1.Items.Add(action.ToString());
             }
+            comboBox1.Items.Add("Other");
             comboBox1.SelectedIndex = 0;
 
             label2.Left = comboBox1.Right + 20;
@@ -60,6 +47,51 @@ namespace WaywardGamers.KParser.Plugin
             //checkBox2.Checked = false;
             checkBox2.Enabled = false;
             checkBox2.Visible = false;
+        }
+
+        public override void DatabaseOpened(KPDatabaseDataSet dataSet)
+        {
+            int allBattles = dataSet.Battles.Count(b => b.DefaultBattle == false);
+
+            if (allBattles > 0)
+            {
+                var mobsKilled = from b in dataSet.Battles
+                                 where b.DefaultBattle == false
+                                 orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
+                                 group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
+                                 select new
+                                 {
+                                     Name = bn.Key,
+                                     XP = from xb in bn
+                                          group xb by xb.BaseExperience() into xbn
+                                          select new { BXP = xbn.Key }
+                                 };
+
+                foreach (var mob in mobsKilled)
+                {
+                    if (this.comboBox2.Items.Contains(mob.Name) == false)
+                    {
+                        AddToComboBox2(mob.Name);
+                    }
+
+                    if (mob.XP.Count() > 1)
+                    {
+                        string mobWithXP;
+
+                        foreach (var xp in mob.XP)
+                        {
+                            mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BXP);
+
+                            if (this.comboBox2.Items.Contains(mobWithXP) == false)
+                            {
+                                AddToComboBox2(mobWithXP);
+                            }
+                        }
+                    }
+                }
+            }
+
+            base.DatabaseOpened(dataSet);
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
@@ -139,6 +171,7 @@ namespace WaywardGamers.KParser.Plugin
         string spellHeader;
         string abilHeader;
         string wskillHeader;
+        string otherHeader;
         #endregion
 
         #region Processing sections
@@ -253,14 +286,29 @@ namespace WaywardGamers.KParser.Plugin
                 totalDamage += player.Value;
 
 
-            var meleeAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionSourceType.Melee);
+            var meleeAttacks = allAttacks.FirstOrDefault(m => (m.ActionSource == ActionSourceType.Melee));
             var rangeAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionSourceType.Ranged);
             var spellAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionSourceType.Spell);
             var abilAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionSourceType.Ability);
             var wskillAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionSourceType.Weaponskill);
+            var otherAttacks = allAttacks.Where(m =>
+                (m.ActionSource != ActionSourceType.Melee) &&
+                (m.ActionSource != ActionSourceType.Ranged) &&
+                (m.ActionSource != ActionSourceType.Spell) &&
+                (m.ActionSource != ActionSourceType.Ability) &&
+                (m.ActionSource != ActionSourceType.Weaponskill) );
 
             switch (actionSourceFilter)
             {
+                // Unknown == "All"
+                case ActionSourceType.Unknown:
+                    ProcessMeleeAttacks(meleeAttacks);
+                    ProcessRangedAttacks(rangeAttacks);
+                    ProcessSpellsAttacks(spellAttacks);
+                    ProcessAbilityAttacks(abilAttacks);
+                    ProcessWeaponskillAttacks(wskillAttacks);
+                    ProcessOtherAttacks(otherAttacks);
+                    break;
                 case ActionSourceType.Melee:
                     ProcessMeleeAttacks(meleeAttacks);
                     break;
@@ -277,11 +325,7 @@ namespace WaywardGamers.KParser.Plugin
                     ProcessWeaponskillAttacks(wskillAttacks);
                     break;
                 default:
-                    ProcessMeleeAttacks(meleeAttacks);
-                    ProcessRangedAttacks(rangeAttacks);
-                    ProcessSpellsAttacks(spellAttacks);
-                    ProcessAbilityAttacks(abilAttacks);
-                    ProcessWeaponskillAttacks(wskillAttacks);
+                    ProcessOtherAttacks(otherAttacks);
                     break;
             }
         }
@@ -1027,6 +1071,28 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             AppendNormalText("\n\n");
+        }
+
+        private void ProcessOtherAttacks(IEnumerable<AttackGroup> otherAttacks)
+        {
+            if (otherAttacks == null)
+                return;
+
+            if (otherAttacks.Count() == 0)
+                return;
+
+            AppendBoldText("Other Damage\n", Color.Red);
+
+            if (otherHeader == null)
+                otherHeader = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10}\n",
+                "Player".PadRight(16), "Other Dmg".PadLeft(10), "Total Dmg".PadLeft(10), "Other %".PadLeft(9),
+                "Dmg Share %".PadLeft(12), "# Counterattacks".PadLeft(18), "C.Dmg".PadLeft(8), "Avg C.Dmg".PadLeft(10),
+                "# Spikes".PadLeft(9), "Spk.Dmg".PadLeft(9), "Avg Spk.Dmg".PadLeft(12));
+
+            AppendBoldUnderText(otherHeader, Color.Black);
+
+            var counterAttacks = otherAttacks.FirstOrDefault(a => a.ActionSource == ActionSourceType.Counterattack);
+            var spikesAttacks = otherAttacks.FirstOrDefault(a => a.ActionSource == ActionSourceType.Spikes);
         }
 
         #endregion

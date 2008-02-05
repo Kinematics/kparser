@@ -49,6 +49,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttackGroup.cs">
+    </Compile>
+    <Compile Include="DefensePlugin.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="OffensePlugin.cs">
       <SubType>UserControl</SubType>
     </Compile>
