@@ -34,6 +34,10 @@ namespace WaywardGamers.KParser.Plugin
             comboBox2.Items.Add("All");
             comboBox2.SelectedIndex = 0;
 
+            checkBox1.Enabled = false;
+            checkBox1.Visible = false;
+            checkBox2.Enabled = false;
+            checkBox2.Visible = false;
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
