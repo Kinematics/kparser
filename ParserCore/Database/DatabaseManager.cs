@@ -662,8 +662,11 @@ namespace WaywardGamers.KParser
                             activeBattleList[battle] = message.Timestamp;
 
                         localDB.CombatDetails.AddCombatDetailsRow(actor, null, battle,
-                            (byte)CombatActionType.Buff, (byte)AttackType.Unknown, (byte)message.ActionDetails.CombatDetails.BuffType,
-                            (byte)message.ActionDetails.CombatDetails.ActionSource, (byte)message.ActionDetails.CombatDetails.FailedActionType, false,
+                            (byte)message.ActionDetails.CombatDetails.CombatCategory,
+                            (byte)message.ActionDetails.CombatDetails.AttackType,
+                            (byte)message.ActionDetails.CombatDetails.BuffType,
+                            (byte)message.ActionDetails.CombatDetails.ActionSource,
+                            (byte)message.ActionDetails.CombatDetails.FailedActionType, false,
                             (byte)DefenseType.None, 0, (byte)DamageModifier.None, (byte)RecoveryType.None, 0, true,
                             action, message.Timestamp, (byte)message.ActionDetails.CombatDetails.SuccessLevel, 0);
 
@@ -699,12 +702,15 @@ namespace WaywardGamers.KParser
                             var targetRow = localDB.Combatants.GetCombatant(target.Name, target.EntityType);
 
                             localDB.CombatDetails.AddCombatDetailsRow(actor, targetRow, battle,
-                                (byte)message.ActionDetails.CombatDetails.CombatCategory, (byte)message.ActionDetails.CombatDetails.AttackType,
-                                (byte)message.ActionDetails.CombatDetails.BuffType, (byte)message.ActionDetails.CombatDetails.ActionSource,
-                                (byte)message.ActionDetails.CombatDetails.FailedActionType, target.Defended, (byte)target.DefenseType,
+                                (byte)message.ActionDetails.CombatDetails.CombatCategory,
+                                (byte)message.ActionDetails.CombatDetails.AttackType,
+                                (byte)message.ActionDetails.CombatDetails.BuffType,
+                                (byte)message.ActionDetails.CombatDetails.ActionSource,
+                                (byte)message.ActionDetails.CombatDetails.FailedActionType,
+                                target.Defended, (byte)target.DefenseType,
                                 target.Damage, (byte)target.DamageModifier, (byte)target.RecoveryType, 0,
-                                message.ActionDetails.CombatDetails.IsPreparing, action, message.Timestamp, (byte)target.SuccessLevel,
-                                target.ShadowsUsed);
+                                message.ActionDetails.CombatDetails.IsPreparing, action, message.Timestamp,
+                                (byte)target.SuccessLevel, target.ShadowsUsed);
                         }
                     }
                     else
@@ -732,12 +738,15 @@ namespace WaywardGamers.KParser
                                 activeBattleList[battle] = message.Timestamp;
 
                             localDB.CombatDetails.AddCombatDetailsRow(actor, targetRow, battle,
-                                (byte)message.ActionDetails.CombatDetails.CombatCategory, (byte)message.ActionDetails.CombatDetails.AttackType,
-                                (byte)message.ActionDetails.CombatDetails.BuffType, (byte)message.ActionDetails.CombatDetails.ActionSource,
-                                (byte)message.ActionDetails.CombatDetails.FailedActionType, target.Defended, (byte)target.DefenseType,
+                                (byte)message.ActionDetails.CombatDetails.CombatCategory,
+                                (byte)message.ActionDetails.CombatDetails.AttackType,
+                                (byte)message.ActionDetails.CombatDetails.BuffType,
+                                (byte)message.ActionDetails.CombatDetails.ActionSource,
+                                (byte)message.ActionDetails.CombatDetails.FailedActionType,
+                                target.Defended, (byte)target.DefenseType,
                                 target.Damage, (byte)target.DamageModifier, (byte)target.RecoveryType, 0,
-                                message.ActionDetails.CombatDetails.IsPreparing, action, message.Timestamp, (byte)target.SuccessLevel,
-                                target.ShadowsUsed);
+                                message.ActionDetails.CombatDetails.IsPreparing, action, message.Timestamp,
+                                (byte)target.SuccessLevel, target.ShadowsUsed);
                         }
                     }
                     break;
@@ -773,8 +782,11 @@ namespace WaywardGamers.KParser
                             activeMobBattleList[message.ActionDetails.CombatDetails.ActorName] = battle;
 
                         var details = localDB.CombatDetails.AddCombatDetailsRow(actor, null, battle,
-                            (byte)CombatActionType.Buff, (byte)AttackType.Unknown, (byte)message.ActionDetails.CombatDetails.BuffType,
-                            (byte)message.ActionDetails.CombatDetails.ActionSource, (byte)message.ActionDetails.CombatDetails.FailedActionType, false,
+                            (byte)CombatActionType.Buff,
+                            (byte)AttackType.Unknown,
+                            (byte)message.ActionDetails.CombatDetails.BuffType,
+                            (byte)message.ActionDetails.CombatDetails.ActionSource,
+                            (byte)message.ActionDetails.CombatDetails.FailedActionType, false,
                             (byte)DefenseType.None, 0, (byte)DamageModifier.None, (byte)RecoveryType.None, 0, true,
                             action, message.Timestamp, (byte)message.ActionDetails.CombatDetails.SuccessLevel, 0);
 
@@ -834,12 +846,15 @@ namespace WaywardGamers.KParser
                                 (byte)target.EntityType, null);
 
                         localDB.CombatDetails.AddCombatDetailsRow(actor, targetRow, battle,
-                            (byte) message.ActionDetails.CombatDetails.CombatCategory, (byte)message.ActionDetails.CombatDetails.AttackType,
-                            (byte)message.ActionDetails.CombatDetails.BuffType, (byte) message.ActionDetails.CombatDetails.ActionSource,
-                            (byte)message.ActionDetails.CombatDetails.FailedActionType, target.Defended, (byte)target.DefenseType,
+                            (byte) message.ActionDetails.CombatDetails.CombatCategory,
+                            (byte)message.ActionDetails.CombatDetails.AttackType,
+                            (byte)message.ActionDetails.CombatDetails.BuffType,
+                            (byte) message.ActionDetails.CombatDetails.ActionSource,
+                            (byte)message.ActionDetails.CombatDetails.FailedActionType,
+                            target.Defended, (byte)target.DefenseType,
                             0, (byte)target.DamageModifier, (byte)target.RecoveryType, target.Damage,
-                            message.ActionDetails.CombatDetails.IsPreparing, action, message.Timestamp, (byte)target.SuccessLevel,
-                            target.ShadowsUsed);
+                            message.ActionDetails.CombatDetails.IsPreparing, action, message.Timestamp,
+                            (byte)target.SuccessLevel, target.ShadowsUsed);
                     }
                     break;
                 #endregion
@@ -883,12 +898,15 @@ namespace WaywardGamers.KParser
                                     (byte)target.EntityType, null);
 
                             localDB.CombatDetails.AddCombatDetailsRow(actor, targetRow, battle,
-                                (byte)message.ActionDetails.CombatDetails.CombatCategory, (byte)message.ActionDetails.CombatDetails.AttackType,
-                                (byte)message.ActionDetails.CombatDetails.BuffType, (byte)message.ActionDetails.CombatDetails.ActionSource,
-                                (byte)message.ActionDetails.CombatDetails.FailedActionType, false, (byte)target.DefenseType,
-                                target.Damage, (byte)target.DamageModifier, (byte)target.RecoveryType, target.RecoveryAmount,
-                                message.ActionDetails.CombatDetails.IsPreparing, null, message.Timestamp, (byte)target.SuccessLevel,
-                                target.ShadowsUsed);
+                                (byte)message.ActionDetails.CombatDetails.CombatCategory,
+                                (byte)message.ActionDetails.CombatDetails.AttackType,
+                                (byte)message.ActionDetails.CombatDetails.BuffType,
+                                (byte)message.ActionDetails.CombatDetails.ActionSource,
+                                (byte)message.ActionDetails.CombatDetails.FailedActionType,
+                                false, (byte)target.DefenseType, target.Damage, (byte)target.DamageModifier,
+                                (byte)target.RecoveryType, target.RecoveryAmount,
+                                message.ActionDetails.CombatDetails.IsPreparing,
+                                null, message.Timestamp, (byte)target.SuccessLevel, target.ShadowsUsed);
                         }
                     }
 
@@ -925,13 +943,17 @@ namespace WaywardGamers.KParser
                                 battle.CombatantsRowByBattleKillerRelation = killer;
                             }
 
-                            localDB.CombatDetails.AddCombatDetailsRow(actor, battle.CombatantsRowByEnemyCombatantRelation,
-                                battle, (byte)message.ActionDetails.CombatDetails.CombatCategory, (byte)message.ActionDetails.CombatDetails.AttackType,
-                                (byte)message.ActionDetails.CombatDetails.BuffType, (byte)message.ActionDetails.CombatDetails.ActionSource,
-                                (byte)message.ActionDetails.CombatDetails.FailedActionType, false, (byte)target.DefenseType,
-                                target.Damage, (byte)target.DamageModifier, (byte)target.RecoveryType, target.RecoveryAmount,
-                                message.ActionDetails.CombatDetails.IsPreparing, null, message.Timestamp, (byte)target.SuccessLevel,
-                                target.ShadowsUsed);
+                            localDB.CombatDetails.AddCombatDetailsRow(actor,
+                                battle.CombatantsRowByEnemyCombatantRelation,
+                                battle, (byte)message.ActionDetails.CombatDetails.CombatCategory,
+                                (byte)message.ActionDetails.CombatDetails.AttackType,
+                                (byte)message.ActionDetails.CombatDetails.BuffType,
+                                (byte)message.ActionDetails.CombatDetails.ActionSource,
+                                (byte)message.ActionDetails.CombatDetails.FailedActionType,
+                                false, (byte)target.DefenseType, target.Damage, (byte)target.DamageModifier,
+                                (byte)target.RecoveryType, target.RecoveryAmount,
+                                message.ActionDetails.CombatDetails.IsPreparing, null, message.Timestamp,
+                                (byte)target.SuccessLevel, target.ShadowsUsed);
 
                             // Remove mob from battle lists
                             activeMobBattleList.Remove(target.Name);
@@ -962,13 +984,17 @@ namespace WaywardGamers.KParser
                                     lastKilledList[target.Name] = battle;
                                     lastFinishedBattle = battle;
 
-                                    localDB.CombatDetails.AddCombatDetailsRow(actor, battle.CombatantsRowByEnemyCombatantRelation,
-                                          battle, (byte)message.ActionDetails.CombatDetails.CombatCategory, (byte)message.ActionDetails.CombatDetails.AttackType,
-                                          (byte)message.ActionDetails.CombatDetails.BuffType, (byte)message.ActionDetails.CombatDetails.ActionSource,
-                                          (byte)message.ActionDetails.CombatDetails.FailedActionType, false, (byte)target.DefenseType,
-                                          target.Damage, (byte)target.DamageModifier, (byte)target.RecoveryType, target.RecoveryAmount,
-                                          message.ActionDetails.CombatDetails.IsPreparing, null, message.Timestamp, (byte)target.SuccessLevel,
-                                          target.ShadowsUsed);
+                                    localDB.CombatDetails.AddCombatDetailsRow(actor,
+                                        battle.CombatantsRowByEnemyCombatantRelation, battle,
+                                        (byte)message.ActionDetails.CombatDetails.CombatCategory,
+                                        (byte)message.ActionDetails.CombatDetails.AttackType,
+                                        (byte)message.ActionDetails.CombatDetails.BuffType,
+                                        (byte)message.ActionDetails.CombatDetails.ActionSource,
+                                        (byte)message.ActionDetails.CombatDetails.FailedActionType,
+                                        false, (byte)target.DefenseType, target.Damage, (byte)target.DamageModifier,
+                                        (byte)target.RecoveryType, target.RecoveryAmount,
+                                        message.ActionDetails.CombatDetails.IsPreparing, null, message.Timestamp,
+                                        (byte)target.SuccessLevel, target.ShadowsUsed);
 
                                     // Remove mob from battle lists
                                     activeMobBattleList.Remove(target.Name);
@@ -985,12 +1011,15 @@ namespace WaywardGamers.KParser
                                             (byte)target.EntityType, null);
 
                                     localDB.CombatDetails.AddCombatDetailsRow(actor, targetRow, battle,
-                                        (byte)message.ActionDetails.CombatDetails.CombatCategory, (byte)message.ActionDetails.CombatDetails.AttackType,
-                                        (byte)message.ActionDetails.CombatDetails.BuffType, (byte)message.ActionDetails.CombatDetails.ActionSource,
-                                        (byte)message.ActionDetails.CombatDetails.FailedActionType, false, (byte)target.DefenseType,
-                                        target.Damage, (byte)target.DamageModifier, (byte)target.RecoveryType, target.RecoveryAmount,
-                                        message.ActionDetails.CombatDetails.IsPreparing, null, message.Timestamp, (byte)target.SuccessLevel,
-                                        target.ShadowsUsed);
+                                        (byte)message.ActionDetails.CombatDetails.CombatCategory,
+                                        (byte)message.ActionDetails.CombatDetails.AttackType,
+                                        (byte)message.ActionDetails.CombatDetails.BuffType,
+                                        (byte)message.ActionDetails.CombatDetails.ActionSource,
+                                        (byte)message.ActionDetails.CombatDetails.FailedActionType,
+                                        false, (byte)target.DefenseType,
+                                        target.Damage, (byte)target.DamageModifier, (byte)target.RecoveryType,
+                                        target.RecoveryAmount, message.ActionDetails.CombatDetails.IsPreparing,
+                                        null, message.Timestamp, (byte)target.SuccessLevel, target.ShadowsUsed);
                                 }
                             }
                         }
