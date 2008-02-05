@@ -53,7 +53,7 @@ namespace WaywardGamers.KParser.Plugin
                 HandleDataset(dataSet);
         }
 
-        public void DatabaseOpened(KPDatabaseDataSet dataSet)
+        public virtual void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
             HandleDataset(dataSet);
         }
@@ -99,6 +99,7 @@ namespace WaywardGamers.KParser.Plugin
             }
             catch (Exception e)
             {
+                Logger.Instance.Log(e);
                 MessageBox.Show("Error while processing plugin: \n" + e.Message);
             }
         }
