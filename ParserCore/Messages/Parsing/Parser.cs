@@ -56,6 +56,10 @@ namespace WaywardGamers.KParser.Parsing
                             message = prevMsg;
                             ContinueParse(message, null);
                         }
+                        else
+                        {
+                            // No previous message with same code.  Probably additional effect
+                        }
                     }
                 }
             }
@@ -65,10 +69,41 @@ namespace WaywardGamers.KParser.Parsing
 
         private static Message GetAttachedMessage(MessageLine messageLine)
         {
-            if (messageLine.EventSequence > lastMessageID)
-                return null;
+            Message msg = null;
 
-            Message msg = MessageManager.Instance.FindMessageWithEventNumber(messageLine.EventSequence);
+            if (messageLine.EventSequence > lastMessageID)
+            {
+                // Check for additional effects
+                if (messageLine.TextOutput.StartsWith("Additional effect:"))
+                {
+                    msg = MessageManager.Instance.FindLastMessageWithCode(messageLine.MessageCode);
+
+                    // Check for samba effects, which have a different code than the attack that
+                    // triggered them.
+                    if (msg == null)
+                    {
+                        switch (messageLine.MessageCode)
+                        {
+                            // self-samba
+                            case 0x1e:
+                                msg = MessageManager.Instance.FindLastMessageWithCode(0x14);
+                                break;
+                            // party-samba
+                            case 0x19: //?
+                                msg = MessageManager.Instance.FindLastMessageWithCode(0x19);
+                                break;
+                            // other-samba
+                            case 0x28: //?
+                                msg = MessageManager.Instance.FindLastMessageWithCode(0x28);
+                                break;
+                        }
+                    }
+                }
+
+                return msg;
+            }
+
+            msg = MessageManager.Instance.FindMessageWithEventNumber(messageLine.EventSequence);
 
             return msg;
         }
@@ -622,6 +657,26 @@ namespace WaywardGamers.KParser.Parsing
                         message.ParseSuccessful = true;
                         return;
                     }
+                    combatMatch = ParseExpressions.DrainHP.Match(currentMessageText);
+                    if (combatMatch.Success == true)
+                    {
+                        target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                        target.RecoveryAmount = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
+                        target.RecoveryType = RecoveryType.RecoverHP;
+                        target.SuccessLevel = SuccessType.Successful;
+                        message.ParseSuccessful = true;
+                        return;
+                    }
+                    combatMatch = ParseExpressions.DrainMP.Match(currentMessageText);
+                    if (combatMatch.Success == true)
+                    {
+                        target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                        target.RecoveryAmount = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
+                        target.RecoveryType = RecoveryType.RecoverMP;
+                        target.SuccessLevel = SuccessType.Successful;
+                        message.ParseSuccessful = true;
+                        return;
+                    }
                     break;
                 case BuffType.Unknown:
                     // For prepping buffing spells or abilities (do we need this?)
@@ -979,11 +1034,10 @@ namespace WaywardGamers.KParser.Parsing
                 if (combatMatch.Success == true)
                 {
                     // Check for modifiers
-
                     Match modifyMatch = ParseExpressions.AdditionalEffect.Match(currentMessageText);
                     if (modifyMatch.Success == true)
                     {
-                        target = combatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Fulltarget].Value);
+                        target = combatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
                         if (target != null)
                         {
                             target.AdditionalEffect = true;
