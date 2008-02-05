@@ -163,6 +163,17 @@ namespace WaywardGamers.KParser.Plugin
         {
 
         }
+
+        protected virtual void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        protected virtual void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
         #endregion
+
     }
 }

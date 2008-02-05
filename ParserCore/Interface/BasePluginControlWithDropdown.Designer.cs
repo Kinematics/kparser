@@ -44,6 +44,8 @@ namespace WaywardGamers.KParser.Plugin
             this.label2 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // richTextBox
@@ -55,7 +57,7 @@ namespace WaywardGamers.KParser.Plugin
             this.richTextBox.Location = new System.Drawing.Point(3, 30);
             this.richTextBox.Name = "richTextBox";
             this.richTextBox.ReadOnly = true;
-            this.richTextBox.Size = new System.Drawing.Size(599, 283);
+            this.richTextBox.Size = new System.Drawing.Size(794, 283);
             this.richTextBox.TabIndex = 0;
             this.richTextBox.Text = "";
             // 
@@ -97,17 +99,41 @@ namespace WaywardGamers.KParser.Plugin
             this.comboBox2.TabIndex = 4;
             this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(435, 6);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(80, 17);
+            this.checkBox1.TabIndex = 5;
+            this.checkBox1.Text = "checkBox1";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(587, 6);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(80, 17);
+            this.checkBox2.TabIndex = 6;
+            this.checkBox2.Text = "checkBox2";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            // 
             // BasePluginControlWithDropdown
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.checkBox2);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.comboBox2);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.richTextBox);
             this.Name = "BasePluginControlWithDropdown";
-            this.Size = new System.Drawing.Size(605, 317);
+            this.Size = new System.Drawing.Size(800, 317);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -120,5 +146,7 @@ namespace WaywardGamers.KParser.Plugin
         protected Label label2;
         protected ComboBox comboBox1;
         protected ComboBox comboBox2;
+        protected CheckBox checkBox1;
+        protected CheckBox checkBox2;
     }
 }
