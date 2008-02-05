@@ -711,6 +711,20 @@ namespace WaywardGamers.KParser
                                 target.Damage, (byte)target.DamageModifier, (byte)target.RecoveryType, 0,
                                 message.ActionDetails.CombatDetails.IsPreparing, action, message.Timestamp,
                                 (byte)target.SuccessLevel, target.ShadowsUsed);
+
+                            if (target.AdditionalEffect == true)
+                            {
+                                localDB.CombatDetails.AddCombatDetailsRow(actor, targetRow, battle,
+                                    (byte)message.ActionDetails.CombatDetails.CombatCategory,
+                                    (byte)message.ActionDetails.CombatDetails.AttackType,
+                                    (byte)message.ActionDetails.CombatDetails.BuffType,
+                                    (byte)ActionSourceType.AdditionalEffect,
+                                    (byte)message.ActionDetails.CombatDetails.FailedActionType,
+                                    target.Defended, (byte)target.DefenseType,
+                                    target.AdditionalDamage, (byte)DamageModifier.None, (byte)target.RecoveryType, 0,
+                                    message.ActionDetails.CombatDetails.IsPreparing, action, message.Timestamp,
+                                    (byte)target.SuccessLevel, target.ShadowsUsed);
+                            }
                         }
                     }
                     else
@@ -747,6 +761,21 @@ namespace WaywardGamers.KParser
                                 target.Damage, (byte)target.DamageModifier, (byte)target.RecoveryType, 0,
                                 message.ActionDetails.CombatDetails.IsPreparing, action, message.Timestamp,
                                 (byte)target.SuccessLevel, target.ShadowsUsed);
+
+                            if (target.AdditionalEffect == true)
+                            {
+                                localDB.CombatDetails.AddCombatDetailsRow(actor, targetRow, battle,
+                                    (byte)message.ActionDetails.CombatDetails.CombatCategory,
+                                    (byte)message.ActionDetails.CombatDetails.AttackType,
+                                    (byte)message.ActionDetails.CombatDetails.BuffType,
+                                    (byte)ActionSourceType.AdditionalEffect,
+                                    (byte)message.ActionDetails.CombatDetails.FailedActionType,
+                                    target.Defended, (byte)target.DefenseType,
+                                    target.AdditionalDamage, (byte)DamageModifier.None, (byte)target.RecoveryType, 0,
+                                    message.ActionDetails.CombatDetails.IsPreparing, action, message.Timestamp,
+                                    (byte)target.SuccessLevel, target.ShadowsUsed);
+                            }
+
                         }
                     }
                     break;
