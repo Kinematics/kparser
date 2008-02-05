@@ -28,7 +28,7 @@ namespace WaywardGamers.KParser.Plugin
             {
                 comboBox1.Items.Add(action.ToString());
             }
-            comboBox1.Items.Add("Other");
+            //comboBox1.Items.Add("Other");
             comboBox1.SelectedIndex = 0;
 
             label2.Left = comboBox1.Right + 20;
@@ -286,17 +286,17 @@ namespace WaywardGamers.KParser.Plugin
                 totalDamage += player.Value;
 
 
-            var meleeAttacks = allAttacks.FirstOrDefault(m => (m.ActionSource == ActionSourceType.Melee));
+            var meleeAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionSourceType.Melee);
             var rangeAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionSourceType.Ranged);
             var spellAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionSourceType.Spell);
             var abilAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionSourceType.Ability);
             var wskillAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionSourceType.Weaponskill);
-            var otherAttacks = allAttacks.Where(m =>
-                (m.ActionSource != ActionSourceType.Melee) &&
-                (m.ActionSource != ActionSourceType.Ranged) &&
-                (m.ActionSource != ActionSourceType.Spell) &&
-                (m.ActionSource != ActionSourceType.Ability) &&
-                (m.ActionSource != ActionSourceType.Weaponskill) );
+            //var otherAttacks = allAttacks.Where(m =>
+            //    (m.ActionSource != ActionSourceType.Melee) &&
+            //    (m.ActionSource != ActionSourceType.Ranged) &&
+            //    (m.ActionSource != ActionSourceType.Spell) &&
+            //    (m.ActionSource != ActionSourceType.Ability) &&
+            //    (m.ActionSource != ActionSourceType.Weaponskill) );
 
             switch (actionSourceFilter)
             {
@@ -307,7 +307,7 @@ namespace WaywardGamers.KParser.Plugin
                     ProcessSpellsAttacks(spellAttacks);
                     ProcessAbilityAttacks(abilAttacks);
                     ProcessWeaponskillAttacks(wskillAttacks);
-                    ProcessOtherAttacks(otherAttacks);
+                    //ProcessOtherAttacks(otherAttacks);
                     break;
                 case ActionSourceType.Melee:
                     ProcessMeleeAttacks(meleeAttacks);
@@ -325,7 +325,7 @@ namespace WaywardGamers.KParser.Plugin
                     ProcessWeaponskillAttacks(wskillAttacks);
                     break;
                 default:
-                    ProcessOtherAttacks(otherAttacks);
+                    //ProcessOtherAttacks(otherAttacks);
                     break;
             }
         }

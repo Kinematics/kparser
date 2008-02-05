@@ -8,7 +8,7 @@ using System.Drawing;
 
 namespace WaywardGamers.KParser.Plugin
 {
-   private class DefensePlugin : BasePluginControlWithDropdown
+    class DefensePlugin : BasePluginControlWithDropdown
     {
         #region IPlugin Overrides
         public override string TabName
