@@ -205,9 +205,9 @@
       <Project>{497E79CF-92E1-4D78-9C5D-DE62B292945C}</Project>
       <Name>PluginExperience</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PluginMelee\PluginMelee.csproj">
+    <ProjectReference Include="..\PluginMelee\PluginCombat.csproj">
       <Project>{5516F8E4-8960-4674-AD6F-BB66D29315A0}</Project>
-      <Name>PluginMelee</Name>
+      <Name>PluginCombat</Name>
     </ProjectReference>
     <ProjectReference Include="..\PluginTreasure\PluginTreasure.csproj">
       <Project>{5DB99DB9-CBE2-410D-94C3-53918075FCB6}</Project>
