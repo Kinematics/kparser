@@ -86,13 +86,13 @@ namespace WaywardGamers.KParser.Plugin
 
                 // Items by player who got them
                 var lootByPlayer = from c in dataSet.Combatants
+                                   where ((c.CombatantType == (byte) EntityType.Player) &&
+                                          (c.GetLootRows().Count() != 0))
                                    orderby c.CombatantName
-                                   where (c.GetLootRows().Count() != 0)
                                    select new
                                    {
                                        Name = c.CombatantName,
-                                       Loot = from l in dataSet.Loot
-                                              where (l.CombatantsRow.CombatantName == c.CombatantName)
+                                       LootItems = from l in c.GetLootRows()
                                               group l by l.ItemsRow.ItemName into li
                                               orderby li.Key
                                               select li
@@ -103,22 +103,22 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     AppendBoldText("\n\nDistribution\n", Color.Red);
 
-                    foreach (var loots in lootByPlayer)
+                    foreach (var loot in lootByPlayer)
                     {
-                        AppendBoldText(string.Format("\n    {0}\n", loots.Name), Color.Black);
+                        AppendBoldText(string.Format("\n    {0}\n", loot.Name), Color.Black);
 
                         if (totalGil > 0)
                         {
-                            if (gilPlayerName == loots.Name)
+                            if (gilPlayerName == loot.Name)
                                 AppendNormalText(string.Format(dropListFormat, totalGil.ToString().PadLeft(9), "Gil"));
                         }
 
-                        foreach (var stuff in loots.Loot)
+                        foreach (var lootItem in loot.LootItems)
                         {
-                            if (stuff.Key != "Gil")
+                            if (lootItem.Key != "Gil")
                             {
                                 AppendNormalText(string.Format(dropListFormat,
-                                    stuff.Count().ToString().PadLeft(9), stuff.Key));
+                                    lootItem.Count().ToString().PadLeft(9), lootItem.Key));
                             }
                         }
                     }
