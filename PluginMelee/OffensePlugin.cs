@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Data;
 using System.Drawing;
 
@@ -43,14 +44,69 @@ namespace WaywardGamers.KParser.Plugin
             }
             comboBox1.SelectedIndex = 0;
 
-            label2.Enabled = false;
-            comboBox2.Enabled = false;
-            label2.Visible = false;
-            comboBox2.Visible = false;
+            label2.Left = comboBox1.Right + 20;
+            label2.Text = "Mob Group";
+            comboBox2.Left = label2.Right + 10;
+            comboBox2.Items.Clear();
+            comboBox2.Items.Add("All");
+            comboBox2.SelectedIndex = 0;
+
+            checkBox1.Left = comboBox2.Right + 20;
+            checkBox1.Text = "Exclude 0 XP Mobs";
+            checkBox1.Checked = false;
+
+            //checkBox2.Left = checkBox1.Right + 10;
+            //checkBox2.Text = "Exclude 0 Dmg Mobs";
+            //checkBox2.Checked = false;
+            checkBox2.Enabled = false;
+            checkBox2.Visible = false;
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
         {
+            if (e.DatasetChanges.Battles.Count != 0)
+            {
+                // Check for new kills.  If any exist, update the Mob Group dropdown list.
+                int allBattles = e.DatasetChanges.Battles.Count(b => b.DefaultBattle == false);
+
+                if (allBattles != 0)
+                {
+                    var mobsKilled = from b in e.FullDataset.Battles
+                                     where b.Killed == true
+                                     orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
+                                     group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
+                                     select new {
+                                         Name = bn.Key,
+                                         XP = from xb in bn
+                                              group xb by xb.BaseExperience() into xbn
+                                              select new { BXP = xbn.Key}
+                                     };
+
+                    foreach (var mob in mobsKilled)
+                    {
+                        if (this.comboBox2.Items.Contains(mob.Name) == false)
+                        {
+                            AddToComboBox2(mob.Name);
+                        }
+
+                        if (mob.XP.Count() > 1)
+                        {
+                            string mobWithXP;
+
+                            foreach (var xp in mob.XP)
+                            {
+                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BXP);
+
+                                if (this.comboBox2.Items.Contains(mobWithXP) == false)
+                                {
+                                    AddToComboBox2(mobWithXP);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             if (e.DatasetChanges.CombatDetails.Count != 0)
             {
                 datasetToUse = e.FullDataset;
@@ -60,10 +116,21 @@ namespace WaywardGamers.KParser.Plugin
             datasetToUse = null;
             return false;
         }
+
+        private void AddToComboBox2(string p)
+        {
+            if (this.InvokeRequired)
+            {
+                Action<string> thisFunc = AddToComboBox2;
+                Invoke(thisFunc, new object[] { p });
+                return;
+            }
+
+            this.comboBox2.Items.Add(p);
+        }
         #endregion
 
         #region Member Variables
-        //EnumerableRowCollection<KPDatabaseDataSet.CombatDetailsRow> Damage;
         int totalDamage;
         Dictionary<string, int> playerDamage = new Dictionary<string,int>();
 
@@ -80,14 +147,24 @@ namespace WaywardGamers.KParser.Plugin
             richTextBox.Clear();
             ActionSourceType actionSourceFilter = (ActionSourceType)comboBox1.SelectedIndex;
 
-            var allAttacks = from cd in dataSet.CombatDetails
+            string mobFilter = comboBox2.SelectedItem.ToString();
+            IEnumerable<AttackGroup> allAttacks;
+
+            int minXP = 0;
+            if (checkBox1.Checked == true)
+                minXP = 1;
+
+            if (mobFilter == "All")
+            {
+                allAttacks = from cd in dataSet.CombatDetails
                              where ((cd.IsActorIDNull() == false) &&
                                     (cd.AttackType == (byte)AttackType.Damage) &&
                                     ((cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Player) ||
                                      (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Pet) ||
                                      (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Fellow) ||
                                      (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Skillchain))
-                                    )
+                                    ) &&
+                                    ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
                              group cd by cd.ActionSource into cda
                              select new AttackGroup(
                                  (ActionSourceType)cda.Key,
@@ -95,6 +172,69 @@ namespace WaywardGamers.KParser.Plugin
                                   orderby c.CombatantsRowByCombatActorRelation.CombatantName
                                   group c by c.CombatantsRowByCombatActorRelation);
 
+            }
+            else
+            {
+                Regex mobAndXP = new Regex(@"(?<mobName>\w+(['\- ](\d|\w)+)*)( \((?<xp>\d+)\))?");
+                Match mobAndXPMatch = mobAndXP.Match(mobFilter);
+
+                if (mobAndXPMatch.Success == true)
+                {
+                    if (mobAndXPMatch.Captures.Count == 1)
+                    {
+                        // Name only
+                        allAttacks = from cd in dataSet.CombatDetails
+                                     where ((cd.IsActorIDNull() == false) &&
+                                            (cd.AttackType == (byte)AttackType.Damage) &&
+                                            ((cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Player) ||
+                                             (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Pet) ||
+                                             (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Fellow) ||
+                                             (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Skillchain))
+                                            ) &&
+                                            (cd.BattlesRow.CombatantsRowByEnemyCombatantRelation.CombatantName == mobAndXPMatch.Groups["mobName"].Value) &&
+                                            ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
+                                     group cd by cd.ActionSource into cda
+                                     select new AttackGroup(
+                                         (ActionSourceType)cda.Key,
+                                          from c in cda
+                                          orderby c.CombatantsRowByCombatActorRelation.CombatantName
+                                          group c by c.CombatantsRowByCombatActorRelation);
+                    }
+                    else if (mobAndXPMatch.Captures.Count == 2)
+                    {
+                        // Name and XP
+                        int xp = int.Parse(mobAndXPMatch.Groups["xp"].Value);
+
+                        allAttacks = from cd in dataSet.CombatDetails
+                                     where ((cd.IsActorIDNull() == false) &&
+                                            (cd.AttackType == (byte)AttackType.Damage) &&
+                                            ((cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Player) ||
+                                             (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Pet) ||
+                                             (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Fellow) ||
+                                             (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Skillchain))
+                                            ) &&
+                                            (cd.BattlesRow.CombatantsRowByEnemyCombatantRelation.CombatantName == mobAndXPMatch.Groups["mobName"].Value) &&
+                                            (cd.BattlesRow.BaseExperience() == xp) &&
+                                            ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
+                                     group cd by cd.ActionSource into cda
+                                     select new AttackGroup(
+                                         (ActionSourceType)cda.Key,
+                                          from c in cda
+                                          orderby c.CombatantsRowByCombatActorRelation.CombatantName
+                                          group c by c.CombatantsRowByCombatActorRelation);
+                    }
+                    else
+                    {
+                        Logger.Instance.Log("OffensePlugin", "Failed in mob filtering.  Invalid number of captures.");
+                        return;
+                    }
+                }
+                else
+                {
+                    Logger.Instance.Log("OffensePlugin", "Failed in mob filtering.  Match failed.");
+                    return;
+                }
+            }
 
             totalDamage = 0;
             playerDamage.Clear();
@@ -134,14 +274,14 @@ namespace WaywardGamers.KParser.Plugin
                     ProcessAbilityAttacks(abilAttacks);
                     break;
                 case ActionSourceType.Weaponskill:
-                    ProcessWeaponskillAttackss(wskillAttacks);
+                    ProcessWeaponskillAttacks(wskillAttacks);
                     break;
                 default:
                     ProcessMeleeAttacks(meleeAttacks);
                     ProcessRangedAttacks(rangeAttacks);
                     ProcessSpellsAttacks(spellAttacks);
                     ProcessAbilityAttacks(abilAttacks);
-                    ProcessWeaponskillAttackss(wskillAttacks);
+                    ProcessWeaponskillAttacks(wskillAttacks);
                     break;
             }
         }
@@ -784,7 +924,7 @@ namespace WaywardGamers.KParser.Plugin
             AppendNormalText("\n\n");
         }
 
-        private void ProcessWeaponskillAttackss(AttackGroup wskillAttacks)
+        private void ProcessWeaponskillAttacks(AttackGroup wskillAttacks)
         {
             if (wskillAttacks == null)
                 return;
@@ -893,6 +1033,21 @@ namespace WaywardGamers.KParser.Plugin
 
         #region Event Handlers
         protected override void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            HandleDataset(DatabaseManager.Instance.Database);
+        }
+
+        protected override void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            HandleDataset(DatabaseManager.Instance.Database);
+        }
+
+        protected override void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            HandleDataset(DatabaseManager.Instance.Database);
+        }
+
+        protected override void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
             HandleDataset(DatabaseManager.Instance.Database);
         }
