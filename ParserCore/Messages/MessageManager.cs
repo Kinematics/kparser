@@ -190,8 +190,8 @@ namespace WaywardGamers.KParser
                 if (stateInfo != null)
                     parseEnding = (bool)stateInfo;
 
-                // If we're in RAM mode, take anything more than 3 seconds old.
-                DateTime shortCheckTime = DateTime.Now - TimeSpan.FromSeconds(3);
+                // If we're in RAM mode, take anything more than 10 seconds old.
+                DateTime shortCheckTime = DateTime.Now - TimeSpan.FromSeconds(10);
                 // If we're in LOG mode, leave the last 10 messages with the same timestamp
                 // for at least 2 minutes in case of log file cross-over.
                 DateTime longCheckTime = DateTime.Now - TimeSpan.FromMinutes(2);
@@ -204,7 +204,7 @@ namespace WaywardGamers.KParser
                 // file dump to happen, in case of partial messages folding across
                 // log files.
                 //
-                // Otherwise process all messages more than 3 seconds old.
+                // Otherwise process all messages more than 10 seconds old.
                 //
                 // In either case, process all messages more than 2 minutes old.
                 // --

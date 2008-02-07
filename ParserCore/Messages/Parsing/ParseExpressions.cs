@@ -116,8 +116,9 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Combat damage
-        public static readonly Regex MeleeHit  = new Regex(string.Format("^{0} hits {1} for {2} point(s)? of damage\\.$", name, target, damage));
-        public static readonly Regex RangedHit = new Regex(string.Format("^{0} uses Ranged Attack\\.$", name));
+        public static readonly Regex MeleeHit          = new Regex(string.Format("^{0} hits {1} for {2} point(s)? of damage\\.$", name, target, damage));
+        public static readonly Regex RangedAttack      = new Regex(string.Format("^{0}'s ranged attack hits {1} for {2} point(s)? of damage\\.$", name, target, damage));
+        public static readonly Regex RangedHit         = new Regex(string.Format("^{0} uses Ranged Attack\\.$", name));
         public static readonly Regex CriticalHit       = new Regex(string.Format("^{0} scores a critical hit!$", name));
         public static readonly Regex RangedCriticalHit = new Regex(string.Format("^{0}'s ranged attack scores a critical hit!$", name));
         public static readonly Regex TargetTakesDamage = new Regex(string.Format("{0} takes {1}( additional)? point(s)? of damage\\.$", target, damage));

@@ -5,13 +5,14 @@ using System.Threading;
 using System.Diagnostics;
 using System.Collections;
 using System.Runtime.InteropServices;
+using WaywardGamers.KParser.Interface;
 
 namespace WaywardGamers.KParser.Monitoring
 {
     /// <summary>
     /// Class that handles parsing the FFXI Log files.
     /// </summary>
-    internal class LogReader
+    internal class LogReader : IReader
     {
         #region Singleton Constructor
         // Make the class a singleton
@@ -50,16 +51,18 @@ namespace WaywardGamers.KParser.Monitoring
         FileSystemWatcher fileSystemWatcher;
         #endregion
 
-        #region Properties
-        internal bool IsRunning { get; private set; }
-        #endregion
+        #region Interface Control Methods and Properties
+        /// <summary>
+        /// Gets (publicly) and sets (privately) the state of the
+        /// reader thread.
+        /// </summary>
+        public bool IsRunning { get; private set; }
 
-        #region internal Control Methods
         /// <summary>
         /// Activate the file system watcher so that we can catch events when files change.
         /// If the option to parse existing files is true, run the parsing code on them.
         /// </summary>
-        internal void Run()
+        public void Run()
         {
             IsRunning = true;
 
@@ -96,8 +99,11 @@ namespace WaywardGamers.KParser.Monitoring
         /// <summary>
         /// Stop monitoring the FFXI log directory.
         /// </summary>
-        internal void Stop()
+        public void Stop()
         {
+            if (IsRunning == false)
+                return;
+
             // Stop watching for new files.
             fileSystemWatcher.EnableRaisingEvents = false;
         

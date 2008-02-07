@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.IO;
 using WaywardGamers.KParser.Monitoring.Memory;
+using WaywardGamers.KParser.Interface;
 
 namespace WaywardGamers.KParser.Monitoring
 {
@@ -12,7 +13,7 @@ namespace WaywardGamers.KParser.Monitoring
     /// in order to monitor the FFXI process space and read
     /// log info to be parsed.
     /// </summary>
-    internal class RamReader
+    internal class RamReader : IReader
     {
         #region Singleton Constructor
         // Make the class a singleton
@@ -46,15 +47,17 @@ namespace WaywardGamers.KParser.Monitoring
         Thread readerThread;
         #endregion
 
-        #region Properties
-        internal bool IsRunning { get; private set; }
-        #endregion
+        #region Interface Control Methods and Properties
+        /// <summary>
+        /// Gets (publicly) and sets (privately) the state of the
+        /// reader thread.
+        /// </summary>
+        public bool IsRunning { get; private set; }
 
-        #region Control Methods
         /// <summary>
         /// Start a thread that reads log files for parsing.
         /// </summary>
-        internal void Run()
+        public void Run()
         {
             IsRunning = true;
 
@@ -94,10 +97,13 @@ namespace WaywardGamers.KParser.Monitoring
         }
 
         /// <summary>
-        /// Stop the active thread.
+        /// Stop the active reader thread.
         /// </summary>
-        internal void Stop()
+        public void Stop()
         {
+            if (IsRunning == false)
+                return;
+
             // Remove event handler and stop thread.
             memoryWatcher.RamDataChanged -= new RamWatchEventHandler(MonitorRam);
             memoryWatcher.Abort();
@@ -107,6 +113,9 @@ namespace WaywardGamers.KParser.Monitoring
 
             IsRunning = false;
         }
+        #endregion
+
+        #region Event handlers
 
         /// <summary>
         /// Event handler for when new chat data is being processed.

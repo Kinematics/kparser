@@ -90,6 +90,7 @@
     <Compile Include="Interface\BasePluginControlListView.Designer.cs">
       <DependentUpon>BasePluginControlListView.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interface\IReader.cs" />
     <Compile Include="Interface\PluginInterface.cs" />
     <Compile Include="KPDatabaseDataSet.cs">
       <DependentUpon>KPDatabaseDataSet.xsd</DependentUpon>
