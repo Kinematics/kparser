@@ -1,5 +1,6 @@
 ﻿using System;
 using WaywardGamers.KParser.Monitoring;
+using WaywardGamers.KParser.Interface;
 
 namespace WaywardGamers.KParser
 {
@@ -7,9 +8,10 @@ namespace WaywardGamers.KParser
     /// Class to handle directing requests to start and stop monitoring
     /// of FFXI data to the proper type of reader based on settings pref.
     /// </summary>
-    public class Monitor
+    public static class Monitor
     {
         static Properties.Settings settings = new Properties.Settings();
+        static IReader currentReader = RamReader.Instance;
 
         /// <summary>
         /// Initiate monitoring of FFXI RAM/logs for data to be parsed.
@@ -18,55 +20,48 @@ namespace WaywardGamers.KParser
         /// that will be stored to.</param>
         public static void Start(string outputFileName)
         {
-            if (LogReader.Instance.IsRunning == true ||
-                RamReader.Instance.IsRunning == true)
-                throw new InvalidOperationException("A monitor is already running.");
+            if (currentReader.IsRunning == true)
+                throw new InvalidOperationException(string.Format(
+                    "{0} is already running", currentReader.GetType().Name));
 
             // Only reload settings values on Start.  Other calls between
-            // Starts will return whatever the original setting was.
+            // Starts will use whatever the setting was at the time of the
+            // last Start.
             settings.Reload();
 
-            // Create the output database
+            // Set the currentReader to the appropriate reader instance
+            // based on program settings.
+            if (settings.ParseMode == DataSource.Log)
+                currentReader = LogReader.Instance;
+            else
+                currentReader = RamReader.Instance;
+
+
+            // Create the output database in preperation for a new run.
             DatabaseManager.Instance.CreateDatabase(outputFileName);
 
-            if (settings.ParseMode == DataSource.Log)
-            {
-                LogReader.Instance.Run();
-            }
-            else
-            {
-                RamReader.Instance.Run();
-            }
+            currentReader.Run();
         }
 
+        /// <summary>
+        /// Stop the current reader's monitoring.
+        /// </summary>
         public static void Stop()
         {
-            if (LogReader.Instance.IsRunning == true)
-            {
-                LogReader.Instance.Stop();
-            }
-
-            if (RamReader.Instance.IsRunning == true)
-            {
-                RamReader.Instance.Stop();
-            }
+            currentReader.Stop();
         }
 
+        /// <summary>
+        /// Gets whether the current reader is running.
+        /// </summary>
         public static bool IsRunning
         {
-            get
-            {
-                if (settings.ParseMode == DataSource.Log)
-                {
-                    return LogReader.Instance.IsRunning;
-                }
-                else
-                {
-                    return RamReader.Instance.IsRunning;
-                }
-            }
+            get { return currentReader.IsRunning; }
         }
 
+        /// <summary>
+        /// Gets the current parse mode, as far as the monitor is aware.
+        /// </summary>
         public static DataSource ParseMode
         {
             get { return settings.ParseMode; }
