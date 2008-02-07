@@ -809,9 +809,18 @@ namespace WaywardGamers.KParser.Parsing
             // Make all the type checks up front
 
             // First up are the first-pass entries of possible multi-line messages.
-            combatMatch = ParseExpressions.MeleeHit.Match(currentMessageText);
+
+            // Ranged attack before melee because it follows the same form
+            combatMatch = ParseExpressions.RangedAttack.Match(currentMessageText);
             if (combatMatch.Success == true)
-                combatDetails.ActionSource = ActionSourceType.Melee;
+                combatDetails.ActionSource = ActionSourceType.Ranged;
+
+            if (combatMatch.Success == false)
+            {
+                combatMatch = ParseExpressions.MeleeHit.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                    combatDetails.ActionSource = ActionSourceType.Melee;
+            }
 
             if (combatMatch.Success == false)
             {
