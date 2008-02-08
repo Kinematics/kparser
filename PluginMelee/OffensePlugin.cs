@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Data;
 using System.Drawing;
+using WaywardGamers.KParser;
 
 namespace WaywardGamers.KParser.Plugin
 {
@@ -49,7 +50,7 @@ namespace WaywardGamers.KParser.Plugin
             checkBox2.Visible = false;
         }
 
-        public override void DatabaseOpened(KPDatabaseODataSet dataSet)
+        public override void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
             int allBattles = dataSet.Battles.Count(b => b.DefaultBattle == false);
 
@@ -94,7 +95,7 @@ namespace WaywardGamers.KParser.Plugin
             base.DatabaseOpened(dataSet);
         }
 
-        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseODataSet datasetToUse)
+        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
         {
             if (e.DatasetChanges.Battles.Count != 0)
             {
@@ -139,7 +140,7 @@ namespace WaywardGamers.KParser.Plugin
                 }
             }
 
-            if (e.DatasetChanges.CombatDetails.Count != 0)
+            if (e.DatasetChanges.Interactions.Count != 0)
             {
                 datasetToUse = e.FullDataset;
                 return true;
@@ -175,7 +176,7 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Processing sections
-        protected override void ProcessData(KPDatabaseODataSet dataSet)
+        protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
             richTextBox.Clear();
             ActionType actionSourceFilter = (ActionType)comboBox1.SelectedIndex;
@@ -189,21 +190,21 @@ namespace WaywardGamers.KParser.Plugin
 
             if (mobFilter == "All")
             {
-                allAttacks = from cd in dataSet.CombatDetails
+                allAttacks = from cd in dataSet.Interactions
                              where ((cd.IsActorIDNull() == false) &&
-                                    (cd.AttackType == (byte)HarmType.Damage) &&
-                                    ((cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Player) ||
-                                     (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Pet) ||
-                                     (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Fellow) ||
-                                     (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Skillchain))
+                                    (cd.HarmType == (byte)HarmType.Damage) &&
+                                    ((cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Player) ||
+                                     (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
+                                     (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Fellow) ||
+                                     (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Skillchain))
                                     ) &&
                                     ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
-                             group cd by cd.ActionSource into cda
+                             group cd by cd.ActionType into cda
                              select new AttackGroup(
                                  (ActionType)cda.Key,
                                   from c in cda
-                                  orderby c.CombatantsRowByCombatActorRelation.CombatantName
-                                  group c by c.CombatantsRowByCombatActorRelation);
+                                  orderby c.CombatantsRowByActorCombatantRelation.CombatantName
+                                  group c by c.CombatantsRowByActorCombatantRelation);
 
             }
             else
@@ -216,45 +217,45 @@ namespace WaywardGamers.KParser.Plugin
                     if (mobAndXPMatch.Captures.Count == 1)
                     {
                         // Name only
-                        allAttacks = from cd in dataSet.CombatDetails
+                        allAttacks = from cd in dataSet.Interactions
                                      where ((cd.IsActorIDNull() == false) &&
-                                            (cd.AttackType == (byte)HarmType.Damage) &&
-                                            ((cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Player) ||
-                                             (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Pet) ||
-                                             (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Fellow) ||
-                                             (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Skillchain))
+                                            (cd.HarmType == (byte)HarmType.Damage) &&
+                                            ((cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Player) ||
+                                             (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
+                                             (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Fellow) ||
+                                             (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Skillchain))
                                             ) &&
                                             (cd.BattlesRow.CombatantsRowByEnemyCombatantRelation.CombatantName == mobAndXPMatch.Groups["mobName"].Value) &&
                                             ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
-                                     group cd by cd.ActionSource into cda
+                                     group cd by cd.ActionType into cda
                                      select new AttackGroup(
                                          (ActionType)cda.Key,
                                           from c in cda
-                                          orderby c.CombatantsRowByCombatActorRelation.CombatantName
-                                          group c by c.CombatantsRowByCombatActorRelation);
+                                          orderby c.CombatantsRowByActorCombatantRelation.CombatantName
+                                          group c by c.CombatantsRowByActorCombatantRelation);
                     }
                     else if (mobAndXPMatch.Captures.Count == 2)
                     {
                         // Name and XP
                         int xp = int.Parse(mobAndXPMatch.Groups["xp"].Value);
 
-                        allAttacks = from cd in dataSet.CombatDetails
+                        allAttacks = from cd in dataSet.Interactions
                                      where ((cd.IsActorIDNull() == false) &&
-                                            (cd.AttackType == (byte)HarmType.Damage) &&
-                                            ((cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Player) ||
-                                             (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Pet) ||
-                                             (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Fellow) ||
-                                             (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Skillchain))
+                                            (cd.HarmType == (byte)HarmType.Damage) &&
+                                            ((cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Player) ||
+                                             (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
+                                             (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Fellow) ||
+                                             (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Skillchain))
                                             ) &&
                                             (cd.BattlesRow.CombatantsRowByEnemyCombatantRelation.CombatantName == mobAndXPMatch.Groups["mobName"].Value) &&
                                             (cd.BattlesRow.BaseExperience() == xp) &&
                                             ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
-                                     group cd by cd.ActionSource into cda
+                                     group cd by cd.ActionType into cda
                                      select new AttackGroup(
                                          (ActionType)cda.Key,
                                           from c in cda
-                                          orderby c.CombatantsRowByCombatActorRelation.CombatantName
-                                          group c by c.CombatantsRowByCombatActorRelation);
+                                          orderby c.CombatantsRowByActorCombatantRelation.CombatantName
+                                          group c by c.CombatantsRowByActorCombatantRelation);
                     }
                     else
                     {
@@ -276,9 +277,9 @@ namespace WaywardGamers.KParser.Plugin
                 foreach (var player in attackTypes.CombatGroup)
                 {
                     if (playerDamage.Keys.Contains(player.Key.CombatantName))
-                        playerDamage[player.Key.CombatantName] += player.Sum(d => d.Damage);
+                        playerDamage[player.Key.CombatantName] += player.Sum(d => d.Amount);
                     else
-                        playerDamage[player.Key.CombatantName] = player.Sum(d => d.Damage);
+                        playerDamage[player.Key.CombatantName] = player.Sum(d => d.Amount);
                 }
             }
 
@@ -360,7 +361,7 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append(" ");
 
                     // Melee damage
-                    int totalMelee = player.Sum(b => b.Damage);
+                    int totalMelee = player.Sum(b => b.Amount);
                     sb.Append(totalMelee.ToString().PadLeft(10));
                     sb.Append(" ");
 
@@ -377,9 +378,9 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append(((double)damageDone / totalDamage).ToString("P2").PadLeft(12));
                     sb.Append(" ");
 
-                    var successfulHits = player.Where(h => h.SuccessLevel == (byte)SuccessType.Successful);
+                    var successfulHits = player.Where(h => h.DefenseType == (byte)DefenseType.None);
                     int hits = successfulHits.Count();
-                    int misses = player.Count(b => b.SuccessLevel == (byte)SuccessType.Unsuccessful);
+                    int misses = player.Count(b => b.DefenseType != (byte)DefenseType.None);
 
                     // Hits/Misses
                     sb.Append(string.Format("{0}/{1}", hits, misses).PadLeft(10));
@@ -400,25 +401,25 @@ namespace WaywardGamers.KParser.Plugin
                         if (normalHits.Count() > 0)
                         {
                             // M.Low/Hi
-                            low = normalHits.Min(b => b.Damage);
-                            high = normalHits.Max(b => b.Damage);
+                            low = normalHits.Min(b => b.Amount);
+                            high = normalHits.Max(b => b.Amount);
 
                             sb.Append(string.Format("{0}/{1}", low, high).PadLeft(9));
                             sb.Append(" ");
 
-                            int normDamage = normalHits.Sum(h => h.Damage);
+                            int normDamage = normalHits.Sum(h => h.Amount);
                             // Melee avg
                             sb.Append(((double)normDamage / normalHits.Count()).ToString("F2").PadLeft(8));
                             sb.Append(" ");
 
-                            var non0Hits = successfulHits.Where(m => m.Damage > 0);
+                            var non0Hits = successfulHits.Where(m => m.Amount > 0);
 
                             // Melee non-0 avg
                             sb.Append(((double)totalMelee / non0Hits.Count()).ToString("F2").PadLeft(8));
                             sb.Append(" ");
 
-                            int addDamageHits = player.Where(h => (h.SuccessLevel == (byte)SuccessType.Successful) &&
-                                (h.ActionSource == (byte)ActionType.AdditionalEffect)).Sum(b => b.Damage);
+                            int addDamageHits = player.Where(h => (h.DefenseType == (byte)DefenseType.None) &&
+                                (h.ActionType == (byte)ActionType.AdditionalEffect)).Sum(b => b.Amount);
 
                             // Add. Effect damage
                             sb.Append(addDamageHits.ToString().PadLeft(7));
@@ -452,14 +453,14 @@ namespace WaywardGamers.KParser.Plugin
                         if (critCount > 0)
                         {
                             // Crit low/high
-                            low = critHits.Min(m => m.Damage);
-                            high = critHits.Max(m => m.Damage);
+                            low = critHits.Min(m => m.Amount);
+                            high = critHits.Max(m => m.Amount);
 
                             sb.Append(string.Format("{0}/{1}", low, high).PadLeft(9));
                             sb.Append(" ");
 
                             // Crit avg
-                            int critDamage = critHits.Sum(m => m.Damage);
+                            int critDamage = critHits.Sum(m => m.Amount);
                             sb.Append(((double)critDamage / critCount).ToString("F2").PadLeft(7));
                             sb.Append(" ");
 
@@ -563,15 +564,15 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append(((double)damageDone / totalDamage).ToString("P2").PadRight(9));
                     sb.Append(" ");
                     // Range damage
-                    int totalRange = player.Sum(b => b.Damage);
+                    int totalRange = player.Sum(b => b.Amount);
                     sb.Append(totalRange.ToString().PadRight(8));
 
                     // Percent of player damage from ranged attacks
                     sb.Append(((double)totalRange / damageDone).ToString("P2").PadRight(8));
 
-                    var successfulHits = player.Where(h => (h.SuccessLevel == (byte)SuccessType.Successful));
+                    var successfulHits = player.Where(h => (h.DefenseType == (byte)DefenseType.None));
                     int hits = successfulHits.Count();
-                    int misses = player.Count(b => b.SuccessLevel == (byte)SuccessType.Unsuccessful);
+                    int misses = player.Count(b => b.DefenseType != (byte)DefenseType.None);
 
                     // Hits/Misses
                     sb.Append(string.Format("{0}/{1}", hits.ToString(), misses.ToString()).PadRight(9));
@@ -593,26 +594,26 @@ namespace WaywardGamers.KParser.Plugin
 
                         if (normalHits.Count() > 0)
                         {
-                            low = normalHits.Min(b => b.Damage);
-                            high = normalHits.Max(b => b.Damage);
+                            low = normalHits.Min(b => b.Amount);
+                            high = normalHits.Max(b => b.Amount);
 
                             // Range low/high
                             sb.Append(string.Format("{0}/{1}", low, high).PadRight(9));
                             sb.Append(" ");
 
                             // Range avg
-                            int normDamage = normalHits.Sum(h => h.Damage);
+                            int normDamage = normalHits.Sum(h => h.Amount);
                             sb.Append(((double)normDamage / normalHits.Count()).ToString("F2").PadRight(7));
                             sb.Append(" ");
 
-                            var non0Hits = normalHits.Where(m => m.Damage > 0);
+                            var non0Hits = normalHits.Where(m => m.Amount > 0);
 
                             // Range non-0 avg
                             sb.Append(((double)totalRange / non0Hits.Count()).ToString("F2").PadRight(7));
                             sb.Append(" ");
 
-                            int addDamageHits = player.Where(h => (h.SuccessLevel == (byte)SuccessType.Successful) &&
-                                (h.ActionSource == (byte)ActionType.AdditionalEffect)).Sum(b => b.Damage);
+                            int addDamageHits = player.Where(h => (h.DefenseType == (byte)DefenseType.None) &&
+                                (h.ActionType == (byte)ActionType.AdditionalEffect)).Sum(b => b.Amount);
 
                             sb.Append(addDamageHits.ToString().PadRight(7));
                             sb.Append(" ");
@@ -644,14 +645,14 @@ namespace WaywardGamers.KParser.Plugin
                         if (critCount > 0)
                         {
                             // Crit low/high
-                            low = critHits.Min(m => m.Damage);
-                            high = critHits.Max(m => m.Damage);
+                            low = critHits.Min(m => m.Amount);
+                            high = critHits.Max(m => m.Amount);
 
                             sb.Append(string.Format("{0}/{1}", low, high).PadRight(9));
                             sb.Append(" ");
 
                             // Crit avg
-                            int critDamage = critHits.Sum(m => m.Damage);
+                            int critDamage = critHits.Sum(m => m.Amount);
                             sb.Append(((double)critDamage / critCount).ToString("F2").PadRight(7));
                             sb.Append(" ");
 
@@ -747,7 +748,7 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append(" ");
 
                     // Spell damage
-                    int spellDamage = player.Sum(b => b.Damage);
+                    int spellDamage = player.Sum(b => b.Amount);
                     sb.Append(spellDamage.ToString().PadLeft(10));
                     sb.Append(" ");
 
@@ -764,7 +765,7 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append(((double)damageDone / totalDamage).ToString("P2").PadLeft(12));
                     sb.Append(" ");
 
-                    var spellsCast = player.Where(b => b.SuccessLevel == (byte)SuccessType.Successful);
+                    var spellsCast = player.Where(b => b.DefenseType == (byte)DefenseType.None);
 
                     var normSpells = spellsCast.Where(s => s.DamageModifier == (byte)DamageModifier.None);
                     var mbSpells = spellsCast.Where(s => s.DamageModifier == (byte)DamageModifier.MagicBurst);
@@ -778,14 +779,14 @@ namespace WaywardGamers.KParser.Plugin
                         sb.Append(" ");
 
                         // M.Low/Hi
-                        int low = normSpells.Min(b => b.Damage);
-                        int high = normSpells.Max(b => b.Damage);
+                        int low = normSpells.Min(b => b.Amount);
+                        int high = normSpells.Max(b => b.Amount);
 
                         sb.Append(string.Format("{0}/{1}", low, high).PadLeft(9));
                         sb.Append(" ");
 
                         // Spell avg
-                        sb.Append(((double)normSpells.Sum(s => s.Damage) / normSpells.Count()).ToString("F2").PadLeft(7));
+                        sb.Append(((double)normSpells.Sum(s => s.Amount) / normSpells.Count()).ToString("F2").PadLeft(7));
                         sb.Append(" ");
 
                         int mbCount = mbSpells.Count();
@@ -797,14 +798,14 @@ namespace WaywardGamers.KParser.Plugin
                             sb.Append(" ");
 
                             // M.Low/Hi
-                            low = mbSpells.Min(b => b.Damage);
-                            high = mbSpells.Max(b => b.Damage);
+                            low = mbSpells.Min(b => b.Amount);
+                            high = mbSpells.Max(b => b.Amount);
 
                             sb.Append(string.Format("{0}/{1}", low, high).PadLeft(10));
                             sb.Append(" ");
 
                             // MB avg
-                            sb.Append(((double)mbSpells.Sum(s => s.Damage) / mbSpells.Count()).ToString("F2").PadLeft(8));
+                            sb.Append(((double)mbSpells.Sum(s => s.Amount) / mbSpells.Count()).ToString("F2").PadLeft(8));
                             sb.Append(" ");
                         }
                         else
@@ -886,7 +887,7 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append(" ");
 
                     // Ability damage
-                    int abilityDmg = player.Sum(b => b.Damage);
+                    int abilityDmg = player.Sum(b => b.Amount);
                     sb.Append(abilityDmg.ToString().PadLeft(10));
                     sb.Append(" ");
 
@@ -904,8 +905,8 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append(" ");
 
 
-                    int hits = player.Count(b => b.SuccessLevel == (byte)SuccessType.Successful);
-                    int misses = player.Count(b => b.SuccessLevel == (byte)SuccessType.Unsuccessful);
+                    int hits = player.Count(b => b.DefenseType == (byte)DefenseType.None);
+                    int misses = player.Count(b => b.DefenseType != (byte)DefenseType.None);
 
                     // Hits/Misses
                     sb.Append(string.Format("{0}/{1}", hits, misses).PadLeft(10));
@@ -916,15 +917,15 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append(" ");
 
                     // A.Low/Hi
-                    var successfulHits = player.Where(h => (h.SuccessLevel == (byte)SuccessType.Successful) &&
+                    var successfulHits = player.Where(h => (h.DefenseType == (byte)DefenseType.None) &&
                         (h.DamageModifier == (byte)DamageModifier.None));
 
                     int successfulHitCount = successfulHits.Count();
 
                     if (successfulHitCount > 0)
                     {
-                        int low = successfulHits.Min(b => b.Damage);
-                        int high = successfulHits.Max(b => b.Damage);
+                        int low = successfulHits.Min(b => b.Amount);
+                        int high = successfulHits.Max(b => b.Amount);
 
                         // Ability low/high
                         sb.Append(string.Format("{0}/{1}", low, high).PadLeft(9));
@@ -934,7 +935,7 @@ namespace WaywardGamers.KParser.Plugin
                         sb.Append(((double)abilityDmg / successfulHitCount).ToString("F2").PadLeft(8));
                         sb.Append(" ");
 
-                        var non0Hits = successfulHits.Where(m => m.Damage > 0);
+                        var non0Hits = successfulHits.Where(m => m.Amount > 0);
                         int non0HitCount = non0Hits.Count();
 
                         // Ability non-0 avg
@@ -996,7 +997,7 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append(" ");
 
                     // Weaponskill damage
-                    int wsDamage = player.Sum(b => b.Damage);
+                    int wsDamage = player.Sum(b => b.Amount);
                     sb.Append(wsDamage.ToString().PadLeft(11));
                     sb.Append(" ");
 
@@ -1014,8 +1015,8 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append(" ");
 
 
-                    int hits = player.Count(b => b.SuccessLevel == (byte)SuccessType.Successful);
-                    int misses = player.Count(b => b.SuccessLevel == (byte)SuccessType.Unsuccessful);
+                    int hits = player.Count(b => b.DefenseType == (byte)DefenseType.None);
+                    int misses = player.Count(b => b.DefenseType != (byte)DefenseType.None);
 
                     // Hits/Misses
                     sb.Append(string.Format("{0}/{1}", hits, misses).PadLeft(10));
@@ -1026,15 +1027,15 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append(" ");
 
                     // WS.Low/Hi
-                    var successfulHits = player.Where(h => (h.SuccessLevel == (byte)SuccessType.Successful) &&
+                    var successfulHits = player.Where(h => (h.DefenseType == (byte)DefenseType.None) &&
                         (h.DamageModifier == (byte)DamageModifier.None));
 
                     int successfulHitCount = successfulHits.Count();
 
                     if (successfulHitCount > 0)
                     {
-                        int low = successfulHits.Min(b => b.Damage);
-                        int high = successfulHits.Max(b => b.Damage);
+                        int low = successfulHits.Min(b => b.Amount);
+                        int high = successfulHits.Max(b => b.Amount);
 
                         // Weaponskill low/high
                         sb.Append(string.Format("{0}/{1}", low, high).PadLeft(9));
@@ -1044,7 +1045,7 @@ namespace WaywardGamers.KParser.Plugin
                         sb.Append(((double)wsDamage / successfulHitCount).ToString("F2").PadLeft(8));
                         sb.Append(" ");
 
-                        var non0Hits = successfulHits.Where(m => m.Damage > 0);
+                        var non0Hits = successfulHits.Where(m => m.Amount > 0);
 
                         // Weaponskill non-0 avg
                         sb.Append(((double)wsDamage / non0Hits.Count()).ToString("F2").PadLeft(8));

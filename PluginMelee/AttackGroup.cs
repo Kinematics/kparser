@@ -15,11 +15,11 @@ namespace WaywardGamers.KParser.Plugin
     internal class AttackGroup
     {
         internal ActionType ActionSource { get; set; }
-        internal IEnumerable<IGrouping<KPDatabaseODataSet.CombatantsRow, KPDatabaseODataSet.CombatDetailsRow>>
+        internal IEnumerable<IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow>>
             CombatGroup { get; set; }
 
         public AttackGroup(ActionType key,
-            IEnumerable<IGrouping<KPDatabaseODataSet.CombatantsRow, KPDatabaseODataSet.CombatDetailsRow>> grouping)
+            IEnumerable<IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow>> grouping)
         {
             ActionSource = key;
             CombatGroup = grouping;

@@ -18,17 +18,17 @@ namespace WaywardGamers.KParser.Plugin
             richTextBox.Clear();
         }
 
-        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseODataSet datasetToUse)
+        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
         {
             datasetToUse = e.DatasetChanges;
             return true;
         }
 
-        protected override void ProcessData(KPDatabaseODataSet dataSet)
+        protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
             if (dataSet.Tables.Contains("ChatLogRecord"))
             {
-                foreach (var row in dataSet.ChatLogRecord)
+                foreach (var row in dataSet.RecordLog)
                 {
                     if (row.ParseSuccessful == false)
                     {
@@ -45,9 +45,9 @@ namespace WaywardGamers.KParser.Plugin
                         richTextBox.SelectionColor = Color.Purple;
 
                         startPos = richTextBox.Text.Length;
-                        endPos = startPos + row.OriginalMessageText.Length;
+                        endPos = startPos + row.MessageText.Length;
 
-                        richTextBox.AppendText(string.Format("{0}\n", row.OriginalMessageText));
+                        richTextBox.AppendText(string.Format("{0}\n", row.MessageText));
                         richTextBox.Select(startPos, endPos);
                         richTextBox.SelectionColor = Color.Black;
                     }

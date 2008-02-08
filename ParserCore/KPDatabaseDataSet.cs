@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace WaywardGamers.KParser {
-    
-    public partial class KPDatabaseODataSet 
+namespace WaywardGamers.KParser
+{
+
+    public partial class KPDatabaseDataSet
     {
-        public partial class BattlesDataTable{
+        public partial class BattlesDataTable
+        {
 
             public BattlesRow GetDefaultBattle()
             {

@@ -124,6 +124,7 @@ namespace WaywardGamers.KParser
     public enum FailedActionType : byte
     {
         None,
+        NoEffect,
         Paralyzed,
         Interrupted,
         Intimidated,

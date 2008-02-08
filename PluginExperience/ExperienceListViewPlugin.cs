@@ -55,7 +55,7 @@ namespace WaywardGamers.KParser.Plugin
             
         }
 
-        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseODataSet datasetToUse)
+        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
         {
             if (e.DatasetChanges.Battles.Any(b => b.Killed == true))
             {

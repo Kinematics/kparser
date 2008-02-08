@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Data;
 using System.Drawing;
+using WaywardGamers.KParser;
 
 namespace WaywardGamers.KParser.Plugin
 {
@@ -47,7 +48,7 @@ namespace WaywardGamers.KParser.Plugin
             checkBox2.Visible = false;
         }
 
-        public override void DatabaseOpened(KPDatabaseODataSet dataSet)
+        public override void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
             int allBattles = dataSet.Battles.Count(b => b.DefaultBattle == false);
 
@@ -92,7 +93,7 @@ namespace WaywardGamers.KParser.Plugin
             base.DatabaseOpened(dataSet);
         }
 
-        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseODataSet datasetToUse)
+        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
         {
             if (e.DatasetChanges.Battles.Count != 0)
             {
@@ -138,7 +139,7 @@ namespace WaywardGamers.KParser.Plugin
                 }
             }
 
-            if (e.DatasetChanges.CombatDetails.Count != 0)
+            if (e.DatasetChanges.Interactions.Count != 0)
             {
                 datasetToUse = e.FullDataset;
                 return true;
@@ -162,7 +163,7 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Processing sections
-        protected override void ProcessData(KPDatabaseODataSet dataSet)
+        protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
             richTextBox.Clear();
 
@@ -175,21 +176,21 @@ namespace WaywardGamers.KParser.Plugin
 
             if (mobFilter == "All")
             {
-                allAttacks = from cd in dataSet.CombatDetails
+                allAttacks = from cd in dataSet.Interactions
                              where ((cd.IsActorIDNull() == false) &&
-                                    (cd.AttackType == (byte)HarmType.Damage) &&
-                                    ((cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Player) ||
-                                     (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Pet) ||
-                                     (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Fellow) ||
-                                     (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Skillchain))
+                                    (cd.HarmType == (byte)HarmType.Damage) &&
+                                    ((cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Player) ||
+                                     (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
+                                     (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Fellow) ||
+                                     (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Skillchain))
                                     ) &&
                                     ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
-                             group cd by cd.ActionSource into cda
+                             group cd by cd.ActionType into cda
                              select new AttackGroup(
                                  (ActionType)cda.Key,
                                   from c in cda
-                                  orderby c.CombatantsRowByCombatActorRelation.CombatantName
-                                  group c by c.CombatantsRowByCombatActorRelation);
+                                  orderby c.CombatantsRowByActorCombatantRelation.CombatantName
+                                  group c by c.CombatantsRowByActorCombatantRelation);
 
             }
             else
@@ -203,45 +204,45 @@ namespace WaywardGamers.KParser.Plugin
                     if (mobAndXPMatch.Captures.Count == 1)
                     {
                         // Name only
-                        allAttacks = from cd in dataSet.CombatDetails
+                        allAttacks = from cd in dataSet.Interactions
                                      where ((cd.IsActorIDNull() == false) &&
-                                            (cd.AttackType == (byte)HarmType.Damage) &&
-                                            ((cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Player) ||
-                                             (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Pet) ||
-                                             (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Fellow) ||
-                                             (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Skillchain))
+                                            (cd.HarmType == (byte)HarmType.Damage) &&
+                                            ((cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Player) ||
+                                             (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
+                                             (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Fellow) ||
+                                             (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Skillchain))
                                             ) &&
                                             (cd.BattlesRow.CombatantsRowByEnemyCombatantRelation.CombatantName == mobAndXPMatch.Groups["mobName"].Value) &&
                                             ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
-                                     group cd by cd.ActionSource into cda
+                                     group cd by cd.ActionType into cda
                                      select new AttackGroup(
                                          (ActionType)cda.Key,
                                           from c in cda
-                                          orderby c.CombatantsRowByCombatActorRelation.CombatantName
-                                          group c by c.CombatantsRowByCombatActorRelation);
+                                          orderby c.CombatantsRowByActorCombatantRelation.CombatantName
+                                          group c by c.CombatantsRowByActorCombatantRelation);
                     }
                     else if (mobAndXPMatch.Captures.Count == 2)
                     {
                         // Name and XP
                         int xp = int.Parse(mobAndXPMatch.Groups["xp"].Value);
 
-                        allAttacks = from cd in dataSet.CombatDetails
+                        allAttacks = from cd in dataSet.Interactions
                                      where ((cd.IsActorIDNull() == false) &&
-                                            (cd.AttackType == (byte)HarmType.Damage) &&
-                                            ((cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Player) ||
-                                             (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Pet) ||
-                                             (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Fellow) ||
-                                             (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Skillchain))
+                                            (cd.HarmType == (byte)HarmType.Damage) &&
+                                            ((cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Player) ||
+                                             (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
+                                             (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Fellow) ||
+                                             (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Skillchain))
                                             ) &&
                                             (cd.BattlesRow.CombatantsRowByEnemyCombatantRelation.CombatantName == mobAndXPMatch.Groups["mobName"].Value) &&
                                             (cd.BattlesRow.BaseExperience() == xp) &&
                                             ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
-                                     group cd by cd.ActionSource into cda
+                                     group cd by cd.ActionType into cda
                                      select new AttackGroup(
                                          (ActionType)cda.Key,
                                           from c in cda
-                                          orderby c.CombatantsRowByCombatActorRelation.CombatantName
-                                          group c by c.CombatantsRowByCombatActorRelation);
+                                          orderby c.CombatantsRowByActorCombatantRelation.CombatantName
+                                          group c by c.CombatantsRowByActorCombatantRelation);
                     }
                     else
                     {

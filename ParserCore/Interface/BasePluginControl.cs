@@ -41,19 +41,19 @@ namespace WaywardGamers.KParser.Plugin
 
         public void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
-            KPDatabaseODataSet dataSet;
+            KPDatabaseDataSet dataSet;
             if (FilterOnDatabaseChanging(e, out dataSet))
                 HandleDataset(dataSet);
         }
 
         public void WatchDatabaseChanged(object sender, DatabaseWatchEventArgs e)
         {
-            KPDatabaseODataSet dataSet;
+            KPDatabaseDataSet dataSet;
             if (FilterOnDatabaseChanged(e, out dataSet))
                 HandleDataset(dataSet);
         }
 
-        public virtual void DatabaseOpened(KPDatabaseODataSet dataSet)
+        public virtual void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
             HandleDataset(dataSet);
         }
@@ -66,19 +66,19 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Assistant Methods for datamining
-        protected virtual bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseODataSet datasetToUse)
+        protected virtual bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
         {
             datasetToUse = null;
             return false;
         }
 
-        protected virtual bool FilterOnDatabaseChanged(DatabaseWatchEventArgs e, out KPDatabaseODataSet datasetToUse)
+        protected virtual bool FilterOnDatabaseChanged(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
         {
             datasetToUse = null;
             return false;
         }
 
-        protected void HandleDataset(KPDatabaseODataSet dataSet)
+        protected void HandleDataset(KPDatabaseDataSet dataSet)
         {
             if (dataSet == null)
                 return;
@@ -105,7 +105,7 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
-        protected virtual void ProcessData(KPDatabaseODataSet dataSet)
+        protected virtual void ProcessData(KPDatabaseDataSet dataSet)
         {
             throw new NotImplementedException();
         }

@@ -20,7 +20,7 @@ namespace WaywardGamers.KParser.Plugin
             richTextBox.Clear();
         }
 
-        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseODataSet datasetToUse)
+        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
         {
             if (e.DatasetChanges.Battles.Any(b => b.Killed == true))
             {
@@ -32,7 +32,7 @@ namespace WaywardGamers.KParser.Plugin
             return false;
         }
 
-        protected override void ProcessData(KPDatabaseODataSet dataSet)
+        protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
             richTextBox.Clear();
 
@@ -77,7 +77,7 @@ namespace WaywardGamers.KParser.Plugin
                 AppendBoldText("\n\nExperience Chains\n", Color.Black);
 
                 string chainFormat = "{0} {1} {2} {3}\n";
-                EnumerableRowCollection<KPDatabaseODataSet.BattlesRow> chain;
+                EnumerableRowCollection<KPDatabaseDataSet.BattlesRow> chain;
                 int chainCount;
                 int chainXP;
                 double avgChainXP;
