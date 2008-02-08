@@ -317,13 +317,11 @@ namespace WaywardGamers.KParser.Parsing
             // Determine type of action message
             switch (message.MessageCode)
             {
-                case 0x79: // Item drop, Lot for item, or other (equipment changed, /recast message, /anon changed, etc)
+                case 0x83: // Experience gained (no chain)
+                case 0x79: // Item drop, Lot for item, xp with chain, or other (equipment changed, /recast message, /anon changed, etc)
                 case 0x7f: // Item obtained
-                    message.ActionDetails.ActionMessageType = ActionMessageType.Loot;
-                    break;
-                case 0x83: // Experience gained / chain number
-                    message.ActionDetails.ActionMessageType = ActionMessageType.Experience;
-                    break;
+                    ParseLootOrXP(message);
+                    return;
                 case 0x92: // <me> caught a fish!
                 case 0x94: // other fishing messages, other stuff
                     message.ActionDetails.ActionMessageType = ActionMessageType.Fishing;
@@ -353,6 +351,117 @@ namespace WaywardGamers.KParser.Parsing
                 default:
                     // Ignore Fishing for now
                     // Ignore Other always
+                    break;
+            }
+        }
+
+        private static void ParseLootOrXP(Message message)
+        {
+            Match lootOrXP;
+
+            switch (message.MessageCode)
+            {
+                // Item drop, Lot for item, equipment changed, /recast message
+                case 0x79:
+                    // Further specificity based on extraCode1
+                    switch (message.ExtraCode1)
+                    {
+                        case 0:
+                            lootOrXP = ParseExpressions.ExpChain.Match(message.CurrentMessageText);
+                            if (lootOrXP.Success == true)
+                            {
+                                message.ActionDetails.ActionMessageType = ActionMessageType.Experience;
+                                message.ActionDetails.ExperienceDetails.ExperienceChain = int.Parse(lootOrXP.Groups[ParseFields.Number].Value);
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            lootOrXP = ParseExpressions.Experience.Match(message.CurrentMessageText);
+                            if (lootOrXP.Success == true)
+                            {
+                                message.ActionDetails.ActionMessageType = ActionMessageType.Experience;
+                                message.ActionDetails.ExperienceDetails.ExperiencePoints = int.Parse(lootOrXP.Groups[ParseFields.Number].Value);
+                                message.ActionDetails.ExperienceDetails.ExperienceRecipient = lootOrXP.Groups[ParseFields.Name].Value;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            // Loot drops from mob, player lots (ignored)
+                            // Check to see if this is the initial message about loot being found.
+                            lootOrXP = ParseExpressions.FindLoot.Match(message.CurrentMessageText);
+                            if (lootOrXP.Success == true)
+                            {
+                                message.ActionDetails.ActionMessageType = ActionMessageType.Loot;
+                                message.ActionDetails.LootDetails.IsFoundMessage = true;
+                                message.ActionDetails.LootDetails.ItemName = lootOrXP.Groups[ParseFields.Item].Value;
+                                message.ActionDetails.LootDetails.MobName = lootOrXP.Groups[ParseFields.Target].Value;
+                                message.ParseSuccessful = true;
+                                break;
+                            }
+                            // May also be the "not qualified" message (out of space, rare/ex)
+                            lootOrXP = ParseExpressions.LootReqr.Match(message.CurrentMessageText);
+                            if (lootOrXP.Success == true)
+                            {
+                                message.ActionDetails.ActionMessageType = ActionMessageType.Loot;
+                                message.ActionDetails.LootDetails.IsFoundMessage = false;
+                                message.ActionDetails.LootDetails.ItemName = lootOrXP.Groups[ParseFields.Item].Value;
+                                message.ParseSuccessful = true;
+                                break;
+                            }
+                            // Or the "Item is lost" message.
+                            lootOrXP = ParseExpressions.LootLost.Match(message.CurrentMessageText);
+                            if (lootOrXP.Success == true)
+                            {
+                                message.ActionDetails.ActionMessageType = ActionMessageType.Loot;
+                                message.ActionDetails.LootDetails.IsFoundMessage = false;
+                                message.ActionDetails.LootDetails.WasLost = true;
+                                message.ActionDetails.LootDetails.ItemName = lootOrXP.Groups[ParseFields.Item].Value;
+                                message.ParseSuccessful = true;
+                                break;
+                            }
+                            break;
+                        case 3:
+                            // Equipment changes, recast times, /search results
+                            message.ActionDetails.ActionMessageType = ActionMessageType.Other;
+                            message.ParseSuccessful = true;
+                            break;
+                        default:
+                            // Other
+                            message.ActionDetails.ActionMessageType = ActionMessageType.Other;
+                            break;
+                    }
+                    break;
+                // Item obtained
+                case 0x7f:
+                    lootOrXP = ParseExpressions.GetGil.Match(message.CurrentMessageText);
+                    if (lootOrXP.Success == true)
+                    {
+                        message.ActionDetails.ActionMessageType = ActionMessageType.Loot;
+                        message.ActionDetails.LootDetails.IsFoundMessage = false;
+                        message.ActionDetails.LootDetails.Gil = int.Parse(lootOrXP.Groups[ParseFields.Money].Value);
+                        message.ActionDetails.LootDetails.WhoObtained = lootOrXP.Groups[ParseFields.Name].Value;
+                        message.ParseSuccessful = true;
+                        break;
+                    }
+                    lootOrXP = ParseExpressions.GetLoot.Match(message.CurrentMessageText);
+                    if (lootOrXP.Success == true)
+                    {
+                        message.ActionDetails.ActionMessageType = ActionMessageType.Loot;
+                        message.ActionDetails.LootDetails.IsFoundMessage = false;
+                        message.ActionDetails.LootDetails.ItemName = lootOrXP.Groups[ParseFields.Item].Value;
+                        message.ActionDetails.LootDetails.WhoObtained = lootOrXP.Groups[ParseFields.Name].Value;
+                        message.ParseSuccessful = true;
+                        break;
+                    }
+                    break;
+                case 0x83:
+                    lootOrXP = ParseExpressions.Experience.Match(message.CurrentMessageText);
+                    if (lootOrXP.Success == true)
+                    {
+                        message.ActionDetails.ActionMessageType = ActionMessageType.Experience;
+                        message.ActionDetails.ExperienceDetails.ExperiencePoints = int.Parse(lootOrXP.Groups[ParseFields.Number].Value);
+                        message.ActionDetails.ExperienceDetails.ExperienceRecipient = lootOrXP.Groups[ParseFields.Name].Value;
+                        message.ParseSuccessful = true;
+                        return;
+                    }
                     break;
             }
         }
