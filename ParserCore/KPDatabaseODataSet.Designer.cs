@@ -23,7 +23,7 @@ namespace WaywardGamers.KParser {
     [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedDataSetSchema")]
     [global::System.Xml.Serialization.XmlRootAttribute("KPDatabaseDataSet")]
     [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.DataSet")]
-    public partial class KPDatabaseDataSet : global::System.Data.DataSet {
+    public partial class KPDatabaseODataSet : global::System.Data.DataSet {
         
         private ActionsDataTable tableActions;
         
@@ -68,7 +68,7 @@ namespace WaywardGamers.KParser {
         private global::System.Data.SchemaSerializationMode _schemaSerializationMode = global::System.Data.SchemaSerializationMode.IncludeSchema;
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public KPDatabaseDataSet() {
+        public KPDatabaseODataSet() {
             this.BeginInit();
             this.InitClass();
             global::System.ComponentModel.CollectionChangeEventHandler schemaChangedHandler = new global::System.ComponentModel.CollectionChangeEventHandler(this.SchemaChanged);
@@ -78,7 +78,7 @@ namespace WaywardGamers.KParser {
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        protected KPDatabaseDataSet(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+        protected KPDatabaseODataSet(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
                 base(info, context, false) {
             if ((this.IsBinarySerialized(info, context) == true)) {
                 this.InitVars(false);
@@ -266,7 +266,7 @@ namespace WaywardGamers.KParser {
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         public override global::System.Data.DataSet Clone() {
-            KPDatabaseDataSet cln = ((KPDatabaseDataSet)(base.Clone()));
+            KPDatabaseODataSet cln = ((KPDatabaseODataSet)(base.Clone()));
             cln.InitVars();
             cln.SchemaSerializationMode = this.SchemaSerializationMode;
             return cln;
@@ -548,7 +548,7 @@ namespace WaywardGamers.KParser {
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedDataSetSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
-            KPDatabaseDataSet ds = new KPDatabaseDataSet();
+            KPDatabaseODataSet ds = new KPDatabaseODataSet();
             global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
             global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
             global::System.Xml.Schema.XmlSchemaAny any = new global::System.Xml.Schema.XmlSchemaAny();
@@ -806,7 +806,7 @@ namespace WaywardGamers.KParser {
             public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
                 global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
                 global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
-                KPDatabaseDataSet ds = new KPDatabaseDataSet();
+                KPDatabaseODataSet ds = new KPDatabaseODataSet();
                 global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
                 any1.Namespace = "http://www.w3.org/2001/XMLSchema";
                 any1.MinOccurs = new decimal(0);
@@ -1084,7 +1084,7 @@ namespace WaywardGamers.KParser {
             public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
                 global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
                 global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
-                KPDatabaseDataSet ds = new KPDatabaseDataSet();
+                KPDatabaseODataSet ds = new KPDatabaseODataSet();
                 global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
                 any1.Namespace = "http://www.w3.org/2001/XMLSchema";
                 any1.MinOccurs = new decimal(0);
@@ -1624,7 +1624,7 @@ namespace WaywardGamers.KParser {
             public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
                 global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
                 global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
-                KPDatabaseDataSet ds = new KPDatabaseDataSet();
+                KPDatabaseODataSet ds = new KPDatabaseODataSet();
                 global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
                 any1.Namespace = "http://www.w3.org/2001/XMLSchema";
                 any1.MinOccurs = new decimal(0);
@@ -1877,7 +1877,7 @@ namespace WaywardGamers.KParser {
             public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
                 global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
                 global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
-                KPDatabaseDataSet ds = new KPDatabaseDataSet();
+                KPDatabaseODataSet ds = new KPDatabaseODataSet();
                 global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
                 any1.Namespace = "http://www.w3.org/2001/XMLSchema";
                 any1.MinOccurs = new decimal(0);
@@ -2189,7 +2189,7 @@ namespace WaywardGamers.KParser {
             public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
                 global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
                 global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
-                KPDatabaseDataSet ds = new KPDatabaseDataSet();
+                KPDatabaseODataSet ds = new KPDatabaseODataSet();
                 global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
                 any1.Namespace = "http://www.w3.org/2001/XMLSchema";
                 any1.MinOccurs = new decimal(0);
@@ -2429,7 +2429,7 @@ namespace WaywardGamers.KParser {
             public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
                 global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
                 global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
-                KPDatabaseDataSet ds = new KPDatabaseDataSet();
+                KPDatabaseODataSet ds = new KPDatabaseODataSet();
                 global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
                 any1.Namespace = "http://www.w3.org/2001/XMLSchema";
                 any1.MinOccurs = new decimal(0);
@@ -2682,7 +2682,7 @@ namespace WaywardGamers.KParser {
             public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
                 global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
                 global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
-                KPDatabaseDataSet ds = new KPDatabaseDataSet();
+                KPDatabaseODataSet ds = new KPDatabaseODataSet();
                 global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
                 any1.Namespace = "http://www.w3.org/2001/XMLSchema";
                 any1.MinOccurs = new decimal(0);
@@ -2961,7 +2961,7 @@ namespace WaywardGamers.KParser {
             public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
                 global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
                 global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
-                KPDatabaseDataSet ds = new KPDatabaseDataSet();
+                KPDatabaseODataSet ds = new KPDatabaseODataSet();
                 global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
                 any1.Namespace = "http://www.w3.org/2001/XMLSchema";
                 any1.MinOccurs = new decimal(0);
@@ -3255,7 +3255,7 @@ namespace WaywardGamers.KParser {
             public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
                 global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
                 global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
-                KPDatabaseDataSet ds = new KPDatabaseDataSet();
+                KPDatabaseODataSet ds = new KPDatabaseODataSet();
                 global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
                 any1.Namespace = "http://www.w3.org/2001/XMLSchema";
                 any1.MinOccurs = new decimal(0);
@@ -3622,7 +3622,7 @@ namespace WaywardGamers.KParser {
             public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
                 global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
                 global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
-                KPDatabaseDataSet ds = new KPDatabaseDataSet();
+                KPDatabaseODataSet ds = new KPDatabaseODataSet();
                 global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
                 any1.Namespace = "http://www.w3.org/2001/XMLSchema";
                 any1.MinOccurs = new decimal(0);
@@ -5312,7 +5312,7 @@ namespace WaywardGamers.KParser.KPDatabaseDataSetTableAdapters {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
-        public virtual int Fill(KPDatabaseDataSet.ActionsDataTable dataTable) {
+        public virtual int Fill(KPDatabaseODataSet.ActionsDataTable dataTable) {
             this.Adapter.SelectCommand = this.CommandCollection[0];
             if ((this.ClearBeforeFill == true)) {
                 dataTable.Clear();
@@ -5324,22 +5324,22 @@ namespace WaywardGamers.KParser.KPDatabaseDataSetTableAdapters {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
-        public virtual KPDatabaseDataSet.ActionsDataTable GetData() {
+        public virtual KPDatabaseODataSet.ActionsDataTable GetData() {
             this.Adapter.SelectCommand = this.CommandCollection[0];
-            KPDatabaseDataSet.ActionsDataTable dataTable = new KPDatabaseDataSet.ActionsDataTable();
+            KPDatabaseODataSet.ActionsDataTable dataTable = new KPDatabaseODataSet.ActionsDataTable();
             this.Adapter.Fill(dataTable);
             return dataTable;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(KPDatabaseDataSet.ActionsDataTable dataTable) {
+        public virtual int Update(KPDatabaseODataSet.ActionsDataTable dataTable) {
             return this.Adapter.Update(dataTable);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(KPDatabaseDataSet dataSet) {
+        public virtual int Update(KPDatabaseODataSet dataSet) {
             return this.Adapter.Update(dataSet, "Actions");
         }
         
@@ -5605,7 +5605,7 @@ namespace WaywardGamers.KParser.KPDatabaseDataSetTableAdapters {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
-        public virtual int Fill(KPDatabaseDataSet.CombatantsDataTable dataTable) {
+        public virtual int Fill(KPDatabaseODataSet.CombatantsDataTable dataTable) {
             this.Adapter.SelectCommand = this.CommandCollection[0];
             if ((this.ClearBeforeFill == true)) {
                 dataTable.Clear();
@@ -5617,22 +5617,22 @@ namespace WaywardGamers.KParser.KPDatabaseDataSetTableAdapters {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
-        public virtual KPDatabaseDataSet.CombatantsDataTable GetData() {
+        public virtual KPDatabaseODataSet.CombatantsDataTable GetData() {
             this.Adapter.SelectCommand = this.CommandCollection[0];
-            KPDatabaseDataSet.CombatantsDataTable dataTable = new KPDatabaseDataSet.CombatantsDataTable();
+            KPDatabaseODataSet.CombatantsDataTable dataTable = new KPDatabaseODataSet.CombatantsDataTable();
             this.Adapter.Fill(dataTable);
             return dataTable;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(KPDatabaseDataSet.CombatantsDataTable dataTable) {
+        public virtual int Update(KPDatabaseODataSet.CombatantsDataTable dataTable) {
             return this.Adapter.Update(dataTable);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(KPDatabaseDataSet dataSet) {
+        public virtual int Update(KPDatabaseODataSet dataSet) {
             return this.Adapter.Update(dataSet, "Combatants");
         }
         
@@ -5960,7 +5960,7 @@ FROM         CombatDetails";
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
-        public virtual int Fill(KPDatabaseDataSet.CombatDetailsDataTable dataTable) {
+        public virtual int Fill(KPDatabaseODataSet.CombatDetailsDataTable dataTable) {
             this.Adapter.SelectCommand = this.CommandCollection[0];
             if ((this.ClearBeforeFill == true)) {
                 dataTable.Clear();
@@ -5972,22 +5972,22 @@ FROM         CombatDetails";
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
-        public virtual KPDatabaseDataSet.CombatDetailsDataTable GetData() {
+        public virtual KPDatabaseODataSet.CombatDetailsDataTable GetData() {
             this.Adapter.SelectCommand = this.CommandCollection[0];
-            KPDatabaseDataSet.CombatDetailsDataTable dataTable = new KPDatabaseDataSet.CombatDetailsDataTable();
+            KPDatabaseODataSet.CombatDetailsDataTable dataTable = new KPDatabaseODataSet.CombatDetailsDataTable();
             this.Adapter.Fill(dataTable);
             return dataTable;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(KPDatabaseDataSet.CombatDetailsDataTable dataTable) {
+        public virtual int Update(KPDatabaseODataSet.CombatDetailsDataTable dataTable) {
             return this.Adapter.Update(dataTable);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(KPDatabaseDataSet dataSet) {
+        public virtual int Update(KPDatabaseODataSet dataSet) {
             return this.Adapter.Update(dataSet, "CombatDetails");
         }
         
@@ -6381,7 +6381,7 @@ FROM         CombatDetails";
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
-        public virtual int Fill(KPDatabaseDataSet.ItemsDataTable dataTable) {
+        public virtual int Fill(KPDatabaseODataSet.ItemsDataTable dataTable) {
             this.Adapter.SelectCommand = this.CommandCollection[0];
             if ((this.ClearBeforeFill == true)) {
                 dataTable.Clear();
@@ -6393,22 +6393,22 @@ FROM         CombatDetails";
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
-        public virtual KPDatabaseDataSet.ItemsDataTable GetData() {
+        public virtual KPDatabaseODataSet.ItemsDataTable GetData() {
             this.Adapter.SelectCommand = this.CommandCollection[0];
-            KPDatabaseDataSet.ItemsDataTable dataTable = new KPDatabaseDataSet.ItemsDataTable();
+            KPDatabaseODataSet.ItemsDataTable dataTable = new KPDatabaseODataSet.ItemsDataTable();
             this.Adapter.Fill(dataTable);
             return dataTable;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(KPDatabaseDataSet.ItemsDataTable dataTable) {
+        public virtual int Update(KPDatabaseODataSet.ItemsDataTable dataTable) {
             return this.Adapter.Update(dataTable);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(KPDatabaseDataSet dataSet) {
+        public virtual int Update(KPDatabaseODataSet dataSet) {
             return this.Adapter.Update(dataSet, "Items");
         }
         
@@ -6680,7 +6680,7 @@ FROM         CombatDetails";
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
-        public virtual int Fill(KPDatabaseDataSet.LootDataTable dataTable) {
+        public virtual int Fill(KPDatabaseODataSet.LootDataTable dataTable) {
             this.Adapter.SelectCommand = this.CommandCollection[0];
             if ((this.ClearBeforeFill == true)) {
                 dataTable.Clear();
@@ -6692,22 +6692,22 @@ FROM         CombatDetails";
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
-        public virtual KPDatabaseDataSet.LootDataTable GetData() {
+        public virtual KPDatabaseODataSet.LootDataTable GetData() {
             this.Adapter.SelectCommand = this.CommandCollection[0];
-            KPDatabaseDataSet.LootDataTable dataTable = new KPDatabaseDataSet.LootDataTable();
+            KPDatabaseODataSet.LootDataTable dataTable = new KPDatabaseODataSet.LootDataTable();
             this.Adapter.Fill(dataTable);
             return dataTable;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(KPDatabaseDataSet.LootDataTable dataTable) {
+        public virtual int Update(KPDatabaseODataSet.LootDataTable dataTable) {
             return this.Adapter.Update(dataTable);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(KPDatabaseDataSet dataSet) {
+        public virtual int Update(KPDatabaseODataSet dataSet) {
             return this.Adapter.Update(dataSet, "Loot");
         }
         
@@ -6980,7 +6980,7 @@ FROM         CombatDetails";
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
-        public virtual int Fill(KPDatabaseDataSet.VersionDataTable dataTable) {
+        public virtual int Fill(KPDatabaseODataSet.VersionDataTable dataTable) {
             this.Adapter.SelectCommand = this.CommandCollection[0];
             if ((this.ClearBeforeFill == true)) {
                 dataTable.Clear();
@@ -6992,22 +6992,22 @@ FROM         CombatDetails";
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
-        public virtual KPDatabaseDataSet.VersionDataTable GetData() {
+        public virtual KPDatabaseODataSet.VersionDataTable GetData() {
             this.Adapter.SelectCommand = this.CommandCollection[0];
-            KPDatabaseDataSet.VersionDataTable dataTable = new KPDatabaseDataSet.VersionDataTable();
+            KPDatabaseODataSet.VersionDataTable dataTable = new KPDatabaseODataSet.VersionDataTable();
             this.Adapter.Fill(dataTable);
             return dataTable;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(KPDatabaseDataSet.VersionDataTable dataTable) {
+        public virtual int Update(KPDatabaseODataSet.VersionDataTable dataTable) {
             return this.Adapter.Update(dataTable);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(KPDatabaseDataSet dataSet) {
+        public virtual int Update(KPDatabaseODataSet dataSet) {
             return this.Adapter.Update(dataSet, "Version");
         }
         
@@ -7209,7 +7209,7 @@ FROM         CombatDetails";
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
-        public virtual int Fill(KPDatabaseDataSet.ChatSpeakersDataTable dataTable) {
+        public virtual int Fill(KPDatabaseODataSet.ChatSpeakersDataTable dataTable) {
             this.Adapter.SelectCommand = this.CommandCollection[0];
             if ((this.ClearBeforeFill == true)) {
                 dataTable.Clear();
@@ -7221,22 +7221,22 @@ FROM         CombatDetails";
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
-        public virtual KPDatabaseDataSet.ChatSpeakersDataTable GetData() {
+        public virtual KPDatabaseODataSet.ChatSpeakersDataTable GetData() {
             this.Adapter.SelectCommand = this.CommandCollection[0];
-            KPDatabaseDataSet.ChatSpeakersDataTable dataTable = new KPDatabaseDataSet.ChatSpeakersDataTable();
+            KPDatabaseODataSet.ChatSpeakersDataTable dataTable = new KPDatabaseODataSet.ChatSpeakersDataTable();
             this.Adapter.Fill(dataTable);
             return dataTable;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(KPDatabaseDataSet.ChatSpeakersDataTable dataTable) {
+        public virtual int Update(KPDatabaseODataSet.ChatSpeakersDataTable dataTable) {
             return this.Adapter.Update(dataTable);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(KPDatabaseDataSet dataSet) {
+        public virtual int Update(KPDatabaseODataSet dataSet) {
             return this.Adapter.Update(dataSet, "ChatSpeakers");
         }
         
@@ -7502,7 +7502,7 @@ FROM         CombatDetails";
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
-        public virtual int Fill(KPDatabaseDataSet.ChatLogRecordDataTable dataTable) {
+        public virtual int Fill(KPDatabaseODataSet.ChatLogRecordDataTable dataTable) {
             this.Adapter.SelectCommand = this.CommandCollection[0];
             if ((this.ClearBeforeFill == true)) {
                 dataTable.Clear();
@@ -7514,22 +7514,22 @@ FROM         CombatDetails";
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
-        public virtual KPDatabaseDataSet.ChatLogRecordDataTable GetData() {
+        public virtual KPDatabaseODataSet.ChatLogRecordDataTable GetData() {
             this.Adapter.SelectCommand = this.CommandCollection[0];
-            KPDatabaseDataSet.ChatLogRecordDataTable dataTable = new KPDatabaseDataSet.ChatLogRecordDataTable();
+            KPDatabaseODataSet.ChatLogRecordDataTable dataTable = new KPDatabaseODataSet.ChatLogRecordDataTable();
             this.Adapter.Fill(dataTable);
             return dataTable;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(KPDatabaseDataSet.ChatLogRecordDataTable dataTable) {
+        public virtual int Update(KPDatabaseODataSet.ChatLogRecordDataTable dataTable) {
             return this.Adapter.Update(dataTable);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(KPDatabaseDataSet dataSet) {
+        public virtual int Update(KPDatabaseODataSet dataSet) {
             return this.Adapter.Update(dataSet, "ChatLogRecord");
         }
         
@@ -7802,7 +7802,7 @@ FROM         CombatDetails";
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
-        public virtual int Fill(KPDatabaseDataSet.ChatMessagesDataTable dataTable) {
+        public virtual int Fill(KPDatabaseODataSet.ChatMessagesDataTable dataTable) {
             this.Adapter.SelectCommand = this.CommandCollection[0];
             if ((this.ClearBeforeFill == true)) {
                 dataTable.Clear();
@@ -7814,22 +7814,22 @@ FROM         CombatDetails";
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
-        public virtual KPDatabaseDataSet.ChatMessagesDataTable GetData() {
+        public virtual KPDatabaseODataSet.ChatMessagesDataTable GetData() {
             this.Adapter.SelectCommand = this.CommandCollection[0];
-            KPDatabaseDataSet.ChatMessagesDataTable dataTable = new KPDatabaseDataSet.ChatMessagesDataTable();
+            KPDatabaseODataSet.ChatMessagesDataTable dataTable = new KPDatabaseODataSet.ChatMessagesDataTable();
             this.Adapter.Fill(dataTable);
             return dataTable;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(KPDatabaseDataSet.ChatMessagesDataTable dataTable) {
+        public virtual int Update(KPDatabaseODataSet.ChatMessagesDataTable dataTable) {
             return this.Adapter.Update(dataTable);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(KPDatabaseDataSet dataSet) {
+        public virtual int Update(KPDatabaseODataSet dataSet) {
             return this.Adapter.Update(dataSet, "ChatMessages");
         }
         
@@ -8143,7 +8143,7 @@ FROM         CombatDetails";
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
-        public virtual int Fill(KPDatabaseDataSet.BattlesDataTable dataTable) {
+        public virtual int Fill(KPDatabaseODataSet.BattlesDataTable dataTable) {
             this.Adapter.SelectCommand = this.CommandCollection[0];
             if ((this.ClearBeforeFill == true)) {
                 dataTable.Clear();
@@ -8155,22 +8155,22 @@ FROM         CombatDetails";
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
-        public virtual KPDatabaseDataSet.BattlesDataTable GetData() {
+        public virtual KPDatabaseODataSet.BattlesDataTable GetData() {
             this.Adapter.SelectCommand = this.CommandCollection[0];
-            KPDatabaseDataSet.BattlesDataTable dataTable = new KPDatabaseDataSet.BattlesDataTable();
+            KPDatabaseODataSet.BattlesDataTable dataTable = new KPDatabaseODataSet.BattlesDataTable();
             this.Adapter.Fill(dataTable);
             return dataTable;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(KPDatabaseDataSet.BattlesDataTable dataTable) {
+        public virtual int Update(KPDatabaseODataSet.BattlesDataTable dataTable) {
             return this.Adapter.Update(dataTable);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(KPDatabaseDataSet dataSet) {
+        public virtual int Update(KPDatabaseODataSet dataSet) {
             return this.Adapter.Update(dataSet, "Battles");
         }
         
@@ -8701,7 +8701,7 @@ FROM         CombatDetails";
         ///Update rows in top-down order.
         ///</summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        private int UpdateUpdatedRows(KPDatabaseDataSet dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allChangedRows, global::System.Collections.Generic.List<global::System.Data.DataRow> allAddedRows) {
+        private int UpdateUpdatedRows(KPDatabaseODataSet dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allChangedRows, global::System.Collections.Generic.List<global::System.Data.DataRow> allAddedRows) {
             int result = 0;
             if ((this._combatantsTableAdapter != null)) {
                 global::System.Data.DataRow[] updatedRows = dataSet.Combatants.Select(null, null, global::System.Data.DataViewRowState.ModifiedCurrent);
@@ -8800,7 +8800,7 @@ FROM         CombatDetails";
         ///Insert rows in top-down order.
         ///</summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        private int UpdateInsertedRows(KPDatabaseDataSet dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allAddedRows) {
+        private int UpdateInsertedRows(KPDatabaseODataSet dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allAddedRows) {
             int result = 0;
             if ((this._combatantsTableAdapter != null)) {
                 global::System.Data.DataRow[] addedRows = dataSet.Combatants.Select(null, null, global::System.Data.DataViewRowState.Added);
@@ -8889,7 +8889,7 @@ FROM         CombatDetails";
         ///Delete rows in bottom-up order.
         ///</summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        private int UpdateDeletedRows(KPDatabaseDataSet dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allChangedRows) {
+        private int UpdateDeletedRows(KPDatabaseODataSet dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allChangedRows) {
             int result = 0;
             if ((this._combatDetailsTableAdapter != null)) {
                 global::System.Data.DataRow[] deletedRows = dataSet.CombatDetails.Select(null, null, global::System.Data.DataViewRowState.Deleted);
@@ -9001,7 +9001,7 @@ FROM         CombatDetails";
         ///Update all changes to the dataset.
         ///</summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public virtual int UpdateAll(KPDatabaseDataSet dataSet) {
+        public virtual int UpdateAll(KPDatabaseODataSet dataSet) {
             if ((dataSet == null)) {
                 throw new global::System.ArgumentNullException("dataSet");
             }

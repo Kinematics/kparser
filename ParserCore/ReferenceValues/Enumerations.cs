@@ -69,7 +69,6 @@ namespace WaywardGamers.KParser
         Unknown,
         Aid,
         Harm,
-        Death,
     }
     
     public enum HarmType : byte
@@ -82,7 +81,7 @@ namespace WaywardGamers.KParser
         Death,
     }
 
-    public enum BuffType : byte
+    public enum AidType : byte
     {
         Unknown,
         Enhance,
@@ -97,7 +96,17 @@ namespace WaywardGamers.KParser
         RecoverMP,
     }
 
-    public enum ActionSourceType : byte
+    public enum DamageType : byte
+    {
+        Unknown,
+        Physical,
+        Magical,
+        AdditionalEffect,
+        Spikes,
+        Counterattack,
+    }
+
+    public enum ActionType : byte
     {
         Unknown,
         Melee,
@@ -105,6 +114,7 @@ namespace WaywardGamers.KParser
         Spell,
         Ability,
         Weaponskill,
+        Skillchain,
         AdditionalEffect,
         Counterattack,
         Spikes,
@@ -131,7 +141,6 @@ namespace WaywardGamers.KParser
         None,
         Critical,
         MagicBurst,
-        Skillchain,
     }
 
     public enum DefenseType : byte
@@ -181,6 +190,17 @@ namespace WaywardGamers.KParser
         NPC,
         Fellow,
         Skillchain,
+    }
+
+    [Flags]
+    public enum ActorType : byte
+    {
+        Unknown = 0x00,
+        Self = 0x01,
+        Party = 0x02,
+        Other = 0x04,
+        Pet = 0x08,
+        NPC = 0x16,
     }
 
     public enum SpeakerType : byte

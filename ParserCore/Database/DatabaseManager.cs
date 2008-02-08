@@ -15,14 +15,14 @@ namespace WaywardGamers.KParser
 
     public class DatabaseWatchEventArgs : EventArgs
     {
-        KPDatabaseDataSet fullDataset;
-        KPDatabaseDataSet changedDataset;
+        KPDatabaseODataSet fullDataset;
+        KPDatabaseODataSet changedDataset;
 
         /// <summary>
         /// Constructor is internal; only created by the DatabaseManager.
         /// </summary>
         /// <param name="coreDataset"></param>
-        internal DatabaseWatchEventArgs(KPDatabaseDataSet coreDataset)
+        internal DatabaseWatchEventArgs(KPDatabaseODataSet coreDataset)
         {
             if (coreDataset == null)
             {
@@ -33,14 +33,14 @@ namespace WaywardGamers.KParser
 
             fullDataset = coreDataset;
 
-            changedDataset = (KPDatabaseDataSet)coreDataset.GetChanges();
+            changedDataset = (KPDatabaseODataSet)coreDataset.GetChanges();
         }
 
         /// <summary>
         /// Gets the dataset containing all changes that are about to be
         /// committed to the database, for the Changing event.
         /// </summary>
-        public KPDatabaseDataSet DatasetChanges
+        public KPDatabaseODataSet DatasetChanges
         {
             get
             {
@@ -48,7 +48,7 @@ namespace WaywardGamers.KParser
             }
         }
 
-        public KPDatabaseDataSet FullDataset
+        public KPDatabaseODataSet FullDataset
         {
             get
             {
@@ -81,9 +81,9 @@ namespace WaywardGamers.KParser
             assemblyVersionString = string.Format("{0}.{1}", assemVersion.Major, assemVersion.Minor);
 
             // Initialize record-keeping variables
-            lastKilledList = new Dictionary<string, KPDatabaseDataSet.BattlesRow>();
-            activeBattleList = new Dictionary<KPDatabaseDataSet.BattlesRow, DateTime>();
-            activeMobBattleList = new Dictionary<string, KPDatabaseDataSet.BattlesRow>();
+            lastKilledList = new Dictionary<string, KPDatabaseODataSet.BattlesRow>();
+            activeBattleList = new Dictionary<KPDatabaseODataSet.BattlesRow, DateTime>();
+            activeMobBattleList = new Dictionary<string, KPDatabaseODataSet.BattlesRow>();
         }
 
 		/// <summary>
@@ -131,7 +131,7 @@ namespace WaywardGamers.KParser
         private string databaseFilename;
         private string databaseConnectionString;
 
-        private KPDatabaseDataSet localDB;
+        private KPDatabaseODataSet localDB;
         private KPDatabaseDataSetTableAdapters.TableAdapterManager localTAManager;
 
         public event DatabaseWatchEventHandler DatabaseChanging;
@@ -141,11 +141,11 @@ namespace WaywardGamers.KParser
         // For diagnostics:
         private Stopwatch stopwatch = new Stopwatch();
 
-        private Dictionary<string, KPDatabaseDataSet.BattlesRow> lastKilledList;
-        private KPDatabaseDataSet.BattlesRow lastFinishedBattle;
+        private Dictionary<string, KPDatabaseODataSet.BattlesRow> lastKilledList;
+        private KPDatabaseODataSet.BattlesRow lastFinishedBattle;
 
-        private Dictionary<KPDatabaseDataSet.BattlesRow, DateTime> activeBattleList;
-        private Dictionary<string, KPDatabaseDataSet.BattlesRow> activeMobBattleList;
+        private Dictionary<KPDatabaseODataSet.BattlesRow, DateTime> activeBattleList;
+        private Dictionary<string, KPDatabaseODataSet.BattlesRow> activeMobBattleList;
         #endregion
 
         #region Public Methods/Properties
@@ -217,7 +217,7 @@ namespace WaywardGamers.KParser
             CreateConnections();
         }
 
-        public KPDatabaseDataSet Database
+        public KPDatabaseODataSet Database
         {
             get
             {
@@ -333,7 +333,7 @@ namespace WaywardGamers.KParser
         /// </summary>
         private void CreateConnections()
         {
-            localDB = new KPDatabaseDataSet();
+            localDB = new KPDatabaseODataSet();
             localTAManager = new TableAdapterManager();
 
             localTAManager.CombatantsTableAdapter = new CombatantsTableAdapter();
@@ -513,7 +513,7 @@ namespace WaywardGamers.KParser
             if (message.EventDetails.LootDetails.IsFoundMessage == true)
             {
                 // Check our local list of recent kills
-                KPDatabaseDataSet.BattlesRow lastKill = null;
+                KPDatabaseODataSet.BattlesRow lastKill = null;
 
                 if (lastKilledList.Keys.Contains(message.EventDetails.LootDetails.MobName))
                     lastKill = lastKilledList[message.EventDetails.LootDetails.MobName];
@@ -551,7 +551,7 @@ namespace WaywardGamers.KParser
 
                     // Get an array of all loot entries for this item.
                     var lootEntries = itemRow.GetLootRows();
-                    KPDatabaseDataSet.LootRow lootEntry = null;
+                    KPDatabaseODataSet.LootRow lootEntry = null;
 
                     // If there are any loot entries of the given type, search for an unclaimed one
                     if (lootEntries != null)
@@ -623,9 +623,9 @@ namespace WaywardGamers.KParser
             // a mob of the appropriate name.  If there is no such active battle, create one solely
             // to close it out.
 
-            KPDatabaseDataSet.CombatantsRow actor = null;
-            KPDatabaseDataSet.BattlesRow battle = null;
-            KPDatabaseDataSet.ActionsRow action = null;
+            KPDatabaseODataSet.CombatantsRow actor = null;
+            KPDatabaseODataSet.BattlesRow battle = null;
+            KPDatabaseODataSet.ActionsRow action = null;
 
 
             switch (message.EventDetails.CombatDetails.InteractionType)
@@ -724,7 +724,7 @@ namespace WaywardGamers.KParser
                                     (byte)message.EventDetails.CombatDetails.InteractionType,
                                     (byte)message.EventDetails.CombatDetails.HarmType,
                                     (byte)message.EventDetails.CombatDetails.AidType,
-                                    (byte)ActionSourceType.AdditionalEffect,
+                                    (byte)ActionType.AdditionalEffect,
                                     (byte)message.EventDetails.CombatDetails.FailedActionType,
                                     target.Defended, (byte)target.DefenseType,
                                     target.AdditionalDamage, (byte)DamageModifier.None, (byte)target.RecoveryType, 0,
@@ -774,7 +774,7 @@ namespace WaywardGamers.KParser
                                     (byte)message.EventDetails.CombatDetails.InteractionType,
                                     (byte)message.EventDetails.CombatDetails.HarmType,
                                     (byte)message.EventDetails.CombatDetails.AidType,
-                                    (byte)ActionSourceType.AdditionalEffect,
+                                    (byte)ActionType.AdditionalEffect,
                                     (byte)message.EventDetails.CombatDetails.FailedActionType,
                                     target.Defended, (byte)target.DefenseType,
                                     target.AdditionalDamage, (byte)DamageModifier.None, (byte)target.RecoveryType, 0,
@@ -908,8 +908,8 @@ namespace WaywardGamers.KParser
                             activeBattleList[battle] = message.Timestamp;
 
                         var details = localDB.CombatDetails.AddCombatDetailsRow(actor, null, battle,
-                            (byte)InteractionType.Unknown, (byte)HarmType.Unknown, (byte)BuffType.Unknown,
-                            (byte)ActionSourceType.Unknown, (byte)FailedActionType.None, false, (byte)DefenseType.None,
+                            (byte)InteractionType.Unknown, (byte)HarmType.Unknown, (byte)AidType.Unknown,
+                            (byte)ActionType.Unknown, (byte)FailedActionType.None, false, (byte)DefenseType.None,
                             0, (byte)DamageModifier.None, (byte)RecoveryType.None, 0, true, action, message.Timestamp,
                             (byte)message.EventDetails.CombatDetails.SuccessLevel, 0);
                     }
@@ -920,8 +920,8 @@ namespace WaywardGamers.KParser
 
         private void ProcessDeath(Message message)
         {
-            KPDatabaseDataSet.CombatantsRow actor = null;
-            KPDatabaseDataSet.BattlesRow battle = null;
+            KPDatabaseODataSet.CombatantsRow actor = null;
+            KPDatabaseODataSet.BattlesRow battle = null;
             
             // If there are no targets, we can't do anything.
             if ((message.EventDetails.CombatDetails.Targets == null) || (message.EventDetails.CombatDetails.Targets.Count == 0))
@@ -1089,15 +1089,15 @@ namespace WaywardGamers.KParser
             }
         }
 
-        private KPDatabaseDataSet.BattlesRow MostRecentActiveBattle()
+        private KPDatabaseODataSet.BattlesRow MostRecentActiveBattle()
         {
             if (activeBattleList.Count == 0)
                 return localDB.Battles.GetDefaultBattle();
 
             // find the most recent non-default battle.
-            KPDatabaseDataSet.BattlesRow mostRecentBattle;
+            KPDatabaseODataSet.BattlesRow mostRecentBattle;
             lock (activeBattleList)
-                mostRecentBattle = (KPDatabaseDataSet.BattlesRow)activeBattleList
+                mostRecentBattle = (KPDatabaseODataSet.BattlesRow)activeBattleList
                     .Where(ab => ab.Key.DefaultBattle == false)
                     .MaxEntry(ab => ab.Value, ab => ab.Key);
 

@@ -40,7 +40,7 @@ namespace WaywardGamers.KParser.Plugin
             checkBox2.Visible = false;
         }
 
-        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
+        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseODataSet datasetToUse)
         {
             if ((e.DatasetChanges.ChatMessages.Count != 0) ||
                 (e.DatasetChanges.ChatSpeakers.Count != 0))
@@ -53,7 +53,7 @@ namespace WaywardGamers.KParser.Plugin
             return false;
         }
 
-        protected override void ProcessData(KPDatabaseDataSet dataSet)
+        protected override void ProcessData(KPDatabaseODataSet dataSet)
         {
             // Update speakers drop-down list
             foreach (var row in dataSet.ChatSpeakers)

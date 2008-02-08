@@ -24,7 +24,7 @@ namespace WaywardGamers.KParser.Plugin
             comboBox1.Left = label1.Right + 10;
             comboBox1.Items.Clear();
             comboBox1.Items.Add("All");
-            for (var action = ActionSourceType.Melee; action <= ActionSourceType.Weaponskill; action++)
+            for (var action = ActionType.Melee; action <= ActionType.Weaponskill; action++)
             {
                 comboBox1.Items.Add(action.ToString());
             }
@@ -49,7 +49,7 @@ namespace WaywardGamers.KParser.Plugin
             checkBox2.Visible = false;
         }
 
-        public override void DatabaseOpened(KPDatabaseDataSet dataSet)
+        public override void DatabaseOpened(KPDatabaseODataSet dataSet)
         {
             int allBattles = dataSet.Battles.Count(b => b.DefaultBattle == false);
 
@@ -94,7 +94,7 @@ namespace WaywardGamers.KParser.Plugin
             base.DatabaseOpened(dataSet);
         }
 
-        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
+        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseODataSet datasetToUse)
         {
             if (e.DatasetChanges.Battles.Count != 0)
             {
@@ -175,10 +175,10 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Processing sections
-        protected override void ProcessData(KPDatabaseDataSet dataSet)
+        protected override void ProcessData(KPDatabaseODataSet dataSet)
         {
             richTextBox.Clear();
-            ActionSourceType actionSourceFilter = (ActionSourceType)comboBox1.SelectedIndex;
+            ActionType actionSourceFilter = (ActionType)comboBox1.SelectedIndex;
 
             string mobFilter = comboBox2.SelectedItem.ToString();
             IEnumerable<AttackGroup> allAttacks;
@@ -200,7 +200,7 @@ namespace WaywardGamers.KParser.Plugin
                                     ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
                              group cd by cd.ActionSource into cda
                              select new AttackGroup(
-                                 (ActionSourceType)cda.Key,
+                                 (ActionType)cda.Key,
                                   from c in cda
                                   orderby c.CombatantsRowByCombatActorRelation.CombatantName
                                   group c by c.CombatantsRowByCombatActorRelation);
@@ -228,7 +228,7 @@ namespace WaywardGamers.KParser.Plugin
                                             ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
                                      group cd by cd.ActionSource into cda
                                      select new AttackGroup(
-                                         (ActionSourceType)cda.Key,
+                                         (ActionType)cda.Key,
                                           from c in cda
                                           orderby c.CombatantsRowByCombatActorRelation.CombatantName
                                           group c by c.CombatantsRowByCombatActorRelation);
@@ -251,7 +251,7 @@ namespace WaywardGamers.KParser.Plugin
                                             ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
                                      group cd by cd.ActionSource into cda
                                      select new AttackGroup(
-                                         (ActionSourceType)cda.Key,
+                                         (ActionType)cda.Key,
                                           from c in cda
                                           orderby c.CombatantsRowByCombatActorRelation.CombatantName
                                           group c by c.CombatantsRowByCombatActorRelation);
@@ -286,11 +286,11 @@ namespace WaywardGamers.KParser.Plugin
                 totalDamage += player.Value;
 
 
-            var meleeAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionSourceType.Melee);
-            var rangeAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionSourceType.Ranged);
-            var spellAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionSourceType.Spell);
-            var abilAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionSourceType.Ability);
-            var wskillAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionSourceType.Weaponskill);
+            var meleeAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Melee);
+            var rangeAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Ranged);
+            var spellAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Spell);
+            var abilAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Ability);
+            var wskillAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Weaponskill);
             //var otherAttacks = allAttacks.Where(m =>
             //    (m.ActionSource != ActionSourceType.Melee) &&
             //    (m.ActionSource != ActionSourceType.Ranged) &&
@@ -301,7 +301,7 @@ namespace WaywardGamers.KParser.Plugin
             switch (actionSourceFilter)
             {
                 // Unknown == "All"
-                case ActionSourceType.Unknown:
+                case ActionType.Unknown:
                     ProcessMeleeAttacks(meleeAttacks);
                     ProcessRangedAttacks(rangeAttacks);
                     ProcessSpellsAttacks(spellAttacks);
@@ -309,19 +309,19 @@ namespace WaywardGamers.KParser.Plugin
                     ProcessWeaponskillAttacks(wskillAttacks);
                     //ProcessOtherAttacks(otherAttacks);
                     break;
-                case ActionSourceType.Melee:
+                case ActionType.Melee:
                     ProcessMeleeAttacks(meleeAttacks);
                     break;
-                case ActionSourceType.Ranged:
+                case ActionType.Ranged:
                     ProcessRangedAttacks(rangeAttacks);
                     break;
-                case ActionSourceType.Spell:
+                case ActionType.Spell:
                     ProcessSpellsAttacks(spellAttacks);
                     break;
-                case ActionSourceType.Ability:
+                case ActionType.Ability:
                     ProcessAbilityAttacks(abilAttacks);
                     break;
-                case ActionSourceType.Weaponskill:
+                case ActionType.Weaponskill:
                     ProcessWeaponskillAttacks(wskillAttacks);
                     break;
                 default:
@@ -418,7 +418,7 @@ namespace WaywardGamers.KParser.Plugin
                             sb.Append(" ");
 
                             int addDamageHits = player.Where(h => (h.SuccessLevel == (byte)SuccessType.Successful) &&
-                                (h.ActionSource == (byte)ActionSourceType.AdditionalEffect)).Sum(b => b.Damage);
+                                (h.ActionSource == (byte)ActionType.AdditionalEffect)).Sum(b => b.Damage);
 
                             // Add. Effect damage
                             sb.Append(addDamageHits.ToString().PadLeft(7));
@@ -612,7 +612,7 @@ namespace WaywardGamers.KParser.Plugin
                             sb.Append(" ");
 
                             int addDamageHits = player.Where(h => (h.SuccessLevel == (byte)SuccessType.Successful) &&
-                                (h.ActionSource == (byte)ActionSourceType.AdditionalEffect)).Sum(b => b.Damage);
+                                (h.ActionSource == (byte)ActionType.AdditionalEffect)).Sum(b => b.Damage);
 
                             sb.Append(addDamageHits.ToString().PadRight(7));
                             sb.Append(" ");
@@ -1091,8 +1091,8 @@ namespace WaywardGamers.KParser.Plugin
 
             AppendBoldUnderText(otherHeader, Color.Black);
 
-            var counterAttacks = otherAttacks.FirstOrDefault(a => a.ActionSource == ActionSourceType.Counterattack);
-            var spikesAttacks = otherAttacks.FirstOrDefault(a => a.ActionSource == ActionSourceType.Spikes);
+            var counterAttacks = otherAttacks.FirstOrDefault(a => a.ActionSource == ActionType.Counterattack);
+            var spikesAttacks = otherAttacks.FirstOrDefault(a => a.ActionSource == ActionType.Spikes);
         }
 
         #endregion

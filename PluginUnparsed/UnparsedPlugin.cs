@@ -18,13 +18,13 @@ namespace WaywardGamers.KParser.Plugin
             richTextBox.Clear();
         }
 
-        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
+        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseODataSet datasetToUse)
         {
             datasetToUse = e.DatasetChanges;
             return true;
         }
 
-        protected override void ProcessData(KPDatabaseDataSet dataSet)
+        protected override void ProcessData(KPDatabaseODataSet dataSet)
         {
             if (dataSet.Tables.Contains("ChatLogRecord"))
             {

@@ -26,7 +26,7 @@ namespace WaywardGamers.KParser.Plugin
             radioButton1.Checked = true;
         }
 
-        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
+        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseODataSet datasetToUse)
         {
             // Only update when something in the loot table changes, or if
             // the battle tables change (ie: mob was killed)
@@ -47,7 +47,7 @@ namespace WaywardGamers.KParser.Plugin
             HandleDataset(DatabaseManager.Instance.Database);
         }
 
-        protected override void ProcessData(KPDatabaseDataSet dataSet)
+        protected override void ProcessData(KPDatabaseODataSet dataSet)
         {
             // For now, rebuild the entire page each time.
             richTextBox.Clear();

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace WaywardGamers.KParser {
     
-    public partial class KPDatabaseDataSet 
+    public partial class KPDatabaseODataSet 
     {
         public partial class BattlesDataTable{
 

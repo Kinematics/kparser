@@ -47,7 +47,7 @@ namespace WaywardGamers.KParser.Plugin
             checkBox2.Visible = false;
         }
 
-        public override void DatabaseOpened(KPDatabaseDataSet dataSet)
+        public override void DatabaseOpened(KPDatabaseODataSet dataSet)
         {
             int allBattles = dataSet.Battles.Count(b => b.DefaultBattle == false);
 
@@ -92,7 +92,7 @@ namespace WaywardGamers.KParser.Plugin
             base.DatabaseOpened(dataSet);
         }
 
-        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
+        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseODataSet datasetToUse)
         {
             if (e.DatasetChanges.Battles.Count != 0)
             {
@@ -162,7 +162,7 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Processing sections
-        protected override void ProcessData(KPDatabaseDataSet dataSet)
+        protected override void ProcessData(KPDatabaseODataSet dataSet)
         {
             richTextBox.Clear();
 
@@ -186,7 +186,7 @@ namespace WaywardGamers.KParser.Plugin
                                     ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
                              group cd by cd.ActionSource into cda
                              select new AttackGroup(
-                                 (ActionSourceType)cda.Key,
+                                 (ActionType)cda.Key,
                                   from c in cda
                                   orderby c.CombatantsRowByCombatActorRelation.CombatantName
                                   group c by c.CombatantsRowByCombatActorRelation);
@@ -215,7 +215,7 @@ namespace WaywardGamers.KParser.Plugin
                                             ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
                                      group cd by cd.ActionSource into cda
                                      select new AttackGroup(
-                                         (ActionSourceType)cda.Key,
+                                         (ActionType)cda.Key,
                                           from c in cda
                                           orderby c.CombatantsRowByCombatActorRelation.CombatantName
                                           group c by c.CombatantsRowByCombatActorRelation);
@@ -238,7 +238,7 @@ namespace WaywardGamers.KParser.Plugin
                                             ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
                                      group cd by cd.ActionSource into cda
                                      select new AttackGroup(
-                                         (ActionSourceType)cda.Key,
+                                         (ActionType)cda.Key,
                                           from c in cda
                                           orderby c.CombatantsRowByCombatActorRelation.CombatantName
                                           group c by c.CombatantsRowByCombatActorRelation);

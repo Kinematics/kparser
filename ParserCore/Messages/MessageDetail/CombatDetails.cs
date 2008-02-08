@@ -24,7 +24,7 @@ namespace WaywardGamers.KParser
         #region Properties
         internal InteractionType InteractionType { get; set; }
 
-        internal BuffType AidType { get; set; }
+        internal AidType AidType { get; set; }
 
         internal HarmType HarmType { get; set; }
 
@@ -81,7 +81,7 @@ namespace WaywardGamers.KParser
             set { if (value != null) actionName = value; }
         }
 
-        internal ActionSourceType ActionSource { get; set; }
+        internal ActionType ActionSource { get; set; }
 
         internal SuccessType SuccessLevel { get; set; }
 

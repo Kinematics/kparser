@@ -26,7 +26,7 @@ namespace WaywardGamers.KParser.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=|DataDirectory|\\KPDatabase.sdf")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=|DataDirectory|\\KPDatabaseO.sdf")]
         public string KPDatabaseConnectionString {
             get {
                 return ((string)(this["KPDatabaseConnectionString"]));

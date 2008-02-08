@@ -6,7 +6,7 @@ using System.Text;
 namespace WaywardGamers.KParser.Plugin
 {
     // For use when needing to invoke into the main messagepump thread.
-    public delegate void DatasetInvoker(KPDatabaseDataSet dataset);
+    public delegate void DatasetInvoker(KPDatabaseODataSet dataset);
 
     public interface IPlugin
     {
@@ -16,7 +16,7 @@ namespace WaywardGamers.KParser.Plugin
         void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e);
         void WatchDatabaseChanged(object sender, DatabaseWatchEventArgs e);
 
-        void DatabaseOpened(KPDatabaseDataSet dataSet);
+        void DatabaseOpened(KPDatabaseODataSet dataSet);
         void Reset();
     }
 }
