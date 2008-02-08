@@ -25,7 +25,7 @@ namespace WaywardGamers.KParser
 	{
 		System,
 		Chat,
-		Action
+		Event
 	}
 
     public enum SystemMessageType : byte
@@ -50,10 +50,11 @@ namespace WaywardGamers.KParser
         NPC
 	}
 
-    public enum ActionMessageType : byte
+    public enum EventMessageType : byte
     {
         Unknown,
-        Combat,
+        Interaction,
+        EndBattle,  // chain #, xp, loot, gains a level
         Experience,
         Loot,
         Fishing,
@@ -63,22 +64,22 @@ namespace WaywardGamers.KParser
     #endregion
 
     #region Combat detail enumerations
-    public enum CombatActionType : byte
+    public enum InteractionType : byte
     {
         Unknown,
-        Attack,
-        Buff,
+        Aid,
+        Harm,
         Death,
-        Experience,
     }
     
-    public enum AttackType : byte
+    public enum HarmType : byte
     {
         Unknown,
         Damage,
         Enfeeble,
         Drain,
         Aspir,
+        Death,
     }
 
     public enum BuffType : byte

@@ -35,13 +35,13 @@ namespace WaywardGamers.KParser
                 switch (value)
                 {
                     case MessageCategoryType.Chat:
-                        ChatDetails = new NewChatDetails();
+                        ChatDetails = new ChatDetails();
                         break;
                     case MessageCategoryType.System:
-                        SystemDetails = new NewSystemDetails();
+                        SystemDetails = new SystemDetails();
                         break;
-                    case MessageCategoryType.Action:
-                        ActionDetails = new NewActionDetails();
+                    case MessageCategoryType.Event:
+                        EventDetails = new EventDetails();
                         break;
                 }
 
@@ -67,11 +67,11 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Details Properties -- only created when MessageCateogory is set.
-        internal NewChatDetails ChatDetails { get; private set; }
+        internal ChatDetails ChatDetails { get; private set; }
 
-        internal NewSystemDetails SystemDetails { get; private set; }
+        internal SystemDetails SystemDetails { get; private set; }
 
-        internal NewActionDetails ActionDetails { get; private set; }
+        internal EventDetails EventDetails { get; private set; }
         #endregion
 
         #region Text Grouping
@@ -180,8 +180,8 @@ namespace WaywardGamers.KParser
                 sb.Append(SystemDetails.ToString());
             if (ChatDetails != null)
                 sb.Append(ChatDetails.ToString());
-            if (ActionDetails != null)
-                sb.Append(ActionDetails.ToString());
+            if (EventDetails != null)
+                sb.Append(EventDetails.ToString());
 
             sb.Append("\n");
 

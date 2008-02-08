@@ -5,7 +5,7 @@ using System.Text;
 
 namespace WaywardGamers.KParser
 {
-    internal class NewExperienceDetails
+    internal class ExperienceDetails
     {
         #region Member Variables
         // experience type? (ie: xp or limit points)

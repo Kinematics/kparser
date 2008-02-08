@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace WaywardGamers.KParser
 {
-    internal class NewCombatDetails
+    internal class CombatDetails
     {
         #region member Variables
         string actorName = string.Empty;
@@ -15,18 +15,18 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Constructor
-        internal NewCombatDetails()
+        internal CombatDetails()
         {
-            Targets = new List<NewTargetDetails>();
+            Targets = new List<TargetDetails>();
         }
         #endregion
 
         #region Properties
-        internal CombatActionType CombatCategory { get; set; }
+        internal InteractionType InteractionType { get; set; }
 
-        internal BuffType BuffType { get; set; }
+        internal BuffType AidType { get; set; }
 
-        internal AttackType AttackType { get; set; }
+        internal HarmType HarmType { get; set; }
 
         internal FailedActionType FailedActionType { get; set; }
 
@@ -68,9 +68,9 @@ namespace WaywardGamers.KParser
         internal EntityType ActorEntityType { get; set; }
 
 
-        internal List<NewTargetDetails> Targets { get; private set; }
+        internal List<TargetDetails> Targets { get; private set; }
 
-        internal NewTargetDetails CurrentTarget { get; set; }
+        internal TargetDetails CurrentTarget { get; set; }
 
 
         internal bool IsPreparing { get; set; }
@@ -90,9 +90,9 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Methods
-        internal NewTargetDetails AddTarget(string targetName)
+        internal TargetDetails AddTarget(string targetName)
         {
-            CurrentTarget = new NewTargetDetails(targetName);
+            CurrentTarget = new TargetDetails(targetName);
             Targets.Add(CurrentTarget);
             return CurrentTarget;
         }
@@ -113,14 +113,14 @@ namespace WaywardGamers.KParser
             sb.AppendFormat("    Success Level: {0}\n", SuccessLevel);
             sb.AppendFormat("    Action Name: {0}\n", ActionName);
             sb.AppendFormat("    IsPreparing: {0}\n", IsPreparing);
-            sb.AppendFormat("    Combat Category: {0}\n", CombatCategory);
-            sb.AppendFormat("    Attack Type: {0}\n", AttackType);
-            sb.AppendFormat("    Buff Type: {0}\n", BuffType);
+            sb.AppendFormat("    Combat Category: {0}\n", InteractionType);
+            sb.AppendFormat("    Attack Type: {0}\n", HarmType);
+            sb.AppendFormat("    Buff Type: {0}\n", AidType);
             sb.AppendFormat("    Action Source: {0}\n", ActionSource);
             sb.AppendFormat("    Failed Action Type: {0}\n", FailedActionType);
             sb.AppendFormat("    Is Crit: {0}\n", FlagCrit);
 
-            foreach (NewTargetDetails target in Targets)
+            foreach (TargetDetails target in Targets)
                 sb.Append(target.ToString());
 
             return sb.ToString();

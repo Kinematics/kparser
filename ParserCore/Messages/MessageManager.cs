@@ -146,8 +146,8 @@ namespace WaywardGamers.KParser
             {
                 // Reverse search the collection list
                 msg = messageCollection.LastOrDefault(m =>
-                    ((m.MessageID == eventNumber) && (m.ActionDetails != null) && (m.ActionDetails.CombatDetails != null) &&
-                    (m.ActionDetails.CombatDetails.ActorName != string.Empty)));
+                    ((m.MessageID == eventNumber) && (m.EventDetails != null) && (m.EventDetails.CombatDetails != null) &&
+                    (m.EventDetails.CombatDetails.ActorName != string.Empty)));
             }
 
             return msg;
@@ -168,8 +168,8 @@ namespace WaywardGamers.KParser
             {
                 // Reverse search the collection list
                 msg = messageCollection.LastOrDefault(m =>
-                    ((m.MessageCode == code) && (m.ActionDetails != null) && (m.ActionDetails.CombatDetails != null) &&
-                    (m.ActionDetails.CombatDetails.ActorName != string.Empty)));
+                    ((m.MessageCode == code) && (m.EventDetails != null) && (m.EventDetails.CombatDetails != null) &&
+                    (m.EventDetails.CombatDetails.ActorName != string.Empty)));
             }
 
             return msg;
@@ -293,14 +293,14 @@ namespace WaywardGamers.KParser
             if (msg == null)
                 return;
 
-            if (msg.ActionDetails == null)
+            if (msg.EventDetails == null)
                 return;
 
-            if (msg.ActionDetails.CombatDetails == null)
+            if (msg.EventDetails.CombatDetails == null)
                 return;
 
             // Update base actor name
-            string name = msg.ActionDetails.CombatDetails.ActorName;
+            string name = msg.EventDetails.CombatDetails.ActorName;
             bool update = true;
 
             if (name != string.Empty)
@@ -313,13 +313,13 @@ namespace WaywardGamers.KParser
                         // of that same named mob as a mob, enter it as a mob and add the special
                         // version name as a pet.
                         if ((entityCollection[name] == EntityType.Pet) &&
-                            (msg.ActionDetails.CombatDetails.ActorEntityType == EntityType.Mob))
+                            (msg.EventDetails.CombatDetails.ActorEntityType == EntityType.Mob))
                         {
                             entityCollection[name] = EntityType.Mob;
                             AddPetEntity(name);
                         }
                         else if ((entityCollection[name] == EntityType.Mob) &&
-                            (msg.ActionDetails.CombatDetails.ActorEntityType == EntityType.Pet))
+                            (msg.EventDetails.CombatDetails.ActorEntityType == EntityType.Pet))
                         {
                             AddPetEntity(name);
                         }
@@ -329,11 +329,11 @@ namespace WaywardGamers.KParser
                 }
 
                 if (update == true)
-                    entityCollection[name] = msg.ActionDetails.CombatDetails.ActorEntityType;
+                    entityCollection[name] = msg.EventDetails.CombatDetails.ActorEntityType;
             }
 
             // Update all target names
-            foreach (NewTargetDetails target in msg.ActionDetails.CombatDetails.Targets)
+            foreach (TargetDetails target in msg.EventDetails.CombatDetails.Targets)
             {
                 name = target.Name;
                 update = true;

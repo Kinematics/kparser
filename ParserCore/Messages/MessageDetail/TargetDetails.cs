@@ -6,14 +6,14 @@ using System.Text.RegularExpressions;
 
 namespace WaywardGamers.KParser
 {
-    internal class NewTargetDetails
+    internal class TargetDetails
     {
         #region Member Variables
         string targetName = string.Empty;
         #endregion
 
         #region Constructor
-        internal NewTargetDetails(string newTargetName)
+        internal TargetDetails(string newTargetName)
         {
             if (newTargetName == null)
                 throw new ArgumentNullException("newTargetName");

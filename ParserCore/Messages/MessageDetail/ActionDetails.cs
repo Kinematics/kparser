@@ -5,10 +5,10 @@ using System.Text;
 
 namespace WaywardGamers.KParser
 {
-    internal class NewActionDetails
+    internal class EventDetails
     {
         #region Member Variables
-        ActionMessageType actionMessageType;
+        EventMessageType eventMessageType;
         #endregion
 
         #region Properties
@@ -16,35 +16,35 @@ namespace WaywardGamers.KParser
         /// Gets and sets the action message type.  When set, creates the
         /// appropriate class for further reference.
         /// </summary>
-        internal ActionMessageType ActionMessageType
+        internal EventMessageType EventMessageType
         {
-            get { return actionMessageType; }
+            get { return eventMessageType; }
             set {
 
-                if (actionMessageType == value)
+                if (eventMessageType == value)
                     return;
 
                 switch (value)
                 {
-                    case ActionMessageType.Combat:
-                        CombatDetails = new NewCombatDetails();
+                    case EventMessageType.Interaction:
+                        CombatDetails = new CombatDetails();
                         break;
-                    case ActionMessageType.Loot:
+                    case EventMessageType.Loot:
                         LootDetails = new LootDetails();
                         break;
-                    case ActionMessageType.Experience:
-                        ExperienceDetails = new NewExperienceDetails();
+                    case EventMessageType.Experience:
+                        ExperienceDetails = new ExperienceDetails();
                         break;
                 }
                 
-                actionMessageType = value;
+                eventMessageType = value;
             }
         }
 
         /// <summary>
         /// Gets the combat details for this action details object.
         /// </summary>
-        internal NewCombatDetails CombatDetails { get; private set; }
+        internal CombatDetails CombatDetails { get; private set; }
 
         /// <summary>
         /// Gets the loot details for this action details object.
@@ -54,7 +54,7 @@ namespace WaywardGamers.KParser
         /// <summary>
         /// Gets the experience details for this action details object.
         /// </summary>
-        internal NewExperienceDetails ExperienceDetails { get; private set; }
+        internal ExperienceDetails ExperienceDetails { get; private set; }
         #endregion
 
         #region Overrides
@@ -63,13 +63,13 @@ namespace WaywardGamers.KParser
             StringBuilder sb = new StringBuilder();
 
             sb.AppendFormat("Action Details:\n");
-            sb.AppendFormat("  Action Message Type: {0}\n", ActionMessageType);
+            sb.AppendFormat("  Action Message Type: {0}\n", EventMessageType);
 
-            if (ActionMessageType == ActionMessageType.Combat)
+            if (EventMessageType == EventMessageType.Interaction)
                 sb.Append(CombatDetails.ToString());
-            if (ActionMessageType == ActionMessageType.Loot)
+            if (EventMessageType == EventMessageType.Loot)
                 sb.Append(LootDetails.ToString());
-            if (ActionMessageType == ActionMessageType.Experience)
+            if (EventMessageType == EventMessageType.Experience)
                 sb.Append(ExperienceDetails.ToString());
 
 

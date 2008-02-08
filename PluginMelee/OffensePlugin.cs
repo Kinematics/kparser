@@ -191,7 +191,7 @@ namespace WaywardGamers.KParser.Plugin
             {
                 allAttacks = from cd in dataSet.CombatDetails
                              where ((cd.IsActorIDNull() == false) &&
-                                    (cd.AttackType == (byte)AttackType.Damage) &&
+                                    (cd.AttackType == (byte)HarmType.Damage) &&
                                     ((cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Player) ||
                                      (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Pet) ||
                                      (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Fellow) ||
@@ -218,7 +218,7 @@ namespace WaywardGamers.KParser.Plugin
                         // Name only
                         allAttacks = from cd in dataSet.CombatDetails
                                      where ((cd.IsActorIDNull() == false) &&
-                                            (cd.AttackType == (byte)AttackType.Damage) &&
+                                            (cd.AttackType == (byte)HarmType.Damage) &&
                                             ((cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Player) ||
                                              (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Pet) ||
                                              (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Fellow) ||
@@ -240,7 +240,7 @@ namespace WaywardGamers.KParser.Plugin
 
                         allAttacks = from cd in dataSet.CombatDetails
                                      where ((cd.IsActorIDNull() == false) &&
-                                            (cd.AttackType == (byte)AttackType.Damage) &&
+                                            (cd.AttackType == (byte)HarmType.Damage) &&
                                             ((cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Player) ||
                                              (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Pet) ||
                                              (cd.CombatantsRowByCombatActorRelation.CombatantType == (byte)EntityType.Fellow) ||
