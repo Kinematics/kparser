@@ -7,6 +7,9 @@ namespace WaywardGamers.KParser
 
     public partial class KPDatabaseDataSet
     {
+        /// <summary>
+        /// Extensions for the Battles table.
+        /// </summary>
         public partial class BattlesDataTable
         {
 
@@ -26,6 +29,9 @@ namespace WaywardGamers.KParser
             }
         }
 
+        /// <summary>
+        /// Extensions for the Battle rows.
+        /// </summary>
         public partial class BattlesRow
         {
             public int BaseExperience()
@@ -76,6 +82,9 @@ namespace WaywardGamers.KParser
             }
         }
 
+        /// <summary>
+        /// Extensions for the Combatants table.
+        /// </summary>
         public partial class CombatantsDataTable
         {
             public CombatantsRow FindCombatantByName(string name)
@@ -161,6 +170,9 @@ namespace WaywardGamers.KParser
             }
         }
 
+        /// <summary>
+        /// Extensions for the Items table.
+        /// </summary>
         public partial class ItemsDataTable
         {
             public ItemsRow FindByItemName(string itemName)
@@ -185,6 +197,9 @@ namespace WaywardGamers.KParser
             }
         }
 
+        /// <summary>
+        /// Extensions for the Actions table.
+        /// </summary>
         public partial class ActionsDataTable
         {
             public ActionsRow FindByActionName(string actionName)
@@ -206,6 +221,33 @@ namespace WaywardGamers.KParser
                 }
 
                 return action;
+            }
+        }
+
+        /// <summary>
+        /// Extensions for the ChatSpeakers table.
+        /// </summary>
+        public partial class ChatSpeakersDataTable
+        {
+            public ChatSpeakersRow FindBySpeakerName(string speakerName)
+            {
+                return this.SingleOrDefault(cs => cs.SpeakerName == speakerName);
+            }
+
+            public ChatSpeakersRow GetSpeaker(string speakerName)
+            {
+                ChatSpeakersRow speaker = null;
+
+                if (speakerName != string.Empty)
+                {
+                    // Get the row for the action name
+                    speaker = FindBySpeakerName(speakerName);
+
+                    if (speaker == null)
+                        speaker = AddChatSpeakersRow(speakerName);
+                }
+
+                return speaker;
             }
         }
     }

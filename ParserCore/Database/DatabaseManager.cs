@@ -415,51 +415,31 @@ namespace WaywardGamers.KParser
                 return;
             }
 
-            // Ignore system messages
-            if (message.MessageCategory == MessageCategoryType.System)
+            // Call functions depending on type of message.
+            switch (message.MessageCategory)
             {
-                return;
-            }
-
-            // Add chat messages to chat table, update speakers table.
-            if (message.MessageCategory == MessageCategoryType.Chat)
-            {
-                var chatSpeakerRow = localDB.ChatSpeakers.SingleOrDefault(sp => sp.SpeakerName == message.ChatDetails.ChatSpeakerName);
-                if (chatSpeakerRow == null)
-                    chatSpeakerRow = localDB.ChatSpeakers.AddChatSpeakersRow(message.ChatDetails.ChatSpeakerName);
-
-                localDB.ChatMessages.AddChatMessagesRow(message.Timestamp, (byte)message.ChatDetails.ChatMessageType,
-                     chatSpeakerRow, message.CompleteMessageText);
-
-                return;
-            }
-
-
-            // From here on are action messages.
-            if (message.MessageCategory == MessageCategoryType.Event)
-            {
-
-                // If this is a loot or experience message it needs to be attached to the most recently killed battle.
-
-                if (message.EventDetails.EventMessageType == EventMessageType.Experience)
-                {
-                    InsertExperience(message);
-                    return;
-                }
-
-                if (message.EventDetails.EventMessageType == EventMessageType.Loot)
-                {
-                    InsertLoot(message);
-                    return;
-                }
-
-                if (message.EventDetails.EventMessageType == EventMessageType.Interaction)
-                {
-                    InsertCombat(message);
-                    return;
-                }
-
-                // Other message types (fishing, crafting, etc) are ignored.
+                case MessageCategoryType.Chat:
+                    InsertChat(message);
+                    break;
+                case MessageCategoryType.Event:
+                    // If this is a loot or experience message it needs to be attached to the most recently killed battle.
+                    switch (message.EventDetails.EventMessageType)
+                    {
+                        case EventMessageType.Experience:
+                            InsertExperience(message);
+                            break;
+                        case EventMessageType.Loot:
+                            InsertLoot(message);
+                            break;
+                        case EventMessageType.Interaction:
+                            InsertCombat2(message);
+                            break;
+                    }
+                    // Other message types (fishing, crafting, etc) are ignored.
+                    break;
+                case MessageCategoryType.System:
+                    // Ignore system messages
+                    break;
             }
         }
 
@@ -490,14 +470,29 @@ namespace WaywardGamers.KParser
         }
 
         /// <summary>
-        /// Subset code for adding experience info to battles.
+        /// Add chat messages to database.
+        /// </summary>
+        /// <param name="message">Chat message to add.</param>
+        private void InsertChat(Message message)
+        {
+            var chatSpeakerRow = localDB.ChatSpeakers.GetSpeaker(message.ChatDetails.ChatSpeakerName);
+
+            localDB.ChatMessages.AddChatMessagesRow(message.Timestamp, (byte)message.ChatDetails.ChatMessageType,
+                 chatSpeakerRow, message.CompleteMessageText);
+        }
+
+        /// <summary>
+        /// Update battles with experience info.
         /// </summary>
         /// <param name="message">The message containing experience data.</param>
         private void InsertExperience(Message message)
         {
             if ((lastFinishedBattle == null) || (lastFinishedBattle.ExperiencePoints != 0))
-                lastFinishedBattle = localDB.Battles.AddBattlesRow(null, message.Timestamp,
-                    message.Timestamp, true, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
+                lastFinishedBattle = localDB.Battles.AddBattlesRow(null,
+                    message.Timestamp, message.Timestamp, true,
+                    null, (byte)ActorType.Unknown,
+                    0, 0, // XP Points & Chain
+                    (byte)MobDifficulty.Unknown, false);
 
             lastFinishedBattle.ExperiencePoints = message.EventDetails.ExperienceDetails.ExperiencePoints;
             lastFinishedBattle.ExperienceChain = message.EventDetails.ExperienceDetails.ExperienceChain;
@@ -527,7 +522,8 @@ namespace WaywardGamers.KParser
                     var mobCombatant = localDB.Combatants.GetCombatant(message.EventDetails.LootDetails.MobName, EntityType.Mob);
 
                     lastKill = localDB.Battles.AddBattlesRow(mobCombatant, message.Timestamp,
-                        message.Timestamp, true, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
+                        message.Timestamp, true, null, (byte)ActorType.Unknown, 0, 0,
+                        (byte)MobDifficulty.Unknown, false);
 
                     lastKilledList[message.EventDetails.LootDetails.MobName] = lastKill;
                 }
@@ -553,11 +549,10 @@ namespace WaywardGamers.KParser
                     var lootEntries = itemRow.GetLootRows();
                     KPDatabaseDataSet.LootRow lootEntry = null;
 
-                    // If there are any loot entries of the given type, search for an unclaimed one
                     if (lootEntries != null)
                     {
-                        // Of that list, find the last one where no one has claimed it and it hasn't been lost
-                        lootEntry = localDB.Loot.LastOrDefault(l => l.Lost == false && l.CombatantsRow == null);
+                        // If there are any loot entries of the given type, search for an unclaimed one
+                        lootEntry = lootEntries.FirstOrDefault(l => l.Lost == false && l.CombatantsRow == null);
                     }
 
                     // If there is no (free) loot entry, create a new one.
@@ -674,7 +669,7 @@ namespace WaywardGamers.KParser
                             (byte)ActorType.Unknown,
                             message.EventDetails.CombatDetails.IsPreparing,
                             action,
-                            (byte)message.EventDetails.CombatDetails.ActionSource,
+                            (byte)message.EventDetails.CombatDetails.ActionType,
                             (byte)message.EventDetails.CombatDetails.FailedActionType,
                             (byte)DefenseType.None, 0,
                             (byte)message.EventDetails.CombatDetails.AidType,
@@ -726,7 +721,7 @@ namespace WaywardGamers.KParser
                                 (byte)ActorType.Unknown,
                                 message.EventDetails.CombatDetails.IsPreparing,
                                 action,
-                                (byte)message.EventDetails.CombatDetails.ActionSource,
+                                (byte)message.EventDetails.CombatDetails.ActionType,
                                 (byte)message.EventDetails.CombatDetails.FailedActionType,
                                 (byte)target.DefenseType,
                                 target.ShadowsUsed,
@@ -773,7 +768,7 @@ namespace WaywardGamers.KParser
                                 (byte)ActorType.Unknown,
                                 message.EventDetails.CombatDetails.IsPreparing,
                                 action,
-                                (byte)message.EventDetails.CombatDetails.ActionSource,
+                                (byte)message.EventDetails.CombatDetails.ActionType,
                                 (byte)message.EventDetails.CombatDetails.FailedActionType,
                                 (byte)target.DefenseType,
                                 target.ShadowsUsed,
@@ -829,7 +824,7 @@ namespace WaywardGamers.KParser
                             (byte)ActorType.Unknown,
                             message.EventDetails.CombatDetails.IsPreparing,
                             action,
-                            (byte)message.EventDetails.CombatDetails.ActionSource,
+                            (byte)message.EventDetails.CombatDetails.ActionType,
                             (byte)message.EventDetails.CombatDetails.FailedActionType,
                             (byte)DefenseType.None,
                             0,
@@ -906,7 +901,7 @@ namespace WaywardGamers.KParser
                             (byte)ActorType.Unknown,
                             message.EventDetails.CombatDetails.IsPreparing,
                             action,
-                            (byte)message.EventDetails.CombatDetails.ActionSource,
+                            (byte)message.EventDetails.CombatDetails.ActionType,
                             (byte)message.EventDetails.CombatDetails.FailedActionType,
                             (byte)target.DefenseType,
                             target.ShadowsUsed,
@@ -944,7 +939,7 @@ namespace WaywardGamers.KParser
                             (byte)ActorType.Unknown,
                             message.EventDetails.CombatDetails.IsPreparing,
                             action,
-                            (byte)message.EventDetails.CombatDetails.ActionSource,
+                            (byte)message.EventDetails.CombatDetails.ActionType,
                             (byte)message.EventDetails.CombatDetails.FailedActionType,
                             (byte)DefenseType.None,
                             0,
@@ -963,6 +958,159 @@ namespace WaywardGamers.KParser
             }
         }
 
+        private void InsertCombat2(Message message)
+        {
+            // Handle death events separately
+            if (message.EventDetails.CombatDetails.HarmType == HarmType.Death)
+            {
+                ProcessDeath(message);
+                return;
+            }
+
+            KPDatabaseDataSet.CombatantsRow actor = null;
+            KPDatabaseDataSet.BattlesRow battle = null;
+            KPDatabaseDataSet.ActionsRow action = null;
+
+            // Get the actor combatant, if any.
+            actor = localDB.Combatants.GetCombatant(message.EventDetails.CombatDetails.ActorName,
+                message.EventDetails.CombatDetails.ActorEntityType);
+
+            // Get the action row, if any is applicable to the message.
+            action = localDB.Actions.GetAction(message.EventDetails.CombatDetails.ActionName);
+
+            // Get the battle (if any) this interaction is associated with.
+            if (message.EventDetails.CombatDetails.Targets.Count == 0)
+            {
+                // No targets, so preparing a move
+
+                if (message.EventDetails.CombatDetails.ActorEntityType == EntityType.Mob)
+                {
+                    // If a mob is taking action, look it up in the battle list, or
+                    // create a new battle for it.
+
+                    battle = activeMobBattleList[message.EventDetails.CombatDetails.ActorName];
+
+                    if (battle == null)
+                    {
+                        battle = localDB.Battles.AddBattlesRow(actor, message.Timestamp,
+                            MagicNumbers.MinSQLDateTime, false, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
+
+                        activeMobBattleList[message.EventDetails.CombatDetails.ActorName] = battle;
+                    }
+                }
+                else
+                {
+                    // If a player is taking action, put this in the most
+                    // recent active battle.
+                    battle = MostRecentActiveBattle();
+                }
+            }
+            else
+            {
+                // Ok, in this case there are targets
+                if (message.EventDetails.CombatDetails.ActorEntityType == EntityType.Mob)
+                {
+                    if (activeMobBattleList.Keys.Contains(message.EventDetails.CombatDetails.ActorName))
+                        battle = activeMobBattleList[message.EventDetails.CombatDetails.ActorName];
+
+                    // If there is none, create a new battle.
+                    // If it's one mob buffing another, assume this is a link and must be
+                    // considered the start of a new battle.
+                    if (battle == null)
+                    {
+                        battle = localDB.Battles.AddBattlesRow(actor, message.Timestamp,
+                            MagicNumbers.MinSQLDateTime, false, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
+
+                        activeMobBattleList[message.EventDetails.CombatDetails.ActorName] = battle;
+                    }
+                }
+            }
+
+            if (battle != null)
+            {
+                // Update the most recent activity record for this fight.
+                lock (activeBattleList)
+                    activeBattleList[battle] = message.Timestamp;
+            }
+
+            if (message.EventDetails.CombatDetails.Targets.Count == 0)
+            {
+                localDB.Interactions.AddInteractionsRow(
+                    message.Timestamp,
+                    actor,
+                    null, // no target
+                    battle,
+                    (byte)message.EventDetails.CombatDetails.ActorType,
+                    message.EventDetails.CombatDetails.IsPreparing,
+                    action,
+                    (byte)message.EventDetails.CombatDetails.ActionType,
+                    (byte)message.EventDetails.CombatDetails.FailedActionType,
+                    (byte)DefenseType.None,
+                    0,
+                    (byte)message.EventDetails.CombatDetails.AidType,
+                    (byte)RecoveryType.None,
+                    (byte)message.EventDetails.CombatDetails.HarmType,
+                    0,
+                    (byte)DamageModifier.None,
+                    (byte)AidType.Unknown,
+                    (byte)RecoveryType.None,
+                    (byte)HarmType.Unknown,
+                    0);
+
+            }
+            else
+            {
+
+                foreach (var target in message.EventDetails.CombatDetails.Targets)
+                {
+                    // Get database row for target combatant.
+                    var targetRow = localDB.Combatants.GetCombatant(target.Name, target.EntityType);
+
+                    // Get the battle each time through the loop if the targets are mobs.
+                    if (target.EntityType == EntityType.Mob)
+                    {
+                        if (activeMobBattleList.Keys.Contains(target.Name))
+                        {
+                            battle = activeMobBattleList[target.Name];
+                        }
+                        else
+                        {
+                            battle = localDB.Battles.AddBattlesRow(targetRow, message.Timestamp,
+                                MagicNumbers.MinSQLDateTime, false, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
+
+                            activeMobBattleList[target.Name] = battle;
+                        }
+
+                        // Update the most recent activity record for the fight.
+                        lock (activeBattleList)
+                            activeBattleList[battle] = message.Timestamp;
+                    }
+
+                    localDB.Interactions.AddInteractionsRow(
+                        message.Timestamp,
+                        actor,
+                        targetRow,
+                        battle,
+                        (byte)message.EventDetails.CombatDetails.ActorType,
+                        message.EventDetails.CombatDetails.IsPreparing,
+                        action,
+                        (byte)message.EventDetails.CombatDetails.ActionType,
+                        (byte)target.FailedActionType,
+                        (byte)target.DefenseType,
+                        target.ShadowsUsed,
+                        (byte)target.AidType,
+                        (byte)target.RecoveryType,
+                        (byte)target.HarmType,
+                        target.Amount,
+                        (byte)target.DamageModifier,
+                        (byte)target.SecondaryAidType,
+                        (byte)target.SecondaryRecoveryType,
+                        (byte)target.SecondaryHarmType,
+                        target.SecondaryAmount);
+                }
+            }
+        }
+
         private void ProcessDeath(Message message)
         {
             KPDatabaseDataSet.CombatantsRow actor = null;
@@ -972,16 +1120,12 @@ namespace WaywardGamers.KParser
             if ((message.EventDetails.CombatDetails.Targets == null) || (message.EventDetails.CombatDetails.Targets.Count == 0))
                 return;
 
-            // If no actor name give, target just "fell to the ground".
+            // If no actor name given, target just "fell to the ground".
             if (message.EventDetails.CombatDetails.ActorName != string.Empty)
             {
                 // Determine the acting combatant for this event
-                actor = localDB.Combatants.FindByNameAndType(message.EventDetails.CombatDetails.ActorName,
+                actor = localDB.Combatants.GetCombatant(message.EventDetails.CombatDetails.ActorName,
                     message.EventDetails.CombatDetails.ActorEntityType);
-
-                if (actor == null)
-                    actor = localDB.Combatants.AddCombatantsRow(message.EventDetails.CombatDetails.ActorName,
-                        (byte)message.EventDetails.CombatDetails.ActorEntityType, null);
             }
 
             if (actor.CombatantType == (byte)EntityType.Mob)
@@ -1013,7 +1157,7 @@ namespace WaywardGamers.KParser
                         (byte)ActorType.Unknown,
                         message.EventDetails.CombatDetails.IsPreparing,
                         null,
-                        (byte)message.EventDetails.CombatDetails.ActionSource,
+                        (byte)message.EventDetails.CombatDetails.ActionType,
                         (byte)message.EventDetails.CombatDetails.FailedActionType,
                         (byte)target.DefenseType,
                         target.ShadowsUsed,
@@ -1030,10 +1174,9 @@ namespace WaywardGamers.KParser
             }
 
 
-            if ((message.EventDetails.CombatDetails.ActorEntityType == EntityType.Player) ||
-                (message.EventDetails.CombatDetails.ActorEntityType == EntityType.Pet))
+            if (message.EventDetails.CombatDetails.ActorEntityType != EntityType.Mob)
             {
-                // Processing players killing mobs
+                // Processing players/pets/etc killing mobs
 
                 foreach (var target in message.EventDetails.CombatDetails.Targets)
                 {
@@ -1072,7 +1215,7 @@ namespace WaywardGamers.KParser
                         (byte)ActorType.Unknown,
                         message.EventDetails.CombatDetails.IsPreparing,
                         null,
-                        (byte)message.EventDetails.CombatDetails.ActionSource,
+                        (byte)message.EventDetails.CombatDetails.ActionType,
                         (byte)message.EventDetails.CombatDetails.FailedActionType,
                         (byte)target.DefenseType,
                         target.ShadowsUsed,
@@ -1125,7 +1268,7 @@ namespace WaywardGamers.KParser
                                 (byte)ActorType.Unknown,
                                 message.EventDetails.CombatDetails.IsPreparing,
                                 null,
-                                (byte)message.EventDetails.CombatDetails.ActionSource,
+                                (byte)message.EventDetails.CombatDetails.ActionType,
                                 (byte)message.EventDetails.CombatDetails.FailedActionType,
                                 (byte)target.DefenseType,
                                 target.ShadowsUsed,
@@ -1161,7 +1304,7 @@ namespace WaywardGamers.KParser
                                 (byte)ActorType.Unknown,
                                 message.EventDetails.CombatDetails.IsPreparing,
                                 null,
-                                (byte)message.EventDetails.CombatDetails.ActionSource,
+                                (byte)message.EventDetails.CombatDetails.ActionType,
                                 (byte)message.EventDetails.CombatDetails.FailedActionType,
                                 (byte)target.DefenseType,
                                 target.ShadowsUsed,
