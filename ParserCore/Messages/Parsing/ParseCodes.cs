@@ -9,7 +9,7 @@ namespace WaywardGamers.KParser
     {
         #region Member lookup variables
         private Dictionary<uint, InteractionType> interactionTypeLookup;
-        private Dictionary<uint, BuffType> aidTypeLookup;
+        private Dictionary<uint, AidType> aidTypeLookup;
         private Dictionary<uint, HarmType> harmTypeLookup;
         private Dictionary<uint, SuccessType> successTypeLookup;
         #endregion
@@ -96,25 +96,25 @@ namespace WaywardGamers.KParser
 
         private void InitAidTypeLookup()
         {
-            aidTypeLookup = new Dictionary<uint, BuffType>();
+            aidTypeLookup = new Dictionary<uint, AidType>();
 
             // Prepping spell
-            aidTypeLookup[0x34] = BuffType.Enhance;
+            aidTypeLookup[0x34] = AidType.Enhance;
             // Enhance target
-            aidTypeLookup[0x38] = BuffType.Enhance;
-            aidTypeLookup[0x3b] = BuffType.Enhance; // failed
-            aidTypeLookup[0x3c] = BuffType.Enhance;
-            aidTypeLookup[0x40] = BuffType.Enhance;
+            aidTypeLookup[0x38] = AidType.Enhance;
+            aidTypeLookup[0x3b] = AidType.Enhance; // failed
+            aidTypeLookup[0x3c] = AidType.Enhance;
+            aidTypeLookup[0x40] = AidType.Enhance;
             // Enhance self
-            aidTypeLookup[0x65] = BuffType.Enhance;
-            aidTypeLookup[0x6a] = BuffType.Enhance;
-            aidTypeLookup[0x6f] = BuffType.Enhance;
+            aidTypeLookup[0x65] = AidType.Enhance;
+            aidTypeLookup[0x6a] = AidType.Enhance;
+            aidTypeLookup[0x6f] = AidType.Enhance;
 
-            aidTypeLookup[0x1e] = BuffType.Recovery; // drain samba
-            aidTypeLookup[0x1f] = BuffType.Recovery;
-            aidTypeLookup[0x2b] = BuffType.Recovery;
+            aidTypeLookup[0x1e] = AidType.Recovery; // drain samba
+            aidTypeLookup[0x1f] = AidType.Recovery;
+            aidTypeLookup[0x2b] = AidType.Recovery;
 
-            aidTypeLookup[0x5a] = BuffType.Item;
+            aidTypeLookup[0x5a] = AidType.Item;
         }
 
         private void InitHarmTypeLookup()
@@ -230,12 +230,12 @@ namespace WaywardGamers.KParser
                 return InteractionType.Unknown;
         }
 
-        internal BuffType GetAidType(uint messageCode)
+        internal AidType GetAidType(uint messageCode)
         {
             if (aidTypeLookup.ContainsKey(messageCode))
                 return aidTypeLookup[messageCode];
             else
-                return BuffType.Unknown;
+                return AidType.Unknown;
         }
 
         internal HarmType GetHarmType(uint messageCode)

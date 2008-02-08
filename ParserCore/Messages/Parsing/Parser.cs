@@ -568,7 +568,7 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.CastSpell.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
-                msgCombatDetails.ActionSource = ActionSourceType.Spell;
+                msgCombatDetails.ActionSource = ActionType.Spell;
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                 message.ParseSuccessful = true;
@@ -579,7 +579,7 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
-                msgCombatDetails.ActionSource = ActionSourceType.Ability;
+                msgCombatDetails.ActionSource = ActionType.Ability;
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                 message.ParseSuccessful = true;
@@ -590,7 +590,7 @@ namespace WaywardGamers.KParser.Parsing
             // Break down the results of the spell/ability
             switch (msgCombatDetails.AidType)
             {
-                case BuffType.Enhance:
+                case AidType.Enhance:
                     // eg: Target gains the effect of Protect.
                     combatMatch = ParseExpressions.Buff.Match(currentMessageText);
                     if (combatMatch.Success == true)
@@ -643,7 +643,7 @@ namespace WaywardGamers.KParser.Parsing
                         return;
                     }
                     break;
-                case BuffType.Recovery:
+                case AidType.Recovery:
                     combatMatch = ParseExpressions.RecoversHP.Match(currentMessageText);
                     if (combatMatch.Success == true)
                     {
@@ -685,13 +685,13 @@ namespace WaywardGamers.KParser.Parsing
                         return;
                     }
                     break;
-                case BuffType.Unknown:
+                case AidType.Unknown:
                     // For prepping buffing spells or abilities (do we need this?)
                     combatMatch = ParseExpressions.PrepSpell.Match(currentMessageText);
                     if (combatMatch.Success == true)
                     {
                         msgCombatDetails.IsPreparing = true;
-                        msgCombatDetails.ActionSource = ActionSourceType.Spell;
+                        msgCombatDetails.ActionSource = ActionType.Spell;
                         msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                         msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                         target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
@@ -705,9 +705,9 @@ namespace WaywardGamers.KParser.Parsing
                         msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                         msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                         if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
-                            msgCombatDetails.ActionSource = ActionSourceType.Weaponskill;
+                            msgCombatDetails.ActionSource = ActionType.Weaponskill;
                         else
-                            msgCombatDetails.ActionSource = ActionSourceType.Ability;
+                            msgCombatDetails.ActionSource = ActionType.Ability;
                         message.ParseSuccessful = true;
                         return;
                     }
@@ -760,7 +760,7 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.IsPreparing = true;
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                msgCombatDetails.ActionSource = ActionSourceType.Spell;
+                msgCombatDetails.ActionSource = ActionType.Spell;
                 message.ParseSuccessful = true;
                 return;
             }
@@ -771,7 +771,7 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.IsPreparing = true;
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                msgCombatDetails.ActionSource = ActionSourceType.Spell;
+                msgCombatDetails.ActionSource = ActionType.Spell;
                 message.ParseSuccessful = true;
                 return;
             }
@@ -783,9 +783,9 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                 if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
-                    msgCombatDetails.ActionSource = ActionSourceType.Weaponskill;
+                    msgCombatDetails.ActionSource = ActionType.Weaponskill;
                 else
-                    msgCombatDetails.ActionSource = ActionSourceType.Ability;
+                    msgCombatDetails.ActionSource = ActionType.Ability;
                 message.ParseSuccessful = true;
                 return;
             }
@@ -818,41 +818,48 @@ namespace WaywardGamers.KParser.Parsing
             // Ranged attack before melee because it follows the same form
             combatMatch = ParseExpressions.RangedAttack.Match(currentMessageText);
             if (combatMatch.Success == true)
-                combatDetails.ActionSource = ActionSourceType.Ranged;
+                combatDetails.ActionSource = ActionType.Ranged;
 
             if (combatMatch.Success == false)
             {
                 combatMatch = ParseExpressions.MeleeHit.Match(currentMessageText);
                 if (combatMatch.Success == true)
-                    combatDetails.ActionSource = ActionSourceType.Melee;
+                    combatDetails.ActionSource = ActionType.Melee;
+            }
+
+            if (combatMatch.Success == false)
+            {
+                combatMatch = ParseExpressions.Skillchain.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                    combatDetails.ActionSource = ActionType.Skillchain;
             }
 
             if (combatMatch.Success == false)
             {
                 combatMatch = ParseExpressions.RangedHit.Match(currentMessageText);
                 if (combatMatch.Success == true)
-                    combatDetails.ActionSource = ActionSourceType.Ranged;
+                    combatDetails.ActionSource = ActionType.Ranged;
             }
 
             if (combatMatch.Success == false)
             {
                 combatMatch = ParseExpressions.Counter.Match(currentMessageText);
                 if (combatMatch.Success == true)
-                    combatDetails.ActionSource = ActionSourceType.Counterattack;
+                    combatDetails.ActionSource = ActionType.Counterattack;
             }
 
             if (combatMatch.Success == false)
             {
                 combatMatch = ParseExpressions.Spikes.Match(currentMessageText);
                 if (combatMatch.Success == true)
-                    combatDetails.ActionSource = ActionSourceType.Spikes;
+                    combatDetails.ActionSource = ActionType.Spikes;
             }
 
             if (combatMatch.Success == false)
             {
                 combatMatch = ParseExpressions.CastSpell.Match(currentMessageText);
                 if (combatMatch.Success == true)
-                    combatDetails.ActionSource = ActionSourceType.Spell;
+                    combatDetails.ActionSource = ActionType.Spell;
             }
 
             if (combatMatch.Success == false)
@@ -861,9 +868,9 @@ namespace WaywardGamers.KParser.Parsing
                 if (combatMatch.Success == true)
                 {
                     if (Weaponskills.NamesList.Contains(combatMatch.Groups[ParseFields.Ability].Value))
-                        combatDetails.ActionSource = ActionSourceType.Weaponskill;
+                        combatDetails.ActionSource = ActionType.Weaponskill;
                     else
-                        combatDetails.ActionSource = ActionSourceType.Ability;
+                        combatDetails.ActionSource = ActionType.Ability;
                 }
             }
 
@@ -873,7 +880,7 @@ namespace WaywardGamers.KParser.Parsing
                 if (combatMatch.Success == true)
                 {
                     combatDetails.FlagCrit = true;
-                    combatDetails.ActionSource = ActionSourceType.Melee;
+                    combatDetails.ActionSource = ActionType.Melee;
                 }
             }
 
@@ -883,7 +890,7 @@ namespace WaywardGamers.KParser.Parsing
                 if (combatMatch.Success == true)
                 {
                     combatDetails.FlagCrit = true;
-                    combatDetails.ActionSource = ActionSourceType.Ranged;
+                    combatDetails.ActionSource = ActionType.Ranged;
                 }
             }
 
@@ -895,14 +902,18 @@ namespace WaywardGamers.KParser.Parsing
 
                 switch (combatDetails.ActionSource)
                 {
-                    case ActionSourceType.Melee:
-                    case ActionSourceType.Ranged:
-                    case ActionSourceType.Counterattack:
-                    case ActionSourceType.Spikes:
-                    case ActionSourceType.Spell:
-                    case ActionSourceType.Ability:
-                    case ActionSourceType.Weaponskill:
+                    case ActionType.Melee:
+                    case ActionType.Ranged:
+                    case ActionType.Counterattack:
+                    case ActionType.Spikes:
+                    case ActionType.Spell:
+                    case ActionType.Ability:
+                    case ActionType.Weaponskill:
                         combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                        break;
+                    case ActionType.Skillchain:
+                        combatDetails.ActorEntityType = EntityType.Skillchain;
+                        combatDetails.ActorName = string.Format("SC: {0}", combatMatch.Groups[ParseFields.SC].Value);
                         break;
                 }
 
@@ -911,9 +922,9 @@ namespace WaywardGamers.KParser.Parsing
                 {
                     switch (combatDetails.ActionSource)
                     {
-                        case ActionSourceType.Melee:
-                        case ActionSourceType.Counterattack:
-                        case ActionSourceType.Spikes:
+                        case ActionType.Melee:
+                        case ActionType.Counterattack:
+                        case ActionType.Spikes:
                             target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                             target.Damage = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
                             break;
@@ -921,43 +932,45 @@ namespace WaywardGamers.KParser.Parsing
                 }
 
                 // Actor entity
-                switch (message.MessageCode)
+                if (combatDetails.ActorEntityType == EntityType.Unknown)
                 {
-                    case 0x14:
-                    case 0x19:
-                        // me or party vs mob
-                        combatDetails.ActorEntityType = EntityType.Player;
-                        break;
-                    case 0x1c:
-                        // mob vs me or party
-                        combatDetails.ActorEntityType = EntityType.Mob;
-                        break;
-                    case 0x28:
-                        // mob vs pet or pet vs mob or player outside party fighting
-                        if (combatDetails.ActorEntityType == EntityType.Unknown)
-                            combatDetails.ActorEntityType = MessageManager.Instance.LookupPetEntity(combatDetails.ActorName);
-                        
-                        // If we have target info, double-check vs target entity type in case
-                        // actor type is unknown.
-                        if (combatDetails.FlagCrit == false)
-                        {
+                    switch (message.MessageCode)
+                    {
+                        case 0x14:
+                        case 0x19:
+                            // me or party vs mob
+                            combatDetails.ActorEntityType = EntityType.Player;
+                            break;
+                        case 0x1c:
+                            // mob vs me or party
+                            combatDetails.ActorEntityType = EntityType.Mob;
+                            break;
+                        case 0x28:
+                            // mob vs pet or pet vs mob or player outside party fighting
                             if (combatDetails.ActorEntityType == EntityType.Unknown)
+                                combatDetails.ActorEntityType = MessageManager.Instance.LookupPetEntity(combatDetails.ActorName);
+
+                            // If we have target info, double-check vs target entity type in case
+                            // actor type is unknown.
+                            if (combatDetails.FlagCrit == false)
                             {
-                                if ((target.EntityType == EntityType.Pet) || (target.EntityType == EntityType.Player))
+                                if (combatDetails.ActorEntityType == EntityType.Unknown)
                                 {
-                                    combatDetails.ActorEntityType = EntityType.Mob;
-                                    break;
+                                    if ((target.EntityType == EntityType.Pet) || (target.EntityType == EntityType.Player))
+                                    {
+                                        combatDetails.ActorEntityType = EntityType.Mob;
+                                        break;
+                                    }
                                 }
                             }
-                        }
-                        break;
-                    default:
-                        // other??
-                        if (combatDetails.ActorEntityType == EntityType.Unknown)
-                            combatDetails.ActorEntityType = MessageManager.Instance.LookupPetEntity(combatDetails.ActorName);
-                        break;
+                            break;
+                        default:
+                            // other??
+                            if (combatDetails.ActorEntityType == EntityType.Unknown)
+                                combatDetails.ActorEntityType = MessageManager.Instance.LookupPetEntity(combatDetails.ActorName);
+                            break;
+                    }
                 }
-
 
                 // Crits only get actor details on the first pass through
                 if (combatDetails.FlagCrit == true)
@@ -1026,11 +1039,11 @@ namespace WaywardGamers.KParser.Parsing
 
                 switch (combatDetails.ActionSource)
                 {
-                    case ActionSourceType.Spell:
+                    case ActionType.Spell:
                         combatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                         break;
-                    case ActionSourceType.Ability:
-                    case ActionSourceType.Weaponskill:
+                    case ActionType.Ability:
+                    case ActionType.Weaponskill:
                         combatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                         break;
                 }
@@ -1142,13 +1155,13 @@ namespace WaywardGamers.KParser.Parsing
 
             combatMatch = ParseExpressions.CastSpell.Match(currentMessageText);
             if (combatMatch.Success == true)
-                combatDetails.ActionSource = ActionSourceType.Spell;
+                combatDetails.ActionSource = ActionType.Spell;
 
             if (combatMatch.Success == false)
             {
                 combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
                 if (combatMatch.Success == true)
-                    combatDetails.ActionSource = ActionSourceType.Ability;
+                    combatDetails.ActionSource = ActionType.Ability;
             }
 
             if (combatMatch.Success == true)
@@ -1159,13 +1172,13 @@ namespace WaywardGamers.KParser.Parsing
 
                 switch (combatDetails.ActionSource)
                 {
-                    case ActionSourceType.Spell:
+                    case ActionType.Spell:
                         combatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                         break;
-                    case ActionSourceType.Ability:
+                    case ActionType.Ability:
                         combatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                         if (Weaponskills.NamesList.Contains(combatDetails.ActionName))
-                            combatDetails.ActionSource = ActionSourceType.Weaponskill;
+                            combatDetails.ActionSource = ActionType.Weaponskill;
                         break;
                 }
 
@@ -1206,7 +1219,7 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.MeleeMiss.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
-                combatDetails.ActionSource = ActionSourceType.Melee;
+                combatDetails.ActionSource = ActionType.Melee;
                 defType = DefenseType.Evasion;
             }
 
@@ -1215,7 +1228,7 @@ namespace WaywardGamers.KParser.Parsing
                 combatMatch = ParseExpressions.RangedMiss.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
-                    combatDetails.ActionSource = ActionSourceType.Ranged;
+                    combatDetails.ActionSource = ActionType.Ranged;
                     defType = DefenseType.Evasion;
                 }
             }
@@ -1225,7 +1238,7 @@ namespace WaywardGamers.KParser.Parsing
                 combatMatch = ParseExpressions.MissAbility.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
-                    combatDetails.ActionSource = ActionSourceType.Ability;
+                    combatDetails.ActionSource = ActionType.Ability;
                     defType = DefenseType.Evasion;
                 }
             }
@@ -1365,7 +1378,7 @@ namespace WaywardGamers.KParser.Parsing
             if (combatMatch.Success == true)
             {
                 msgCombatDetails.IsPreparing = true;
-                msgCombatDetails.ActionSource = ActionSourceType.Spell;
+                msgCombatDetails.ActionSource = ActionType.Spell;
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
@@ -1379,9 +1392,9 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                 if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
-                    msgCombatDetails.ActionSource = ActionSourceType.Weaponskill;
+                    msgCombatDetails.ActionSource = ActionType.Weaponskill;
                 else
-                    msgCombatDetails.ActionSource = ActionSourceType.Ability;
+                    msgCombatDetails.ActionSource = ActionType.Ability;
                 message.ParseSuccessful = true;
                 return;
             }
@@ -1390,7 +1403,7 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.CastSpell.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
-                msgCombatDetails.ActionSource = ActionSourceType.Spell;
+                msgCombatDetails.ActionSource = ActionType.Spell;
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                 message.ParseSuccessful = true;
@@ -1399,7 +1412,7 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
-                msgCombatDetails.ActionSource = ActionSourceType.Ability;
+                msgCombatDetails.ActionSource = ActionType.Ability;
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                 message.ParseSuccessful = true;
@@ -1408,7 +1421,7 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.UseAbilityOn.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
-                msgCombatDetails.ActionSource = ActionSourceType.Ability;
+                msgCombatDetails.ActionSource = ActionType.Ability;
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
@@ -1423,7 +1436,7 @@ namespace WaywardGamers.KParser.Parsing
                 combatMatch = ParseExpressions.NoEffect.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
-                    msgCombatDetails.ActionSource = ActionSourceType.Spell;
+                    msgCombatDetails.ActionSource = ActionType.Spell;
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
@@ -1437,7 +1450,7 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.MissAbility.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
-                msgCombatDetails.ActionSource = ActionSourceType.Ability;
+                msgCombatDetails.ActionSource = ActionType.Ability;
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
@@ -1510,7 +1523,7 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.FailsCharm.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
-                msgCombatDetails.ActionSource = ActionSourceType.Ability;
+                msgCombatDetails.ActionSource = ActionType.Ability;
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                 target.SuccessLevel = SuccessType.Unsuccessful;
@@ -1547,7 +1560,7 @@ namespace WaywardGamers.KParser.Parsing
             if (combatMatch.Success == true)
             {
                 msgCombatDetails.IsPreparing = true;
-                msgCombatDetails.ActionSource = ActionSourceType.Spell;
+                msgCombatDetails.ActionSource = ActionType.Spell;
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
@@ -1561,9 +1574,9 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                 if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
-                    msgCombatDetails.ActionSource = ActionSourceType.Weaponskill;
+                    msgCombatDetails.ActionSource = ActionType.Weaponskill;
                 else
-                    msgCombatDetails.ActionSource = ActionSourceType.Ability;
+                    msgCombatDetails.ActionSource = ActionType.Ability;
                 message.ParseSuccessful = true;
                 return;
             }
@@ -1573,7 +1586,7 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.CastSpell.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
-                msgCombatDetails.ActionSource = ActionSourceType.Spell;
+                msgCombatDetails.ActionSource = ActionType.Spell;
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                 message.ParseSuccessful = true;
@@ -1582,7 +1595,7 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
-                msgCombatDetails.ActionSource = ActionSourceType.Ability;
+                msgCombatDetails.ActionSource = ActionType.Ability;
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                 message.ParseSuccessful = true;
@@ -1591,7 +1604,7 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.UseAbilityOn.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
-                msgCombatDetails.ActionSource = ActionSourceType.Ability;
+                msgCombatDetails.ActionSource = ActionType.Ability;
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
@@ -1737,7 +1750,7 @@ namespace WaywardGamers.KParser.Parsing
             if (combatMatch.Success == true)
             {
                 msgCombatDetails.IsPreparing = true;
-                msgCombatDetails.ActionSource = ActionSourceType.Spell;
+                msgCombatDetails.ActionSource = ActionType.Spell;
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                 message.ParseSuccessful = true;
@@ -1747,7 +1760,7 @@ namespace WaywardGamers.KParser.Parsing
             if (combatMatch.Success == true)
             {
                 msgCombatDetails.IsPreparing = true;
-                msgCombatDetails.ActionSource = ActionSourceType.Spell;
+                msgCombatDetails.ActionSource = ActionType.Spell;
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                 msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
@@ -1761,9 +1774,9 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                 if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
-                    msgCombatDetails.ActionSource = ActionSourceType.Weaponskill;
+                    msgCombatDetails.ActionSource = ActionType.Weaponskill;
                 else
-                    msgCombatDetails.ActionSource = ActionSourceType.Ability;
+                    msgCombatDetails.ActionSource = ActionType.Ability;
                 message.ParseSuccessful = true;
                 return;
             }

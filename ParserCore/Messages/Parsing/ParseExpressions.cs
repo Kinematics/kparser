@@ -18,6 +18,7 @@ namespace WaywardGamers.KParser
         public static readonly string Spell      = "spell";
         public static readonly string Ability    = "ability";
         public static readonly string Effect     = "effect";
+        public static readonly string SC         = "skillchain";
     }
 
     // Class to store regular expressions in.
@@ -35,6 +36,7 @@ namespace WaywardGamers.KParser
         private static readonly string spell       = @"(?<spell>\w+((\:)? \w+)?)";
         private static readonly string ability     = @"(?<ability>\w+((\:)? \w+)?)";
         private static readonly string effect      = @"(?<effect>\w+( \w+)?)";
+        private static readonly string skillchain  = @"(?<skillchain>\w+)";
         #endregion
 
         #region Plugin corrections
@@ -122,7 +124,8 @@ namespace WaywardGamers.KParser
         public static readonly Regex CriticalHit       = new Regex(string.Format("^{0} scores a critical hit!$", name));
         public static readonly Regex RangedCriticalHit = new Regex(string.Format("^{0}'s ranged attack scores a critical hit!$", name));
         public static readonly Regex TargetTakesDamage = new Regex(string.Format("{0} takes {1}( additional)? point(s)? of damage\\.$", target, damage));
-        public static readonly Regex Spikes = new Regex(string.Format("{0}'s spikes deal {1} point(s)? of damage to {2}\\.", name, damage, target));
+        public static readonly Regex Spikes            = new Regex(string.Format("{0}'s spikes deal {1} point(s)? of damage to {2}\\.", name, damage, target));
+        public static readonly Regex Skillchain        = new Regex(string.Format("^Skillchain: {0}\\.$", skillchain));
         #endregion
 
         #region Combat defenses
