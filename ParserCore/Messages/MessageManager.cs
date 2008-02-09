@@ -210,44 +210,55 @@ namespace WaywardGamers.KParser
                 // --
 
 
-                if (Monitor.ParseMode == DataSource.Ram)
+                switch (Monitor.ParseMode)
                 {
-                    lock (messageCollection)
-                    {
-                        messagesToProcess.AddRange(messageCollection.FindAll(m => m.Timestamp.CompareTo(shortCheckTime) < 0));
-
-                        // Remove those messages from the list.
-                        messageCollection.RemoveAll(m => m.Timestamp.CompareTo(shortCheckTime) < 0);
-                    }
-                }
-                else
-                {
-                    // If we're in LOG mode, leave the last 10 messages with the same timestamp
-                    // for at least 2 minutes in case of log file cross-over.
-                    lock (messageCollection)
-                    {
-                        Message lastMessage = messageCollection.Last();
-                        int numberOfMessagesToLeave = 0;
-
-                        // But only if they haven't crossed the long time threshhold (2 minutes)
-                        if (lastMessage.Timestamp.CompareTo(longCheckTime) >= 0)
-                            numberOfMessagesToLeave = messageCollection.Count(m => m.Timestamp == lastMessage.Timestamp);
-
-                        // cap at 10
-                        if (numberOfMessagesToLeave > 20)
-                            numberOfMessagesToLeave = 20;
-
-                        int numberOfMessagesToTake = messageCollection.Count() - numberOfMessagesToLeave;
-
-                        if (numberOfMessagesToTake < 0)
-                            numberOfMessagesToTake = 0;
-
-                        if (numberOfMessagesToTake > 0)
+                    case DataSource.Ram:
+                        lock (messageCollection)
                         {
-                            messagesToProcess.AddRange(messageCollection.Take(numberOfMessagesToTake));
-                            messageCollection.RemoveRange(0, numberOfMessagesToTake);
+                            messagesToProcess.AddRange(messageCollection.FindAll(m => m.Timestamp.CompareTo(shortCheckTime) < 0));
+
+                            // Remove those messages from the list.
+                            messageCollection.RemoveAll(m => m.Timestamp.CompareTo(shortCheckTime) < 0);
                         }
-                    }
+                        break;
+                    case DataSource.Log:
+                        // If we're in LOG mode, leave the last 10 messages with the same timestamp
+                        // for at least 2 minutes in case of log file cross-over.
+                        lock (messageCollection)
+                        {
+                            Message lastMessage = messageCollection.Last();
+                            int numberOfMessagesToLeave = 0;
+
+                            // But only if they haven't crossed the long time threshhold (2 minutes)
+                            if (lastMessage.Timestamp.CompareTo(longCheckTime) >= 0)
+                                numberOfMessagesToLeave = messageCollection.Count(m => m.Timestamp == lastMessage.Timestamp);
+
+                            // cap at 10
+                            if (numberOfMessagesToLeave > 20)
+                                numberOfMessagesToLeave = 20;
+
+                            int numberOfMessagesToTake = messageCollection.Count() - numberOfMessagesToLeave;
+
+                            if (numberOfMessagesToTake < 0)
+                                numberOfMessagesToTake = 0;
+
+                            if (numberOfMessagesToTake > 0)
+                            {
+                                messagesToProcess.AddRange(messageCollection.Take(numberOfMessagesToTake));
+                                messageCollection.RemoveRange(0, numberOfMessagesToTake);
+                            }
+                        }
+                        break;
+                    case DataSource.Database:
+                        // In database reading mode, the messages are going to come very quickly
+                        // Leave the last 10 messages always.  When the re-parse ends, the
+                        // code below will clean up the leftovers.
+                        if (messageCollection.Count > 10)
+                        {
+                            messagesToProcess.AddRange(messageCollection.GetRange(0, messageCollection.Count - 10));
+                            messageCollection.RemoveRange(0, messageCollection.Count - 10);
+                        }
+                        break;
                 }
 
 

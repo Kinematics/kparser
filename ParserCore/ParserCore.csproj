@@ -116,6 +116,7 @@
     <Compile Include="Messages\Message.cs" />
     <Compile Include="Messages\MessageManager.cs" />
     <Compile Include="Messages\Parsing\Parser.cs" />
+    <Compile Include="Monitors\DatabaseReader\DatabaseReader.cs" />
     <Compile Include="Monitors\LogReader\LogReader.cs" />
     <Compile Include="Monitors\Monitor.cs" />
     <Compile Include="Monitors\RamReader\MemoryAccess.cs" />

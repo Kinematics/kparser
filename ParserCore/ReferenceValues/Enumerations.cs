@@ -17,7 +17,8 @@ namespace WaywardGamers.KParser
     public enum DataSource
     {
         Log,
-        Ram
+        Ram,
+        Database,
     }
 
     #region General message types
@@ -73,7 +74,7 @@ namespace WaywardGamers.KParser
     
     public enum HarmType : byte
     {
-        Unknown,
+        None,
         Damage,
         Enfeeble,
         Drain,
@@ -83,7 +84,7 @@ namespace WaywardGamers.KParser
 
     public enum AidType : byte
     {
-        Unknown,
+        None,
         Enhance,
         Recovery,
         Item,

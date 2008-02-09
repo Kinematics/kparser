@@ -66,6 +66,7 @@ namespace WaywardGamers.KParser
         /// Make the class a singleton
         /// </summary>
         private static readonly DatabaseManager instance = new DatabaseManager();
+        private static readonly DatabaseManager secondInstance = new DatabaseManager();
 
          /// <summary>
         /// Private constructor ensures singleton purity.
@@ -95,6 +96,17 @@ namespace WaywardGamers.KParser
 			{
 				return instance;
 			}
+        }
+
+        /// <summary>
+        /// Gets the singleton instance of the DatabaseManager class.
+        /// </summary>
+        public static DatabaseManager SecondInstance
+        {
+            get
+            {
+                return secondInstance;
+            }
         }
         #endregion
 
@@ -230,6 +242,14 @@ namespace WaywardGamers.KParser
             get { return databaseVersion; }
         }
 
+        public string DatabaseFilename
+        {
+            get
+            {
+                return databaseFilename;
+            }
+        }
+
         internal void ProcessNewMessages(List<Message> messageList, bool parseEnded)
         {
             if ((messageList == null) || (messageList.Count == 0))
@@ -290,7 +310,7 @@ namespace WaywardGamers.KParser
             lastFinishedBattle = null;
         }
 
-        private void CloseDatabase()
+        public void CloseDatabase()
         {
             if (localTAManager != null)
             {
@@ -677,9 +697,9 @@ namespace WaywardGamers.KParser
                             (byte)message.EventDetails.CombatDetails.HarmType,
                             0,
                             (byte)DamageModifier.None,
-                            (byte)AidType.Unknown,
+                            (byte)AidType.None,
                             (byte)RecoveryType.None,
-                            (byte)HarmType.Unknown,
+                            (byte)HarmType.None,
                             0);
 
                         return;
@@ -833,9 +853,9 @@ namespace WaywardGamers.KParser
                             (byte)message.EventDetails.CombatDetails.HarmType,
                             0,
                             (byte)DamageModifier.None,
-                            (byte)AidType.Unknown,
+                            (byte)AidType.None,
                             (byte)RecoveryType.None,
-                            (byte)HarmType.Unknown,
+                            (byte)HarmType.None,
                             0);
 
                         return;
@@ -948,9 +968,9 @@ namespace WaywardGamers.KParser
                             (byte)message.EventDetails.CombatDetails.HarmType,
                             0,
                             (byte)DamageModifier.None,
-                            (byte)AidType.Unknown,
+                            (byte)AidType.None,
                             (byte)RecoveryType.None,
-                            (byte)HarmType.Unknown,
+                            (byte)HarmType.None,
                             0);
                     }
                     break;
@@ -1052,9 +1072,9 @@ namespace WaywardGamers.KParser
                     (byte)message.EventDetails.CombatDetails.HarmType,
                     0,
                     (byte)DamageModifier.None,
-                    (byte)AidType.Unknown,
+                    (byte)AidType.None,
                     (byte)RecoveryType.None,
-                    (byte)HarmType.Unknown,
+                    (byte)HarmType.None,
                     0);
 
             }

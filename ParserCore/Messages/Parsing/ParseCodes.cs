@@ -133,7 +133,7 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0x1d] = HarmType.Damage;
             harmTypeLookup[0x29] = HarmType.Damage;
             // Uncertain
-            harmTypeLookup[0x32] = HarmType.Unknown;
+            harmTypeLookup[0x32] = HarmType.None;
             // Enfeebling
             harmTypeLookup[0x33] = HarmType.Enfeeble;
             harmTypeLookup[0x34] = HarmType.Enfeeble;
@@ -161,8 +161,8 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0xa7] = HarmType.Death;
 
             // Failed actions
-            harmTypeLookup[0x7a] = HarmType.Unknown;
-            harmTypeLookup[0x7b] = HarmType.Unknown;
+            harmTypeLookup[0x7a] = HarmType.None;
+            harmTypeLookup[0x7b] = HarmType.None;
 
         }
 
@@ -235,7 +235,7 @@ namespace WaywardGamers.KParser
             if (aidTypeLookup.ContainsKey(messageCode))
                 return aidTypeLookup[messageCode];
             else
-                return AidType.Unknown;
+                return AidType.None;
         }
 
         internal HarmType GetHarmType(uint messageCode)
@@ -243,7 +243,7 @@ namespace WaywardGamers.KParser
             if (harmTypeLookup.ContainsKey(messageCode))
                 return harmTypeLookup[messageCode];
             else
-                return HarmType.Unknown;
+                return HarmType.None;
         }
 
         internal SuccessType GetSuccessType(uint messageCode)

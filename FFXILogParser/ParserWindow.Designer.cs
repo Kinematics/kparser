@@ -47,10 +47,10 @@ namespace WaywardGamers.KParser
             this.menuExit = new System.Windows.Forms.MenuItem();
             this.toolsMenu = new System.Windows.Forms.MenuItem();
             this.menuItem1 = new System.Windows.Forms.MenuItem();
-            this.menuItem2 = new System.Windows.Forms.MenuItem();
-            this.menuItem4 = new System.Windows.Forms.MenuItem();
-            this.menuItem5 = new System.Windows.Forms.MenuItem();
-            this.menuItem6 = new System.Windows.Forms.MenuItem();
+            this.databaseToolsMenu = new System.Windows.Forms.MenuItem();
+            this.databaseClearData = new System.Windows.Forms.MenuItem();
+            this.databaseUpgrade = new System.Windows.Forms.MenuItem();
+            this.databaseReparse = new System.Windows.Forms.MenuItem();
             this.menuSeparator3 = new System.Windows.Forms.MenuItem();
             this.menuOptions = new System.Windows.Forms.MenuItem();
             this.windowMenu = new System.Windows.Forms.MenuItem();
@@ -179,7 +179,7 @@ namespace WaywardGamers.KParser
             this.toolsMenu.Index = 1;
             this.toolsMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem1,
-            this.menuItem2,
+            this.databaseToolsMenu,
             this.menuSeparator3,
             this.menuOptions});
             this.toolsMenu.Text = "&Tools";
@@ -191,32 +191,34 @@ namespace WaywardGamers.KParser
             this.menuItem1.Text = "&Test Function";
             this.menuItem1.Click += new System.EventHandler(this.menuItem1_Click);
             // 
-            // menuItem2
+            // databaseToolsMenu
             // 
-            this.menuItem2.Index = 1;
-            this.menuItem2.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.menuItem4,
-            this.menuItem5,
-            this.menuItem6});
-            this.menuItem2.Text = "Database";
+            this.databaseToolsMenu.Index = 1;
+            this.databaseToolsMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.databaseClearData,
+            this.databaseUpgrade,
+            this.databaseReparse});
+            this.databaseToolsMenu.Text = "Database";
+            this.databaseToolsMenu.Popup += new System.EventHandler(this.databaseToolsMenu_Popup);
             // 
-            // menuItem4
+            // databaseClearData
             // 
-            this.menuItem4.Enabled = false;
-            this.menuItem4.Index = 0;
-            this.menuItem4.Text = "Clear Data";
+            this.databaseClearData.Enabled = false;
+            this.databaseClearData.Index = 0;
+            this.databaseClearData.Text = "Clear Data";
             // 
-            // menuItem5
+            // databaseUpgrade
             // 
-            this.menuItem5.Enabled = false;
-            this.menuItem5.Index = 1;
-            this.menuItem5.Text = "Upgrade";
+            this.databaseUpgrade.Enabled = false;
+            this.databaseUpgrade.Index = 1;
+            this.databaseUpgrade.Text = "Upgrade";
             // 
-            // menuItem6
+            // databaseReparse
             // 
-            this.menuItem6.Enabled = false;
-            this.menuItem6.Index = 2;
-            this.menuItem6.Text = "Reparse";
+            this.databaseReparse.Enabled = false;
+            this.databaseReparse.Index = 2;
+            this.databaseReparse.Text = "Reparse";
+            this.databaseReparse.Click += new System.EventHandler(this.databaseReparse_Click);
             // 
             // menuSeparator3
             // 
@@ -298,10 +300,10 @@ namespace WaywardGamers.KParser
         private System.Windows.Forms.MenuItem menuItem1;
         private System.Windows.Forms.MenuItem windowMenu;
         private System.Windows.Forms.MenuItem menuItem3;
-        private System.Windows.Forms.MenuItem menuItem2;
-        private System.Windows.Forms.MenuItem menuItem4;
-        private System.Windows.Forms.MenuItem menuItem5;
-        private System.Windows.Forms.MenuItem menuItem6;
+        private System.Windows.Forms.MenuItem databaseToolsMenu;
+        private System.Windows.Forms.MenuItem databaseClearData;
+        private System.Windows.Forms.MenuItem databaseUpgrade;
+        private System.Windows.Forms.MenuItem databaseReparse;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
     }
 }

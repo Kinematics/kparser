@@ -149,10 +149,10 @@ namespace WaywardGamers.KParser
             sb.AppendFormat("      Harm Type: {0}\n", HarmType);
             sb.AppendFormat("      Amount: {0}\n", Amount);
             sb.AppendFormat("      Damage Modifier: {0}\n", DamageModifier);
-            sb.AppendFormat("      Secondary Aid Type: {0}\n", AidType);
-            sb.AppendFormat("      Secondary Recovery Type: {0}\n", RecoveryType);
-            sb.AppendFormat("      Secondary Harm Type: {0}\n", HarmType);
-            sb.AppendFormat("      Secondary Amount: {0}\n", Amount);
+            sb.AppendFormat("      Secondary Aid Type: {0}\n", SecondaryAidType);
+            sb.AppendFormat("      Secondary Recovery Type: {0}\n", SecondaryRecoveryType);
+            sb.AppendFormat("      Secondary Harm Type: {0}\n", SecondaryHarmType);
+            sb.AppendFormat("      Secondary Amount: {0}\n", SecondaryAmount);
 
             return sb.ToString();
         }

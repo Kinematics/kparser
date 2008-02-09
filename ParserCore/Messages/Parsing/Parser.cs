@@ -545,7 +545,7 @@ namespace WaywardGamers.KParser.Parsing
                 case HarmType.Death:
                     ParseCombatDeath(message);
                     break;
-                case HarmType.Unknown:
+                case HarmType.None:
                     ParseAttackUnknown(message);
                     break;
             }
@@ -677,7 +677,7 @@ namespace WaywardGamers.KParser.Parsing
                         return;
                     }
                     break;
-                case AidType.Unknown:
+                case AidType.None:
                     // For prepping buffing spells or abilities (do we need this?)
                     combatMatch = ParseExpressions.PrepSpell.Match(currentMessageText);
                     if (combatMatch.Success == true)
@@ -1649,7 +1649,7 @@ namespace WaywardGamers.KParser.Parsing
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     target.DefenseType = DefenseType.Intimidate;
                     // Adjust message category
-                    msgCombatDetails.HarmType = HarmType.Unknown;
+                    msgCombatDetails.HarmType = HarmType.None;
                     msgCombatDetails.SuccessLevel = SuccessType.Unsuccessful;
                     message.ParseSuccessful = true;
                     return;
