@@ -25,6 +25,7 @@ namespace WaywardGamers.KParser
         internal CombatDetails()
         {
             Targets = new List<TargetDetails>();
+            ShortActorName = string.Empty;
         }
         #endregion
 
