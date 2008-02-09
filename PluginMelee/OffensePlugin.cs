@@ -26,6 +26,7 @@ namespace WaywardGamers.KParser.Plugin
             comboBox1.Left = label1.Right + 10;
             comboBox1.Items.Clear();
             comboBox1.Items.Add("All");
+            comboBox1.Items.Add("Summary");
             for (var action = ActionType.Melee; action <= ActionType.Weaponskill; action++)
             {
                 comboBox1.Items.Add(action.ToString());
@@ -168,11 +169,13 @@ namespace WaywardGamers.KParser.Plugin
         int totalDamage;
         Dictionary<string, int> playerDamage = new Dictionary<string,int>();
 
+        string summaryHeader;
         string meleeHeader;
         string rangeHeader;
         string spellHeader;
         string abilHeader;
         string wskillHeader;
+        string skillchainHeader;
         string otherHeader;
         #endregion
 
@@ -180,7 +183,7 @@ namespace WaywardGamers.KParser.Plugin
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
             richTextBox.Clear();
-            ActionType actionSourceFilter = (ActionType)comboBox1.SelectedIndex;
+            string actionSourceFilter = comboBox1.SelectedItem.ToString();
 
             string mobFilter = comboBox2.SelectedItem.ToString();
             IEnumerable<AttackGroup> allAttacks;
@@ -288,11 +291,14 @@ namespace WaywardGamers.KParser.Plugin
                 totalDamage += player.Value;
 
 
-            var meleeAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Melee);
-            var rangeAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Ranged);
-            var spellAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Spell);
-            var abilAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Ability);
-            var wskillAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Weaponskill);
+            AttackGroup meleeAttacks;
+            AttackGroup rangeAttacks;
+            AttackGroup spellAttacks;
+            AttackGroup abilAttacks;
+            AttackGroup wskillAttacks;
+            AttackGroup skillchainAttacks;
+
+
             //var otherAttacks = allAttacks.Where(m =>
             //    (m.ActionSource != ActionSourceType.Melee) &&
             //    (m.ActionSource != ActionSourceType.Ranged) &&
@@ -303,7 +309,14 @@ namespace WaywardGamers.KParser.Plugin
             switch (actionSourceFilter)
             {
                 // Unknown == "All"
-                case ActionType.Unknown:
+                case "All":
+                    meleeAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Melee);
+                    rangeAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Ranged);
+                    spellAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Spell);
+                    abilAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Ability);
+                    wskillAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Weaponskill);
+                    skillchainAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Skillchain);
+                    ProcessAttackSummary(allAttacks);
                     ProcessMeleeAttacks(meleeAttacks);
                     ProcessRangedAttacks(rangeAttacks);
                     ProcessSpellsAttacks(spellAttacks);
@@ -311,25 +324,195 @@ namespace WaywardGamers.KParser.Plugin
                     ProcessWeaponskillAttacks(wskillAttacks);
                     //ProcessOtherAttacks(otherAttacks);
                     break;
-                case ActionType.Melee:
+                case "Summary":
+                    ProcessAttackSummary(allAttacks);
+                    break;
+                case "Melee":
+                    meleeAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Melee);
                     ProcessMeleeAttacks(meleeAttacks);
                     break;
-                case ActionType.Ranged:
+                case "Ranged":
+                    rangeAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Ranged);
                     ProcessRangedAttacks(rangeAttacks);
                     break;
-                case ActionType.Spell:
+                case "Spell":
+                    spellAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Spell);
                     ProcessSpellsAttacks(spellAttacks);
                     break;
-                case ActionType.Ability:
+                case "Ability":
+                    abilAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Ability);
                     ProcessAbilityAttacks(abilAttacks);
                     break;
-                case ActionType.Weaponskill:
+                case "Weaponskill":
+                    wskillAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Weaponskill);
                     ProcessWeaponskillAttacks(wskillAttacks);
+                    break;
+                case "Skillchain":
+                    skillchainAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Skillchain);
+                    ProcessSkillchains(skillchainAttacks);
                     break;
                 default:
                     //ProcessOtherAttacks(otherAttacks);
                     break;
             }
+        }
+
+        private void ProcessAttackSummary(IEnumerable<AttackGroup> allAttacks)
+        {
+            if (allAttacks == null)
+                return;
+
+            if (allAttacks.Count() == 0)
+                return;
+
+            AppendBoldText("Damage Summary\n", Color.Red);
+
+            if (summaryHeader == null)
+                summaryHeader = string.Format("{0} {1} {2} {3} {4} {5} {6} {7}\n",
+                "Player".PadRight(16),
+                "Total Dmg".PadLeft(10),
+                "Damage %".PadLeft(10),
+                "Melee Dmg".PadLeft(11),
+                "Range Dmg".PadLeft(11),
+                "Spell Dmg".PadLeft(11),
+                "Abil. Dmg".PadLeft(11),
+                "WSkill Dmg".PadLeft(11));
+
+            AppendBoldUnderText(summaryHeader, Color.Black);
+
+            // First get a list of all player names across all attack groups.
+            List<string> nameList = new List<string>();
+
+            foreach (var attackGroup in allAttacks)
+            {
+                foreach (var player in attackGroup.CombatGroup)
+                {
+                    if ((player.Key.CombatantType == (byte)EntityType.Player) ||
+                        (player.Key.CombatantType == (byte)EntityType.Pet) ||
+                        (player.Key.CombatantType == (byte)EntityType.Fellow) ||
+                        (player.Key.CombatantType == (byte)EntityType.NPC))
+                    {
+                        if (nameList.Contains(player.Key.CombatantName) == false)
+                            nameList.Add(player.Key.CombatantName);
+                    }
+                }
+            }
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (string player in nameList)
+            {
+                if (playerDamage.Keys.Contains(player))
+                {
+                    if (playerDamage[player] > 0)
+                    {
+                        // Player name
+                        sb.Append(player.PadRight(16));
+                        sb.Append(" ");
+
+                        // Total damage
+                        int damageDone = playerDamage[player];
+                        sb.Append(damageDone.ToString().PadLeft(10));
+                        sb.Append(" ");
+
+                        // Damage share
+                        sb.Append(((double)damageDone / totalDamage).ToString("P2").PadLeft(10));
+                        sb.Append(" ");
+
+                        // Variables used for the subgroup analysis
+                        int dmg = 0;
+                        AttackGroup attackSet;
+                        IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow> attacker;
+
+                        // Melee Dmg
+                        attackSet = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Melee);
+
+                        if (attackSet != null)
+                        {
+                            attacker = attackSet.CombatGroup.FirstOrDefault(c => c.Key.CombatantName == player);
+                            if (attacker != null)
+                            {
+                                dmg = attacker.Sum(d => d.Amount) + attacker.Sum(d => d.SecondAmount);
+                            }
+                        }
+
+                        sb.Append(dmg.ToString().PadLeft(11));
+                        sb.Append(" ");
+
+
+                        // Range Dmg
+                        dmg = 0;
+                        attackSet = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Ranged);
+
+                        if (attackSet != null)
+                        {
+                            attacker = attackSet.CombatGroup.FirstOrDefault(c => c.Key.CombatantName == player);
+                            if (attacker != null)
+                            {
+                                dmg = attacker.Sum(d => d.Amount) + attacker.Sum(d => d.SecondAmount);
+                            }
+                        }
+
+                        sb.Append(dmg.ToString().PadLeft(11));
+                        sb.Append(" ");
+
+                        // Spell Dmg
+                        dmg = 0;
+                        attackSet = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Spell);
+
+                        if (attackSet != null)
+                        {
+                            attacker = attackSet.CombatGroup.FirstOrDefault(c => c.Key.CombatantName == player);
+                            if (attacker != null)
+                            {
+                                dmg = attacker.Sum(d => d.Amount) + attacker.Sum(d => d.SecondAmount);
+                            }
+                        }
+
+                        sb.Append(dmg.ToString().PadLeft(11));
+                        sb.Append(" ");
+
+                        // Ability Dmg
+                        dmg = 0;
+                        attackSet = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Ability);
+
+                        if (attackSet != null)
+                        {
+                            attacker = attackSet.CombatGroup.FirstOrDefault(c => c.Key.CombatantName == player);
+                            if (attacker != null)
+                            {
+                                dmg = attacker.Sum(d => d.Amount) + attacker.Sum(d => d.SecondAmount);
+                            }
+                        }
+
+                        sb.Append(dmg.ToString().PadLeft(11));
+                        sb.Append(" ");
+
+                        // Weaponskill Dmg
+                        dmg = 0;
+                        attackSet = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Weaponskill);
+
+                        if (attackSet != null)
+                        {
+                            attacker = attackSet.CombatGroup.FirstOrDefault(c => c.Key.CombatantName == player);
+                            if (attacker != null)
+                            {
+                                dmg = attacker.Sum(d => d.Amount) + attacker.Sum(d => d.SecondAmount);
+                            }
+                        }
+
+                        sb.Append(dmg.ToString().PadLeft(11));
+                        sb.Append(" ");
+
+
+                        sb.Append("\n");
+                    }
+                }
+            }
+
+            AppendNormalText(sb.ToString());
+
+            AppendNormalText("\n\n");
         }
 
         private void ProcessMeleeAttacks(AttackGroup meleeAttacks)
@@ -343,10 +526,10 @@ namespace WaywardGamers.KParser.Plugin
             AppendBoldText("Melee Damage\n", Color.Red);
 
             if (meleeHeader == null)
-                meleeHeader = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12} {13} {14}\n",
-                "Player".PadRight(16), "Melee Dmg".PadLeft(10), "Total Dmg".PadLeft(10), "Melee %".PadLeft(9),
-                "Dmg Share %".PadLeft(12), "Hit/Miss".PadLeft(10), "Acc%".PadLeft(9), "M.Low/Hi".PadLeft(9),
-                "M.Avg".PadLeft(8), "M.Avg0".PadLeft(8), "Effect".PadLeft(7), "#Crit".PadLeft(6),
+                meleeHeader = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}\n",
+                "Player".PadRight(16), "Melee Dmg".PadLeft(10), "Melee %".PadLeft(9),
+                "Hit/Miss".PadLeft(10), "Acc%".PadLeft(9), "M.Low/Hi".PadLeft(9),
+                "M.Avg".PadLeft(8), "Effect".PadLeft(7), "#Crit".PadLeft(6),
                 "C.Low/Hi".PadLeft(9), "C.Avg".PadLeft(7), "Crit%".PadLeft(9));
 
             AppendBoldUnderText(meleeHeader, Color.Black);
@@ -368,15 +551,9 @@ namespace WaywardGamers.KParser.Plugin
 
                     // Total damage
                     int damageDone = playerDamage[player.Key.CombatantName];
-                    sb.Append(damageDone.ToString().PadLeft(10));
-                    sb.Append(" ");
 
                     // Melee % of total player damage
                     sb.Append(((double)totalMelee / damageDone).ToString("P2").PadLeft(9));
-                    sb.Append(" ");
-
-                    // Damage share
-                    sb.Append(((double)damageDone / totalDamage).ToString("P2").PadLeft(12));
                     sb.Append(" ");
 
                     var successfulHits = player.Where(h => h.DefenseType == (byte)DefenseType.None);
@@ -413,12 +590,6 @@ namespace WaywardGamers.KParser.Plugin
                             sb.Append(((double)normDamage / normalHits.Count()).ToString("F2").PadLeft(8));
                             sb.Append(" ");
 
-                            var non0Hits = successfulHits.Where(m => m.Amount > 0);
-
-                            // Melee non-0 avg
-                            sb.Append(((double)totalMelee / non0Hits.Count()).ToString("F2").PadLeft(8));
-                            sb.Append(" ");
-
                             int addDamageHits = player.Where(h => (h.DefenseType == (byte)DefenseType.None) &&
                                 (h.ActionType == (byte)ActionType.AdditionalEffect)).Sum(b => b.Amount);
 
@@ -433,10 +604,6 @@ namespace WaywardGamers.KParser.Plugin
                             sb.Append(" ");
 
                             // Melee avg
-                            sb.Append("N/A".PadLeft(8));
-                            sb.Append(" ");
-
-                            // Melee non-0 avg
                             sb.Append("N/A".PadLeft(8));
                             sb.Append(" ");
 
@@ -494,10 +661,6 @@ namespace WaywardGamers.KParser.Plugin
                         sb.Append("N/A".PadLeft(8));
                         sb.Append(" ");
 
-                        // Melee non-0 avg
-                        sb.Append("N/A".PadLeft(8));
-                        sb.Append(" ");
-
                         // Add. Effect damage
                         sb.Append("N/A".PadLeft(7));
                         sb.Append(" ");
@@ -539,10 +702,10 @@ namespace WaywardGamers.KParser.Plugin
             AppendBoldText("Ranged Damage\n", Color.Red);
 
             if (rangeHeader == null)
-                rangeHeader = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12} {13} {14}\n",
-                "Player".PadRight(16), "Range Dmg".PadLeft(10), "Total Dmg".PadLeft(10), "Range %".PadLeft(9),
-                "Dmg Share %".PadLeft(12), "Hit/Miss".PadLeft(10), "Acc%".PadLeft(9), "R.Low/Hi".PadLeft(9),
-                "R.Avg".PadLeft(8), "R.Avg0".PadLeft(8), "Effect".PadLeft(7),
+                rangeHeader = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}\n",
+                "Player".PadRight(16), "Range Dmg".PadLeft(10), "Range %".PadLeft(9),
+                "Hit/Miss".PadLeft(10), "Acc%".PadLeft(9), "R.Low/Hi".PadLeft(9),
+                "R.Avg".PadLeft(8), "Effect".PadLeft(7),
                 "#Crit".PadLeft(6), "C.Low/Hi".PadLeft(9), "C.Avg".PadLeft(7), "Crit%".PadLeft(9));
 
             AppendBoldUnderText(rangeHeader, Color.Black);
@@ -557,18 +720,12 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append(player.Key.CombatantName.PadRight(16));
                     sb.Append(" ");
 
-                    int damageDone = playerDamage[player.Key.CombatantName];
-                    // Total damage
-                    sb.Append(damageDone.ToString().PadRight(10));
-                    sb.Append(" ");
-                    // Damage share
-                    sb.Append(((double)damageDone / totalDamage).ToString("P2").PadRight(9));
-                    sb.Append(" ");
                     // Range damage
                     int totalRange = player.Sum(b => b.Amount);
                     sb.Append(totalRange.ToString().PadRight(8));
 
                     // Percent of player damage from ranged attacks
+                    int damageDone = playerDamage[player.Key.CombatantName];
                     sb.Append(((double)totalRange / damageDone).ToString("P2").PadRight(8));
 
                     var successfulHits = player.Where(h => (h.DefenseType == (byte)DefenseType.None));
@@ -607,12 +764,6 @@ namespace WaywardGamers.KParser.Plugin
                             sb.Append(((double)normDamage / normalHits.Count()).ToString("F2").PadRight(7));
                             sb.Append(" ");
 
-                            var non0Hits = normalHits.Where(m => m.Amount > 0);
-
-                            // Range non-0 avg
-                            sb.Append(((double)totalRange / non0Hits.Count()).ToString("F2").PadRight(7));
-                            sb.Append(" ");
-
                             int addDamageHits = player.Where(h => (h.DefenseType == (byte)DefenseType.None) &&
                                 (h.ActionType == (byte)ActionType.AdditionalEffect)).Sum(b => b.Amount);
 
@@ -626,10 +777,6 @@ namespace WaywardGamers.KParser.Plugin
                             sb.Append(" ");
 
                             // Melee avg
-                            sb.Append("N/A".PadRight(8));
-                            sb.Append(" ");
-
-                            // Melee non-0 avg
                             sb.Append("N/A".PadRight(8));
                             sb.Append(" ");
 
@@ -686,10 +833,7 @@ namespace WaywardGamers.KParser.Plugin
                         sb.Append("N/A".PadRight(7));
                         sb.Append(" ");
 
-                        // Range non-0 avg
-                        sb.Append("N/A".PadRight(7));
-                        sb.Append(" ");
-
+                        // Add effect
                         sb.Append("N/A".PadRight(7));
                         sb.Append(" ");
 
@@ -732,9 +876,9 @@ namespace WaywardGamers.KParser.Plugin
             AppendBoldText("Spell Damage\n", Color.Red);
 
             if (spellHeader == null)
-                spellHeader = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10}\n",
-                "Player".PadRight(16), "Spell Dmg".PadLeft(10), "Total Dmg".PadLeft(10), "Spell %".PadLeft(9),
-                "Dmg Share %".PadLeft(12), "#Spells".PadLeft(8), "S.Low/Hi".PadLeft(9), "S.Avg".PadLeft(7),
+                spellHeader = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8}\n",
+                "Player".PadRight(16), "Spell Dmg".PadLeft(10), "Spell %".PadLeft(9),
+                "#Spells".PadLeft(8), "S.Low/Hi".PadLeft(9), "S.Avg".PadLeft(7),
                 "#MagicBurst".PadLeft(12), "MB.Low/Hi".PadLeft(10), "MB.Avg".PadLeft(8));
 
             AppendBoldUnderText(spellHeader, Color.Black);
@@ -753,17 +897,9 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append(spellDamage.ToString().PadLeft(10));
                     sb.Append(" ");
 
-                    // Total damage
-                    int damageDone = playerDamage[player.Key.CombatantName];
-                    sb.Append(damageDone.ToString().PadLeft(10));
-                    sb.Append(" ");
-
                     // Percent of player damage from Spells
+                    int damageDone = playerDamage[player.Key.CombatantName];
                     sb.Append(((double)spellDamage / damageDone).ToString("P2").PadLeft(9));
-                    sb.Append(" ");
-
-                    // Damage share
-                    sb.Append(((double)damageDone / totalDamage).ToString("P2").PadLeft(12));
                     sb.Append(" ");
 
                     var spellsCast = player.Where(b => b.DefenseType == (byte)DefenseType.None);
@@ -871,10 +1007,10 @@ namespace WaywardGamers.KParser.Plugin
             AppendBoldText("Ability Damage\n", Color.Red);
 
             if (abilHeader == null)
-                abilHeader = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9}\n",
-                "Player".PadRight(16), "Abil. Dmg".PadLeft(10), "Total Dmg".PadLeft(10), "Abil. %".PadLeft(9),
-                "Dmg Share %".PadLeft(12), "Hit/Miss".PadLeft(10), "Acc%".PadLeft(9), "A.Low/Hi".PadLeft(9),
-                "A.Avg".PadLeft(8), "A.Avg0".PadLeft(8));
+                abilHeader = string.Format("{0} {1} {2} {3} {4} {5} {6}\n",
+                "Player".PadRight(16), "Abil. Dmg".PadLeft(10), "Abil. %".PadLeft(9),
+                "Hit/Miss".PadLeft(10), "Acc%".PadLeft(9), "A.Low/Hi".PadLeft(9),
+                "A.Avg".PadLeft(8));
 
             AppendBoldUnderText(abilHeader, Color.Black);
 
@@ -892,17 +1028,9 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append(abilityDmg.ToString().PadLeft(10));
                     sb.Append(" ");
 
-                    // Total damage
-                    int damageDone = playerDamage[player.Key.CombatantName];
-                    sb.Append(damageDone.ToString().PadLeft(10));
-                    sb.Append(" ");
-
                     // Percent of player damage from Abilities
+                    int damageDone = playerDamage[player.Key.CombatantName];
                     sb.Append(((double)abilityDmg / damageDone).ToString("P2").PadLeft(9));
-                    sb.Append(" ");
-
-                    // Damage share
-                    sb.Append(((double)damageDone / totalDamage).ToString("P2").PadLeft(12));
                     sb.Append(" ");
 
 
@@ -935,17 +1063,6 @@ namespace WaywardGamers.KParser.Plugin
                         // Ability avg
                         sb.Append(((double)abilityDmg / successfulHitCount).ToString("F2").PadLeft(8));
                         sb.Append(" ");
-
-                        var non0Hits = successfulHits.Where(m => m.Amount > 0);
-                        int non0HitCount = non0Hits.Count();
-
-                        // Ability non-0 avg
-                        if (non0HitCount > 0)
-                            sb.Append(((double)abilityDmg / non0Hits.Count()).ToString("F2").PadLeft(8));
-                        else
-                            sb.Append("N/A".PadLeft(8));
-
-                        sb.Append(" ");
                     }
                     else
                     {
@@ -954,10 +1071,6 @@ namespace WaywardGamers.KParser.Plugin
                         sb.Append(" ");
 
                         // Ability avg
-                        sb.Append("N/A".PadLeft(8));
-                        sb.Append(" ");
-
-                        // Ability non-0 avg
                         sb.Append("N/A".PadLeft(8));
                         sb.Append(" ");
                     }
@@ -981,10 +1094,10 @@ namespace WaywardGamers.KParser.Plugin
             AppendBoldText("Weaponskill Damage\n", Color.Red);
 
             if (wskillHeader == null)
-                wskillHeader = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9}\n",
-                "Player".PadRight(16), "WSkill Dmg".PadLeft(11), "Total Dmg".PadLeft(10), "WSkill %".PadLeft(9),
-                "Dmg Share %".PadLeft(12), "Hit/Miss".PadLeft(10), "Acc%".PadLeft(9), "WS.Low/Hi".PadLeft(10),
-                "WS.Avg".PadLeft(8), "WS.Avg0".PadLeft(8));
+                wskillHeader = string.Format("{0} {1} {2} {3} {4} {5} {6}\n",
+                "Player".PadRight(16), "WSkill Dmg".PadLeft(11), "WSkill %".PadLeft(9),
+                "Hit/Miss".PadLeft(10), "Acc%".PadLeft(9), "WS.Low/Hi".PadLeft(10),
+                "WS.Avg".PadLeft(8));
 
             AppendBoldUnderText(wskillHeader, Color.Black);
 
@@ -1002,17 +1115,9 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append(wsDamage.ToString().PadLeft(11));
                     sb.Append(" ");
 
-                    // Total damage
-                    int damageDone = playerDamage[player.Key.CombatantName];
-                    sb.Append(damageDone.ToString().PadLeft(10));
-                    sb.Append(" ");
-
                     // Percent of player damage from Weaponskills
+                    int damageDone = playerDamage[player.Key.CombatantName];
                     sb.Append(((double)wsDamage / damageDone).ToString("P2").PadLeft(9));
-                    sb.Append(" ");
-
-                    // Damage share
-                    sb.Append(((double)damageDone / totalDamage).ToString("P2").PadLeft(12));
                     sb.Append(" ");
 
 
@@ -1046,11 +1151,6 @@ namespace WaywardGamers.KParser.Plugin
                         sb.Append(((double)wsDamage / successfulHitCount).ToString("F2").PadLeft(8));
                         sb.Append(" ");
 
-                        var non0Hits = successfulHits.Where(m => m.Amount > 0);
-
-                        // Weaponskill non-0 avg
-                        sb.Append(((double)wsDamage / non0Hits.Count()).ToString("F2").PadLeft(8));
-                        sb.Append(" ");
                     }
                     else
                     {
@@ -1061,10 +1161,6 @@ namespace WaywardGamers.KParser.Plugin
                         // Weaponskill avg
                         sb.Append("N/A".PadLeft(8));
                         sb.Append(" ");
-
-                        // Weaponskill non-0 avg
-                        sb.Append("N/A".PadLeft(8));
-                        sb.Append(" ");
                     }
 
                     sb.Append("\n");
@@ -1073,6 +1169,61 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             AppendNormalText("\n\n");
+        }
+
+        private void ProcessSkillchains(AttackGroup skillchainAttacks)
+        {
+            if (skillchainAttacks == null)
+                return;
+
+            if (skillchainAttacks.CombatGroup.Count() == 0)
+                return;
+
+            AppendBoldText("Skillchain Damage\n", Color.Red);
+
+            if (skillchainHeader == null)
+                skillchainHeader = string.Format("{0} {1} {2} {3} {4} {5}\n",
+                "Skillchain".PadRight(16), "Skill Dmg".PadLeft(11), "SC %".PadLeft(9),
+                "# SC".PadLeft(6), "SC.Low/Hi".PadLeft(10),
+                "SC.Avg".PadLeft(8));
+
+            AppendBoldUnderText(skillchainHeader, Color.Black);
+
+            foreach (var player in skillchainAttacks.CombatGroup)
+            {
+                if (player.Count() > 0)
+                {
+                    StringBuilder sb = new StringBuilder();
+
+                    sb.Append(player.Key.CombatantName.PadRight(16));
+                    sb.Append(" ");
+
+                    // Skillchain damage
+                    int scDamage = player.Sum(b => b.Amount);
+                    sb.Append(scDamage.ToString().PadLeft(11));
+                    sb.Append(" ");
+
+                    // Percent of player damage from Weaponskills
+                    int damageDone = playerDamage[player.Key.CombatantName];
+                    sb.Append(((double)scDamage / damageDone).ToString("P2").PadLeft(9));
+                    sb.Append(" ");
+
+                    var scs = player.Where(b => b.DefenseType == (byte)DefenseType.None);
+                    sb.Append(string.Format("{0}", scs.Count()).PadLeft(6));
+                    sb.Append(" ");
+
+                    int low = scs.Min(b => b.Amount);
+                    int high = scs.Max(b => b.Amount);
+
+                    // Skillchain low/high
+                    sb.Append(string.Format("{0}/{1}", low, high).PadLeft(9));
+                    sb.Append(" ");
+
+                    // Skillchain avg
+                    sb.Append(((double)scDamage / scs.Count()).ToString("F2").PadLeft(8));
+                    sb.Append(" ");
+                }
+            }
         }
 
         private void ProcessOtherAttacks(IEnumerable<AttackGroup> otherAttacks)

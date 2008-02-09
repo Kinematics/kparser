@@ -63,9 +63,9 @@ namespace WaywardGamers.KParser
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel});
-            this.statusStrip.Location = new System.Drawing.Point(0, 402);
+            this.statusStrip.Location = new System.Drawing.Point(0, 435);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(771, 22);
+            this.statusStrip.Size = new System.Drawing.Size(992, 22);
             this.statusStrip.TabIndex = 2;
             this.statusStrip.Text = "statusStrip";
             // 
@@ -253,7 +253,7 @@ namespace WaywardGamers.KParser
             this.pluginTabs.Location = new System.Drawing.Point(0, 0);
             this.pluginTabs.Name = "pluginTabs";
             this.pluginTabs.SelectedIndex = 0;
-            this.pluginTabs.Size = new System.Drawing.Size(771, 403);
+            this.pluginTabs.Size = new System.Drawing.Size(992, 436);
             this.pluginTabs.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.pluginTabs.TabIndex = 3;
             // 
@@ -262,7 +262,7 @@ namespace WaywardGamers.KParser
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.ClientSize = new System.Drawing.Size(771, 424);
+            this.ClientSize = new System.Drawing.Size(992, 457);
             this.Controls.Add(this.pluginTabs);
             this.Controls.Add(this.statusStrip);
             this.Menu = this.mainMenu;
