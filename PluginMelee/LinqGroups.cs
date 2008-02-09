@@ -18,6 +18,10 @@ namespace WaywardGamers.KParser.Plugin
         internal IEnumerable<IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow>>
             CombatGroup { get; set; }
 
+        public AttackGroup()
+        {
+        }
+
         public AttackGroup(ActionType key,
             IEnumerable<IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow>> grouping)
         {
@@ -28,5 +32,30 @@ namespace WaywardGamers.KParser.Plugin
 
     internal class DefenseGroup
     {
+        internal string Player { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> AllAttacks { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Melee { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Range { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Spell { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Abil { get; set; }
+
+        public DefenseGroup()
+        {
+        }
+
+        public DefenseGroup(string player,
+            IEnumerable<KPDatabaseDataSet.InteractionsRow> allAtt,
+            IEnumerable<KPDatabaseDataSet.InteractionsRow> melee,
+            IEnumerable<KPDatabaseDataSet.InteractionsRow> range,
+            IEnumerable<KPDatabaseDataSet.InteractionsRow> spell,
+            IEnumerable<KPDatabaseDataSet.InteractionsRow> abil)
+        {
+            Player = player;
+            AllAttacks = allAtt;
+            Melee = melee;
+            Range = range;
+            Spell = spell;
+            Abil = abil;
+        }
     }
 }

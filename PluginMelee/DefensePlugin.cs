@@ -28,6 +28,7 @@ namespace WaywardGamers.KParser.Plugin
             comboBox1.Items.Add("All");
             comboBox1.Items.Add("Recovery");
             comboBox1.Items.Add("Defense");
+            comboBox1.Items.Add("Utsusemi");
             comboBox1.SelectedIndex = 0;
 
             label2.Left = comboBox1.Right + 20;
@@ -164,10 +165,11 @@ namespace WaywardGamers.KParser.Plugin
         string cureHeader        = "Player           Cured (Sp)  Cured (Ab)  C.1s  C.2s  C.3s  C.4s  C.5s  Curagas  Rg.1s  Rg.2s  Rg.3s\n";
         string avgCureHeader     = "Player           Avg Cure 1   Avg Cure 2   Avg Cure 3   Avg Cure 4   Avg Cure 5   Avg Ability\n";
 
-        string incAttacksHeader  = "Player           M.Hits Tk   R.Hits Tk   S.Hits Tk   A/WS Hits Tk   Hits Avoided   Avoid %   Attack# %\n";
+        string incAttacksHeader  = "Player           Melee   Range   Abil/Ws   Spells   Avoided   Avoid %   Attack# %\n";
         string incDamageHeader   = "Player           M.Dmg   Avg M.Dmg   R.Dmg  Avg R.Dmg   S.Dmg  Avg S.Dmg   A/WS.Dmg  Avg A/WS.Dmg   Damage %\n";
-        string evasionHeader     = "Player           M.Evade  M.Evade %  R.Evade  R.Evade %\n";
+        string evasionHeader     = "Player           M.Evade   M.Evade %   R.Evade   R.Evade %\n";
         string otherDefHeader    = "Player           Parry   Parry %   Blink   Blink %   Anticipate  Anticipate %   Counter   Counter %\n";
+        
         string utsuHeader        = "Player           Shadows Used   Ichi Cast  Ichi Fin  Ni Cast  Ni Fin  Shadows  Shadows(N)  Efficiency  Efficiency(N)\n";
         #endregion
 
@@ -182,6 +184,7 @@ namespace WaywardGamers.KParser.Plugin
                     // All
                     ProcessRecovery(dataSet);
                     ProcessDefense(dataSet);
+                    ProcessDefenseUtsusemi(dataSet);
                     break;
                 case 1:
                     // Recovery
@@ -190,6 +193,10 @@ namespace WaywardGamers.KParser.Plugin
                 case 2:
                     // Defense
                     ProcessDefense(dataSet);
+                    break;
+                case 3:
+                    // Utsusemi
+                    ProcessDefenseUtsusemi(dataSet);
                     break;
             }
         }
@@ -554,87 +561,227 @@ namespace WaywardGamers.KParser.Plugin
         #region Defense
         private void ProcessDefense(KPDatabaseDataSet dataSet)
         {
-            AppendBoldText("Defense\n\n", Color.Red);
+            IEnumerable<DefenseGroup> incAttacks;
 
-            ProcessDefenseAttacks(dataSet);
-            ProcessDefenseDamage(dataSet);
-            ProcessDefenseEvasion(dataSet);
-            ProcessDefenseOther(dataSet);
-            ProcessDefenseUtsusemi(dataSet);
+            incAttacks = from cd in dataSet.Interactions
+                         where ((cd.IsTargetIDNull() == false) &&
+                                ((cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Player) ||
+                                 (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
+                                 (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Fellow)) &&
+                                ((cd.HarmType == (byte)HarmType.Damage) ||
+                                 (cd.HarmType == (byte)HarmType.Drain)))
+                         group cd by cd.CombatantsRowByTargetCombatantRelation.CombatantName into cdd
+                         orderby cdd.Key
+                         select new DefenseGroup
+                         {
+                             Player = cdd.Key,
+                             AllAttacks = from pd in cdd
+                                          select pd,
+                             Melee = from pd in cdd
+                                     where (pd.ActionType == (byte)ActionType.Melee)
+                                     select pd,
+                             Range = from pd in cdd
+                                     where (pd.ActionType == (byte)ActionType.Ranged)
+                                     select pd,
+                             Spell = from pd in cdd
+                                     where (pd.ActionType == (byte)ActionType.Spell)
+                                     select pd,
+                             Abil = from pd in cdd
+                                    where ((pd.ActionType == (byte)ActionType.Ability) ||
+                                            (pd.ActionType == (byte)ActionType.Weaponskill))
+                                    select pd
+                         };
+
+            if ((incAttacks != null) && (incAttacks.Count() > 0))
+            {
+                AppendBoldText("Defense\n\n", Color.Red);
+
+                ProcessDefenseAttacks(incAttacks);
+                ProcessDefenseDamage(incAttacks);
+                ProcessDefenseEvasion(incAttacks);
+                ProcessDefenseOther(incAttacks);
+
+                AppendNormalText("\n");
+            }
         }
-        private void ProcessDefenseAttacks(KPDatabaseDataSet dataSet)
+
+        private void ProcessDefenseAttacks(IEnumerable<DefenseGroup> incAttacks)
         {
             AppendBoldText("Incoming Attacks\n", Color.Blue);
             AppendBoldUnderText(incAttacksHeader, Color.Black);
 
-            //"Player           M.Hits Tk   R.Hits Tk   S.Hits Tk   A/WS Hits Tk   Hits Avoided   Avoid %   Attack# %"
-
-
-            var incAttacks = from cd in dataSet.Interactions
-                             where ((cd.IsTargetIDNull() == false) &&
-                                    ((cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Player) ||
-                                     (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
-                                     (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Fellow)) &&
-                                    ((cd.HarmType == (byte)HarmType.Damage) ||
-                                     (cd.HarmType == (byte)HarmType.Drain)))
-                             group cd by cd.CombatantsRowByTargetCombatantRelation.CombatantName into cdd
-                             orderby cdd.Key
-                             select new
-                             {
-                                 Player = cdd.Key,
-                                 Melee = from pd in cdd
-                                         where (pd.ActionType == (byte)ActionType.Melee)
-                                         select pd,
-                                 Range = from pd in cdd
-                                         where (pd.ActionType == (byte)ActionType.Ranged)
-                                         select pd,
-                                 Spell = from pd in cdd
-                                         where (pd.ActionType == (byte)ActionType.Spell)
-                                         select pd,
-                                 Abil = from pd in cdd
-                                        where ((pd.ActionType == (byte)ActionType.Ability) ||
-                                                (pd.ActionType == (byte)ActionType.Weaponskill))
-                                        select pd
-                             };
-
-
             StringBuilder sb = new StringBuilder();
+
+            //"Player           Melee   Range   Abil/Ws   Spells   Avoided   Avoid %   Attack# %"
+
+            int totalAttacks = incAttacks.Sum(b =>
+                b.Melee.Count() + b.Range.Count() + b.Abil.Count() + b.Spell.Count());
+
+            foreach (var player in incAttacks)
+            {
+                sb.Append(player.Player.PadRight(16));
+                sb.Append(" ");
+
+                int mHits = 0;
+                int rHits = 0;
+                int sHits = 0;
+                int aHits = 0;
+                int incHits = 0;
+                int avoidHits = 0;
+
+                double avoidPerc = 0;
+                double attackPerc = 0;
+
+                if (player.Melee != null)
+                    mHits = player.Melee.Count();
+                if (player.Range != null)
+                    rHits = player.Range.Count();
+                if (player.Abil != null)
+                    aHits = player.Abil.Count();
+                if (player.Spell != null)
+                    sHits = player.Spell.Count();
+
+                incHits = mHits + rHits + aHits + sHits;
+
+                avoidHits = player.AllAttacks.Count(h => h.DefenseType != (byte)DefenseType.None);
+
+                avoidPerc = (double)avoidHits / incHits;
+
+                attackPerc = (double)incHits / totalAttacks;
+
+
+                sb.Append(mHits.ToString().PadLeft(5));
+                sb.Append(rHits.ToString().PadLeft(8));
+                sb.Append(aHits.ToString().PadLeft(10));
+                sb.Append(sHits.ToString().PadLeft(9));
+                sb.Append(avoidHits.ToString().PadLeft(10));
+                sb.Append(avoidPerc.ToString("P2").PadLeft(10));
+                sb.Append(attackPerc.ToString("P2").PadLeft(12));
+
+                sb.Append("\n");
+            }
 
             sb.Append("\n");
             AppendNormalText(sb.ToString());
-
         }
 
-        private void ProcessDefenseDamage(KPDatabaseDataSet dataSet)
+        private void ProcessDefenseDamage(IEnumerable<DefenseGroup> incAttacks)
         {
             AppendBoldText("Incoming Damage\n", Color.Blue);
             AppendBoldUnderText(incDamageHeader, Color.Black);
 
-            AppendNormalText("\n");
+            StringBuilder sb = new StringBuilder();
+
+
+
+            sb.Append("\n");
+            AppendNormalText(sb.ToString());
         }
 
-        private void ProcessDefenseEvasion(KPDatabaseDataSet dataSet)
+        private void ProcessDefenseEvasion(IEnumerable<DefenseGroup> incAttacks)
         {
             AppendBoldText("Evasion\n", Color.Blue);
             AppendBoldUnderText(evasionHeader, Color.Black);
 
-            AppendNormalText("\n");
+            //Player           M.Evade   M.Evade %   R.Evade   R.Evade %
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var player in incAttacks)
+            {
+                if ((player.Melee.Count() + player.Range.Count()) > 0)
+                {
+                    sb.Append(player.Player.PadRight(16));
+                    sb.Append(" ");
+
+                    int mEvaded = 0;
+                    double mEvadePerc = 0;
+                    int rEvaded = 0;
+                    double rEvadePerc = 0;
+
+                    if (player.Melee.Count() > 0)
+                    {
+                        mEvaded = player.Melee.Count(h => h.DefenseType == (byte)DefenseType.Evasion);
+                        mEvadePerc = (double)mEvaded / player.Melee.Count();
+                    }
+
+                    if (player.Range.Count() > 0)
+                    {
+                        rEvaded = player.Range.Count(h => h.DefenseType == (byte)DefenseType.Evasion);
+                        rEvadePerc = (double)rEvaded / player.Range.Count();
+                    }
+
+                    sb.Append(mEvaded.ToString().PadLeft(7));
+                    sb.Append(mEvadePerc.ToString("P2").PadLeft(12));
+                    sb.Append(rEvaded.ToString().PadLeft(10));
+                    sb.Append(rEvadePerc.ToString("P2").PadLeft(12));
+
+                    sb.Append("\n");
+                }
+            }
+
+            sb.Append("\n");
+            AppendNormalText(sb.ToString());
         }
 
-        private void ProcessDefenseOther(KPDatabaseDataSet dataSet)
+        private void ProcessDefenseOther(IEnumerable<DefenseGroup> incAttacks)
         {
             AppendBoldText("Other Defenses\n", Color.Blue);
             AppendBoldUnderText(otherDefHeader, Color.Black);
 
-            AppendNormalText("\n");
-        }
+            StringBuilder sb = new StringBuilder();
 
+            foreach (var player in incAttacks)
+            {
+                if ((player.Melee.Count() + player.Range.Count()) > 0)
+                {
+                    sb.Append(player.Player.PadRight(16));
+                    sb.Append(" ");
+
+                    int mEvaded = 0;
+                    double mEvadePerc = 0;
+                    int rEvaded = 0;
+                    double rEvadePerc = 0;
+
+                    if (player.Melee.Count() > 0)
+                    {
+                        mEvaded = player.Melee.Count(h => h.DefenseType == (byte)DefenseType.Evasion);
+                        mEvadePerc = (double)mEvaded / player.Melee.Count();
+                    }
+
+                    if (player.Range.Count() > 0)
+                    {
+                        rEvaded = player.Range.Count(h => h.DefenseType == (byte)DefenseType.Evasion);
+                        rEvadePerc = (double)rEvaded / player.Range.Count();
+                    }
+
+                    sb.Append(mEvaded.ToString().PadLeft(7));
+                    sb.Append(mEvadePerc.ToString("P2").PadLeft(12));
+                    sb.Append(rEvaded.ToString().PadLeft(10));
+                    sb.Append(rEvadePerc.ToString("P2").PadLeft(12));
+
+                    sb.Append("\n");
+                }
+            }
+
+
+            sb.Append("\n");
+            AppendNormalText(sb.ToString());
+        }
+        #endregion
+
+        #region Utsu
         private void ProcessDefenseUtsusemi(KPDatabaseDataSet dataSet)
         {
-            AppendBoldText("Utsusemi\n", Color.Blue);
+            AppendBoldText("Utsusemi\n\n", Color.Red);
             AppendBoldUnderText(utsuHeader, Color.Black);
 
-            AppendNormalText("\n");
+            StringBuilder sb = new StringBuilder();
+
+
+
+            sb.Append("\n");
+            AppendNormalText(sb.ToString());
         }
         #endregion
         #endregion

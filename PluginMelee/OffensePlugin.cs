@@ -204,11 +204,13 @@ namespace WaywardGamers.KParser.Plugin
                                     ) &&
                                     ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
                              group cd by cd.ActionType into cda
-                             select new AttackGroup(
-                                 (ActionType)cda.Key,
-                                  from c in cda
-                                  orderby c.CombatantsRowByActorCombatantRelation.CombatantName
-                                  group c by c.CombatantsRowByActorCombatantRelation);
+                             select new AttackGroup
+                                 {
+                                     ActionSource = (ActionType) cda.Key,
+                                     CombatGroup = from c in cda
+                                                   orderby c.CombatantsRowByActorCombatantRelation.CombatantName
+                                                   group c by c.CombatantsRowByActorCombatantRelation
+                                 };
 
             }
             else
@@ -232,11 +234,13 @@ namespace WaywardGamers.KParser.Plugin
                                             (cd.BattlesRow.CombatantsRowByEnemyCombatantRelation.CombatantName == mobAndXPMatch.Groups["mobName"].Value) &&
                                             ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
                                      group cd by cd.ActionType into cda
-                                     select new AttackGroup(
-                                         (ActionType)cda.Key,
-                                          from c in cda
-                                          orderby c.CombatantsRowByActorCombatantRelation.CombatantName
-                                          group c by c.CombatantsRowByActorCombatantRelation);
+                                     select new AttackGroup
+                                         {
+                                             ActionSource = (ActionType)cda.Key,
+                                             CombatGroup = from c in cda
+                                                           orderby c.CombatantsRowByActorCombatantRelation.CombatantName
+                                                           group c by c.CombatantsRowByActorCombatantRelation
+                                         };
                     }
                     else if (mobAndXPMatch.Captures.Count == 2)
                     {
@@ -255,11 +259,14 @@ namespace WaywardGamers.KParser.Plugin
                                             (cd.BattlesRow.BaseExperience() == xp) &&
                                             ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
                                      group cd by cd.ActionType into cda
-                                     select new AttackGroup(
-                                         (ActionType)cda.Key,
+                                     select new AttackGroup
+                                     {
+                                         ActionSource = (ActionType)cda.Key,
+                                         CombatGroup =
                                           from c in cda
                                           orderby c.CombatantsRowByActorCombatantRelation.CombatantName
-                                          group c by c.CombatantsRowByActorCombatantRelation);
+                                          group c by c.CombatantsRowByActorCombatantRelation
+                                     };
                     }
                     else
                     {
