@@ -20,6 +20,7 @@ namespace WaywardGamers.KParser.Plugin
         public override void Reset()
         {
             richTextBox.Clear();
+            richTextBox.WordWrap = false;
 
             label1.Text = "Attack Type";
             comboBox1.Left = label1.Right + 10;

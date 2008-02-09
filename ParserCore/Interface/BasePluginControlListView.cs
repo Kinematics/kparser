@@ -55,6 +55,7 @@ namespace WaywardGamers.KParser.Plugin
 
         public virtual void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
+            this.
             HandleDataset(dataSet);
         }
 

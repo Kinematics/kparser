@@ -175,6 +175,7 @@ namespace WaywardGamers.KParser
             sb.AppendFormat("Message Code: {0:x}\n", MessageCode);
 
             sb.AppendFormat("Message Category: {0}\n", MessageCategory);
+            sb.AppendFormat("Parse Successful: {0}\n", ParseSuccessful);
 
             if (SystemDetails != null)
                 sb.Append(SystemDetails.ToString());

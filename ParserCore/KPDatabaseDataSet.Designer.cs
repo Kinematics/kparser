@@ -65,6 +65,8 @@ namespace WaywardGamers.KParser {
         
         private global::System.Data.DataRelation relationTargetCombatantRelation;
         
+        private global::System.Data.DataRelation relationSecondaryActionNameRelation;
+        
         private global::System.Data.SchemaSerializationMode _schemaSerializationMode = global::System.Data.SchemaSerializationMode.IncludeSchema;
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -418,6 +420,7 @@ namespace WaywardGamers.KParser {
             this.relationActorCombatantRelation = this.Relations["ActorCombatantRelation"];
             this.relationBattleInteractionsRelation = this.Relations["BattleInteractionsRelation"];
             this.relationTargetCombatantRelation = this.Relations["TargetCombatantRelation"];
+            this.relationSecondaryActionNameRelation = this.Relations["SecondaryActionNameRelation"];
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -487,6 +490,10 @@ namespace WaywardGamers.KParser {
                         this.tableCombatants.CombatantIDColumn}, new global::System.Data.DataColumn[] {
                         this.tableInteractions.TargetIDColumn}, false);
             this.Relations.Add(this.relationTargetCombatantRelation);
+            this.relationSecondaryActionNameRelation = new global::System.Data.DataRelation("SecondaryActionNameRelation", new global::System.Data.DataColumn[] {
+                        this.tableActions.ActionIDColumn}, new global::System.Data.DataColumn[] {
+                        this.tableInteractions.SecondActionIDColumn}, false);
+            this.Relations.Add(this.relationSecondaryActionNameRelation);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -3212,6 +3219,8 @@ namespace WaywardGamers.KParser {
             
             private global::System.Data.DataColumn columnSecondAmount;
             
+            private global::System.Data.DataColumn columnSecondActionID;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             public InteractionsDataTable() {
                 this.TableName = "Interactions";
@@ -3390,6 +3399,13 @@ namespace WaywardGamers.KParser {
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            public global::System.Data.DataColumn SecondActionIDColumn {
+                get {
+                    return this.columnSecondActionID;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -3438,7 +3454,8 @@ namespace WaywardGamers.KParser {
                         byte SecondAidType, 
                         byte SecondRecoveryType, 
                         byte SecondHarmType, 
-                        int SecondAmount) {
+                        int SecondAmount, 
+                        ActionsRow parentActionsRowBySecondaryActionNameRelation) {
                 InteractionsRow rowInteractionsRow = ((InteractionsRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
@@ -3461,7 +3478,8 @@ namespace WaywardGamers.KParser {
                         SecondAidType,
                         SecondRecoveryType,
                         SecondHarmType,
-                        SecondAmount};
+                        SecondAmount,
+                        null};
                 if ((parentCombatantsRowByActorCombatantRelation != null)) {
                     columnValuesArray[2] = parentCombatantsRowByActorCombatantRelation[0];
                 }
@@ -3473,6 +3491,9 @@ namespace WaywardGamers.KParser {
                 }
                 if ((parentActionsRowByActionNamesRelation != null)) {
                     columnValuesArray[7] = parentActionsRowByActionNamesRelation[0];
+                }
+                if ((parentActionsRowBySecondaryActionNameRelation != null)) {
+                    columnValuesArray[21] = parentActionsRowBySecondaryActionNameRelation[0];
                 }
                 rowInteractionsRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowInteractionsRow);
@@ -3520,6 +3541,7 @@ namespace WaywardGamers.KParser {
                 this.columnSecondRecoveryType = base.Columns["SecondRecoveryType"];
                 this.columnSecondHarmType = base.Columns["SecondHarmType"];
                 this.columnSecondAmount = base.Columns["SecondAmount"];
+                this.columnSecondActionID = base.Columns["SecondActionID"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -3566,6 +3588,8 @@ namespace WaywardGamers.KParser {
                 base.Columns.Add(this.columnSecondHarmType);
                 this.columnSecondAmount = new global::System.Data.DataColumn("SecondAmount", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnSecondAmount);
+                this.columnSecondActionID = new global::System.Data.DataColumn("SecondActionID", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnSecondActionID);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnInteractionID}, true));
                 this.columnInteractionID.AutoIncrement = true;
@@ -3578,17 +3602,29 @@ namespace WaywardGamers.KParser {
                 this.columnPreparing.DefaultValue = ((bool)(false));
                 this.columnActionType.AllowDBNull = false;
                 this.columnActionType.DefaultValue = ((byte)(0));
+                this.columnFailedActionType.AllowDBNull = false;
                 this.columnFailedActionType.DefaultValue = ((byte)(0));
+                this.columnDefenseType.AllowDBNull = false;
                 this.columnDefenseType.DefaultValue = ((byte)(0));
+                this.columnShadowsUsed.AllowDBNull = false;
                 this.columnShadowsUsed.DefaultValue = ((byte)(0));
+                this.columnAidType.AllowDBNull = false;
                 this.columnAidType.DefaultValue = ((byte)(0));
+                this.columnRecoveryType.AllowDBNull = false;
                 this.columnRecoveryType.DefaultValue = ((byte)(0));
+                this.columnHarmType.AllowDBNull = false;
                 this.columnHarmType.DefaultValue = ((byte)(0));
+                this.columnAmount.AllowDBNull = false;
                 this.columnAmount.DefaultValue = ((int)(0));
+                this.columnDamageModifier.AllowDBNull = false;
                 this.columnDamageModifier.DefaultValue = ((byte)(0));
+                this.columnSecondAidType.AllowDBNull = false;
                 this.columnSecondAidType.DefaultValue = ((byte)(0));
+                this.columnSecondRecoveryType.AllowDBNull = false;
                 this.columnSecondRecoveryType.DefaultValue = ((byte)(0));
+                this.columnSecondHarmType.AllowDBNull = false;
                 this.columnSecondHarmType.DefaultValue = ((byte)(0));
+                this.columnSecondAmount.AllowDBNull = false;
                 this.columnSecondAmount.DefaultValue = ((int)(0));
             }
             
@@ -3748,6 +3784,16 @@ namespace WaywardGamers.KParser {
                 }
                 else {
                     return ((InteractionsRow[])(base.GetChildRows(this.Table.ChildRelations["ActionNamesRelation"])));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            public InteractionsRow[] GetInteractionsRowsBySecondaryActionNameRelation() {
+                if ((this.Table.ChildRelations["SecondaryActionNameRelation"] == null)) {
+                    return new InteractionsRow[0];
+                }
+                else {
+                    return ((InteractionsRow[])(base.GetChildRows(this.Table.ChildRelations["SecondaryActionNameRelation"])));
                 }
             }
         }
@@ -4614,12 +4660,7 @@ namespace WaywardGamers.KParser {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             public byte FailedActionType {
                 get {
-                    try {
-                        return ((byte)(this[this.tableInteractions.FailedActionTypeColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'FailedActionType\' in table \'Interactions\' is DBNull.", e);
-                    }
+                    return ((byte)(this[this.tableInteractions.FailedActionTypeColumn]));
                 }
                 set {
                     this[this.tableInteractions.FailedActionTypeColumn] = value;
@@ -4629,12 +4670,7 @@ namespace WaywardGamers.KParser {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             public byte DefenseType {
                 get {
-                    try {
-                        return ((byte)(this[this.tableInteractions.DefenseTypeColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'DefenseType\' in table \'Interactions\' is DBNull.", e);
-                    }
+                    return ((byte)(this[this.tableInteractions.DefenseTypeColumn]));
                 }
                 set {
                     this[this.tableInteractions.DefenseTypeColumn] = value;
@@ -4644,12 +4680,7 @@ namespace WaywardGamers.KParser {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             public byte ShadowsUsed {
                 get {
-                    try {
-                        return ((byte)(this[this.tableInteractions.ShadowsUsedColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'ShadowsUsed\' in table \'Interactions\' is DBNull.", e);
-                    }
+                    return ((byte)(this[this.tableInteractions.ShadowsUsedColumn]));
                 }
                 set {
                     this[this.tableInteractions.ShadowsUsedColumn] = value;
@@ -4659,12 +4690,7 @@ namespace WaywardGamers.KParser {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             public byte AidType {
                 get {
-                    try {
-                        return ((byte)(this[this.tableInteractions.AidTypeColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'AidType\' in table \'Interactions\' is DBNull.", e);
-                    }
+                    return ((byte)(this[this.tableInteractions.AidTypeColumn]));
                 }
                 set {
                     this[this.tableInteractions.AidTypeColumn] = value;
@@ -4674,12 +4700,7 @@ namespace WaywardGamers.KParser {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             public byte RecoveryType {
                 get {
-                    try {
-                        return ((byte)(this[this.tableInteractions.RecoveryTypeColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'RecoveryType\' in table \'Interactions\' is DBNull.", e);
-                    }
+                    return ((byte)(this[this.tableInteractions.RecoveryTypeColumn]));
                 }
                 set {
                     this[this.tableInteractions.RecoveryTypeColumn] = value;
@@ -4689,12 +4710,7 @@ namespace WaywardGamers.KParser {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             public byte HarmType {
                 get {
-                    try {
-                        return ((byte)(this[this.tableInteractions.HarmTypeColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'HarmType\' in table \'Interactions\' is DBNull.", e);
-                    }
+                    return ((byte)(this[this.tableInteractions.HarmTypeColumn]));
                 }
                 set {
                     this[this.tableInteractions.HarmTypeColumn] = value;
@@ -4704,12 +4720,7 @@ namespace WaywardGamers.KParser {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             public int Amount {
                 get {
-                    try {
-                        return ((int)(this[this.tableInteractions.AmountColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Amount\' in table \'Interactions\' is DBNull.", e);
-                    }
+                    return ((int)(this[this.tableInteractions.AmountColumn]));
                 }
                 set {
                     this[this.tableInteractions.AmountColumn] = value;
@@ -4719,12 +4730,7 @@ namespace WaywardGamers.KParser {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             public byte DamageModifier {
                 get {
-                    try {
-                        return ((byte)(this[this.tableInteractions.DamageModifierColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'DamageModifier\' in table \'Interactions\' is DBNull.", e);
-                    }
+                    return ((byte)(this[this.tableInteractions.DamageModifierColumn]));
                 }
                 set {
                     this[this.tableInteractions.DamageModifierColumn] = value;
@@ -4734,12 +4740,7 @@ namespace WaywardGamers.KParser {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             public byte SecondAidType {
                 get {
-                    try {
-                        return ((byte)(this[this.tableInteractions.SecondAidTypeColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'SecondAidType\' in table \'Interactions\' is DBNull.", e);
-                    }
+                    return ((byte)(this[this.tableInteractions.SecondAidTypeColumn]));
                 }
                 set {
                     this[this.tableInteractions.SecondAidTypeColumn] = value;
@@ -4749,12 +4750,7 @@ namespace WaywardGamers.KParser {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             public byte SecondRecoveryType {
                 get {
-                    try {
-                        return ((byte)(this[this.tableInteractions.SecondRecoveryTypeColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'SecondRecoveryType\' in table \'Interactions\' is DBNull.", e);
-                    }
+                    return ((byte)(this[this.tableInteractions.SecondRecoveryTypeColumn]));
                 }
                 set {
                     this[this.tableInteractions.SecondRecoveryTypeColumn] = value;
@@ -4764,12 +4760,7 @@ namespace WaywardGamers.KParser {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             public byte SecondHarmType {
                 get {
-                    try {
-                        return ((byte)(this[this.tableInteractions.SecondHarmTypeColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'SecondHarmType\' in table \'Interactions\' is DBNull.", e);
-                    }
+                    return ((byte)(this[this.tableInteractions.SecondHarmTypeColumn]));
                 }
                 set {
                     this[this.tableInteractions.SecondHarmTypeColumn] = value;
@@ -4779,15 +4770,25 @@ namespace WaywardGamers.KParser {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             public int SecondAmount {
                 get {
-                    try {
-                        return ((int)(this[this.tableInteractions.SecondAmountColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'SecondAmount\' in table \'Interactions\' is DBNull.", e);
-                    }
+                    return ((int)(this[this.tableInteractions.SecondAmountColumn]));
                 }
                 set {
                     this[this.tableInteractions.SecondAmountColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            public int SecondActionID {
+                get {
+                    try {
+                        return ((int)(this[this.tableInteractions.SecondActionIDColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'SecondActionID\' in table \'Interactions\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableInteractions.SecondActionIDColumn] = value;
                 }
             }
             
@@ -4832,6 +4833,16 @@ namespace WaywardGamers.KParser {
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            public ActionsRow ActionsRowBySecondaryActionNameRelation {
+                get {
+                    return ((ActionsRow)(this.GetParentRow(this.Table.ParentRelations["SecondaryActionNameRelation"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["SecondaryActionNameRelation"]);
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             public bool IsActorIDNull() {
                 return this.IsNull(this.tableInteractions.ActorIDColumn);
             }
@@ -4872,123 +4883,13 @@ namespace WaywardGamers.KParser {
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public bool IsFailedActionTypeNull() {
-                return this.IsNull(this.tableInteractions.FailedActionTypeColumn);
+            public bool IsSecondActionIDNull() {
+                return this.IsNull(this.tableInteractions.SecondActionIDColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public void SetFailedActionTypeNull() {
-                this[this.tableInteractions.FailedActionTypeColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public bool IsDefenseTypeNull() {
-                return this.IsNull(this.tableInteractions.DefenseTypeColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public void SetDefenseTypeNull() {
-                this[this.tableInteractions.DefenseTypeColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public bool IsShadowsUsedNull() {
-                return this.IsNull(this.tableInteractions.ShadowsUsedColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public void SetShadowsUsedNull() {
-                this[this.tableInteractions.ShadowsUsedColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public bool IsAidTypeNull() {
-                return this.IsNull(this.tableInteractions.AidTypeColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public void SetAidTypeNull() {
-                this[this.tableInteractions.AidTypeColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public bool IsRecoveryTypeNull() {
-                return this.IsNull(this.tableInteractions.RecoveryTypeColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public void SetRecoveryTypeNull() {
-                this[this.tableInteractions.RecoveryTypeColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public bool IsHarmTypeNull() {
-                return this.IsNull(this.tableInteractions.HarmTypeColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public void SetHarmTypeNull() {
-                this[this.tableInteractions.HarmTypeColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public bool IsAmountNull() {
-                return this.IsNull(this.tableInteractions.AmountColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public void SetAmountNull() {
-                this[this.tableInteractions.AmountColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public bool IsDamageModifierNull() {
-                return this.IsNull(this.tableInteractions.DamageModifierColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public void SetDamageModifierNull() {
-                this[this.tableInteractions.DamageModifierColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public bool IsSecondAidTypeNull() {
-                return this.IsNull(this.tableInteractions.SecondAidTypeColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public void SetSecondAidTypeNull() {
-                this[this.tableInteractions.SecondAidTypeColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public bool IsSecondRecoveryTypeNull() {
-                return this.IsNull(this.tableInteractions.SecondRecoveryTypeColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public void SetSecondRecoveryTypeNull() {
-                this[this.tableInteractions.SecondRecoveryTypeColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public bool IsSecondHarmTypeNull() {
-                return this.IsNull(this.tableInteractions.SecondHarmTypeColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public void SetSecondHarmTypeNull() {
-                this[this.tableInteractions.SecondHarmTypeColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public bool IsSecondAmountNull() {
-                return this.IsNull(this.tableInteractions.SecondAmountColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            public void SetSecondAmountNull() {
-                this[this.tableInteractions.SecondAmountColumn] = global::System.Convert.DBNull;
+            public void SetSecondActionIDNull() {
+                this[this.tableInteractions.SecondActionIDColumn] = global::System.Convert.DBNull;
             }
         }
         
@@ -8142,6 +8043,7 @@ namespace WaywardGamers.KParser.KPDatabaseDataSetTableAdapters {
             tableMapping.ColumnMappings.Add("SecondRecoveryType", "SecondRecoveryType");
             tableMapping.ColumnMappings.Add("SecondHarmType", "SecondHarmType");
             tableMapping.ColumnMappings.Add("SecondAmount", "SecondAmount");
+            tableMapping.ColumnMappings.Add("SecondActionID", "SecondActionID");
             this._adapter.TableMappings.Add(tableMapping);
             this._adapter.DeleteCommand = new global::System.Data.SqlServerCe.SqlCeCommand();
             this._adapter.DeleteCommand.Connection = this.Connection;
@@ -8150,7 +8052,7 @@ namespace WaywardGamers.KParser.KPDatabaseDataSetTableAdapters {
             this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlServerCe.SqlCeParameter("@p1", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, true, 0, 0, "InteractionID", global::System.Data.DataRowVersion.Original, null));
             this._adapter.InsertCommand = new global::System.Data.SqlServerCe.SqlCeCommand();
             this._adapter.InsertCommand.Connection = this.Connection;
-            this._adapter.InsertCommand.CommandText = @"INSERT INTO [Interactions] ([InteractionID], [Timestamp], [ActorID], [TargetID], [BattleID], [ActorType], [Preparing], [ActionID], [ActionType], [FailedActionType], [DefenseType], [ShadowsUsed], [AidType], [RecoveryType], [HarmType], [Amount], [DamageModifier], [SecondAidType], [SecondRecoveryType], [SecondHarmType], [SecondAmount]) VALUES (@p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18, @p19, @p20, @p21)";
+            this._adapter.InsertCommand.CommandText = @"INSERT INTO [Interactions] ([InteractionID], [Timestamp], [ActorID], [TargetID], [BattleID], [ActorType], [Preparing], [ActionID], [ActionType], [FailedActionType], [DefenseType], [ShadowsUsed], [AidType], [RecoveryType], [HarmType], [Amount], [DamageModifier], [SecondAidType], [SecondRecoveryType], [SecondHarmType], [SecondAmount], [SecondActionID]) VALUES (@p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18, @p19, @p20, @p21, @p22)";
             this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlServerCe.SqlCeParameter("@p1", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, true, 0, 0, "InteractionID", global::System.Data.DataRowVersion.Current, null));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlServerCe.SqlCeParameter("@p2", global::System.Data.SqlDbType.DateTime, 0, global::System.Data.ParameterDirection.Input, true, 0, 0, "Timestamp", global::System.Data.DataRowVersion.Current, null));
@@ -8173,9 +8075,10 @@ namespace WaywardGamers.KParser.KPDatabaseDataSetTableAdapters {
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlServerCe.SqlCeParameter("@p19", global::System.Data.SqlDbType.TinyInt, 0, global::System.Data.ParameterDirection.Input, true, 0, 0, "SecondRecoveryType", global::System.Data.DataRowVersion.Current, null));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlServerCe.SqlCeParameter("@p20", global::System.Data.SqlDbType.TinyInt, 0, global::System.Data.ParameterDirection.Input, true, 0, 0, "SecondHarmType", global::System.Data.DataRowVersion.Current, null));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlServerCe.SqlCeParameter("@p21", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, true, 0, 0, "SecondAmount", global::System.Data.DataRowVersion.Current, null));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlServerCe.SqlCeParameter("@p22", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, true, 0, 0, "SecondActionID", global::System.Data.DataRowVersion.Current, null));
             this._adapter.UpdateCommand = new global::System.Data.SqlServerCe.SqlCeCommand();
             this._adapter.UpdateCommand.Connection = this.Connection;
-            this._adapter.UpdateCommand.CommandText = @"UPDATE [Interactions] SET [InteractionID] = @p1, [Timestamp] = @p2, [ActorID] = @p3, [TargetID] = @p4, [BattleID] = @p5, [ActorType] = @p6, [Preparing] = @p7, [ActionID] = @p8, [ActionType] = @p9, [FailedActionType] = @p10, [DefenseType] = @p11, [ShadowsUsed] = @p12, [AidType] = @p13, [RecoveryType] = @p14, [HarmType] = @p15, [Amount] = @p16, [DamageModifier] = @p17, [SecondAidType] = @p18, [SecondRecoveryType] = @p19, [SecondHarmType] = @p20, [SecondAmount] = @p21 WHERE (([InteractionID] = @p22))";
+            this._adapter.UpdateCommand.CommandText = @"UPDATE [Interactions] SET [InteractionID] = @p1, [Timestamp] = @p2, [ActorID] = @p3, [TargetID] = @p4, [BattleID] = @p5, [ActorType] = @p6, [Preparing] = @p7, [ActionID] = @p8, [ActionType] = @p9, [FailedActionType] = @p10, [DefenseType] = @p11, [ShadowsUsed] = @p12, [AidType] = @p13, [RecoveryType] = @p14, [HarmType] = @p15, [Amount] = @p16, [DamageModifier] = @p17, [SecondAidType] = @p18, [SecondRecoveryType] = @p19, [SecondHarmType] = @p20, [SecondAmount] = @p21, [SecondActionID] = @p22 WHERE (([InteractionID] = @p23))";
             this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlServerCe.SqlCeParameter("@p1", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, true, 0, 0, "InteractionID", global::System.Data.DataRowVersion.Current, null));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlServerCe.SqlCeParameter("@p2", global::System.Data.SqlDbType.DateTime, 0, global::System.Data.ParameterDirection.Input, true, 0, 0, "Timestamp", global::System.Data.DataRowVersion.Current, null));
@@ -8198,7 +8101,8 @@ namespace WaywardGamers.KParser.KPDatabaseDataSetTableAdapters {
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlServerCe.SqlCeParameter("@p19", global::System.Data.SqlDbType.TinyInt, 0, global::System.Data.ParameterDirection.Input, true, 0, 0, "SecondRecoveryType", global::System.Data.DataRowVersion.Current, null));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlServerCe.SqlCeParameter("@p20", global::System.Data.SqlDbType.TinyInt, 0, global::System.Data.ParameterDirection.Input, true, 0, 0, "SecondHarmType", global::System.Data.DataRowVersion.Current, null));
             this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlServerCe.SqlCeParameter("@p21", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, true, 0, 0, "SecondAmount", global::System.Data.DataRowVersion.Current, null));
-            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlServerCe.SqlCeParameter("@p22", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, true, 0, 0, "InteractionID", global::System.Data.DataRowVersion.Original, null));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlServerCe.SqlCeParameter("@p22", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, true, 0, 0, "SecondActionID", global::System.Data.DataRowVersion.Current, null));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlServerCe.SqlCeParameter("@p23", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, true, 0, 0, "InteractionID", global::System.Data.DataRowVersion.Original, null));
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -8212,7 +8116,10 @@ namespace WaywardGamers.KParser.KPDatabaseDataSetTableAdapters {
             this._commandCollection = new global::System.Data.SqlServerCe.SqlCeCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlServerCe.SqlCeCommand();
             this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = @"SELECT [InteractionID], [Timestamp], [ActorID], [TargetID], [BattleID], [ActorType], [Preparing], [ActionID], [ActionType], [FailedActionType], [DefenseType], [ShadowsUsed], [AidType], [RecoveryType], [HarmType], [Amount], [DamageModifier], [SecondAidType], [SecondRecoveryType], [SecondHarmType], [SecondAmount] FROM [Interactions]";
+            this._commandCollection[0].CommandText = @"SELECT     InteractionID, Timestamp, ActorID, TargetID, BattleID, ActorType, Preparing, ActionID, ActionType, FailedActionType, DefenseType, ShadowsUsed, 
+                      AidType, RecoveryType, HarmType, Amount, DamageModifier, SecondAidType, SecondRecoveryType, SecondHarmType, SecondAmount, 
+                      SecondActionID
+FROM         Interactions";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         
@@ -8297,18 +8204,19 @@ namespace WaywardGamers.KParser.KPDatabaseDataSetTableAdapters {
                     bool p7, 
                     global::System.Nullable<int> p8, 
                     byte p9, 
-                    global::System.Nullable<byte> p10, 
-                    global::System.Nullable<byte> p11, 
-                    global::System.Nullable<byte> p12, 
-                    global::System.Nullable<byte> p13, 
-                    global::System.Nullable<byte> p14, 
-                    global::System.Nullable<byte> p15, 
-                    global::System.Nullable<int> p16, 
-                    global::System.Nullable<byte> p17, 
-                    global::System.Nullable<byte> p18, 
-                    global::System.Nullable<byte> p19, 
-                    global::System.Nullable<byte> p20, 
-                    global::System.Nullable<int> p21) {
+                    byte p10, 
+                    byte p11, 
+                    byte p12, 
+                    byte p13, 
+                    byte p14, 
+                    byte p15, 
+                    int p16, 
+                    byte p17, 
+                    byte p18, 
+                    byte p19, 
+                    byte p20, 
+                    int p21, 
+                    global::System.Nullable<int> p22) {
             this.Adapter.InsertCommand.Parameters[0].Value = ((int)(p1));
             this.Adapter.InsertCommand.Parameters[1].Value = ((System.DateTime)(p2));
             if ((p3.HasValue == true)) {
@@ -8338,77 +8246,23 @@ namespace WaywardGamers.KParser.KPDatabaseDataSetTableAdapters {
                 this.Adapter.InsertCommand.Parameters[7].Value = global::System.DBNull.Value;
             }
             this.Adapter.InsertCommand.Parameters[8].Value = ((byte)(p9));
-            if ((p10.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[9].Value = ((byte)(p10.Value));
+            this.Adapter.InsertCommand.Parameters[9].Value = ((byte)(p10));
+            this.Adapter.InsertCommand.Parameters[10].Value = ((byte)(p11));
+            this.Adapter.InsertCommand.Parameters[11].Value = ((byte)(p12));
+            this.Adapter.InsertCommand.Parameters[12].Value = ((byte)(p13));
+            this.Adapter.InsertCommand.Parameters[13].Value = ((byte)(p14));
+            this.Adapter.InsertCommand.Parameters[14].Value = ((byte)(p15));
+            this.Adapter.InsertCommand.Parameters[15].Value = ((int)(p16));
+            this.Adapter.InsertCommand.Parameters[16].Value = ((byte)(p17));
+            this.Adapter.InsertCommand.Parameters[17].Value = ((byte)(p18));
+            this.Adapter.InsertCommand.Parameters[18].Value = ((byte)(p19));
+            this.Adapter.InsertCommand.Parameters[19].Value = ((byte)(p20));
+            this.Adapter.InsertCommand.Parameters[20].Value = ((int)(p21));
+            if ((p22.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[21].Value = ((int)(p22.Value));
             }
             else {
-                this.Adapter.InsertCommand.Parameters[9].Value = global::System.DBNull.Value;
-            }
-            if ((p11.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[10].Value = ((byte)(p11.Value));
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[10].Value = global::System.DBNull.Value;
-            }
-            if ((p12.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[11].Value = ((byte)(p12.Value));
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[11].Value = global::System.DBNull.Value;
-            }
-            if ((p13.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[12].Value = ((byte)(p13.Value));
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[12].Value = global::System.DBNull.Value;
-            }
-            if ((p14.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[13].Value = ((byte)(p14.Value));
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[13].Value = global::System.DBNull.Value;
-            }
-            if ((p15.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[14].Value = ((byte)(p15.Value));
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[14].Value = global::System.DBNull.Value;
-            }
-            if ((p16.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[15].Value = ((int)(p16.Value));
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[15].Value = global::System.DBNull.Value;
-            }
-            if ((p17.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[16].Value = ((byte)(p17.Value));
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[16].Value = global::System.DBNull.Value;
-            }
-            if ((p18.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[17].Value = ((byte)(p18.Value));
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[17].Value = global::System.DBNull.Value;
-            }
-            if ((p19.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[18].Value = ((byte)(p19.Value));
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[18].Value = global::System.DBNull.Value;
-            }
-            if ((p20.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[19].Value = ((byte)(p20.Value));
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[19].Value = global::System.DBNull.Value;
-            }
-            if ((p21.HasValue == true)) {
-                this.Adapter.InsertCommand.Parameters[20].Value = ((int)(p21.Value));
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[20].Value = global::System.DBNull.Value;
+                this.Adapter.InsertCommand.Parameters[21].Value = global::System.DBNull.Value;
             }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
             if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
@@ -8439,19 +8293,20 @@ namespace WaywardGamers.KParser.KPDatabaseDataSetTableAdapters {
                     bool p7, 
                     global::System.Nullable<int> p8, 
                     byte p9, 
-                    global::System.Nullable<byte> p10, 
-                    global::System.Nullable<byte> p11, 
-                    global::System.Nullable<byte> p12, 
-                    global::System.Nullable<byte> p13, 
-                    global::System.Nullable<byte> p14, 
-                    global::System.Nullable<byte> p15, 
-                    global::System.Nullable<int> p16, 
-                    global::System.Nullable<byte> p17, 
-                    global::System.Nullable<byte> p18, 
-                    global::System.Nullable<byte> p19, 
-                    global::System.Nullable<byte> p20, 
-                    global::System.Nullable<int> p21, 
-                    int p22) {
+                    byte p10, 
+                    byte p11, 
+                    byte p12, 
+                    byte p13, 
+                    byte p14, 
+                    byte p15, 
+                    int p16, 
+                    byte p17, 
+                    byte p18, 
+                    byte p19, 
+                    byte p20, 
+                    int p21, 
+                    global::System.Nullable<int> p22, 
+                    int p23) {
             this.Adapter.UpdateCommand.Parameters[0].Value = ((int)(p1));
             this.Adapter.UpdateCommand.Parameters[1].Value = ((System.DateTime)(p2));
             if ((p3.HasValue == true)) {
@@ -8481,79 +8336,25 @@ namespace WaywardGamers.KParser.KPDatabaseDataSetTableAdapters {
                 this.Adapter.UpdateCommand.Parameters[7].Value = global::System.DBNull.Value;
             }
             this.Adapter.UpdateCommand.Parameters[8].Value = ((byte)(p9));
-            if ((p10.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[9].Value = ((byte)(p10.Value));
+            this.Adapter.UpdateCommand.Parameters[9].Value = ((byte)(p10));
+            this.Adapter.UpdateCommand.Parameters[10].Value = ((byte)(p11));
+            this.Adapter.UpdateCommand.Parameters[11].Value = ((byte)(p12));
+            this.Adapter.UpdateCommand.Parameters[12].Value = ((byte)(p13));
+            this.Adapter.UpdateCommand.Parameters[13].Value = ((byte)(p14));
+            this.Adapter.UpdateCommand.Parameters[14].Value = ((byte)(p15));
+            this.Adapter.UpdateCommand.Parameters[15].Value = ((int)(p16));
+            this.Adapter.UpdateCommand.Parameters[16].Value = ((byte)(p17));
+            this.Adapter.UpdateCommand.Parameters[17].Value = ((byte)(p18));
+            this.Adapter.UpdateCommand.Parameters[18].Value = ((byte)(p19));
+            this.Adapter.UpdateCommand.Parameters[19].Value = ((byte)(p20));
+            this.Adapter.UpdateCommand.Parameters[20].Value = ((int)(p21));
+            if ((p22.HasValue == true)) {
+                this.Adapter.UpdateCommand.Parameters[21].Value = ((int)(p22.Value));
             }
             else {
-                this.Adapter.UpdateCommand.Parameters[9].Value = global::System.DBNull.Value;
+                this.Adapter.UpdateCommand.Parameters[21].Value = global::System.DBNull.Value;
             }
-            if ((p11.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[10].Value = ((byte)(p11.Value));
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[10].Value = global::System.DBNull.Value;
-            }
-            if ((p12.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[11].Value = ((byte)(p12.Value));
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[11].Value = global::System.DBNull.Value;
-            }
-            if ((p13.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[12].Value = ((byte)(p13.Value));
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[12].Value = global::System.DBNull.Value;
-            }
-            if ((p14.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[13].Value = ((byte)(p14.Value));
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[13].Value = global::System.DBNull.Value;
-            }
-            if ((p15.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[14].Value = ((byte)(p15.Value));
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[14].Value = global::System.DBNull.Value;
-            }
-            if ((p16.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[15].Value = ((int)(p16.Value));
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[15].Value = global::System.DBNull.Value;
-            }
-            if ((p17.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[16].Value = ((byte)(p17.Value));
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[16].Value = global::System.DBNull.Value;
-            }
-            if ((p18.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[17].Value = ((byte)(p18.Value));
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[17].Value = global::System.DBNull.Value;
-            }
-            if ((p19.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[18].Value = ((byte)(p19.Value));
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[18].Value = global::System.DBNull.Value;
-            }
-            if ((p20.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[19].Value = ((byte)(p20.Value));
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[19].Value = global::System.DBNull.Value;
-            }
-            if ((p21.HasValue == true)) {
-                this.Adapter.UpdateCommand.Parameters[20].Value = ((int)(p21.Value));
-            }
-            else {
-                this.Adapter.UpdateCommand.Parameters[20].Value = global::System.DBNull.Value;
-            }
-            this.Adapter.UpdateCommand.Parameters[21].Value = ((int)(p22));
+            this.Adapter.UpdateCommand.Parameters[22].Value = ((int)(p23));
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
             if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -8582,20 +8383,21 @@ namespace WaywardGamers.KParser.KPDatabaseDataSetTableAdapters {
                     bool p7, 
                     global::System.Nullable<int> p8, 
                     byte p9, 
-                    global::System.Nullable<byte> p10, 
-                    global::System.Nullable<byte> p11, 
-                    global::System.Nullable<byte> p12, 
-                    global::System.Nullable<byte> p13, 
-                    global::System.Nullable<byte> p14, 
-                    global::System.Nullable<byte> p15, 
-                    global::System.Nullable<int> p16, 
-                    global::System.Nullable<byte> p17, 
-                    global::System.Nullable<byte> p18, 
-                    global::System.Nullable<byte> p19, 
-                    global::System.Nullable<byte> p20, 
-                    global::System.Nullable<int> p21, 
-                    int p22) {
-            return this.Update(p22, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21, p22);
+                    byte p10, 
+                    byte p11, 
+                    byte p12, 
+                    byte p13, 
+                    byte p14, 
+                    byte p15, 
+                    int p16, 
+                    byte p17, 
+                    byte p18, 
+                    byte p19, 
+                    byte p20, 
+                    int p21, 
+                    global::System.Nullable<int> p22, 
+                    int p23) {
+            return this.Update(p23, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21, p22, p23);
         }
     }
     

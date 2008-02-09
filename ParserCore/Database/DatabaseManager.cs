@@ -452,7 +452,7 @@ namespace WaywardGamers.KParser
                             InsertLoot(message);
                             break;
                         case EventMessageType.Interaction:
-                            InsertCombat2(message);
+                            InsertCombat(message);
                             break;
                     }
                     // Other message types (fishing, crafting, etc) are ignored.
@@ -630,356 +630,6 @@ namespace WaywardGamers.KParser
         /// <param name="message">The message containing combat data.</param>
         private void InsertCombat(Message message)
         {
-
-            // If this is a buff/unknown message, it should be attached to the current active battle.
-            // If there are no active battles, attach it to the default battle.
-
-            // If this is a death message, it needs to be attached to the active battle against
-            // a mob of the appropriate name.  If there is no such active battle, create one solely
-            // to close it out.
-
-            KPDatabaseDataSet.CombatantsRow actor = null;
-            KPDatabaseDataSet.BattlesRow battle = null;
-            KPDatabaseDataSet.ActionsRow action = null;
-
-
-            switch (message.EventDetails.CombatDetails.InteractionType)
-            {
-                #region Attack
-                case InteractionType.Harm:
-                    if (message.EventDetails.CombatDetails.HarmType == HarmType.Death)
-                    {
-                        ProcessDeath(message);
-                        return;
-                    }
-
-                    actor = localDB.Combatants.GetCombatant(message.EventDetails.CombatDetails.ActorName,
-                        message.EventDetails.CombatDetails.ActorEntityType);
-
-                    // Get the action row, if any is applicable to the message.
-                    action = localDB.Actions.GetAction(message.EventDetails.CombatDetails.ActionName);
-
-                    // If preparing, only the primary actor and battle is of consequence.
-                    if (message.EventDetails.CombatDetails.IsPreparing == true)
-                    {
-                        if (message.EventDetails.CombatDetails.ActorEntityType == EntityType.Mob)
-                        {
-                            battle = activeMobBattleList[message.EventDetails.CombatDetails.ActorName];
-
-                            if (battle == null)
-                            {
-                                battle = localDB.Battles.AddBattlesRow(actor, message.Timestamp,
-                                    MagicNumbers.MinSQLDateTime, false, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
-
-                                activeMobBattleList[message.EventDetails.CombatDetails.ActorName] = battle;
-                            }
-                        }
-                        else
-                        {
-                            battle = MostRecentActiveBattle();
-                        }
-
-                        lock (activeBattleList)
-                            activeBattleList[battle] = message.Timestamp;
-
-                        localDB.Interactions.AddInteractionsRow(message.Timestamp,
-                            actor,
-                            null,
-                            battle,
-                            (byte)ActorType.Unknown,
-                            message.EventDetails.CombatDetails.IsPreparing,
-                            action,
-                            (byte)message.EventDetails.CombatDetails.ActionType,
-                            (byte)message.EventDetails.CombatDetails.FailedActionType,
-                            (byte)DefenseType.None, 0,
-                            (byte)message.EventDetails.CombatDetails.AidType,
-                            (byte)RecoveryType.None,
-                            (byte)message.EventDetails.CombatDetails.HarmType,
-                            0,
-                            (byte)DamageModifier.None,
-                            (byte)AidType.None,
-                            (byte)RecoveryType.None,
-                            (byte)HarmType.None,
-                            0);
-
-                        return;
-                    }
-
-                    // Not preparing, so casting/action is being completed.
-
-                    // If mob is acting, get any current battle with this mob type
-                    if (message.EventDetails.CombatDetails.ActorEntityType == EntityType.Mob)
-                    {
-                        if (activeMobBattleList.Keys.Contains(message.EventDetails.CombatDetails.ActorName))
-                            battle = activeMobBattleList[message.EventDetails.CombatDetails.ActorName];
-
-                        // If there is none, create a new battle.
-                        if (battle == null)
-                        {
-                            battle = localDB.Battles.AddBattlesRow(actor, message.Timestamp,
-                                MagicNumbers.MinSQLDateTime, false, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
-
-                            activeMobBattleList[message.EventDetails.CombatDetails.ActorName] = battle;
-                        }
-                        
-                        // Update the most recent activity record for this fight.
-                        lock (activeBattleList)
-                            activeBattleList[battle] = message.Timestamp;
-
-                        // Add combat detail entries for each player in this message.
-
-                        //  Create an entry for each target
-                        foreach (var target in message.EventDetails.CombatDetails.Targets)
-                        {
-                            var targetRow = localDB.Combatants.GetCombatant(target.Name, target.EntityType);
-
-                            localDB.Interactions.AddInteractionsRow(
-                                message.Timestamp,
-                                actor,
-                                targetRow,
-                                battle,
-                                (byte)ActorType.Unknown,
-                                message.EventDetails.CombatDetails.IsPreparing,
-                                action,
-                                (byte)message.EventDetails.CombatDetails.ActionType,
-                                (byte)message.EventDetails.CombatDetails.FailedActionType,
-                                (byte)target.DefenseType,
-                                target.ShadowsUsed,
-                                (byte)message.EventDetails.CombatDetails.AidType,
-                                (byte)target.RecoveryType,
-                                (byte)message.EventDetails.CombatDetails.HarmType,
-                                target.Amount,
-                                (byte)target.DamageModifier,
-                                (byte)target.SecondaryAidType,
-                                (byte)target.SecondaryRecoveryType,
-                                (byte)target.SecondaryHarmType,
-                                target.SecondaryAmount);
-                        }
-                    }
-                    else
-                    {
-                        // If player or pet is acting, need to find the battle record for each target.
-
-                        foreach (var target in message.EventDetails.CombatDetails.Targets)
-                        {
-                            var targetRow = localDB.Combatants.GetCombatant(target.Name, EntityType.Mob);
-
-                            if (activeMobBattleList.Keys.Contains(target.Name))
-                            {
-                                battle = activeMobBattleList[target.Name];
-                            }
-                            else
-                            {
-                                battle = localDB.Battles.AddBattlesRow(targetRow, message.Timestamp,
-                                    MagicNumbers.MinSQLDateTime, false, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
-
-                                activeMobBattleList[target.Name] = battle;
-                            }
-
-                            // Update the most recent activity record for this fight.
-                            lock (activeBattleList)
-                                activeBattleList[battle] = message.Timestamp;
-
-                            localDB.Interactions.AddInteractionsRow(
-                                message.Timestamp,
-                                actor,
-                                targetRow,
-                                battle,
-                                (byte)ActorType.Unknown,
-                                message.EventDetails.CombatDetails.IsPreparing,
-                                action,
-                                (byte)message.EventDetails.CombatDetails.ActionType,
-                                (byte)message.EventDetails.CombatDetails.FailedActionType,
-                                (byte)target.DefenseType,
-                                target.ShadowsUsed,
-                                (byte)message.EventDetails.CombatDetails.AidType,
-                                (byte)target.RecoveryType,
-                                (byte)message.EventDetails.CombatDetails.HarmType,
-                                target.Amount,
-                                (byte)target.DamageModifier,
-                                (byte)target.SecondaryAidType,
-                                (byte)target.SecondaryRecoveryType,
-                                (byte)target.SecondaryHarmType,
-                                target.SecondaryAmount);
-
-                        }
-                    }
-                    break;
-                #endregion
-                #region Buff
-                case InteractionType.Aid:
-                    actor = localDB.Combatants.GetCombatant(message.EventDetails.CombatDetails.ActorName,
-                        message.EventDetails.CombatDetails.ActorEntityType);
-
-                    // Get the action row, if any is applicable to the message.
-                    action = localDB.Actions.GetAction(message.EventDetails.CombatDetails.ActionName);
-
-                    if (message.EventDetails.CombatDetails.IsPreparing == true)
-                    {
-                        // If preparing, only the primary actor is of consequence.
-
-                        if (message.EventDetails.CombatDetails.ActorEntityType == EntityType.Mob)
-                        {
-                            if (activeMobBattleList.Keys.Contains(message.EventDetails.CombatDetails.ActorName))
-                                battle = activeMobBattleList[message.EventDetails.CombatDetails.ActorName];
-                            else
-                                battle = localDB.Battles.GetDefaultBattle();
-                        }
-                        else
-                        {
-                            battle = MostRecentActiveBattle();
-                        }
-
-                        lock (activeBattleList)
-                            activeBattleList[battle] = message.Timestamp;
-
-                        if (message.EventDetails.CombatDetails.ActorEntityType == EntityType.Mob)
-                            activeMobBattleList[message.EventDetails.CombatDetails.ActorName] = battle;
-
-                        localDB.Interactions.AddInteractionsRow(
-                            message.Timestamp,
-                            actor,
-                            null,
-                            battle,
-                            (byte)ActorType.Unknown,
-                            message.EventDetails.CombatDetails.IsPreparing,
-                            action,
-                            (byte)message.EventDetails.CombatDetails.ActionType,
-                            (byte)message.EventDetails.CombatDetails.FailedActionType,
-                            (byte)DefenseType.None,
-                            0,
-                            (byte)message.EventDetails.CombatDetails.AidType,
-                            (byte)RecoveryType.None,
-                            (byte)message.EventDetails.CombatDetails.HarmType,
-                            0,
-                            (byte)DamageModifier.None,
-                            (byte)AidType.None,
-                            (byte)RecoveryType.None,
-                            (byte)HarmType.None,
-                            0);
-
-                        return;
-                    }
-
-                    // Not preparing, so casting is being completed.
-
-                    if (message.EventDetails.CombatDetails.ActorEntityType == EntityType.Mob)
-                    {
-                        // look for an active battle record with either acting or target mob
-                        if (activeMobBattleList.Keys.Contains(message.EventDetails.CombatDetails.ActorName))
-                            battle = activeMobBattleList[message.EventDetails.CombatDetails.ActorName];
-                        else
-                        {
-                            // if actor isn't in one of the battles, check for targets.
-                            foreach (var target in message.EventDetails.CombatDetails.Targets)
-                            {
-                                var targetRow = localDB.Combatants.FindMobByName(target.Name);
-
-                                if (targetRow != null)
-                                {
-                                    var ambl = activeMobBattleList.FirstOrDefault(am => am.Key == target.Name);
-
-                                    if ((ambl.Key != null) && (ambl.Key != string.Empty))
-                                        battle = ambl.Value;
-
-                                    if (battle != null)
-                                        break;
-                                }
-                            }
-                        }
-
-                        // If we can't find it by now, just dump it in the default battle
-                        if (battle == null)
-                            battle = localDB.Battles.GetDefaultBattle();
-                    }
-                    else
-                    {
-                        // If player or pet acting (or we just don't know), put in the most current battle
-                        battle = MostRecentActiveBattle();
-                    }
-
-                    lock (activeBattleList)
-                        activeBattleList[battle] = message.Timestamp;
-
-                    //  Create an entry for each target
-                    foreach (var target in message.EventDetails.CombatDetails.Targets)
-                    {
-                        var targetRow = localDB.Combatants.FindByNameAndType(target.Name, target.EntityType);
-
-                        if ((targetRow != null) && (targetRow.CombatantType != (byte)target.EntityType))
-                            targetRow.CombatantType = (byte)target.EntityType;
-
-                        if (targetRow == null)
-                            targetRow = localDB.Combatants.AddCombatantsRow(target.Name,
-                                (byte)target.EntityType, null);
-
-                        localDB.Interactions.AddInteractionsRow(
-                            message.Timestamp,
-                            actor,
-                            targetRow,
-                            battle,
-                            (byte)ActorType.Unknown,
-                            message.EventDetails.CombatDetails.IsPreparing,
-                            action,
-                            (byte)message.EventDetails.CombatDetails.ActionType,
-                            (byte)message.EventDetails.CombatDetails.FailedActionType,
-                            (byte)target.DefenseType,
-                            target.ShadowsUsed,
-                            (byte)message.EventDetails.CombatDetails.AidType,
-                            (byte)target.RecoveryType,
-                            (byte)message.EventDetails.CombatDetails.HarmType,
-                            target.Amount,
-                            (byte)target.DamageModifier,
-                            (byte)target.SecondaryAidType,
-                            (byte)target.SecondaryRecoveryType,
-                            (byte)target.SecondaryHarmType,
-                            target.SecondaryAmount);
-                    }
-                    break;
-                #endregion
-                #region Unknown
-                case InteractionType.Unknown:
-                    if (message.EventDetails.CombatDetails.IsPreparing == true)
-                    {
-                        actor = localDB.Combatants.GetCombatant(message.EventDetails.CombatDetails.ActorName,
-                            message.EventDetails.CombatDetails.ActorEntityType);
-
-                        action = localDB.Actions.GetAction(message.EventDetails.CombatDetails.ActionName);
-
-                        battle = MostRecentActiveBattle();
-
-                        lock (activeBattleList)
-                            activeBattleList[battle] = message.Timestamp;
-
-                        localDB.Interactions.AddInteractionsRow(
-                            message.Timestamp,
-                            actor,
-                            null,
-                            battle,
-                            (byte)ActorType.Unknown,
-                            message.EventDetails.CombatDetails.IsPreparing,
-                            action,
-                            (byte)message.EventDetails.CombatDetails.ActionType,
-                            (byte)message.EventDetails.CombatDetails.FailedActionType,
-                            (byte)DefenseType.None,
-                            0,
-                            (byte)message.EventDetails.CombatDetails.AidType,
-                            (byte)RecoveryType.None,
-                            (byte)message.EventDetails.CombatDetails.HarmType,
-                            0,
-                            (byte)DamageModifier.None,
-                            (byte)AidType.None,
-                            (byte)RecoveryType.None,
-                            (byte)HarmType.None,
-                            0);
-                    }
-                    break;
-                #endregion
-            }
-        }
-
-        private void InsertCombat2(Message message)
-        {
             // Handle death events separately
             if (message.EventDetails.CombatDetails.HarmType == HarmType.Death)
             {
@@ -990,6 +640,7 @@ namespace WaywardGamers.KParser
             KPDatabaseDataSet.CombatantsRow actor = null;
             KPDatabaseDataSet.BattlesRow battle = null;
             KPDatabaseDataSet.ActionsRow action = null;
+            KPDatabaseDataSet.ActionsRow secondAction = null;
 
             // Get the actor combatant, if any.
             actor = localDB.Combatants.GetCombatant(message.EventDetails.CombatDetails.ActorName,
@@ -1075,7 +726,8 @@ namespace WaywardGamers.KParser
                     (byte)AidType.None,
                     (byte)RecoveryType.None,
                     (byte)HarmType.None,
-                    0);
+                    0,
+                    secondAction);
 
             }
             else
@@ -1085,6 +737,8 @@ namespace WaywardGamers.KParser
                 {
                     // Get database row for target combatant.
                     var targetRow = localDB.Combatants.GetCombatant(target.Name, target.EntityType);
+
+                    secondAction = localDB.Actions.GetAction(target.SecondaryAction);
 
                     // Get the battle each time through the loop if the targets are mobs.
                     if (target.EntityType == EntityType.Mob)
@@ -1126,7 +780,8 @@ namespace WaywardGamers.KParser
                         (byte)target.SecondaryAidType,
                         (byte)target.SecondaryRecoveryType,
                         (byte)target.SecondaryHarmType,
-                        target.SecondaryAmount);
+                        target.SecondaryAmount,
+                        secondAction);
                 }
             }
         }
@@ -1135,7 +790,8 @@ namespace WaywardGamers.KParser
         {
             KPDatabaseDataSet.CombatantsRow actor = null;
             KPDatabaseDataSet.BattlesRow battle = null;
-            
+            KPDatabaseDataSet.ActionsRow secondAction = null;
+
             // If there are no targets, we can't do anything.
             if ((message.EventDetails.CombatDetails.Targets == null) || (message.EventDetails.CombatDetails.Targets.Count == 0))
                 return;
@@ -1169,6 +825,8 @@ namespace WaywardGamers.KParser
                         targetRow = localDB.Combatants.AddCombatantsRow(target.Name,
                             (byte)target.EntityType, null);
 
+                    secondAction = localDB.Actions.GetAction(target.SecondaryAction);
+
                     localDB.Interactions.AddInteractionsRow(
                         message.Timestamp,
                         actor,
@@ -1189,7 +847,8 @@ namespace WaywardGamers.KParser
                         (byte)target.SecondaryAidType,
                         (byte)target.SecondaryRecoveryType,
                         (byte)target.SecondaryHarmType,
-                        target.SecondaryAmount);
+                        target.SecondaryAmount,
+                        secondAction);
                 }
             }
 
@@ -1201,6 +860,8 @@ namespace WaywardGamers.KParser
                 foreach (var target in message.EventDetails.CombatDetails.Targets)
                 {
                     var targetRow = localDB.Combatants.FindByNameAndType(target.Name, target.EntityType);
+
+                    secondAction = localDB.Actions.GetAction(target.SecondaryAction);
 
                     if (activeMobBattleList.Keys.Contains(target.Name))
                         battle = activeMobBattleList[target.Name];
@@ -1247,7 +908,8 @@ namespace WaywardGamers.KParser
                         (byte)target.SecondaryAidType,
                         (byte)target.SecondaryRecoveryType,
                         (byte)target.SecondaryHarmType,
-                        target.SecondaryAmount);
+                        target.SecondaryAmount,
+                        secondAction);
 
                     // Remove mob from battle lists
                     activeMobBattleList.Remove(target.Name);
@@ -1264,6 +926,8 @@ namespace WaywardGamers.KParser
                         if (target.EntityType == EntityType.Mob)
                         {
                             var targetRow = localDB.Combatants.FindByNameAndType(target.Name, target.EntityType);
+
+                            secondAction = localDB.Actions.GetAction(target.SecondaryAction);
 
                             // if mob died, need to end battle
                             // Determine the battle the death(s) need to be linked against.
@@ -1300,7 +964,8 @@ namespace WaywardGamers.KParser
                                 (byte)target.SecondaryAidType,
                                 (byte)target.SecondaryRecoveryType,
                                 (byte)target.SecondaryHarmType,
-                                target.SecondaryAmount);
+                                target.SecondaryAmount,
+                                secondAction);
 
                             // Remove mob from battle lists
                             activeMobBattleList.Remove(target.Name);
@@ -1315,6 +980,8 @@ namespace WaywardGamers.KParser
                             if (targetRow == null)
                                 targetRow = localDB.Combatants.AddCombatantsRow(target.Name,
                                     (byte)target.EntityType, null);
+
+                            secondAction = localDB.Actions.GetAction(target.SecondaryAction);
 
                             localDB.Interactions.AddInteractionsRow(
                                 message.Timestamp,
@@ -1336,7 +1003,8 @@ namespace WaywardGamers.KParser
                                 (byte)target.SecondaryAidType,
                                 (byte)target.SecondaryRecoveryType,
                                 (byte)target.SecondaryHarmType,
-                                target.SecondaryAmount);
+                                target.SecondaryAmount,
+                                secondAction);
                         }
                     }
                 }

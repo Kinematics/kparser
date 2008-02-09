@@ -115,6 +115,7 @@ namespace WaywardGamers.KParser
         #region Modifiers on existing lines
         public static readonly Regex AdditionalEffect = new Regex(@"^Additional effect:");
         public static readonly Regex MagicBurst       = new Regex(@"^Magic Burst!");
+        public static readonly Regex AdditionalStatus = new Regex(string.Format("^Additional effect: {0}", effect));
         #endregion
 
         #region Combat damage

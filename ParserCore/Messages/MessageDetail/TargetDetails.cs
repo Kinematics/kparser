@@ -14,6 +14,7 @@ namespace WaywardGamers.KParser
     {
         #region Member Variables
         readonly string targetName;
+        string actionName = string.Empty;
         #endregion
 
         #region Constructor
@@ -127,6 +128,14 @@ namespace WaywardGamers.KParser
         /// </summary>
         internal int SecondaryAmount { get; set; }
 
+        /// <summary>
+        /// Gets and sets the name of the effect of the secondary/additional action/effect.
+        /// </summary>
+        internal string SecondaryAction
+        {
+            get { return actionName; }
+            set { if (value != null) actionName = value; }
+        }
         #endregion
 
         #region Overrides
@@ -153,6 +162,7 @@ namespace WaywardGamers.KParser
             sb.AppendFormat("      Secondary Recovery Type: {0}\n", SecondaryRecoveryType);
             sb.AppendFormat("      Secondary Harm Type: {0}\n", SecondaryHarmType);
             sb.AppendFormat("      Secondary Amount: {0}\n", SecondaryAmount);
+            sb.AppendFormat("      Secondary Action: {0}\n", SecondaryAction);
 
             return sb.ToString();
         }

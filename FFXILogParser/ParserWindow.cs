@@ -118,7 +118,7 @@ namespace WaywardGamers.KParser
         {
             string baseDateName = string.Format("{0:D2}-{1:D2}-{2:D2}", DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
 
-            string dateNameFilter = baseDateName + "_???.prs";
+            string dateNameFilter = baseDateName + "_???.sdf";
 
             string[] files = Directory.GetFiles(defaultSaveDirectory, dateNameFilter);
 
@@ -136,7 +136,7 @@ namespace WaywardGamers.KParser
 
                     string lastFileName = fi.Name;
 
-                    Regex rx = new Regex(@"\d{2}-\d{2}-\d{2}_(\d{3}).prs");
+                    Regex rx = new Regex(@"\d{2}-\d{2}-\d{2}_(\d{3}).sdf");
 
                     Match match = rx.Match(lastFileName);
 
@@ -259,6 +259,8 @@ namespace WaywardGamers.KParser
                     Logger.Instance.Log(ex);
                     MessageBox.Show(ex.Message, "Error while attempting to reparse.",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
                 }
 
                 // Adjust what menu options are available
@@ -268,6 +270,7 @@ namespace WaywardGamers.KParser
                 menuOpenSavedData.Enabled = true;
 
                 toolStripStatusLabel.Text = "Status: Stopped.";
+                DatabaseManager.Instance.OpenDatabase(outFilename);
 
                 lock (activePluginList)
                 {

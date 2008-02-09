@@ -211,7 +211,7 @@ namespace WaywardGamers.KParser
             {
                 ActionsRow action = null;
 
-                if (actionName != string.Empty)
+                if ((actionName != null) && (actionName != string.Empty))
                 {
                     // Get the row for the action name
                     action = FindByActionName(actionName);

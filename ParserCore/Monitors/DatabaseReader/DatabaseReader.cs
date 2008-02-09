@@ -70,30 +70,13 @@ namespace WaywardGamers.KParser.Monitoring
                     MessageManager.Instance.AddChatLine(chat);
                 }
 
-                DatabaseManager.SecondInstance.CloseDatabase();
-
             }
-            catch (Exception)
+            finally
             {
-                IsRunning = false;
                 MessageManager.Instance.StopParsing();
-                throw;
+                DatabaseManager.SecondInstance.CloseDatabase();
+                IsRunning = false;
             }
-        }
-
-        private void ReadDatabase()
-        {
-            KPDatabaseDataSet readDataSet = DatabaseManager.SecondInstance.Database;
-
-            // Read the (fixed) record log from the database, reconstruct
-            // the chat line, and send it to the new database.
-            foreach (var logLine in readDataSet.RecordLog)
-            {
-                ChatLine chat = new ChatLine(logLine.MessageText, logLine.Timestamp);
-                MessageManager.Instance.AddChatLine(chat);
-            }
-
-            DatabaseManager.SecondInstance.CloseDatabase();
         }
 
         /// <summary>

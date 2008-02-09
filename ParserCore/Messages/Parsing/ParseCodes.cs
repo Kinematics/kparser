@@ -64,6 +64,14 @@ namespace WaywardGamers.KParser
             // Prep attack moves
             interactionTypeLookup[0x6e] = InteractionType.Harm; // <me> prep weaponskill
 
+            interactionTypeLookup[0x24] = InteractionType.Harm; // <me> kills
+            interactionTypeLookup[0x25] = InteractionType.Harm; // <party> kills
+            interactionTypeLookup[0x26] = InteractionType.Harm;
+            interactionTypeLookup[0x27] = InteractionType.Harm;
+            interactionTypeLookup[0x2c] = InteractionType.Harm; // <other> kills
+            interactionTypeLookup[0xa6] = InteractionType.Harm;
+            interactionTypeLookup[0xa7] = InteractionType.Harm;
+
             // Prep buffs
             //combatCategoryLookup[0x34] = CombatCategory.Buff;
             // Use buffs
