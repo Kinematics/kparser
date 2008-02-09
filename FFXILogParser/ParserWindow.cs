@@ -118,7 +118,7 @@ namespace WaywardGamers.KParser
         {
             string baseDateName = string.Format("{0:D2}-{1:D2}-{2:D2}", DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
 
-            string dateNameFilter = baseDateName + "_???.prs";
+            string dateNameFilter = baseDateName + "_???.sdf";
 
             string[] files = Directory.GetFiles(defaultSaveDirectory, dateNameFilter);
 
@@ -136,7 +136,7 @@ namespace WaywardGamers.KParser
 
                     string lastFileName = fi.Name;
 
-                    Regex rx = new Regex(@"\d{2}-\d{2}-\d{2}_(\d{3}).prs");
+                    Regex rx = new Regex(@"\d{2}-\d{2}-\d{2}_(\d{3}).sdf");
 
                     Match match = rx.Match(lastFileName);
 
@@ -221,7 +221,64 @@ namespace WaywardGamers.KParser
                         plugin.DatabaseOpened(DatabaseManager.Instance.Database);
                     }
                 }
+            }
+        }
 
+        private void databaseToolsMenu_Popup(object sender, EventArgs e)
+        {
+            databaseReparse.Enabled = (DatabaseManager.Instance.Database != null);
+        }
+
+        private void databaseReparse_Click(object sender, EventArgs e)
+        {
+            string outFilename;
+            if (GetParseFileName(out outFilename) == true)
+            {
+                if (outFilename == DatabaseManager.Instance.DatabaseFilename)
+                {
+                    MessageBox.Show("Cannot save to the same file you want to reparse.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Adjust what menu options are available
+                menuStopParse.Enabled = true;
+                menuBeginDefaultParse.Enabled = false;
+                menuBeginParseWithSave.Enabled = false;
+                menuOpenSavedData.Enabled = false;
+
+                try
+                {
+                    toolStripStatusLabel.Text = "Reparsing...";
+                    Monitor.Reparse(outFilename);
+                }
+                catch (Exception ex)
+                {
+                    StopParsing();
+                    toolStripStatusLabel.Text = "Error.  Parsing stopped.";
+                    Logger.Instance.Log(ex);
+                    MessageBox.Show(ex.Message, "Error while attempting to reparse.",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    return;
+                }
+
+                // Adjust what menu options are available
+                menuStopParse.Enabled = false;
+                menuBeginDefaultParse.Enabled = true;
+                menuBeginParseWithSave.Enabled = true;
+                menuOpenSavedData.Enabled = true;
+
+                toolStripStatusLabel.Text = "Status: Stopped.";
+                DatabaseManager.Instance.OpenDatabase(outFilename);
+
+                lock (activePluginList)
+                {
+                    foreach (IPlugin plugin in activePluginList)
+                    {
+                        plugin.DatabaseOpened(DatabaseManager.Instance.Database);
+                    }
+                }
             }
         }
 
@@ -234,7 +291,14 @@ namespace WaywardGamers.KParser
 
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-                // Copy database to new file
+                if (sfd.FileName == DatabaseManager.Instance.DatabaseFilename)
+                {
+                    MessageBox.Show("Can't save the database file back onto itself.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                File.Copy(DatabaseManager.Instance.DatabaseFilename, sfd.FileName);
             }
         }
 
@@ -508,5 +572,7 @@ namespace WaywardGamers.KParser
         {
             //MMHook.Hook("14,e8,12,80c08080,000000f6,0000010f,0019,00,01,02,00,Motenten uses Judgment.");
         }
+
+
     }
 }

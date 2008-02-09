@@ -146,8 +146,8 @@ namespace WaywardGamers.KParser
             {
                 // Reverse search the collection list
                 msg = messageCollection.LastOrDefault(m =>
-                    ((m.MessageID == eventNumber) && (m.ActionDetails != null) && (m.ActionDetails.CombatDetails != null) &&
-                    (m.ActionDetails.CombatDetails.ActorName != string.Empty)));
+                    ((m.MessageID == eventNumber) && (m.EventDetails != null) && (m.EventDetails.CombatDetails != null) &&
+                    (m.EventDetails.CombatDetails.ActorName != string.Empty)));
             }
 
             return msg;
@@ -168,8 +168,8 @@ namespace WaywardGamers.KParser
             {
                 // Reverse search the collection list
                 msg = messageCollection.LastOrDefault(m =>
-                    ((m.MessageCode == code) && (m.ActionDetails != null) && (m.ActionDetails.CombatDetails != null) &&
-                    (m.ActionDetails.CombatDetails.ActorName != string.Empty)));
+                    ((m.MessageCode == code) && (m.EventDetails != null) && (m.EventDetails.CombatDetails != null) &&
+                    (m.EventDetails.CombatDetails.ActorName != string.Empty)));
             }
 
             return msg;
@@ -210,44 +210,55 @@ namespace WaywardGamers.KParser
                 // --
 
 
-                if (Monitor.ParseMode == DataSource.Ram)
+                switch (Monitor.ParseMode)
                 {
-                    lock (messageCollection)
-                    {
-                        messagesToProcess.AddRange(messageCollection.FindAll(m => m.Timestamp.CompareTo(shortCheckTime) < 0));
-
-                        // Remove those messages from the list.
-                        messageCollection.RemoveAll(m => m.Timestamp.CompareTo(shortCheckTime) < 0);
-                    }
-                }
-                else
-                {
-                    // If we're in LOG mode, leave the last 10 messages with the same timestamp
-                    // for at least 2 minutes in case of log file cross-over.
-                    lock (messageCollection)
-                    {
-                        Message lastMessage = messageCollection.Last();
-                        int numberOfMessagesToLeave = 0;
-
-                        // But only if they haven't crossed the long time threshhold (2 minutes)
-                        if (lastMessage.Timestamp.CompareTo(longCheckTime) >= 0)
-                            numberOfMessagesToLeave = messageCollection.Count(m => m.Timestamp == lastMessage.Timestamp);
-
-                        // cap at 10
-                        if (numberOfMessagesToLeave > 20)
-                            numberOfMessagesToLeave = 20;
-
-                        int numberOfMessagesToTake = messageCollection.Count() - numberOfMessagesToLeave;
-
-                        if (numberOfMessagesToTake < 0)
-                            numberOfMessagesToTake = 0;
-
-                        if (numberOfMessagesToTake > 0)
+                    case DataSource.Ram:
+                        lock (messageCollection)
                         {
-                            messagesToProcess.AddRange(messageCollection.Take(numberOfMessagesToTake));
-                            messageCollection.RemoveRange(0, numberOfMessagesToTake);
+                            messagesToProcess.AddRange(messageCollection.FindAll(m => m.Timestamp.CompareTo(shortCheckTime) < 0));
+
+                            // Remove those messages from the list.
+                            messageCollection.RemoveAll(m => m.Timestamp.CompareTo(shortCheckTime) < 0);
                         }
-                    }
+                        break;
+                    case DataSource.Log:
+                        // If we're in LOG mode, leave the last 10 messages with the same timestamp
+                        // for at least 2 minutes in case of log file cross-over.
+                        lock (messageCollection)
+                        {
+                            Message lastMessage = messageCollection.Last();
+                            int numberOfMessagesToLeave = 0;
+
+                            // But only if they haven't crossed the long time threshhold (2 minutes)
+                            if (lastMessage.Timestamp.CompareTo(longCheckTime) >= 0)
+                                numberOfMessagesToLeave = messageCollection.Count(m => m.Timestamp == lastMessage.Timestamp);
+
+                            // cap at 10
+                            if (numberOfMessagesToLeave > 20)
+                                numberOfMessagesToLeave = 20;
+
+                            int numberOfMessagesToTake = messageCollection.Count() - numberOfMessagesToLeave;
+
+                            if (numberOfMessagesToTake < 0)
+                                numberOfMessagesToTake = 0;
+
+                            if (numberOfMessagesToTake > 0)
+                            {
+                                messagesToProcess.AddRange(messageCollection.Take(numberOfMessagesToTake));
+                                messageCollection.RemoveRange(0, numberOfMessagesToTake);
+                            }
+                        }
+                        break;
+                    case DataSource.Database:
+                        // In database reading mode, the messages are going to come very quickly
+                        // Leave the last 10 messages always.  When the re-parse ends, the
+                        // code below will clean up the leftovers.
+                        if (messageCollection.Count > 10)
+                        {
+                            messagesToProcess.AddRange(messageCollection.GetRange(0, messageCollection.Count - 10));
+                            messageCollection.RemoveRange(0, messageCollection.Count - 10);
+                        }
+                        break;
                 }
 
 
@@ -293,14 +304,14 @@ namespace WaywardGamers.KParser
             if (msg == null)
                 return;
 
-            if (msg.ActionDetails == null)
+            if (msg.EventDetails == null)
                 return;
 
-            if (msg.ActionDetails.CombatDetails == null)
+            if (msg.EventDetails.CombatDetails == null)
                 return;
 
             // Update base actor name
-            string name = msg.ActionDetails.CombatDetails.ActorName;
+            string name = msg.EventDetails.CombatDetails.ActorName;
             bool update = true;
 
             if (name != string.Empty)
@@ -313,13 +324,13 @@ namespace WaywardGamers.KParser
                         // of that same named mob as a mob, enter it as a mob and add the special
                         // version name as a pet.
                         if ((entityCollection[name] == EntityType.Pet) &&
-                            (msg.ActionDetails.CombatDetails.ActorEntityType == EntityType.Mob))
+                            (msg.EventDetails.CombatDetails.ActorEntityType == EntityType.Mob))
                         {
                             entityCollection[name] = EntityType.Mob;
                             AddPetEntity(name);
                         }
                         else if ((entityCollection[name] == EntityType.Mob) &&
-                            (msg.ActionDetails.CombatDetails.ActorEntityType == EntityType.Pet))
+                            (msg.EventDetails.CombatDetails.ActorEntityType == EntityType.Pet))
                         {
                             AddPetEntity(name);
                         }
@@ -329,11 +340,11 @@ namespace WaywardGamers.KParser
                 }
 
                 if (update == true)
-                    entityCollection[name] = msg.ActionDetails.CombatDetails.ActorEntityType;
+                    entityCollection[name] = msg.EventDetails.CombatDetails.ActorEntityType;
             }
 
             // Update all target names
-            foreach (NewTargetDetails target in msg.ActionDetails.CombatDetails.Targets)
+            foreach (TargetDetails target in msg.EventDetails.CombatDetails.Targets)
             {
                 name = target.Name;
                 update = true;

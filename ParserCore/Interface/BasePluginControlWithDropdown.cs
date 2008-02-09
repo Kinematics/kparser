@@ -56,6 +56,7 @@ namespace WaywardGamers.KParser.Plugin
 
         public virtual void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
+            this.richTextBox.Clear();
             HandleDataset(dataSet);
         }
 
@@ -96,7 +97,7 @@ namespace WaywardGamers.KParser.Plugin
             {
                 richTextBox.SuspendLayout();
                 ProcessData(dataSet);
-                richTextBox.Select(0, 0);
+                richTextBox.Select(richTextBox.Text.Length, richTextBox.Text.Length);
                 richTextBox.ResumeLayout();
             }
             catch (Exception e)

@@ -56,6 +56,7 @@ namespace WaywardGamers.KParser.Plugin
 
         public virtual void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
+            this.richTextBox.Clear();
             HandleDataset(dataSet);
         }
 

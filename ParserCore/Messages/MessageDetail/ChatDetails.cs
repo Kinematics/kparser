@@ -5,7 +5,7 @@ using System.Text;
 
 namespace WaywardGamers.KParser
 {
-    internal class NewChatDetails
+    internal class ChatDetails
     {
         #region Properties
         internal string ChatSpeakerName { get; set; }

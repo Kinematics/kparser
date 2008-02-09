@@ -43,6 +43,25 @@ namespace WaywardGamers.KParser
             currentReader.Run();
         }
 
+        public static void Reparse(string outputFileName)
+        {
+            if (currentReader.IsRunning == true)
+                throw new InvalidOperationException(string.Format(
+                    "{0} is already running", currentReader.GetType().Name));
+
+            if (DatabaseManager.Instance.Database == null)
+                throw new InvalidOperationException("Open a database before trying to reparse.");
+
+            string oldDBName = DatabaseManager.Instance.DatabaseFilename;
+
+            DatabaseManager.Instance.CreateDatabase(outputFileName);
+            DatabaseManager.SecondInstance.OpenDatabase(oldDBName);
+
+            currentReader = DatabaseReader.Instance;
+
+            currentReader.Run();
+        }
+
         /// <summary>
         /// Stop the current reader's monitoring.
         /// </summary>

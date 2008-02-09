@@ -5,7 +5,7 @@ using System.Text;
 
 namespace WaywardGamers.KParser
 {
-    internal class NewSystemDetails
+    internal class SystemDetails
     {
         internal SystemMessageType SystemMessageType { get; set; }
 

@@ -6,7 +6,11 @@ using System.Text.RegularExpressions;
 
 namespace WaywardGamers.KParser
 {
-    internal class NewCombatDetails
+    /// <summary>
+    /// Class to maintain details about an actor/target interaction
+    /// as it relates to the actor.
+    /// </summary>
+    internal class CombatDetails
     {
         #region member Variables
         string actorName = string.Empty;
@@ -15,22 +19,54 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Constructor
-        internal NewCombatDetails()
+        /// <summary>
+        /// Create a new instance of CombatDetails.
+        /// </summary>
+        internal CombatDetails()
         {
-            Targets = new List<NewTargetDetails>();
+            Targets = new List<TargetDetails>();
+            ShortActorName = string.Empty;
         }
         #endregion
 
         #region Properties
-        internal CombatActionType CombatCategory { get; set; }
+        /// <summary>
+        /// Gets and sets the type of actor/target interaction.
+        /// </summary>
+        internal InteractionType InteractionType { get; set; }
 
-        internal BuffType BuffType { get; set; }
+        /// <summary>
+        /// Gets and sets the Actor name.  When set, the actor entity type
+        /// is automatically determined.
+        /// </summary>
+        internal string ActorName
+        {
+            get
+            {
+                return ShortActorName;
+            }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("ActorName");
 
-        internal AttackType AttackType { get; set; }
+                if (value == string.Empty)
+                    throw new ArgumentOutOfRangeException("ActorName", "Cannot create an actor with an empty name.");
 
-        internal FailedActionType FailedActionType { get; set; }
+                actorName = value;
 
-        
+                if (actorName.StartsWith("The ") || actorName.StartsWith("the "))
+                    ShortActorName = actorName.Substring(4);
+                else
+                    ShortActorName = actorName;
+
+                ActorEntityType = Parsing.ClassifyEntity.Classify(actorName);
+            }
+        }
+
+        /// <summary>
+        /// Gets the full, unmodified actor name.
+        /// </summary>
         internal string FullActorName
         {
             get
@@ -39,62 +75,101 @@ namespace WaywardGamers.KParser
             }
         }
 
-        internal string ActorName
-        {
-            get
-            {
-                if (actorName.StartsWith("The ") || actorName.StartsWith("the "))
-                {
-                    return actorName.Substring(4);
-                }
+        /// <summary>
+        /// Gets and sets the short (most commonly used) actor name.
+        /// Internal use only; it gets passed through to ActorName.
+        /// </summary>
+        private string ShortActorName { get; set; }
 
-                return actorName;
-            }
-            set
-            {
-                if (value != null)
-                {
-                    actorName = value;
-                    ActorEntityType = Parsing.ClassifyEntity.Classify(actorName);
-                }
-            }
-        }
-
+        /// <summary>
+        /// Gets whether the actor name has been set to anything valid.
+        /// </summary>
         internal bool HasActor
         {
             get { return (actorName != string.Empty); }
         }
 
+        /// <summary>
+        /// Gets and sets the actor's entity type.
+        /// </summary>
         internal EntityType ActorEntityType { get; set; }
 
+        /// <summary>
+        /// Gets and sets the actor type (self/party/other/etc)
+        /// </summary>
+        internal ActorType ActorType { get; set; }
 
-        internal List<NewTargetDetails> Targets { get; private set; }
+        /// <summary>
+        /// Gets the list of targets that this interaction encompasses.
+        /// </summary>
+        internal List<TargetDetails> Targets { get; private set; }
 
-        internal NewTargetDetails CurrentTarget { get; set; }
+
+        /// <summary>
+        /// Gets and sets the failed action type of this interaction.
+        /// </summary>
+        internal FailedActionType FailedActionType { get; set; }
+
+        /// <summary>
+        /// Gets and sets the aid type of this interaction.
+        /// </summary>
+        internal AidType AidType { get; set; }
+
+        /// <summary>
+        /// Gets and sets the harm type of this interaction.
+        /// </summary>
+        internal HarmType HarmType { get; set; }
 
 
+        /// <summary>
+        /// Gets and sets the type of action performed for this interaction.
+        /// </summary>
+        internal ActionType ActionType { get; set; }
+
+        /// <summary>
+        /// Gets and sets whether this interaction is for the preparing phase
+        /// of a spell or ability.
+        /// </summary>
         internal bool IsPreparing { get; set; }
 
+        /// <summary>
+        /// Gets and sets the name of the action being used.
+        /// </summary>
         internal string ActionName
         {
             get { return actionName; }
             set { if (value != null) actionName = value; }
         }
 
-        internal ActionSourceType ActionSource { get; set; }
 
+        /// <summary>
+        /// Gets and sets the success level of this interaction.  Used for
+        /// state tracking.
+        /// </summary>
         internal SuccessType SuccessLevel { get; set; }
 
+        /// <summary>
+        /// Gets and sets whether an attack was a critical.  Used for
+        /// state tracking.
+        /// </summary>
         internal bool FlagCrit { get; set; }
 
         #endregion
 
         #region Methods
-        internal NewTargetDetails AddTarget(string targetName)
+        /// <summary>
+        /// Add a new target to the target list for this interaction.
+        /// </summary>
+        /// <param name="targetName">The name of the target to add.</param>
+        /// <returns>Returns a reference to the TargetDetails for the target.</returns>
+        internal TargetDetails AddTarget(string targetName)
         {
-            CurrentTarget = new NewTargetDetails(targetName);
-            Targets.Add(CurrentTarget);
-            return CurrentTarget;
+            TargetDetails newTarget;
+
+            newTarget = new TargetDetails(targetName);
+            Targets.Add(newTarget);
+
+            return newTarget;
         }
         #endregion
 
@@ -108,19 +183,19 @@ namespace WaywardGamers.KParser
             StringBuilder sb = new StringBuilder();
 
             sb.AppendFormat("  Combat Details:\n");
+            sb.AppendFormat("    Interaction Type: {0}\n", InteractionType);
             sb.AppendFormat("    Actor Name: {0}\n", ActorName);
             sb.AppendFormat("    Entity Type: {0}\n", ActorEntityType);
-            sb.AppendFormat("    Success Level: {0}\n", SuccessLevel);
-            sb.AppendFormat("    Action Name: {0}\n", ActionName);
-            sb.AppendFormat("    IsPreparing: {0}\n", IsPreparing);
-            sb.AppendFormat("    Combat Category: {0}\n", CombatCategory);
-            sb.AppendFormat("    Attack Type: {0}\n", AttackType);
-            sb.AppendFormat("    Buff Type: {0}\n", BuffType);
-            sb.AppendFormat("    Action Source: {0}\n", ActionSource);
             sb.AppendFormat("    Failed Action Type: {0}\n", FailedActionType);
+            sb.AppendFormat("    Aid Type: {0}\n", AidType);
+            sb.AppendFormat("    Harm Type: {0}\n", HarmType);
+            sb.AppendFormat("    Action Type: {0}\n", ActionType);
+            sb.AppendFormat("    IsPreparing: {0}\n", IsPreparing);
+            sb.AppendFormat("    Action Name: {0}\n", ActionName);
+            sb.AppendFormat("    Success Level: {0}\n", SuccessLevel);
             sb.AppendFormat("    Is Crit: {0}\n", FlagCrit);
 
-            foreach (NewTargetDetails target in Targets)
+            foreach (TargetDetails target in Targets)
                 sb.Append(target.ToString());
 
             return sb.ToString();

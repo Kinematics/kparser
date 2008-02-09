@@ -8,9 +8,9 @@ namespace WaywardGamers.KParser
     internal class ParseCodes
     {
         #region Member lookup variables
-        private Dictionary<uint, CombatActionType> combatCategoryLookup;
-        private Dictionary<uint, BuffType> buffTypeLookup;
-        private Dictionary<uint, AttackType> attackTypeLookup;
+        private Dictionary<uint, InteractionType> interactionTypeLookup;
+        private Dictionary<uint, AidType> aidTypeLookup;
+        private Dictionary<uint, HarmType> harmTypeLookup;
         private Dictionary<uint, SuccessType> successTypeLookup;
         #endregion
 
@@ -23,8 +23,8 @@ namespace WaywardGamers.KParser
         private void InitLookupTables()
         {
             InitCombatCategoryLookup();
-            InitBuffTypeLookup();
-            InitAttackTypeLookup();
+            InitAidTypeLookup();
+            InitHarmTypeLookup();
             InitSuccessTypeLookup();
         }
         #endregion
@@ -32,137 +32,145 @@ namespace WaywardGamers.KParser
         #region Individual table initializations
         private void InitCombatCategoryLookup()
         {
-            combatCategoryLookup = new Dictionary<uint, CombatActionType>();
+            interactionTypeLookup = new Dictionary<uint, InteractionType>();
 
             // Successful attacks
-            combatCategoryLookup[0x14] = CombatActionType.Attack;
-            combatCategoryLookup[0x19] = CombatActionType.Attack;
-            combatCategoryLookup[0x1c] = CombatActionType.Attack;
-            combatCategoryLookup[0x28] = CombatActionType.Attack;
-            combatCategoryLookup[0x2a] = CombatActionType.Attack;
+            interactionTypeLookup[0x14] = InteractionType.Harm;
+            interactionTypeLookup[0x19] = InteractionType.Harm;
+            interactionTypeLookup[0x1c] = InteractionType.Harm;
+            interactionTypeLookup[0x28] = InteractionType.Harm;
+            interactionTypeLookup[0x2a] = InteractionType.Harm;
             // Unsuccessful attacks
-            combatCategoryLookup[0x15] = CombatActionType.Attack;
-            combatCategoryLookup[0x1a] = CombatActionType.Attack;
-            combatCategoryLookup[0x1d] = CombatActionType.Attack;
-            combatCategoryLookup[0x29] = CombatActionType.Attack;
+            interactionTypeLookup[0x15] = InteractionType.Harm;
+            interactionTypeLookup[0x1a] = InteractionType.Harm;
+            interactionTypeLookup[0x1d] = InteractionType.Harm;
+            interactionTypeLookup[0x29] = InteractionType.Harm;
             // Enfeebling
-            combatCategoryLookup[0x32] = CombatActionType.Attack;
-            combatCategoryLookup[0x33] = CombatActionType.Attack;
-            combatCategoryLookup[0x39] = CombatActionType.Attack;
-            combatCategoryLookup[0x3d] = CombatActionType.Attack;
-            combatCategoryLookup[0x41] = CombatActionType.Attack;
-            combatCategoryLookup[0x70] = CombatActionType.Attack;
+            interactionTypeLookup[0x32] = InteractionType.Harm;
+            interactionTypeLookup[0x33] = InteractionType.Harm;
+            interactionTypeLookup[0x39] = InteractionType.Harm;
+            interactionTypeLookup[0x3d] = InteractionType.Harm;
+            interactionTypeLookup[0x41] = InteractionType.Harm;
+            interactionTypeLookup[0x70] = InteractionType.Harm;
             // Resisted enfeebles
-            combatCategoryLookup[0x3b] = CombatActionType.Attack;
-            combatCategoryLookup[0x3f] = CombatActionType.Attack;
-            combatCategoryLookup[0x43] = CombatActionType.Attack;
-            combatCategoryLookup[0x44] = CombatActionType.Attack;
-            combatCategoryLookup[0x45] = CombatActionType.Attack;
+            interactionTypeLookup[0x3b] = InteractionType.Harm;
+            interactionTypeLookup[0x3f] = InteractionType.Harm;
+            interactionTypeLookup[0x43] = InteractionType.Harm;
+            interactionTypeLookup[0x44] = InteractionType.Harm;
+            interactionTypeLookup[0x45] = InteractionType.Harm;
             // Ability moves that miss
-            combatCategoryLookup[0x68] = CombatActionType.Attack;
-            combatCategoryLookup[0x72] = CombatActionType.Attack;
+            interactionTypeLookup[0x68] = InteractionType.Harm;
+            interactionTypeLookup[0x72] = InteractionType.Harm;
             // Prep attack moves
-            combatCategoryLookup[0x6e] = CombatActionType.Attack; // <me> prep weaponskill
+            interactionTypeLookup[0x6e] = InteractionType.Harm; // <me> prep weaponskill
+
+            interactionTypeLookup[0x24] = InteractionType.Harm; // <me> kills
+            interactionTypeLookup[0x25] = InteractionType.Harm; // <party> kills
+            interactionTypeLookup[0x26] = InteractionType.Harm;
+            interactionTypeLookup[0x27] = InteractionType.Harm;
+            interactionTypeLookup[0x2c] = InteractionType.Harm; // <other> kills
+            interactionTypeLookup[0xa6] = InteractionType.Harm;
+            interactionTypeLookup[0xa7] = InteractionType.Harm;
 
             // Prep buffs
             //combatCategoryLookup[0x34] = CombatCategory.Buff;
             // Use buffs
-            combatCategoryLookup[0x65] = CombatActionType.Buff;
-            combatCategoryLookup[0x6a] = CombatActionType.Buff;
-            combatCategoryLookup[0x6f] = CombatActionType.Buff;
+            interactionTypeLookup[0x65] = InteractionType.Aid;
+            interactionTypeLookup[0x6a] = InteractionType.Aid;
+            interactionTypeLookup[0x6f] = InteractionType.Aid;
             // Enhance
-            combatCategoryLookup[0x38] = CombatActionType.Buff;
-            combatCategoryLookup[0x3b] = CombatActionType.Buff; // failed
-            combatCategoryLookup[0x3c] = CombatActionType.Buff;
-            combatCategoryLookup[0x40] = CombatActionType.Buff;
+            interactionTypeLookup[0x38] = InteractionType.Aid;
+            interactionTypeLookup[0x3b] = InteractionType.Aid; // failed
+            interactionTypeLookup[0x3c] = InteractionType.Aid;
+            interactionTypeLookup[0x40] = InteractionType.Aid;
             // Recovery
-            combatCategoryLookup[0x1e] = CombatActionType.Buff; // drain samba
-            combatCategoryLookup[0x1f] = CombatActionType.Buff; // cures
-            combatCategoryLookup[0x2b] = CombatActionType.Buff;
+            interactionTypeLookup[0x1e] = InteractionType.Aid; // drain samba
+            interactionTypeLookup[0x1f] = InteractionType.Aid; // cures
+            interactionTypeLookup[0x2b] = InteractionType.Aid;
 
-            combatCategoryLookup[0x5a] = CombatActionType.Buff; // item use
+            interactionTypeLookup[0x5a] = InteractionType.Aid; // item use
 
 
             // Prep spell of unknown type (buff)?
-            combatCategoryLookup[0x34] = CombatActionType.Unknown;
+            interactionTypeLookup[0x34] = InteractionType.Unknown;
             // Prepping moves of unknown types (buffs?)
-            combatCategoryLookup[0x64] = CombatActionType.Unknown;
-            combatCategoryLookup[0x66] = CombatActionType.Unknown;
+            interactionTypeLookup[0x64] = InteractionType.Unknown;
+            interactionTypeLookup[0x66] = InteractionType.Unknown;
 
             // Considered an attack attempt; success type will be Failed
-            combatCategoryLookup[0x7a] = CombatActionType.Attack;
-            combatCategoryLookup[0x7b] = CombatActionType.Attack;
-
-            combatCategoryLookup[0x24] = CombatActionType.Death;
-            combatCategoryLookup[0x25] = CombatActionType.Death;
-            combatCategoryLookup[0x26] = CombatActionType.Death;
-            combatCategoryLookup[0x27] = CombatActionType.Death;
-            combatCategoryLookup[0x2c] = CombatActionType.Death;
-            combatCategoryLookup[0xa6] = CombatActionType.Death;
-            combatCategoryLookup[0xa7] = CombatActionType.Death;
+            interactionTypeLookup[0x7a] = InteractionType.Harm;
+            interactionTypeLookup[0x7b] = InteractionType.Harm;
         }
 
-        private void InitBuffTypeLookup()
+        private void InitAidTypeLookup()
         {
-            buffTypeLookup = new Dictionary<uint, BuffType>();
+            aidTypeLookup = new Dictionary<uint, AidType>();
 
             // Prepping spell
-            buffTypeLookup[0x34] = BuffType.Enhance;
+            aidTypeLookup[0x34] = AidType.Enhance;
             // Enhance target
-            buffTypeLookup[0x38] = BuffType.Enhance;
-            buffTypeLookup[0x3b] = BuffType.Enhance; // failed
-            buffTypeLookup[0x3c] = BuffType.Enhance;
-            buffTypeLookup[0x40] = BuffType.Enhance;
+            aidTypeLookup[0x38] = AidType.Enhance;
+            aidTypeLookup[0x3b] = AidType.Enhance; // failed
+            aidTypeLookup[0x3c] = AidType.Enhance;
+            aidTypeLookup[0x40] = AidType.Enhance;
             // Enhance self
-            buffTypeLookup[0x65] = BuffType.Enhance;
-            buffTypeLookup[0x6a] = BuffType.Enhance;
-            buffTypeLookup[0x6f] = BuffType.Enhance;
+            aidTypeLookup[0x65] = AidType.Enhance;
+            aidTypeLookup[0x6a] = AidType.Enhance;
+            aidTypeLookup[0x6f] = AidType.Enhance;
 
-            buffTypeLookup[0x1e] = BuffType.Recovery; // drain samba
-            buffTypeLookup[0x1f] = BuffType.Recovery;
-            buffTypeLookup[0x2b] = BuffType.Recovery;
+            aidTypeLookup[0x1e] = AidType.Recovery; // drain samba
+            aidTypeLookup[0x1f] = AidType.Recovery;
+            aidTypeLookup[0x2b] = AidType.Recovery;
 
-            buffTypeLookup[0x5a] = BuffType.Item;
+            aidTypeLookup[0x5a] = AidType.Item;
         }
 
-        private void InitAttackTypeLookup()
+        private void InitHarmTypeLookup()
         {
-            attackTypeLookup = new Dictionary<uint, AttackType>();
+            harmTypeLookup = new Dictionary<uint, HarmType>();
 
             // Successful attacks
-            attackTypeLookup[0x14] = AttackType.Damage;
-            attackTypeLookup[0x19] = AttackType.Damage;
-            attackTypeLookup[0x1c] = AttackType.Damage;
-            attackTypeLookup[0x28] = AttackType.Damage;
-            attackTypeLookup[0x2a] = AttackType.Drain;
+            harmTypeLookup[0x14] = HarmType.Damage;
+            harmTypeLookup[0x19] = HarmType.Damage;
+            harmTypeLookup[0x1c] = HarmType.Damage;
+            harmTypeLookup[0x28] = HarmType.Damage;
+            harmTypeLookup[0x2a] = HarmType.Drain;
             // Unsuccessful attacks
-            attackTypeLookup[0x15] = AttackType.Damage;
-            attackTypeLookup[0x1a] = AttackType.Damage;
-            attackTypeLookup[0x1d] = AttackType.Damage;
-            attackTypeLookup[0x29] = AttackType.Damage;
+            harmTypeLookup[0x15] = HarmType.Damage;
+            harmTypeLookup[0x1a] = HarmType.Damage;
+            harmTypeLookup[0x1d] = HarmType.Damage;
+            harmTypeLookup[0x29] = HarmType.Damage;
             // Uncertain
-            attackTypeLookup[0x32] = AttackType.Unknown;
+            harmTypeLookup[0x32] = HarmType.None;
             // Enfeebling
-            attackTypeLookup[0x33] = AttackType.Enfeeble;
-            attackTypeLookup[0x34] = AttackType.Enfeeble;
-            attackTypeLookup[0x39] = AttackType.Enfeeble;
-            attackTypeLookup[0x3d] = AttackType.Enfeeble;
-            attackTypeLookup[0x41] = AttackType.Enfeeble;
-            attackTypeLookup[0x70] = AttackType.Enfeeble;
+            harmTypeLookup[0x33] = HarmType.Enfeeble;
+            harmTypeLookup[0x34] = HarmType.Enfeeble;
+            harmTypeLookup[0x39] = HarmType.Enfeeble;
+            harmTypeLookup[0x3d] = HarmType.Enfeeble;
+            harmTypeLookup[0x41] = HarmType.Enfeeble;
+            harmTypeLookup[0x70] = HarmType.Enfeeble;
             // Resisted enfeebles
-            attackTypeLookup[0x3b] = AttackType.Enfeeble;
-            attackTypeLookup[0x3f] = AttackType.Enfeeble;
-            attackTypeLookup[0x44] = AttackType.Enfeeble;
-            attackTypeLookup[0x45] = AttackType.Enfeeble;
+            harmTypeLookup[0x3b] = HarmType.Enfeeble;
+            harmTypeLookup[0x3f] = HarmType.Enfeeble;
+            harmTypeLookup[0x44] = HarmType.Enfeeble;
+            harmTypeLookup[0x45] = HarmType.Enfeeble;
             // No effect
-            attackTypeLookup[0x43] = AttackType.Enfeeble;
+            harmTypeLookup[0x43] = HarmType.Enfeeble;
             // Ability moves that miss
-            attackTypeLookup[0x68] = AttackType.Damage;
-            attackTypeLookup[0x72] = AttackType.Damage;
+            harmTypeLookup[0x68] = HarmType.Damage;
+            harmTypeLookup[0x72] = HarmType.Damage;
+
+            harmTypeLookup[0x24] = HarmType.Death; // <me> kills
+            harmTypeLookup[0x25] = HarmType.Death; // <party> kills
+            harmTypeLookup[0x26] = HarmType.Death;
+            harmTypeLookup[0x27] = HarmType.Death;
+            harmTypeLookup[0x2c] = HarmType.Death; // <other> kills
+            harmTypeLookup[0xa6] = HarmType.Death;
+            harmTypeLookup[0xa7] = HarmType.Death;
 
             // Failed actions
-            attackTypeLookup[0x7a] = AttackType.Unknown;
-            attackTypeLookup[0x7b] = AttackType.Unknown;
+            harmTypeLookup[0x7a] = HarmType.None;
+            harmTypeLookup[0x7b] = HarmType.None;
 
         }
 
@@ -222,28 +230,28 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region internal lookup calls
-        internal CombatActionType GetCombatCategory(uint messageCode)
+        internal InteractionType GetInteractionType(uint messageCode)
         {
-            if (combatCategoryLookup.ContainsKey(messageCode))
-                return combatCategoryLookup[messageCode];
+            if (interactionTypeLookup.ContainsKey(messageCode))
+                return interactionTypeLookup[messageCode];
             else
-                return CombatActionType.Unknown;
+                return InteractionType.Unknown;
         }
 
-        internal BuffType GetBuffType(uint messageCode)
+        internal AidType GetAidType(uint messageCode)
         {
-            if (buffTypeLookup.ContainsKey(messageCode))
-                return buffTypeLookup[messageCode];
+            if (aidTypeLookup.ContainsKey(messageCode))
+                return aidTypeLookup[messageCode];
             else
-                return BuffType.Unknown;
+                return AidType.None;
         }
 
-        internal AttackType GetAttackType(uint messageCode)
+        internal HarmType GetHarmType(uint messageCode)
         {
-            if (attackTypeLookup.ContainsKey(messageCode))
-                return attackTypeLookup[messageCode];
+            if (harmTypeLookup.ContainsKey(messageCode))
+                return harmTypeLookup[messageCode];
             else
-                return AttackType.Unknown;
+                return HarmType.None;
         }
 
         internal SuccessType GetSuccessType(uint messageCode)

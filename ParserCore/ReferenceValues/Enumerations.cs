@@ -17,7 +17,8 @@ namespace WaywardGamers.KParser
     public enum DataSource
     {
         Log,
-        Ram
+        Ram,
+        Database,
     }
 
     #region General message types
@@ -25,7 +26,7 @@ namespace WaywardGamers.KParser
 	{
 		System,
 		Chat,
-		Action
+		Event
 	}
 
     public enum SystemMessageType : byte
@@ -50,10 +51,11 @@ namespace WaywardGamers.KParser
         NPC
 	}
 
-    public enum ActionMessageType : byte
+    public enum EventMessageType : byte
     {
         Unknown,
-        Combat,
+        Interaction,
+        EndBattle,  // chain #, xp, loot, gains a level
         Experience,
         Loot,
         Fishing,
@@ -63,27 +65,26 @@ namespace WaywardGamers.KParser
     #endregion
 
     #region Combat detail enumerations
-    public enum CombatActionType : byte
+    public enum InteractionType : byte
     {
         Unknown,
-        Attack,
-        Buff,
-        Death,
-        Experience,
+        Aid,
+        Harm,
     }
     
-    public enum AttackType : byte
+    public enum HarmType : byte
     {
-        Unknown,
+        None,
         Damage,
         Enfeeble,
         Drain,
         Aspir,
+        Death,
     }
 
-    public enum BuffType : byte
+    public enum AidType : byte
     {
-        Unknown,
+        None,
         Enhance,
         Recovery,
         Item,
@@ -96,7 +97,17 @@ namespace WaywardGamers.KParser
         RecoverMP,
     }
 
-    public enum ActionSourceType : byte
+    public enum DamageType : byte
+    {
+        Unknown,
+        Physical,
+        Magical,
+        AdditionalEffect,
+        Spikes,
+        Counterattack,
+    }
+
+    public enum ActionType : byte
     {
         Unknown,
         Melee,
@@ -104,6 +115,7 @@ namespace WaywardGamers.KParser
         Spell,
         Ability,
         Weaponskill,
+        Skillchain,
         AdditionalEffect,
         Counterattack,
         Spikes,
@@ -113,6 +125,7 @@ namespace WaywardGamers.KParser
     public enum FailedActionType : byte
     {
         None,
+        NoEffect,
         Paralyzed,
         Interrupted,
         Intimidated,
@@ -130,7 +143,6 @@ namespace WaywardGamers.KParser
         None,
         Critical,
         MagicBurst,
-        Skillchain,
     }
 
     public enum DefenseType : byte
@@ -180,6 +192,17 @@ namespace WaywardGamers.KParser
         NPC,
         Fellow,
         Skillchain,
+    }
+
+    [Flags]
+    public enum ActorType : byte
+    {
+        Unknown = 0x00,
+        Self = 0x01,
+        Party = 0x02,
+        Other = 0x04,
+        Pet = 0x08,
+        NPC = 0x16,
     }
 
     public enum SpeakerType : byte
