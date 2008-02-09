@@ -25,4 +25,8 @@ namespace WaywardGamers.KParser.Plugin
             CombatGroup = grouping;
         }
     }
+
+    internal class DefenseGroup
+    {
+    }
 }
