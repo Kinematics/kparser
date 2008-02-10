@@ -269,7 +269,10 @@ namespace WaywardGamers.KParser.Parsing
             switch (message.ChatDetails.ChatMessageType)
             {
                 case ChatMessageType.Say:
-                    chatName = ParseExpressions.ChatSay.Match(message.CurrentMessageText);
+                    if (message.ChatDetails.ChatSpeakerType == SpeakerType.NPC)
+                        chatName = ParseExpressions.ChatNPC.Match(message.CurrentMessageText);
+                    else
+                        chatName = ParseExpressions.ChatSay.Match(message.CurrentMessageText);
                     break;
                 case ChatMessageType.Party:
                     chatName = ParseExpressions.ChatParty.Match(message.CurrentMessageText);
@@ -810,6 +813,7 @@ namespace WaywardGamers.KParser.Parsing
             CombatDetails combatDetails = message.EventDetails.CombatDetails;
             string currentMessageText = message.CurrentMessageText;
             TargetDetails target = null;
+            bool partialRanged = false;
 
             // Make all the type checks up front
 
@@ -838,7 +842,10 @@ namespace WaywardGamers.KParser.Parsing
             {
                 combatMatch = ParseExpressions.RangedHit.Match(currentMessageText);
                 if (combatMatch.Success == true)
+                {
                     combatDetails.ActionType = ActionType.Ranged;
+                    partialRanged = true;
+                }
             }
 
             if (combatMatch.Success == false)
@@ -923,10 +930,14 @@ namespace WaywardGamers.KParser.Parsing
                     switch (combatDetails.ActionType)
                     {
                         case ActionType.Melee:
+                        case ActionType.Ranged:
                         case ActionType.Counterattack:
                         case ActionType.Spikes:
-                            target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                            target.Amount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
+                            if (partialRanged == false)
+                            {
+                                target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                                target.Amount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
+                            }
                             break;
                     }
                 }
@@ -1097,6 +1108,17 @@ namespace WaywardGamers.KParser.Parsing
 
                 if (combatMatch.Success == false)
                 {
+                    combatMatch = ParseExpressions.AdditionalDamage.Match(currentMessageText);
+                    if (combatMatch.Success == true)
+                    {
+                        target = combatDetails.Targets.LastOrDefault();
+                        if (target != null)
+                        {
+                            target.SecondaryHarmType = HarmType.Damage;
+                            target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
+                        }
+                    }
+
                     combatMatch = ParseExpressions.AdditionalStatus.Match(currentMessageText);
                     if (combatMatch.Success == true)
                     {
@@ -1104,6 +1126,7 @@ namespace WaywardGamers.KParser.Parsing
                         if (target != null)
                         {
                             target.SecondaryHarmType = HarmType.Enfeeble;
+                            target.SecondaryAction = combatMatch.Groups[ParseFields.Effect].Value;
                         }
                     }
                 }
