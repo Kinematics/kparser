@@ -18,10 +18,11 @@ namespace WaywardGamers.KParser
             this.labelVersion.Text = String.Format("Version {0}", AssemblyVersion);
             this.labelCopyright.Text = AssemblyCopyright;
             this.labelCompanyName.Text = AssemblyCompany;
-            this.textBoxDescription.Text = AssemblyDescription;
 
-            this.textBoxDescription.Text += string.Format("\r\n\r\nUsing database version {0}.\r\n",
-                DatabaseManager.Instance.DatabaseVersion);
+            this.textBoxDescription.Text = AssemblyDescription;
+            this.textBoxDescription.Text += DatabaseDescription;
+            this.textBoxDescription.Text += OpenDatabaseDescription;
+
         }
 
         #region Assembly Attribute Accessors
@@ -100,6 +101,40 @@ namespace WaywardGamers.KParser
                     return "";
                 }
                 return ((AssemblyCompanyAttribute)attributes[0]).Company;
+            }
+        }
+        #endregion
+
+        #region Other Info Accessors
+        public string DatabaseDescription
+        {
+            get
+            {
+                return string.Format("\r\n\r\nUsing database version {0}.\r\n",
+                    DatabaseManager.Instance.DatabaseVersion);
+            }
+        }
+
+        public string OpenDatabaseDescription
+        {
+            get
+            {
+                if (DatabaseManager.Instance.Database != null)
+                {
+                    if (DatabaseManager.Instance.Database.Version.Count > 0)
+                    {
+                        //string dbVer = DatabaseManager.Instance.Database.Version[0].DatabaseVersion.ToString();
+                        string dbParseVer = DatabaseManager.Instance.Database.Version[0].ParserVersion;
+                        string dbName = (new System.IO.FileInfo(DatabaseManager.Instance.DatabaseFilename)).Name;
+
+                        string desc = string.Format("\r\nCurrent database: {0}\r\n  Parsed using parser version {1}\r\n",
+                            dbName, dbParseVer);
+
+                        return desc;
+                    }
+                }
+
+                return string.Empty;
             }
         }
         #endregion
