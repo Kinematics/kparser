@@ -26,6 +26,7 @@ namespace WaywardGamers.KParser
     {
         #region Named substrings
         private static readonly string playerName  = @"(?<name>\w{3,16})";
+        private static readonly string npcName     = @"(?<fullname>([Tt]he )?(?<name>\w+((,)|(\.\w?)|['\- ](\d|\w)+)*))";
         private static readonly string name        = @"(?<fullname>([Tt]he )?(?<name>\w+(['\- ](\d|\w)+)*))";
         private static readonly string repeatname  = @"(([Tt]he )?(?<repeatname>\w+(['\- ](\d|\w)+)*))";
         private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+(['\- ](\d|\w)+)*))";
@@ -53,7 +54,7 @@ namespace WaywardGamers.KParser
         public static readonly Regex ChatLinkshell = new Regex(string.Format("^<{0}> (.+)$", playerName));
         public static readonly Regex ChatEmote     = new Regex(string.Format("^{0} (.+)$", playerName));
         public static readonly Regex ChatEmoteA    = new Regex(string.Format("^{0}'s (.+)$", playerName));
-        public static readonly Regex ChatNPC       = new Regex(string.Format("^{0} (.+)$", name));
+        public static readonly Regex ChatNPC       = new Regex(string.Format("^{0} : (.+)$", npcName));
         #endregion
 
         #region Loot
@@ -115,7 +116,8 @@ namespace WaywardGamers.KParser
         #region Modifiers on existing lines
         public static readonly Regex AdditionalEffect = new Regex(@"^Additional effect:");
         public static readonly Regex MagicBurst       = new Regex(@"^Magic Burst!");
-        public static readonly Regex AdditionalStatus = new Regex(string.Format("^Additional effect: {0}", effect));
+        public static readonly Regex AdditionalDamage = new Regex(string.Format("^Additional effect: {0} points of damage\\.$", damage));
+        public static readonly Regex AdditionalStatus = new Regex(string.Format("^Additional effect: {0}\\.$", effect));
         #endregion
 
         #region Combat damage
