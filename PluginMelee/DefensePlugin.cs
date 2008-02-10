@@ -164,7 +164,7 @@ namespace WaywardGamers.KParser.Plugin
 
         string dmgRecoveryHeader = "Player           Dmg Taken   HP Drained   HP Cured   #Regen   #Regen 2   #Regen 3\n";
         string cureHeader        = "Player           Cured (Sp)  Cured (Ab)  C.1s  C.2s  C.3s  C.4s  C.5s  Curagas  Rg.1s  Rg.2s  Rg.3s\n";
-        string avgCureHeader     = "Player           Avg Cure 1   Avg Cure 2   Avg Cure 3   Avg Cure 4   Avg Cure 5   Avg Ability\n";
+        string avgCureHeader     = "Player           Avg Cure 1   Avg Cure 2   Avg Cure 3   Avg Cure 4   Avg Cure 5   Avg Curaga   Avg Ability\n";
 
         string incAttacksHeader  = "Player           Melee   Range   Abil/Ws   Spells   Avoided   Avoid %   Attack# %\n";
         string incDamageHeader   = "Player           M.Dmg   Avg M.Dmg   R.Dmg  Avg R.Dmg   S.Dmg  Avg S.Dmg   A/WS.Dmg  Avg A/WS.Dmg   Damage %\n";
@@ -392,7 +392,7 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append("\n");
                 }
 
-                sb.Append("\n");
+                sb.Append("\n\n");
                 AppendNormalText(sb.ToString());
             }
         }
@@ -410,7 +410,7 @@ namespace WaywardGamers.KParser.Plugin
                                       (cd.Preparing == false) &&
                                       (cd.IsActionIDNull() == false) &&
                                       (cd.ActionsRow.ActionName.StartsWith("Regen")))))
-                             group cd by cd.CombatantsRowByTargetCombatantRelation.CombatantName into cdr
+                             group cd by cd.CombatantsRowByActorCombatantRelation.CombatantName into cdr
                              orderby cdr.Key
                              select new
                              {
@@ -493,37 +493,77 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append("\n");
                 }
 
-                sb.Append("\n");
+                sb.Append("\n\n");
                 AppendNormalText(sb.ToString());
 
 
                 //-- Second section (Average curing) uses same dataset results as this
                 //-- one, so combining within the same function.
 
-                AppendBoldText("Average Curing\n", Color.Blue);
+                // Equivalents:
+                // Cure 1: Pollen, Healing Breath
+                // Cure 2: Curing Waltz, Healing Breath II
+                // Cure 3: Curing Waltz II, Healing Breath III, Wild Carrot
+                // Cure 4: Curing Watlz III, Magic Fruit
+                // Curaga: Healing Breeze, Divine Waltz
+
+
+                AppendBoldText("Average Curing (whm spells or equivalent)\n", Color.Blue);
                 AppendBoldUnderText(avgCureHeader, Color.Black);
 
                 sb = new StringBuilder();
 
                 foreach (var healer in allHealing)
                 {
-                    sb.Append(healer.Player.PadRight(16));
-                    sb.Append(" ");
-                    
+                    // Known spells
                     var cureSet = healer.Cures.Where(c => c.ActionType == (byte)ActionType.Spell);
                     var abilSet = healer.Cures.Where(c => c.ActionType == (byte)ActionType.Ability);
 
-                    var cure1Set = cureSet.Where(c => c.ActionsRow.ActionName == "Cure");
-                    var cure2Set = cureSet.Where(c => c.ActionsRow.ActionName == "Cure II");
-                    var cure3Set = cureSet.Where(c => c.ActionsRow.ActionName == "Cure III");
-                    var cure4Set = cureSet.Where(c => c.ActionsRow.ActionName == "Cure IV");
-                    var cure5Set = cureSet.Where(c => c.ActionsRow.ActionName == "Cure IV");
+                    IEnumerable<KPDatabaseDataSet.InteractionsRow> cure1Set;
+                    IEnumerable<KPDatabaseDataSet.InteractionsRow> cure2Set;
+                    IEnumerable<KPDatabaseDataSet.InteractionsRow> cure3Set;
+                    IEnumerable<KPDatabaseDataSet.InteractionsRow> cure4Set;
+                    IEnumerable<KPDatabaseDataSet.InteractionsRow> cure5Set;
+                    IEnumerable<KPDatabaseDataSet.InteractionsRow> miscSet;
+
+
+                    cure1Set = cureSet.Where(c => c.ActionsRow.ActionName == "Cure" ||
+                        c.ActionsRow.ActionName == "Pollen").
+                        Concat(abilSet.Where(c => c.ActionsRow.ActionName == "Healing Breath"));
+
+                    cure2Set = cureSet.Where(c => c.ActionsRow.ActionName == "Cure II").
+                        Concat(abilSet.Where(c => c.ActionsRow.ActionName == "Curing Waltz" ||
+                            c.ActionsRow.ActionName == "Healing Breath II"));
+
+                    cure3Set = cureSet.Where(c => c.ActionsRow.ActionName == "Cure III" ||
+                        c.ActionsRow.ActionName == "Wild Carrot").
+                        Concat(abilSet.Where(c => c.ActionsRow.ActionName == "Curing Waltz II" ||
+                            c.ActionsRow.ActionName == "Healing Breath III"));
+
+                    cure4Set = cureSet.Where(c => c.ActionsRow.ActionName == "Cure IV" ||
+                        c.ActionsRow.ActionName == "Magic Fruit").
+                        Concat(abilSet.Where(c => c.ActionsRow.ActionName == "Curing Waltz III"));
+
+                    cure5Set = cureSet.Where(c => c.ActionsRow.ActionName == "Cure V");
+
+                    // Group in 10 second intervals to make sure we catch multiple messages
+                    // that may span different readout times.
+                    var curagaSet = cureSet.Where(c =>
+                        c.ActionsRow.ActionName.StartsWith("Curaga") ||
+                        c.ActionsRow.ActionName == "Healing Breeze").
+                        Concat(abilSet.Where(c => c.ActionsRow.ActionName == "Divine Waltz")).
+                        GroupBy(c => c.Timestamp.Hour * 3600 + c.Timestamp.Minute * 60 + c.Timestamp.Second / 6);
+
+                    // Chakra and any other misc abilities go here.
+                    miscSet = abilSet.Where(c => c.ActionsRow.ActionName == "Chakra");
+
 
                     double avgC1 = 0;
                     double avgC2 = 0;
                     double avgC3 = 0;
                     double avgC4 = 0;
                     double avgC5 = 0;
+                    double avgCg = 0;
                     double avgAb = 0;
 
                     if ((cure1Set != null) && (cure1Set.Count() > 0))
@@ -537,22 +577,33 @@ namespace WaywardGamers.KParser.Plugin
                     if ((cure5Set != null) && (cure5Set.Count() > 0))
                         avgC5 = cure5Set.Average(h => h.Amount);
 
-                    if ((abilSet != null) && (abilSet.Count() > 0))
-                        avgAb = abilSet.Average(h => h.Amount);
+                    // Average the sum of the groups of curaga events (multiple people cured)
+                    if ((curagaSet != null) && (curagaSet.Count() > 0))
+                        avgCg = curagaSet.Average(h => h.Sum(c => c.Amount));
+
+                    if ((miscSet != null) && (miscSet.Count() > 0))
+                        avgAb = miscSet.Average(h => h.Amount);
 
 
-                    sb.Append(avgC1.ToString("F2").PadLeft(10));
-                    sb.Append(avgC2.ToString("F2").PadLeft(13));
-                    sb.Append(avgC3.ToString("F2").PadLeft(13));
-                    sb.Append(avgC4.ToString("F2").PadLeft(13));
-                    sb.Append(avgC5.ToString("F2").PadLeft(13));
-                    sb.Append(avgAb.ToString("F2").PadLeft(14));
+                    if ((avgAb + avgC1 + avgC2 + avgC3 + avgC4 + avgC5 + avgCg) > 0)
+                    {
+                        sb.Append(healer.Player.PadRight(16));
+                        sb.Append(" ");
 
-                    sb.Append("\n");
+                        sb.Append(avgC1.ToString("F2").PadLeft(10));
+                        sb.Append(avgC2.ToString("F2").PadLeft(13));
+                        sb.Append(avgC3.ToString("F2").PadLeft(13));
+                        sb.Append(avgC4.ToString("F2").PadLeft(13));
+                        sb.Append(avgC5.ToString("F2").PadLeft(13));
+                        sb.Append(avgCg.ToString("F2").PadLeft(13));
+                        sb.Append(avgAb.ToString("F2").PadLeft(14));
+
+                        sb.Append("\n");
+                    }
                 }
 
 
-                sb.Append("\n");
+                sb.Append("\n\n");
                 AppendNormalText(sb.ToString());
 
             }
@@ -662,7 +713,7 @@ namespace WaywardGamers.KParser.Plugin
                 sb.Append("\n");
             }
 
-            sb.Append("\n");
+            sb.Append("\n\n");
             AppendNormalText(sb.ToString());
         }
 
@@ -756,7 +807,7 @@ namespace WaywardGamers.KParser.Plugin
                     }
                 }
 
-                sb.Append("\n");
+                sb.Append("\n\n");
                 AppendNormalText(sb.ToString());
             }
         }
@@ -774,9 +825,6 @@ namespace WaywardGamers.KParser.Plugin
             {
                 if ((player.Melee.Count() + player.Range.Count()) > 0)
                 {
-                    sb.Append(player.Player.PadRight(16));
-                    sb.Append(" ");
-
                     int mEvaded = 0;
                     double mEvadePerc = 0;
                     int rEvaded = 0;
@@ -794,16 +842,22 @@ namespace WaywardGamers.KParser.Plugin
                         rEvadePerc = (double)rEvaded / player.Range.Count();
                     }
 
-                    sb.Append(mEvaded.ToString().PadLeft(7));
-                    sb.Append(mEvadePerc.ToString("P2").PadLeft(12));
-                    sb.Append(rEvaded.ToString().PadLeft(10));
-                    sb.Append(rEvadePerc.ToString("P2").PadLeft(12));
+                    if ((mEvaded + rEvaded) > 0)
+                    {
+                        sb.Append(player.Player.PadRight(16));
+                        sb.Append(" ");
 
-                    sb.Append("\n");
+                        sb.Append(mEvaded.ToString().PadLeft(7));
+                        sb.Append(mEvadePerc.ToString("P2").PadLeft(12));
+                        sb.Append(rEvaded.ToString().PadLeft(10));
+                        sb.Append(rEvadePerc.ToString("P2").PadLeft(12));
+
+                        sb.Append("\n");
+                    }
                 }
             }
 
-            sb.Append("\n");
+            sb.Append("\n\n");
             AppendNormalText(sb.ToString());
         }
 
@@ -855,16 +909,6 @@ namespace WaywardGamers.KParser.Plugin
 
                 if ((parryableCount + blinkableCount + anticibleCount + counterableCount) > 0)
                 {
-                    if (placedHeader == false)
-                    {
-                        AppendBoldText("Other Defenses\n", Color.Blue);
-                        AppendBoldUnderText(otherDefHeader, Color.Black);
-                        placedHeader = true;
-                    }
-
-                    sb.Append(player.Player.PadRight(16));
-                    sb.Append(" ");
-
                     if (parryableCount > 0)
                     {
                         parriedAttacks = parryableAttacks.Count(a => a.DefenseType == (byte)DefenseType.Parry);
@@ -890,21 +934,34 @@ namespace WaywardGamers.KParser.Plugin
                     }
 
 
-                    sb.Append(parriedAttacks.ToString().PadLeft(5));
-                    sb.Append(parryPerc.ToString("P2").PadLeft(10));
-                    sb.Append(blinkedAttacks.ToString().PadLeft(8));
-                    sb.Append(blinkPerc.ToString("P2").PadLeft(10));
-                    sb.Append(anticipatedAttacks.ToString().PadLeft(13));
-                    sb.Append(antiPerc.ToString("P2").PadLeft(14));
-                    sb.Append(counteredAttacks.ToString().PadLeft(10));
-                    sb.Append(counterPerc.ToString("P2").PadLeft(12));
+                    if ((parriedAttacks + blinkedAttacks + anticipatedAttacks + counteredAttacks) > 0)
+                    {
+                        if (placedHeader == false)
+                        {
+                            AppendBoldText("Other Defenses\n", Color.Blue);
+                            AppendBoldUnderText(otherDefHeader, Color.Black);
+                            placedHeader = true;
+                        }
 
-                    sb.Append("\n");
+                        sb.Append(player.Player.PadRight(16));
+                        sb.Append(" ");
+
+                        sb.Append(parriedAttacks.ToString().PadLeft(5));
+                        sb.Append(parryPerc.ToString("P2").PadLeft(10));
+                        sb.Append(blinkedAttacks.ToString().PadLeft(8));
+                        sb.Append(blinkPerc.ToString("P2").PadLeft(10));
+                        sb.Append(anticipatedAttacks.ToString().PadLeft(13));
+                        sb.Append(antiPerc.ToString("P2").PadLeft(14));
+                        sb.Append(counteredAttacks.ToString().PadLeft(10));
+                        sb.Append(counterPerc.ToString("P2").PadLeft(12));
+
+                        sb.Append("\n");
+                    }
                 }
             }
 
 
-            sb.Append("\n");
+            sb.Append("\n\n");
             AppendNormalText(sb.ToString());
         }
         #endregion
