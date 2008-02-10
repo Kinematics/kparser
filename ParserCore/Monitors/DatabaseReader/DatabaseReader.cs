@@ -57,10 +57,10 @@ namespace WaywardGamers.KParser.Monitoring
 
             try
             {
-                // Notify MessageManager that we're starting.
-                MessageManager.Instance.StartParsing();
+                KPDatabaseDataSet readDataSet = DatabaseReadingManager.Instance.Database;
 
-                KPDatabaseDataSet readDataSet = DatabaseManager.SecondInstance.Database;
+                // Notify MessageManager that we're starting.
+                MessageManager.Instance.StartParsing(false);
 
                 // Read the (fixed) record log from the database, reconstruct
                 // the chat line, and send it to the new database.
@@ -71,10 +71,13 @@ namespace WaywardGamers.KParser.Monitoring
                 }
 
             }
+            catch (Exception e)
+            {
+                Logger.Instance.Log(e);
+            }
             finally
             {
                 MessageManager.Instance.StopParsing();
-                DatabaseManager.SecondInstance.CloseDatabase();
                 IsRunning = false;
             }
         }
