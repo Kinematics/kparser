@@ -54,12 +54,19 @@ namespace WaywardGamers.KParser
 
             string oldDBName = DatabaseManager.Instance.DatabaseFilename;
 
-            DatabaseManager.Instance.CreateDatabase(outputFileName);
-            DatabaseManager.SecondInstance.OpenDatabase(oldDBName);
-
             currentReader = DatabaseReader.Instance;
 
-            currentReader.Run();
+            try
+            {
+                DatabaseManager.Instance.CreateDatabase(outputFileName);
+                DatabaseReadingManager.Instance.OpenDatabase(oldDBName);
+
+                currentReader.Run();
+            }
+            finally
+            {
+                DatabaseReadingManager.Instance.CloseDatabase();
+            }
         }
 
         /// <summary>
