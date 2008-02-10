@@ -56,12 +56,15 @@ namespace WaywardGamers.KParser
         /// Activate the timer so that we periodically pass accumulated messages
         /// on to the DatabaseManager to be committed to the database.
         /// </summary>
-        internal void StartParsing()
+        internal void StartParsing(bool activateTimer)
         {
             Reset();
 
-            if (periodicUpdates == null)
-                periodicUpdates = new Timer(ProcessMessageList, null, 3000, 3000);
+            if (activateTimer == true)
+            {
+                if (periodicUpdates == null)
+                    periodicUpdates = new Timer(ProcessMessageList, null, 3000, 3000);
+            }
 
             DumpToFile(null, true, false);
         }
@@ -76,9 +79,9 @@ namespace WaywardGamers.KParser
             {
                 periodicUpdates.Dispose();
                 periodicUpdates = null;
-
-                ProcessMessageList(true);
             }
+
+            ProcessMessageList(true);
         }
 
         /// <summary>
@@ -256,10 +259,13 @@ namespace WaywardGamers.KParser
                         // In database reading mode, the messages are going to come very quickly
                         // Leave the last 10 messages always.  When the re-parse ends, the
                         // code below will clean up the leftovers.
-                        if (messageCollection.Count > 10)
+                        lock (messageCollection)
                         {
-                            messagesToProcess.AddRange(messageCollection.GetRange(0, messageCollection.Count - 10));
-                            messageCollection.RemoveRange(0, messageCollection.Count - 10);
+                            if (messageCollection.Count > 10)
+                            {
+                                messagesToProcess.AddRange(messageCollection.GetRange(0, messageCollection.Count - 10));
+                                messageCollection.RemoveRange(0, messageCollection.Count - 10);
+                            }
                         }
                         break;
                 }
