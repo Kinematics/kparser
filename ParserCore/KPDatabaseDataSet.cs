@@ -204,7 +204,7 @@ namespace WaywardGamers.KParser
         {
             public ActionsRow FindByActionName(string actionName)
             {
-                return this.SingleOrDefault(i => i.ActionName == actionName);
+                return this.FirstOrDefault(i => i.ActionName.ToLower() == actionName.ToLower());
             }
 
             public ActionsRow GetAction(string actionName)
@@ -217,7 +217,17 @@ namespace WaywardGamers.KParser
                     action = FindByActionName(actionName);
 
                     if (action == null)
+                    {
+                        // Ensure we don't get fully lower-case entries
+                        if (actionName == actionName.ToLower())
+                        {
+                            string firstChar = actionName.Substring(0, 1);
+                            firstChar = firstChar.ToUpper();
+                            actionName = firstChar + actionName.Substring(1);
+                        }
+
                         action = AddActionsRow(actionName);
+                    }
                 }
 
                 return action;
