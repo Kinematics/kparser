@@ -35,7 +35,7 @@ namespace WaywardGamers.KParser
         private static readonly string item        = @"(([Aa]|[Aa]n|[Tt]he) )?(?<item>.{3,})";
         private static readonly string money       = @"((?<money>\d{1,4}?) gil)";
         private static readonly string spell       = @"(?<spell>\w+((\:)? \w+)?)";
-        private static readonly string ability     = @"(?<ability>\w+((\:)? \w+)?)";
+        private static readonly string ability     = @"(?<ability>\w+((\:)? \w+)?( \w+)?)";
         private static readonly string effect      = @"(?<effect>\w+( \w+)?)";
         private static readonly string skillchain  = @"(?<skillchain>\w+)";
         #endregion
