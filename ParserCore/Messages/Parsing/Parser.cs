@@ -200,10 +200,12 @@ namespace WaywardGamers.KParser.Parsing
             {
                 case 0x01: // <me> say
                 case 0x09: // Others say
+                case 0x98: // <npc> say
                     message.ChatDetails.ChatMessageType = ChatMessageType.Say;
                     break;
                 case 0x02: // <me> shout
                 case 0x0a: // Others shout
+                case 0x8e: // <npc> shout
                     message.ChatDetails.ChatMessageType = ChatMessageType.Shout;
                     break;
                 case 0x04: // <me> tell
@@ -221,9 +223,6 @@ namespace WaywardGamers.KParser.Parsing
                 case 0x07: // <me> emote
                 case 0x0f: // Others emote
                     message.ChatDetails.ChatMessageType = ChatMessageType.Emote;
-                    break;
-                case 0x98: // <npc> say
-                    message.ChatDetails.ChatMessageType = ChatMessageType.Say;
                     break;
                 // The following codes fit into the above pattern, but
                 // I haven't encountered the specific code values.
@@ -255,7 +254,8 @@ namespace WaywardGamers.KParser.Parsing
                 case 0x0f: // Others emote
                     message.ChatDetails.ChatSpeakerType = SpeakerType.Player;
                     break;
-                case 0x98: // NPCs say
+                case 0x98: // <npc> say
+                case 0x8e: // <npc> shout
                     message.ChatDetails.ChatSpeakerType = SpeakerType.NPC;
                     break;
                 default:
@@ -281,7 +281,10 @@ namespace WaywardGamers.KParser.Parsing
                     chatName = ParseExpressions.ChatLinkshell.Match(message.CurrentMessageText);
                     break;
                 case ChatMessageType.Shout:
-                    chatName = ParseExpressions.ChatShout.Match(message.CurrentMessageText);
+                    if (message.ChatDetails.ChatSpeakerType == SpeakerType.NPC)
+                        chatName = ParseExpressions.ChatNPC.Match(message.CurrentMessageText);
+                    else
+                        chatName = ParseExpressions.ChatShout.Match(message.CurrentMessageText);
                     break;
                 case ChatMessageType.Emote:
                     chatName = ParseExpressions.ChatEmote.Match(message.CurrentMessageText);
