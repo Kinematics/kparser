@@ -146,6 +146,9 @@ namespace WaywardGamers.KParser
         private KPDatabaseDataSet localDB;
         private KPDatabaseDataSetTableAdapters.TableAdapterManager localTAManager;
 
+        private DateTime lastUpdateTime = DateTime.Now;
+        private TimeSpan updateDelayWindow = TimeSpan.FromSeconds(5);
+
         public event DatabaseWatchEventHandler DatabaseChanging;
         public event DatabaseWatchEventHandler DatabaseChanged;
 
@@ -261,6 +264,17 @@ namespace WaywardGamers.KParser
                 AddMessageToDatabase(message);
 
             UpdateActiveBattleList(false);
+
+            // Only process updates every 5 seconds, unless parse is ending.
+            if (parseEnded == false)
+            {
+                DateTime currentTime = DateTime.Now;
+                if (lastUpdateTime + updateDelayWindow > currentTime)
+                    return;
+
+                lastUpdateTime = currentTime;
+            }
+
 
             stopwatch.Reset();
             stopwatch.Start();
@@ -879,11 +893,8 @@ namespace WaywardGamers.KParser
                     // If the one who killed the mob is given, note that in the killer ID
                     if (message.EventDetails.CombatDetails.ActorName != "")
                     {
-                        var killer = localDB.Combatants.FindPlayerOrPetByName(message.EventDetails.CombatDetails.ActorName);
-
-                        if (killer == null)
-                            killer = localDB.Combatants.AddCombatantsRow(message.EventDetails.CombatDetails.ActorName,
-                                (byte)EntityType.Unknown, null);
+                        var killer = localDB.Combatants.GetCombatant(message.EventDetails.CombatDetails.ActorName,
+                            message.EventDetails.CombatDetails.ActorEntityType);
 
                         battle.CombatantsRowByBattleKillerRelation = killer;
                     }
