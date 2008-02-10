@@ -165,7 +165,7 @@ namespace WaywardGamers.KParser.Monitoring.Memory
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine(e.Message);
+                    Logger.Instance.Log(e);
                 }
             }
         }

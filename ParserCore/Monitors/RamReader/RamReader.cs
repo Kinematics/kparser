@@ -85,7 +85,7 @@ namespace WaywardGamers.KParser.Monitoring
                 readerThread.Start();
 
                 // Notify MessageManager that we're starting.
-                MessageManager.Instance.StartParsing();
+                MessageManager.Instance.StartParsing(true);
             }
             catch (Exception)
             {

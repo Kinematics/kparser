@@ -596,7 +596,7 @@ namespace WaywardGamers.KParser.Monitoring.Memory
                 }
                 catch (Exception e)
                 {
-                    Trace.WriteLine(String.Format(Thread.CurrentThread.Name + ": ERROR: An exception occured while trying to connect to Final Fantasy.  Message = {0}", e.Message));
+                    Logger.Instance.Log("Memory access", String.Format(Thread.CurrentThread.Name + ": ERROR: An exception occured while trying to connect to Final Fantasy.  Message = {0}", e.Message));
                     System.Threading.Thread.Sleep(5000);
                 }
             }

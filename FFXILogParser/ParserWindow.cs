@@ -294,6 +294,10 @@ namespace WaywardGamers.KParser
                         }
                     }
                 }
+                catch (Exception ex)
+                {
+                    Logger.Instance.Log(ex);
+                }
                 finally
                 {
                     Cursor.Current = Cursors.Default;
