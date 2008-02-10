@@ -66,7 +66,6 @@ namespace WaywardGamers.KParser
         /// Make the class a singleton
         /// </summary>
         private static readonly DatabaseManager instance = new DatabaseManager();
-        private static readonly DatabaseManager secondInstance = new DatabaseManager();
 
          /// <summary>
         /// Private constructor ensures singleton purity.
@@ -96,17 +95,6 @@ namespace WaywardGamers.KParser
 			{
 				return instance;
 			}
-        }
-
-        /// <summary>
-        /// Gets the singleton instance of the DatabaseManager class.
-        /// </summary>
-        public static DatabaseManager SecondInstance
-        {
-            get
-            {
-                return secondInstance;
-            }
         }
         #endregion
 
@@ -337,6 +325,13 @@ namespace WaywardGamers.KParser
                 localDB.Dispose();
                 localDB = null;
             }
+
+            lastKilledList.Clear();
+            activeBattleList.Clear();
+            activeMobBattleList.Clear();
+
+            lastFinishedBattle = null;
+
         }
         #endregion
 
