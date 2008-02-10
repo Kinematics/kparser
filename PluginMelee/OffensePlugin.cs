@@ -198,7 +198,8 @@ namespace WaywardGamers.KParser.Plugin
             {
                 allAttacks = from cd in dataSet.Interactions
                              where ((cd.IsActorIDNull() == false) &&
-                                    (cd.HarmType == (byte)HarmType.Damage) &&
+                                    ((cd.HarmType == (byte)HarmType.Damage) ||
+                                     (cd.HarmType == (byte)HarmType.Drain)) &&
                                     ((cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Player) ||
                                      (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
                                      (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Fellow) ||
@@ -378,24 +379,41 @@ namespace WaywardGamers.KParser.Plugin
             AppendBoldUnderText(summaryHeader, Color.Black);
 
             // First get a list of all player names across all attack groups.
-            List<string> nameList = new List<string>();
+            IEnumerable<string> nameList = new List<string>();
 
-            foreach (var attackGroup in allAttacks)
+            foreach (var attgroup in allAttacks)
             {
-                foreach (var player in attackGroup.CombatGroup)
-                {
-                    if ((player.Key.CombatantType == (byte)EntityType.Player) ||
-                        (player.Key.CombatantType == (byte)EntityType.Pet) ||
-                        (player.Key.CombatantType == (byte)EntityType.Fellow) ||
-                        (player.Key.CombatantType == (byte)EntityType.NPC))
-                    {
-                        if (nameList.Contains(player.Key.CombatantName) == false)
-                            nameList.Add(player.Key.CombatantName);
-                    }
-                }
+                nameList = nameList.Concat(attgroup.CombatGroup.
+                    Select(n => n.Key.CombatantName));
             }
 
+            nameList = nameList.Distinct().OrderBy(n => n);
+
             StringBuilder sb = new StringBuilder();
+
+
+            var meleeSet = allAttacks.FirstOrDefault(g => g.ActionSource == ActionType.Melee);
+            var rangeSet = allAttacks.FirstOrDefault(g => g.ActionSource == ActionType.Ranged);
+            var spellSet = allAttacks.FirstOrDefault(g => g.ActionSource == ActionType.Spell);
+            var abilSet = allAttacks.FirstOrDefault(g => g.ActionSource == ActionType.Ability);
+            var wskillSet = allAttacks.FirstOrDefault(g => g.ActionSource == ActionType.Weaponskill);
+
+            IEnumerable<IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow>> meleeGroup = null;
+            IEnumerable<IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow>> rangeGroup = null;
+            IEnumerable<IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow>> spellGroup = null;
+            IEnumerable<IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow>> abilGroup = null;
+            IEnumerable<IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow>> wskillGroup = null;
+
+            if (meleeSet != null)
+                meleeGroup = meleeSet.CombatGroup;
+            if (rangeSet != null)
+                rangeGroup = rangeSet.CombatGroup;
+            if (spellSet != null)
+                spellGroup = spellSet.CombatGroup;
+            if (abilSet != null)
+                abilGroup = abilSet.CombatGroup;
+            if (wskillSet != null)
+                wskillGroup = wskillSet.CombatGroup;
 
             foreach (string player in nameList)
             {
@@ -407,100 +425,72 @@ namespace WaywardGamers.KParser.Plugin
                         sb.Append(player.PadRight(16));
                         sb.Append(" ");
 
-                        // Total damage
-                        int damageDone = playerDamage[player];
-                        sb.Append(damageDone.ToString().PadLeft(10));
-                        sb.Append(" ");
 
-                        // Damage share
-                        sb.Append(((double)damageDone / totalDamage).ToString("P2").PadLeft(10));
-                        sb.Append(" ");
+                        int ttlPlayerDmg = playerDamage[player];
+                        double damageShare = (double)ttlPlayerDmg / totalDamage;
 
-                        // Variables used for the subgroup analysis
-                        int dmg = 0;
-                        AttackGroup attackSet;
-                        IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow> attacker;
+                        sb.Append(ttlPlayerDmg.ToString().PadLeft(10));
+                        sb.Append(damageShare.ToString("P2").PadLeft(11));
 
-                        // Melee Dmg
-                        attackSet = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Melee);
+                        IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow> playerMelee = null;
+                        IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow> playerRange = null;
+                        IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow> playerSpell = null;
+                        IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow> playerAbil = null;
+                        IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow> playerWSkill = null;
 
-                        if (attackSet != null)
+                        if (meleeGroup != null)
+                            playerMelee = meleeGroup.FirstOrDefault(d => d.Key.CombatantName == player);
+                        if (rangeGroup != null)
+                            playerRange = rangeGroup.FirstOrDefault(d => d.Key.CombatantName == player);
+                        if (spellGroup != null)
+                            playerSpell = spellGroup.FirstOrDefault(d => d.Key.CombatantName == player);
+                        if (abilGroup != null)
+                            playerAbil = abilGroup.FirstOrDefault(d => d.Key.CombatantName == player);
+                        if (wskillGroup != null)
+                            playerWSkill = wskillGroup.FirstOrDefault(d => d.Key.CombatantName == player);
+
+                        int meleeDmg = 0;
+                        int rangeDmg = 0;
+                        int spellDmg = 0;
+                        int abilDmg = 0;
+                        int wskillDmg = 0;
+
+                        if (playerMelee != null)
                         {
-                            attacker = attackSet.CombatGroup.FirstOrDefault(c => c.Key.CombatantName == player);
-                            if (attacker != null)
-                            {
-                                dmg = attacker.Sum(d => d.Amount) + attacker.Sum(d => d.SecondAmount);
-                            }
+                            meleeDmg = playerMelee.Sum(d => d.Amount) +
+                                playerMelee.Where(s =>
+                                    s.SecondHarmType == (byte)HarmType.Damage ||
+                                    s.SecondHarmType == (byte)HarmType.Drain).Sum(d => d.SecondAmount);
                         }
 
-                        sb.Append(dmg.ToString().PadLeft(11));
-                        sb.Append(" ");
-
-
-                        // Range Dmg
-                        dmg = 0;
-                        attackSet = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Ranged);
-
-                        if (attackSet != null)
+                        if (playerRange != null)
                         {
-                            attacker = attackSet.CombatGroup.FirstOrDefault(c => c.Key.CombatantName == player);
-                            if (attacker != null)
-                            {
-                                dmg = attacker.Sum(d => d.Amount) + attacker.Sum(d => d.SecondAmount);
-                            }
+                            rangeDmg = playerRange.Sum(d => d.Amount) +
+                                playerRange.Where(s =>
+                                    s.SecondHarmType == (byte)HarmType.Damage ||
+                                    s.SecondHarmType == (byte)HarmType.Drain).Sum(d => d.SecondAmount);
                         }
 
-                        sb.Append(dmg.ToString().PadLeft(11));
-                        sb.Append(" ");
-
-                        // Spell Dmg
-                        dmg = 0;
-                        attackSet = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Spell);
-
-                        if (attackSet != null)
+                        if (playerSpell != null)
                         {
-                            attacker = attackSet.CombatGroup.FirstOrDefault(c => c.Key.CombatantName == player);
-                            if (attacker != null)
-                            {
-                                dmg = attacker.Sum(d => d.Amount) + attacker.Sum(d => d.SecondAmount);
-                            }
+                            spellDmg = playerSpell.Sum(d => d.Amount);
                         }
 
-                        sb.Append(dmg.ToString().PadLeft(11));
-                        sb.Append(" ");
-
-                        // Ability Dmg
-                        dmg = 0;
-                        attackSet = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Ability);
-
-                        if (attackSet != null)
+                        if (playerAbil != null)
                         {
-                            attacker = attackSet.CombatGroup.FirstOrDefault(c => c.Key.CombatantName == player);
-                            if (attacker != null)
-                            {
-                                dmg = attacker.Sum(d => d.Amount) + attacker.Sum(d => d.SecondAmount);
-                            }
+                            abilDmg = playerAbil.Sum(d => d.Amount);
                         }
 
-                        sb.Append(dmg.ToString().PadLeft(11));
-                        sb.Append(" ");
-
-                        // Weaponskill Dmg
-                        dmg = 0;
-                        attackSet = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Weaponskill);
-
-                        if (attackSet != null)
+                        if (playerWSkill != null)
                         {
-                            attacker = attackSet.CombatGroup.FirstOrDefault(c => c.Key.CombatantName == player);
-                            if (attacker != null)
-                            {
-                                dmg = attacker.Sum(d => d.Amount) + attacker.Sum(d => d.SecondAmount);
-                            }
+                            wskillDmg = playerWSkill.Sum(d => d.Amount);
                         }
 
-                        sb.Append(dmg.ToString().PadLeft(11));
-                        sb.Append(" ");
-
+                        sb.Append(meleeDmg.ToString().PadLeft(12));
+                        sb.Append(rangeDmg.ToString().PadLeft(12));
+                        sb.Append(spellDmg.ToString().PadLeft(12));
+                        sb.Append(abilDmg.ToString().PadLeft(12));
+                        sb.Append(wskillDmg.ToString().PadLeft(12));
 
                         sb.Append("\n");
                     }
@@ -523,159 +513,88 @@ namespace WaywardGamers.KParser.Plugin
             AppendBoldText("Melee Damage\n", Color.Red);
             AppendBoldUnderText(meleeHeader, Color.Black);
 
+            StringBuilder sb = new StringBuilder();
+
             foreach (var player in meleeAttacks.CombatGroup)
             {
-                if (player.Count() > 0)
+
+                sb.Append(player.Key.CombatantName.PadRight(16));
+                sb.Append(" ");
+
+                int meleeDmg = 0;
+                double meleePerc = 0;
+                int meleeHits = 0;
+                int meleeMiss = 0;
+                double meleeAcc = 0;
+                int normHits = 0;
+                int critHits = 0;
+                int normLow = 0;
+                int normHi = 0;
+                double normAvg = 0;
+                int critLow = 0;
+                int critHi = 0;
+                double critAvg = 0;
+                double critPerc = 0;
+                int effectDmg = 0;
+
+
+                meleeDmg = player.Sum(d => d.Amount);
+                effectDmg = player.Where(s =>
+                                s.SecondHarmType == (byte)HarmType.Damage ||
+                                s.SecondHarmType == (byte)HarmType.Drain).
+                                Sum(d => d.SecondAmount);
+
+                if (playerDamage[player.Key.CombatantName] > 0)
+                    meleePerc = (double)meleeDmg / playerDamage[player.Key.CombatantName];
+
+                var successfulHits = player.Where(h => h.DefenseType == (byte)DefenseType.None);
+
+                meleeHits = successfulHits.Count();
+                meleeMiss = player.Count(b => b.DefenseType != (byte)DefenseType.None);
+
+                meleeAcc = (double)meleeHits / (meleeHits + meleeMiss);
+
+                var meleeNorm = successfulHits.Where(h => h.DamageModifier == (byte)DamageModifier.None);
+                var meleeCrit = successfulHits.Where(h => h.DamageModifier == (byte)DamageModifier.Critical);
+
+                normHits = meleeNorm.Count();
+                critHits = meleeCrit.Count();
+
+                if (normHits > 0)
                 {
-                    StringBuilder sb = new StringBuilder();
-
-                    sb.Append(player.Key.CombatantName.PadRight(16));
-                    sb.Append(" ");
-
-                    // Melee damage
-                    int totalMelee = player.Sum(b => b.Amount);
-                    sb.Append(totalMelee.ToString().PadLeft(10));
-                    sb.Append(" ");
-
-                    // Total damage
-                    int damageDone = playerDamage[player.Key.CombatantName];
-
-                    // Melee % of total player damage
-                    sb.Append(((double)totalMelee / damageDone).ToString("P2").PadLeft(9));
-                    sb.Append(" ");
-
-                    var successfulHits = player.Where(h => h.DefenseType == (byte)DefenseType.None);
-                    int hits = successfulHits.Count();
-                    int misses = player.Count(b => b.DefenseType != (byte)DefenseType.None);
-
-                    // Hits/Misses
-                    sb.Append(string.Format("{0}/{1}", hits, misses).PadLeft(10));
-                    sb.Append(" ");
-
-                    // Accuracy
-                    sb.Append(((double)hits / (hits + misses)).ToString("P2").PadLeft(9));
-                    sb.Append(" ");
-
-                    var normalHits = successfulHits.Where(h => h.DamageModifier == (byte)DamageModifier.None);
-                    var critHits = successfulHits.Where(h => h.DamageModifier == (byte)DamageModifier.Critical);
-
-                    if (hits > 0)
-                    {
-                        int low = 0;
-                        int high = 0;
-
-                        if (normalHits.Count() > 0)
-                        {
-                            // M.Low/Hi
-                            low = normalHits.Min(b => b.Amount);
-                            high = normalHits.Max(b => b.Amount);
-
-                            sb.Append(string.Format("{0}/{1}", low, high).PadLeft(9));
-                            sb.Append(" ");
-
-                            int normDamage = normalHits.Sum(h => h.Amount);
-                            // Melee avg
-                            sb.Append(((double)normDamage / normalHits.Count()).ToString("F2").PadLeft(8));
-                            sb.Append(" ");
-
-                            int addDamageHits = player.Where(h => (h.DefenseType == (byte)DefenseType.None) &&
-                                (h.ActionType == (byte)ActionType.AdditionalEffect)).Sum(b => b.Amount);
-
-                            // Add. Effect damage
-                            sb.Append(addDamageHits.ToString().PadLeft(7));
-                            sb.Append(" ");
-                        }
-                        else
-                        {
-                            // Low/Hi
-                            sb.Append("N/A".PadLeft(10));
-                            sb.Append(" ");
-
-                            // Melee avg
-                            sb.Append("N/A".PadLeft(8));
-                            sb.Append(" ");
-
-                            // Add effect
-                            sb.Append("N/A".PadLeft(7));
-                            sb.Append(" ");
-                        }
-
-                        // Crit hits
-                        int critCount = critHits.Count();
-                        sb.Append(critCount.ToString().PadLeft(6));
-                        sb.Append(" ");
-
-                        // Crit low/high
-                        if (critCount > 0)
-                        {
-                            // Crit low/high
-                            low = critHits.Min(m => m.Amount);
-                            high = critHits.Max(m => m.Amount);
-
-                            sb.Append(string.Format("{0}/{1}", low, high).PadLeft(9));
-                            sb.Append(" ");
-
-                            // Crit avg
-                            int critDamage = critHits.Sum(m => m.Amount);
-                            sb.Append(((double)critDamage / critCount).ToString("F2").PadLeft(7));
-                            sb.Append(" ");
-
-                            // Crit %
-                            sb.Append(((double)critCount / hits).ToString("P2").PadLeft(9));
-                            sb.Append(" ");
-                        }
-                        else
-                        {
-                            // Crit low/high
-                            sb.Append("N/A".PadLeft(9));
-                            sb.Append(" ");
-
-                            // Crit avg
-                            sb.Append("N/A".PadLeft(7));
-                            sb.Append(" ");
-
-                            // Crit %
-                            sb.Append(0.ToString("P2").PadLeft(9));
-                            sb.Append(" ");
-                        }
-                    }
-                    else
-                    {
-                        // Melee low/high
-                        sb.Append("N/A".PadLeft(9));
-                        sb.Append(" ");
-
-                        // Melee avg
-                        sb.Append("N/A".PadLeft(8));
-                        sb.Append(" ");
-
-                        // Add. Effect damage
-                        sb.Append("N/A".PadLeft(7));
-                        sb.Append(" ");
-
-                        // Crit hits
-                        sb.Append("N/A".PadLeft(6));
-                        sb.Append(" ");
-
-                        // Crit low/high
-                        sb.Append("N/A".PadLeft(9));
-                        sb.Append(" ");
-
-                        // Crit avg
-                        sb.Append("N/A".PadLeft(7));
-                        sb.Append(" ");
-
-                        // Crit %
-                        sb.Append("N/A".PadLeft(9));
-                        sb.Append(" ");
-                    }
-
-                    sb.Append("\n");
-                    AppendNormalText(sb.ToString());
+                    normLow = meleeNorm.Min(d => d.Amount);
+                    normHi = meleeNorm.Max(d => d.Amount);
+                    normAvg = meleeNorm.Average(d => d.Amount);
                 }
+
+                if (critHits > 0)
+                {
+                    critLow = meleeCrit.Min(d => d.Amount);
+                    critHi = meleeCrit.Max(d => d.Amount);
+                    critAvg = meleeCrit.Average(d => d.Amount);
+                }
+
+                if (meleeHits > 0)
+                    critPerc = (double)critHits / meleeHits;
+
+                sb.Append(meleeDmg.ToString().PadLeft(10));
+                sb.Append(meleePerc.ToString("P2").PadLeft(10));
+                sb.Append(string.Format("{0}/{1}", meleeHits, meleeMiss).PadLeft(11));
+                sb.Append(meleeAcc.ToString("P2").PadLeft(10));
+                sb.Append(string.Format("{0}/{1}", normLow, normHi).PadLeft(10));
+                sb.Append(normAvg.ToString("F2").PadLeft(9));
+                sb.Append(effectDmg.ToString().PadLeft(8));
+                sb.Append(critHits.ToString().PadLeft(7));
+                sb.Append(string.Format("{0}/{1}", critLow, critHi).PadLeft(10));
+                sb.Append(critAvg.ToString("F2").PadLeft(8));
+                sb.Append(critPerc.ToString("P2").PadLeft(10));
+
+
+                sb.Append("\n");
             }
 
-            AppendNormalText("\n\n");
+            sb.Append("\n\n");
+            AppendNormalText(sb.ToString());
         }
 
         private void ProcessRangedAttacks(AttackGroup rangeAttacks)
@@ -690,158 +609,87 @@ namespace WaywardGamers.KParser.Plugin
             AppendBoldText("Ranged Damage\n", Color.Red);
             AppendBoldUnderText(rangeHeader, Color.Black);
 
+            StringBuilder sb = new StringBuilder();
 
             foreach (var player in rangeAttacks.CombatGroup)
             {
-                if (player.Count() > 0)
+                sb.Append(player.Key.CombatantName.PadRight(16));
+                sb.Append(" ");
+
+                int rangeDmg = 0;
+                double rangePerc = 0;
+                int rangeHits = 0;
+                int rangeMiss = 0;
+                double rangeAcc = 0;
+                int normHits = 0;
+                int critHits = 0;
+                int normLow = 0;
+                int normHi = 0;
+                double normAvg = 0;
+                int critLow = 0;
+                int critHi = 0;
+                double critAvg = 0;
+                double critPerc = 0;
+                int effectDmg = 0;
+
+
+                rangeDmg = player.Sum(d => d.Amount);
+                effectDmg = player.Where(s =>
+                                s.SecondHarmType == (byte)HarmType.Damage ||
+                                s.SecondHarmType == (byte)HarmType.Drain).
+                                Sum(d => d.SecondAmount);
+
+                if (playerDamage[player.Key.CombatantName] > 0)
+                    rangePerc = (double)rangeDmg / playerDamage[player.Key.CombatantName];
+
+                var successfulHits = player.Where(h => h.DefenseType == (byte)DefenseType.None);
+
+                rangeHits = successfulHits.Count();
+                rangeMiss = player.Count(b => b.DefenseType != (byte)DefenseType.None);
+
+                rangeAcc = (double)rangeHits / (rangeHits + rangeMiss);
+
+                var meleeNorm = successfulHits.Where(h => h.DamageModifier == (byte)DamageModifier.None);
+                var meleeCrit = successfulHits.Where(h => h.DamageModifier == (byte)DamageModifier.Critical);
+
+                normHits = meleeNorm.Count();
+                critHits = meleeCrit.Count();
+
+                if (normHits > 0)
                 {
-                    StringBuilder sb = new StringBuilder();
-
-                    sb.Append(player.Key.CombatantName.PadRight(16));
-                    sb.Append(" ");
-
-                    // Range damage
-                    int totalRange = player.Sum(b => b.Amount);
-                    sb.Append(totalRange.ToString().PadRight(8));
-
-                    // Percent of player damage from ranged attacks
-                    int damageDone = playerDamage[player.Key.CombatantName];
-                    sb.Append(((double)totalRange / damageDone).ToString("P2").PadRight(8));
-
-                    var successfulHits = player.Where(h => (h.DefenseType == (byte)DefenseType.None));
-                    int hits = successfulHits.Count();
-                    int misses = player.Count(b => b.DefenseType != (byte)DefenseType.None);
-
-                    // Hits/Misses
-                    sb.Append(string.Format("{0}/{1}", hits.ToString(), misses.ToString()).PadRight(9));
-                    sb.Append(" ");
-
-                    // Accuracy
-                    sb.Append(((double)hits / (hits + misses)).ToString("P2").PadRight(8));
-                    sb.Append(" ");
-
-                    // R.Low/Hi
-
-                    var normalHits = successfulHits.Where(h => h.DamageModifier == (byte)DamageModifier.None);
-                    var critHits = successfulHits.Where(h => h.DamageModifier == (byte)DamageModifier.Critical);
-
-                    if (hits > 0)
-                    {
-                        int low = 0;
-                        int high = 0;
-
-                        if (normalHits.Count() > 0)
-                        {
-                            low = normalHits.Min(b => b.Amount);
-                            high = normalHits.Max(b => b.Amount);
-
-                            // Range low/high
-                            sb.Append(string.Format("{0}/{1}", low, high).PadRight(9));
-                            sb.Append(" ");
-
-                            // Range avg
-                            int normDamage = normalHits.Sum(h => h.Amount);
-                            sb.Append(((double)normDamage / normalHits.Count()).ToString("F2").PadRight(7));
-                            sb.Append(" ");
-
-                            int addDamageHits = player.Where(h => (h.DefenseType == (byte)DefenseType.None) &&
-                                (h.ActionType == (byte)ActionType.AdditionalEffect)).Sum(b => b.Amount);
-
-                            sb.Append(addDamageHits.ToString().PadRight(7));
-                            sb.Append(" ");
-                        }
-                        else
-                        {
-                            // Low/Hi
-                            sb.Append("N/A".PadRight(10));
-                            sb.Append(" ");
-
-                            // Melee avg
-                            sb.Append("N/A".PadRight(8));
-                            sb.Append(" ");
-
-                            // Add effect
-                            sb.Append("N/A".PadRight(7));
-                            sb.Append(" ");
-                        }
-
-                        // Crit hits
-                        int critCount = critHits.Count();
-                        sb.Append(critCount.ToString().PadRight(6));
-                        sb.Append(" ");
-
-                        if (critCount > 0)
-                        {
-                            // Crit low/high
-                            low = critHits.Min(m => m.Amount);
-                            high = critHits.Max(m => m.Amount);
-
-                            sb.Append(string.Format("{0}/{1}", low, high).PadRight(9));
-                            sb.Append(" ");
-
-                            // Crit avg
-                            int critDamage = critHits.Sum(m => m.Amount);
-                            sb.Append(((double)critDamage / critCount).ToString("F2").PadRight(7));
-                            sb.Append(" ");
-
-                            // Crit %
-                            sb.Append(((double)critCount / hits).ToString("P2").PadRight(10));
-                            sb.Append(" ");
-                        }
-                        else
-                        {
-                            // Crit low/high
-                            sb.Append("N/A".PadRight(9));
-                            sb.Append(" ");
-
-                            // Crit avg
-                            sb.Append("N/A".PadRight(7));
-                            sb.Append(" ");
-
-                            // Crit %
-                            sb.Append(0.ToString("P2").PadRight(10));
-                            sb.Append(" ");
-                        }
-                    }
-                    else
-                    {
-                        // Range low/high
-                        sb.Append("N/A".PadRight(9));
-                        sb.Append(" ");
-
-                        // Range avg
-                        sb.Append("N/A".PadRight(7));
-                        sb.Append(" ");
-
-                        // Add effect
-                        sb.Append("N/A".PadRight(7));
-                        sb.Append(" ");
-
-                        // Crit hits
-                        sb.Append("N/A".PadRight(6));
-                        sb.Append(" ");
-
-                        // Crit low/high
-                        sb.Append("N/A".PadRight(9));
-                        sb.Append(" ");
-
-                        // Crit avg
-                        sb.Append("N/A".PadRight(7));
-                        sb.Append(" ");
-
-                        // Crit %
-                        sb.Append("N/A".PadRight(10));
-                        sb.Append(" ");
-                    }
-
-                    sb.Append("\n");
-
-                    AppendNormalText(sb.ToString());
+                    normLow = meleeNorm.Min(d => d.Amount);
+                    normHi = meleeNorm.Max(d => d.Amount);
+                    normAvg = meleeNorm.Average(d => d.Amount);
                 }
+
+                if (critHits > 0)
+                {
+                    critLow = meleeCrit.Min(d => d.Amount);
+                    critHi = meleeCrit.Max(d => d.Amount);
+                    critAvg = meleeCrit.Average(d => d.Amount);
+                }
+
+                if (rangeHits > 0)
+                    critPerc = (double)critHits / rangeHits;
+
+                sb.Append(rangeDmg.ToString().PadLeft(10));
+                sb.Append(rangePerc.ToString("P2").PadLeft(10));
+                sb.Append(string.Format("{0}/{1}", rangeHits, rangeMiss).PadLeft(11));
+                sb.Append(rangeAcc.ToString("P2").PadLeft(10));
+                sb.Append(string.Format("{0}/{1}", normLow, normHi).PadLeft(10));
+                sb.Append(normAvg.ToString("F2").PadLeft(9));
+                sb.Append(effectDmg.ToString().PadLeft(8));
+                sb.Append(critHits.ToString().PadLeft(7));
+                sb.Append(string.Format("{0}/{1}", critLow, critHi).PadLeft(10));
+                sb.Append(critAvg.ToString("F2").PadLeft(8));
+                sb.Append(critPerc.ToString("P2").PadLeft(10));
+
+
+                sb.Append("\n");
             }
 
-
-            AppendNormalText("\n\n");
+            sb.Append("\n\n");
+            AppendNormalText(sb.ToString());
         }
 
         private void ProcessSpellsAttacks(AttackGroup spellAttacks)
@@ -1059,74 +907,58 @@ namespace WaywardGamers.KParser.Plugin
             AppendBoldText("Weaponskill Damage\n", Color.Red);
             AppendBoldUnderText(wskillHeader, Color.Black);
 
+            StringBuilder sb = new StringBuilder();
+
             foreach (var player in wskillAttacks.CombatGroup)
             {
                 if (player.Count() > 0)
                 {
-                    StringBuilder sb = new StringBuilder();
-
                     sb.Append(player.Key.CombatantName.PadRight(16));
                     sb.Append(" ");
 
+                    int wsDamage = 0;
+                    double wsPerc = 0;
+                    int wsHit = 0;
+                    int wsMiss = 0;
+                    double wsAcc = 0;
+                    int wsLow = 0;
+                    int wsHi = 0;
+                    double wsAvg = 0;
+
+
                     // Weaponskill damage
-                    int wsDamage = player.Sum(b => b.Amount);
-                    sb.Append(wsDamage.ToString().PadLeft(11));
-                    sb.Append(" ");
+                    wsDamage = player.Sum(b => b.Amount);
 
                     // Percent of player damage from Weaponskills
-                    int damageDone = playerDamage[player.Key.CombatantName];
-                    sb.Append(((double)wsDamage / damageDone).ToString("P2").PadLeft(9));
-                    sb.Append(" ");
+                    if (playerDamage[player.Key.CombatantName] > 0)
+                        wsPerc = (double)wsDamage / playerDamage[player.Key.CombatantName];
 
+                    wsHit = player.Count(b => b.DefenseType == (byte)DefenseType.None);
+                    wsMiss = player.Count(b => b.DefenseType != (byte)DefenseType.None);
 
-                    int hits = player.Count(b => b.DefenseType == (byte)DefenseType.None);
-                    int misses = player.Count(b => b.DefenseType != (byte)DefenseType.None);
+                    wsAcc = (double)wsHit / (wsHit + wsMiss);
 
-                    // Hits/Misses
-                    sb.Append(string.Format("{0}/{1}", hits, misses).PadLeft(10));
-                    sb.Append(" ");
-
-                    // Accuracy
-                    sb.Append(((double)hits / (hits + misses)).ToString("P2").PadLeft(10));
-                    sb.Append(" ");
-
-                    // WS.Low/Hi
-                    var successfulHits = player.Where(h => (h.DefenseType == (byte)DefenseType.None) &&
-                        (h.DamageModifier == (byte)DamageModifier.None));
-
-                    int successfulHitCount = successfulHits.Count();
-
-                    if (successfulHitCount > 0)
+                    if (wsHit > 0)
                     {
-                        int low = successfulHits.Min(b => b.Amount);
-                        int high = successfulHits.Max(b => b.Amount);
-
-                        // Weaponskill low/high
-                        sb.Append(string.Format("{0}/{1}", low, high).PadLeft(9));
-                        sb.Append(" ");
-
-                        // Weaponskill avg
-                        sb.Append(((double)wsDamage / successfulHitCount).ToString("F2").PadLeft(8));
-                        sb.Append(" ");
-
+                        var weaponskills = player.Where(h => h.DefenseType == (byte)DefenseType.None);
+                        wsLow = weaponskills.Min(w => w.Amount);
+                        wsHi = weaponskills.Max(w => w.Amount);
+                        wsAvg = weaponskills.Average(w => w.Amount);
                     }
-                    else
-                    {
-                        // Weaponskill low/high
-                        sb.Append("N/A".PadLeft(9));
-                        sb.Append(" ");
 
-                        // Weaponskill avg
-                        sb.Append("N/A".PadLeft(8));
-                        sb.Append(" ");
-                    }
+                    sb.Append(wsDamage.ToString().PadLeft(11));
+                    sb.Append(wsPerc.ToString("P2").PadLeft(10));
+                    sb.Append(string.Format("{0}/{1}", wsHit, wsMiss).PadLeft(11));
+                    sb.Append(wsAcc.ToString("P2").PadLeft(10));
+                    sb.Append(string.Format("{0}/{1}", wsLow, wsHi).PadLeft(11));
+                    sb.Append(wsAvg.ToString("F2").PadLeft(9));
 
                     sb.Append("\n");
-                    AppendNormalText(sb.ToString());
                 }
             }
 
-            AppendNormalText("\n\n");
+            sb.Append("\n\n");
+            AppendNormalText(sb.ToString());
         }
 
         private void ProcessSkillchains(AttackGroup skillchainAttacks)
@@ -1140,41 +972,46 @@ namespace WaywardGamers.KParser.Plugin
             AppendBoldText("Skillchain Damage\n", Color.Red);
             AppendBoldUnderText(skillchainHeader, Color.Black);
 
+            StringBuilder sb = new StringBuilder();
+
             foreach (var player in skillchainAttacks.CombatGroup)
             {
                 if (player.Count() > 0)
                 {
-                    StringBuilder sb = new StringBuilder();
-
                     sb.Append(player.Key.CombatantName.PadRight(16));
                     sb.Append(" ");
 
-                    // Skillchain damage
-                    int scDamage = player.Sum(b => b.Amount);
+                    int scDamage = 0;
+                    int numSCs = 0;
+                    int minSC = 0;
+                    int maxSC = 0;
+                    double avgSC = 0;
+
+
+                    var scList = player.Where(b => b.DefenseType == (byte)DefenseType.None);
+
+                    numSCs = scList.Count();
+                    scDamage = scList.Sum(b => b.Amount);
+
+                    minSC = scList.Min(b => b.Amount);
+                    maxSC = scList.Max(b => b.Amount);
+
+                    if (numSCs > 0)
+                        avgSC = scList.Average(b => b.Amount);
+
+                    //"Skillchain        Skill Dmg   # SC   SC.Low/Hi  SC.Avg"
+
                     sb.Append(scDamage.ToString().PadLeft(11));
-                    sb.Append(" ");
+                    sb.Append(numSCs.ToString().PadLeft(7));
+                    sb.Append(string.Format("{0}/{1}", minSC, maxSC).PadLeft(12));
+                    sb.Append(avgSC.ToString("F2").PadLeft(8));
 
-                    // Percent of player damage from Weaponskills
-                    int damageDone = playerDamage[player.Key.CombatantName];
-                    sb.Append(((double)scDamage / damageDone).ToString("P2").PadLeft(9));
-                    sb.Append(" ");
-
-                    var scs = player.Where(b => b.DefenseType == (byte)DefenseType.None);
-                    sb.Append(string.Format("{0}", scs.Count()).PadLeft(6));
-                    sb.Append(" ");
-
-                    int low = scs.Min(b => b.Amount);
-                    int high = scs.Max(b => b.Amount);
-
-                    // Skillchain low/high
-                    sb.Append(string.Format("{0}/{1}", low, high).PadLeft(9));
-                    sb.Append(" ");
-
-                    // Skillchain avg
-                    sb.Append(((double)scDamage / scs.Count()).ToString("F2").PadLeft(8));
-                    sb.Append(" ");
+                    sb.Append("\n");
                 }
             }
+
+            sb.Append("\n\n");
+            AppendNormalText(sb.ToString());
         }
 
         private void ProcessOtherAttacks(IEnumerable<AttackGroup> otherAttacks)
