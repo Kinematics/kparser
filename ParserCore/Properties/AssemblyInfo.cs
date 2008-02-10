@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Wayward Gamers")]
 [assembly: AssemblyProduct("ParserCore")]
-[assembly: AssemblyCopyright("Copyright © Wayward Gamers 2007")]
+[assembly: AssemblyCopyright("Copyright © Wayward Gamers 2007-2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

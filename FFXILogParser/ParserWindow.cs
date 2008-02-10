@@ -590,7 +590,6 @@ namespace WaywardGamers.KParser
         private void menuItem1_Click(object sender, EventArgs e)
         {
             //MMHook.Hook("14,e8,12,80c08080,000000f6,0000010f,0019,00,01,02,00,Motenten uses Judgment.");
-
         }
 
 
