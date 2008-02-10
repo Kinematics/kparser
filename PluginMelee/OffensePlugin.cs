@@ -40,6 +40,7 @@ namespace WaywardGamers.KParser.Plugin
             comboBox2.Items.Clear();
             comboBox2.Items.Add("All");
             comboBox2.SelectedIndex = 0;
+            comboBox2.Enabled = false;
 
             checkBox1.Left = comboBox2.Right + 20;
             checkBox1.Text = "Exclude 0 XP Mobs";
@@ -59,7 +60,8 @@ namespace WaywardGamers.KParser.Plugin
             if (allBattles > 0)
             {
                 var mobsKilled = from b in dataSet.Battles
-                                 where b.DefaultBattle == false
+                                 where ((b.DefaultBattle == false) &&
+                                        (b.IsEnemyIDNull() == false))
                                  orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
                                  group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
                                  select new
@@ -169,14 +171,14 @@ namespace WaywardGamers.KParser.Plugin
         int totalDamage;
         Dictionary<string, int> playerDamage = new Dictionary<string,int>();
 
-        string summaryHeader;
-        string meleeHeader;
-        string rangeHeader;
-        string spellHeader;
-        string abilHeader;
-        string wskillHeader;
-        string skillchainHeader;
-        string otherHeader;
+        string summaryHeader    = "Player            Total Dmg   Damage %   Melee Dmg   Range Dmg   Spell Dmg   Abil. Dmg  WSkill Dmg\n";
+        string meleeHeader      = "Player            Melee Dmg   Melee %   Hit/Miss    M.Acc%  M.Low/Hi    M.Avg  Effect  #Crit  C.Low/Hi   C.Avg     Crit%\n";
+        string rangeHeader      = "Player            Range Dmg   Range %   Hit/Miss    R.Acc%  R.Low/Hi    R.Avg  Effect  #Crit  C.Low/Hi   C.Avg     Crit%\n";
+        string spellHeader      = "Player            Spell Dmg   Spell %  #Spells  S.Low/Hi   S.Avg  #MagicBurst  MB.Low/Hi   MB.Avg\n";
+        string abilHeader       = "Player            Abil. Dmg   Abil. %   Hit/Miss      Acc%  A.Low/Hi    A.Avg\n";
+        string wskillHeader     = "Player            WSkill Dmg  WSkill %   Hit/Miss      Acc%  WS.Low/Hi   WS.Avg\n";
+        string skillchainHeader = "Skillchain        Skill Dmg   # SC   SC.Low/Hi  SC.Avg\n";
+        string otherHeader      = "Player\n";
         #endregion
 
         #region Processing sections
@@ -373,18 +375,6 @@ namespace WaywardGamers.KParser.Plugin
                 return;
 
             AppendBoldText("Damage Summary\n", Color.Red);
-
-            if (summaryHeader == null)
-                summaryHeader = string.Format("{0} {1} {2} {3} {4} {5} {6} {7}\n",
-                "Player".PadRight(16),
-                "Total Dmg".PadLeft(10),
-                "Damage %".PadLeft(10),
-                "Melee Dmg".PadLeft(11),
-                "Range Dmg".PadLeft(11),
-                "Spell Dmg".PadLeft(11),
-                "Abil. Dmg".PadLeft(11),
-                "WSkill Dmg".PadLeft(11));
-
             AppendBoldUnderText(summaryHeader, Color.Black);
 
             // First get a list of all player names across all attack groups.
@@ -531,16 +521,7 @@ namespace WaywardGamers.KParser.Plugin
                 return;
 
             AppendBoldText("Melee Damage\n", Color.Red);
-
-            if (meleeHeader == null)
-                meleeHeader = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}\n",
-                "Player".PadRight(16), "Melee Dmg".PadLeft(10), "Melee %".PadLeft(9),
-                "Hit/Miss".PadLeft(10), "Acc%".PadLeft(9), "M.Low/Hi".PadLeft(9),
-                "M.Avg".PadLeft(8), "Effect".PadLeft(7), "#Crit".PadLeft(6),
-                "C.Low/Hi".PadLeft(9), "C.Avg".PadLeft(7), "Crit%".PadLeft(9));
-
             AppendBoldUnderText(meleeHeader, Color.Black);
-
 
             foreach (var player in meleeAttacks.CombatGroup)
             {
@@ -707,14 +688,6 @@ namespace WaywardGamers.KParser.Plugin
 
 
             AppendBoldText("Ranged Damage\n", Color.Red);
-
-            if (rangeHeader == null)
-                rangeHeader = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}\n",
-                "Player".PadRight(16), "Range Dmg".PadLeft(10), "Range %".PadLeft(9),
-                "Hit/Miss".PadLeft(10), "Acc%".PadLeft(9), "R.Low/Hi".PadLeft(9),
-                "R.Avg".PadLeft(8), "Effect".PadLeft(7),
-                "#Crit".PadLeft(6), "C.Low/Hi".PadLeft(9), "C.Avg".PadLeft(7), "Crit%".PadLeft(9));
-
             AppendBoldUnderText(rangeHeader, Color.Black);
 
 
@@ -881,13 +854,6 @@ namespace WaywardGamers.KParser.Plugin
 
 
             AppendBoldText("Spell Damage\n", Color.Red);
-
-            if (spellHeader == null)
-                spellHeader = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8}\n",
-                "Player".PadRight(16), "Spell Dmg".PadLeft(10), "Spell %".PadLeft(9),
-                "#Spells".PadLeft(8), "S.Low/Hi".PadLeft(9), "S.Avg".PadLeft(7),
-                "#MagicBurst".PadLeft(12), "MB.Low/Hi".PadLeft(10), "MB.Avg".PadLeft(8));
-
             AppendBoldUnderText(spellHeader, Color.Black);
 
             foreach (var player in spellAttacks.CombatGroup)
@@ -1010,15 +976,7 @@ namespace WaywardGamers.KParser.Plugin
             if (abilAttacks.CombatGroup.Count() == 0)
                 return;
 
-
             AppendBoldText("Ability Damage\n", Color.Red);
-
-            if (abilHeader == null)
-                abilHeader = string.Format("{0} {1} {2} {3} {4} {5} {6}\n",
-                "Player".PadRight(16), "Abil. Dmg".PadLeft(10), "Abil. %".PadLeft(9),
-                "Hit/Miss".PadLeft(10), "Acc%".PadLeft(9), "A.Low/Hi".PadLeft(9),
-                "A.Avg".PadLeft(8));
-
             AppendBoldUnderText(abilHeader, Color.Black);
 
             foreach (var player in abilAttacks.CombatGroup)
@@ -1099,13 +1057,6 @@ namespace WaywardGamers.KParser.Plugin
                 return;
 
             AppendBoldText("Weaponskill Damage\n", Color.Red);
-
-            if (wskillHeader == null)
-                wskillHeader = string.Format("{0} {1} {2} {3} {4} {5} {6}\n",
-                "Player".PadRight(16), "WSkill Dmg".PadLeft(11), "WSkill %".PadLeft(9),
-                "Hit/Miss".PadLeft(10), "Acc%".PadLeft(9), "WS.Low/Hi".PadLeft(10),
-                "WS.Avg".PadLeft(8));
-
             AppendBoldUnderText(wskillHeader, Color.Black);
 
             foreach (var player in wskillAttacks.CombatGroup)
@@ -1187,13 +1138,6 @@ namespace WaywardGamers.KParser.Plugin
                 return;
 
             AppendBoldText("Skillchain Damage\n", Color.Red);
-
-            if (skillchainHeader == null)
-                skillchainHeader = string.Format("{0} {1} {2} {3} {4} {5}\n",
-                "Skillchain".PadRight(16), "Skill Dmg".PadLeft(11), "SC %".PadLeft(9),
-                "# SC".PadLeft(6), "SC.Low/Hi".PadLeft(10),
-                "SC.Avg".PadLeft(8));
-
             AppendBoldUnderText(skillchainHeader, Color.Black);
 
             foreach (var player in skillchainAttacks.CombatGroup)

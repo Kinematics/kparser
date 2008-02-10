@@ -50,7 +50,8 @@ namespace WaywardGamers.KParser.Plugin
             if (dataSet.Battles.Count() > 1)
             {
                 var mobsKilled = from b in dataSet.Battles
-                                 where (b.DefaultBattle == false)
+                                 where ((b.DefaultBattle == false) &&
+                                        (b.IsEnemyIDNull() == false))
                                  orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
                                  group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
                                  select new
