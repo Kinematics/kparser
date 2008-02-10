@@ -212,14 +212,24 @@ namespace WaywardGamers.KParser
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 StopParsing();
-                DatabaseManager.Instance.OpenDatabase(ofd.FileName);
 
-                lock (activePluginList)
+                try
                 {
-                    foreach (IPlugin plugin in activePluginList)
+                    Cursor.Current = Cursors.WaitCursor;
+
+                    DatabaseManager.Instance.OpenDatabase(ofd.FileName);
+
+                    lock (activePluginList)
                     {
-                        plugin.DatabaseOpened(DatabaseManager.Instance.Database);
+                        foreach (IPlugin plugin in activePluginList)
+                        {
+                            plugin.DatabaseOpened(DatabaseManager.Instance.Database);
+                        }
                     }
+                }
+                finally
+                {
+                    Cursor.Current = Cursors.Default;
                 }
             }
         }
@@ -241,43 +251,52 @@ namespace WaywardGamers.KParser
                     return;
                 }
 
-                // Adjust what menu options are available
-                menuStopParse.Enabled = true;
-                menuBeginDefaultParse.Enabled = false;
-                menuBeginParseWithSave.Enabled = false;
-                menuOpenSavedData.Enabled = false;
-
                 try
                 {
-                    toolStripStatusLabel.Text = "Reparsing...";
-                    Monitor.Reparse(outFilename);
-                }
-                catch (Exception ex)
-                {
-                    StopParsing();
-                    toolStripStatusLabel.Text = "Error.  Parsing stopped.";
-                    Logger.Instance.Log(ex);
-                    MessageBox.Show(ex.Message, "Error while attempting to reparse.",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Cursor.Current = Cursors.WaitCursor;
 
-                    return;
-                }
+                    // Adjust what menu options are available
+                    menuStopParse.Enabled = true;
+                    menuBeginDefaultParse.Enabled = false;
+                    menuBeginParseWithSave.Enabled = false;
+                    menuOpenSavedData.Enabled = false;
 
-                // Adjust what menu options are available
-                menuStopParse.Enabled = false;
-                menuBeginDefaultParse.Enabled = true;
-                menuBeginParseWithSave.Enabled = true;
-                menuOpenSavedData.Enabled = true;
-
-                toolStripStatusLabel.Text = "Status: Stopped.";
-                DatabaseManager.Instance.OpenDatabase(outFilename);
-
-                lock (activePluginList)
-                {
-                    foreach (IPlugin plugin in activePluginList)
+                    try
                     {
-                        plugin.DatabaseOpened(DatabaseManager.Instance.Database);
+                        toolStripStatusLabel.Text = "Reparsing...";
+                        Monitor.Reparse(outFilename);
                     }
+                    catch (Exception ex)
+                    {
+                        StopParsing();
+                        toolStripStatusLabel.Text = "Error.  Parsing stopped.";
+                        Logger.Instance.Log(ex);
+                        MessageBox.Show(ex.Message, "Error while attempting to reparse.",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        return;
+                    }
+
+                    // Adjust what menu options are available
+                    menuStopParse.Enabled = false;
+                    menuBeginDefaultParse.Enabled = true;
+                    menuBeginParseWithSave.Enabled = true;
+                    menuOpenSavedData.Enabled = true;
+
+                    toolStripStatusLabel.Text = "Status: Stopped.";
+                    DatabaseManager.Instance.OpenDatabase(outFilename);
+
+                    lock (activePluginList)
+                    {
+                        foreach (IPlugin plugin in activePluginList)
+                        {
+                            plugin.DatabaseOpened(DatabaseManager.Instance.Database);
+                        }
+                    }
+                }
+                finally
+                {
+                    Cursor.Current = Cursors.Default;
                 }
             }
         }
@@ -571,6 +590,7 @@ namespace WaywardGamers.KParser
         private void menuItem1_Click(object sender, EventArgs e)
         {
             //MMHook.Hook("14,e8,12,80c08080,000000f6,0000010f,0019,00,01,02,00,Motenten uses Judgment.");
+
         }
 
 
