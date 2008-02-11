@@ -1492,15 +1492,6 @@ namespace WaywardGamers.KParser.Parsing
                 message.ParseSuccessful = true;
                 return;
             }
-            combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
-            if (combatMatch.Success == true)
-            {
-                msgCombatDetails.ActionType = ActionType.Ability;
-                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                message.ParseSuccessful = true;
-                return;
-            }
             combatMatch = ParseExpressions.UseAbilityOn.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
@@ -1508,6 +1499,15 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                message.ParseSuccessful = true;
+                return;
+            }
+            combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                msgCombatDetails.ActionType = ActionType.Ability;
+                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                 message.ParseSuccessful = true;
                 return;
             }
@@ -1530,6 +1530,7 @@ namespace WaywardGamers.KParser.Parsing
                     return;
                 }
             }
+
             // Misses (The Mandragora uses Dream Flower but misses Player.)
             combatMatch = ParseExpressions.MissAbility.Match(currentMessageText);
             if (combatMatch.Success == true)
@@ -1556,6 +1557,15 @@ namespace WaywardGamers.KParser.Parsing
                 return;
             }
             combatMatch = ParseExpressions.Enfeeble.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                target.HarmType = msgCombatDetails.HarmType;
+                target.AidType = msgCombatDetails.AidType;
+                message.ParseSuccessful = true;
+                return;
+            }
+            combatMatch = ParseExpressions.Afflict.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
