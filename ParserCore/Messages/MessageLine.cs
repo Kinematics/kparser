@@ -42,7 +42,7 @@ namespace WaywardGamers.KParser
         internal MessageLine(ChatLine chatLine)
 		{
             if (chatLine == null)
-                throw new ArgumentNullException("msg");
+                throw new ArgumentNullException("chatLine");
 
             if (chatLine.ChatText == "")
 				throw new ArgumentException("Cannot process an empty message");
@@ -72,7 +72,8 @@ namespace WaywardGamers.KParser
 			int endCodesBreakPoint = msg.IndexOf(breakString);
 
             if (endCodesBreakPoint < 0)
-                throw new FormatException("Message string does not contain the proper breakpoint values (position 1).");
+                throw new FormatException("Message string does not contain the proper breakpoint values (position 1).\n"
+                    + msg);
 
             // Extract the text codes from the front half of the message.
             string preMsg = msg.Substring(0, endCodesBreakPoint);
@@ -81,7 +82,8 @@ namespace WaywardGamers.KParser
             int beingTextBreakPoint = msg.IndexOf(breakString, endCodesBreakPoint + breakString.Length);
 
             if (beingTextBreakPoint < 0)
-                throw new FormatException("Message string does not contain the proper breakpoint values (position 2).");
+                throw new FormatException("Message string does not contain the proper breakpoint values (position 2).\n"
+                    + msg);
 
             // Extract the display text from the back half of the message.
             TextOutput = msg.Substring(beingTextBreakPoint + breakString.Length);
