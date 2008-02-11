@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Data;
 using System.Drawing;
 using WaywardGamers.KParser;
+using System.Diagnostics;
 
 namespace WaywardGamers.KParser.Plugin
 {
@@ -179,11 +180,17 @@ namespace WaywardGamers.KParser.Plugin
         {
             richTextBox.Clear();
 
+            Stopwatch stopwatch = new Stopwatch();
+
             switch (comboBox1.SelectedIndex)
             {
                 case 0:
                     // All
+                    stopwatch.Reset();
+                    stopwatch.Start();
                     ProcessRecovery(dataSet);
+                    stopwatch.Stop();
+                    Debug.WriteLine(string.Format("Recovery section time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
                     ProcessDefense(dataSet);
                     ProcessUtsusemi(dataSet);
                     break;
@@ -207,182 +214,110 @@ namespace WaywardGamers.KParser.Plugin
         {
             AppendBoldText("Recovery\n\n", Color.Red);
 
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Reset();
+            stopwatch.Start();
+
             ProcessRecoveryDamage(dataSet);
+            stopwatch.Stop();
+            Debug.WriteLine(string.Format("ProcessRecoveryDamage section time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
+            stopwatch.Reset();
+            stopwatch.Start();
             ProcessRecoveryCuring(dataSet);
+            stopwatch.Stop();
+            Debug.WriteLine(string.Format("ProcessRecoveryCuring section time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
 
             AppendNormalText("\n");
         }
 
         private void ProcessRecoveryDamage(KPDatabaseDataSet dataSet)
         {
-            playerDamage.Clear();
-
-            var dmgTaken = from cd in dataSet.Interactions
-                           where ((cd.IsTargetIDNull() == false) &&
-                                  ((cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Player) ||
-                                   (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
-                                   (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Fellow)) &&
-                                  ((cd.HarmType == (byte)HarmType.Damage) ||
-                                   (cd.HarmType == (byte)HarmType.Drain) ||
-                                   (cd.SecondHarmType == (byte)HarmType.Damage) ||
-                                   (cd.SecondHarmType == (byte)HarmType.Drain)))
-                           group cd by cd.CombatantsRowByTargetCombatantRelation.CombatantName into cdd
-                           orderby cdd.Key
-                           select new
-                           {
-                               Player = cdd.Key,
-                               PrimaryDamage = from pd in cdd
-                                               where ((pd.HarmType == (byte)HarmType.Damage) ||
-                                                      (pd.HarmType == (byte)HarmType.Drain))
-                                               select pd,
-                               SecondaryDamage = from pd in cdd
-                                                 where ((pd.SecondHarmType == (byte)HarmType.Damage) ||
-                                                        (pd.SecondHarmType == (byte)HarmType.Drain))
-                                                 select pd,
-                           };
-
-            var hpDrained = from cd in dataSet.Interactions
-                            where ((cd.IsActorIDNull() == false) &&
-                                  ((cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Player) ||
-                                   (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
-                                   (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Fellow)) &&
-                                  ((cd.HarmType == (byte)HarmType.Drain) ||
-                                   (cd.SecondHarmType == (byte)HarmType.Drain) ||
-                                   (cd.SecondAidType == (byte)AidType.Recovery)))
-                            group cd by cd.CombatantsRowByActorCombatantRelation.CombatantName into cdd
-                            orderby cdd.Key
-                            select new
-                            {
-                                Player = cdd.Key,
-                                Drains = from dd in cdd
-                                         where (dd.HarmType == (byte)HarmType.Drain)
-                                         select dd,
-                                AddDrains = from dd in cdd
-                                            where ((dd.SecondHarmType == (byte)HarmType.Drain) ||
-                                                   (dd.SecondAidType == (byte)AidType.Recovery))
-                                            select dd
-                            };
-
-            var allHealing = from cd in dataSet.Interactions
-                             where ((cd.IsTargetIDNull() == false) &&
-                                    ((cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Player) ||
-                                     (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
-                                     (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Fellow)) &&
-                                    (((cd.AidType == (byte)AidType.Recovery) &&
-                                      (cd.RecoveryType == (byte)RecoveryType.RecoverHP)) ||
-                                     ((cd.SecondAidType == (byte)AidType.Recovery) &&
-                                      (cd.SecondRecoveryType == (byte)RecoveryType.RecoverHP)) ||
-                                     ((cd.AidType == (byte)AidType.Enhance) &&
-                                      (cd.Preparing == false) &&
-                                      (cd.IsActionIDNull() == false) &&
-                                      (cd.ActionsRow.ActionName.StartsWith("Regen")))))
-                             group cd by cd.CombatantsRowByTargetCombatantRelation.CombatantName into cdr
-                             orderby cdr.Key
+            var playerData = from c in dataSet.Combatants
+                             where ((c.CombatantType == (byte)EntityType.Player) ||
+                                    (c.CombatantType == (byte)EntityType.Pet) ||
+                                    (c.CombatantType == (byte)EntityType.Fellow))
+                             orderby c.CombatantName
                              select new
                              {
-                                 Player = cdr.Key,
-                                 PrimaryHealed = from hr in cdr
-                                                 where hr.AidType == (byte)AidType.Recovery
-                                                 select hr,
-                                 SecondaryHealed = from hr in cdr
-                                                   where hr.SecondAidType == (byte)AidType.Recovery
-                                                   select hr,
-                                 Regens = from hr in cdr
-                                          where hr.AidType == (byte)AidType.Enhance
-                                          select hr
+                                 Player = c.CombatantName,
+                                 PrimeDmgTaken = from dm in c.GetInteractionsRowsByTargetCombatantRelation()
+                                                 where ((dm.HarmType == (byte)HarmType.Damage) ||
+                                                        (dm.HarmType == (byte)HarmType.Drain))
+                                                 select dm.Amount,
+                                 SecondDmgTaken = from dm in c.GetInteractionsRowsByTargetCombatantRelation()
+                                                  where ((dm.SecondHarmType == (byte)HarmType.Damage) ||
+                                                         (dm.SecondHarmType == (byte)HarmType.Drain))
+                                                  select dm.SecondAmount,
+                                 PrimeDrain = from dr in c.GetInteractionsRowsByActorCombatantRelation()
+                                              where (dr.HarmType == (byte)HarmType.Drain)
+                                              select dr.Amount,
+                                 SecondDrain = from dr in c.GetInteractionsRowsByActorCombatantRelation()
+                                               where ((dr.SecondHarmType == (byte)HarmType.Drain) ||
+                                                      (dr.SecondAidType == (byte)AidType.Recovery))
+                                               select dr.SecondAmount,
+                                 Cured = from cr in c.GetInteractionsRowsByTargetCombatantRelation()
+                                         where ((cr.AidType == (byte)AidType.Recovery) &&
+                                                (cr.RecoveryType == (byte)RecoveryType.RecoverHP))
+                                         select cr.Amount,
+                                 Regen1 = from cr in c.GetInteractionsRowsByTargetCombatantRelation()
+                                          where ((cr.AidType == (byte)AidType.Enhance) &&
+                                          (cr.IsActionIDNull() == false) &&
+                                          (cr.ActionsRow.ActionName == "Regen"))
+                                          select cr,
+                                 Regen2 = from cr in c.GetInteractionsRowsByTargetCombatantRelation()
+                                          where ((cr.AidType == (byte)AidType.Enhance) &&
+                                          (cr.IsActionIDNull() == false) &&
+                                          (cr.ActionsRow.ActionName == "Regen II"))
+                                          select cr,
+                                 Regen3 = from cr in c.GetInteractionsRowsByTargetCombatantRelation()
+                                          where ((cr.AidType == (byte)AidType.Enhance) &&
+                                          (cr.IsActionIDNull() == false) &&
+                                          (cr.ActionsRow.ActionName == "Regen III"))
+                                          select cr,
                              };
 
+            int dmgTaken = 0;
+            int drainAmt = 0;
+            int healAmt = 0;
+            int numR1 = 0;
+            int numR2 = 0;
+            int numR3 = 0;
+            StringBuilder sb = new StringBuilder();
 
-            List<string> playerList;
-
-            playerList = dmgTaken.Select(p => p.Player)
-                .Concat(hpDrained.Select(p => p.Player))
-                .Concat(allHealing.Select(p => p.Player))
-                .Distinct().OrderBy(p => p).ToList();
-
-            foreach (var dmg in dmgTaken)
-            {
-                playerDamage[dmg.Player] = 0;
-                if (dmg.PrimaryDamage.Count() > 0)
-                    playerDamage[dmg.Player] += dmg.PrimaryDamage.Sum(d => d.Amount);
-                if (dmg.SecondaryDamage.Count() > 0)
-                    playerDamage[dmg.Player] += dmg.SecondaryDamage.Sum(d => d.SecondAmount);
-            }
-
-            if (playerList.Count > 0)
+            if (playerData.Count() > 0)
             {
                 AppendBoldText("Damage Recovery\n", Color.Blue);
                 AppendBoldUnderText(dmgRecoveryHeader, Color.Black);
-                //"Player           Dmg Taken   HP Drained   HP Cured   #Regen  #Regen 2  #Regen 3"
 
-                StringBuilder sb = new StringBuilder();
-
-                foreach (string player in playerList)
+                foreach (var player in playerData)
                 {
-                    sb.Append(player.PadRight(16));
-                    sb.Append(" ");
+                    dmgTaken = player.PrimeDmgTaken.Sum() + player.SecondDmgTaken.Sum();
+                    drainAmt = player.PrimeDrain.Sum() + player.SecondDrain.Sum();
+                    healAmt = player.Cured.Sum();
+                    numR1 = player.Regen1.Count();
+                    numR2 = player.Regen2.Count();
+                    numR3 = player.Regen3.Count();
 
-                    if (playerDamage.ContainsKey(player))
-                        sb.Append(playerDamage[player].ToString().PadLeft(9));
-                    else
-                        sb.Append("0".PadLeft(9));
-
-                    sb.Append(" ");
-
-                    var drain = hpDrained.FirstOrDefault(d => d.Player == player);
-
-                    if (drain != null)
+                    if ((dmgTaken + drainAmt + healAmt + numR1 + numR2 + numR3) > 0)
                     {
-                        int amtDrained = drain.Drains.Sum(d => d.Amount) + drain.AddDrains.Sum(d => d.SecondAmount);
-                        sb.Append(amtDrained.ToString().PadLeft(12));
-                    }
-                    else
-                    {
-                        sb.Append("0".PadLeft(12));
-                    }
+                        sb.Append(player.Player.PadRight(16));
+                        sb.Append(" ");
 
-
-                    var heal = allHealing.FirstOrDefault(d => d.Player == player);
-
-                    if (heal != null)
-                    {
-                        int amtHealed = 0;
-                        if (heal.PrimaryHealed != null)
-                            amtHealed += heal.PrimaryHealed.Sum(h => h.Amount);
-                        if (heal.SecondaryHealed != null)
-                            amtHealed += heal.SecondaryHealed.Sum(h => h.SecondAmount);
-
-                        sb.Append(amtHealed.ToString().PadLeft(11));
-
-                        int numR1 = 0;
-                        int numR2 = 0;
-                        int numR3 = 0;
-
-                        if (heal.Regens != null)
-                        {
-                            numR1 = heal.Regens.Count(r => r.ActionsRow.ActionName == "Regen");
-                            numR2 = heal.Regens.Count(r => r.ActionsRow.ActionName == "Regen II");
-                            numR3 = heal.Regens.Count(r => r.ActionsRow.ActionName == "Regen III");
-                        }
+                        sb.Append(dmgTaken.ToString().PadLeft(9));
+                        sb.Append(drainAmt.ToString().PadLeft(13));
+                        sb.Append(healAmt.ToString().PadLeft(11));
 
                         sb.Append(numR1.ToString().PadLeft(9));
                         sb.Append(numR2.ToString().PadLeft(11));
                         sb.Append(numR3.ToString().PadLeft(11));
 
+                        sb.Append("\n");
                     }
-                    else
-                    {
-                        sb.Append("0".PadLeft(11));
-                        sb.Append("0".PadLeft(9));
-                        sb.Append("0".PadLeft(11));
-                        sb.Append("0".PadLeft(11));
-                    }
-
-                    sb.Append("\n");
                 }
 
                 sb.Append("\n\n");
                 AppendNormalText(sb.ToString());
+
             }
         }
 
@@ -405,8 +340,8 @@ namespace WaywardGamers.KParser.Plugin
                              {
                                  Player = cdr.Key,
                                  Cures = from hr in cdr
-                                                 where hr.AidType == (byte)AidType.Recovery
-                                                 select hr,
+                                         where hr.AidType == (byte)AidType.Recovery
+                                         select hr,
                                  Regens = from hr in cdr
                                           where hr.AidType == (byte)AidType.Enhance
                                           select hr
