@@ -427,7 +427,7 @@ namespace WaywardGamers.KParser {
         private void InitClass() {
             this.DataSetName = "KPDatabaseDataSet";
             this.Prefix = "";
-            this.Namespace = "http://tempuri.org/KPDatabaseDataSet.xsd";
+            this.Namespace = "http://waywardgamers.org/KPDatabaseDataSet.xsd";
             this.EnforceConstraints = true;
             this.SchemaSerializationMode = global::System.Data.SchemaSerializationMode.IncludeSchema;
             this.tableActions = new ActionsDataTable();
