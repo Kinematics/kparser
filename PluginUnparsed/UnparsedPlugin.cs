@@ -26,7 +26,7 @@ namespace WaywardGamers.KParser.Plugin
 
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
-            if (dataSet.Tables.Contains("ChatLogRecord"))
+            if (dataSet.Tables.Contains("RecordLog"))
             {
                 foreach (var row in dataSet.RecordLog)
                 {
