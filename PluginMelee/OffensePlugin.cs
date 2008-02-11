@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Data;
 using System.Drawing;
 using WaywardGamers.KParser;
+using System.Diagnostics;
 
 namespace WaywardGamers.KParser.Plugin
 {
@@ -37,10 +38,11 @@ namespace WaywardGamers.KParser.Plugin
             label2.Left = comboBox1.Right + 20;
             label2.Text = "Mob Group";
             comboBox2.Left = label2.Right + 10;
+            comboBox2.Width = 150;
             comboBox2.Items.Clear();
             comboBox2.Items.Add("All");
             comboBox2.SelectedIndex = 0;
-            comboBox2.Enabled = false;
+            //comboBox2.Enabled = false;
 
             checkBox1.Left = comboBox2.Right + 20;
             checkBox1.Text = "Exclude 0 XP Mobs";
@@ -61,15 +63,16 @@ namespace WaywardGamers.KParser.Plugin
             {
                 var mobsKilled = from b in dataSet.Battles
                                  where ((b.DefaultBattle == false) &&
-                                        (b.IsEnemyIDNull() == false))
-                                 orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
+                                        (b.IsEnemyIDNull() == false) &&
+                                        (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
                                  group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
+                                 orderby bn.Key
                                  select new
                                  {
                                      Name = bn.Key,
                                      XP = from xb in bn
                                           group xb by xb.BaseExperience() into xbn
-                                          select new { BXP = xbn.Key }
+                                          select new { BaseXP = xbn.Key }
                                  };
 
                 foreach (var mob in mobsKilled)
@@ -85,7 +88,7 @@ namespace WaywardGamers.KParser.Plugin
 
                         foreach (var xp in mob.XP)
                         {
-                            mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BXP);
+                            mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP);
 
                             if (this.comboBox2.Items.Contains(mobWithXP) == false)
                             {
@@ -172,6 +175,7 @@ namespace WaywardGamers.KParser.Plugin
 
         #region Member Variables
         int totalDamage;
+        List<string> playerList = new List<string>();
         Dictionary<string, int> playerDamage = new Dictionary<string,int>();
 
         string summaryHeader    = "Player            Total Dmg   Damage %   Melee Dmg   Range Dmg   Spell Dmg   Abil. Dmg  WSkill Dmg\n";
@@ -190,8 +194,15 @@ namespace WaywardGamers.KParser.Plugin
             richTextBox.Clear();
             string actionSourceFilter = comboBox1.SelectedItem.ToString();
 
+            Stopwatch stopwatch = new Stopwatch();
+
+
+            stopwatch.Reset();
+            stopwatch.Start();
+
             string mobFilter = comboBox2.SelectedItem.ToString();
-            IEnumerable<AttackGroup> allAttacks;
+            IEnumerable<AttackGroup> attacksByType;
+            IEnumerable<AttackGroup2> attacksByPlayer;
 
             int minXP = 0;
             if (checkBox1.Checked == true)
@@ -199,7 +210,7 @@ namespace WaywardGamers.KParser.Plugin
 
             if (mobFilter == "All")
             {
-                allAttacks = from cd in dataSet.Interactions
+                attacksByType = from cd in dataSet.Interactions
                              where ((cd.IsActorIDNull() == false) &&
                                     ((cd.HarmType == (byte)HarmType.Damage) ||
                                      (cd.HarmType == (byte)HarmType.Drain)) &&
@@ -218,9 +229,85 @@ namespace WaywardGamers.KParser.Plugin
                                                    group c by c.CombatantsRowByActorCombatantRelation
                                  };
 
+
+                attacksByPlayer = from cd in dataSet.Interactions
+                                  where ((cd.IsActorIDNull() == false) &&
+                                         ((cd.HarmType == (byte)HarmType.Damage) ||
+                                          (cd.HarmType == (byte)HarmType.Drain)) &&
+                                         ((cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Player) ||
+                                          (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
+                                          (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Fellow) ||
+                                          (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Skillchain))
+                                         ) &&
+                                         ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
+                                  group cd by cd.CombatantsRowByActorCombatantRelation.CombatantName into cdp
+                                  orderby cdp.Key
+                                  select new AttackGroup2
+                                  {
+                                      Player = cdp.Key,
+                                      Melee = from g in cdp
+                                              where g.ActionType == (byte)ActionType.Melee
+                                              select g,
+                                      Range = from g in cdp
+                                              where g.ActionType == (byte)ActionType.Ranged
+                                              select g,
+                                      Spell = from g in cdp
+                                              where g.ActionType == (byte)ActionType.Spell
+                                              select g,
+                                      Ability = from g in cdp
+                                                where g.ActionType == (byte)ActionType.Ability
+                                                select g,
+                                      WSkill = from g in cdp
+                                               where g.ActionType == (byte)ActionType.Weaponskill
+                                               select g,
+                                      SC = from g in cdp
+                                           where g.ActionType == (byte)ActionType.Skillchain
+                                           select g,
+
+                                      
+                                     
+                                  };
+
+
             }
             else
             {
+
+                attacksByPlayer = from cd in dataSet.Interactions
+                                  where ((cd.IsActorIDNull() == false) &&
+                                         ((cd.HarmType == (byte)HarmType.Damage) ||
+                                          (cd.HarmType == (byte)HarmType.Drain)) &&
+                                         ((cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Player) ||
+                                          (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
+                                          (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Fellow) ||
+                                          (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Skillchain))
+                                         ) &&
+                                         ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
+                                  group cd by cd.CombatantsRowByActorCombatantRelation.CombatantName into cdp
+                                  orderby cdp.Key
+                                  select new AttackGroup2
+                                  {
+                                      Player = cdp.Key,
+                                      Melee = from g in cdp
+                                              where g.ActionType == (byte)ActionType.Melee
+                                              select g,
+                                      Range = from g in cdp
+                                              where g.ActionType == (byte)ActionType.Ranged
+                                              select g,
+                                      Spell = from g in cdp
+                                              where g.ActionType == (byte)ActionType.Spell
+                                              select g,
+                                      Ability = from g in cdp
+                                                where g.ActionType == (byte)ActionType.Ability
+                                                select g,
+                                      WSkill = from g in cdp
+                                               where g.ActionType == (byte)ActionType.Weaponskill
+                                               select g,
+                                      SC = from g in cdp
+                                           where g.ActionType == (byte)ActionType.Skillchain
+                                           select g
+                                  };
+
                 Regex mobAndXP = new Regex(@"(?<mobName>\w+(['\- ](\d|\w)+)*)( \((?<xp>\d+)\))?");
                 Match mobAndXPMatch = mobAndXP.Match(mobFilter);
 
@@ -229,7 +316,7 @@ namespace WaywardGamers.KParser.Plugin
                     if (mobAndXPMatch.Captures.Count == 1)
                     {
                         // Name only
-                        allAttacks = from cd in dataSet.Interactions
+                        attacksByType = from cd in dataSet.Interactions
                                      where ((cd.IsActorIDNull() == false) &&
                                             (cd.HarmType == (byte)HarmType.Damage) &&
                                             ((cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Player) ||
@@ -253,7 +340,7 @@ namespace WaywardGamers.KParser.Plugin
                         // Name and XP
                         int xp = int.Parse(mobAndXPMatch.Groups["xp"].Value);
 
-                        allAttacks = from cd in dataSet.Interactions
+                        attacksByType = from cd in dataSet.Interactions
                                      where ((cd.IsActorIDNull() == false) &&
                                             (cd.HarmType == (byte)HarmType.Damage) &&
                                             ((cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Player) ||
@@ -287,21 +374,29 @@ namespace WaywardGamers.KParser.Plugin
                 }
             }
 
+            stopwatch.Stop();
+            Debug.WriteLine(string.Format("Offense: Prep Linq section time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
+            stopwatch.Reset();
+            stopwatch.Start();
+
+            int localDamage = 0;
             totalDamage = 0;
             playerDamage.Clear();
-            foreach (var attackTypes in allAttacks)
+
+            foreach (var player in attacksByPlayer)
             {
-                foreach (var player in attackTypes.CombatGroup)
-                {
-                    if (playerDamage.Keys.Contains(player.Key.CombatantName))
-                        playerDamage[player.Key.CombatantName] += player.Sum(d => d.Amount);
-                    else
-                        playerDamage[player.Key.CombatantName] = player.Sum(d => d.Amount);
-                }
+                playerDamage[player.Player] = 0;
+
+                localDamage = player.MeleeDmg + player.RangeDmg + player.SpellDmg
+                    + player.AbilityDmg + player.WSkillDmg;
+                playerDamage[player.Player] = localDamage;
+                totalDamage += localDamage;
             }
 
-            foreach (var player in playerDamage)
-                totalDamage += player.Value;
+            stopwatch.Stop();
+            Debug.WriteLine(string.Format("Offense: Revised Setup player list/damage time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
+            stopwatch.Reset();
+            stopwatch.Start();
 
 
             AttackGroup meleeAttacks;
@@ -323,13 +418,16 @@ namespace WaywardGamers.KParser.Plugin
             {
                 // Unknown == "All"
                 case "All":
-                    meleeAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Melee);
-                    rangeAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Ranged);
-                    spellAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Spell);
-                    abilAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Ability);
-                    wskillAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Weaponskill);
-                    skillchainAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Skillchain);
-                    ProcessAttackSummary(allAttacks);
+                    meleeAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Melee);
+                    rangeAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Ranged);
+                    spellAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Spell);
+                    abilAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Ability);
+                    wskillAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Weaponskill);
+                    skillchainAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Skillchain);
+                    stopwatch.Start();
+                    ProcessAttackSummary(attacksByPlayer);
+                    stopwatch.Stop();
+                    Debug.WriteLine(string.Format("Offense: Process Summary time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
                     ProcessMeleeAttacks(meleeAttacks);
                     ProcessRangedAttacks(rangeAttacks);
                     ProcessSpellsAttacks(spellAttacks);
@@ -338,30 +436,30 @@ namespace WaywardGamers.KParser.Plugin
                     //ProcessOtherAttacks(otherAttacks);
                     break;
                 case "Summary":
-                    ProcessAttackSummary(allAttacks);
+                    ProcessAttackSummary(attacksByPlayer);
                     break;
                 case "Melee":
-                    meleeAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Melee);
+                    meleeAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Melee);
                     ProcessMeleeAttacks(meleeAttacks);
                     break;
                 case "Ranged":
-                    rangeAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Ranged);
+                    rangeAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Ranged);
                     ProcessRangedAttacks(rangeAttacks);
                     break;
                 case "Spell":
-                    spellAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Spell);
+                    spellAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Spell);
                     ProcessSpellsAttacks(spellAttacks);
                     break;
                 case "Ability":
-                    abilAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Ability);
+                    abilAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Ability);
                     ProcessAbilityAttacks(abilAttacks);
                     break;
                 case "Weaponskill":
-                    wskillAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Weaponskill);
+                    wskillAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Weaponskill);
                     ProcessWeaponskillAttacks(wskillAttacks);
                     break;
                 case "Skillchain":
-                    skillchainAttacks = allAttacks.FirstOrDefault(m => m.ActionSource == ActionType.Skillchain);
+                    skillchainAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Skillchain);
                     ProcessSkillchains(skillchainAttacks);
                     break;
                 default:
@@ -370,139 +468,52 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
-        private void ProcessAttackSummary(IEnumerable<AttackGroup> allAttacks)
+        private void ProcessAttackSummary(IEnumerable<AttackGroup2> attacksByPlayer)
         {
-            if (allAttacks == null)
+            if (attacksByPlayer == null)
                 return;
 
-            if (allAttacks.Count() == 0)
+            if (attacksByPlayer.Count() == 0)
                 return;
 
             AppendBoldText("Damage Summary\n", Color.Red);
             AppendBoldUnderText(summaryHeader, Color.Black);
 
-            // First get a list of all player names across all attack groups.
-            IEnumerable<string> nameList = new List<string>();
-
-            foreach (var attgroup in allAttacks)
-            {
-                nameList = nameList.Concat(attgroup.CombatGroup.
-                    Select(n => n.Key.CombatantName));
-            }
-
-            nameList = nameList.Distinct().OrderBy(n => n);
 
             StringBuilder sb = new StringBuilder();
 
-
-            var meleeSet = allAttacks.FirstOrDefault(g => g.ActionSource == ActionType.Melee);
-            var rangeSet = allAttacks.FirstOrDefault(g => g.ActionSource == ActionType.Ranged);
-            var spellSet = allAttacks.FirstOrDefault(g => g.ActionSource == ActionType.Spell);
-            var abilSet = allAttacks.FirstOrDefault(g => g.ActionSource == ActionType.Ability);
-            var wskillSet = allAttacks.FirstOrDefault(g => g.ActionSource == ActionType.Weaponskill);
-
-            IEnumerable<IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow>> meleeGroup = null;
-            IEnumerable<IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow>> rangeGroup = null;
-            IEnumerable<IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow>> spellGroup = null;
-            IEnumerable<IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow>> abilGroup = null;
-            IEnumerable<IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow>> wskillGroup = null;
-
-            if (meleeSet != null)
-                meleeGroup = meleeSet.CombatGroup;
-            if (rangeSet != null)
-                rangeGroup = rangeSet.CombatGroup;
-            if (spellSet != null)
-                spellGroup = spellSet.CombatGroup;
-            if (abilSet != null)
-                abilGroup = abilSet.CombatGroup;
-            if (wskillSet != null)
-                wskillGroup = wskillSet.CombatGroup;
-
-            foreach (string player in nameList)
+            foreach (var player in attacksByPlayer)
             {
-                if (playerDamage.Keys.Contains(player))
+                if (playerDamage[player.Player] > 0)
                 {
-                    if (playerDamage[player] > 0)
-                    {
-                        // Player name
-                        sb.Append(player.PadRight(16));
-                        sb.Append(" ");
+                    // Player name
+                    sb.Append(player.Player.PadRight(16));
+                    sb.Append(" ");
 
+                    int ttlPlayerDmg = playerDamage[player.Player];
+                    double damageShare = (double)ttlPlayerDmg / totalDamage;
 
-                        int ttlPlayerDmg = playerDamage[player];
-                        double damageShare = (double)ttlPlayerDmg / totalDamage;
+                    int meleeDmg = player.MeleeDmg;
+                    int rangeDmg = player.RangeDmg;
+                    int spellDmg = player.SpellDmg;
+                    int abilDmg = player.AbilityDmg;
+                    int wskillDmg = player.WSkillDmg;
 
-                        sb.Append(ttlPlayerDmg.ToString().PadLeft(10));
-                        sb.Append(damageShare.ToString("P2").PadLeft(11));
+                    sb.Append(ttlPlayerDmg.ToString().PadLeft(10));
+                    sb.Append(damageShare.ToString("P2").PadLeft(11));
 
-                        IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow> playerMelee = null;
-                        IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow> playerRange = null;
-                        IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow> playerSpell = null;
-                        IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow> playerAbil = null;
-                        IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow> playerWSkill = null;
+                    sb.Append(meleeDmg.ToString().PadLeft(12));
+                    sb.Append(rangeDmg.ToString().PadLeft(12));
+                    sb.Append(spellDmg.ToString().PadLeft(12));
+                    sb.Append(abilDmg.ToString().PadLeft(12));
+                    sb.Append(wskillDmg.ToString().PadLeft(12));
 
-                        if (meleeGroup != null)
-                            playerMelee = meleeGroup.FirstOrDefault(d => d.Key.CombatantName == player);
-                        if (rangeGroup != null)
-                            playerRange = rangeGroup.FirstOrDefault(d => d.Key.CombatantName == player);
-                        if (spellGroup != null)
-                            playerSpell = spellGroup.FirstOrDefault(d => d.Key.CombatantName == player);
-                        if (abilGroup != null)
-                            playerAbil = abilGroup.FirstOrDefault(d => d.Key.CombatantName == player);
-                        if (wskillGroup != null)
-                            playerWSkill = wskillGroup.FirstOrDefault(d => d.Key.CombatantName == player);
-
-                        int meleeDmg = 0;
-                        int rangeDmg = 0;
-                        int spellDmg = 0;
-                        int abilDmg = 0;
-                        int wskillDmg = 0;
-
-                        if (playerMelee != null)
-                        {
-                            meleeDmg = playerMelee.Sum(d => d.Amount) +
-                                playerMelee.Where(s =>
-                                    s.SecondHarmType == (byte)HarmType.Damage ||
-                                    s.SecondHarmType == (byte)HarmType.Drain).Sum(d => d.SecondAmount);
-                        }
-
-                        if (playerRange != null)
-                        {
-                            rangeDmg = playerRange.Sum(d => d.Amount) +
-                                playerRange.Where(s =>
-                                    s.SecondHarmType == (byte)HarmType.Damage ||
-                                    s.SecondHarmType == (byte)HarmType.Drain).Sum(d => d.SecondAmount);
-                        }
-
-                        if (playerSpell != null)
-                        {
-                            spellDmg = playerSpell.Sum(d => d.Amount);
-                        }
-
-                        if (playerAbil != null)
-                        {
-                            abilDmg = playerAbil.Sum(d => d.Amount);
-                        }
-
-                        if (playerWSkill != null)
-                        {
-                            wskillDmg = playerWSkill.Sum(d => d.Amount);
-                        }
-
-                        sb.Append(meleeDmg.ToString().PadLeft(12));
-                        sb.Append(rangeDmg.ToString().PadLeft(12));
-                        sb.Append(spellDmg.ToString().PadLeft(12));
-                        sb.Append(abilDmg.ToString().PadLeft(12));
-                        sb.Append(wskillDmg.ToString().PadLeft(12));
-
-                        sb.Append("\n");
-                    }
+                    sb.Append("\n");
                 }
             }
 
+            sb.Append("\n\n");
             AppendNormalText(sb.ToString());
-
-            AppendNormalText("\n\n");
         }
 
         private void ProcessMeleeAttacks(AttackGroup meleeAttacks)
