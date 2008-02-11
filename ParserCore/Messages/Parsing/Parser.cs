@@ -75,27 +75,26 @@ namespace WaywardGamers.KParser.Parsing
                 // Check for additional effects
                 if (messageLine.TextOutput.StartsWith("Additional effect:"))
                 {
-                    msg = MessageManager.Instance.FindLastMessageWithCode(messageLine.MessageCode);
-
                     // Check for samba effects, which have a different code than the attack that
                     // triggered them.
-                    if (msg == null)
+                    switch (messageLine.MessageCode)
                     {
-                        switch (messageLine.MessageCode)
-                        {
-                            // self-samba
-                            case 0x1e:
-                                msg = MessageManager.Instance.FindLastMessageWithCode(0x14);
-                                break;
-                            // party-samba
-                            case 0x19: //?
-                                msg = MessageManager.Instance.FindLastMessageWithCode(0x19);
-                                break;
-                            // other-samba
-                            case 0x28: //?
-                                msg = MessageManager.Instance.FindLastMessageWithCode(0x28);
-                                break;
-                        }
+                        // self-samba
+                        case 0x1e:
+                            msg = MessageManager.Instance.FindLastMessageWithCode(0x14);
+                            break;
+                        // party-samba
+                        case 0x22: //?
+                            msg = MessageManager.Instance.FindLastMessageWithCode(0x19);
+                            break;
+                        // other-samba
+                        case 0x2a:
+                            msg = MessageManager.Instance.FindLastMessageWithCode(0x28);
+                            break;
+                        // Anything else
+                        default:
+                            msg = MessageManager.Instance.FindLastMessageWithCode(messageLine.MessageCode);
+                            break;
                     }
                 }
 
@@ -1108,32 +1107,70 @@ namespace WaywardGamers.KParser.Parsing
                     if (modifyMatch.Success == false)
                         target.Amount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
                 }
+            }
 
-                if (combatMatch.Success == false)
+            // Check for limited additional damage
+            if (combatMatch.Success == false)
+            {
+                combatMatch = ParseExpressions.AdditionalDamage.Match(currentMessageText);
+                if (combatMatch.Success == true)
                 {
-                    combatMatch = ParseExpressions.AdditionalDamage.Match(currentMessageText);
-                    if (combatMatch.Success == true)
+                    target = combatDetails.Targets.LastOrDefault();
+                    if (target != null)
                     {
-                        target = combatDetails.Targets.LastOrDefault();
-                        if (target != null)
-                        {
-                            target.SecondaryHarmType = HarmType.Damage;
-                            target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
-                        }
-                    }
-
-                    combatMatch = ParseExpressions.AdditionalStatus.Match(currentMessageText);
-                    if (combatMatch.Success == true)
-                    {
-                        target = combatDetails.Targets.LastOrDefault();
-                        if (target != null)
-                        {
-                            target.SecondaryHarmType = HarmType.Enfeeble;
-                            target.SecondaryAction = combatMatch.Groups[ParseFields.Effect].Value;
-                        }
+                        target.SecondaryHarmType = HarmType.Damage;
+                        target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
                     }
                 }
             }
+             
+            // Check for additional effect: status effects
+            if (combatMatch.Success == false)
+            {
+                combatMatch = ParseExpressions.AdditionalStatus.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    target = combatDetails.Targets.LastOrDefault();
+                    if (target != null)
+                    {
+                        target.SecondaryHarmType = HarmType.Enfeeble;
+                        target.SecondaryAction = combatMatch.Groups[ParseFields.Effect].Value;
+                    }
+                }
+            }
+
+            // Check for additional effect: drain effects (eg: drain samba)
+            if (combatMatch.Success == false)
+            {
+                combatMatch = ParseExpressions.AdditionalDrain.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    target = combatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
+                    if (target != null)
+                    {
+                        target.SecondaryAidType = AidType.Recovery;
+                        target.SecondaryRecoveryType = RecoveryType.RecoverHP;
+                        target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
+                    }
+                }
+            }
+
+            // Check for additional effect: aspir effects (eg: aspir samba)
+            if (combatMatch.Success == false)
+            {
+                combatMatch = ParseExpressions.AdditionalAspir.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    target = combatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
+                    if (target != null)
+                    {
+                        target.SecondaryAidType = AidType.Recovery;
+                        target.SecondaryRecoveryType = RecoveryType.RecoverMP;
+                        target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
+                    }
+                }
+            }
+            
 
             // Handle entity settings on additional targets
             if (combatMatch.Success == true)
