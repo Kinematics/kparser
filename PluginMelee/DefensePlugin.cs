@@ -180,17 +180,11 @@ namespace WaywardGamers.KParser.Plugin
         {
             richTextBox.Clear();
 
-            Stopwatch stopwatch = new Stopwatch();
-
             switch (comboBox1.SelectedIndex)
             {
                 case 0:
                     // All
-                    stopwatch.Reset();
-                    stopwatch.Start();
                     ProcessRecovery(dataSet);
-                    stopwatch.Stop();
-                    Debug.WriteLine(string.Format("Recovery section time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
                     ProcessDefense(dataSet);
                     ProcessUtsusemi(dataSet);
                     break;
@@ -213,20 +207,8 @@ namespace WaywardGamers.KParser.Plugin
         private void ProcessRecovery(KPDatabaseDataSet dataSet)
         {
             AppendBoldText("Recovery\n\n", Color.Red);
-
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Reset();
-            stopwatch.Start();
-
             ProcessRecoveryDamage(dataSet);
-            stopwatch.Stop();
-            Debug.WriteLine(string.Format("ProcessRecoveryDamage section time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
-            stopwatch.Reset();
-            stopwatch.Start();
             ProcessRecoveryCuring(dataSet);
-            stopwatch.Stop();
-            Debug.WriteLine(string.Format("ProcessRecoveryCuring section time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
-
             AppendNormalText("\n");
         }
 
@@ -323,213 +305,223 @@ namespace WaywardGamers.KParser.Plugin
 
         private void ProcessRecoveryCuring(KPDatabaseDataSet dataSet)
         {
-            var allHealing = from cd in dataSet.Interactions
-                             where ((cd.IsActorIDNull() == false) &&
-                                    ((cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Player) ||
-                                     (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
-                                     (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Fellow)) &&
-                                    (((cd.AidType == (byte)AidType.Recovery) &&
-                                      (cd.RecoveryType == (byte)RecoveryType.RecoverHP)) ||
-                                     ((cd.AidType == (byte)AidType.Enhance) &&
-                                      (cd.Preparing == false) &&
-                                      (cd.IsActionIDNull() == false) &&
-                                      (cd.ActionsRow.ActionName.StartsWith("Regen")))))
-                             group cd by cd.CombatantsRowByActorCombatantRelation.CombatantName into cdr
-                             orderby cdr.Key
-                             select new
-                             {
-                                 Player = cdr.Key,
-                                 Cures = from hr in cdr
-                                         where hr.AidType == (byte)AidType.Recovery
-                                         select hr,
-                                 Regens = from hr in cdr
-                                          where hr.AidType == (byte)AidType.Enhance
-                                          select hr
-                             };
+            var uberHealing = from c in dataSet.Combatants
+                              where ((c.CombatantType == (byte)EntityType.Player) ||
+                                     (c.CombatantType == (byte)EntityType.Pet) ||
+                                     (c.CombatantType == (byte)EntityType.Fellow))
+                              orderby c.CombatantName
+                              select new
+                              {
+                                  Player = c.CombatantName,
+                                  Cure1s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                           where ((cr.AidType == (byte)AidType.Recovery) &&
+                                                  (cr.IsActionIDNull() == false) &&
+                                                  ((cr.ActionsRow.ActionName == "Cure") ||
+                                                   (cr.ActionsRow.ActionName == "Pollen") ||
+                                                   (cr.ActionsRow.ActionName == "Healing Breath")))
+                                           select cr.Amount,
+                                  Cure2s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                           where ((cr.AidType == (byte)AidType.Recovery) &&
+                                                  (cr.IsActionIDNull() == false) &&
+                                                  ((cr.ActionsRow.ActionName == "Cure II") ||
+                                                   (cr.ActionsRow.ActionName == "Curing Waltz") ||
+                                                   (cr.ActionsRow.ActionName == "Healing Breath II")))
+                                           select cr.Amount,
+                                  Cure3s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                           where ((cr.AidType == (byte)AidType.Recovery) &&
+                                                  (cr.IsActionIDNull() == false) &&
+                                                  ((cr.ActionsRow.ActionName == "Cure III") ||
+                                                   (cr.ActionsRow.ActionName == "Curing Waltz II") ||
+                                                   (cr.ActionsRow.ActionName == "Wild Carrot") ||
+                                                   (cr.ActionsRow.ActionName == "Healing Breath III")))
+                                           select cr.Amount,
+                                  Cure4s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                           where ((cr.AidType == (byte)AidType.Recovery) &&
+                                                  (cr.IsActionIDNull() == false) &&
+                                                  ((cr.ActionsRow.ActionName == "Cure IV") ||
+                                                   (cr.ActionsRow.ActionName == "Curing Waltz III") ||
+                                                   (cr.ActionsRow.ActionName == "Magic Fruit")))
+                                           select cr.Amount,
+                                  Cure5s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                           where ((cr.AidType == (byte)AidType.Recovery) &&
+                                                  (cr.IsActionIDNull() == false) &&
+                                                  (cr.ActionsRow.ActionName == "Cure V"))
+                                           select cr.Amount,
+                                  Curagas = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                            where ((cr.AidType == (byte)AidType.Recovery) &&
+                                                   (cr.IsActionIDNull() == false) &&
+                                                   ((cr.ActionsRow.ActionName.StartsWith("Curaga")) ||
+                                                    (cr.ActionsRow.ActionName == "Healing Breeze") ||
+                                                    (cr.ActionsRow.ActionName == "Divine Waltz")))
+                                            group cr by cr.Timestamp into crt
+                                            select crt,
+                                  OtherCures = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                               where ((cr.AidType == (byte)AidType.Recovery) &&
+                                                      (cr.IsActionIDNull() == false) &&
+                                                      (cr.ActionsRow.ActionName == "Chakra"))
+                                               select cr.Amount,
+                                  Reg1s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                          where ((cr.AidType == (byte)AidType.Enhance) &&
+                                                 (cr.IsActionIDNull() == false) &&
+                                                 (cr.ActionsRow.ActionName == "Regen"))
+                                          select cr,
+                                  Reg2s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                          where ((cr.AidType == (byte)AidType.Enhance) &&
+                                                 (cr.IsActionIDNull() == false) &&
+                                                 (cr.ActionsRow.ActionName == "Regen II"))
+                                          select cr,
+                                  Reg3s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                          where ((cr.AidType == (byte)AidType.Enhance) &&
+                                                 (cr.IsActionIDNull() == false) &&
+                                                 (cr.ActionsRow.ActionName == "Regen III"))
+                                          select cr,
+                                  Spells = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                           where ((cr.ActionType == (byte)ActionType.Spell) &&
+                                                  (cr.AidType == (byte)AidType.Recovery) &&
+                                                  (cr.RecoveryType == (byte)RecoveryType.RecoverHP))
+                                           select cr.Amount,
+                                  Ability = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                            where ((cr.ActionType == (byte)ActionType.Ability) &&
+                                                   (cr.AidType == (byte)AidType.Recovery) &&
+                                                   (cr.RecoveryType == (byte)RecoveryType.RecoverHP))
+                                            select cr.Amount
+                              };
 
-            if ((allHealing != null) && (allHealing.Count() > 0))
+
+            int cureSpell = 0;
+            int cureAbil = 0;
+            int numCure1 = 0;
+            int numCure2 = 0;
+            int numCure3 = 0;
+            int numCure4 = 0;
+            int numCure5 = 0;
+            int numCuraga = 0;
+            int numRegen1 = 0;
+            int numRegen2 = 0;
+            int numRegen3 = 0;
+
+            double avgC1 = 0;
+            double avgC2 = 0;
+            double avgC3 = 0;
+            double avgC4 = 0;
+            double avgC5 = 0;
+            double avgCg = 0;
+            double avgAb = 0;
+
+            StringBuilder sb = new StringBuilder();
+            bool haveHealer = false;
+
+            if (uberHealing.Count() > 0)
             {
-                AppendBoldText("Curing\n", Color.Blue);
-                AppendBoldUnderText(cureHeader, Color.Black);
-                //"Player           Cured (Sp)  Cured (Ab)  C.1s  C.2s  C.3s  C.4s  C.5s  Curagas  Rg.1s  Rg.2s  Rg.3s"
-
-                StringBuilder sb = new StringBuilder();
-
-                foreach (var healer in allHealing)
+                foreach (var healer in uberHealing)
                 {
-                    sb.Append(healer.Player.PadRight(16));
-                    sb.Append(" ");
-
-                    int cureSpell = 0;
-                    int cureAbil = 0;
-                    int numCure1 = 0;
-                    int numCure2 = 0;
-                    int numCure3 = 0;
-                    int numCure4 = 0;
-                    int numCure5 = 0;
-                    int numCuraga = 0;
-                    int numRegen1 = 0;
-                    int numRegen2 = 0;
-                    int numRegen3 = 0;
+                    cureSpell = healer.Spells.Sum();
+                    cureAbil = healer.Ability.Sum();
+                    numCure1 = healer.Cure1s.Count();
+                    numCure2 = healer.Cure2s.Count();
+                    numCure3 = healer.Cure3s.Count();
+                    numCure4 = healer.Cure4s.Count();
+                    numCure5 = healer.Cure5s.Count();
+                    numCuraga = healer.Curagas.Count();
+                    numRegen1 = healer.Reg1s.Count();
+                    numRegen2 = healer.Reg2s.Count();
+                    numRegen3 = healer.Reg3s.Count();
 
 
-                    if (healer.Cures != null)
+                    if ((cureSpell + cureAbil + numCure1 + numCure2 + numCure3 + numCure4 + numCure5 +
+                        numRegen1 + numRegen2 + numRegen3 + numCuraga) > 0)
                     {
-                        cureSpell = healer.Cures.Where(c => c.ActionType == (byte)ActionType.Spell).Sum(c => c.Amount);
-                        cureAbil = healer.Cures.Where(c => c.ActionType == (byte)ActionType.Ability).Sum(c => c.Amount);
+                        if (haveHealer == false)
+                        {
+                            AppendBoldText("Curing\n", Color.Blue);
+                            AppendBoldUnderText(cureHeader, Color.Black);
 
-                        numCure1 = healer.Cures.Count(r => r.ActionsRow.ActionName == "Cure");
-                        numCure2 = healer.Cures.Count(r => r.ActionsRow.ActionName == "Cure II" ||
-                            r.ActionsRow.ActionName == "Curing Waltz");
-                        numCure3 = healer.Cures.Count(r => r.ActionsRow.ActionName == "Cure III" ||
-                            r.ActionsRow.ActionName == "Curing Waltz II");
-                        numCure4 = healer.Cures.Count(r => r.ActionsRow.ActionName == "Cure IV" ||
-                            r.ActionsRow.ActionName == "Curing Waltz III");
-                        numCure5 = healer.Cures.Count(r => r.ActionsRow.ActionName == "Cure V");
+                            haveHealer = true;
+                        }
 
-                        numCuraga = healer.Cures.Count(r => r.ActionsRow.ActionName.StartsWith("Curaga") ||
-                            r.ActionsRow.ActionName == "Divine Waltz");
-                    }
-
-                    if (healer.Regens != null)
-                    {
-                        numRegen1 = healer.Regens.Count(r => r.ActionsRow.ActionName == "Regen");
-                        numRegen2 = healer.Regens.Count(r => r.ActionsRow.ActionName == "Regen II");
-                        numRegen3 = healer.Regens.Count(r => r.ActionsRow.ActionName == "Regen III");
-                    }
-
-
-                    sb.Append(cureSpell.ToString().PadLeft(9));
-                    sb.Append(cureAbil.ToString().PadLeft(12));
-
-                    sb.Append(numCure1.ToString().PadLeft(7));
-                    sb.Append(numCure2.ToString().PadLeft(6));
-                    sb.Append(numCure3.ToString().PadLeft(6));
-                    sb.Append(numCure4.ToString().PadLeft(6));
-                    sb.Append(numCure5.ToString().PadLeft(6));
-
-                    sb.Append(numCuraga.ToString().PadLeft(9));
-
-                    sb.Append(numRegen1.ToString().PadLeft(7));
-                    sb.Append(numRegen2.ToString().PadLeft(7));
-                    sb.Append(numRegen3.ToString().PadLeft(7));
-
-                    sb.Append("\n");
-                }
-
-                sb.Append("\n\n");
-                AppendNormalText(sb.ToString());
-
-
-                //-- Second section (Average curing) uses same dataset results as this
-                //-- one, so combining within the same function.
-
-                // Equivalents:
-                // Cure 1: Pollen, Healing Breath
-                // Cure 2: Curing Waltz, Healing Breath II
-                // Cure 3: Curing Waltz II, Healing Breath III, Wild Carrot
-                // Cure 4: Curing Watlz III, Magic Fruit
-                // Curaga: Healing Breeze, Divine Waltz
-
-
-                AppendBoldText("Average Curing (whm spells or equivalent)\n", Color.Blue);
-                AppendBoldUnderText(avgCureHeader, Color.Black);
-
-                sb = new StringBuilder();
-
-                foreach (var healer in allHealing)
-                {
-                    // Known spells
-                    var cureSet = healer.Cures.Where(c => c.ActionType == (byte)ActionType.Spell);
-                    var abilSet = healer.Cures.Where(c => c.ActionType == (byte)ActionType.Ability);
-
-                    IEnumerable<KPDatabaseDataSet.InteractionsRow> cure1Set;
-                    IEnumerable<KPDatabaseDataSet.InteractionsRow> cure2Set;
-                    IEnumerable<KPDatabaseDataSet.InteractionsRow> cure3Set;
-                    IEnumerable<KPDatabaseDataSet.InteractionsRow> cure4Set;
-                    IEnumerable<KPDatabaseDataSet.InteractionsRow> cure5Set;
-                    IEnumerable<KPDatabaseDataSet.InteractionsRow> miscSet;
-
-
-                    cure1Set = cureSet.Where(c => c.ActionsRow.ActionName == "Cure" ||
-                        c.ActionsRow.ActionName == "Pollen").
-                        Concat(abilSet.Where(c => c.ActionsRow.ActionName == "Healing Breath"));
-
-                    cure2Set = cureSet.Where(c => c.ActionsRow.ActionName == "Cure II").
-                        Concat(abilSet.Where(c => c.ActionsRow.ActionName == "Curing Waltz" ||
-                            c.ActionsRow.ActionName == "Healing Breath II"));
-
-                    cure3Set = cureSet.Where(c => c.ActionsRow.ActionName == "Cure III" ||
-                        c.ActionsRow.ActionName == "Wild Carrot").
-                        Concat(abilSet.Where(c => c.ActionsRow.ActionName == "Curing Waltz II" ||
-                            c.ActionsRow.ActionName == "Healing Breath III"));
-
-                    cure4Set = cureSet.Where(c => c.ActionsRow.ActionName == "Cure IV" ||
-                        c.ActionsRow.ActionName == "Magic Fruit").
-                        Concat(abilSet.Where(c => c.ActionsRow.ActionName == "Curing Waltz III"));
-
-                    cure5Set = cureSet.Where(c => c.ActionsRow.ActionName == "Cure V");
-
-                    // Group in 10 second intervals to make sure we catch multiple messages
-                    // that may span different readout times.
-                    var curagaSet = cureSet.Where(c =>
-                        c.ActionsRow.ActionName.StartsWith("Curaga") ||
-                        c.ActionsRow.ActionName == "Healing Breeze").
-                        Concat(abilSet.Where(c => c.ActionsRow.ActionName == "Divine Waltz")).
-                        GroupBy(c => c.Timestamp.Hour * 3600 + c.Timestamp.Minute * 60 + c.Timestamp.Second / 6);
-
-                    // Chakra and any other misc abilities go here.
-                    miscSet = abilSet.Where(c => c.ActionsRow.ActionName == "Chakra");
-
-
-                    double avgC1 = 0;
-                    double avgC2 = 0;
-                    double avgC3 = 0;
-                    double avgC4 = 0;
-                    double avgC5 = 0;
-                    double avgCg = 0;
-                    double avgAb = 0;
-
-                    if ((cure1Set != null) && (cure1Set.Count() > 0))
-                        avgC1 = cure1Set.Average(h => h.Amount);
-                    if ((cure2Set != null) && (cure2Set.Count() > 0))
-                        avgC2 = cure2Set.Average(h => h.Amount);
-                    if ((cure3Set != null) && (cure3Set.Count() > 0))
-                        avgC3 = cure3Set.Average(h => h.Amount);
-                    if ((cure4Set != null) && (cure4Set.Count() > 0))
-                        avgC4 = cure4Set.Average(h => h.Amount);
-                    if ((cure5Set != null) && (cure5Set.Count() > 0))
-                        avgC5 = cure5Set.Average(h => h.Amount);
-
-                    // Average the sum of the groups of curaga events (multiple people cured)
-                    if ((curagaSet != null) && (curagaSet.Count() > 0))
-                        avgCg = curagaSet.Average(h => h.Sum(c => c.Amount));
-
-                    if ((miscSet != null) && (miscSet.Count() > 0))
-                        avgAb = miscSet.Average(h => h.Amount);
-
-
-                    if ((avgAb + avgC1 + avgC2 + avgC3 + avgC4 + avgC5 + avgCg) > 0)
-                    {
                         sb.Append(healer.Player.PadRight(16));
                         sb.Append(" ");
 
-                        sb.Append(avgC1.ToString("F2").PadLeft(10));
-                        sb.Append(avgC2.ToString("F2").PadLeft(13));
-                        sb.Append(avgC3.ToString("F2").PadLeft(13));
-                        sb.Append(avgC4.ToString("F2").PadLeft(13));
-                        sb.Append(avgC5.ToString("F2").PadLeft(13));
-                        sb.Append(avgCg.ToString("F2").PadLeft(13));
-                        sb.Append(avgAb.ToString("F2").PadLeft(14));
+                        sb.Append(cureSpell.ToString().PadLeft(9));
+                        sb.Append(cureAbil.ToString().PadLeft(12));
+
+                        sb.Append(numCure1.ToString().PadLeft(7));
+                        sb.Append(numCure2.ToString().PadLeft(6));
+                        sb.Append(numCure3.ToString().PadLeft(6));
+                        sb.Append(numCure4.ToString().PadLeft(6));
+                        sb.Append(numCure5.ToString().PadLeft(6));
+
+                        sb.Append(numCuraga.ToString().PadLeft(9));
+
+                        sb.Append(numRegen1.ToString().PadLeft(7));
+                        sb.Append(numRegen2.ToString().PadLeft(7));
+                        sb.Append(numRegen3.ToString().PadLeft(7));
 
                         sb.Append("\n");
                     }
                 }
 
+                if (haveHealer == true)
+                {
+                    sb.Append("\n\n");
+                    AppendNormalText(sb.ToString());
+                    sb = new StringBuilder();
+                }
 
-                sb.Append("\n\n");
-                AppendNormalText(sb.ToString());
 
+                if (haveHealer == true)
+                {
+                    AppendBoldText("Average Curing (whm spells or equivalent)\n", Color.Blue);
+                    AppendBoldUnderText(avgCureHeader, Color.Black);
+
+                    foreach (var healer in uberHealing)
+                    {
+                        avgC1 = 0;
+                        avgC2 = 0;
+                        avgC3 = 0;
+                        avgC4 = 0;
+                        avgC5 = 0;
+                        avgCg = 0;
+                        avgAb = 0;
+
+                        if (healer.Cure1s.Count() > 0)
+                            avgC1 = healer.Cure1s.Average();
+                        if (healer.Cure2s.Count() > 0)
+                            avgC2 = healer.Cure2s.Average();
+                        if (healer.Cure3s.Count() > 0)
+                            avgC3 = healer.Cure3s.Average();
+                        if (healer.Cure4s.Count() > 0)
+                            avgC4 = healer.Cure4s.Average();
+                        if (healer.Cure5s.Count() > 0)
+                            avgC5 = healer.Cure5s.Average();
+
+                        if (healer.Curagas.Count() > 0)
+                            avgCg = healer.Curagas.Average(c => c.Sum(i => i.Amount));
+
+                        if (healer.OtherCures.Count() > 0)
+                            avgAb = healer.OtherCures.Average();
+
+
+                        if ((avgAb + avgC1 + avgC2 + avgC3 + avgC4 + avgC5 + avgCg) > 0)
+                        {
+                            sb.Append(healer.Player.PadRight(16));
+                            sb.Append(" ");
+
+                            sb.Append(avgC1.ToString("F2").PadLeft(10));
+                            sb.Append(avgC2.ToString("F2").PadLeft(13));
+                            sb.Append(avgC3.ToString("F2").PadLeft(13));
+                            sb.Append(avgC4.ToString("F2").PadLeft(13));
+                            sb.Append(avgC5.ToString("F2").PadLeft(13));
+                            sb.Append(avgCg.ToString("F2").PadLeft(13));
+                            sb.Append(avgAb.ToString("F2").PadLeft(14));
+
+                            sb.Append("\n");
+                        }
+                    }
+
+                    sb.Append("\n\n");
+                    AppendNormalText(sb.ToString());
+                }
             }
         }
         #endregion
