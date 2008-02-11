@@ -293,12 +293,15 @@ namespace WaywardGamers.KParser.Plugin
                              };
 
 
-            List<string> playerList = new List<string>();
+            List<string> playerList;
+
+            playerList = dmgTaken.Select(p => p.Player)
+                .Concat(hpDrained.Select(p => p.Player))
+                .Concat(allHealing.Select(p => p.Player))
+                .Distinct().OrderBy(p => p).ToList();
+
             foreach (var dmg in dmgTaken)
             {
-                if (playerList.Contains(dmg.Player) == false)
-                    playerList.Add(dmg.Player);
-
                 playerDamage[dmg.Player] = 0;
                 if (dmg.PrimaryDamage.Count() > 0)
                     playerDamage[dmg.Player] += dmg.PrimaryDamage.Sum(d => d.Amount);
@@ -306,22 +309,8 @@ namespace WaywardGamers.KParser.Plugin
                     playerDamage[dmg.Player] += dmg.SecondaryDamage.Sum(d => d.SecondAmount);
             }
 
-            foreach (var drain in hpDrained)
-            {
-                if (playerList.Contains(drain.Player) == false)
-                    playerList.Add(drain.Player);
-            }
-
-            foreach (var heal in allHealing)
-            {
-                if (playerList.Contains(heal.Player) == false)
-                    playerList.Add(heal.Player);
-            }
-
             if (playerList.Count > 0)
             {
-                playerList.Sort();
-
                 AppendBoldText("Damage Recovery\n", Color.Blue);
                 AppendBoldUnderText(dmgRecoveryHeader, Color.Black);
                 //"Player           Dmg Taken   HP Drained   HP Cured   #Regen  #Regen 2  #Regen 3"
@@ -814,8 +803,7 @@ namespace WaywardGamers.KParser.Plugin
 
         private void ProcessDefenseEvasion(IEnumerable<DefenseGroup> incAttacks)
         {
-            AppendBoldText("Evasion\n", Color.Blue);
-            AppendBoldUnderText(evasionHeader, Color.Black);
+            bool headerPrinted = false;
 
             //Player           M.Evade   M.Evade %   R.Evade   R.Evade %
 
@@ -844,6 +832,14 @@ namespace WaywardGamers.KParser.Plugin
 
                     if ((mEvaded + rEvaded) > 0)
                     {
+                        if (headerPrinted == false)
+                        {
+                            AppendBoldText("Evasion\n", Color.Blue);
+                            AppendBoldUnderText(evasionHeader, Color.Black);
+
+                            headerPrinted = true;
+                        }
+
                         sb.Append(player.Player.PadRight(16));
                         sb.Append(" ");
 
@@ -857,13 +853,16 @@ namespace WaywardGamers.KParser.Plugin
                 }
             }
 
-            sb.Append("\n\n");
-            AppendNormalText(sb.ToString());
+            if (headerPrinted == true)
+            {
+                sb.Append("\n\n");
+                AppendNormalText(sb.ToString());
+            }
         }
 
         private void ProcessDefenseOther(IEnumerable<DefenseGroup> incAttacks)
         {
-            bool placedHeader = false;
+            bool headerPrinted = false;
 
             //Player           Parry   Parry %   Blink   Blink %   Anticipate  Anticipate %   Counter   Counter %
 
@@ -936,11 +935,11 @@ namespace WaywardGamers.KParser.Plugin
 
                     if ((parriedAttacks + blinkedAttacks + anticipatedAttacks + counteredAttacks) > 0)
                     {
-                        if (placedHeader == false)
+                        if (headerPrinted == false)
                         {
                             AppendBoldText("Other Defenses\n", Color.Blue);
                             AppendBoldUnderText(otherDefHeader, Color.Black);
-                            placedHeader = true;
+                            headerPrinted = true;
                         }
 
                         sb.Append(player.Player.PadRight(16));
@@ -960,9 +959,11 @@ namespace WaywardGamers.KParser.Plugin
                 }
             }
 
-
-            sb.Append("\n\n");
-            AppendNormalText(sb.ToString());
+            if (headerPrinted == true)
+            {
+                sb.Append("\n\n");
+                AppendNormalText(sb.ToString());
+            }
         }
         #endregion
 

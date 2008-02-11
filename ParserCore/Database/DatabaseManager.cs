@@ -539,10 +539,7 @@ namespace WaywardGamers.KParser
                 // Check our local list of recent kills
                 KPDatabaseDataSet.BattlesRow lastKill = null;
 
-                if (lastKilledList.Keys.Contains(message.EventDetails.LootDetails.MobName))
-                    lastKill = lastKilledList[message.EventDetails.LootDetails.MobName];
-                
-                if (lastKill == null)
+                if (lastKilledList.TryGetValue(message.EventDetails.LootDetails.MobName, out lastKill) == false)
                 {
                     // No record of the last kill for this mob type; create a
                     // new battle record for it.
@@ -688,13 +685,10 @@ namespace WaywardGamers.KParser
                 // Ok, in this case there are targets
                 if (message.EventDetails.CombatDetails.ActorEntityType == EntityType.Mob)
                 {
-                    if (activeMobBattleList.Keys.Contains(message.EventDetails.CombatDetails.ActorName))
-                        battle = activeMobBattleList[message.EventDetails.CombatDetails.ActorName];
-
                     // If there is none, create a new battle.
                     // If it's one mob buffing another, assume this is a link and must be
                     // considered the start of a new battle.
-                    if (battle == null)
+                    if (activeMobBattleList.TryGetValue(message.EventDetails.CombatDetails.ActorName, out battle) == false)
                     {
                         battle = localDB.Battles.AddBattlesRow(actor, message.Timestamp,
                             MagicNumbers.MinSQLDateTime, false, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
@@ -750,11 +744,7 @@ namespace WaywardGamers.KParser
                     // Get the battle each time through the loop if the targets are mobs.
                     if (target.EntityType == EntityType.Mob)
                     {
-                        if (activeMobBattleList.Keys.Contains(target.Name))
-                        {
-                            battle = activeMobBattleList[target.Name];
-                        }
-                        else
+                        if (activeMobBattleList.TryGetValue(target.Name, out battle) == false)
                         {
                             battle = localDB.Battles.AddBattlesRow(targetRow, message.Timestamp,
                                 MagicNumbers.MinSQLDateTime, false, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
@@ -819,12 +809,13 @@ namespace WaywardGamers.KParser
                     // just make a combat detail entry per death.
 
                     // Determine the battle the death(s) need to be linked against.
-                    if (activeMobBattleList.Keys.Contains(message.EventDetails.CombatDetails.ActorName))
-                        battle = activeMobBattleList[message.EventDetails.CombatDetails.ActorName];
-                    else
+
+                    if (activeMobBattleList.TryGetValue(message.EventDetails.CombatDetails.ActorName, out battle) == false)
+                    {
                         // Make a new one if one doesn't exist
                         battle = localDB.Battles.AddBattlesRow(actor, message.Timestamp,
                             MagicNumbers.MinSQLDateTime, false, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
+                    }
 
                     foreach (var target in message.EventDetails.CombatDetails.Targets)
                     {
@@ -874,12 +865,12 @@ namespace WaywardGamers.KParser
 
                     secondAction = localDB.Actions.GetAction(target.SecondaryAction);
 
-                    if (activeMobBattleList.Keys.Contains(target.Name))
-                        battle = activeMobBattleList[target.Name];
-                    else
+                    if (activeMobBattleList.TryGetValue(target.Name, out battle) == false)
+                    {
                         // Make a new one if one doesn't exist
                         battle = localDB.Battles.AddBattlesRow(actor, message.Timestamp,
                             MagicNumbers.MinSQLDateTime, false, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
+                    }
 
                     battle.Killed = true;
                     battle.EndTime = message.Timestamp;
@@ -939,12 +930,12 @@ namespace WaywardGamers.KParser
 
                             // if mob died, need to end battle
                             // Determine the battle the death(s) need to be linked against.
-                            if (activeMobBattleList.Keys.Contains(message.EventDetails.CombatDetails.ActorName))
-                                battle = activeMobBattleList[message.EventDetails.CombatDetails.ActorName];
-                            else
+                            if (activeMobBattleList.TryGetValue(message.EventDetails.CombatDetails.ActorName, out battle) == false)
+                            {
                                 // Make a new one if one doesn't exist
                                 battle = localDB.Battles.AddBattlesRow(actor, message.Timestamp,
                                     MagicNumbers.MinSQLDateTime, false, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
+                            }
 
                             battle.Killed = true;
                             battle.EndTime = message.Timestamp;
