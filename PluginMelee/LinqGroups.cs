@@ -30,6 +30,75 @@ namespace WaywardGamers.KParser.Plugin
         }
     }
 
+    internal class AttackGroup2
+    {
+        internal string Player { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Melee { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Range { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Spell { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Ability { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> WSkill { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> SC { get; set; }
+        internal int MeleeDmg
+        {
+            get
+            {
+                return Melee.Sum(d => d.Amount) +
+                       Melee.Where(s =>
+                           s.SecondHarmType == (byte)HarmType.Damage ||
+                           s.SecondHarmType == (byte)HarmType.Drain).Sum(d => d.SecondAmount);
+            }
+        }
+
+        internal int RangeDmg
+        {
+            get
+            {
+                return Range.Sum(d => d.Amount) +
+                       Range.Where(s =>
+                           s.SecondHarmType == (byte)HarmType.Damage ||
+                           s.SecondHarmType == (byte)HarmType.Drain).Sum(d => d.SecondAmount);
+            }
+        }
+
+        internal int SpellDmg
+        {
+            get
+            {
+                return Spell.Sum(d => d.Amount);
+            }
+        }
+
+        internal int AbilityDmg
+        {
+            get
+            {
+                return Ability.Sum(d => d.Amount);
+            }
+        }
+
+        internal int WSkillDmg
+        {
+            get
+            {
+                return WSkill.Sum(d => d.Amount);
+            }
+        }
+
+        internal int SCDmg
+        {
+            get
+            {
+                return SC.Sum(d => d.Amount);
+            }
+        }
+
+        public AttackGroup2()
+        {
+        }
+    }
+
+
     internal class DefenseGroup
     {
         internal string Player { get; set; }
