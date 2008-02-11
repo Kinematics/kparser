@@ -118,6 +118,8 @@ namespace WaywardGamers.KParser
         public static readonly Regex MagicBurst       = new Regex(@"^Magic Burst!");
         public static readonly Regex AdditionalDamage = new Regex(string.Format("^Additional effect: {0} points of damage\\.$", damage));
         public static readonly Regex AdditionalStatus = new Regex(string.Format("^Additional effect: {0}\\.$", effect));
+        public static readonly Regex AdditionalDrain  = new Regex(string.Format("^Additional effect: {0} HP drained from {1}\\.$", damage, target));
+        public static readonly Regex AdditionalAspir  = new Regex(string.Format("^Additional effect: {0} MP drained from {1}\\.$", damage, target));
         #endregion
 
         #region Combat damage
@@ -158,8 +160,6 @@ namespace WaywardGamers.KParser
         public static readonly Regex DrainHP = new Regex(string.Format("^{0} HP drained from {1}\\.$", damage, target));
         public static readonly Regex DrainMP = new Regex(string.Format("^{0} MP drained from {1}\\.$", damage, target));
 
-        public static readonly Regex DrainSamba = new Regex(string.Format("^Additional effect: {0} HP drained from {1}\\.$", damage, target));
-        public static readonly Regex AspirSamba = new Regex(string.Format("^Additional effect: {0} MP drained from {1}\\.$", damage, target));
 
     }
 }
