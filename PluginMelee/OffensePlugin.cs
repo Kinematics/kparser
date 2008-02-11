@@ -119,24 +119,27 @@ namespace WaywardGamers.KParser.Plugin
                                               select new { BXP = xbn.Key}
                                      };
 
-                    foreach (var mob in mobsKilled)
+                    if (mobsKilled != null)
                     {
-                        if (this.comboBox2.Items.Contains(mob.Name) == false)
+                        foreach (var mob in mobsKilled)
                         {
-                            AddToComboBox2(mob.Name);
-                        }
-
-                        if (mob.XP.Count() > 1)
-                        {
-                            string mobWithXP;
-
-                            foreach (var xp in mob.XP)
+                            if (this.comboBox2.Items.Contains(mob.Name) == false)
                             {
-                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BXP);
+                                AddToComboBox2(mob.Name);
+                            }
 
-                                if (this.comboBox2.Items.Contains(mobWithXP) == false)
+                            if (mob.XP.Count() > 1)
+                            {
+                                string mobWithXP;
+
+                                foreach (var xp in mob.XP)
                                 {
-                                    AddToComboBox2(mobWithXP);
+                                    mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BXP);
+
+                                    if (this.comboBox2.Items.Contains(mobWithXP) == false)
+                                    {
+                                        AddToComboBox2(mobWithXP);
+                                    }
                                 }
                             }
                         }
