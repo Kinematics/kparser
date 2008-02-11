@@ -44,6 +44,7 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0x15] = InteractionType.Harm;
             interactionTypeLookup[0x1a] = InteractionType.Harm;
             interactionTypeLookup[0x1d] = InteractionType.Harm;
+            interactionTypeLookup[0x21] = InteractionType.Harm;
             interactionTypeLookup[0x29] = InteractionType.Harm;
             // Enfeebling
             interactionTypeLookup[0x32] = InteractionType.Harm;
@@ -60,6 +61,7 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0x45] = InteractionType.Harm;
             // Ability moves that miss
             interactionTypeLookup[0x68] = InteractionType.Harm;
+            interactionTypeLookup[0x6d] = InteractionType.Harm;
             interactionTypeLookup[0x72] = InteractionType.Harm;
             // Prep attack moves
             interactionTypeLookup[0x6e] = InteractionType.Harm; // <me> prep weaponskill
@@ -139,6 +141,7 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0x15] = HarmType.Damage;
             harmTypeLookup[0x1a] = HarmType.Damage;
             harmTypeLookup[0x1d] = HarmType.Damage;
+            harmTypeLookup[0x21] = HarmType.Damage;
             harmTypeLookup[0x29] = HarmType.Damage;
             // Uncertain
             harmTypeLookup[0x32] = HarmType.None;
@@ -158,6 +161,7 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0x43] = HarmType.Enfeeble;
             // Ability moves that miss
             harmTypeLookup[0x68] = HarmType.Damage;
+            harmTypeLookup[0x6d] = HarmType.Damage;
             harmTypeLookup[0x72] = HarmType.Damage;
 
             harmTypeLookup[0x24] = HarmType.Death; // <me> kills
@@ -192,10 +196,12 @@ namespace WaywardGamers.KParser
             successTypeLookup[0x15] = SuccessType.Unsuccessful;
             successTypeLookup[0x1a] = SuccessType.Unsuccessful;
             successTypeLookup[0x1d] = SuccessType.Unsuccessful;
+            successTypeLookup[0x21] = SuccessType.Unsuccessful;
             successTypeLookup[0x29] = SuccessType.Unsuccessful;
 
             // Missed ability moves
             successTypeLookup[0x68] = SuccessType.Unsuccessful;
+            successTypeLookup[0x6d] = SuccessType.Unsuccessful;
             successTypeLookup[0x72] = SuccessType.Unsuccessful;
 
             // Enfeebles

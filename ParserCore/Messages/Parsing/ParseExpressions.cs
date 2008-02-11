@@ -85,7 +85,7 @@ namespace WaywardGamers.KParser
         public static readonly Regex CastSpell    = new Regex(string.Format("^{0} cast(s)? {1}\\.$", name, spell));
         public static readonly Regex UseAbility   = new Regex(string.Format("^{0} use(s)? {1}\\.$", name, ability));
         public static readonly Regex UseAbilityOn = new Regex(string.Format("^{0} use(s)? {1} on {2}\\.$", name, ability, target));
-        public static readonly Regex MissAbility  = new Regex(string.Format("^{0} use(s)? {1}, but misses {2}\\.$", name, ability, target));
+        public static readonly Regex MissAbility  = new Regex(string.Format("^{0} use(s)? {1}, but miss(es)? {2}\\.$", name, ability, target));
         public static readonly Regex FailsCharm   = new Regex(string.Format("^{0} fail(s)? to charm {1}\\.$", name, target));
         #endregion
 
@@ -151,8 +151,9 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Defeated
-        public static readonly Regex Defeat = new Regex(string.Format("^{0} defeats {1}\\.$", name, target));
-        public static readonly Regex Dies   = new Regex(string.Format("^{0} falls to the ground\\.$", target));
+        public static readonly Regex Defeated = new Regex(string.Format("^{0} was defeated by {1}\\.$", target, name));
+        public static readonly Regex Defeat   = new Regex(string.Format("^{0} defeats {1}\\.$", name, target));
+        public static readonly Regex Dies     = new Regex(string.Format("^{0} falls to the ground\\.$", target));
         #endregion
 
         #region Experience

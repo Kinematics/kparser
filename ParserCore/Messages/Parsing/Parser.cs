@@ -737,6 +737,15 @@ namespace WaywardGamers.KParser.Parsing
                 return;
             }
 
+            combatMatch = ParseExpressions.Defeated.Match(message.CurrentMessageText);
+            if (combatMatch.Success == true)
+            {
+                message.EventDetails.CombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                message.EventDetails.CombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                message.ParseSuccessful = true;
+                return;
+            }
+
             combatMatch = ParseExpressions.Dies.Match(message.CurrentMessageText);
             if (combatMatch.Success == true)
             {
