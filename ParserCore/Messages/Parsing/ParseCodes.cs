@@ -59,6 +59,8 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0x43] = InteractionType.Harm;
             interactionTypeLookup[0x44] = InteractionType.Harm;
             interactionTypeLookup[0x45] = InteractionType.Harm;
+            // Ability moves
+            interactionTypeLookup[0x20] = InteractionType.Harm;
             // Ability moves that miss
             interactionTypeLookup[0x68] = InteractionType.Harm;
             interactionTypeLookup[0x6d] = InteractionType.Harm;
@@ -88,7 +90,10 @@ namespace WaywardGamers.KParser
             // Recovery
             interactionTypeLookup[0x1e] = InteractionType.Aid; // drain samba
             interactionTypeLookup[0x1f] = InteractionType.Aid; // cures
+            interactionTypeLookup[0x17] = InteractionType.Aid; // cures
             interactionTypeLookup[0x2b] = InteractionType.Aid;
+
+            interactionTypeLookup[0x23] = InteractionType.Aid;
 
             interactionTypeLookup[0x5a] = InteractionType.Aid; // item use
 
@@ -121,8 +126,13 @@ namespace WaywardGamers.KParser
             aidTypeLookup[0x6f] = AidType.Enhance;
 
             aidTypeLookup[0x1e] = AidType.Recovery; // drain samba
+            aidTypeLookup[0x22] = AidType.Recovery; // drain samba
+            aidTypeLookup[0x2a] = AidType.Recovery; // drain samba
             aidTypeLookup[0x1f] = AidType.Recovery;
+            aidTypeLookup[0x17] = AidType.Recovery;
             aidTypeLookup[0x2b] = AidType.Recovery;
+
+            aidTypeLookup[0x23] = AidType.Recovery;
 
             aidTypeLookup[0x5a] = AidType.Item;
         }
@@ -159,6 +169,8 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0x45] = HarmType.Enfeeble;
             // No effect
             harmTypeLookup[0x43] = HarmType.Enfeeble;
+            // Ability moves
+            harmTypeLookup[0x20] = HarmType.Damage;
             // Ability moves that miss
             harmTypeLookup[0x68] = HarmType.Damage;
             harmTypeLookup[0x6d] = HarmType.Damage;
@@ -199,6 +211,9 @@ namespace WaywardGamers.KParser
             successTypeLookup[0x21] = SuccessType.Unsuccessful;
             successTypeLookup[0x29] = SuccessType.Unsuccessful;
 
+            // Ability moves (AOE?)
+            successTypeLookup[0x20] = SuccessType.Successful;
+
             // Missed ability moves
             successTypeLookup[0x68] = SuccessType.Unsuccessful;
             successTypeLookup[0x6d] = SuccessType.Unsuccessful;
@@ -214,7 +229,9 @@ namespace WaywardGamers.KParser
 
             // Recovery
             successTypeLookup[0x1e] = SuccessType.Successful;
+            successTypeLookup[0x17] = SuccessType.Successful;
             successTypeLookup[0x1f] = SuccessType.Successful;
+            successTypeLookup[0x23] = SuccessType.Successful;
             successTypeLookup[0x2b] = SuccessType.Successful;
 
             // Item use
