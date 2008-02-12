@@ -40,12 +40,14 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0x1c] = InteractionType.Harm;
             interactionTypeLookup[0x28] = InteractionType.Harm;
             interactionTypeLookup[0x2a] = InteractionType.Harm;
+            interactionTypeLookup[0xa3] = InteractionType.Harm; // ally
             // Unsuccessful attacks
             interactionTypeLookup[0x15] = InteractionType.Harm;
             interactionTypeLookup[0x1a] = InteractionType.Harm;
             interactionTypeLookup[0x1d] = InteractionType.Harm;
             interactionTypeLookup[0x21] = InteractionType.Harm;
             interactionTypeLookup[0x29] = InteractionType.Harm;
+            interactionTypeLookup[0xa4] = InteractionType.Harm; // ally
             // Enfeebling
             interactionTypeLookup[0x32] = InteractionType.Harm;
             interactionTypeLookup[0x33] = InteractionType.Harm;
@@ -90,12 +92,14 @@ namespace WaywardGamers.KParser
             // Recovery
             interactionTypeLookup[0x1e] = InteractionType.Aid; // drain samba
             interactionTypeLookup[0x1f] = InteractionType.Aid; // cures
-            interactionTypeLookup[0x17] = InteractionType.Aid; // cures
+            interactionTypeLookup[0x17] = InteractionType.Aid; // <me> cast cures
+            interactionTypeLookup[0x18] = InteractionType.Aid; // <party> cast cures
             interactionTypeLookup[0x2b] = InteractionType.Aid;
 
             interactionTypeLookup[0x23] = InteractionType.Aid;
 
             interactionTypeLookup[0x5a] = InteractionType.Aid; // item use
+            interactionTypeLookup[0x55] = InteractionType.Aid; // <party> item use
 
 
             // Prep spell of unknown type (buff)?
@@ -130,11 +134,13 @@ namespace WaywardGamers.KParser
             aidTypeLookup[0x2a] = AidType.Recovery; // drain samba
             aidTypeLookup[0x1f] = AidType.Recovery;
             aidTypeLookup[0x17] = AidType.Recovery;
+            aidTypeLookup[0x18] = AidType.Recovery;
             aidTypeLookup[0x2b] = AidType.Recovery;
 
             aidTypeLookup[0x23] = AidType.Recovery;
 
             aidTypeLookup[0x5a] = AidType.Item;
+            aidTypeLookup[0x55] = AidType.Item;
         }
 
         private void InitHarmTypeLookup()
@@ -146,6 +152,7 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0x19] = HarmType.Damage;
             harmTypeLookup[0x1c] = HarmType.Damage;
             harmTypeLookup[0x28] = HarmType.Damage;
+            harmTypeLookup[0xa3] = HarmType.Damage;
             harmTypeLookup[0x2a] = HarmType.Drain;
             // Unsuccessful attacks
             harmTypeLookup[0x15] = HarmType.Damage;
@@ -153,6 +160,7 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0x1d] = HarmType.Damage;
             harmTypeLookup[0x21] = HarmType.Damage;
             harmTypeLookup[0x29] = HarmType.Damage;
+            harmTypeLookup[0xa4] = HarmType.Damage;
             // Uncertain
             harmTypeLookup[0x32] = HarmType.None;
             // Enfeebling
@@ -202,6 +210,7 @@ namespace WaywardGamers.KParser
             successTypeLookup[0x19] = SuccessType.Successful;
             successTypeLookup[0x1c] = SuccessType.Successful;
             successTypeLookup[0x28] = SuccessType.Successful;
+            successTypeLookup[0xa3] = SuccessType.Successful;
             successTypeLookup[0x2a] = SuccessType.Successful;
 
             // Unsucessful damage attempts
@@ -210,6 +219,7 @@ namespace WaywardGamers.KParser
             successTypeLookup[0x1d] = SuccessType.Unsuccessful;
             successTypeLookup[0x21] = SuccessType.Unsuccessful;
             successTypeLookup[0x29] = SuccessType.Unsuccessful;
+            successTypeLookup[0xa4] = SuccessType.Unsuccessful;
 
             // Ability moves (AOE?)
             successTypeLookup[0x20] = SuccessType.Successful;
@@ -230,12 +240,14 @@ namespace WaywardGamers.KParser
             // Recovery
             successTypeLookup[0x1e] = SuccessType.Successful;
             successTypeLookup[0x17] = SuccessType.Successful;
+            successTypeLookup[0x18] = SuccessType.Successful;
             successTypeLookup[0x1f] = SuccessType.Successful;
             successTypeLookup[0x23] = SuccessType.Successful;
             successTypeLookup[0x2b] = SuccessType.Successful;
 
             // Item use
             successTypeLookup[0x5a] = SuccessType.Successful;
+            successTypeLookup[0x55] = SuccessType.Successful; // <party>
 
 
             // Resisted enfeebles
