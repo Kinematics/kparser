@@ -67,6 +67,7 @@ namespace WaywardGamers.KParser
         public static readonly Regex GetGil   = new Regex(string.Format("^{0} obtains {1}\\.$", playerName, money));
         public static readonly Regex LootReqr = new Regex(string.Format("^You do not meet the requirements to obtain {0}\\.$", item));
         public static readonly Regex LootLost = new Regex(string.Format("^{0} lost\\.$", item));
+        public static readonly Regex LotItem  = new Regex(string.Format("^{0}'s lot for {1}: {2} points\\.$", playerName, item, number));
         #endregion
 
         #region Name Tests
