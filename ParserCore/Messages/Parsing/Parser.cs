@@ -68,6 +68,10 @@ namespace WaywardGamers.KParser.Parsing
 
         private static Message GetAttachedMessage(MessageLine messageLine)
         {
+            int i = 0;
+            if (messageLine.TextOutput.EndsWith("uses Sweep."))
+                i = 1;
+
             Message msg = null;
 
             if (messageLine.EventSequence > lastMessageID)
@@ -94,6 +98,18 @@ namespace WaywardGamers.KParser.Parsing
                         // Anything else
                         default:
                             msg = MessageManager.Instance.FindLastMessageWithCode(messageLine.MessageCode);
+                            break;
+                    }
+                }
+                else
+                {
+                    switch (messageLine.MessageCode)
+                    {
+                        // Recovery (possible AOE)
+                        case 0x17:
+                            msg = MessageManager.Instance.FindLastMessageWithECode(0x1f,
+                                messageLine.ExtraCode1,
+                                messageLine.ExtraCode2);
                             break;
                     }
                 }
@@ -178,6 +194,9 @@ namespace WaywardGamers.KParser.Parsing
                     break;
                 case 0x7b:
                     message.SystemDetails.SystemMessageType = SystemMessageType.OutOfRange;
+                    break;
+                case 0xcc:
+                    message.SystemDetails.SystemMessageType = SystemMessageType.SearchComment;
                     break;
                 default:
                     message.SystemDetails.SystemMessageType = SystemMessageType.Unknown;
@@ -579,17 +598,31 @@ namespace WaywardGamers.KParser.Parsing
                 return;
             }
 
-            // eg: Player uses Warcry.
-            combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
-            if (combatMatch.Success == true)
+            // eg: Player uses a rolanberry pie.
+            if (message.EventDetails.CombatDetails.AidType == AidType.Item)
             {
-                msgCombatDetails.ActionType = ActionType.Ability;
-                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                message.ParseSuccessful = true;
-                return;
+                combatMatch = ParseExpressions.UseItem.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Item].Value;
+                    message.ParseSuccessful = true;
+                    return;
+                }
             }
-
+            else
+            {
+                // eg: Player uses warcry
+                combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.ActionType = ActionType.Ability;
+                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+            }
 
             // Break down the results of the spell/ability
             switch (msgCombatDetails.AidType)
@@ -669,23 +702,24 @@ namespace WaywardGamers.KParser.Parsing
                         message.ParseSuccessful = true;
                         return;
                     }
-                    combatMatch = ParseExpressions.DrainHP.Match(currentMessageText);
+                    combatMatch = ParseExpressions.Drain.Match(currentMessageText);
                     if (combatMatch.Success == true)
                     {
                         target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                         target.Amount = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
                         target.AidType = msgCombatDetails.AidType;
-                        target.RecoveryType = RecoveryType.RecoverHP;
-                        message.ParseSuccessful = true;
-                        return;
-                    }
-                    combatMatch = ParseExpressions.DrainMP.Match(currentMessageText);
-                    if (combatMatch.Success == true)
-                    {
-                        target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                        target.Amount = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
-                        target.AidType = msgCombatDetails.AidType;
-                        target.RecoveryType = RecoveryType.RecoverMP;
+                        switch (combatMatch.Groups[ParseFields.Fulltarget].Value)
+                        {
+                            case "HP":
+                                target.RecoveryType = RecoveryType.RecoverHP;
+                                break;
+                            case "MP":
+                                target.RecoveryType = RecoveryType.RecoverMP;
+                                break;
+                            case "TP":
+                                target.RecoveryType = RecoveryType.RecoverTP;
+                                break;
+                        }
                         message.ParseSuccessful = true;
                         return;
                     }
@@ -768,7 +802,7 @@ namespace WaywardGamers.KParser.Parsing
            
             // Prepping spell or ability of unknown type
 
-            combatMatch = ParseExpressions.PrepSpell.Match(message.CurrentMessageText);
+            combatMatch = ParseExpressions.PrepSpellOn.Match(message.CurrentMessageText);
             if (combatMatch.Success == true)
             {
                 msgCombatDetails.IsPreparing = true;
@@ -779,7 +813,7 @@ namespace WaywardGamers.KParser.Parsing
                 return;
             }
 
-            combatMatch = ParseExpressions.PrepSpellOn.Match(message.CurrentMessageText);
+            combatMatch = ParseExpressions.PrepSpell.Match(message.CurrentMessageText);
             if (combatMatch.Success == true)
             {
                 msgCombatDetails.IsPreparing = true;
@@ -1464,7 +1498,7 @@ namespace WaywardGamers.KParser.Parsing
 
             // First check for prepping attack spells or abilities
             // eg: Player starts casting Poison on the Mandragora.
-            combatMatch = ParseExpressions.PrepSpell.Match(currentMessageText);
+            combatMatch = ParseExpressions.PrepSpellOn.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
                 msgCombatDetails.IsPreparing = true;
@@ -1474,6 +1508,16 @@ namespace WaywardGamers.KParser.Parsing
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                 target.HarmType = msgCombatDetails.HarmType;
                 target.AidType = msgCombatDetails.AidType;
+                message.ParseSuccessful = true;
+                return;
+            }
+            combatMatch = ParseExpressions.PrepSpell.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                msgCombatDetails.IsPreparing = true;
+                msgCombatDetails.ActionType = ActionType.Spell;
+                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                 message.ParseSuccessful = true;
                 return;
             }
@@ -1662,8 +1706,7 @@ namespace WaywardGamers.KParser.Parsing
             TargetDetails target = null;
 
             // First check for prepping spells or abilities
-            // eg: Player starts casting Drain on the Mandragora.
-            combatMatch = ParseExpressions.PrepSpell.Match(currentMessageText);
+            combatMatch = ParseExpressions.PrepSpellOn.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
                 msgCombatDetails.IsPreparing = true;
@@ -1673,6 +1716,16 @@ namespace WaywardGamers.KParser.Parsing
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                 target.HarmType = msgCombatDetails.HarmType;
                 target.AidType = msgCombatDetails.AidType;
+                message.ParseSuccessful = true;
+                return;
+            }
+            combatMatch = ParseExpressions.PrepSpell.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                msgCombatDetails.IsPreparing = true;
+                msgCombatDetails.ActionType = ActionType.Spell;
+                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                 message.ParseSuccessful = true;
                 return;
             }
@@ -1724,36 +1777,34 @@ namespace WaywardGamers.KParser.Parsing
             }
 
 
-            // Player drains XXX HP/MP from target.
+            // Player drains XXX HP/MP/TP from target.
 
-            combatMatch = ParseExpressions.DrainHP.Match(currentMessageText);
+            combatMatch = ParseExpressions.Drain.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                 target.Amount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
                 target.HarmType = msgCombatDetails.HarmType;
                 target.AidType = msgCombatDetails.AidType;
-                target.RecoveryType = RecoveryType.RecoverHP;
+
+                switch (combatMatch.Groups[ParseFields.Fulltarget].Value)
+                {
+                    case "HP":
+                        target.RecoveryType = RecoveryType.RecoverHP;
+                        break;
+                    case "MP":
+                        target.RecoveryType = RecoveryType.RecoverMP;
+                        break;
+                    case "TP":
+                        target.RecoveryType = RecoveryType.RecoverTP;
+                        break;
+                }
+
                 msgCombatDetails.SuccessLevel = SuccessType.Successful;
 
                 message.ParseSuccessful = true;
                 return;
             }
-
-            combatMatch = ParseExpressions.DrainMP.Match(currentMessageText);
-            if (combatMatch.Success == true)
-            {
-                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                target.Amount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
-                target.HarmType = msgCombatDetails.HarmType;
-                target.AidType = msgCombatDetails.AidType;
-                target.RecoveryType = RecoveryType.RecoverMP;
-                msgCombatDetails.SuccessLevel = SuccessType.Successful;
-
-                message.ParseSuccessful = true;
-                return;
-            }
-
         }
 
         private static void ParseAttackUnknown(Message message)
@@ -1860,16 +1911,6 @@ namespace WaywardGamers.KParser.Parsing
             #endregion
 
             // For prepping attack spells or abilities
-            combatMatch = ParseExpressions.PrepSpell.Match(currentMessageText);
-            if (combatMatch.Success == true)
-            {
-                msgCombatDetails.IsPreparing = true;
-                msgCombatDetails.ActionType = ActionType.Spell;
-                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                message.ParseSuccessful = true;
-                return;
-            }
             combatMatch = ParseExpressions.PrepSpellOn.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
@@ -1878,6 +1919,16 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                 msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                message.ParseSuccessful = true;
+                return;
+            }
+            combatMatch = ParseExpressions.PrepSpell.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                msgCombatDetails.IsPreparing = true;
+                msgCombatDetails.ActionType = ActionType.Spell;
+                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                 message.ParseSuccessful = true;
                 return;
             }
