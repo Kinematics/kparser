@@ -43,6 +43,40 @@ namespace WaywardGamers.KParser
             currentReader.Run();
         }
 
+        /// <summary>
+        /// Continue parsing against an existing database.
+        /// </summary>
+        public static void Continue()
+        {
+            if (currentReader.IsRunning == true)
+                throw new InvalidOperationException(string.Format(
+                    "{0} is already running", currentReader.GetType().Name));
+
+            if (DatabaseManager.Instance.Database == null)
+            {
+                throw new InvalidOperationException(
+                    "You must have a database already open in order to continue parsing.");
+            }
+
+            // Only reload settings values on Start.  Other calls between
+            // Starts will use whatever the setting was at the time of the
+            // last Start.
+            settings.Reload();
+
+            // Set the currentReader to the appropriate reader instance
+            // based on program settings.
+            if (settings.ParseMode == DataSource.Log)
+                currentReader = LogReader.Instance;
+            else
+                currentReader = RamReader.Instance;
+
+            currentReader.Run();
+        }
+
+        /// <summary>
+        /// Reparse an existing database into a new one.
+        /// </summary>
+        /// <param name="outputFileName">The name of the new database.</param>
         public static void Reparse(string outputFileName)
         {
             if (currentReader.IsRunning == true)
