@@ -181,6 +181,37 @@ namespace WaywardGamers.KParser
             return msg;
         }
 
+        internal Message FindLastMessageWithECode(uint mcode, uint ecode1, uint ecode2)
+        {
+            Message msg;
+
+            lock (messageCollection)
+            {
+                // Reverse search the collection list
+                if (mcode != 0)
+                {
+                    msg = messageCollection.LastOrDefault(m =>
+                        ((m.MessageCode == mcode) &&
+                         (m.ExtraCode1 == ecode1) &&
+                         (m.ExtraCode2 == ecode2) &&
+                         (m.EventDetails != null) &&
+                         (m.EventDetails.CombatDetails != null) &&
+                         (m.EventDetails.CombatDetails.ActorName != string.Empty)));
+                }
+                else
+                {
+                    msg = messageCollection.LastOrDefault(m =>
+                        ((m.ExtraCode1 == ecode1) &&
+                         (m.ExtraCode2 == ecode2) &&
+                         (m.EventDetails != null) &&
+                         (m.EventDetails.CombatDetails != null) &&
+                         (m.EventDetails.CombatDetails.ActorName != string.Empty)));
+                }
+            }
+
+            return msg;
+        }
+
         /// <summary>
         /// Go through the messages in the messageCollection and send excess
         /// and older messages to the database for storage.
