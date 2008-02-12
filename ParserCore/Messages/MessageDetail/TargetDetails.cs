@@ -19,6 +19,13 @@ namespace WaywardGamers.KParser
 
         #region Constructor
         /// <summary>
+        /// Empty constructor.
+        /// </summary>
+        internal TargetDetails()
+        {
+        }
+
+        /// <summary>
         /// Create a new instance of TargetDetails.
         /// </summary>
         /// <param name="newTargetName">The name of the target to initialize the class with.</param>
