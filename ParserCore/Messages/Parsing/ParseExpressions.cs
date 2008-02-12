@@ -19,6 +19,7 @@ namespace WaywardGamers.KParser
         public static readonly string Ability    = "ability";
         public static readonly string Effect     = "effect";
         public static readonly string SC         = "skillchain";
+        public static readonly string DrainType  = "draintype";
     }
 
     // Class to store regular expressions in.
@@ -34,11 +35,13 @@ namespace WaywardGamers.KParser
         private static readonly string number      = @"(?<number>\d{1,4})";
         private static readonly string item        = @"(([Aa]|[Aa]n|[Tt]he) )?(?<item>.{3,})";
         private static readonly string money       = @"((?<money>\d{1,4}?) gil)";
-        private static readonly string spell       = @"(?<spell>\w+((\:)? \w+)?)";
+        private static readonly string spell       = @"(?<spell>\w+('s|\:|-)?(( )?\w+)*)";
         private static readonly string ability     = @"(?<ability>\w+(\:)?([ ']\w+){0,4})";
         private static readonly string effect      = @"(?<effect>\w+( \w+)?)";
         private static readonly string skillchain  = @"(?<skillchain>\w+)";
+        
         private static readonly string afflictLvl  = @"\(lv\.\d\)";
+        private static readonly string drainType   = @"(?<draintype>(H|M|T)P)";
         #endregion
 
         #region Plugin corrections
@@ -87,6 +90,7 @@ namespace WaywardGamers.KParser
         public static readonly Regex UseAbilityOn = new Regex(string.Format("^{0} use(s)? {1} on {2}\\.$", name, ability, target));
         public static readonly Regex MissAbility  = new Regex(string.Format("^{0} use(s)? {1}, but miss(es)? {2}\\.$", name, ability, target));
         public static readonly Regex FailsCharm   = new Regex(string.Format("^{0} fail(s)? to charm {1}\\.$", name, target));
+        public static readonly Regex UseItem      = new Regex(string.Format("^{0} use(s)? {1}\\.$", name, item));
         #endregion
 
         #region Spell/Ability Effects
@@ -150,6 +154,10 @@ namespace WaywardGamers.KParser
         public static readonly Regex ResistEffect = new Regex(string.Format("^{0} resist(s)? the effect\\.$", target));
         #endregion
 
+        #region Drains
+        public static readonly Regex Drain = new Regex(string.Format("^{0} {1} drained from {2}\\.$", damage, drainType, target));
+        #endregion
+
         #region Defeated
         public static readonly Regex Defeated = new Regex(string.Format("^{0} was defeated by {1}\\.$", target, name));
         public static readonly Regex Defeat   = new Regex(string.Format("^{0} defeats {1}\\.$", name, target));
@@ -160,11 +168,6 @@ namespace WaywardGamers.KParser
         public static readonly Regex ExpChain = new Regex(string.Format("^(EXP|Limit) chain {0}!$", number));
         public static readonly Regex Experience = new Regex(string.Format("^{0} gains {1} (experience|limit points)\\.$", name, number));
         #endregion
-
-
-        public static readonly Regex DrainHP = new Regex(string.Format("^{0} HP drained from {1}\\.$", damage, target));
-        public static readonly Regex DrainMP = new Regex(string.Format("^{0} MP drained from {1}\\.$", damage, target));
-
 
     }
 }
