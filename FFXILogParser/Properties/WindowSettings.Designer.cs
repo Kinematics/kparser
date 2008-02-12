@@ -58,5 +58,27 @@ namespace WaywardGamers.KParser.Properties {
                 this["mainWindowMaximized"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection activePluginList {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["activePluginList"]));
+            }
+            set {
+                this["activePluginList"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection fullPluginList {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["fullPluginList"]));
+            }
+            set {
+                this["fullPluginList"] = value;
+            }
+        }
     }
 }

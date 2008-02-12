@@ -40,6 +40,8 @@ namespace WaywardGamers.KParser
         private string applicationDirectory;
         private string defaultSaveDirectory;
 
+        Properties.WindowSettings windowSettings = new WaywardGamers.KParser.Properties.WindowSettings();
+
         private List<IPlugin> pluginList = new List<IPlugin>();
         private List<IPlugin> activePluginList = new List<IPlugin>();
         private List<TabPage> tabList = new List<TabPage>();
@@ -72,14 +74,17 @@ namespace WaywardGamers.KParser
         #region Load/Close Event handlers for saving window state
         private void ParserWindow_Load(object sender, EventArgs e)
         {
-            Properties.WindowSettings windowSettings = new WaywardGamers.KParser.Properties.WindowSettings();
-
             this.Size = windowSettings.mainWindowSize;
             this.Location = windowSettings.mainWindowPosition;
             if (windowSettings.mainWindowMaximized == true)
                 this.WindowState = FormWindowState.Maximized;
             else
                 this.WindowState = FormWindowState.Normal;
+
+            if (windowSettings.activePluginList == null)
+                windowSettings.activePluginList = new StringCollection();
+            if (windowSettings.fullPluginList == null)
+                windowSettings.fullPluginList = new StringCollection();
 
             // Load plugins on startup and add them to the Windows menu
             FindAndLoadPlugins();
@@ -88,8 +93,6 @@ namespace WaywardGamers.KParser
 
         private void ParserWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Properties.WindowSettings windowSettings = new WaywardGamers.KParser.Properties.WindowSettings();
-
             if (this.WindowState == FormWindowState.Maximized)
             {
                 windowSettings.mainWindowMaximized = true;
@@ -108,6 +111,12 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Menu Handlers
+        private void fileMenu_Popup(object sender, EventArgs e)
+        {
+            menuContinueParse.Enabled = ((DatabaseManager.Instance.Database != null) &&
+                (Monitor.IsRunning == false));
+        }
+
         /// <summary>
         /// Gets the filename to save the parse output to.  By default it uses
         /// the current date and a numeric progression.
@@ -199,6 +208,11 @@ namespace WaywardGamers.KParser
         private void menuStopParse_Click(object sender, EventArgs e)
         {
             StopParsing();
+        }
+
+        private void menuContinueParse_Click(object sender, EventArgs e)
+        {
+            Monitor.Continue();
         }
 
         private void menuOpenSavedData_Click(object sender, EventArgs e)
@@ -389,7 +403,15 @@ namespace WaywardGamers.KParser
 
             foreach (var plug in pluginList)
             {
-                activePluginList.Add(plug);
+                if (windowSettings.fullPluginList.Contains(plug.TabName) == false)
+                {
+                    windowSettings.fullPluginList.Add(plug.TabName);
+                    activePluginList.Add(plug);
+                }
+                else if (windowSettings.activePluginList.Contains(plug.TabName) == true)
+                {
+                    activePluginList.Add(plug);
+                }
             }
         }
 
@@ -417,7 +439,7 @@ namespace WaywardGamers.KParser
             for (int i = 0; i < pluginList.Count; i++)
             {
                 MenuItem mi = new MenuItem(pluginList[i].TabName);
-                mi.Checked = true;
+                mi.Checked = activePluginList.Contains(pluginList[i]);
                 mi.Click += new EventHandler(menuPlugin_Click);
 
                 windowMenu.MenuItems.Add(i + 2, mi);
@@ -496,17 +518,33 @@ namespace WaywardGamers.KParser
             {
                 lock (activePluginList)
                 {
-                    activePluginList.Remove(pluginList[mi.Index - 2]);
+                    var plugin = pluginList[mi.Index - 2];
+                    activePluginList.Remove(plugin);
+                    windowSettings.activePluginList.Remove(plugin.TabName);
                 }
             }
             else
             {
+                var plugin = pluginList[mi.Index - 2];
+
                 lock (activePluginList)
                 {
-                    activePluginList.Add(pluginList[mi.Index - 2]);
+                    activePluginList.Add(plugin);
+                    windowSettings.activePluginList.Add(plugin.TabName);
+                }
 
-                    if (Monitor.IsRunning)
-                        pluginList[mi.Index - 2].DatabaseOpened(DatabaseManager.Instance.Database);
+                if (DatabaseManager.Instance.Database != null)
+                {
+                    try
+                    {
+                        Cursor.Current = Cursors.WaitCursor;
+
+                        plugin.DatabaseOpened(DatabaseManager.Instance.Database);
+                    }
+                    finally
+                    {
+                        Cursor.Current = Cursors.Default;
+                    }
                 }
             }
 
