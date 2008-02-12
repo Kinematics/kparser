@@ -32,6 +32,10 @@ namespace WaywardGamers.KParser.Parsing
                 return EntityType.Mob;
             }
 
+            // If the entityName starts with 'SC: ', it's a skillchain.  Mark it as such.
+            if (entityName.StartsWith("SC: "))
+                return EntityType.Skillchain;
+
             // Check for characters that only show up in mob names and some sublists.
             Match entityNameMatch = ParseExpressions.MobNameTest.Match(entityName);
 
