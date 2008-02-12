@@ -655,8 +655,11 @@ namespace WaywardGamers.KParser
             // Get the action row, if any is applicable to the message.
             action = localDB.Actions.GetAction(message.EventDetails.CombatDetails.ActionName);
 
+            // Bogus target for passing in data on incomplete messages.
+            TargetDetails checkTarget = message.EventDetails.CombatDetails.Targets.SingleOrDefault(t => t.Name == "");
+
             // Get the battle (if any) this interaction is associated with.
-            if (message.EventDetails.CombatDetails.Targets.Count == 0)
+            if ((message.EventDetails.CombatDetails.Targets.Count == 0) || (checkTarget != null))
             {
                 // No targets, so preparing a move
 
@@ -730,6 +733,33 @@ namespace WaywardGamers.KParser
                     0,
                     secondAction);
 
+            }
+            else if (checkTarget != null)
+            {
+                var targetRow = battle.CombatantsRowByEnemyCombatantRelation;
+
+                localDB.Interactions.AddInteractionsRow(
+                    message.Timestamp,
+                    actor,
+                    targetRow,
+                    battle,
+                    (byte)message.EventDetails.CombatDetails.ActorType,
+                    message.EventDetails.CombatDetails.IsPreparing,
+                    action,
+                    (byte)message.EventDetails.CombatDetails.ActionType,
+                    (byte)message.EventDetails.CombatDetails.FailedActionType,
+                    (byte)checkTarget.DefenseType,
+                    0,
+                    (byte)message.EventDetails.CombatDetails.AidType,
+                    (byte)RecoveryType.None,
+                    (byte)message.EventDetails.CombatDetails.HarmType,
+                    0,
+                    (byte)DamageModifier.None,
+                    (byte)AidType.None,
+                    (byte)RecoveryType.None,
+                    (byte)HarmType.None,
+                    0,
+                    secondAction);
             }
             else
             {
