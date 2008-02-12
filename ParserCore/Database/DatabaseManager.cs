@@ -668,7 +668,7 @@ namespace WaywardGamers.KParser
                     // If a mob is taking action, look it up in the battle list, or
                     // create a new battle for it.
 
-                    if (activeMobBattleList.TryGetValue(message.EventDetails.CombatDetails.ActorName, out battle))
+                    if (activeMobBattleList.TryGetValue(message.EventDetails.CombatDetails.ActorName, out battle) == false)
                     {
                         battle = localDB.Battles.AddBattlesRow(actor, message.Timestamp,
                             MagicNumbers.MinSQLDateTime, false, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
@@ -767,7 +767,9 @@ namespace WaywardGamers.KParser
                 foreach (var target in message.EventDetails.CombatDetails.Targets)
                 {
                     // Get database row for target combatant.
-                    var targetRow = localDB.Combatants.GetCombatant(target.Name, target.EntityType);
+                    KPDatabaseDataSet.CombatantsRow targetRow = null;
+                    if (target.Name != null)
+                        targetRow = localDB.Combatants.GetCombatant(target.Name, target.EntityType);
 
                     secondAction = localDB.Actions.GetAction(target.SecondaryAction);
 

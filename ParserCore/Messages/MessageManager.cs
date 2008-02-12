@@ -389,7 +389,7 @@ namespace WaywardGamers.KParser
                 name = target.Name;
                 update = true;
 
-                if (name != string.Empty)
+                if ((name != null) && (name != string.Empty))
                 {
                     if (entityCollection.ContainsKey(name))
                     {
