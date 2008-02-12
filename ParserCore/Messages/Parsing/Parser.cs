@@ -69,7 +69,7 @@ namespace WaywardGamers.KParser.Parsing
         private static Message GetAttachedMessage(MessageLine messageLine)
         {
             int i = 0;
-            if (messageLine.TextOutput.EndsWith("uses Sweep."))
+            if ((messageLine.MessageCode == 0xa4) && (messageLine.TextOutput.EndsWith("ranged attack misses.")))
                 i = 1;
 
             Message msg = null;
@@ -97,7 +97,8 @@ namespace WaywardGamers.KParser.Parsing
                             break;
                         // Anything else
                         default:
-                            msg = MessageManager.Instance.FindLastMessageWithCode(messageLine.MessageCode);
+                            msg = MessageManager.Instance.FindLastMessageWithECode(messageLine.MessageCode,
+                                messageLine.ExtraCode1, messageLine.ExtraCode2);
                             break;
                     }
                 }
@@ -334,7 +335,8 @@ namespace WaywardGamers.KParser.Parsing
             // to analyze the text at this point.  Return it as incomplete.
 
             if ((message.CurrentMessageText.EndsWith(".") == false) &&
-                (message.CurrentMessageText.EndsWith("!") == false))
+                (message.CurrentMessageText.EndsWith("!") == false) &&
+                (message.MessageCode != 0x79))
                 return;
 
             // Determine type of action message
@@ -441,6 +443,19 @@ namespace WaywardGamers.KParser.Parsing
                                 message.ParseSuccessful = true;
                                 break;
                             }
+                            lootOrXP = ParseExpressions.LotItem.Match(message.CurrentMessageText);
+                            if (lootOrXP.Success == true)
+                            {
+                                // Don't record lots at this time. Just mark the message as parsed.
+                                //message.EventDetails.EventMessageType = EventMessageType.Loot;
+                                message.ParseSuccessful = true;
+                                break;
+                            }
+                            break;
+                        case 2:
+                            // Obtaining temporary items, Salvage restriction removal
+                            message.EventDetails.EventMessageType = EventMessageType.Other;
+                            message.ParseSuccessful = true;
                             break;
                         case 3:
                             // Equipment changes, recast times, /search results
@@ -928,21 +943,21 @@ namespace WaywardGamers.KParser.Parsing
 
             if (combatMatch.Success == false)
             {
-                combatMatch = ParseExpressions.CriticalHit.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    combatDetails.FlagCrit = true;
-                    combatDetails.ActionType = ActionType.Melee;
-                }
-            }
-
-            if (combatMatch.Success == false)
-            {
                 combatMatch = ParseExpressions.RangedCriticalHit.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
                     combatDetails.FlagCrit = true;
                     combatDetails.ActionType = ActionType.Ranged;
+                }
+            }
+
+            if (combatMatch.Success == false)
+            {
+                combatMatch = ParseExpressions.CriticalHit.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    combatDetails.FlagCrit = true;
+                    combatDetails.ActionType = ActionType.Melee;
                 }
             }
 
@@ -1353,6 +1368,23 @@ namespace WaywardGamers.KParser.Parsing
                 {
                     combatDetails.ActionType = ActionType.Ranged;
                     defType = DefenseType.Evasion;
+                }
+            }
+
+            if (combatMatch.Success == false)
+            {
+                combatMatch = ParseExpressions.RangedMiss2.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    combatDetails.ActionType = ActionType.Ranged;
+                    defType = DefenseType.Evasion;
+                    // No target available in this message. End here.
+                    target = new TargetDetails();
+                    target.DefenseType = defType;
+                    target.HarmType = combatDetails.HarmType;
+                    combatDetails.Targets.Add(target);
+                    message.ParseSuccessful = true;
+                    return;
                 }
             }
 
