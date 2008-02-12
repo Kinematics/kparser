@@ -40,7 +40,7 @@ namespace WaywardGamers.KParser
             this.menuStopParse = new System.Windows.Forms.MenuItem();
             this.menuSeparator1 = new System.Windows.Forms.MenuItem();
             this.menuOpenSavedData = new System.Windows.Forms.MenuItem();
-            this.menuItem3 = new System.Windows.Forms.MenuItem();
+            this.menuContinueParse = new System.Windows.Forms.MenuItem();
             this.menuSaveDataAs = new System.Windows.Forms.MenuItem();
             this.menuSaveReport = new System.Windows.Forms.MenuItem();
             this.menuSeparator2 = new System.Windows.Forms.MenuItem();
@@ -99,12 +99,13 @@ namespace WaywardGamers.KParser
             this.menuStopParse,
             this.menuSeparator1,
             this.menuOpenSavedData,
-            this.menuItem3,
+            this.menuContinueParse,
             this.menuSaveDataAs,
             this.menuSaveReport,
             this.menuSeparator2,
             this.menuExit});
             this.fileMenu.Text = "&File";
+            this.fileMenu.Popup += new System.EventHandler(this.fileMenu_Popup);
             // 
             // menuBeginParseWithSave
             // 
@@ -140,11 +141,11 @@ namespace WaywardGamers.KParser
             this.menuOpenSavedData.Text = "&Open Saved Data";
             this.menuOpenSavedData.Click += new System.EventHandler(this.menuOpenSavedData_Click);
             // 
-            // menuItem3
+            // menuContinueParse
             // 
-            this.menuItem3.Enabled = false;
-            this.menuItem3.Index = 5;
-            this.menuItem3.Text = "Continue Parsing";
+            this.menuContinueParse.Index = 5;
+            this.menuContinueParse.Text = "Continue Parsing";
+            this.menuContinueParse.Click += new System.EventHandler(this.menuContinueParse_Click);
             // 
             // menuSaveDataAs
             // 
@@ -299,7 +300,7 @@ namespace WaywardGamers.KParser
         private System.Windows.Forms.TabControl pluginTabs;
         private System.Windows.Forms.MenuItem menuItem1;
         private System.Windows.Forms.MenuItem windowMenu;
-        private System.Windows.Forms.MenuItem menuItem3;
+        private System.Windows.Forms.MenuItem menuContinueParse;
         private System.Windows.Forms.MenuItem databaseToolsMenu;
         private System.Windows.Forms.MenuItem databaseClearData;
         private System.Windows.Forms.MenuItem databaseUpgrade;
