@@ -37,6 +37,7 @@ namespace WaywardGamers.KParser
         EffectWearsOff,
         OutOfRange,
         Examine,
+        SearchComment,
     }
 
     public enum ChatMessageType : byte
@@ -95,6 +96,7 @@ namespace WaywardGamers.KParser
         None,
         RecoverHP,
         RecoverMP,
+        RecoverTP,
     }
 
     public enum DamageType : byte
