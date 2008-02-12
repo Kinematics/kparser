@@ -511,7 +511,8 @@ namespace WaywardGamers.KParser
                 }
             }
 
-            if ((messagesToDump == null) || (messagesToDump.Count == 0))
+            if (((messagesToDump == null) || (messagesToDump.Count == 0)) &&
+                (dumpEntities == false))
                 return;
 
             using (StreamWriter sw = File.AppendText(fileName))
