@@ -32,17 +32,17 @@ namespace WaywardGamers.KParser
         //private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)))))))";
         //private static readonly string repeatname  = @"(([Tt]he )?(?<repeatname>\w+((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)))))))";
 
-        private static readonly string playerName = @"(?<name>\w{3,16})";
-        private static readonly string npcName = @"(?<fullname>([Tt]he )?(?<name>\w+((,)|(\.\w?)|['\- ](\d|\w)+)*))";
-        private static readonly string name = @"(?<fullname>([Tt]he )?(?<name>\w+(['\- ](\d|\w)+)*))";
-        private static readonly string repeatname = @"(([Tt]he )?(?<repeatname>\w+(['\- ](\d|\w)+)*))";
-        private static readonly string target = @"(?<fulltarget>([Tt]he )?(?<target>\w+(['\- ](\d|\w)+)*))";
+        private static readonly string playerName  = @"(?<name>\w{3,16})";
+        private static readonly string npcName     = @"(?<fullname>([Tt]he )?(?<name>\w+((,)|(\.\w?)|['\- ](\d|\w)+)*))";
+        private static readonly string name        = @"(?<fullname>([Tt]he )?(?<name>\w+(['\- ](\d|\w)+)*))";
+        private static readonly string repeatname  = @"(([Tt]he )?(?<repeatname>\w+(['\- ](\d|\w)+)*))";
+        private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+(['\- ](\d|\w)+)*))";
 
         private static readonly string damage      = @"(?<damage>\d{1,4})";
         private static readonly string number      = @"(?<number>\d{1,4})";
         private static readonly string item        = @"(([Aa]|[Aa]n|[Tt]he) )?(?<item>.{3,})";
         private static readonly string money       = @"((?<money>\d{1,4}?) gil)";
-        private static readonly string spell       = @"(?<spell>\w+('s|\:|-)?(( )?\w+){0,2})";
+        private static readonly string spell       = @"(?<spell>\w+((: (Ichi|Ni|San))|(((('s |-)\w+)|(( \w+(?<! (on|III|II|IV|VI|V))){1,2}))?( (III|II|IV|VI|V))?))?)";
         private static readonly string ability     = @"(?<ability>\w+(\:)?([ ']\w+){0,4})";
         private static readonly string effect      = @"(?<effect>\w+( \w+)?)";
         private static readonly string skillchain  = @"(?<skillchain>\w+)";
