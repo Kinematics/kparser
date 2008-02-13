@@ -54,6 +54,7 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0x39] = InteractionType.Harm;
             interactionTypeLookup[0x3d] = InteractionType.Harm;
             interactionTypeLookup[0x41] = InteractionType.Harm;
+            interactionTypeLookup[0x66] = InteractionType.Harm;
             interactionTypeLookup[0x70] = InteractionType.Harm;
             // Resisted enfeebles
             interactionTypeLookup[0x3b] = InteractionType.Harm;
@@ -61,8 +62,12 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0x43] = InteractionType.Harm;
             interactionTypeLookup[0x44] = InteractionType.Harm;
             interactionTypeLookup[0x45] = InteractionType.Harm;
+            // ally enfeebles
+            interactionTypeLookup[0xbb] = InteractionType.Harm;
+            interactionTypeLookup[0xaa] = InteractionType.Harm;
             // Ability moves
             interactionTypeLookup[0x20] = InteractionType.Harm;
+            interactionTypeLookup[0x6b] = InteractionType.Harm;
             // Ability moves that miss
             interactionTypeLookup[0x68] = InteractionType.Harm;
             interactionTypeLookup[0x6d] = InteractionType.Harm;
@@ -154,6 +159,7 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0x28] = HarmType.Damage;
             harmTypeLookup[0xa3] = HarmType.Damage;
             harmTypeLookup[0x2a] = HarmType.Drain;
+            harmTypeLookup[0xbb] = HarmType.Drain;
             // Unsuccessful attacks
             harmTypeLookup[0x15] = HarmType.Damage;
             harmTypeLookup[0x1a] = HarmType.Damage;
@@ -169,12 +175,15 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0x39] = HarmType.Enfeeble;
             harmTypeLookup[0x3d] = HarmType.Enfeeble;
             harmTypeLookup[0x41] = HarmType.Enfeeble;
+            harmTypeLookup[0x66] = HarmType.Enfeeble;
+            harmTypeLookup[0x6b] = HarmType.Enfeeble;
             harmTypeLookup[0x70] = HarmType.Enfeeble;
             // Resisted enfeebles
             harmTypeLookup[0x3b] = HarmType.Enfeeble;
             harmTypeLookup[0x3f] = HarmType.Enfeeble;
             harmTypeLookup[0x44] = HarmType.Enfeeble;
             harmTypeLookup[0x45] = HarmType.Enfeeble;
+            harmTypeLookup[0xaa] = HarmType.Enfeeble;
             // No effect
             harmTypeLookup[0x43] = HarmType.Enfeeble;
             // Ability moves
@@ -212,6 +221,7 @@ namespace WaywardGamers.KParser
             successTypeLookup[0x28] = SuccessType.Successful;
             successTypeLookup[0xa3] = SuccessType.Successful;
             successTypeLookup[0x2a] = SuccessType.Successful;
+            successTypeLookup[0xbb] = SuccessType.Successful;
 
             // Unsucessful damage attempts
             successTypeLookup[0x15] = SuccessType.Unsuccessful;
@@ -223,6 +233,7 @@ namespace WaywardGamers.KParser
 
             // Ability moves (AOE?)
             successTypeLookup[0x20] = SuccessType.Successful;
+            successTypeLookup[0x6b] = SuccessType.Unsuccessful;
 
             // Missed ability moves
             successTypeLookup[0x68] = SuccessType.Unsuccessful;
@@ -235,6 +246,7 @@ namespace WaywardGamers.KParser
             successTypeLookup[0x39] = SuccessType.Successful;
             successTypeLookup[0x3d] = SuccessType.Successful;
             successTypeLookup[0x41] = SuccessType.Successful;
+            successTypeLookup[0x66] = SuccessType.Successful;
             successTypeLookup[0x70] = SuccessType.Successful;
 
             // Recovery
@@ -255,6 +267,7 @@ namespace WaywardGamers.KParser
             successTypeLookup[0x3f] = SuccessType.Unsuccessful;
             successTypeLookup[0x44] = SuccessType.Unsuccessful;
             successTypeLookup[0x45] = SuccessType.Unsuccessful;
+            successTypeLookup[0xaa] = SuccessType.Unsuccessful;
 
             // Failed enfeeble
             successTypeLookup[0x43] = SuccessType.Failed;
