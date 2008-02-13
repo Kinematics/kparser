@@ -117,6 +117,9 @@ namespace WaywardGamers.KParser
                 // Create a message line that tokenizes the individual text fields.
                 MessageLine messageLine = new MessageLine(chatLine);
 
+                // Add this directly to the database before starting to parse.
+                DatabaseManager.Instance.AddMessageLineRecord(messageLine);
+
                 Message msg = Parser.Parse(messageLine);
 
                 UpdateEntityCollection(msg);

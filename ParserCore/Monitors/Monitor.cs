@@ -28,6 +28,7 @@ namespace WaywardGamers.KParser
             // Starts will use whatever the setting was at the time of the
             // last Start.
             settings.Reload();
+            ParseMode = settings.ParseMode;
 
             // Set the currentReader to the appropriate reader instance
             // based on program settings.
@@ -62,6 +63,7 @@ namespace WaywardGamers.KParser
             // Starts will use whatever the setting was at the time of the
             // last Start.
             settings.Reload();
+            ParseMode = settings.ParseMode;
 
             // Set the currentReader to the appropriate reader instance
             // based on program settings.
@@ -88,6 +90,7 @@ namespace WaywardGamers.KParser
 
             string oldDBName = DatabaseManager.Instance.DatabaseFilename;
 
+            ParseMode = DataSource.Database;
             currentReader = DatabaseReader.Instance;
 
             try
@@ -122,9 +125,6 @@ namespace WaywardGamers.KParser
         /// <summary>
         /// Gets the current parse mode, as far as the monitor is aware.
         /// </summary>
-        public static DataSource ParseMode
-        {
-            get { return settings.ParseMode; }
-        }
+        public static DataSource ParseMode { get; private set; }
     }
 }

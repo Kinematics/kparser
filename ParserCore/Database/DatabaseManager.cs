@@ -111,7 +111,6 @@ namespace WaywardGamers.KParser
             // Check to see if Dispose has already been called.
             if (!this.disposed)
             {
-                UpdateDatabase();
                 CloseDatabase();
 
                 // Note disposing has been done.
@@ -314,6 +313,8 @@ namespace WaywardGamers.KParser
 
         public void CloseDatabase()
         {
+            UpdateDatabase();
+
             if (localTAManager != null)
             {
                 localTAManager.Dispose();
@@ -428,21 +429,40 @@ namespace WaywardGamers.KParser
 
         #region Methods for inserting message information
         /// <summary>
+        /// Insert raw (pre-parsed) message lines to the database for consistency.
+        /// </summary>
+        /// <param name="messageLine"></param>
+        internal void AddMessageLineRecord(MessageLine messageLine)
+        {
+            // Set ParseSuccessful to False at this point since we don't know the parse outcome.
+            if (messageLine != null)
+                localDB.RecordLog.AddRecordLogRow(messageLine.Timestamp, messageLine.OriginalText, false);
+        }
+
+        /// <summary>
         /// Takes a message object and inserts all its various values into
         /// the appropriate locations within the database.
         /// </summary>
         /// <param name="message">The message to add to the database.</param>
         private void AddMessageToDatabase(Message message)
         {
-            // First add all messages to the log record table.
-            foreach (var msgLine in message.MessageLineCollection)
-                localDB.RecordLog.AddRecordLogRow(msgLine.Timestamp, msgLine.OriginalText, message.ParseSuccessful);
-
             // Don't try to insert data from unsuccessful parses.
             if (message.ParseSuccessful == false)
             {
                 return;
             }
+
+            // For successful parses, update the RecordLog table entries for each messageline in the
+            // message.
+            foreach (var msgLine in message.MessageLineCollection)
+            {
+                var recordRow = localDB.RecordLog.Where(t => t.Timestamp == msgLine.Timestamp)
+                    .Where(t => t.MessageText == msgLine.OriginalText).SingleOrDefault();
+
+                if (recordRow != null)
+                    recordRow.ParseSuccessful = true;
+            }
+
 
             // Call functions depending on type of message.
             switch (message.MessageCategory)
@@ -649,11 +669,13 @@ namespace WaywardGamers.KParser
             KPDatabaseDataSet.ActionsRow secondAction = null;
 
             // Get the actor combatant, if any.
-            actor = localDB.Combatants.GetCombatant(message.EventDetails.CombatDetails.ActorName,
-                message.EventDetails.CombatDetails.ActorEntityType);
+            if (message.EventDetails.CombatDetails.ActorName != string.Empty)
+                actor = localDB.Combatants.GetCombatant(message.EventDetails.CombatDetails.ActorName,
+                    message.EventDetails.CombatDetails.ActorEntityType);
 
             // Get the action row, if any is applicable to the message.
-            action = localDB.Actions.GetAction(message.EventDetails.CombatDetails.ActionName);
+            if (message.EventDetails.CombatDetails.ActionName != string.Empty)
+                localDB.Actions.GetAction(message.EventDetails.CombatDetails.ActionName);
 
             // Bogus target for passing in data on incomplete messages.
             TargetDetails checkTarget = message.EventDetails.CombatDetails.Targets.SingleOrDefault(t => t.Name == "");
@@ -771,7 +793,8 @@ namespace WaywardGamers.KParser
                     if (target.Name != null)
                         targetRow = localDB.Combatants.GetCombatant(target.Name, target.EntityType);
 
-                    secondAction = localDB.Actions.GetAction(target.SecondaryAction);
+                    if (target.SecondaryAction != string.Empty)
+                        secondAction = localDB.Actions.GetAction(target.SecondaryAction);
 
                     // Get the battle each time through the loop if the targets are mobs.
                     if (target.EntityType == EntityType.Mob)
