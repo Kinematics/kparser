@@ -26,16 +26,23 @@ namespace WaywardGamers.KParser
     public class ParseExpressions
     {
         #region Named substrings
-        private static readonly string playerName  = @"(?<name>\w{3,16})";
-        private static readonly string npcName     = @"(?<fullname>([Tt]he )?(?<name>\w+((,)|(\.\w?)|['\- ](\d|\w)+)*))";
-        private static readonly string name        = @"(?<fullname>([Tt]he )?(?<name>\w+(['\- ](\d|\w)+)*))";
-        private static readonly string repeatname  = @"(([Tt]he )?(?<repeatname>\w+(['\- ](\d|\w)+)*))";
-        private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+(['\- ](\d|\w)+)*))";
+        //private static readonly string playerName  = @"(?<name>\w{3,16})('s)?";
+        //private static readonly string npcName     = @"(?<fullname>([Tt]he )?(?<name>\w+((,)|(\.\w?)|['\- ](\d|\w)+)*))";
+        //private static readonly string name        = @"(?<fullname>([Tt]he )?(?<name>\w+((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)))))))";
+        //private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)))))))";
+        //private static readonly string repeatname  = @"(([Tt]he )?(?<repeatname>\w+((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)))))))";
+
+        private static readonly string playerName = @"(?<name>\w{3,16})";
+        private static readonly string npcName = @"(?<fullname>([Tt]he )?(?<name>\w+((,)|(\.\w?)|['\- ](\d|\w)+)*))";
+        private static readonly string name = @"(?<fullname>([Tt]he )?(?<name>\w+(['\- ](\d|\w)+)*))";
+        private static readonly string repeatname = @"(([Tt]he )?(?<repeatname>\w+(['\- ](\d|\w)+)*))";
+        private static readonly string target = @"(?<fulltarget>([Tt]he )?(?<target>\w+(['\- ](\d|\w)+)*))";
+
         private static readonly string damage      = @"(?<damage>\d{1,4})";
         private static readonly string number      = @"(?<number>\d{1,4})";
         private static readonly string item        = @"(([Aa]|[Aa]n|[Tt]he) )?(?<item>.{3,})";
         private static readonly string money       = @"((?<money>\d{1,4}?) gil)";
-        private static readonly string spell       = @"(?<spell>\w+('s|\:|-)?(( )?\w+)*)";
+        private static readonly string spell       = @"(?<spell>\w+('s|\:|-)?(( )?\w+){0,2})";
         private static readonly string ability     = @"(?<ability>\w+(\:)?([ ']\w+){0,4})";
         private static readonly string effect      = @"(?<effect>\w+( \w+)?)";
         private static readonly string skillchain  = @"(?<skillchain>\w+)";
@@ -104,17 +111,18 @@ namespace WaywardGamers.KParser
         public static readonly Regex Enhance    = new Regex(string.Format("^{0}'s attacks are enhanced\\.$", target));
         public static readonly Regex Charmed    = new Regex(string.Format("^{0} is now under {1}'s control\\.$", target, name));
         public static readonly Regex NotCharmed = new Regex(string.Format("^{0} is no longer charmed\\.$", target));
+        public static readonly Regex Dispelled  = new Regex(string.Format("^{0}'s {1} effect disappears!$", target, effect));
         #endregion
 
         #region Failed Actions
-        public static readonly Regex Interrupted = new Regex(string.Format("^{0}'s casting is interrupted\\.$", name));
-        public static readonly Regex Paralyzed   = new Regex(string.Format("^{0} is paralyzed\\.$", name));
+        public static readonly Regex Interrupted = new Regex(string.Format("^{0}'(s)? casting is interrupted\\.$", name));
+        public static readonly Regex Paralyzed   = new Regex(string.Format("^{0} (is|are) paralyzed\\.$", name));
         public static readonly Regex CannotSee   = new Regex(string.Format("^Unable to see {0}\\.$", target));
-        public static readonly Regex TooFarAway  = new Regex(string.Format("^{0} is too far away\\.$", target));
-        public static readonly Regex OutOfRange  = new Regex(string.Format("^{0} is out of range\\.$", target));
+        public static readonly Regex TooFarAway  = new Regex(string.Format("^{0} (is|are) too far away\\.$", target));
+        public static readonly Regex OutOfRange  = new Regex(string.Format("^{0} (is|are) out of range\\.$", target));
         public static readonly Regex NotEnoughTP = new Regex(string.Format("^You do not have enough TP\\.$", target));
         public static readonly Regex NotEnoughMP = new Regex(string.Format("^You do not have enough MP\\.$", target));
-        public static readonly Regex Intimidated = new Regex(string.Format("^{0} is intimidated by {1}'s presence\\.$", name, target));
+        public static readonly Regex Intimidated = new Regex(string.Format("^{0} (is|are) intimidated by {1}'s presence\\.$", name, target));
         public static readonly Regex UnableToCast = new Regex(string.Format("^Unable to cast spells at this time\\.$"));
         public static readonly Regex UnableToUse = new Regex(string.Format("^Unable to use job ability\\.$"));
         public static readonly Regex NoEffect    = new Regex(string.Format("^{0}'s {1} has no effect on {2}\\.$", name, spell, target));
@@ -130,8 +138,8 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Combat damage
-        public static readonly Regex MeleeHit          = new Regex(string.Format("^{0} hits {1} for {2} point(s)? of damage\\.$", name, target, damage));
-        public static readonly Regex RangedAttack      = new Regex(string.Format("^{0}'s ranged attack hits {1} for {2} point(s)? of damage\\.$", name, target, damage));
+        public static readonly Regex MeleeHit          = new Regex(string.Format("^{0} hit(s)? {1} for {2} point(s)? of damage\\.$", name, target, damage));
+        public static readonly Regex RangedAttack      = new Regex(string.Format("^{0}'(s)? ranged attack hit(s)? {1} for {2} point(s)? of damage\\.$", name, target, damage));
         public static readonly Regex RangedHit         = new Regex(string.Format("^{0} use(s)? Ranged Attack\\.$", name));
         public static readonly Regex CriticalHit       = new Regex(string.Format("^{0} score(s)? a critical hit!$", name));
         public static readonly Regex RangedCriticalHit = new Regex(string.Format("^{0}'s ranged attack scores a critical hit!$", name));
