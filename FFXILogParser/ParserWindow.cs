@@ -488,6 +488,7 @@ namespace WaywardGamers.KParser
                     if (pluginTabs.Contains(tabToCheckFor) == false)
                     {
                         pluginTabs.TabPages.Add(tabToCheckFor);
+                        tabToCheckFor.Focus();
                     }
                 }
                 else
@@ -632,6 +633,86 @@ namespace WaywardGamers.KParser
         private void menuItem1_Click(object sender, EventArgs e)
         {
             //MMHook.Hook("14,e8,12,80c08080,000000f6,0000010f,0019,00,01,02,00,Motenten uses Judgment.");
+
+            Match testMatch;
+
+            string target = @"(?<fullname>([Tt]he )?(?<name>\w+((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)))))))";
+            string unnamedTarget = @"(([Tt]he )?(\w+((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)))))))";
+            string effect = @"(?<effect>\w+( \w+)?)";
+            Regex Dispelled = new Regex(string.Format("^{0}'s {1} effect disappears!$", target, effect));
+            Regex uDispelled = new Regex(string.Format("^{0}'s {1} effect disappears!$", unnamedTarget, effect));
+
+            string msg = "The Wamouracampa's Blaze Spikes effect disappears!";
+
+            testMatch = Dispelled.Match(msg);
+            testMatch = uDispelled.Match(msg);
+
+            msg = "The Wamouracampa Kar-esh's Blaze Spikes effect disappears!";
+
+            testMatch = Dispelled.Match(msg);
+            testMatch = uDispelled.Match(msg);
+
+            if (testMatch.Success == true)
+            {
+            }
+        }
+
+        private void UpgradeCode()
+        {
+
+            // Recreate salvage parse uniqueness.
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Reset();
+            stopwatch.Start();
+
+            try
+            {
+                Cursor.Current = Cursors.WaitCursor;
+
+                string inputDB = @"C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\bin\Debug\SaveLogs\Salvage.sdf";
+
+                DatabaseManager.Instance.OpenDatabase(inputDB);
+
+                KPDatabaseDataSet readDataSet = DatabaseManager.Instance.Database;
+
+                List<ChatLine> chatLineList = new List<ChatLine>(readDataSet.RecordLog.Count);
+
+                foreach (var logLine in readDataSet.RecordLog)
+                {
+                    ChatLine chat = new ChatLine(logLine.MessageText, logLine.Timestamp);
+                    chatLineList.Add(chat);
+                }
+
+                var grpChat = from c in chatLineList
+                              group c by c.ChatText into uc
+                              select uc;
+
+                var uniqChat = from c in grpChat
+                               orderby c.First().ChatText.Substring(27, 8)
+                               select c.First();
+
+
+                string outputDB = @"C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\bin\Debug\SaveLogs\Salvage-Redo.sdf";
+
+                DatabaseManager.Instance.CreateDatabase(outputDB);
+
+                KPDatabaseDataSet writeDataSet = DatabaseManager.Instance.Database;
+
+                foreach (var chat in uniqChat)
+                {
+                    writeDataSet.RecordLog.AddRecordLogRow(chat.Timestamp, chat.ChatText, false);
+                }
+
+                DatabaseManager.Instance.CloseDatabase();
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+            }
+
+            stopwatch.Stop();
+            MessageBox.Show(string.Format("Completed convert in {0} seconds", stopwatch.Elapsed.TotalSeconds));
         }
 
 
