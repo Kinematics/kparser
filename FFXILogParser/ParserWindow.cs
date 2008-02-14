@@ -233,11 +233,21 @@ namespace WaywardGamers.KParser
 
                     DatabaseManager.Instance.OpenDatabase(ofd.FileName);
 
+                    Stopwatch stopwatch = new Stopwatch();
+                    stopwatch.Reset();
+
                     lock (activePluginList)
                     {
                         foreach (IPlugin plugin in activePluginList)
                         {
+                            stopwatch.Start();
+
                             plugin.DatabaseOpened(DatabaseManager.Instance.Database);
+
+                            stopwatch.Stop();
+                            Debug.WriteLine(string.Format("Opened: Time to proces plugin {0}: {1} ms",
+                                plugin.TabName, stopwatch.Elapsed.TotalMilliseconds));
+                            stopwatch.Reset();
                         }
                     }
                 }
@@ -608,22 +618,42 @@ namespace WaywardGamers.KParser
 
         private void MonitorDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Reset();
+
             lock (activePluginList)
             {
                 foreach (IPlugin plugin in activePluginList)
                 {
+                    stopwatch.Start();
+
                     plugin.WatchDatabaseChanging(sender, e);
+
+                    stopwatch.Stop();
+                    Debug.WriteLine(string.Format("Changing: Time to proces plugin {0}: {1} ms",
+                        plugin.TabName, stopwatch.Elapsed.TotalMilliseconds));
+                    stopwatch.Reset();
                 }
             }
         }
 
         private void MonitorDatabaseChanged(object sender, DatabaseWatchEventArgs e)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Reset();
+
             lock (activePluginList)
             {
                 foreach (IPlugin plugin in activePluginList)
                 {
+                    stopwatch.Start();
+
                     plugin.WatchDatabaseChanged(sender, e);
+
+                    stopwatch.Stop();
+                    Debug.WriteLine(string.Format("Changed: Time to proces plugin {0}: {1} ms",
+                        plugin.TabName, stopwatch.Elapsed.TotalMilliseconds));
+                    stopwatch.Reset();
                 }
             }
         }
