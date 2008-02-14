@@ -201,7 +201,10 @@ namespace WaywardGamers.KParser
         {
             get
             {
-                return localDB;
+                lock (localDB)
+                {
+                    return localDB.Copy();
+                }
             }
         }
 
