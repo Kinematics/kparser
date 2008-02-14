@@ -114,7 +114,19 @@ namespace WaywardGamers.KParser.Plugin
 
         #endregion
 
-        #region Helper Methods for adding text to RTF control
+        #region Helper Methods for adding updating the UI
+        protected void AddToComboBox2(string p)
+        {
+            if (this.InvokeRequired)
+            {
+                Action<string> thisFunc = AddToComboBox2;
+                Invoke(thisFunc, new object[] { p });
+                return;
+            }
+
+            this.comboBox2.Items.Add(p);
+        }
+        
         protected void AppendBoldText(string textToInsert, Color color)
         {
             int start = richTextBox.Text.Length;
