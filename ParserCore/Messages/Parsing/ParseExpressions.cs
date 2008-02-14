@@ -32,18 +32,22 @@ namespace WaywardGamers.KParser
         //private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)))))))";
         //private static readonly string repeatname  = @"(([Tt]he )?(?<repeatname>\w+((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)))))))";
 
-        private static readonly string playerName  = @"(?<name>\w{3,16})";
+        private static readonly string playername  = @"(?<name>\w{3,16})";
         private static readonly string npcName     = @"(?<fullname>([Tt]he )?(?<name>\w+((,)|(\.\w?)|['\- ](\d|\w)+)*))";
-        private static readonly string name        = @"(?<fullname>([Tt]he )?(?<name>\w+(['\- ](\d|\w)+)*))";
-        private static readonly string repeatname  = @"(([Tt]he )?(?<repeatname>\w+(['\- ](\d|\w)+)*))";
-        private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+(['\- ](\d|\w)+)*))";
+        //private static readonly string repeatname  = @"(([Tt]he )?(?<repeatname>\w+(['\- ](\d|\w)+)*))";
+        //private static readonly string name        = @"(?<fullname>([Tt]he )?(?<name>\w+(['\- ](\d|\w)+)*))";
+        //private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+(['\- ](\d|\w)+)*))";
+
+        private static readonly string name        = @"(?<fullname>([Tt]he )?(?<name>\w+(('\w{2,})|(-(\w|\d)+)|(the \w+)|( \w+)|){0,3}))";
+        private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+(('\w{2,})|(-(\w|\d)+)|(the \w+)|( \w+)|){0,3}))";
+        private static readonly string repeatname  = @"(([Tt]he )?(?<repeatname>\w+(('\w{2,})|(-(\w|\d)+)|(the \w+)|( \w+)|){0,3}))";
 
         private static readonly string damage      = @"(?<damage>\d{1,4})";
         private static readonly string number      = @"(?<number>\d{1,4})";
         private static readonly string item        = @"(([Aa]|[Aa]n|[Tt]he) )?(?<item>.{3,})";
         private static readonly string money       = @"((?<money>\d{1,4}?) gil)";
         private static readonly string spell       = @"(?<spell>\w+((: (Ichi|Ni|San))|(((('s |-)\w+)|(( \w+(?<! (on|III|II|IV|VI|V))){1,2}))?( (III|II|IV|VI|V))?))?)";
-        private static readonly string ability     = @"(?<ability>\w+(\:)?([ ']\w+){0,4})";
+        private static readonly string ability     = @"(?<ability>\w+((: \w+)|(-\w+)|('s \w+)|( \w+)( \w+)?)?)";
         private static readonly string effect      = @"(?<effect>\w+( \w+)?)";
         private static readonly string skillchain  = @"(?<skillchain>\w+)";
         
@@ -56,33 +60,40 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Chat name extractions
-        public static readonly Regex ChatSay       = new Regex(string.Format("^{0} : (.+)$", playerName));
-        public static readonly Regex ChatParty     = new Regex(string.Format("^\\({0}\\) (.+)$", playerName));
-        public static readonly Regex ChatTell      = new Regex(string.Format("^(>>)?{0}(>>)? (.+)$", playerName));
-        public static readonly Regex ChatTellFrom  = new Regex(string.Format("^{0}>> (.+)$", playerName));
-        public static readonly Regex ChatTellTo    = new Regex(string.Format("^>>{0} (.+)$", playerName));
-        public static readonly Regex ChatShout     = new Regex(string.Format("^{0} : (.+)$", playerName));
-        public static readonly Regex ChatLinkshell = new Regex(string.Format("^<{0}> (.+)$", playerName));
-        public static readonly Regex ChatEmote     = new Regex(string.Format("^{0} (.+)$", playerName));
-        public static readonly Regex ChatEmoteA    = new Regex(string.Format("^{0}'s (.+)$", playerName));
+        public static readonly Regex ChatSay       = new Regex(string.Format("^{0} : (.+)$", playername));
+        public static readonly Regex ChatParty     = new Regex(string.Format("^\\({0}\\) (.+)$", playername));
+        public static readonly Regex ChatTell      = new Regex(string.Format("^(>>)?{0}(>>)? (.+)$", playername));
+        public static readonly Regex ChatTellFrom  = new Regex(string.Format("^{0}>> (.+)$", playername));
+        public static readonly Regex ChatTellTo    = new Regex(string.Format("^>>{0} (.+)$", playername));
+        public static readonly Regex ChatShout     = new Regex(string.Format("^{0} : (.+)$", playername));
+        public static readonly Regex ChatLinkshell = new Regex(string.Format("^<{0}> (.+)$", playername));
+        public static readonly Regex ChatEmote     = new Regex(string.Format("^{0} (.+)$", playername));
+        public static readonly Regex ChatEmoteA    = new Regex(string.Format("^{0}'s (.+)$", playername));
         public static readonly Regex ChatNPC       = new Regex(string.Format("^{0} : (.+)$", npcName));
         #endregion
 
-        #region Loot
-        public static readonly Regex FindLoot = new Regex(string.Format("^You find {0} on {1}\\.$", item, target));
-        public static readonly Regex GetLoot  = new Regex(string.Format("^{0} obtains {1}\\.$", playerName, item));
-        public static readonly Regex GetGil   = new Regex(string.Format("^{0} obtains {1}\\.$", playerName, money));
-        public static readonly Regex LootReqr = new Regex(string.Format("^You do not meet the requirements to obtain {0}\\.$", item));
-        public static readonly Regex LootLost = new Regex(string.Format("^{0} lost\\.$", item));
-        public static readonly Regex LotItem  = new Regex(string.Format("^{0}'s lot for {1}: {2} points\\.$", playerName, item, number));
-        #endregion
-
         #region Name Tests
-        // If any of the specified characters occur in the name, it should be a mob type (may possibly be a puppet).
+        // If any of the specified characters occur in the name, it should be a mob type (may possibly be a pet).
         // Otherwise have to check against the Avatar/Wyvern/Puppet name lists.
         public static readonly Regex MobNameTest = new Regex(@"['\- \d]");
         // Bst jug pets are named either as "CrabFamiliar" (all one word) or "CourierCarrie" (all one word).
         public static readonly Regex BstJugPetName = new Regex(@"(^\w+Familiar$)|(^[A-Z][a-z]+[A-Z][a-z]+$)");
+        #endregion
+
+
+        #region Experience
+        public static readonly Regex ExpChain     = new Regex(string.Format("^(EXP|Limit) chain {0}!$", number));
+        public static readonly Regex Experience   = new Regex(string.Format("^{0} gains {1} (experience|limit points)\\.$", name, number));
+        public static readonly Regex NoExperience = new Regex(string.Format("^No experience gained\\.$"));
+        #endregion
+
+        #region Loot
+        public static readonly Regex FindLoot = new Regex(string.Format("^You find {0} (on|in) {1}\\.$", item, target));
+        public static readonly Regex GetLoot  = new Regex(string.Format("^{0} obtains {1}\\.$", playername, item));
+        public static readonly Regex GetGil   = new Regex(string.Format("^{0} obtains {1}\\.$", playername, money));
+        public static readonly Regex LootReqr = new Regex(string.Format("^You do not meet the requirements to obtain {0}\\.$", item));
+        public static readonly Regex LootLost = new Regex(string.Format("^{0} lost\\.$", item));
+        public static readonly Regex LotItem  = new Regex(string.Format("^{0}'s lot for {1}: {2} points\\.$", playername, item, number));
         #endregion
 
 
@@ -99,6 +110,12 @@ namespace WaywardGamers.KParser
         public static readonly Regex MissAbility  = new Regex(string.Format("^{0} use(s)? {1}, but miss(es)? {2}\\.$", name, ability, target));
         public static readonly Regex FailsCharm   = new Regex(string.Format("^{0} fail(s)? to charm {1}\\.$", name, target));
         public static readonly Regex UseItem      = new Regex(string.Format("^{0} use(s)? {1}\\.$", name, item));
+        // Corsair stuff (6f/65|70/66):
+        public static readonly Regex UseCorRoll   = new Regex(string.Format("^{0} uses {1}\\. The total comes to {2}!$", name, item, number));
+        public static readonly Regex TotalCorRoll = new Regex(string.Format("^The total for {0} increases to {1}!$", ability, number));
+        public static readonly Regex GainCorRoll  = new Regex(string.Format("^{0} receives the effect of {1}\\.$", playername, ability));
+        public static readonly Regex BustCorRoll  = new Regex(string.Format("^Bust!$"));
+        public static readonly Regex LoseCorRoll  = new Regex(string.Format("^{0} loses the effect of {1}\\.$", playername, ability));
         #endregion
 
         #region Spell/Ability Effects
@@ -172,11 +189,5 @@ namespace WaywardGamers.KParser
         public static readonly Regex Defeat   = new Regex(string.Format("^{0} defeats {1}\\.$", name, target));
         public static readonly Regex Dies     = new Regex(string.Format("^{0} falls to the ground\\.$", target));
         #endregion
-
-        #region Experience
-        public static readonly Regex ExpChain = new Regex(string.Format("^(EXP|Limit) chain {0}!$", number));
-        public static readonly Regex Experience = new Regex(string.Format("^{0} gains {1} (experience|limit points)\\.$", name, number));
-        #endregion
-
     }
 }
