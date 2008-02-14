@@ -57,16 +57,13 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
-            int allBattles = dataSet.Battles.Count(b => b.DefaultBattle == false);
-
-            if (allBattles > 0)
+            if (dataSet.Battles.Count() > 1)
             {
                 var mobsKilled = from b in dataSet.Battles
                                  where ((b.DefaultBattle == false) &&
-                                        (b.IsEnemyIDNull() == false) &&
-                                        (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
+                                        (b.IsEnemyIDNull() == false))
+                                 orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
                                  group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
-                                 orderby bn.Key
                                  select new
                                  {
                                      Name = bn.Key,
@@ -75,23 +72,23 @@ namespace WaywardGamers.KParser.Plugin
                                           select new { BaseXP = xbn.Key }
                                  };
 
-                foreach (var mob in mobsKilled)
+                if (mobsKilled.Count() > 0)
                 {
-                    if (this.comboBox2.Items.Contains(mob.Name) == false)
+                    //comboBox2.Items.Clear();
+                    //AddToComboBox2("All");
+
+                    string mobWithXP;
+
+                    foreach (var mob in mobsKilled)
                     {
                         AddToComboBox2(mob.Name);
-                    }
 
-                    if (mob.XP.Count() > 1)
-                    {
-                        string mobWithXP;
-
-                        foreach (var xp in mob.XP)
+                        if (mob.XP.Count() > 1)
                         {
-                            mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP);
-
-                            if (this.comboBox2.Items.Contains(mobWithXP) == false)
+                            foreach (var xp in mob.XP)
                             {
+                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP);
+
                                 AddToComboBox2(mobWithXP);
                             }
                         }
@@ -104,72 +101,54 @@ namespace WaywardGamers.KParser.Plugin
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
         {
-            if (e.DatasetChanges.Battles.Count != 0)
+            // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
+            if (e.DatasetChanges.Battles.Count > 0)
             {
-                // Check for new kills.  If any exist, update the Mob Group dropdown list.
-                int allBattles = e.DatasetChanges.Battles.Count(b => b.DefaultBattle == false);
+                var mobsFought = from b in e.DatasetChanges.Battles
+                                 where ((b.DefaultBattle == false) &&
+                                        (b.IsEnemyIDNull() == false))
+                                 group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
+                                 select new
+                                 {
+                                     Name = bn.Key,
+                                     XP = from xb in bn
+                                          group xb by xb.BaseExperience() into xbn
+                                          select new { BaseXP = xbn.Key }
+                                 };
 
-                if (allBattles != 0)
+
+                if (mobsFought.Count() > 0)
                 {
-                    var mobsKilled = from b in e.FullDataset.Battles
-                                     where b.Killed == true
-                                     orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
-                                     group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
-                                     select new {
-                                         Name = bn.Key,
-                                         XP = from xb in bn
-                                              group xb by xb.BaseExperience() into xbn
-                                              select new { BXP = xbn.Key}
-                                     };
+                    string mobWithXP;
 
-                    if (mobsKilled != null)
+                    foreach (var mob in mobsFought)
                     {
-                        foreach (var mob in mobsKilled)
+                        if (comboBox2.Items.Contains(mob.Name) == false)
+                            AddToComboBox2(mob.Name);
+
+                        foreach (var xp in mob.XP)
                         {
-                            if (this.comboBox2.Items.Contains(mob.Name) == false)
+                            if (xp.BaseXP > 0)
                             {
-                                AddToComboBox2(mob.Name);
-                            }
+                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP);
 
-                            if (mob.XP.Count() > 1)
-                            {
-                                string mobWithXP;
-
-                                foreach (var xp in mob.XP)
-                                {
-                                    mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BXP);
-
-                                    if (this.comboBox2.Items.Contains(mobWithXP) == false)
-                                    {
-                                        AddToComboBox2(mobWithXP);
-                                    }
-                                }
+                                if (comboBox2.Items.Contains(mobWithXP) == false)
+                                    AddToComboBox2(mobWithXP);
                             }
                         }
                     }
                 }
             }
 
+
             if (e.DatasetChanges.Interactions.Count != 0)
             {
-                datasetToUse = e.FullDataset;
+                datasetToUse = e.Dataset;
                 return true;
             }
 
             datasetToUse = null;
             return false;
-        }
-
-        private void AddToComboBox2(string p)
-        {
-            if (this.InvokeRequired)
-            {
-                Action<string> thisFunc = AddToComboBox2;
-                Invoke(thisFunc, new object[] { p });
-                return;
-            }
-
-            this.comboBox2.Items.Add(p);
         }
         #endregion
 
@@ -179,11 +158,11 @@ namespace WaywardGamers.KParser.Plugin
         Dictionary<string, int> playerDamage = new Dictionary<string,int>();
 
         string summaryHeader    = "Player            Total Dmg   Damage %   Melee Dmg   Range Dmg   Spell Dmg   Abil. Dmg  WSkill Dmg\n";
-        string meleeHeader      = "Player            Melee Dmg   Melee %   Hit/Miss    M.Acc%  M.Low/Hi    M.Avg  Effect  #Crit  C.Low/Hi   C.Avg     Crit%\n";
-        string rangeHeader      = "Player            Range Dmg   Range %   Hit/Miss    R.Acc%  R.Low/Hi    R.Avg  Effect  #Crit  C.Low/Hi   C.Avg     Crit%\n";
-        string spellHeader      = "Player            Spell Dmg   Spell %  #Spells  S.Low/Hi   S.Avg  #MagicBurst  MB.Low/Hi   MB.Avg\n";
-        string abilHeader       = "Player            Abil. Dmg   Abil. %   Hit/Miss      Acc%  A.Low/Hi    A.Avg\n";
-        string wskillHeader     = "Player            WSkill Dmg  WSkill %   Hit/Miss      Acc%  WS.Low/Hi   WS.Avg\n";
+        string meleeHeader      = "Player            Melee Dmg   Melee %   Hit/Miss   M.Acc %  M.Low/Hi    M.Avg  Effect  #Crit  C.Low/Hi   C.Avg     Crit%\n";
+        string rangeHeader      = "Player            Range Dmg   Range %   Hit/Miss   R.Acc %  R.Low/Hi    R.Avg  Effect  #Crit  C.Low/Hi   C.Avg     Crit%\n";
+        string spellHeader      = "Player            Spell Dmg   Spell %  #Spells  S.Low/Hi     S.Avg  #MagicBurst  MB.Low/Hi   MB.Avg\n";
+        string abilHeader       = "Player            Abil. Dmg   Abil. %   Hit/Miss   A.Acc %  A.Low/Hi    A.Avg\n";
+        string wskillHeader     = "Player            WSkill Dmg  WSkill %   Hit/Miss  WS.Acc %  WS.Low/Hi   WS.Avg\n";
         string skillchainHeader = "Skillchain        Skill Dmg   # SC   SC.Low/Hi  SC.Avg\n";
         string otherHeader      = "Player\n";
         #endregion
@@ -195,195 +174,223 @@ namespace WaywardGamers.KParser.Plugin
             string actionSourceFilter = comboBox1.SelectedItem.ToString();
 
             Stopwatch stopwatch = new Stopwatch();
-
-
             stopwatch.Reset();
             stopwatch.Start();
 
-            string mobFilter = comboBox2.SelectedItem.ToString();
-            IEnumerable<AttackGroup> attacksByType;
-            IEnumerable<AttackGroup2> attacksByPlayer;
+            string mobFilter;
+            if (comboBox2.SelectedIndex >= 0)
+                mobFilter = comboBox2.SelectedItem.ToString();
+            else
+                mobFilter = "All";
 
-            int minXP = 0;
-            if (checkBox1.Checked == true)
-                minXP = 1;
+            IEnumerable<AttackGroup> attackSet = null;
 
+            //int minXP = 0;
+            //if (checkBox1.Checked == true)
+            //    minXP = 1;
+
+            #region LINQ queries
             if (mobFilter == "All")
             {
-                attacksByType = from cd in dataSet.Interactions
-                             where ((cd.IsActorIDNull() == false) &&
-                                    ((cd.HarmType == (byte)HarmType.Damage) ||
-                                     (cd.HarmType == (byte)HarmType.Drain)) &&
-                                    ((cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Player) ||
-                                     (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
-                                     (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Fellow) ||
-                                     (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Skillchain))
-                                    ) &&
-                                    ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
-                             group cd by cd.ActionType into cda
-                             select new AttackGroup
-                                 {
-                                     ActionSource = (ActionType) cda.Key,
-                                     CombatGroup = from c in cda
-                                                   orderby c.CombatantsRowByActorCombatantRelation.CombatantName
-                                                   group c by c.CombatantsRowByActorCombatantRelation
-                                 };
-
-
-                attacksByPlayer = from cd in dataSet.Interactions
-                                  where ((cd.IsActorIDNull() == false) &&
-                                         ((cd.HarmType == (byte)HarmType.Damage) ||
-                                          (cd.HarmType == (byte)HarmType.Drain)) &&
-                                         ((cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Player) ||
-                                          (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
-                                          (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Fellow) ||
-                                          (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Skillchain))
-                                         ) &&
-                                         ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
-                                  group cd by cd.CombatantsRowByActorCombatantRelation.CombatantName into cdp
-                                  orderby cdp.Key
-                                  select new AttackGroup2
-                                  {
-                                      Player = cdp.Key,
-                                      Melee = from g in cdp
-                                              where g.ActionType == (byte)ActionType.Melee
-                                              select g,
-                                      Range = from g in cdp
-                                              where g.ActionType == (byte)ActionType.Ranged
-                                              select g,
-                                      Spell = from g in cdp
-                                              where g.ActionType == (byte)ActionType.Spell
-                                              select g,
-                                      Ability = from g in cdp
-                                                where g.ActionType == (byte)ActionType.Ability
-                                                select g,
-                                      WSkill = from g in cdp
-                                               where g.ActionType == (byte)ActionType.Weaponskill
-                                               select g,
-                                      SC = from g in cdp
-                                           where g.ActionType == (byte)ActionType.Skillchain
-                                           select g,
-
-                                      
-                                     
-                                  };
-
+                attackSet = from c in dataSet.Combatants
+                            where ((c.CombatantType == (byte)EntityType.Player) ||
+                                   (c.CombatantType == (byte)EntityType.Pet) ||
+                                   (c.CombatantType == (byte)EntityType.Fellow) ||
+                                   (c.CombatantType == (byte)EntityType.Skillchain))
+                            orderby c.CombatantName
+                            select new AttackGroup
+                            {
+                                Player = c.CombatantName,
+                                Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                        where (n.ActionType == (byte)ActionType.Melee &&
+                                               (n.HarmType == (byte)HarmType.Damage || 
+                                                n.HarmType == (byte)HarmType.Drain))
+                                        select n,
+                                Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                        where (n.ActionType == (byte)ActionType.Ranged &&
+                                               (n.HarmType == (byte)HarmType.Damage || 
+                                                n.HarmType == (byte)HarmType.Drain))
+                                        select n,
+                                Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                        where (n.ActionType == (byte)ActionType.Spell &&
+                                               (n.HarmType == (byte)HarmType.Damage ||
+                                                n.HarmType == (byte)HarmType.Drain))
+                                        select n,
+                                Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                          where (n.ActionType == (byte)ActionType.Ability &&
+                                               (n.HarmType == (byte)HarmType.Damage ||
+                                                n.HarmType == (byte)HarmType.Drain))
+                                          select n,
+                                WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                         where (n.ActionType == (byte)ActionType.Weaponskill &&
+                                               (n.HarmType == (byte)HarmType.Damage ||
+                                                n.HarmType == (byte)HarmType.Drain))
+                                         select n,
+                                SC = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                     where (n.ActionType == (byte)ActionType.Skillchain &&
+                                               (n.HarmType == (byte)HarmType.Damage ||
+                                                n.HarmType == (byte)HarmType.Drain))
+                                     select n
+                            };
 
             }
             else
             {
-
-                attacksByPlayer = from cd in dataSet.Interactions
-                                  where ((cd.IsActorIDNull() == false) &&
-                                         ((cd.HarmType == (byte)HarmType.Damage) ||
-                                          (cd.HarmType == (byte)HarmType.Drain)) &&
-                                         ((cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Player) ||
-                                          (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
-                                          (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Fellow) ||
-                                          (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Skillchain))
-                                         ) &&
-                                         ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
-                                  group cd by cd.CombatantsRowByActorCombatantRelation.CombatantName into cdp
-                                  orderby cdp.Key
-                                  select new AttackGroup2
-                                  {
-                                      Player = cdp.Key,
-                                      Melee = from g in cdp
-                                              where g.ActionType == (byte)ActionType.Melee
-                                              select g,
-                                      Range = from g in cdp
-                                              where g.ActionType == (byte)ActionType.Ranged
-                                              select g,
-                                      Spell = from g in cdp
-                                              where g.ActionType == (byte)ActionType.Spell
-                                              select g,
-                                      Ability = from g in cdp
-                                                where g.ActionType == (byte)ActionType.Ability
-                                                select g,
-                                      WSkill = from g in cdp
-                                               where g.ActionType == (byte)ActionType.Weaponskill
-                                               select g,
-                                      SC = from g in cdp
-                                           where g.ActionType == (byte)ActionType.Skillchain
-                                           select g
-                                  };
-
-                Regex mobAndXP = new Regex(@"(?<mobName>\w+(['\- ](\d|\w)+)*)( \((?<xp>\d+)\))?");
+                Regex mobAndXP = new Regex(@"(?<mobName>(.*(?<! \()))( \((?<xp>\d+)\))?");
                 Match mobAndXPMatch = mobAndXP.Match(mobFilter);
 
                 if (mobAndXPMatch.Success == true)
                 {
-                    if (mobAndXPMatch.Captures.Count == 1)
-                    {
-                        // Name only
-                        attacksByType = from cd in dataSet.Interactions
-                                     where ((cd.IsActorIDNull() == false) &&
-                                            (cd.HarmType == (byte)HarmType.Damage) &&
-                                            ((cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Player) ||
-                                             (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
-                                             (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Fellow) ||
-                                             (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Skillchain))
-                                            ) &&
-                                            (cd.BattlesRow.CombatantsRowByEnemyCombatantRelation.CombatantName == mobAndXPMatch.Groups["mobName"].Value) &&
-                                            ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
-                                     group cd by cd.ActionType into cda
-                                     select new AttackGroup
-                                         {
-                                             ActionSource = (ActionType)cda.Key,
-                                             CombatGroup = from c in cda
-                                                           orderby c.CombatantsRowByActorCombatantRelation.CombatantName
-                                                           group c by c.CombatantsRowByActorCombatantRelation
-                                         };
-                    }
-                    else if (mobAndXPMatch.Captures.Count == 2)
-                    {
-                        // Name and XP
-                        int xp = int.Parse(mobAndXPMatch.Groups["xp"].Value);
+                    string mobName = mobAndXPMatch.Groups["mobName"].Value;
+                    int xp = 0;
 
-                        attacksByType = from cd in dataSet.Interactions
-                                     where ((cd.IsActorIDNull() == false) &&
-                                            (cd.HarmType == (byte)HarmType.Damage) &&
-                                            ((cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Player) ||
-                                             (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
-                                             (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Fellow) ||
-                                             (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Skillchain))
-                                            ) &&
-                                            (cd.BattlesRow.CombatantsRowByEnemyCombatantRelation.CombatantName == mobAndXPMatch.Groups["mobName"].Value) &&
-                                            (cd.BattlesRow.BaseExperience() == xp) &&
-                                            ((cd.BattlesRow.ExperiencePoints >= minXP) || (cd.BattlesRow.Killed == false))
-                                     group cd by cd.ActionType into cda
-                                     select new AttackGroup
-                                     {
-                                         ActionSource = (ActionType)cda.Key,
-                                         CombatGroup =
-                                          from c in cda
-                                          orderby c.CombatantsRowByActorCombatantRelation.CombatantName
-                                          group c by c.CombatantsRowByActorCombatantRelation
-                                     };
+                    if ((mobAndXPMatch.Groups["xp"] != null) && (mobAndXPMatch.Groups["xp"].Value != string.Empty))
+                    {
+                        xp = int.Parse(mobAndXPMatch.Groups["xp"].Value);
+                    }
+
+                    if (xp > 0)
+                    {
+                        // Attacks against a particular mob type of a given base xp
+
+                        attackSet = from c in dataSet.Combatants
+                                    where ((c.CombatantType == (byte)EntityType.Player) ||
+                                           (c.CombatantType == (byte)EntityType.Pet) ||
+                                           (c.CombatantType == (byte)EntityType.Fellow) ||
+                                           (c.CombatantType == (byte)EntityType.Skillchain))
+                                    orderby c.CombatantName
+                                    select new AttackGroup
+                                    {
+                                        Player = c.CombatantName,
+                                        Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                where (n.ActionType == (byte)ActionType.Melee &&
+                                                       (n.HarmType == (byte)HarmType.Damage ||
+                                                        n.HarmType == (byte)HarmType.Drain) &&
+                                                       n.IsTargetIDNull() == false &&
+                                                       n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                                       n.IsBattleIDNull() == false &&
+                                                       n.BattlesRow.BaseExperience() == xp)
+                                                select n,
+                                        Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                where (n.ActionType == (byte)ActionType.Ranged &&
+                                                       (n.HarmType == (byte)HarmType.Damage ||
+                                                        n.HarmType == (byte)HarmType.Drain) &&
+                                                       n.IsTargetIDNull() == false &&
+                                                       n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                                       n.IsBattleIDNull() == false &&
+                                                       n.BattlesRow.BaseExperience() == xp)
+                                                select n,
+                                        Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                where (n.ActionType == (byte)ActionType.Spell &&
+                                                       (n.HarmType == (byte)HarmType.Damage ||
+                                                        n.HarmType == (byte)HarmType.Drain) &&
+                                                       n.IsTargetIDNull() == false &&
+                                                       n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                                       n.IsBattleIDNull() == false &&
+                                                       n.BattlesRow.BaseExperience() == xp)
+                                                select n,
+                                        Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                  where (n.ActionType == (byte)ActionType.Ability &&
+                                                         (n.HarmType == (byte)HarmType.Damage ||
+                                                          n.HarmType == (byte)HarmType.Drain) &&
+                                                         n.IsTargetIDNull() == false &&
+                                                         n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                                         n.IsBattleIDNull() == false &&
+                                                         n.BattlesRow.BaseExperience() == xp)
+                                                  select n,
+                                        WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                 where (n.ActionType == (byte)ActionType.Weaponskill &&
+                                                        (n.HarmType == (byte)HarmType.Damage ||
+                                                         n.HarmType == (byte)HarmType.Drain) &&
+                                                        n.IsTargetIDNull() == false &&
+                                                        n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                                        n.IsBattleIDNull() == false &&
+                                                        n.BattlesRow.BaseExperience() == xp)
+                                                 select n,
+                                        SC = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                             where (n.ActionType == (byte)ActionType.Skillchain &&
+                                                    (n.HarmType == (byte)HarmType.Damage ||
+                                                     n.HarmType == (byte)HarmType.Drain) &&
+                                                    n.IsTargetIDNull() == false &&
+                                                    n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                                    n.IsBattleIDNull() == false &&
+                                                    n.BattlesRow.BaseExperience() == xp)
+                                             select n
+                                    };
                     }
                     else
                     {
-                        Logger.Instance.Log("OffensePlugin", "Failed in mob filtering.  Invalid number of captures.");
-                        return;
+                        // Attacks against a particular mob type
+                        attackSet = from c in dataSet.Combatants
+                                    where ((c.CombatantType == (byte)EntityType.Player) ||
+                                           (c.CombatantType == (byte)EntityType.Pet) ||
+                                           (c.CombatantType == (byte)EntityType.Fellow) ||
+                                           (c.CombatantType == (byte)EntityType.Skillchain))
+                                    orderby c.CombatantName
+                                    select new AttackGroup
+                                    {
+                                        Player = c.CombatantName,
+                                        Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                where (n.ActionType == (byte)ActionType.Melee &&
+                                                       (n.HarmType == (byte)HarmType.Damage ||
+                                                        n.HarmType == (byte)HarmType.Drain) &&
+                                                       n.IsTargetIDNull() == false &&
+                                                       n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
+                                                select n,
+                                        Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                where (n.ActionType == (byte)ActionType.Ranged &&
+                                                       (n.HarmType == (byte)HarmType.Damage ||
+                                                        n.HarmType == (byte)HarmType.Drain) &&
+                                                       n.IsTargetIDNull() == false &&
+                                                       n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
+                                                select n,
+                                        Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                where (n.ActionType == (byte)ActionType.Spell &&
+                                                       (n.HarmType == (byte)HarmType.Damage ||
+                                                        n.HarmType == (byte)HarmType.Drain) &&
+                                                       n.IsTargetIDNull() == false &&
+                                                       n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
+                                                select n,
+                                        Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                  where (n.ActionType == (byte)ActionType.Ability &&
+                                                         (n.HarmType == (byte)HarmType.Damage ||
+                                                          n.HarmType == (byte)HarmType.Drain) &&
+                                                         n.IsTargetIDNull() == false &&
+                                                         n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
+                                                  select n,
+                                        WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                 where (n.ActionType == (byte)ActionType.Weaponskill &&
+                                                        (n.HarmType == (byte)HarmType.Damage ||
+                                                         n.HarmType == (byte)HarmType.Drain) &&
+                                                        n.IsTargetIDNull() == false &&
+                                                        n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
+                                                 select n,
+                                        SC = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                             where (n.ActionType == (byte)ActionType.Skillchain &&
+                                                    (n.HarmType == (byte)HarmType.Damage ||
+                                                     n.HarmType == (byte)HarmType.Drain) &&
+                                                    n.IsTargetIDNull() == false &&
+                                                    n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
+                                             select n
+                                    };
                     }
                 }
-                else
-                {
-                    Logger.Instance.Log("OffensePlugin", "Failed in mob filtering.  Match failed.");
-                    return;
-                }
             }
+            #endregion
 
             stopwatch.Stop();
             Debug.WriteLine(string.Format("Offense: Prep Linq section time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
             stopwatch.Reset();
             stopwatch.Start();
 
+            if ((attackSet == null) || (attackSet.Count() == 0))
+                return;
+
             int localDamage = 0;
             totalDamage = 0;
             playerDamage.Clear();
 
-            foreach (var player in attacksByPlayer)
+            foreach (var player in attackSet)
             {
                 playerDamage[player.Player] = 0;
 
@@ -398,69 +405,42 @@ namespace WaywardGamers.KParser.Plugin
             stopwatch.Reset();
             stopwatch.Start();
 
-
-            AttackGroup meleeAttacks;
-            AttackGroup rangeAttacks;
-            AttackGroup spellAttacks;
-            AttackGroup abilAttacks;
-            AttackGroup wskillAttacks;
-            AttackGroup skillchainAttacks;
-
-
-            //var otherAttacks = allAttacks.Where(m =>
-            //    (m.ActionSource != ActionSourceType.Melee) &&
-            //    (m.ActionSource != ActionSourceType.Ranged) &&
-            //    (m.ActionSource != ActionSourceType.Spell) &&
-            //    (m.ActionSource != ActionSourceType.Ability) &&
-            //    (m.ActionSource != ActionSourceType.Weaponskill) );
-
             switch (actionSourceFilter)
             {
                 // Unknown == "All"
                 case "All":
-                    meleeAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Melee);
-                    rangeAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Ranged);
-                    spellAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Spell);
-                    abilAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Ability);
-                    wskillAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Weaponskill);
-                    skillchainAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Skillchain);
                     stopwatch.Start();
-                    ProcessAttackSummary(attacksByPlayer);
+                    ProcessAttackSummary(attackSet);
                     stopwatch.Stop();
                     Debug.WriteLine(string.Format("Offense: Process Summary time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
-                    ProcessMeleeAttacks(meleeAttacks);
-                    ProcessRangedAttacks(rangeAttacks);
-                    ProcessSpellsAttacks(spellAttacks);
-                    ProcessAbilityAttacks(abilAttacks);
-                    ProcessWeaponskillAttacks(wskillAttacks);
+                    ProcessMeleeAttacks(attackSet);
+                    ProcessRangedAttacks(attackSet);
+                    ProcessSpellsAttacks(attackSet);
+                    ProcessAbilityAttacks(attackSet);
+                    ProcessWeaponskillAttacks(attackSet);
+                    ProcessSkillchains(attackSet);
                     //ProcessOtherAttacks(otherAttacks);
                     break;
                 case "Summary":
-                    ProcessAttackSummary(attacksByPlayer);
+                    ProcessAttackSummary(attackSet);
                     break;
                 case "Melee":
-                    meleeAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Melee);
-                    ProcessMeleeAttacks(meleeAttacks);
+                    ProcessMeleeAttacks(attackSet);
                     break;
                 case "Ranged":
-                    rangeAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Ranged);
-                    ProcessRangedAttacks(rangeAttacks);
+                    ProcessRangedAttacks(attackSet);
                     break;
                 case "Spell":
-                    spellAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Spell);
-                    ProcessSpellsAttacks(spellAttacks);
+                    ProcessSpellsAttacks(attackSet);
                     break;
                 case "Ability":
-                    abilAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Ability);
-                    ProcessAbilityAttacks(abilAttacks);
+                    ProcessAbilityAttacks(attackSet);
                     break;
                 case "Weaponskill":
-                    wskillAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Weaponskill);
-                    ProcessWeaponskillAttacks(wskillAttacks);
+                    ProcessWeaponskillAttacks(attackSet);
                     break;
                 case "Skillchain":
-                    skillchainAttacks = attacksByType.FirstOrDefault(m => m.ActionSource == ActionType.Skillchain);
-                    ProcessSkillchains(skillchainAttacks);
+                    ProcessSkillchains(attackSet);
                     break;
                 default:
                     //ProcessOtherAttacks(otherAttacks);
@@ -468,7 +448,7 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
-        private void ProcessAttackSummary(IEnumerable<AttackGroup2> attacksByPlayer)
+        private void ProcessAttackSummary(IEnumerable<AttackGroup> attacksByPlayer)
         {
             if (attacksByPlayer == null)
                 return;
@@ -516,55 +496,66 @@ namespace WaywardGamers.KParser.Plugin
             AppendNormalText(sb.ToString());
         }
 
-        private void ProcessMeleeAttacks(AttackGroup meleeAttacks)
+        private void ProcessMeleeAttacks(IEnumerable<AttackGroup> attacksByPlayer)
         {
-            if (meleeAttacks == null)
+            if (attacksByPlayer == null)
                 return;
 
-            if (meleeAttacks.CombatGroup.Count() == 0)
+            if (attacksByPlayer.Count() == 0)
                 return;
-
-            AppendBoldText("Melee Damage\n", Color.Red);
-            AppendBoldUnderText(meleeHeader, Color.Black);
 
             StringBuilder sb = new StringBuilder();
+            bool headerDisplayed = false;
 
-            foreach (var player in meleeAttacks.CombatGroup)
+            int meleeDmg;
+            double meleePerc;
+            int meleeHits;
+            int meleeMiss;
+            double meleeAcc;
+            int normHits;
+            int critHits;
+            int normLow;
+            int normHi;
+            double normAvg;
+            int critLow;
+            int critHi;
+            double critAvg;
+            double critPerc;
+            int effectDmg;
+
+
+            foreach (var player in attacksByPlayer)
             {
+                if (player.Melee.Count() == 0)
+                    continue;
 
-                sb.Append(player.Key.CombatantName.PadRight(16));
-                sb.Append(" ");
-
-                int meleeDmg = 0;
-                double meleePerc = 0;
-                int meleeHits = 0;
-                int meleeMiss = 0;
-                double meleeAcc = 0;
-                int normHits = 0;
-                int critHits = 0;
-                int normLow = 0;
-                int normHi = 0;
-                double normAvg = 0;
-                int critLow = 0;
-                int critHi = 0;
-                double critAvg = 0;
-                double critPerc = 0;
-                int effectDmg = 0;
+                meleeDmg = 0;
+                meleePerc = 0;
+                meleeHits = 0;
+                meleeMiss = 0;
+                meleeAcc = 0;
+                normHits = 0;
+                critHits = 0;
+                normLow = 0;
+                normHi = 0;
+                normAvg = 0;
+                critLow = 0;
+                critHi = 0;
+                critAvg = 0;
+                critPerc = 0;
+                effectDmg = 0;
 
 
-                meleeDmg = player.Sum(d => d.Amount);
-                effectDmg = player.Where(s =>
-                                s.SecondHarmType == (byte)HarmType.Damage ||
-                                s.SecondHarmType == (byte)HarmType.Drain).
-                                Sum(d => d.SecondAmount);
+                meleeDmg = player.MeleeDmg;
+                effectDmg = player.MeleeEffectDmg;
 
-                if (playerDamage[player.Key.CombatantName] > 0)
-                    meleePerc = (double)meleeDmg / playerDamage[player.Key.CombatantName];
+                if (playerDamage[player.Player] > 0)
+                    meleePerc = (double)meleeDmg / playerDamage[player.Player];
 
-                var successfulHits = player.Where(h => h.DefenseType == (byte)DefenseType.None);
+                var successfulHits = player.Melee.Where(h => h.DefenseType == (byte)DefenseType.None);
 
                 meleeHits = successfulHits.Count();
-                meleeMiss = player.Count(b => b.DefenseType != (byte)DefenseType.None);
+                meleeMiss = player.Melee.Count(b => b.DefenseType != (byte)DefenseType.None);
 
                 meleeAcc = (double)meleeHits / (meleeHits + meleeMiss);
 
@@ -591,449 +582,526 @@ namespace WaywardGamers.KParser.Plugin
                 if (meleeHits > 0)
                     critPerc = (double)critHits / meleeHits;
 
-                sb.Append(meleeDmg.ToString().PadLeft(10));
-                sb.Append(meleePerc.ToString("P2").PadLeft(10));
-                sb.Append(string.Format("{0}/{1}", meleeHits, meleeMiss).PadLeft(11));
-                sb.Append(meleeAcc.ToString("P2").PadLeft(10));
-                sb.Append(string.Format("{0}/{1}", normLow, normHi).PadLeft(10));
-                sb.Append(normAvg.ToString("F2").PadLeft(9));
-                sb.Append(effectDmg.ToString().PadLeft(8));
-                sb.Append(critHits.ToString().PadLeft(7));
-                sb.Append(string.Format("{0}/{1}", critLow, critHi).PadLeft(10));
-                sb.Append(critAvg.ToString("F2").PadLeft(8));
-                sb.Append(critPerc.ToString("P2").PadLeft(10));
 
+                if ((meleeHits + meleeMiss) > 0)
+                {
+                    if (headerDisplayed == false)
+                    {
+                        AppendBoldText("Melee Damage\n", Color.Red);
+                        AppendBoldUnderText(meleeHeader, Color.Black);
 
-                sb.Append("\n");
+                        headerDisplayed = true;
+                    }
+
+                    sb.Append(player.Player.PadRight(17));
+
+                    sb.Append(meleeDmg.ToString().PadLeft(10));
+                    sb.Append(meleePerc.ToString("P2").PadLeft(10));
+                    sb.Append(string.Format("{0}/{1}", meleeHits, meleeMiss).PadLeft(11));
+                    sb.Append(meleeAcc.ToString("P2").PadLeft(10));
+                    sb.Append(string.Format("{0}/{1}", normLow, normHi).PadLeft(10));
+                    sb.Append(normAvg.ToString("F2").PadLeft(9));
+                    sb.Append(effectDmg.ToString().PadLeft(8));
+                    sb.Append(critHits.ToString().PadLeft(7));
+                    sb.Append(string.Format("{0}/{1}", critLow, critHi).PadLeft(10));
+                    sb.Append(critAvg.ToString("F2").PadLeft(8));
+                    sb.Append(critPerc.ToString("P2").PadLeft(10));
+
+                    sb.Append("\n");
+                }
             }
 
-            sb.Append("\n\n");
-            AppendNormalText(sb.ToString());
+            if (headerDisplayed == true)
+            {
+                sb.Append("\n\n");
+                AppendNormalText(sb.ToString());
+            }
         }
 
-        private void ProcessRangedAttacks(AttackGroup rangeAttacks)
+        private void ProcessRangedAttacks(IEnumerable<AttackGroup> attacksByPlayer)
         {
-            if (rangeAttacks == null)
+            if (attacksByPlayer == null)
                 return;
 
-            if (rangeAttacks.CombatGroup.Count() == 0)
+            if (attacksByPlayer.Count() == 0)
                 return;
-
-
-            AppendBoldText("Ranged Damage\n", Color.Red);
-            AppendBoldUnderText(rangeHeader, Color.Black);
 
             StringBuilder sb = new StringBuilder();
+            bool headerDisplayed = false;
 
-            foreach (var player in rangeAttacks.CombatGroup)
+            int rangeDmg = 0;
+            double rangePerc = 0;
+            int rangeHits = 0;
+            int rangeMiss = 0;
+            double rangeAcc = 0;
+            int normHits = 0;
+            int critHits = 0;
+            int normLow = 0;
+            int normHi = 0;
+            double normAvg = 0;
+            int critLow = 0;
+            int critHi = 0;
+            double critAvg = 0;
+            double critPerc = 0;
+            int effectDmg = 0;
+
+            foreach (var player in attacksByPlayer)
             {
-                sb.Append(player.Key.CombatantName.PadRight(16));
-                sb.Append(" ");
+                if (player.Range.Count() == 0)
+                    continue;
 
-                int rangeDmg = 0;
-                double rangePerc = 0;
-                int rangeHits = 0;
-                int rangeMiss = 0;
-                double rangeAcc = 0;
-                int normHits = 0;
-                int critHits = 0;
-                int normLow = 0;
-                int normHi = 0;
-                double normAvg = 0;
-                int critLow = 0;
-                int critHi = 0;
-                double critAvg = 0;
-                double critPerc = 0;
-                int effectDmg = 0;
+                rangeDmg = 0;
+                rangePerc = 0;
+                rangeHits = 0;
+                rangeMiss = 0;
+                rangeAcc = 0;
+                normHits = 0;
+                critHits = 0;
+                normLow = 0;
+                normHi = 0;
+                normAvg = 0;
+                critLow = 0;
+                critHi = 0;
+                critAvg = 0;
+                critPerc = 0;
+                effectDmg = 0;
 
 
-                rangeDmg = player.Sum(d => d.Amount);
-                effectDmg = player.Where(s =>
-                                s.SecondHarmType == (byte)HarmType.Damage ||
-                                s.SecondHarmType == (byte)HarmType.Drain).
-                                Sum(d => d.SecondAmount);
+                rangeDmg = player.RangeDmg;
+                effectDmg = player.RangeEffectDmg;
 
-                if (playerDamage[player.Key.CombatantName] > 0)
-                    rangePerc = (double)rangeDmg / playerDamage[player.Key.CombatantName];
+                if (playerDamage[player.Player] > 0)
+                    rangePerc = (double)rangeDmg / playerDamage[player.Player];
 
-                var successfulHits = player.Where(h => h.DefenseType == (byte)DefenseType.None);
+                var successfulHits = player.Range.Where(h => h.DefenseType == (byte)DefenseType.None);
 
                 rangeHits = successfulHits.Count();
-                rangeMiss = player.Count(b => b.DefenseType != (byte)DefenseType.None);
+                rangeMiss = player.Range.Count(b => b.DefenseType != (byte)DefenseType.None);
 
                 rangeAcc = (double)rangeHits / (rangeHits + rangeMiss);
 
-                var meleeNorm = successfulHits.Where(h => h.DamageModifier == (byte)DamageModifier.None);
-                var meleeCrit = successfulHits.Where(h => h.DamageModifier == (byte)DamageModifier.Critical);
+                var rangeNorm = successfulHits.Where(h => h.DamageModifier == (byte)DamageModifier.None);
+                var rangeCrit = successfulHits.Where(h => h.DamageModifier == (byte)DamageModifier.Critical);
 
-                normHits = meleeNorm.Count();
-                critHits = meleeCrit.Count();
+                normHits = rangeNorm.Count();
+                critHits = rangeCrit.Count();
 
                 if (normHits > 0)
                 {
-                    normLow = meleeNorm.Min(d => d.Amount);
-                    normHi = meleeNorm.Max(d => d.Amount);
-                    normAvg = meleeNorm.Average(d => d.Amount);
+                    normLow = rangeNorm.Min(d => d.Amount);
+                    normHi = rangeNorm.Max(d => d.Amount);
+                    normAvg = rangeNorm.Average(d => d.Amount);
                 }
 
                 if (critHits > 0)
                 {
-                    critLow = meleeCrit.Min(d => d.Amount);
-                    critHi = meleeCrit.Max(d => d.Amount);
-                    critAvg = meleeCrit.Average(d => d.Amount);
+                    critLow = rangeCrit.Min(d => d.Amount);
+                    critHi = rangeCrit.Max(d => d.Amount);
+                    critAvg = rangeCrit.Average(d => d.Amount);
                 }
 
                 if (rangeHits > 0)
                     critPerc = (double)critHits / rangeHits;
 
-                sb.Append(rangeDmg.ToString().PadLeft(10));
-                sb.Append(rangePerc.ToString("P2").PadLeft(10));
-                sb.Append(string.Format("{0}/{1}", rangeHits, rangeMiss).PadLeft(11));
-                sb.Append(rangeAcc.ToString("P2").PadLeft(10));
-                sb.Append(string.Format("{0}/{1}", normLow, normHi).PadLeft(10));
-                sb.Append(normAvg.ToString("F2").PadLeft(9));
-                sb.Append(effectDmg.ToString().PadLeft(8));
-                sb.Append(critHits.ToString().PadLeft(7));
-                sb.Append(string.Format("{0}/{1}", critLow, critHi).PadLeft(10));
-                sb.Append(critAvg.ToString("F2").PadLeft(8));
-                sb.Append(critPerc.ToString("P2").PadLeft(10));
+
+                if ((rangeHits + rangeMiss) > 0)
+                {
+                    if (headerDisplayed == false)
+                    {
+                        AppendBoldText("Ranged Damage\n", Color.Red);
+                        AppendBoldUnderText(rangeHeader, Color.Black);
+
+                        headerDisplayed = true;
+                    }
+
+                    sb.Append(player.Player.PadRight(17));
+
+                    sb.Append(rangeDmg.ToString().PadLeft(10));
+                    sb.Append(rangePerc.ToString("P2").PadLeft(10));
+                    sb.Append(string.Format("{0}/{1}", rangeHits, rangeMiss).PadLeft(11));
+                    sb.Append(rangeAcc.ToString("P2").PadLeft(10));
+                    sb.Append(string.Format("{0}/{1}", normLow, normHi).PadLeft(10));
+                    sb.Append(normAvg.ToString("F2").PadLeft(9));
+                    sb.Append(effectDmg.ToString().PadLeft(8));
+                    sb.Append(critHits.ToString().PadLeft(7));
+                    sb.Append(string.Format("{0}/{1}", critLow, critHi).PadLeft(10));
+                    sb.Append(critAvg.ToString("F2").PadLeft(8));
+                    sb.Append(critPerc.ToString("P2").PadLeft(10));
 
 
-                sb.Append("\n");
+                    sb.Append("\n");
+                }
             }
 
-            sb.Append("\n\n");
-            AppendNormalText(sb.ToString());
+            if (headerDisplayed == true)
+            {
+                sb.Append("\n\n");
+                AppendNormalText(sb.ToString());
+            }
         }
 
-        private void ProcessSpellsAttacks(AttackGroup spellAttacks)
+        private void ProcessSpellsAttacks(IEnumerable<AttackGroup> attacksByPlayer)
         {
-            if (spellAttacks == null)
+            if (attacksByPlayer == null)
                 return;
 
-            if (spellAttacks.CombatGroup.Count() == 0)
+            if (attacksByPlayer.Count() == 0)
                 return;
 
+            StringBuilder sb = new StringBuilder();
+            bool headerDisplayed = false;
 
-            AppendBoldText("Spell Damage\n", Color.Red);
-            AppendBoldUnderText(spellHeader, Color.Black);
+            int spellDamage;
+            double spellPerc;
+            int spellCasts;
+            int spellLow;
+            int spellHigh;
+            double spellAvg;
+            int mbCasts;
+            int mbLow;
+            int mbHigh;
+            double mbAvg;
+            int normSpellCount;
+            int mbSpellCount;
 
-            foreach (var player in spellAttacks.CombatGroup)
+            foreach (var player in attacksByPlayer)
             {
-                if (player.Count() > 0)
+                if (player.Spell.Count() == 0)
+                    continue;
+
+                spellDamage = 0;
+                spellPerc = 0;
+                spellCasts = 0;
+                spellLow = 0;
+                spellHigh = 0;
+                spellAvg = 0;
+                mbCasts = 0;
+                mbLow = 0;
+                mbHigh = 0;
+                mbAvg = 0;
+                normSpellCount = 0;
+                mbSpellCount = 0;
+
+                // Spell damage
+                spellDamage = player.SpellDmg;
+
+                if (playerDamage[player.Player] > 0)
+                    spellPerc = (double)spellDamage / playerDamage[player.Player];
+
+
+                var spellsCast = player.Spell.Where(b => b.DefenseType == (byte)DefenseType.None);
+
+                spellCasts = spellsCast.Count();
+
+                var normSpells = spellsCast.Where(s => s.DamageModifier == (byte)DamageModifier.None);
+                var mbSpells = spellsCast.Where(s => s.DamageModifier == (byte)DamageModifier.MagicBurst);
+
+                normSpellCount = normSpells.Count();
+                mbSpellCount = mbSpells.Count();
+
+                if (normSpellCount > 0)
                 {
-                    StringBuilder sb = new StringBuilder();
+                    spellLow = normSpells.Min(d => d.Amount);
+                    spellHigh = normSpells.Max(d => d.Amount);
+                    spellAvg = normSpells.Average(d => d.Amount);
+                }
 
-                    sb.Append(player.Key.CombatantName.PadRight(16));
-                    sb.Append(" ");
+                if (mbSpellCount > 0)
+                {
+                    mbLow = mbSpells.Min(d => d.Amount);
+                    mbHigh = mbSpells.Max(d => d.Amount);
+                    mbAvg = mbSpells.Average(d => d.Amount);
+                }
 
-                    // Spell damage
-                    int spellDamage = player.Sum(b => b.Amount);
+                if (spellCasts > 0)
+                {
+                    if (headerDisplayed == false)
+                    {
+                        AppendBoldText("Spell Damage\n", Color.Red);
+                        AppendBoldUnderText(spellHeader, Color.Black);
+
+                        headerDisplayed = true;
+                    }
+
+                    sb.Append(player.Player.PadRight(17));
+
                     sb.Append(spellDamage.ToString().PadLeft(10));
-                    sb.Append(" ");
-
-                    // Percent of player damage from Spells
-                    int damageDone = playerDamage[player.Key.CombatantName];
-                    sb.Append(((double)spellDamage / damageDone).ToString("P2").PadLeft(9));
-                    sb.Append(" ");
-
-                    var spellsCast = player.Where(b => b.DefenseType == (byte)DefenseType.None);
-
-                    var normSpells = spellsCast.Where(s => s.DamageModifier == (byte)DamageModifier.None);
-                    var mbSpells = spellsCast.Where(s => s.DamageModifier == (byte)DamageModifier.MagicBurst);
-
-                    int casts = spellsCast.Count();
-
-                    if (casts > 0)
-                    {
-                        // # cast
-                        sb.Append(casts.ToString().PadLeft(8));
-                        sb.Append(" ");
-
-                        // M.Low/Hi
-                        int low = normSpells.Min(b => b.Amount);
-                        int high = normSpells.Max(b => b.Amount);
-
-                        sb.Append(string.Format("{0}/{1}", low, high).PadLeft(9));
-                        sb.Append(" ");
-
-                        // Spell avg
-                        sb.Append(((double)normSpells.Sum(s => s.Amount) / normSpells.Count()).ToString("F2").PadLeft(7));
-                        sb.Append(" ");
-
-                        int mbCount = mbSpells.Count();
-
-                        if (mbCount > 0)
-                        {
-                            // # MBs
-                            sb.Append(mbCount.ToString().PadLeft(12));
-                            sb.Append(" ");
-
-                            // M.Low/Hi
-                            low = mbSpells.Min(b => b.Amount);
-                            high = mbSpells.Max(b => b.Amount);
-
-                            sb.Append(string.Format("{0}/{1}", low, high).PadLeft(10));
-                            sb.Append(" ");
-
-                            // MB avg
-                            sb.Append(((double)mbSpells.Sum(s => s.Amount) / mbSpells.Count()).ToString("F2").PadLeft(8));
-                            sb.Append(" ");
-                        }
-                        else
-                        {
-                            // MB Cast
-                            sb.Append("0".PadLeft(12));
-                            sb.Append(" ");
-
-                            // MB Low/High
-                            sb.Append("N/A".PadLeft(10));
-                            sb.Append(" ");
-
-                            // MB avg
-                            sb.Append("N/A".PadLeft(8));
-                            sb.Append(" ");
-                        }
-                    }
-                    else
-                    {
-                        // # cast
-                        sb.Append("N/A".PadLeft(8));
-                        sb.Append(" ");
-
-                        // M.Low/Hi
-                        sb.Append("N/A".PadLeft(9));
-                        sb.Append(" ");
-
-                        // Spell avg
-                        sb.Append("N/A".PadLeft(7));
-                        sb.Append(" ");
-
-                        // MB Cast
-                        sb.Append("N/A".PadRight(12));
-                        sb.Append(" ");
-
-                        // MB Low/High
-                        sb.Append("N/A".PadLeft(10));
-                        sb.Append(" ");
-
-                        // MB avg
-                        sb.Append("N/A".PadLeft(8));
-                        sb.Append(" ");
-                    }
+                    sb.Append(spellPerc.ToString("P2").PadLeft(10));
+                    sb.Append(spellCasts.ToString().PadLeft(9));
+                    sb.Append(string.Format("{0}/{1}", spellLow, spellHigh).PadLeft(10));
+                    sb.Append(spellAvg.ToString("F2").PadLeft(10));
+                    sb.Append(mbCasts.ToString().PadLeft(13));
+                    sb.Append(string.Format("{0}/{1}", mbLow, mbHigh).PadLeft(11));
+                    sb.Append(mbAvg.ToString("F2").PadLeft(9));
 
                     sb.Append("\n");
-                    AppendNormalText(sb.ToString());
                 }
             }
 
-            AppendNormalText("\n\n");
-        }
-
-        private void ProcessAbilityAttacks(AttackGroup abilAttacks)
-        {
-            if (abilAttacks == null)
-                return;
-
-            if (abilAttacks.CombatGroup.Count() == 0)
-                return;
-
-            AppendBoldText("Ability Damage\n", Color.Red);
-            AppendBoldUnderText(abilHeader, Color.Black);
-
-            foreach (var player in abilAttacks.CombatGroup)
+            if (headerDisplayed == true)
             {
-                if (player.Count() > 0)
-                {
-                    StringBuilder sb = new StringBuilder();
-
-                    sb.Append(player.Key.CombatantName.PadRight(16));
-                    sb.Append(" ");
-
-                    // Ability damage
-                    int abilityDmg = player.Sum(b => b.Amount);
-                    sb.Append(abilityDmg.ToString().PadLeft(10));
-                    sb.Append(" ");
-
-                    // Percent of player damage from Abilities
-                    int damageDone = playerDamage[player.Key.CombatantName];
-                    sb.Append(((double)abilityDmg / damageDone).ToString("P2").PadLeft(9));
-                    sb.Append(" ");
-
-
-                    int hits = player.Count(b => b.DefenseType == (byte)DefenseType.None);
-                    int misses = player.Count(b => b.DefenseType != (byte)DefenseType.None);
-
-                    // Hits/Misses
-                    sb.Append(string.Format("{0}/{1}", hits, misses).PadLeft(10));
-                    sb.Append(" ");
-
-                    // Accuracy
-                    sb.Append(((double)hits / (hits + misses)).ToString("P2").PadLeft(9));
-                    sb.Append(" ");
-
-                    // A.Low/Hi
-                    var successfulHits = player.Where(h => (h.DefenseType == (byte)DefenseType.None) &&
-                        (h.DamageModifier == (byte)DamageModifier.None));
-
-                    int successfulHitCount = successfulHits.Count();
-
-                    if (successfulHitCount > 0)
-                    {
-                        int low = successfulHits.Min(b => b.Amount);
-                        int high = successfulHits.Max(b => b.Amount);
-
-                        // Ability low/high
-                        sb.Append(string.Format("{0}/{1}", low, high).PadLeft(9));
-                        sb.Append(" ");
-
-                        // Ability avg
-                        sb.Append(((double)abilityDmg / successfulHitCount).ToString("F2").PadLeft(8));
-                        sb.Append(" ");
-                    }
-                    else
-                    {
-                        // Ability low/high
-                        sb.Append("N/A".PadLeft(9));
-                        sb.Append(" ");
-
-                        // Ability avg
-                        sb.Append("N/A".PadLeft(8));
-                        sb.Append(" ");
-                    }
-
-                    sb.Append("\n");
-                    AppendNormalText(sb.ToString());
-                }
+                sb.Append("\n\n");
+                AppendNormalText(sb.ToString());
             }
-
-            AppendNormalText("\n\n");
         }
 
-        private void ProcessWeaponskillAttacks(AttackGroup wskillAttacks)
+        private void ProcessAbilityAttacks(IEnumerable<AttackGroup> attacksByPlayer)
         {
-            if (wskillAttacks == null)
+            if (attacksByPlayer == null)
                 return;
 
-            if (wskillAttacks.CombatGroup.Count() == 0)
+            if (attacksByPlayer.Count() == 0)
                 return;
-
-            AppendBoldText("Weaponskill Damage\n", Color.Red);
-            AppendBoldUnderText(wskillHeader, Color.Black);
 
             StringBuilder sb = new StringBuilder();
+            bool headerDisplayed = false;
 
-            foreach (var player in wskillAttacks.CombatGroup)
+            int abilityDamage;
+            double abilPerc;
+            int abilUses;
+            int abilHits;
+            int abilMiss;
+            double abilAcc;
+            int abilLow;
+            int abilHigh;
+            double abilAvg;
+
+            foreach (var player in attacksByPlayer)
             {
-                if (player.Count() > 0)
+                if (player.Ability.Count() == 0)
+                    continue;
+
+                abilityDamage = 0;
+                abilPerc = 0;
+                abilUses = 0;
+                abilHits = 0;
+                abilMiss = 0;
+                abilAcc = 0;
+                abilLow = 0;
+                abilHigh = 0;
+                abilAvg = 0;
+
+                // Spell damage
+                abilityDamage = player.AbilityDmg;
+
+                if (playerDamage[player.Player] > 0)
+                    abilPerc = (double)abilityDamage / playerDamage[player.Player];
+
+                var successfulHits = player.Ability.Where(h => h.DefenseType == (byte)DefenseType.None);
+
+                abilHits = successfulHits.Count();
+                abilMiss = player.Ability.Count(b => b.DefenseType != (byte)DefenseType.None);
+
+                abilUses = abilHits + abilMiss;
+
+                if (abilUses > 0)
+                    abilAcc = (double)abilHits / abilUses;
+
+                if (abilHits > 0)
                 {
-                    sb.Append(player.Key.CombatantName.PadRight(16));
-                    sb.Append(" ");
+                    abilLow = successfulHits.Min(d => d.Amount);
+                    abilHigh = successfulHits.Max(d => d.Amount);
+                    abilAvg = successfulHits.Average(d => d.Amount);
+                }
 
-                    int wsDamage = 0;
-                    double wsPerc = 0;
-                    int wsHit = 0;
-                    int wsMiss = 0;
-                    double wsAcc = 0;
-                    int wsLow = 0;
-                    int wsHi = 0;
-                    double wsAvg = 0;
-
-
-                    // Weaponskill damage
-                    wsDamage = player.Sum(b => b.Amount);
-
-                    // Percent of player damage from Weaponskills
-                    if (playerDamage[player.Key.CombatantName] > 0)
-                        wsPerc = (double)wsDamage / playerDamage[player.Key.CombatantName];
-
-                    wsHit = player.Count(b => b.DefenseType == (byte)DefenseType.None);
-                    wsMiss = player.Count(b => b.DefenseType != (byte)DefenseType.None);
-
-                    wsAcc = (double)wsHit / (wsHit + wsMiss);
-
-                    if (wsHit > 0)
+                if (abilUses > 0)
+                {
+                    if (headerDisplayed == false)
                     {
-                        var weaponskills = player.Where(h => h.DefenseType == (byte)DefenseType.None);
-                        wsLow = weaponskills.Min(w => w.Amount);
-                        wsHi = weaponskills.Max(w => w.Amount);
-                        wsAvg = weaponskills.Average(w => w.Amount);
+                        AppendBoldText("Ability Damage\n", Color.Red);
+                        AppendBoldUnderText(abilHeader, Color.Black);
+
+                        headerDisplayed = true;
                     }
 
-                    sb.Append(wsDamage.ToString().PadLeft(11));
-                    sb.Append(wsPerc.ToString("P2").PadLeft(10));
-                    sb.Append(string.Format("{0}/{1}", wsHit, wsMiss).PadLeft(11));
-                    sb.Append(wsAcc.ToString("P2").PadLeft(10));
-                    sb.Append(string.Format("{0}/{1}", wsLow, wsHi).PadLeft(11));
-                    sb.Append(wsAvg.ToString("F2").PadLeft(9));
+                    sb.Append(player.Player.PadRight(17));
+
+                    sb.Append(abilityDamage.ToString().PadLeft(10));
+                    sb.Append(abilPerc.ToString("P2").PadLeft(10));
+                    sb.Append(string.Format("{0}/{1}", abilHits, abilMiss).PadLeft(11));
+                    sb.Append(abilAcc.ToString("P2").PadLeft(10));
+                    sb.Append(string.Format("{0}/{1}", abilLow, abilHigh).PadLeft(10));
+                    sb.Append(abilAvg.ToString("F2").PadLeft(9));
 
                     sb.Append("\n");
                 }
             }
 
-            sb.Append("\n\n");
-            AppendNormalText(sb.ToString());
+            if (headerDisplayed == true)
+            {
+                sb.Append("\n\n");
+                AppendNormalText(sb.ToString());
+            }
         }
 
-        private void ProcessSkillchains(AttackGroup skillchainAttacks)
+        private void ProcessWeaponskillAttacks(IEnumerable<AttackGroup> attacksByPlayer)
         {
-            if (skillchainAttacks == null)
+            if (attacksByPlayer == null)
                 return;
 
-            if (skillchainAttacks.CombatGroup.Count() == 0)
+            if (attacksByPlayer.Count() == 0)
                 return;
-
-            AppendBoldText("Skillchain Damage\n", Color.Red);
-            AppendBoldUnderText(skillchainHeader, Color.Black);
 
             StringBuilder sb = new StringBuilder();
+            bool headerDisplayed = false;
 
-            foreach (var player in skillchainAttacks.CombatGroup)
+            int wskillDamage;
+            double wskillPerc;
+            int wskillUses;
+            int wskillHits;
+            int wskillMiss;
+            double wskillAcc;
+            int wskillLow;
+            int wskillHigh;
+            double wskillAvg;
+
+            foreach (var player in attacksByPlayer)
             {
-                if (player.Count() > 0)
+                if (player.WSkill.Count() == 0)
+                    continue;
+
+                wskillDamage = 0;
+                wskillPerc = 0;
+                wskillUses = 0;
+                wskillHits = 0;
+                wskillMiss = 0;
+                wskillAcc = 0;
+                wskillLow = 0;
+                wskillHigh = 0;
+                wskillAvg = 0;
+
+                // Spell damage
+                wskillDamage = player.WSkillDmg;
+
+                if (playerDamage[player.Player] > 0)
+                    wskillPerc = (double)wskillDamage / playerDamage[player.Player];
+
+                var successfulHits = player.WSkill.Where(h => h.DefenseType == (byte)DefenseType.None);
+
+                wskillHits = successfulHits.Count();
+                wskillMiss = player.WSkill.Count(b => b.DefenseType != (byte)DefenseType.None);
+
+                wskillUses = wskillHits + wskillMiss;
+
+                if (wskillUses > 0)
+                    wskillAcc = (double)wskillHits / wskillUses;
+
+                if (wskillHits > 0)
                 {
-                    sb.Append(player.Key.CombatantName.PadRight(16));
-                    sb.Append(" ");
+                    wskillLow = successfulHits.Min(d => d.Amount);
+                    wskillHigh = successfulHits.Max(d => d.Amount);
+                    wskillAvg = successfulHits.Average(d => d.Amount);
+                }
 
-                    int scDamage = 0;
-                    int numSCs = 0;
-                    int minSC = 0;
-                    int maxSC = 0;
-                    double avgSC = 0;
+                if (wskillUses > 0)
+                {
+                    if (headerDisplayed == false)
+                    {
+                        AppendBoldText("Weaponskill Damage\n", Color.Red);
+                        AppendBoldUnderText(wskillHeader, Color.Black);
 
+                        headerDisplayed = true;
+                    }
 
-                    var scList = player.Where(b => b.DefenseType == (byte)DefenseType.None);
+                    sb.Append(player.Player.PadRight(17));
 
-                    numSCs = scList.Count();
-                    scDamage = scList.Sum(b => b.Amount);
+                    sb.Append(wskillDamage.ToString().PadLeft(10));
+                    sb.Append(wskillPerc.ToString("P2").PadLeft(11));
+                    sb.Append(string.Format("{0}/{1}", wskillHits, wskillMiss).PadLeft(11));
+                    sb.Append(wskillAcc.ToString("P2").PadLeft(10));
+                    sb.Append(string.Format("{0}/{1}", wskillLow, wskillHigh).PadLeft(10));
+                    sb.Append(wskillAvg.ToString("F2").PadLeft(10));
 
-                    minSC = scList.Min(b => b.Amount);
-                    maxSC = scList.Max(b => b.Amount);
+                    sb.Append("\n");
+                }
+            }
 
-                    if (numSCs > 0)
-                        avgSC = scList.Average(b => b.Amount);
+            if (headerDisplayed == true)
+            {
+                sb.Append("\n\n");
+                AppendNormalText(sb.ToString());
+            }
+        }
 
-                    //"Skillchain        Skill Dmg   # SC   SC.Low/Hi  SC.Avg"
+        private void ProcessSkillchains(IEnumerable<AttackGroup> attacksByPlayer)
+        {
+            if (attacksByPlayer == null)
+                return;
 
-                    sb.Append(scDamage.ToString().PadLeft(11));
+            if (attacksByPlayer.Count() == 0)
+                return;
+
+            StringBuilder sb = new StringBuilder();
+            bool headerDisplayed = false;
+
+            int scDamage;
+            double scPerc;
+            int numSCs;
+            int scLow;
+            int scHigh;
+            double scAvg;
+
+            foreach (var player in attacksByPlayer)
+            {
+                if (player.SC.Count() == 0)
+                    continue;
+
+                scDamage = 0;
+                scPerc = 0;
+                numSCs = 0;
+                scLow = 0;
+                scHigh = 0;
+                scAvg = 0;
+
+                // Spell damage
+                scDamage = player.SCDmg;
+
+                if (playerDamage[player.Player] > 0)
+                    scPerc = (double)scDamage / playerDamage[player.Player];
+
+                numSCs = player.SC.Count();
+
+                if (numSCs > 0)
+                {
+                    scLow = player.SC.Min(d => d.Amount);
+                    scHigh = player.SC.Max(d => d.Amount);
+                    scAvg = player.SC.Average(d => d.Amount);
+                }
+
+                if (numSCs > 0)
+                {
+                    if (headerDisplayed == false)
+                    {
+                        AppendBoldText("Skillchain Damage\n", Color.Red);
+                        AppendBoldUnderText(skillchainHeader, Color.Black);
+
+                        headerDisplayed = true;
+                    }
+
+                    sb.Append(player.Player.PadRight(17));
+
+                    sb.Append(scDamage.ToString().PadLeft(10));
                     sb.Append(numSCs.ToString().PadLeft(7));
-                    sb.Append(string.Format("{0}/{1}", minSC, maxSC).PadLeft(12));
-                    sb.Append(avgSC.ToString("F2").PadLeft(8));
+                    sb.Append(string.Format("{0}/{1}", scLow, scHigh).PadLeft(12));
+                    sb.Append(scAvg.ToString("F2").PadLeft(8));
 
                     sb.Append("\n");
                 }
             }
 
-            sb.Append("\n\n");
-            AppendNormalText(sb.ToString());
+            if (headerDisplayed == true)
+            {
+                sb.Append("\n\n");
+                AppendNormalText(sb.ToString());
+            }
         }
 
-        private void ProcessOtherAttacks(IEnumerable<AttackGroup> otherAttacks)
+        private void ProcessOtherAttacks(IEnumerable<AttackGroup> attacksByPlayer)
         {
-            if (otherAttacks == null)
+            if (attacksByPlayer == null)
                 return;
 
-            if (otherAttacks.Count() == 0)
+            if (attacksByPlayer.Count() == 0)
                 return;
 
             AppendBoldText("Other Damage\n", Color.Red);
@@ -1046,8 +1114,8 @@ namespace WaywardGamers.KParser.Plugin
 
             AppendBoldUnderText(otherHeader, Color.Black);
 
-            var counterAttacks = otherAttacks.FirstOrDefault(a => a.ActionSource == ActionType.Counterattack);
-            var spikesAttacks = otherAttacks.FirstOrDefault(a => a.ActionSource == ActionType.Spikes);
+            //var counterAttacks = attacksByPlayer.FirstOrDefault(a => a.ActionSource == ActionType.Counterattack);
+            //var spikesAttacks = otherAttacks.FirstOrDefault(a => a.ActionSource == ActionType.Spikes);
         }
 
         #endregion
