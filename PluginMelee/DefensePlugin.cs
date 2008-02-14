@@ -48,7 +48,7 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
-            if (dataSet.Battles.Count() > 1)
+            if (dataSet.Battles.Count > 1)
             {
                 var mobsKilled = from b in dataSet.Battles
                                  where ((b.DefaultBattle == false) &&
@@ -60,26 +60,26 @@ namespace WaywardGamers.KParser.Plugin
                                      Name = bn.Key,
                                      XP = from xb in bn
                                           group xb by xb.BaseExperience() into xbn
-                                          select new { BXP = xbn.Key }
+                                          select new { BaseXP = xbn.Key }
                                  };
 
-                foreach (var mob in mobsKilled)
+                if (mobsKilled.Count() > 0)
                 {
-                    if (this.comboBox2.Items.Contains(mob.Name) == false)
+                    comboBox2.Items.Clear();
+                    AddToComboBox2("All");
+
+                    string mobWithXP;
+
+                    foreach (var mob in mobsKilled)
                     {
                         AddToComboBox2(mob.Name);
-                    }
 
-                    if (mob.XP.Count() > 1)
-                    {
-                        string mobWithXP;
-
-                        foreach (var xp in mob.XP)
+                        if (mob.XP.Count() > 1)
                         {
-                            mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BXP);
-
-                            if (this.comboBox2.Items.Contains(mobWithXP) == false)
+                            foreach (var xp in mob.XP)
                             {
+                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP);
+
                                 AddToComboBox2(mobWithXP);
                             }
                         }
@@ -92,44 +92,39 @@ namespace WaywardGamers.KParser.Plugin
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
         {
-            if (e.DatasetChanges.Battles.Count != 0)
+            // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
+            if (e.DatasetChanges.Battles.Count > 0)
             {
-                // Check for new kills.  If any exist, update the Mob Group dropdown list.
-                int allBattles = e.DatasetChanges.Battles.Count(b => b.DefaultBattle == false);
+                var mobsFought = from b in e.DatasetChanges.Battles
+                                 where ((b.DefaultBattle == false) &&
+                                        (b.IsEnemyIDNull() == false))
+                                 group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
+                                 select new
+                                 {
+                                     Name = bn.Key,
+                                     XP = from xb in bn
+                                          group xb by xb.BaseExperience() into xbn
+                                          select new { BaseXP = xbn.Key }
+                                 };
 
-                if (allBattles != 0)
+
+                if (mobsFought.Count() > 0)
                 {
-                    var mobsKilled = from b in e.FullDataset.Battles
-                                     where b.Killed == true
-                                     orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
-                                     group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
-                                     select new
-                                     {
-                                         Name = bn.Key,
-                                         XP = from xb in bn
-                                              group xb by xb.BaseExperience() into xbn
-                                              select new { BXP = xbn.Key }
-                                     };
+                    string mobWithXP;
 
-                    foreach (var mob in mobsKilled)
+                    foreach (var mob in mobsFought)
                     {
-                        if (this.comboBox2.Items.Contains(mob.Name) == false)
-                        {
+                        if (comboBox2.Items.Contains(mob.Name) == false)
                             AddToComboBox2(mob.Name);
-                        }
 
-                        if (mob.XP.Count() > 1)
+                        foreach (var xp in mob.XP)
                         {
-                            string mobWithXP;
-
-                            foreach (var xp in mob.XP)
+                            if (xp.BaseXP > 0)
                             {
-                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BXP);
+                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP);
 
-                                if (this.comboBox2.Items.Contains(mobWithXP) == false)
-                                {
+                                if (comboBox2.Items.Contains(mobWithXP) == false)
                                     AddToComboBox2(mobWithXP);
-                                }
                             }
                         }
                     }
@@ -138,24 +133,12 @@ namespace WaywardGamers.KParser.Plugin
 
             if (e.DatasetChanges.Interactions.Count != 0)
             {
-                datasetToUse = e.FullDataset;
+                datasetToUse = e.Dataset;
                 return true;
             }
 
             datasetToUse = null;
             return false;
-        }
-
-        private void AddToComboBox2(string p)
-        {
-            if (this.InvokeRequired)
-            {
-                Action<string> thisFunc = AddToComboBox2;
-                Invoke(thisFunc, new object[] { p });
-                return;
-            }
-
-            this.comboBox2.Items.Add(p);
         }
         #endregion
 
@@ -897,105 +880,95 @@ namespace WaywardGamers.KParser.Plugin
         #region Utsu
         private void ProcessUtsusemi(KPDatabaseDataSet dataSet)
         {
-            var utsuUsed = from cd in dataSet.Interactions
-                           where ((cd.IsTargetIDNull() == false) &&
-                                  (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Player) &&
-                                  (cd.ShadowsUsed > 0))
-                           group cd by cd.CombatantsRowByTargetCombatantRelation.CombatantName into cdu
-                           orderby cdu.Key
-                           select new
-                           {
-                               Player = cdu.Key,
-                               Shadows = cdu.Sum(s => s.ShadowsUsed)
-                           };
+            var utsu1 = dataSet.Actions.FirstOrDefault(a => a.ActionName == "Utsusemi: Ichi");
+            var utsu2 = dataSet.Actions.FirstOrDefault(a => a.ActionName == "Utsusemi: Ni");
+
+            var utsuByPlayer = from c in dataSet.Combatants
+                               where c.CombatantType == (byte)EntityType.Player
+                               orderby c.CombatantName
+                               select new
+                               {
+                                   Player = c.CombatantName,
+                                   ShadowsUsed = from uc in c.GetInteractionsRowsByTargetCombatantRelation()
+                                                 where ((uc.DefenseType == (byte)DefenseType.Blink) &&
+                                                        (uc.ShadowsUsed > 0))
+                                                 select uc,
+                                   UtsuIchi = from i in dataSet.Interactions
+                                              where ((utsu1 != null) &&
+                                                     (i.ActionsRow == utsu1) &&
+                                                     (i.CombatantsRowByActorCombatantRelation == c))
+                                              select i,
+                                   UtsuNi = from i in dataSet.Interactions
+                                            where ((utsu2 != null) &&
+                                                   (i.ActionsRow == utsu2) &&
+                                                   (i.CombatantsRowByActorCombatantRelation == c))
+                                            select i,
+                               };
 
 
-            var utsuCasts = from cd in dataSet.Interactions
-                            where ((cd.IsActorIDNull() == false) &&
-                                   (cd.CombatantsRowByActorCombatantRelation.CombatantType == (byte)EntityType.Player) &&
-                                   (cd.ActionType == (byte)ActionType.Spell) &&
-                                   (cd.ActionsRow.ActionName.StartsWith("Utsusemi")))
-                            group cd by cd.CombatantsRowByActorCombatantRelation.CombatantName into cdu
-                            orderby cdu.Key
-                            select new
-                            {
-                                Player = cdu.Key,
-                                UtsuIchi = from uc in cdu
-                                           where uc.ActionsRow.ActionName == "Utsusemi: Ichi"
-                                           select uc,
-                                UtsuNi = from uc in cdu
-                                         where uc.ActionsRow.ActionName == "Utsusemi: Ni"
-                                         select uc
-                            };
+            int shadsUsed = 0;
+            int ichiCast = 0;
+            int niCast = 0;
+            int ichiFin = 0;
+            int niFin = 0;
+            int numShads = 0;
+            int numShadsN = 0;
+            double effNorm = 0;
+            double effNin = 0;
 
-            if ((utsuUsed.Count() > 0) || (utsuCasts.Count() > 0))
+
+            if (utsuByPlayer.Count() > 0)
             {
                 AppendBoldText("Utsusemi\n\n", Color.Red);
                 AppendBoldUnderText(utsuHeader, Color.Black);
 
                 StringBuilder sb = new StringBuilder();
 
-                var playerList = utsuUsed.Select(n => n.Player).
-                    Concat(utsuCasts.Select(n => n.Player)).
-                    Distinct().OrderBy(n => n);
-
-
-                foreach (var playerName in playerList)
+                foreach (var player in utsuByPlayer)
                 {
-                    sb.Append(playerName.PadRight(16));
-                    sb.Append(" ");
+                    shadsUsed = 0;
+                    ichiCast = 0;
+                    niCast = 0;
+                    ichiFin = 0;
+                    niFin = 0;
+                    numShads = 0;
+                    numShadsN = 0;
+                    effNorm = 0;
+                    effNin = 0;
 
-                    int shadsUsed = 0;
-                    int ichiCast = 0;
-                    int niCast = 0;
-                    int ichiFin = 0;
-                    int niFin = 0;
-                    int numShads = 0;
-                    int numShadsN = 0;
-                    double effNorm = 0;
-                    double effNin = 0;
+                    shadsUsed = player.ShadowsUsed.Sum(u => u.ShadowsUsed);
+                    ichiCast = player.UtsuIchi.Count(u => u.Preparing == true);
+                    niCast = player.UtsuNi.Count(u => u.Preparing == true);
+                    ichiFin = player.UtsuIchi.Count(u => u.Preparing == false);
+                    niFin = player.UtsuNi.Count(u => u.Preparing == false);
 
-                    var used = utsuUsed.FirstOrDefault(p => p.Player == playerName);
+                    numShads = ichiFin * 3 + niFin * 3;
+                    numShadsN = ichiFin * 3 + niFin * 4;
 
-                    if (used != null)
+                    if (numShads > 0)
                     {
-                        shadsUsed = used.Shadows;
+                        effNorm = (double)shadsUsed / numShads;
+                        effNin = (double)shadsUsed / numShadsN;
                     }
 
-                    var cast = utsuCasts.FirstOrDefault(p => p.Player == playerName);
-
-                    if (cast != null)
+                    if ((numShads + shadsUsed + ichiCast + niCast) > 0)
                     {
-                        ichiCast = cast.UtsuIchi.Count(u => u.Preparing == true);
-                        ichiFin = cast.UtsuIchi.Count(u => u.Preparing == false);
-                        niCast = cast.UtsuNi.Count(u => u.Preparing == true);
-                        niFin = cast.UtsuNi.Count(u => u.Preparing = false);
+                        sb.Append(player.Player.PadRight(16));
+                        sb.Append(" ");
 
-                        numShads = ichiFin * 3 + niFin * 3;
-                        numShadsN = ichiFin * 3 + niFin * 4;
+                        sb.Append(shadsUsed.ToString().PadLeft(12));
+                        sb.Append(ichiCast.ToString().PadLeft(12));
+                        sb.Append(ichiFin.ToString().PadLeft(10));
+                        sb.Append(niCast.ToString().PadLeft(9));
+                        sb.Append(niFin.ToString().PadLeft(8));
+                        sb.Append(numShads.ToString().PadLeft(9));
+                        sb.Append(numShadsN.ToString().PadLeft(11));
+                        sb.Append(effNorm.ToString("P2").PadLeft(13));
+                        sb.Append(effNin.ToString("P2").PadLeft(14));
 
-                        if (numShads > 0)
-                        {
-                            effNorm = (double)shadsUsed / numShads;
-                            effNin = (double)shadsUsed / numShadsN;
-                        }
+                        sb.Append("\n");
                     }
-
-                    //Player           Shadows Used   Ichi Cast  Ichi Fin  Ni Cast  Ni Fin  Shadows  Shadows(N)  Efficiency  Efficiency(N)
-
-                    sb.Append(shadsUsed.ToString().PadLeft(12));
-                    sb.Append(ichiCast.ToString().PadLeft(12));
-                    sb.Append(ichiFin.ToString().PadLeft(10));
-                    sb.Append(niCast.ToString().PadLeft(9));
-                    sb.Append(niFin.ToString().PadLeft(8));
-                    sb.Append(numShads.ToString().PadLeft(9));
-                    sb.Append(numShadsN.ToString().PadLeft(11));
-                    sb.Append(effNorm.ToString("P2").PadLeft(13));
-                    sb.Append(effNin.ToString("P2").PadLeft(14));
-
-                    sb.Append("\n");
                 }
-
 
                 sb.Append("\n");
                 AppendNormalText(sb.ToString());
