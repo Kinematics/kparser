@@ -33,7 +33,7 @@ namespace WaywardGamers.KParser.Plugin
             if ((e.DatasetChanges.Loot.Count != 0) ||
                 (e.DatasetChanges.Battles.Any(b => b.Killed == true)))
             {
-                datasetToUse = e.FullDataset;
+                datasetToUse = e.Dataset;
                 return true;
             }
 
