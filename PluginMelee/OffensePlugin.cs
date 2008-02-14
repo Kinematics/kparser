@@ -157,13 +157,14 @@ namespace WaywardGamers.KParser.Plugin
         List<string> playerList = new List<string>();
         Dictionary<string, int> playerDamage = new Dictionary<string,int>();
 
-        string summaryHeader    = "Player            Total Dmg   Damage %   Melee Dmg   Range Dmg   Spell Dmg   Abil. Dmg  WSkill Dmg\n";
+        string mobSetHeader     = "Mob                        Base XP   Number\n";
+        string summaryHeader    = "Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Spell Dmg   Abil. Dmg  WSkill Dmg\n";
         string meleeHeader      = "Player            Melee Dmg   Melee %   Hit/Miss   M.Acc %  M.Low/Hi    M.Avg  Effect  #Crit  C.Low/Hi   C.Avg     Crit%\n";
         string rangeHeader      = "Player            Range Dmg   Range %   Hit/Miss   R.Acc %  R.Low/Hi    R.Avg  Effect  #Crit  C.Low/Hi   C.Avg     Crit%\n";
         string spellHeader      = "Player            Spell Dmg   Spell %  #Spells  S.Low/Hi     S.Avg  #MagicBurst  MB.Low/Hi   MB.Avg\n";
         string abilHeader       = "Player            Abil. Dmg   Abil. %   Hit/Miss   A.Acc %  A.Low/Hi    A.Avg\n";
         string wskillHeader     = "Player            WSkill Dmg  WSkill %   Hit/Miss  WS.Acc %  WS.Low/Hi   WS.Avg\n";
-        string skillchainHeader = "Skillchain        Skill Dmg   # SC   SC.Low/Hi  SC.Avg\n";
+        string skillchainHeader = "Skillchain          SC Dmg  # SC  SC.Low/Hi  SC.Avg\n";
         string otherHeader      = "Player\n";
         #endregion
 
@@ -177,19 +178,59 @@ namespace WaywardGamers.KParser.Plugin
             stopwatch.Reset();
             stopwatch.Start();
 
+            #region Filtering
             string mobFilter;
+
             if (comboBox2.SelectedIndex >= 0)
                 mobFilter = comboBox2.SelectedItem.ToString();
             else
                 mobFilter = "All";
 
+            string mobName = "All";
+            int xp = 0;
+
+            if (mobFilter != "All")
+            {
+                Regex mobAndXP = new Regex(@"(?<mobName>(.*(?<! \()))( \((?<xp>\d+)\))?");
+                Match mobAndXPMatch = mobAndXP.Match(mobFilter);
+
+                if (mobAndXPMatch.Success == true)
+                {
+                    mobName = mobAndXPMatch.Groups["mobName"].Value;
+
+                    if ((mobAndXPMatch.Groups["xp"] != null) && (mobAndXPMatch.Groups["xp"].Value != string.Empty))
+                    {
+                        xp = int.Parse(mobAndXPMatch.Groups["xp"].Value);
+                    }
+                }
+            }
+            #endregion
+
             IEnumerable<AttackGroup> attackSet = null;
+            IEnumerable<MobGroup> mobSet = null;
+
 
             //int minXP = 0;
             //if (checkBox1.Checked == true)
             //    minXP = 1;
 
             #region LINQ queries
+            mobSet = from c in dataSet.Combatants
+                     where ((c.CombatantName == mobName) ||
+                            ((mobName == "All") && (c.CombatantType == (byte)EntityType.Mob)))
+                     orderby c.CombatantName
+                     select new MobGroup
+                     {
+                         Mob = c.CombatantName,
+                         Battles = from b in c.GetBattlesRowsByEnemyCombatantRelation()
+                                   where ((b.Killed == false) ||
+                                          (xp == 0) ||
+                                          (b.BaseExperience() == xp))
+                                   group b by b.BaseExperience() into bx
+                                   orderby bx.Key
+                                   select bx
+                     };
+
             if (mobFilter == "All")
             {
                 attackSet = from c in dataSet.Combatants
@@ -236,144 +277,130 @@ namespace WaywardGamers.KParser.Plugin
             }
             else
             {
-                Regex mobAndXP = new Regex(@"(?<mobName>(.*(?<! \()))( \((?<xp>\d+)\))?");
-                Match mobAndXPMatch = mobAndXP.Match(mobFilter);
-
-                if (mobAndXPMatch.Success == true)
+                if (xp > 0)
                 {
-                    string mobName = mobAndXPMatch.Groups["mobName"].Value;
-                    int xp = 0;
+                    // Attacks against a particular mob type of a given base xp
 
-                    if ((mobAndXPMatch.Groups["xp"] != null) && (mobAndXPMatch.Groups["xp"].Value != string.Empty))
-                    {
-                        xp = int.Parse(mobAndXPMatch.Groups["xp"].Value);
-                    }
-
-                    if (xp > 0)
-                    {
-                        // Attacks against a particular mob type of a given base xp
-
-                        attackSet = from c in dataSet.Combatants
-                                    where ((c.CombatantType == (byte)EntityType.Player) ||
-                                           (c.CombatantType == (byte)EntityType.Pet) ||
-                                           (c.CombatantType == (byte)EntityType.Fellow) ||
-                                           (c.CombatantType == (byte)EntityType.Skillchain))
-                                    orderby c.CombatantName
-                                    select new AttackGroup
-                                    {
-                                        Player = c.CombatantName,
-                                        Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                                where (n.ActionType == (byte)ActionType.Melee &&
-                                                       (n.HarmType == (byte)HarmType.Damage ||
-                                                        n.HarmType == (byte)HarmType.Drain) &&
-                                                       n.IsTargetIDNull() == false &&
-                                                       n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
-                                                       n.IsBattleIDNull() == false &&
-                                                       n.BattlesRow.BaseExperience() == xp)
-                                                select n,
-                                        Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                                where (n.ActionType == (byte)ActionType.Ranged &&
-                                                       (n.HarmType == (byte)HarmType.Damage ||
-                                                        n.HarmType == (byte)HarmType.Drain) &&
-                                                       n.IsTargetIDNull() == false &&
-                                                       n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
-                                                       n.IsBattleIDNull() == false &&
-                                                       n.BattlesRow.BaseExperience() == xp)
-                                                select n,
-                                        Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                                where (n.ActionType == (byte)ActionType.Spell &&
-                                                       (n.HarmType == (byte)HarmType.Damage ||
-                                                        n.HarmType == (byte)HarmType.Drain) &&
-                                                       n.IsTargetIDNull() == false &&
-                                                       n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
-                                                       n.IsBattleIDNull() == false &&
-                                                       n.BattlesRow.BaseExperience() == xp)
-                                                select n,
-                                        Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                                  where (n.ActionType == (byte)ActionType.Ability &&
-                                                         (n.HarmType == (byte)HarmType.Damage ||
-                                                          n.HarmType == (byte)HarmType.Drain) &&
-                                                         n.IsTargetIDNull() == false &&
-                                                         n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
-                                                         n.IsBattleIDNull() == false &&
-                                                         n.BattlesRow.BaseExperience() == xp)
-                                                  select n,
-                                        WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                                 where (n.ActionType == (byte)ActionType.Weaponskill &&
-                                                        (n.HarmType == (byte)HarmType.Damage ||
-                                                         n.HarmType == (byte)HarmType.Drain) &&
-                                                        n.IsTargetIDNull() == false &&
-                                                        n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
-                                                        n.IsBattleIDNull() == false &&
-                                                        n.BattlesRow.BaseExperience() == xp)
-                                                 select n,
-                                        SC = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                             where (n.ActionType == (byte)ActionType.Skillchain &&
+                    attackSet = from c in dataSet.Combatants
+                                where ((c.CombatantType == (byte)EntityType.Player) ||
+                                       (c.CombatantType == (byte)EntityType.Pet) ||
+                                       (c.CombatantType == (byte)EntityType.Fellow) ||
+                                       (c.CombatantType == (byte)EntityType.Skillchain))
+                                orderby c.CombatantName
+                                select new AttackGroup
+                                {
+                                    Player = c.CombatantName,
+                                    Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                            where (n.ActionType == (byte)ActionType.Melee &&
+                                                   (n.HarmType == (byte)HarmType.Damage ||
+                                                    n.HarmType == (byte)HarmType.Drain) &&
+                                                   n.IsTargetIDNull() == false &&
+                                                   n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                                   n.IsBattleIDNull() == false &&
+                                                   n.BattlesRow.BaseExperience() == xp)
+                                            select n,
+                                    Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                            where (n.ActionType == (byte)ActionType.Ranged &&
+                                                   (n.HarmType == (byte)HarmType.Damage ||
+                                                    n.HarmType == (byte)HarmType.Drain) &&
+                                                   n.IsTargetIDNull() == false &&
+                                                   n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                                   n.IsBattleIDNull() == false &&
+                                                   n.BattlesRow.BaseExperience() == xp)
+                                            select n,
+                                    Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                            where (n.ActionType == (byte)ActionType.Spell &&
+                                                   (n.HarmType == (byte)HarmType.Damage ||
+                                                    n.HarmType == (byte)HarmType.Drain) &&
+                                                   n.IsTargetIDNull() == false &&
+                                                   n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                                   n.IsBattleIDNull() == false &&
+                                                   n.BattlesRow.BaseExperience() == xp)
+                                            select n,
+                                    Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                              where (n.ActionType == (byte)ActionType.Ability &&
+                                                     (n.HarmType == (byte)HarmType.Damage ||
+                                                      n.HarmType == (byte)HarmType.Drain) &&
+                                                     n.IsTargetIDNull() == false &&
+                                                     n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                                     n.IsBattleIDNull() == false &&
+                                                     n.BattlesRow.BaseExperience() == xp)
+                                              select n,
+                                    WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                             where (n.ActionType == (byte)ActionType.Weaponskill &&
                                                     (n.HarmType == (byte)HarmType.Damage ||
                                                      n.HarmType == (byte)HarmType.Drain) &&
                                                     n.IsTargetIDNull() == false &&
                                                     n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
                                                     n.IsBattleIDNull() == false &&
                                                     n.BattlesRow.BaseExperience() == xp)
-                                             select n
-                                    };
-                    }
-                    else
-                    {
-                        // Attacks against a particular mob type
-                        attackSet = from c in dataSet.Combatants
-                                    where ((c.CombatantType == (byte)EntityType.Player) ||
-                                           (c.CombatantType == (byte)EntityType.Pet) ||
-                                           (c.CombatantType == (byte)EntityType.Fellow) ||
-                                           (c.CombatantType == (byte)EntityType.Skillchain))
-                                    orderby c.CombatantName
-                                    select new AttackGroup
-                                    {
-                                        Player = c.CombatantName,
-                                        Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                                where (n.ActionType == (byte)ActionType.Melee &&
-                                                       (n.HarmType == (byte)HarmType.Damage ||
-                                                        n.HarmType == (byte)HarmType.Drain) &&
-                                                       n.IsTargetIDNull() == false &&
-                                                       n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
-                                                select n,
-                                        Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                                where (n.ActionType == (byte)ActionType.Ranged &&
-                                                       (n.HarmType == (byte)HarmType.Damage ||
-                                                        n.HarmType == (byte)HarmType.Drain) &&
-                                                       n.IsTargetIDNull() == false &&
-                                                       n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
-                                                select n,
-                                        Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                                where (n.ActionType == (byte)ActionType.Spell &&
-                                                       (n.HarmType == (byte)HarmType.Damage ||
-                                                        n.HarmType == (byte)HarmType.Drain) &&
-                                                       n.IsTargetIDNull() == false &&
-                                                       n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
-                                                select n,
-                                        Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                                  where (n.ActionType == (byte)ActionType.Ability &&
-                                                         (n.HarmType == (byte)HarmType.Damage ||
-                                                          n.HarmType == (byte)HarmType.Drain) &&
-                                                         n.IsTargetIDNull() == false &&
-                                                         n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
-                                                  select n,
-                                        WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                                 where (n.ActionType == (byte)ActionType.Weaponskill &&
-                                                        (n.HarmType == (byte)HarmType.Damage ||
-                                                         n.HarmType == (byte)HarmType.Drain) &&
-                                                        n.IsTargetIDNull() == false &&
-                                                        n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
-                                                 select n,
-                                        SC = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                             where (n.ActionType == (byte)ActionType.Skillchain &&
+                                             select n,
+                                    SC = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                         where (n.ActionType == (byte)ActionType.Skillchain &&
+                                                (n.HarmType == (byte)HarmType.Damage ||
+                                                 n.HarmType == (byte)HarmType.Drain) &&
+                                                n.IsTargetIDNull() == false &&
+                                                n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                                n.IsBattleIDNull() == false &&
+                                                n.BattlesRow.BaseExperience() == xp)
+                                         select n
+                                };
+                }
+                else
+                {
+                    // Attacks against a particular mob type
+                    attackSet = from c in dataSet.Combatants
+                                where ((c.CombatantType == (byte)EntityType.Player) ||
+                                       (c.CombatantType == (byte)EntityType.Pet) ||
+                                       (c.CombatantType == (byte)EntityType.Fellow) ||
+                                       (c.CombatantType == (byte)EntityType.Skillchain))
+                                orderby c.CombatantName
+                                select new AttackGroup
+                                {
+                                    Player = c.CombatantName,
+                                    Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                            where (n.ActionType == (byte)ActionType.Melee &&
+                                                   (n.HarmType == (byte)HarmType.Damage ||
+                                                    n.HarmType == (byte)HarmType.Drain) &&
+                                                   n.IsTargetIDNull() == false &&
+                                                   n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
+                                            select n,
+                                    Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                            where (n.ActionType == (byte)ActionType.Ranged &&
+                                                   (n.HarmType == (byte)HarmType.Damage ||
+                                                    n.HarmType == (byte)HarmType.Drain) &&
+                                                   n.IsTargetIDNull() == false &&
+                                                   n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
+                                            select n,
+                                    Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                            where (n.ActionType == (byte)ActionType.Spell &&
+                                                   (n.HarmType == (byte)HarmType.Damage ||
+                                                    n.HarmType == (byte)HarmType.Drain) &&
+                                                   n.IsTargetIDNull() == false &&
+                                                   n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
+                                            select n,
+                                    Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                              where (n.ActionType == (byte)ActionType.Ability &&
+                                                     (n.HarmType == (byte)HarmType.Damage ||
+                                                      n.HarmType == (byte)HarmType.Drain) &&
+                                                     n.IsTargetIDNull() == false &&
+                                                     n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
+                                              select n,
+                                    WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                             where (n.ActionType == (byte)ActionType.Weaponskill &&
                                                     (n.HarmType == (byte)HarmType.Damage ||
                                                      n.HarmType == (byte)HarmType.Drain) &&
                                                     n.IsTargetIDNull() == false &&
                                                     n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
-                                             select n
-                                    };
-                    }
+                                             select n,
+                                    SC = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                         where (n.ActionType == (byte)ActionType.Skillchain &&
+                                                (n.HarmType == (byte)HarmType.Damage ||
+                                                 n.HarmType == (byte)HarmType.Drain) &&
+                                                n.IsTargetIDNull() == false &&
+                                                n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
+                                         select n
+                                };
                 }
             }
             #endregion
@@ -394,8 +421,9 @@ namespace WaywardGamers.KParser.Plugin
             {
                 playerDamage[player.Player] = 0;
 
-                localDamage = player.MeleeDmg + player.RangeDmg + player.SpellDmg
-                    + player.AbilityDmg + player.WSkillDmg;
+                localDamage = player.MeleeDmg + player.MeleeEffectDmg +
+                    player.RangeDmg + player.RangeEffectDmg + player.SpellDmg +
+                    player.AbilityDmg + player.WSkillDmg + player.SCDmg;
                 playerDamage[player.Player] = localDamage;
                 totalDamage += localDamage;
             }
@@ -404,6 +432,9 @@ namespace WaywardGamers.KParser.Plugin
             Debug.WriteLine(string.Format("Offense: Revised Setup player list/damage time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
             stopwatch.Reset();
             stopwatch.Start();
+
+            ProcessMobSummary(mobSet);
+
 
             switch (actionSourceFilter)
             {
@@ -448,6 +479,63 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
+        private void ProcessMobSummary(IEnumerable<MobGroup> mobSet)
+        {
+            if (mobSet == null)
+                return;
+
+            if (mobSet.Count() == 0)
+                return;
+
+            StringBuilder sb = new StringBuilder();
+            bool headerDisplayed = false;
+
+            int mobCount;
+
+            foreach (var mob in mobSet)
+            {
+                if (mob.Battles.Count() > 0)
+                {
+                    foreach (var mobBattle in mob.Battles)
+                    {
+                        mobCount = mobBattle.Count();
+
+                        if (mobCount > 0)
+                        {
+                            if (headerDisplayed == false)
+                            {
+                                AppendBoldText("Mob Listing\n", Color.Red);
+                                AppendBoldUnderText(mobSetHeader, Color.Black);
+
+                                headerDisplayed = true;
+                            }
+
+                            sb.Append(mob.Mob.PadRight(24));
+
+                            if (mobBattle.Key > 0)
+                            {
+                                sb.Append(mobBattle.Key.ToString().PadLeft(10));
+                            }
+                            else
+                            {
+                                sb.Append("---".PadLeft(10));
+                            }
+
+                            sb.Append(mobCount.ToString().PadLeft(9));
+
+                            sb.Append("\n");
+                        }
+                    }
+                }
+            }
+
+            if (headerDisplayed == true)
+            {
+                sb.Append("\n\n");
+                AppendNormalText(sb.ToString());
+            }
+        }
+
         private void ProcessAttackSummary(IEnumerable<AttackGroup> attacksByPlayer)
         {
             if (attacksByPlayer == null)
@@ -459,6 +547,21 @@ namespace WaywardGamers.KParser.Plugin
             AppendBoldText("Damage Summary\n", Color.Red);
             AppendBoldUnderText(summaryHeader, Color.Black);
 
+            int playerDmg;
+            double damageShare;
+            int meleeDmg;
+            int rangeDmg;
+            int spellDmg;
+            int abilDmg;
+            int wskillDmg;
+
+            int ttlPlayerDmg = 0;
+            double ttlDamageShare = 0;
+            int ttlMeleeDmg = 0;
+            int ttlRangeDmg = 0;
+            int ttlSpellDmg = 0;
+            int ttlAbilDmg = 0;
+            int ttlWskillDmg = 0;
 
             StringBuilder sb = new StringBuilder();
 
@@ -467,19 +570,26 @@ namespace WaywardGamers.KParser.Plugin
                 if (playerDamage[player.Player] > 0)
                 {
                     // Player name
-                    sb.Append(player.Player.PadRight(16));
-                    sb.Append(" ");
+                    sb.Append(player.Player.PadRight(20));
 
-                    int ttlPlayerDmg = playerDamage[player.Player];
-                    double damageShare = (double)ttlPlayerDmg / totalDamage;
+                    playerDmg = playerDamage[player.Player];
+                    damageShare = (double)playerDmg / totalDamage;
 
-                    int meleeDmg = player.MeleeDmg;
-                    int rangeDmg = player.RangeDmg;
-                    int spellDmg = player.SpellDmg;
-                    int abilDmg = player.AbilityDmg;
-                    int wskillDmg = player.WSkillDmg;
+                    meleeDmg = player.MeleeDmg;
+                    rangeDmg = player.RangeDmg;
+                    spellDmg = player.SpellDmg;
+                    abilDmg = player.AbilityDmg;
+                    wskillDmg = player.WSkillDmg;
 
-                    sb.Append(ttlPlayerDmg.ToString().PadLeft(10));
+                    ttlPlayerDmg += playerDmg;
+                    ttlDamageShare += damageShare;
+                    ttlMeleeDmg += meleeDmg;
+                    ttlRangeDmg += rangeDmg;
+                    ttlSpellDmg += spellDmg;
+                    ttlAbilDmg += abilDmg;
+                    ttlWskillDmg += wskillDmg;
+
+                    sb.Append(playerDmg.ToString().PadLeft(10));
                     sb.Append(damageShare.ToString("P2").PadLeft(11));
 
                     sb.Append(meleeDmg.ToString().PadLeft(12));
@@ -492,8 +602,28 @@ namespace WaywardGamers.KParser.Plugin
                 }
             }
 
-            sb.Append("\n\n");
             AppendNormalText(sb.ToString());
+
+            sb = new StringBuilder();
+
+            if (ttlPlayerDmg > 0)
+            {
+                sb.Append("Total".PadRight(20));
+                
+                sb.Append(ttlPlayerDmg.ToString().PadLeft(10));
+                sb.Append(ttlDamageShare.ToString("P2").PadLeft(11));
+
+                sb.Append(ttlMeleeDmg.ToString().PadLeft(12));
+                sb.Append(ttlRangeDmg.ToString().PadLeft(12));
+                sb.Append(ttlSpellDmg.ToString().PadLeft(12));
+                sb.Append(ttlAbilDmg.ToString().PadLeft(12));
+                sb.Append(ttlWskillDmg.ToString().PadLeft(12));
+
+                sb.Append("\n");
+                AppendBoldText(sb.ToString(), Color.Black);
+            }
+
+            AppendNormalText("\n\n");
         }
 
         private void ProcessMeleeAttacks(IEnumerable<AttackGroup> attacksByPlayer)
@@ -1078,11 +1208,11 @@ namespace WaywardGamers.KParser.Plugin
                         headerDisplayed = true;
                     }
 
-                    sb.Append(player.Player.PadRight(17));
+                    sb.Append(player.Player.PadRight(20));
 
-                    sb.Append(scDamage.ToString().PadLeft(10));
-                    sb.Append(numSCs.ToString().PadLeft(7));
-                    sb.Append(string.Format("{0}/{1}", scLow, scHigh).PadLeft(12));
+                    sb.Append(scDamage.ToString().PadLeft(6));
+                    sb.Append(numSCs.ToString().PadLeft(6));
+                    sb.Append(string.Format("{0}/{1}", scLow, scHigh).PadLeft(11));
                     sb.Append(scAvg.ToString("F2").PadLeft(8));
 
                     sb.Append("\n");

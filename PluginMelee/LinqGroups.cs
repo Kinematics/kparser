@@ -15,12 +15,14 @@ namespace WaywardGamers.KParser.Plugin
     internal class AttackGroup
     {
         internal string Player { get; set; }
+        internal int BaseXP { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Melee { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Range { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Spell { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Ability { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> WSkill { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> SC { get; set; }
+
         internal int MeleeDmg
         {
             get
@@ -94,7 +96,6 @@ namespace WaywardGamers.KParser.Plugin
         }
     }
 
-
     internal class DefenseGroup
     {
         internal string Player { get; set; }
@@ -107,20 +108,16 @@ namespace WaywardGamers.KParser.Plugin
         public DefenseGroup()
         {
         }
+    }
 
-        public DefenseGroup(string player,
-            IEnumerable<KPDatabaseDataSet.InteractionsRow> allAtt,
-            IEnumerable<KPDatabaseDataSet.InteractionsRow> melee,
-            IEnumerable<KPDatabaseDataSet.InteractionsRow> range,
-            IEnumerable<KPDatabaseDataSet.InteractionsRow> spell,
-            IEnumerable<KPDatabaseDataSet.InteractionsRow> abil)
+    internal class MobGroup
+    {
+        internal string Mob { get; set; }
+        internal IOrderedEnumerable<IGrouping<int, KPDatabaseDataSet.BattlesRow>> Battles { get; set; }
+
+        public MobGroup()
         {
-            Player = player;
-            AllAttacks = allAtt;
-            Melee = melee;
-            Range = range;
-            Spell = spell;
-            Abil = abil;
         }
     }
+
 }
