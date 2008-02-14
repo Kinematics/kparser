@@ -14,24 +14,6 @@ namespace WaywardGamers.KParser.Plugin
     /// </summary>
     internal class AttackGroup
     {
-        internal ActionType ActionSource { get; set; }
-        internal IEnumerable<IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow>>
-            CombatGroup { get; set; }
-
-        public AttackGroup()
-        {
-        }
-
-        public AttackGroup(ActionType key,
-            IEnumerable<IGrouping<KPDatabaseDataSet.CombatantsRow, KPDatabaseDataSet.InteractionsRow>> grouping)
-        {
-            ActionSource = key;
-            CombatGroup = grouping;
-        }
-    }
-
-    internal class AttackGroup2
-    {
         internal string Player { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Melee { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Range { get; set; }
@@ -43,8 +25,15 @@ namespace WaywardGamers.KParser.Plugin
         {
             get
             {
-                return Melee.Sum(d => d.Amount) +
-                       Melee.Where(s =>
+                return Melee.Sum(d => d.Amount);
+            }
+        }
+
+        internal int MeleeEffectDmg
+        {
+            get
+            {
+                return Melee.Where(s =>
                            s.SecondHarmType == (byte)HarmType.Damage ||
                            s.SecondHarmType == (byte)HarmType.Drain).Sum(d => d.SecondAmount);
             }
@@ -54,8 +43,15 @@ namespace WaywardGamers.KParser.Plugin
         {
             get
             {
-                return Range.Sum(d => d.Amount) +
-                       Range.Where(s =>
+                return Range.Sum(d => d.Amount);
+            }
+        }
+
+        internal int RangeEffectDmg
+        {
+            get
+            {
+                return Range.Where(s =>
                            s.SecondHarmType == (byte)HarmType.Damage ||
                            s.SecondHarmType == (byte)HarmType.Drain).Sum(d => d.SecondAmount);
             }
@@ -93,7 +89,7 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
-        public AttackGroup2()
+        public AttackGroup()
         {
         }
     }
