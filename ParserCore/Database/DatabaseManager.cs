@@ -657,7 +657,7 @@ namespace WaywardGamers.KParser
         private void InsertCombat(Message message)
         {
             // Handle death events separately
-            if (message.EventDetails.CombatDetails.HarmType == HarmType.Death)
+            if (message.EventDetails.CombatDetails.InteractionType == InteractionType.Death)
             {
                 ProcessDeath(message);
                 return;
