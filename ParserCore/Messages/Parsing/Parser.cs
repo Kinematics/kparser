@@ -1112,8 +1112,8 @@ namespace WaywardGamers.KParser.Parsing
                         combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                         break;
                     case ActionType.Skillchain:
-                        combatDetails.ActorEntityType = EntityType.Skillchain;
                         combatDetails.ActorName = string.Format("SC: {0}", combatMatch.Groups[ParseFields.SC].Value);
+                        combatDetails.ActorEntityType = EntityType.Skillchain;
                         break;
                 }
 
