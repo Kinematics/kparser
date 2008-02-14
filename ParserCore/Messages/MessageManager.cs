@@ -112,10 +112,12 @@ namespace WaywardGamers.KParser
         /// <param name="chatLine">The chatline to add to the message collection.</param>
         internal void AddChatLine(ChatLine chatLine)
         {
+            MessageLine messageLine = null;
+
             try
             {
                 // Create a message line that tokenizes the individual text fields.
-                MessageLine messageLine = new MessageLine(chatLine);
+                messageLine = new MessageLine(chatLine);
 
                 // Add this directly to the database before starting to parse.
                 DatabaseManager.Instance.AddMessageLineRecord(messageLine);
@@ -135,7 +137,7 @@ namespace WaywardGamers.KParser
             }
             catch (Exception e)
             {
-                Logger.Instance.Log(e);
+                Logger.Instance.Log(e, messageLine);
             }
         }
 
