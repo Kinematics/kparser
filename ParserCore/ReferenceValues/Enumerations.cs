@@ -71,21 +71,32 @@ namespace WaywardGamers.KParser
         Unknown,
         Aid,
         Harm,
+        Death,
     }
-    
+
+    public enum SuccessType : byte
+    {
+        None,
+        Unknown,
+        Failed,
+        Unsuccessful,
+        Successful,
+    }
+
     public enum HarmType : byte
     {
         None,
+        Unknown,
         Damage,
         Enfeeble,
         Drain,
         Aspir,
-        Death,
     }
 
     public enum AidType : byte
     {
         None,
+        Unknown,
         Enhance,
         Recovery,
         Item,
@@ -160,14 +171,6 @@ namespace WaywardGamers.KParser
         Guard,
         Resist,
         Intimidate,
-    }
-
-    public enum SuccessType : byte
-    {
-        Unknown,
-        Failed,
-        Unsuccessful,
-        Successful,
     }
 
     public enum MobDifficulty : byte
