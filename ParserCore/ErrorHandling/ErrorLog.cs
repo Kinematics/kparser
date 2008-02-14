@@ -119,7 +119,15 @@ namespace WaywardGamers.KParser
 			Log(e, "");
 		}
 
-		/// <summary>
+        internal void Log(Exception e, MessageLine messageLine)
+        {
+            if (messageLine == null)
+                Log(e, "");
+            else
+                Log(e, messageLine.OriginalText);
+        }
+
+        /// <summary>
 		/// Log any other exceptions.
 		/// </summary>
 		/// <param name="e">The exception to be logged.</param>
