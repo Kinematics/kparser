@@ -201,9 +201,12 @@ namespace WaywardGamers.KParser
         {
             get
             {
+                if (localDB == null)
+                    return null;
+
                 lock (localDB)
                 {
-                    return localDB.Copy();
+                    return (KPDatabaseDataSet)localDB.Copy();
                 }
             }
         }
