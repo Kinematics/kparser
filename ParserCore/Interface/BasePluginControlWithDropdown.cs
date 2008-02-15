@@ -114,7 +114,31 @@ namespace WaywardGamers.KParser.Plugin
 
         #endregion
 
-        #region Helper Methods for adding updating the UI
+        #region Helper Methods for updating the UI via secondary threads.
+        protected void ResetTextBox()
+        {
+            if (this.InvokeRequired)
+            {
+                Action thisFunc = ResetTextBox;
+                Invoke(thisFunc);
+                return;
+            }
+
+            this.richTextBox.Clear();
+        }
+
+        protected void ResetComboBox2()
+        {
+            if (this.InvokeRequired)
+            {
+                Action thisFunc = ResetComboBox2;
+                Invoke(thisFunc);
+                return;
+            }
+
+            this.comboBox2.Items.Clear();
+        }
+
         protected void AddToComboBox2(string p)
         {
             if (this.InvokeRequired)
@@ -126,7 +150,20 @@ namespace WaywardGamers.KParser.Plugin
 
             this.comboBox2.Items.Add(p);
         }
-        
+
+        protected void InitComboBox2Selection()
+        {
+            if (this.InvokeRequired)
+            {
+                Action thisFunc = InitComboBox2Selection;
+                Invoke(thisFunc);
+                return;
+            }
+
+            if (this.comboBox2.Items.Count > 0)
+                this.comboBox2.SelectedIndex = 0;
+        }
+
         protected void AppendBoldText(string textToInsert, Color color)
         {
             int start = richTextBox.Text.Length;
