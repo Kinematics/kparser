@@ -22,10 +22,13 @@ namespace WaywardGamers.KParser.Plugin
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
         {
-            if (e.DatasetChanges.Battles.Any(b => b.Killed == true))
+            if (e.DatasetChanges != null)
             {
-                datasetToUse = e.Dataset;
-                return true;
+                if (e.DatasetChanges.Battles.Any(b => (b.Killed == true) || (b.EndTime != MagicNumbers.MinSQLDateTime)))
+                {
+                    datasetToUse = e.Dataset;
+                    return true;
+                }
             }
 
             datasetToUse = null;
@@ -35,84 +38,115 @@ namespace WaywardGamers.KParser.Plugin
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
             richTextBox.Clear();
+            StringBuilder sb1 = new StringBuilder();
+            StringBuilder sb2 = new StringBuilder();
 
-            var completedFights = dataSet.Battles.Where(b => b.Killed == true);
+            var completedFights = dataSet.Battles.Where(b =>
+                ((b.Killed == true) || (b.EndTime != MagicNumbers.MinSQLDateTime)) &&
+                (b.EndTime != b.StartTime));
             int totalFights = completedFights.Count();
 
             if (totalFights > 0)
             {
-                AppendBoldText("Experience Rates\n", Color.Black);
+                DateTime startTime;
+                DateTime endTime;
+                TimeSpan partyDuration;
+                Double totalFightsLength = 0;
+                TimeSpan minTime = TimeSpan.FromSeconds(1);
 
-                int totalXP = completedFights.Sum(b => b.ExperiencePoints);
+                int totalXP = 0;
+                double xpPerHour = 0;
+                double xpPerMinute = 0;
+                double xpPerFight = 0;
 
-                DateTime startTime = completedFights.First(b => b.Killed == true).StartTime;
-                DateTime endTime = completedFights.Last(b => b.Killed == true).EndTime;
+                double avgFightLength;
+                double timePerFight;
 
-                TimeSpan partyDuration = endTime - startTime;
-                Double totalFightLengths = completedFights.Sum(b => b.FightLength().TotalSeconds);
+                int[] chainXPTotals = new int[11];
+                int[] chainCounts = new int[11];
+                int maxChain = 0;
 
-                string expFormat = "{0}: {1}\n";
-                string expDecFormat = "{0}: {1:f2}\n";
-                string expDurFormat = "{0}: {1:f2} seconds\n";
+                int chainNum;
 
-
-                AppendNormalText(string.Format(expFormat, "Total Experience".PadRight(17), totalXP));
-                AppendNormalText(string.Format(expFormat, "Total Fights".PadRight(17), totalFights));
-
-                AppendNormalText(string.Format(expFormat, "Start Time".PadRight(17), startTime.ToLongTimeString()));
-                AppendNormalText(string.Format(expFormat, "End Time".PadRight(17), endTime.ToLongTimeString()));
-
-                if (partyDuration > TimeSpan.FromSeconds(1))
+                foreach (var fight in completedFights)
                 {
-                    AppendNormalText(string.Format(expDecFormat, "XP/Hour".PadRight(17), totalXP / partyDuration.TotalHours));
-                    AppendNormalText(string.Format(expDecFormat, "XP/Minute".PadRight(17), totalXP / partyDuration.TotalMinutes));
-                    AppendNormalText(string.Format(expDecFormat, "XP/Fight".PadRight(17), (double)totalXP / totalFights));
+                    totalFightsLength += fight.FightLength().TotalSeconds;
 
-                    AppendNormalText(string.Format(expDurFormat, "Avg Fight Length".PadRight(17),
-                        totalFightLengths / totalFights));
-                    AppendNormalText(string.Format(expDurFormat, "Avg Time/Fight".PadRight(17),
-                        partyDuration.TotalSeconds / totalFights));
+                    chainNum = fight.ExperienceChain;
+
+                    if (chainNum > maxChain)
+                        maxChain = chainNum;
+
+                    if (chainNum < 10)
+                    {
+                        chainCounts[chainNum]++;
+                        chainXPTotals[chainNum] += fight.ExperiencePoints;
+                    }
+                    else
+                    {
+                        chainCounts[10]++;
+                        chainXPTotals[10] += fight.ExperiencePoints;
+                    }
+
+                    totalXP += fight.ExperiencePoints;
                 }
 
-                AppendBoldText("\n\nExperience Chains\n", Color.Black);
 
-                string chainFormat = "{0} {1} {2} {3}\n";
-                EnumerableRowCollection<KPDatabaseDataSet.BattlesRow> chain;
-                int chainCount;
-                int chainXP;
-                double avgChainXP;
+                startTime = completedFights.First(b => b.Killed == true).StartTime;
+                endTime = completedFights.Last(b => b.Killed == true).EndTime;
+                partyDuration = endTime - startTime;
 
-                AppendNormalText(string.Format(chainFormat, "Chain".PadRight(6), "Count".PadRight(6),
-                    "Total XP".PadRight(9), "Average XP"));
+                if (partyDuration > minTime)
+                {
+                    double totalXPDouble = (double) totalXP;
+                    xpPerHour = totalXPDouble / partyDuration.TotalHours;
+                    xpPerMinute = totalXPDouble / partyDuration.TotalMinutes;
+                    xpPerFight = totalXPDouble / totalFights;
+                }
+
+                avgFightLength = totalFightsLength / totalFights;
+                timePerFight = partyDuration.TotalSeconds / totalFights;
+
+
+                sb1.AppendFormat("Total Experience : {0}\n", totalXP);
+                sb1.AppendFormat("Number of Fights : {0}\n", totalFights);
+                sb1.AppendFormat("Start Time       : {0}\n", startTime.ToLongTimeString());
+                sb1.AppendFormat("End Time         : {0}\n", endTime.ToLongTimeString());
+                sb1.AppendFormat("Party Duration   : {0}:{1}:{2}\n",
+                    partyDuration.Hours, partyDuration.Minutes, partyDuration.Seconds);
+                sb1.AppendFormat("XP/Hour          : {0:F2}\n", xpPerHour);
+                sb1.AppendFormat("XP/Minute        : {0:F2}\n", xpPerMinute);
+                sb1.AppendFormat("XP/Fight         : {0:F2}\n", xpPerFight);
+                sb1.AppendFormat("Avg Fight Length : {0:F2} seconds\n", avgFightLength);
+                sb1.AppendFormat("Avg Time/Fight   : {0:F2} seconds\n", timePerFight);
+                sb1.Append("\n\n");
+
+
+                sb2.Append("Chain   Count   Total XP   Avg XP\n");
 
                 for (int i = 0; i < 10; i++)
                 {
-                    chain = completedFights.Where(b => b.ExperienceChain == i);
-                    chainCount = chain.Count();
-                    if (chainCount > 0)
-                    {
-                        chainXP = chain.Sum(b => b.ExperiencePoints);
-                        avgChainXP = (double)chainXP / chainCount;
-
-                        AppendNormalText(string.Format(chainFormat, i.ToString().PadRight(6),
-                            chainCount.ToString().PadRight(6), chainXP.ToString().PadRight(9),
-                            avgChainXP.ToString("F2")));
-                    }
+                    if (chainCounts[i] > 0)
+                        sb2.AppendFormat("{0,-6} {1,6} {2,10} {3,8:F2}\n", i, chainCounts[i], chainXPTotals[i],
+                            (double)chainXPTotals[i] / chainCounts[i]);
                 }
 
-                chain = completedFights.Where(b => b.ExperienceChain >= 10);
-                chainCount = chain.Count();
-                if (chainCount > 0)
+                if (chainCounts[10] > 0)
                 {
-                    chainXP = chain.Sum(b => b.ExperiencePoints);
-                    avgChainXP = (double)chainXP / chainCount;
-
-                    AppendNormalText(string.Format(chainFormat, "10+", chainCount, chainXP, avgChainXP.ToString("F2")));
+                    sb2.AppendFormat("{0,-6}  {1,6}  {2,10}  {3,8:F2}\n", "10+", chainCounts[10], chainXPTotals[10],
+                        (double)chainXPTotals[10] / chainCounts[10]);
                 }
 
-                int maxChain = dataSet.Battles.Max(b => b.ExperienceChain);
+                sb2.Append("\n");
+                sb2.AppendFormat("Highest Chain:  {0}\n\n", maxChain);
 
-                AppendNormalText(string.Format("\nHighest Chain: {0}\n", maxChain));
+
+                // Dump all the constructed text above into the window.
+                AppendBoldText("Experience Rates\n", Color.Black);
+                AppendNormalText(sb1.ToString());
+
+                AppendBoldText("Experience Chains\n", Color.Black);
+                AppendNormalText(sb2.ToString());
             }
         }
     }
