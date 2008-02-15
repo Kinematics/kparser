@@ -53,159 +53,164 @@ namespace WaywardGamers.KParser.Plugin
             richTextBox.Clear();
 
             if (radioButton1.Checked == true)
+                ProcessSummary(dataSet);
+            else
+                ProcessDropRates(dataSet);
+        }
+
+        private void ProcessSummary(KPDatabaseDataSet dataSet)
+        {
+            // All items
+            AppendBoldText("Item Drops\n", Color.Red);
+            string dropListFormat = "{0,9} {1}\n";
+
+            int totalGil = 0;
+            string gilPlayerName = string.Empty;
+
+            var gilItem = dataSet.Items.SingleOrDefault(i => i.ItemName == "Gil");
+            if (gilItem != null)
             {
-                // Summary section
+                gilPlayerName = gilItem.GetLootRows().First().CombatantsRow.CombatantName;
+                totalGil = gilItem.GetLootRows().Sum(l => l.GilDropped);
+            }
 
-                // All items
-                AppendBoldText("Item Drops\n", Color.Red);
-                string dropListFormat = "{0} {1}\n";
+            if (totalGil > 0)
+            {
+                AppendNormalText(string.Format(dropListFormat, totalGil, "Gil"));
+            }
 
-                int totalGil = 0;
-                string gilPlayerName = string.Empty;
-
-                var gilItem = dataSet.Items.SingleOrDefault(i => i.ItemName == "Gil");
-                if (gilItem != null)
+            foreach (var item in dataSet.Items)
+            {
+                if (item.ItemName != "Gil")
                 {
-                    gilPlayerName = gilItem.GetLootRows().First().CombatantsRow.CombatantName;
-                    totalGil = gilItem.GetLootRows().Sum(l => l.GilDropped);
+                    AppendNormalText(string.Format(dropListFormat,
+                        item.GetLootRows().Count(), item.ItemName));
                 }
+            }
 
-                if (totalGil > 0)
-                {
-                    AppendNormalText(string.Format(dropListFormat, totalGil.ToString().PadLeft(9), "Gil"));
-                }
+            // Items by player who got them
+            var lootByPlayer = from c in dataSet.Combatants
+                               where ((c.CombatantType == (byte)EntityType.Player) &&
+                                      (c.GetLootRows().Count() != 0))
+                               orderby c.CombatantName
+                               select new
+                               {
+                                   Name = c.CombatantName,
+                                   LootItems = from l in c.GetLootRows()
+                                               group l by l.ItemsRow.ItemName into li
+                                               orderby li.Key
+                                               select li
+                               };
 
-                foreach (var item in dataSet.Items)
+
+            if (lootByPlayer.Count() > 0)
+            {
+                AppendBoldText("\n\nDistribution\n", Color.Red);
+
+                foreach (var loot in lootByPlayer)
                 {
-                    if (item.ItemName != "Gil")
+                    AppendBoldText(string.Format("\n    {0}\n", loot.Name), Color.Black);
+
+                    if (totalGil > 0)
                     {
-                        AppendNormalText(string.Format(dropListFormat,
-                            item.GetLootRows().Count().ToString().PadLeft(9), item.ItemName));
+                        if (gilPlayerName == loot.Name)
+                            AppendNormalText(string.Format(dropListFormat, totalGil, "Gil"));
                     }
-                }
 
-                // Items by player who got them
-                var lootByPlayer = from c in dataSet.Combatants
-                                   where ((c.CombatantType == (byte) EntityType.Player) &&
-                                          (c.GetLootRows().Count() != 0))
-                                   orderby c.CombatantName
-                                   select new
-                                   {
-                                       Name = c.CombatantName,
-                                       LootItems = from l in c.GetLootRows()
-                                              group l by l.ItemsRow.ItemName into li
-                                              orderby li.Key
-                                              select li
-                                   };
-
-
-                if (lootByPlayer.Count() > 0)
-                {
-                    AppendBoldText("\n\nDistribution\n", Color.Red);
-
-                    foreach (var loot in lootByPlayer)
+                    foreach (var lootItem in loot.LootItems)
                     {
-                        AppendBoldText(string.Format("\n    {0}\n", loot.Name), Color.Black);
-
-                        if (totalGil > 0)
+                        if (lootItem.Key != "Gil")
                         {
-                            if (gilPlayerName == loot.Name)
-                                AppendNormalText(string.Format(dropListFormat, totalGil.ToString().PadLeft(9), "Gil"));
-                        }
-
-                        foreach (var lootItem in loot.LootItems)
-                        {
-                            if (lootItem.Key != "Gil")
-                            {
-                                AppendNormalText(string.Format(dropListFormat,
-                                    lootItem.Count().ToString().PadLeft(9), lootItem.Key));
-                            }
+                            AppendNormalText(string.Format(dropListFormat,
+                                lootItem.Count(), lootItem.Key));
                         }
                     }
                 }
             }
-            else
+        }
+
+        private void ProcessDropRates(KPDatabaseDataSet dataSet)
+        {
+            // Drop rate section
+            AppendBoldText("Drop Rates\n", Color.Red);
+            string dropItemFormat = "{0,9} {1,-24} [Drop Rate: {2,8:p2}]\n";
+            string dropGilFormat  = "{0,9} {1,-24} [Average:   {2,8:f2}]\n";
+            int mobKillCount;
+
+            var lootByMob = from c in dataSet.Combatants
+                            where (c.CombatantType == (byte)EntityType.Mob)
+                            orderby c.CombatantName
+                            select new
+                            {
+                                MobName = c.CombatantName,
+                                Battles = from b in c.GetBattlesRowsByEnemyCombatantRelation()
+                                          where b.Killed == true
+                                          select b,
+                                Loot = from l in dataSet.Loot
+                                       where ((l.IsBattleIDNull() == false) &&
+                                              (l.BattlesRow.CombatantsRowByEnemyCombatantRelation.CombatantName == c.CombatantName))
+                                       group l by l.ItemsRow.ItemName into li
+                                       orderby li.Key
+                                       select new
+                                       {
+                                           LootName = li.Key,
+                                           LootDrops = li
+                                       }
+                            };
+
+
+            int totalGil;
+            double avgGil;
+            double avgLoot;
+
+            foreach (var mob in lootByMob)
             {
-                // Drop rate section
-                AppendBoldText("Drop Rates\n", Color.Red);
-                string dropListFormat = "{0} {1} [Drop Rate: {2:p2}]\n";
-                int mobKillCount;
+                mobKillCount = mob.Battles.Count();
+                AppendBoldText(string.Format("\n{0} (Killed {1} times)\n", mob.MobName, mobKillCount), Color.Black);
 
-                var lootByMob = from c in dataSet.Combatants
-                                 where (c.CombatantType == (byte)EntityType.Mob)
-                                 orderby c.CombatantName
-                                 select new
-                                 {
-                                     MobName = c.CombatantName,
-                                     Battles = from b in c.GetBattlesRowsByEnemyCombatantRelation()
-                                               where b.Killed == true
-                                               select b,
-                                     Loot = from l in dataSet.Loot
-                                            where ((l.IsBattleIDNull() == false) &&
-                                                   (l.BattlesRow.CombatantsRowByEnemyCombatantRelation.CombatantName == c.CombatantName))
-                                            group l by l.ItemsRow.ItemName into li
-                                            orderby li.Key
-                                            select new
-                                            {
-                                                LootName = li.Key,
-                                                LootDrops = li
-                                            }
-                                 };
+                totalGil = 0;
+                avgGil = 0;
 
-
-                int totalGil;
-                double avgGil;
-                double avgLoot;
-
-                foreach (var mob in lootByMob)
+                if (mob.Loot != null)
                 {
-                    mobKillCount = mob.Battles.Count();
-                    AppendBoldText(string.Format("\n{0} (Killed {1} times)\n", mob.MobName, mobKillCount), Color.Black);
-
-                    totalGil = 0;
-                    avgGil = 0;
-
-                    if (mob.Loot != null)
+                    if (mob.Loot.Count() == 0)
                     {
-                        if (mob.Loot.Count() == 0)
+                        AppendNormalText("       No drops.\n");
+                    }
+                    else
+                    {
+                        var gilLoot = mob.Loot.FirstOrDefault(l => l.LootName == "Gil");
+
+                        if (gilLoot != null)
                         {
-                            AppendNormalText("       No drops.\n");
+                            // Gil among loot dropped
+                            totalGil = gilLoot.LootDrops.Sum(l => l.GilDropped);
+
+                            if (mobKillCount > 0)
+                                avgGil = (double)totalGil / mobKillCount;
+
+                            AppendNormalText(string.Format(dropGilFormat,
+                                totalGil, "Gil", avgGil));
                         }
-                        else
+
+                        // Non-gil loot
+                        foreach (var loot in mob.Loot)
                         {
-                            var gilLoot = mob.Loot.FirstOrDefault(l => l.LootName == "Gil");
+                            avgLoot = 0;
 
-                            if (gilLoot != null)
+                            if (loot.LootName != "Gil")
                             {
-                                // Gil among loot dropped
-                                totalGil = gilLoot.LootDrops.Sum(l => l.GilDropped);
-
                                 if (mobKillCount > 0)
-                                    avgGil = (double) totalGil / mobKillCount;
+                                    avgLoot = (double)loot.LootDrops.Count() / mobKillCount;
 
-                                AppendNormalText(string.Format("{0} {1} [Average: {2:f2}]\n",
-                                    totalGil.ToString().PadLeft(9), "Gil".PadRight(24), avgGil));
-                            }
-
-                            // Non-gil loot
-                            foreach (var loot in mob.Loot)
-                            {
-                                avgLoot = 0;
-
-                                if (loot.LootName != "Gil")
-                                {
-                                    if (mobKillCount > 0)
-                                        avgLoot = (double)loot.LootDrops.Count() / mobKillCount;
-
-                                    AppendNormalText(string.Format(dropListFormat,
-                                        loot.LootDrops.Count().ToString().PadLeft(9),
-                                        loot.LootName.PadRight(24), avgLoot));
-                                }
+                                AppendNormalText(string.Format(dropItemFormat,
+                                    loot.LootDrops.Count(), loot.LootName, avgLoot));
                             }
                         }
                     }
                 }
             }
         }
+
     }
 }
