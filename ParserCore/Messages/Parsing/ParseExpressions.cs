@@ -26,21 +26,12 @@ namespace WaywardGamers.KParser
     public class ParseExpressions
     {
         #region Named substrings
-        //private static readonly string playerName  = @"(?<name>\w{3,16})('s)?";
-        //private static readonly string npcName     = @"(?<fullname>([Tt]he )?(?<name>\w+((,)|(\.\w?)|['\- ](\d|\w)+)*))";
-        //private static readonly string name        = @"(?<fullname>([Tt]he )?(?<name>\w+((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)))))))";
-        //private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)))))))";
-        //private static readonly string repeatname  = @"(([Tt]he )?(?<repeatname>\w+((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)))))))";
-
         private static readonly string playername  = @"(?<name>\w{3,16})";
         private static readonly string npcName     = @"(?<fullname>([Tt]he )?(?<name>\w+((,)|(\.\w?)|['\- ](\d|\w)+)*))";
-        //private static readonly string repeatname  = @"(([Tt]he )?(?<repeatname>\w+(['\- ](\d|\w)+)*))";
-        //private static readonly string name        = @"(?<fullname>([Tt]he )?(?<name>\w+(['\- ](\d|\w)+)*))";
-        //private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+(['\- ](\d|\w)+)*))";
 
-        private static readonly string name        = @"(?<fullname>([Tt]he )?(?<name>\w+(('\w{2,})|(-(\w|\d)+)|(the \w+)|( \w+)|){0,3}))";
-        private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+(('\w{2,})|(-(\w|\d)+)|(the \w+)|( \w+)|){0,3}))";
-        private static readonly string repeatname  = @"(([Tt]he )?(?<repeatname>\w+(('\w{2,})|(-(\w|\d)+)|(the \w+)|( \w+)|){0,3}))";
+        private static readonly string name        = @"(?<fullname>([Tt]he )?(?<name>\w+(((('s (?=\w+'s))\w+)|('\w{2,})|(-(\w|\d)+)|(the \w+)|( \w+)){0,3}|('s \w+))))";
+        private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+(((('s (?=\w+'s))\w+)|('\w{2,})|(-(\w|\d)+)|(the \w+)|( \w+)){0,3}|('s \w+))))";
+        private static readonly string repeatname  = @"([Tt]he )?(?<repeatname>\w+(((('s (?=\w+'s))\w+)|('\w{2,})|(-(\w|\d)+)|(the \w+)|( \w+)){0,3}|('s \w+)))";
 
         private static readonly string damage      = @"(?<damage>\d{1,4})";
         private static readonly string number      = @"(?<number>\d{1,4})";
