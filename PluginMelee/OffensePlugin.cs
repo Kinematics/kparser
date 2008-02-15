@@ -57,6 +57,10 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
+            ResetComboBox2();
+            AddToComboBox2("All");
+            ResetTextBox();
+
             if (dataSet.Battles.Count() > 1)
             {
                 var mobsKilled = from b in dataSet.Battles
@@ -74,8 +78,7 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (mobsKilled.Count() > 0)
                 {
-                    //comboBox2.Items.Clear();
-                    //AddToComboBox2("All");
+                    // Add to the Reset list
 
                     string mobWithXP;
 
@@ -96,7 +99,9 @@ namespace WaywardGamers.KParser.Plugin
                 }
             }
 
-            base.DatabaseOpened(dataSet);
+            InitComboBox2Selection();
+
+            //base.DatabaseOpened(dataSet);
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
@@ -434,7 +439,6 @@ namespace WaywardGamers.KParser.Plugin
             stopwatch.Start();
 
             ProcessMobSummary(mobSet);
-
 
             switch (actionSourceFilter)
             {

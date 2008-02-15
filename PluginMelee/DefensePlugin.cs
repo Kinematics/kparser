@@ -38,7 +38,6 @@ namespace WaywardGamers.KParser.Plugin
             comboBox2.Items.Clear();
             comboBox2.Items.Add("All");
             comboBox2.SelectedIndex = 0;
-            comboBox2.Enabled = false;
 
             checkBox1.Enabled = false;
             checkBox1.Visible = false;
@@ -48,6 +47,10 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
+            ResetComboBox2();
+            AddToComboBox2("All");
+            ResetTextBox();
+
             if (dataSet.Battles.Count > 1)
             {
                 var mobsKilled = from b in dataSet.Battles
@@ -65,8 +68,7 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (mobsKilled.Count() > 0)
                 {
-                    comboBox2.Items.Clear();
-                    AddToComboBox2("All");
+                    // Add to the Reset list
 
                     string mobWithXP;
 
@@ -87,7 +89,9 @@ namespace WaywardGamers.KParser.Plugin
                 }
             }
 
-            base.DatabaseOpened(dataSet);
+            InitComboBox2Selection();
+
+            //base.DatabaseOpened(dataSet);
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
@@ -150,6 +154,7 @@ namespace WaywardGamers.KParser.Plugin
         string cureHeader        = "Player           Cured (Sp)  Cured (Ab)  C.1s  C.2s  C.3s  C.4s  C.5s  Curagas  Rg.1s  Rg.2s  Rg.3s\n";
         string avgCureHeader     = "Player           Avg Cure 1   Avg Cure 2   Avg Cure 3   Avg Cure 4   Avg Cure 5   Avg Curaga   Avg Ability\n";
 
+        string mobSetHeader      = "Mob                        Base XP   Number\n";
         string incAttacksHeader  = "Player           Melee   Range   Abil/Ws   Spells   Avoided   Avoid %   Attack# %\n";
         string incDamageHeader   = "Player           M.Dmg   Avg M.Dmg   R.Dmg  Avg R.Dmg   S.Dmg  Avg S.Dmg   A/WS.Dmg  Avg A/WS.Dmg   Damage %\n";
         string evasionHeader     = "Player           M.Evade   M.Evade %   R.Evade   R.Evade %\n";
@@ -513,6 +518,52 @@ namespace WaywardGamers.KParser.Plugin
         private void ProcessDefense(KPDatabaseDataSet dataSet)
         {
             IEnumerable<DefenseGroup> incAttacks;
+            IEnumerable<MobGroup> mobSet = null;
+
+            #region Filtering
+            string mobFilter;
+
+            if (comboBox2.SelectedIndex >= 0)
+                mobFilter = comboBox2.SelectedItem.ToString();
+            else
+                mobFilter = "All";
+
+            string mobName = "All";
+            int xp = 0;
+
+            if (mobFilter != "All")
+            {
+                Regex mobAndXP = new Regex(@"(?<mobName>(.*(?<! \()))( \((?<xp>\d+)\))?");
+                Match mobAndXPMatch = mobAndXP.Match(mobFilter);
+
+                if (mobAndXPMatch.Success == true)
+                {
+                    mobName = mobAndXPMatch.Groups["mobName"].Value;
+
+                    if ((mobAndXPMatch.Groups["xp"] != null) && (mobAndXPMatch.Groups["xp"].Value != string.Empty))
+                    {
+                        xp = int.Parse(mobAndXPMatch.Groups["xp"].Value);
+                    }
+                }
+            }
+            #endregion
+
+            #region LINQ queries
+            mobSet = from c in dataSet.Combatants
+                     where ((c.CombatantName == mobName) ||
+                            ((mobName == "All") && (c.CombatantType == (byte)EntityType.Mob)))
+                     orderby c.CombatantName
+                     select new MobGroup
+                     {
+                         Mob = c.CombatantName,
+                         Battles = from b in c.GetBattlesRowsByEnemyCombatantRelation()
+                                   where ((b.Killed == false) ||
+                                          (xp == 0) ||
+                                          (b.BaseExperience() == xp))
+                                   group b by b.BaseExperience() into bx
+                                   orderby bx.Key
+                                   select bx
+                     };
 
             incAttacks = from cd in dataSet.Interactions
                          where ((cd.IsTargetIDNull() == false) &&
@@ -542,10 +593,14 @@ namespace WaywardGamers.KParser.Plugin
                                             (pd.ActionType == (byte)ActionType.Weaponskill))
                                     select pd
                          };
+            #endregion
+
 
             if ((incAttacks != null) && (incAttacks.Count() > 0))
             {
                 AppendBoldText("Defense\n\n", Color.Red);
+
+                ProcessMobSummary(mobSet);
 
                 ProcessDefenseAttacks(incAttacks);
                 ProcessDefenseDamage(incAttacks);
@@ -553,6 +608,63 @@ namespace WaywardGamers.KParser.Plugin
                 ProcessDefenseOther(incAttacks);
 
                 AppendNormalText("\n");
+            }
+        }
+
+        private void ProcessMobSummary(IEnumerable<MobGroup> mobSet)
+        {
+            if (mobSet == null)
+                return;
+
+            if (mobSet.Count() == 0)
+                return;
+
+            StringBuilder sb = new StringBuilder();
+            bool headerDisplayed = false;
+
+            int mobCount;
+
+            foreach (var mob in mobSet)
+            {
+                if (mob.Battles.Count() > 0)
+                {
+                    foreach (var mobBattle in mob.Battles)
+                    {
+                        mobCount = mobBattle.Count();
+
+                        if (mobCount > 0)
+                        {
+                            if (headerDisplayed == false)
+                            {
+                                AppendBoldText("Mob Listing\n", Color.Blue);
+                                AppendBoldUnderText(mobSetHeader, Color.Black);
+
+                                headerDisplayed = true;
+                            }
+
+                            sb.Append(mob.Mob.PadRight(24));
+
+                            if (mobBattle.Key > 0)
+                            {
+                                sb.Append(mobBattle.Key.ToString().PadLeft(10));
+                            }
+                            else
+                            {
+                                sb.Append("---".PadLeft(10));
+                            }
+
+                            sb.Append(mobCount.ToString().PadLeft(9));
+
+                            sb.Append("\n");
+                        }
+                    }
+                }
+            }
+
+            if (headerDisplayed == true)
+            {
+                sb.Append("\n\n");
+                AppendNormalText(sb.ToString());
             }
         }
 
