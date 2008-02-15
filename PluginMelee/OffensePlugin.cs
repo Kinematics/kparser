@@ -212,7 +212,7 @@ namespace WaywardGamers.KParser.Plugin
             #endregion
 
             IEnumerable<AttackGroup> attackSet = null;
-            IEnumerable<MobGroup> mobSet = null;
+            //IEnumerable<MobGroup> mobSet = null;
 
 
             //int minXP = 0;
@@ -220,21 +220,21 @@ namespace WaywardGamers.KParser.Plugin
             //    minXP = 1;
 
             #region LINQ queries
-            mobSet = from c in dataSet.Combatants
-                     where ((c.CombatantName == mobName) ||
-                            ((mobName == "All") && (c.CombatantType == (byte)EntityType.Mob)))
-                     orderby c.CombatantName
-                     select new MobGroup
-                     {
-                         Mob = c.CombatantName,
-                         Battles = from b in c.GetBattlesRowsByEnemyCombatantRelation()
-                                   where ((b.Killed == false) ||
-                                          (xp == 0) ||
-                                          (b.BaseExperience() == xp))
-                                   group b by b.BaseExperience() into bx
-                                   orderby bx.Key
-                                   select bx
-                     };
+            //mobSet = from c in dataSet.Combatants
+            //         where ((c.CombatantName == mobName) ||
+            //                ((mobName == "All") && (c.CombatantType == (byte)EntityType.Mob)))
+            //         orderby c.CombatantName
+            //         select new MobGroup
+            //         {
+            //             Mob = c.CombatantName,
+            //             Battles = from b in c.GetBattlesRowsByEnemyCombatantRelation()
+            //                       where ((b.Killed == false) ||
+            //                              (xp == 0) ||
+            //                              (b.BaseExperience() == xp))
+            //                       group b by b.BaseExperience() into bx
+            //                       orderby bx.Key
+            //                       select bx
+            //         };
 
             if (mobFilter == "All")
             {
@@ -438,7 +438,7 @@ namespace WaywardGamers.KParser.Plugin
             stopwatch.Reset();
             stopwatch.Start();
 
-            ProcessMobSummary(mobSet);
+            //ProcessMobSummary(mobSet);
 
             switch (actionSourceFilter)
             {
@@ -448,12 +448,36 @@ namespace WaywardGamers.KParser.Plugin
                     ProcessAttackSummary(attackSet);
                     stopwatch.Stop();
                     Debug.WriteLine(string.Format("Offense: Process Summary time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
+                    stopwatch.Reset();
+                    stopwatch.Start();
                     ProcessMeleeAttacks(attackSet);
+                    stopwatch.Stop();
+                    Debug.WriteLine(string.Format("Offense: Process Melee time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
+                    stopwatch.Reset();
+                    stopwatch.Start();
                     ProcessRangedAttacks(attackSet);
+                    stopwatch.Stop();
+                    Debug.WriteLine(string.Format("Offense: Process Ranged time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
+                    stopwatch.Reset();
+                    stopwatch.Start();
                     ProcessSpellsAttacks(attackSet);
+                    stopwatch.Stop();
+                    Debug.WriteLine(string.Format("Offense: Process Spell time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
+                    stopwatch.Reset();
+                    stopwatch.Start();
                     ProcessAbilityAttacks(attackSet);
+                    stopwatch.Stop();
+                    Debug.WriteLine(string.Format("Offense: Process Ability time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
+                    stopwatch.Reset();
+                    stopwatch.Start();
                     ProcessWeaponskillAttacks(attackSet);
+                    stopwatch.Stop();
+                    Debug.WriteLine(string.Format("Offense: Process WSkill time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
+                    stopwatch.Reset();
+                    stopwatch.Start();
                     ProcessSkillchains(attackSet);
+                    stopwatch.Stop();
+                    Debug.WriteLine(string.Format("Offense: Process SChain time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
                     //ProcessOtherAttacks(otherAttacks);
                     break;
                 case "Summary":

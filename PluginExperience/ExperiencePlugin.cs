@@ -38,12 +38,16 @@ namespace WaywardGamers.KParser.Plugin
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
             richTextBox.Clear();
+            ProcessExperience(dataSet);
+            ProcessMobs(dataSet);
+        }
+
+        private void ProcessExperience(KPDatabaseDataSet dataSet)
+        {
             StringBuilder sb1 = new StringBuilder();
             StringBuilder sb2 = new StringBuilder();
 
-            var completedFights = dataSet.Battles.Where(b =>
-                ((b.Killed == true) || (b.EndTime != MagicNumbers.MinSQLDateTime)) &&
-                (b.EndTime != b.StartTime));
+            var completedFights = dataSet.Battles.Where(b => b.Killed == true);
             int totalFights = completedFights.Count();
 
             if (totalFights > 0)
@@ -98,7 +102,7 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (partyDuration > minTime)
                 {
-                    double totalXPDouble = (double) totalXP;
+                    double totalXPDouble = (double)totalXP;
                     xpPerHour = totalXPDouble / partyDuration.TotalHours;
                     xpPerMinute = totalXPDouble / partyDuration.TotalMinutes;
                     xpPerFight = totalXPDouble / totalFights;
@@ -138,7 +142,7 @@ namespace WaywardGamers.KParser.Plugin
                 }
 
                 sb2.Append("\n");
-                sb2.AppendFormat("Highest Chain:  {0}\n\n", maxChain);
+                sb2.AppendFormat("Highest Chain:  {0}\n\n\n", maxChain);
 
 
                 // Dump all the constructed text above into the window.
@@ -147,6 +151,74 @@ namespace WaywardGamers.KParser.Plugin
 
                 AppendBoldText("Experience Chains\n", Color.Black);
                 AppendNormalText(sb2.ToString());
+            }
+        }
+
+        private void ProcessMobs(KPDatabaseDataSet dataSet)
+        {
+            var mobSet = from c in dataSet.Combatants
+                         where (c.CombatantType == (byte)EntityType.Mob)
+                         orderby c.CombatantName
+                         select new
+                         {
+                             Mob = c.CombatantName,
+                             Battles = from b in c.GetBattlesRowsByEnemyCombatantRelation()
+                                       group b by b.BaseExperience() into bx
+                                       orderby bx.Key
+                                       select bx
+                         };
+
+            if ((mobSet == null) || (mobSet.Count() == 0))
+                return;
+
+            string mobSetHeader = "Mob                        Base XP   Number\n";
+
+            StringBuilder sb = new StringBuilder();
+            bool headerDisplayed = false;
+
+            int mobCount;
+
+            foreach (var mob in mobSet)
+            {
+                if (mob.Battles.Count() > 0)
+                {
+                    foreach (var mobBattle in mob.Battles)
+                    {
+                        mobCount = mobBattle.Count();
+
+                        if (mobCount > 0)
+                        {
+                            if (headerDisplayed == false)
+                            {
+                                AppendBoldText("Mob Listing\n", Color.Blue);
+                                AppendBoldUnderText(mobSetHeader, Color.Black);
+
+                                headerDisplayed = true;
+                            }
+
+                            sb.Append(mob.Mob.PadRight(24));
+
+                            if (mobBattle.Key > 0)
+                            {
+                                sb.Append(mobBattle.Key.ToString().PadLeft(10));
+                            }
+                            else
+                            {
+                                sb.Append("---".PadLeft(10));
+                            }
+
+                            sb.Append(mobCount.ToString().PadLeft(9));
+
+                            sb.Append("\n");
+                        }
+                    }
+                }
+            }
+
+            if (headerDisplayed == true)
+            {
+                sb.Append("\n\n");
+                AppendNormalText(sb.ToString());
             }
         }
     }
