@@ -506,6 +506,14 @@ namespace WaywardGamers.KParser.Parsing
                     break;
                 // XP with no chain
                 case 0x83:
+                    lootOrXP = ParseExpressions.ExpChain.Match(message.CurrentMessageText);
+                    if (lootOrXP.Success == true)
+                    {
+                        message.EventDetails.EventMessageType = EventMessageType.Experience;
+                        message.EventDetails.ExperienceDetails.ExperienceChain = int.Parse(lootOrXP.Groups[ParseFields.Number].Value);
+                        message.ParseSuccessful = true;
+                        return;
+                    }
                     lootOrXP = ParseExpressions.Experience.Match(message.CurrentMessageText);
                     if (lootOrXP.Success == true)
                     {
