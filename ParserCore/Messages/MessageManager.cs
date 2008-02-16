@@ -153,9 +153,7 @@ namespace WaywardGamers.KParser
             lock (messageCollection)
             {
                 // Reverse search the collection list
-                msg = messageCollection.LastOrDefault(m =>
-                    ((m.MessageID == eventNumber) && (m.EventDetails != null) && (m.EventDetails.CombatDetails != null) &&
-                    (m.EventDetails.CombatDetails.ActorName != string.Empty)));
+                msg = messageCollection.LastOrDefault(m => m.MessageID == eventNumber);
             }
 
             return msg;
