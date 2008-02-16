@@ -73,7 +73,7 @@ namespace WaywardGamers.KParser
 
 
         #region Experience
-        public static readonly Regex ExpChain     = new Regex(string.Format("^(EXP|Limit) chain {0}!$", number));
+        public static readonly Regex ExpChain     = new Regex(string.Format("^(EXP|Limit) chain #{0}!$", number));
         public static readonly Regex Experience   = new Regex(string.Format("^{0} gains {1} (experience|limit points)\\.$", name, number));
         public static readonly Regex NoExperience = new Regex(string.Format("^No experience gained\\.$"));
         #endregion
