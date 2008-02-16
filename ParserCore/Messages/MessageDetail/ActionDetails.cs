@@ -27,13 +27,16 @@ namespace WaywardGamers.KParser
                 switch (value)
                 {
                     case EventMessageType.Interaction:
-                        CombatDetails = new CombatDetails();
+                        if (CombatDetails == null)
+                            CombatDetails = new CombatDetails();
                         break;
                     case EventMessageType.Loot:
-                        LootDetails = new LootDetails();
+                        if (LootDetails == null)
+                            LootDetails = new LootDetails();
                         break;
                     case EventMessageType.Experience:
-                        ExperienceDetails = new ExperienceDetails();
+                        if (ExperienceDetails == null)
+                            ExperienceDetails = new ExperienceDetails();
                         break;
                 }
                 
