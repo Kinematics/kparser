@@ -245,7 +245,7 @@ namespace WaywardGamers.KParser
                             plugin.DatabaseOpened(DatabaseManager.Instance.Database);
 
                             stopwatch.Stop();
-                            Debug.WriteLine(string.Format("Opened: Time to proces plugin {0}: {1} ms",
+                            Debug.WriteLine(string.Format("Opened: Time to process plugin {0}: {1} ms",
                                 plugin.TabName, stopwatch.Elapsed.TotalMilliseconds));
                             stopwatch.Reset();
                         }
