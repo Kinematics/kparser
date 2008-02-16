@@ -64,7 +64,8 @@ namespace WaywardGamers.KParser.Plugin
                                  {
                                      Name = bn.Key,
                                      XP = from xb in bn
-                                          group xb by xb.BaseExperience() into xbn
+                                          group xb by xb.MinBaseExperience() into xbn
+                                          orderby xbn.Key
                                           select new { BaseXP = xbn.Key }
                                  };
 
@@ -85,6 +86,12 @@ namespace WaywardGamers.KParser.Plugin
                                 mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP);
 
                                 AddToComboBox2(mobWithXP);
+                            
+                                // Check for existing entry with higher min base xp
+                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP + 1);
+
+                                if (comboBox2.Items.Contains(mobWithXP))
+                                    RemoveFromComboBox2(mobWithXP);
                             }
                         }
                     }
@@ -109,7 +116,8 @@ namespace WaywardGamers.KParser.Plugin
                                  {
                                      Name = bn.Key,
                                      XP = from xb in bn
-                                          group xb by xb.BaseExperience() into xbn
+                                          group xb by xb.MinBaseExperience() into xbn
+                                          orderby xbn.Key
                                           select new { BaseXP = xbn.Key }
                                  };
 
@@ -153,10 +161,10 @@ namespace WaywardGamers.KParser.Plugin
         Dictionary<string, int> playerDamage = new Dictionary<string, int>();
 
         string mobSetHeader      = "Mob                        Base XP   Number\n";
-        string incAttacksHeader  = "Player           Melee   Range   Abil/Ws   Spells   Avoided   Avoid %   Attack# %\n";
+        string incAttacksHeader  = "Player           Melee   Range   Abil/Ws   Spells   Unknown   Avoided   Avoid %   Attack# %\n";
         string incDamageHeader   = "Player           M.Dmg   Avg M.Dmg   R.Dmg  Avg R.Dmg   S.Dmg  Avg S.Dmg   A/WS.Dmg  Avg A/WS.Dmg   Damage %\n";
         string evasionHeader     = "Player           M.Evade   M.Evade %   R.Evade   R.Evade %\n";
-        string otherDefHeader    = "Player           Parry   Parry %   Blink   Blink %   Anticipate  Anticipate %   Counter   Counter %\n";
+        string otherDefHeader    = "Player           Parry   Parry %   Shadow   Shadow %   Anticipate  Anticipate %   Counter   Counter %\n";
         
         string utsuHeader        = "Player           Shadows Used   Ichi Cast  Ichi Fin  Ni Cast  Ni Fin  Shadows  Shadows(N)  Efficiency  Efficiency(N)\n";
         #endregion
@@ -166,39 +174,6 @@ namespace WaywardGamers.KParser.Plugin
         {
             richTextBox.Clear();
 
-            switch (comboBox1.SelectedIndex)
-            {
-                case 0:
-                    // All
-                    ProcessDefense(dataSet);
-                    ProcessUtsusemi(dataSet);
-                    break;
-                case 1:
-                    // Attacks
-                    ProcessDefense(dataSet);
-                    break;
-                case 2:
-                    // Damage
-                    ProcessDefense(dataSet);
-                    break;
-                case 3:
-                    // Evasion
-                    ProcessUtsusemi(dataSet);
-                    break;
-                case 4:
-                    // Other
-                    ProcessUtsusemi(dataSet);
-                    break;
-                case 5:
-                    // Utsusemi
-                    ProcessUtsusemi(dataSet);
-                    break;
-            }
-        }
-
-        #region Defense
-        private void ProcessDefense(KPDatabaseDataSet dataSet)
-        {
             IEnumerable<DefenseGroup> incAttacks;
             //IEnumerable<MobGroup> mobSet = null;
 
@@ -215,7 +190,7 @@ namespace WaywardGamers.KParser.Plugin
 
             if (mobFilter != "All")
             {
-                Regex mobAndXP = new Regex(@"(?<mobName>(.*(?<! \()))( \((?<xp>\d+)\))?");
+                Regex mobAndXP = new Regex(@"((?<mobName>.*(?<! \())) \(((?<xp>\d+)\))|(?<mobName>.*)");
                 Match mobAndXPMatch = mobAndXP.Match(mobFilter);
 
                 if (mobAndXPMatch.Success == true)
@@ -273,6 +248,9 @@ namespace WaywardGamers.KParser.Plugin
                              Abil = from pd in cdd
                                     where ((pd.ActionType == (byte)ActionType.Ability) ||
                                             (pd.ActionType == (byte)ActionType.Weaponskill))
+                                    select pd,
+                             Unknown = from pd in cdd
+                                    where (pd.ActionType == (byte)ActionType.Unknown)
                                     select pd
                          };
             #endregion
@@ -284,10 +262,37 @@ namespace WaywardGamers.KParser.Plugin
 
                 //ProcessMobSummary(mobSet);
 
-                ProcessDefenseAttacks(incAttacks);
-                ProcessDefenseDamage(incAttacks);
-                ProcessDefenseEvasion(incAttacks);
-                ProcessDefenseOther(incAttacks);
+
+                switch (comboBox1.SelectedIndex)
+                {
+                    case 0:
+                        // All
+                        ProcessDefenseAttacks(incAttacks);
+                        ProcessDefenseDamage(incAttacks);
+                        ProcessDefenseEvasion(incAttacks);
+                        ProcessDefenseOther(incAttacks);
+                        break;
+                    case 1:
+                        // Attacks
+                        ProcessDefenseAttacks(incAttacks);
+                        break;
+                    case 2:
+                        // Damage
+                        ProcessDefenseDamage(incAttacks);
+                        break;
+                    case 3:
+                        // Evasion
+                        ProcessDefenseEvasion(incAttacks);
+                        break;
+                    case 4:
+                        // Other
+                        ProcessDefenseOther(incAttacks);
+                        break;
+                    case 5:
+                        // Utsusemi
+                        ProcessUtsusemi(dataSet);
+                        break;
+                }
 
                 AppendNormalText("\n");
             }
@@ -352,15 +357,15 @@ namespace WaywardGamers.KParser.Plugin
 
         private void ProcessDefenseAttacks(IEnumerable<DefenseGroup> incAttacks)
         {
-            AppendBoldText("Incoming Attacks\n", Color.Blue);
+            AppendBoldText("Attacks Against:\n", Color.Blue);
             AppendBoldUnderText(incAttacksHeader, Color.Black);
 
             StringBuilder sb = new StringBuilder();
 
-            //"Player           Melee   Range   Abil/Ws   Spells   Avoided   Avoid %   Attack# %"
+            //"Player           Melee   Range   Abil/Ws   Spells   Unknown   Avoided   Avoid %   Attack# %"
 
             int totalAttacks = incAttacks.Sum(b =>
-                b.Melee.Count() + b.Range.Count() + b.Abil.Count() + b.Spell.Count());
+                b.Melee.Count() + b.Range.Count() + b.Abil.Count() + b.Spell.Count() + b.Unknown.Count());
 
             foreach (var player in incAttacks)
             {
@@ -371,6 +376,7 @@ namespace WaywardGamers.KParser.Plugin
                 int rHits = 0;
                 int sHits = 0;
                 int aHits = 0;
+                int uHits = 0;
                 int incHits = 0;
                 int avoidHits = 0;
 
@@ -385,8 +391,10 @@ namespace WaywardGamers.KParser.Plugin
                     aHits = player.Abil.Count();
                 if (player.Spell != null)
                     sHits = player.Spell.Count();
+                if (player.Unknown != null)
+                    uHits = player.Unknown.Count();
 
-                incHits = mHits + rHits + aHits + sHits;
+                incHits = mHits + rHits + aHits + sHits + uHits;
 
                 avoidHits = player.AllAttacks.Count(h => h.DefenseType != (byte)DefenseType.None);
 
@@ -395,15 +403,8 @@ namespace WaywardGamers.KParser.Plugin
                 attackPerc = (double)incHits / totalAttacks;
 
 
-                sb.Append(mHits.ToString().PadLeft(5));
-                sb.Append(rHits.ToString().PadLeft(8));
-                sb.Append(aHits.ToString().PadLeft(10));
-                sb.Append(sHits.ToString().PadLeft(9));
-                sb.Append(avoidHits.ToString().PadLeft(10));
-                sb.Append(avoidPerc.ToString("P2").PadLeft(10));
-                sb.Append(attackPerc.ToString("P2").PadLeft(12));
-
-                sb.Append("\n");
+                sb.AppendFormat("{0,5}{1,8}{2,10}{3,9}{4,10}{5,10}{6,10:p2}{7,12:p2}\n",
+                    mHits, rHits, aHits, sHits, uHits, avoidHits, avoidPerc, attackPerc);
             }
 
             sb.Append("\n\n");
@@ -426,7 +427,7 @@ namespace WaywardGamers.KParser.Plugin
 
             if (totalDmg > 0)
             {
-                AppendBoldText("Incoming Damage\n", Color.Blue);
+                AppendBoldText("Damage Against:\n", Color.Blue);
                 AppendBoldUnderText(incDamageHeader, Color.Black);
 
                 StringBuilder sb = new StringBuilder();
@@ -485,18 +486,8 @@ namespace WaywardGamers.KParser.Plugin
                         if (totalDmg > 0)
                             dmgPerc = (double)playerDamage[player.Player] / totalDmg;
 
-
-                        sb.Append(mDmg.ToString().PadLeft(5));
-                        sb.Append(mAvg.ToString("F2").PadLeft(12));
-                        sb.Append(rDmg.ToString().PadLeft(8));
-                        sb.Append(rAvg.ToString("F2").PadLeft(11));
-                        sb.Append(sDmg.ToString().PadLeft(8));
-                        sb.Append(sAvg.ToString("F2").PadLeft(11));
-                        sb.Append(aDmg.ToString().PadLeft(11));
-                        sb.Append(aAvg.ToString("F2").PadLeft(14));
-                        sb.Append(dmgPerc.ToString("P2").PadLeft(11));
-
-                        sb.Append("\n");
+                        sb.AppendFormat("{0,5}{1,12:f2}{2,8}{3,11:f2}{4,8}{5,11:f2}{6,11}{7,14:f2}{8,11:p2}\n",
+                            mDmg, mAvg, rDmg, rAvg, sDmg, sAvg, aDmg, aAvg, dmgPerc);
                     }
                 }
 
@@ -544,15 +535,8 @@ namespace WaywardGamers.KParser.Plugin
                             headerPrinted = true;
                         }
 
-                        sb.Append(player.Player.PadRight(16));
-                        sb.Append(" ");
-
-                        sb.Append(mEvaded.ToString().PadLeft(7));
-                        sb.Append(mEvadePerc.ToString("P2").PadLeft(12));
-                        sb.Append(rEvaded.ToString().PadLeft(10));
-                        sb.Append(rEvadePerc.ToString("P2").PadLeft(12));
-
-                        sb.Append("\n");
+                        sb.AppendFormat("{0,-17}{1,7}{2,12:p2}{3,10}{4,12:p2}\n",
+                            player.Player, mEvaded, mEvadePerc, rEvaded, rEvadePerc);
                     }
                 }
             }
@@ -651,8 +635,8 @@ namespace WaywardGamers.KParser.Plugin
 
                         sb.Append(parriedAttacks.ToString().PadLeft(5));
                         sb.Append(parryPerc.ToString("P2").PadLeft(10));
-                        sb.Append(blinkedAttacks.ToString().PadLeft(8));
-                        sb.Append(blinkPerc.ToString("P2").PadLeft(10));
+                        sb.Append(blinkedAttacks.ToString().PadLeft(9));
+                        sb.Append(blinkPerc.ToString("P2").PadLeft(11));
                         sb.Append(anticipatedAttacks.ToString().PadLeft(13));
                         sb.Append(antiPerc.ToString("P2").PadLeft(14));
                         sb.Append(counteredAttacks.ToString().PadLeft(10));
@@ -669,9 +653,7 @@ namespace WaywardGamers.KParser.Plugin
                 AppendNormalText(sb.ToString());
             }
         }
-        #endregion
 
-        #region Utsu
         private void ProcessUtsusemi(KPDatabaseDataSet dataSet)
         {
             var utsu1 = dataSet.Actions.FirstOrDefault(a => a.ActionName == "Utsusemi: Ichi");
@@ -768,7 +750,6 @@ namespace WaywardGamers.KParser.Plugin
                 AppendNormalText(sb.ToString());
             }
         }
-        #endregion
         #endregion
 
         #region Event Handlers
