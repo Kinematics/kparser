@@ -131,13 +131,13 @@ namespace WaywardGamers.KParser.Plugin
                 for (int i = 0; i < 10; i++)
                 {
                     if (chainCounts[i] > 0)
-                        sb2.AppendFormat("{0,-6} {1,6} {2,10} {3,8:F2}\n", i, chainCounts[i], chainXPTotals[i],
+                        sb2.AppendFormat("{0,-5}{1,8}{2,11}{3,9:F2}\n", i, chainCounts[i], chainXPTotals[i],
                             (double)chainXPTotals[i] / chainCounts[i]);
                 }
 
                 if (chainCounts[10] > 0)
                 {
-                    sb2.AppendFormat("{0,-6}  {1,6}  {2,10}  {3,8:F2}\n", "10+", chainCounts[10], chainXPTotals[10],
+                    sb2.AppendFormat("{0,-5}{1,8}{2,11}{3,9:F2}\n", "10+", chainCounts[10], chainXPTotals[10],
                         (double)chainXPTotals[10] / chainCounts[10]);
                 }
 
@@ -162,8 +162,12 @@ namespace WaywardGamers.KParser.Plugin
                          select new
                          {
                              Mob = c.CombatantName,
+                             //Battles = from b in c.GetBattlesRowsByEnemyCombatantRelation()
+                             //          group b by b.BaseExperience() into bx
+                             //          orderby bx.Key
+                             //          select bx,
                              Battles = from b in c.GetBattlesRowsByEnemyCombatantRelation()
-                                       group b by b.BaseExperience() into bx
+                                       group b by b.MinBaseExperience() into bx
                                        orderby bx.Key
                                        select bx
                          };
