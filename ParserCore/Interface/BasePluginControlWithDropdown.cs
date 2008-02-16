@@ -151,6 +151,20 @@ namespace WaywardGamers.KParser.Plugin
             this.comboBox2.Items.Add(p);
         }
 
+        protected void RemoveFromComboBox2(string p)
+        {
+            if (this.InvokeRequired)
+            {
+                Action<string> thisFunc = AddToComboBox2;
+                Invoke(thisFunc, new object[] { p });
+                return;
+            }
+
+            int foundIndex = this.comboBox2.Items.IndexOf(p);
+            if (foundIndex > 0)
+                this.comboBox2.Items.RemoveAt(foundIndex);
+        }
+
         protected void InitComboBox2Selection()
         {
             if (this.InvokeRequired)
