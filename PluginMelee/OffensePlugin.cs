@@ -57,6 +57,9 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             ResetComboBox2();
             AddToComboBox2("All");
             ResetTextBox();
@@ -72,7 +75,8 @@ namespace WaywardGamers.KParser.Plugin
                                  {
                                      Name = bn.Key,
                                      XP = from xb in bn
-                                          group xb by xb.BaseExperience() into xbn
+                                          group xb by xb.MinBaseExperience() into xbn
+                                          orderby xbn.Key
                                           select new { BaseXP = xbn.Key }
                                  };
 
@@ -101,6 +105,9 @@ namespace WaywardGamers.KParser.Plugin
 
             InitComboBox2Selection();
 
+            stopwatch.Stop();
+            Debug.WriteLine(string.Format("Internal total time to process Offense: {0} ms",
+                stopwatch.Elapsed.TotalMilliseconds));
             //base.DatabaseOpened(dataSet);
         }
 
@@ -117,7 +124,8 @@ namespace WaywardGamers.KParser.Plugin
                                  {
                                      Name = bn.Key,
                                      XP = from xb in bn
-                                          group xb by xb.BaseExperience() into xbn
+                                          group xb by xb.MinBaseExperience() into xbn
+                                          orderby xbn.Key
                                           select new { BaseXP = xbn.Key }
                                  };
 
@@ -139,6 +147,12 @@ namespace WaywardGamers.KParser.Plugin
 
                                 if (comboBox2.Items.Contains(mobWithXP) == false)
                                     AddToComboBox2(mobWithXP);
+
+                                // Check for existing entry with higher min base xp
+                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP+1);
+
+                                if (comboBox2.Items.Contains(mobWithXP))
+                                    RemoveFromComboBox2(mobWithXP);
                             }
                         }
                     }
@@ -196,7 +210,7 @@ namespace WaywardGamers.KParser.Plugin
 
             if (mobFilter != "All")
             {
-                Regex mobAndXP = new Regex(@"(?<mobName>(.*(?<! \()))( \((?<xp>\d+)\))?");
+                Regex mobAndXP = new Regex(@"((?<mobName>.*(?<! \())) \(((?<xp>\d+)\))|(?<mobName>.*)");
                 Match mobAndXPMatch = mobAndXP.Match(mobFilter);
 
                 if (mobAndXPMatch.Success == true)
@@ -302,7 +316,7 @@ namespace WaywardGamers.KParser.Plugin
                                                    n.IsTargetIDNull() == false &&
                                                    n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
                                                    n.IsBattleIDNull() == false &&
-                                                   n.BattlesRow.BaseExperience() == xp)
+                                                   n.BattlesRow.MinBaseExperience() == xp)
                                             select n,
                                     Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                             where (n.ActionType == (byte)ActionType.Ranged &&
@@ -311,7 +325,7 @@ namespace WaywardGamers.KParser.Plugin
                                                    n.IsTargetIDNull() == false &&
                                                    n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
                                                    n.IsBattleIDNull() == false &&
-                                                   n.BattlesRow.BaseExperience() == xp)
+                                                   n.BattlesRow.MinBaseExperience() == xp)
                                             select n,
                                     Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                             where (n.ActionType == (byte)ActionType.Spell &&
@@ -320,7 +334,7 @@ namespace WaywardGamers.KParser.Plugin
                                                    n.IsTargetIDNull() == false &&
                                                    n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
                                                    n.IsBattleIDNull() == false &&
-                                                   n.BattlesRow.BaseExperience() == xp)
+                                                   n.BattlesRow.MinBaseExperience() == xp)
                                             select n,
                                     Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                               where (n.ActionType == (byte)ActionType.Ability &&
@@ -329,7 +343,7 @@ namespace WaywardGamers.KParser.Plugin
                                                      n.IsTargetIDNull() == false &&
                                                      n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
                                                      n.IsBattleIDNull() == false &&
-                                                     n.BattlesRow.BaseExperience() == xp)
+                                                     n.BattlesRow.MinBaseExperience() == xp)
                                               select n,
                                     WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                              where (n.ActionType == (byte)ActionType.Weaponskill &&
@@ -338,7 +352,7 @@ namespace WaywardGamers.KParser.Plugin
                                                     n.IsTargetIDNull() == false &&
                                                     n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
                                                     n.IsBattleIDNull() == false &&
-                                                    n.BattlesRow.BaseExperience() == xp)
+                                                    n.BattlesRow.MinBaseExperience() == xp)
                                              select n,
                                     SC = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                          where (n.ActionType == (byte)ActionType.Skillchain &&
@@ -347,7 +361,7 @@ namespace WaywardGamers.KParser.Plugin
                                                 n.IsTargetIDNull() == false &&
                                                 n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
                                                 n.IsBattleIDNull() == false &&
-                                                n.BattlesRow.BaseExperience() == xp)
+                                                n.BattlesRow.MinBaseExperience() == xp)
                                          select n
                                 };
                 }
