@@ -104,6 +104,7 @@ namespace WaywardGamers.KParser.Plugin
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Range { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Spell { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Abil { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Unknown { get; set; }
 
         public DefenseGroup()
         {
