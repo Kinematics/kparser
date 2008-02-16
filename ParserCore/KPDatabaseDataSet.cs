@@ -58,8 +58,8 @@ namespace WaywardGamers.KParser
                 switch (ExperienceChain)
                 {
                     case 0:
-                        xpFactor = 1.00;
-                        break;
+                        //xpFactor = 1.00;
+                        return ExperiencePoints;
                     case 1:
                         xpFactor = 1.20;
                         break;
@@ -81,6 +81,17 @@ namespace WaywardGamers.KParser
                 double baseXP = Math.Ceiling((double)ExperiencePoints / xpFactor);
 
                 return (int)baseXP;
+            }
+
+            public int MinBaseExperience()
+            {
+                int baseXP = this.BaseExperience();
+
+                var closeMin = from b in this.CombatantsRowByEnemyCombatantRelation.GetBattlesRowsByEnemyCombatantRelation()
+                               where (Math.Abs(baseXP - b.BaseExperience()) < 2)
+                               select b;
+
+                return closeMin.Min(x => x.BaseExperience());
             }
 
             /// <summary>
