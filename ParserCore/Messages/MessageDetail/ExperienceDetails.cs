@@ -24,6 +24,7 @@ namespace WaywardGamers.KParser
 
             sb.AppendFormat("  Experience Details:\n");
 
+            sb.AppendFormat("    Experience Recipient: {0}\n", ExperienceRecipient);
             sb.AppendFormat("    Experience Points: {0}\n", ExperiencePoints);
             sb.AppendFormat("    Experience Chain: {0}\n", ExperienceChain);
 
