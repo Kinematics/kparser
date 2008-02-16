@@ -45,45 +45,6 @@ namespace WaywardGamers.KParser.Plugin
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
         {
-            // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
-            if (e.DatasetChanges.Battles.Count > 0)
-            {
-                var mobsFought = from b in e.DatasetChanges.Battles
-                                 where ((b.DefaultBattle == false) &&
-                                        (b.IsEnemyIDNull() == false))
-                                 group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
-                                 select new
-                                 {
-                                     Name = bn.Key,
-                                     XP = from xb in bn
-                                          group xb by xb.BaseExperience() into xbn
-                                          select new { BaseXP = xbn.Key }
-                                 };
-
-
-                if (mobsFought.Count() > 0)
-                {
-                    string mobWithXP;
-
-                    foreach (var mob in mobsFought)
-                    {
-                        if (comboBox2.Items.Contains(mob.Name) == false)
-                            AddToComboBox2(mob.Name);
-
-                        foreach (var xp in mob.XP)
-                        {
-                            if (xp.BaseXP > 0)
-                            {
-                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP);
-
-                                if (comboBox2.Items.Contains(mobWithXP) == false)
-                                    AddToComboBox2(mobWithXP);
-                            }
-                        }
-                    }
-                }
-            }
-
             if (e.DatasetChanges.Interactions.Count != 0)
             {
                 datasetToUse = e.Dataset;
