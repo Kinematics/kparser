@@ -57,12 +57,11 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Member Variables
-        //int totalDamage;
         Dictionary<string, int> playerDamage = new Dictionary<string, int>();
 
         string dmgRecoveryHeader = "Player           Dmg Taken   HP Drained   HP Cured   #Regen   #Regen 2   #Regen 3\n";
-        string cureHeader = "Player           Cured (Sp)  Cured (Ab)  C.1s  C.2s  C.3s  C.4s  C.5s  Curagas  Rg.1s  Rg.2s  Rg.3s\n";
-        string avgCureHeader = "Player           Avg Cure 1   Avg Cure 2   Avg Cure 3   Avg Cure 4   Avg Cure 5   Avg Curaga   Avg Ability\n";
+        string cureHeader        = "Player           Cured (Sp)  Cured (Ab)  C.1s  C.2s  C.3s  C.4s  C.5s  Curagas  Rg.1s  Rg.2s  Rg.3s\n";
+        string avgCureHeader     = "Player           Avg Cure 1   Avg Cure 2   Avg Cure 3   Avg Cure 4   Avg Cure 5   Avg Curaga   Avg Ability\n";
         #endregion
 
         #region Processing sections
@@ -74,32 +73,27 @@ namespace WaywardGamers.KParser.Plugin
             {
                 case 0:
                     // All
-                    ProcessRecovery(dataSet);
+                    ProcessDamage(dataSet);
+                    ProcessCuring(dataSet, true, true);
                     break;
                 case 1:
                     // Recovery
-                    ProcessRecovery(dataSet);
+                    ProcessDamage(dataSet);
                     break;
                 case 2:
                     // Curing
+                    ProcessCuring(dataSet, true, false);
                     break;
                 case 3:
                     // AverageCuring
+                    ProcessCuring(dataSet, false, true);
                     break;
             }
         }
         #endregion
 
         #region Recovery
-        private void ProcessRecovery(KPDatabaseDataSet dataSet)
-        {
-            AppendBoldText("Recovery\n\n", Color.Red);
-            ProcessRecoveryDamage(dataSet);
-            ProcessRecoveryCuring(dataSet);
-            AppendNormalText("\n");
-        }
-
-        private void ProcessRecoveryDamage(KPDatabaseDataSet dataSet)
+        private void ProcessDamage(KPDatabaseDataSet dataSet)
         {
             var playerData = from c in dataSet.Combatants
                              where ((c.CombatantType == (byte)EntityType.Player) ||
@@ -218,7 +212,7 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
-        private void ProcessRecoveryCuring(KPDatabaseDataSet dataSet)
+        private void ProcessCuring(KPDatabaseDataSet dataSet, bool displayCures, bool displayAvgCures)
         {
             var uberHealing = from c in dataSet.Combatants
                               where ((c.CombatantType == (byte)EntityType.Player) ||
@@ -323,71 +317,74 @@ namespace WaywardGamers.KParser.Plugin
             double avgCg = 0;
             double avgAb = 0;
 
-            StringBuilder sb = new StringBuilder();
-            bool haveHealer = false;
+            StringBuilder sb;
+            bool placeHeader = false;
 
             if (uberHealing.Count() > 0)
             {
-                foreach (var healer in uberHealing)
+                if (displayCures == true)
                 {
-                    cureSpell = healer.Spells.Sum();
-                    cureAbil = healer.Ability.Sum();
-                    numCure1 = healer.Cure1s.Count();
-                    numCure2 = healer.Cure2s.Count();
-                    numCure3 = healer.Cure3s.Count();
-                    numCure4 = healer.Cure4s.Count();
-                    numCure5 = healer.Cure5s.Count();
-                    numCuraga = healer.Curagas.Count();
-                    numRegen1 = healer.Reg1s.Count();
-                    numRegen2 = healer.Reg2s.Count();
-                    numRegen3 = healer.Reg3s.Count();
+                    sb = new StringBuilder();
 
-
-                    if ((cureSpell + cureAbil + numCure1 + numCure2 + numCure3 + numCure4 + numCure5 +
-                        numRegen1 + numRegen2 + numRegen3 + numCuraga) > 0)
+                    foreach (var healer in uberHealing)
                     {
-                        if (haveHealer == false)
+                        cureSpell = healer.Spells.Sum();
+                        cureAbil = healer.Ability.Sum();
+                        numCure1 = healer.Cure1s.Count();
+                        numCure2 = healer.Cure2s.Count();
+                        numCure3 = healer.Cure3s.Count();
+                        numCure4 = healer.Cure4s.Count();
+                        numCure5 = healer.Cure5s.Count();
+                        numCuraga = healer.Curagas.Count();
+                        numRegen1 = healer.Reg1s.Count();
+                        numRegen2 = healer.Reg2s.Count();
+                        numRegen3 = healer.Reg3s.Count();
+
+
+                        if ((cureSpell + cureAbil + numCure1 + numCure2 + numCure3 + numCure4 + numCure5 +
+                            numRegen1 + numRegen2 + numRegen3 + numCuraga) > 0)
                         {
-                            AppendBoldText("Curing\n", Color.Blue);
-                            AppendBoldUnderText(cureHeader, Color.Black);
+                            if (placeHeader == false)
+                            {
+                                AppendBoldText("Curing (Whm spells or equivalent)\n", Color.Blue);
+                                AppendBoldUnderText(cureHeader, Color.Black);
 
-                            haveHealer = true;
+                                placeHeader = true;
+                            }
+
+                            sb.Append(healer.Player.PadRight(16));
+                            sb.Append(" ");
+
+                            sb.Append(cureSpell.ToString().PadLeft(9));
+                            sb.Append(cureAbil.ToString().PadLeft(12));
+
+                            sb.Append(numCure1.ToString().PadLeft(7));
+                            sb.Append(numCure2.ToString().PadLeft(6));
+                            sb.Append(numCure3.ToString().PadLeft(6));
+                            sb.Append(numCure4.ToString().PadLeft(6));
+                            sb.Append(numCure5.ToString().PadLeft(6));
+
+                            sb.Append(numCuraga.ToString().PadLeft(9));
+
+                            sb.Append(numRegen1.ToString().PadLeft(7));
+                            sb.Append(numRegen2.ToString().PadLeft(7));
+                            sb.Append(numRegen3.ToString().PadLeft(7));
+
+                            sb.Append("\n");
                         }
+                    }
 
-                        sb.Append(healer.Player.PadRight(16));
-                        sb.Append(" ");
-
-                        sb.Append(cureSpell.ToString().PadLeft(9));
-                        sb.Append(cureAbil.ToString().PadLeft(12));
-
-                        sb.Append(numCure1.ToString().PadLeft(7));
-                        sb.Append(numCure2.ToString().PadLeft(6));
-                        sb.Append(numCure3.ToString().PadLeft(6));
-                        sb.Append(numCure4.ToString().PadLeft(6));
-                        sb.Append(numCure5.ToString().PadLeft(6));
-
-                        sb.Append(numCuraga.ToString().PadLeft(9));
-
-                        sb.Append(numRegen1.ToString().PadLeft(7));
-                        sb.Append(numRegen2.ToString().PadLeft(7));
-                        sb.Append(numRegen3.ToString().PadLeft(7));
-
-                        sb.Append("\n");
+                    if (placeHeader == true)
+                    {
+                        sb.Append("\n\n");
+                        AppendNormalText(sb.ToString());
                     }
                 }
 
-                if (haveHealer == true)
+                if (displayAvgCures == true)
                 {
-                    sb.Append("\n\n");
-                    AppendNormalText(sb.ToString());
+                    placeHeader = false;
                     sb = new StringBuilder();
-                }
-
-
-                if (haveHealer == true)
-                {
-                    AppendBoldText("Average Curing (whm spells or equivalent)\n", Color.Blue);
-                    AppendBoldUnderText(avgCureHeader, Color.Black);
 
                     foreach (var healer in uberHealing)
                     {
@@ -419,6 +416,14 @@ namespace WaywardGamers.KParser.Plugin
 
                         if ((avgAb + avgC1 + avgC2 + avgC3 + avgC4 + avgC5 + avgCg) > 0)
                         {
+                            if (placeHeader == false)
+                            {
+                                AppendBoldText("Average Curing (Whm spells or equivalent)\n", Color.Blue);
+                                AppendBoldUnderText(avgCureHeader, Color.Black);
+
+                                placeHeader = true;
+                            }
+
                             sb.Append(healer.Player.PadRight(16));
                             sb.Append(" ");
 
@@ -434,8 +439,11 @@ namespace WaywardGamers.KParser.Plugin
                         }
                     }
 
-                    sb.Append("\n\n");
-                    AppendNormalText(sb.ToString());
+                    if (placeHeader == true)
+                    {
+                        sb.Append("\n\n");
+                        AppendNormalText(sb.ToString());
+                    }
                 }
             }
         }
