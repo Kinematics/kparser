@@ -1167,8 +1167,13 @@ namespace WaywardGamers.KParser.Parsing
             // Handle this group first
             if (combatMatch.Success == true)
             {
-                message.ParseSuccessful = true;
+                if (target != null)
+                {
+                    target.HarmType = combatDetails.HarmType;
+                    target.AidType = combatDetails.AidType;
+                }
 
+                message.ParseSuccessful = true;
                 return;
             }
 
