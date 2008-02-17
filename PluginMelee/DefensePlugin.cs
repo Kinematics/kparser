@@ -99,8 +99,6 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             InitComboBox2Selection();
-
-            //base.DatabaseOpened(dataSet);
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
@@ -157,10 +155,8 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Member Variables
-        //int totalDamage;
         Dictionary<string, int> playerDamage = new Dictionary<string, int>();
 
-        string mobSetHeader      = "Mob                        Base XP   Number\n";
         string incAttacksHeader  = "Player           Melee   Range   Abil/Ws   Spells   Unknown   Total   Attack# %   Avoided   Avoid %\n";
         string incDamageHeader   = "Player           M.Dmg   Avg M.Dmg   R.Dmg  Avg R.Dmg   S.Dmg  Avg S.Dmg   A/WS.Dmg  Avg A/WS.Dmg   Damage %\n";
         string evasionHeader     = "Player           M.Evade   M.Evade %   R.Evade   R.Evade %\n";
@@ -250,18 +246,14 @@ namespace WaywardGamers.KParser.Plugin
                                             (pd.ActionType == (byte)ActionType.Weaponskill))
                                     select pd,
                              Unknown = from pd in cdd
-                                    where (pd.ActionType == (byte)ActionType.Unknown)
-                                    select pd
+                                       where (pd.ActionType == (byte)ActionType.Unknown)
+                                       select pd
                          };
             #endregion
-
 
             if ((incAttacks != null) && (incAttacks.Count() > 0))
             {
                 AppendBoldText("Defense\n\n", Color.Red);
-
-                //ProcessMobSummary(mobSet);
-
 
                 switch (comboBox1.SelectedIndex)
                 {
@@ -270,8 +262,8 @@ namespace WaywardGamers.KParser.Plugin
                         ProcessDefenseAttacks(incAttacks);
                         ProcessDefenseDamage(incAttacks);
                         ProcessDefenseEvasion(incAttacks);
-                        ProcessDefenseOther(incAttacks);
-                        ProcessUtsusemi(dataSet);
+                        ProcessDefenseOther(incAttacks); 
+                        ProcessUtsusemi(dataSet); 
                         break;
                     case 1:
                         // Attacks
@@ -296,63 +288,6 @@ namespace WaywardGamers.KParser.Plugin
                 }
 
                 AppendNormalText("\n");
-            }
-        }
-
-        private void ProcessMobSummary(IEnumerable<MobGroup> mobSet)
-        {
-            if (mobSet == null)
-                return;
-
-            if (mobSet.Count() == 0)
-                return;
-
-            StringBuilder sb = new StringBuilder();
-            bool headerDisplayed = false;
-
-            int mobCount;
-
-            foreach (var mob in mobSet)
-            {
-                if (mob.Battles.Count() > 0)
-                {
-                    foreach (var mobBattle in mob.Battles)
-                    {
-                        mobCount = mobBattle.Count();
-
-                        if (mobCount > 0)
-                        {
-                            if (headerDisplayed == false)
-                            {
-                                AppendBoldText("Mob Listing\n", Color.Blue);
-                                AppendBoldUnderText(mobSetHeader, Color.Black);
-
-                                headerDisplayed = true;
-                            }
-
-                            sb.Append(mob.Mob.PadRight(24));
-
-                            if (mobBattle.Key > 0)
-                            {
-                                sb.Append(mobBattle.Key.ToString().PadLeft(10));
-                            }
-                            else
-                            {
-                                sb.Append("---".PadLeft(10));
-                            }
-
-                            sb.Append(mobCount.ToString().PadLeft(9));
-
-                            sb.Append("\n");
-                        }
-                    }
-                }
-            }
-
-            if (headerDisplayed == true)
-            {
-                sb.Append("\n\n");
-                AppendNormalText(sb.ToString());
             }
         }
 
@@ -676,15 +611,11 @@ namespace WaywardGamers.KParser.Plugin
                                                  where ((uc.DefenseType == (byte)DefenseType.Blink) &&
                                                         (uc.ShadowsUsed > 0))
                                                  select uc,
-                                   UtsuIchi = from i in dataSet.Interactions
-                                              where ((utsu1 != null) &&
-                                                     (i.ActionsRow == utsu1) &&
-                                                     (i.CombatantsRowByActorCombatantRelation == c))
+                                   UtsuIchi = from i in utsu1.GetInteractionsRows()
+                                              where (i.CombatantsRowByActorCombatantRelation == c)
                                               select i,
-                                   UtsuNi = from i in dataSet.Interactions
-                                            where ((utsu2 != null) &&
-                                                   (i.ActionsRow == utsu2) &&
-                                                   (i.CombatantsRowByActorCombatantRelation == c))
+                                   UtsuNi = from i in utsu2.GetInteractionsRows()
+                                            where (i.CombatantsRowByActorCombatantRelation == c)
                                             select i,
                                };
 
