@@ -64,12 +64,15 @@ namespace WaywardGamers.KParser.Monitoring
 
                 // Read the (fixed) record log from the database, reconstruct
                 // the chat line, and send it to the new database.
-                foreach (var logLine in readDataSet.RecordLog)
+                using (new ProfileRegion("Reparse: Read database and parse"))
                 {
-                    ChatLine chat = new ChatLine(logLine.MessageText, logLine.Timestamp);
-                    MessageManager.Instance.AddChatLine(chat);
+                    foreach (var logLine in readDataSet.RecordLog)
+                    {
+                        ChatLine chat = new ChatLine(logLine.MessageText, logLine.Timestamp);
+                        MessageManager.Instance.AddChatLine(chat);
+                    }
+                    
                 }
-
             }
             catch (Exception e)
             {
@@ -77,8 +80,8 @@ namespace WaywardGamers.KParser.Monitoring
             }
             finally
             {
-                MessageManager.Instance.StopParsing();
                 IsRunning = false;
+                MessageManager.Instance.StopParsing();
             }
         }
 
