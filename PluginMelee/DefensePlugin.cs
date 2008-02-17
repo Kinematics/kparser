@@ -161,7 +161,7 @@ namespace WaywardGamers.KParser.Plugin
         Dictionary<string, int> playerDamage = new Dictionary<string, int>();
 
         string mobSetHeader      = "Mob                        Base XP   Number\n";
-        string incAttacksHeader  = "Player           Melee   Range   Abil/Ws   Spells   Unknown   Avoided   Avoid %   Attack# %\n";
+        string incAttacksHeader  = "Player           Melee   Range   Abil/Ws   Spells   Unknown   Total   Attack# %   Avoided   Avoid %\n";
         string incDamageHeader   = "Player           M.Dmg   Avg M.Dmg   R.Dmg  Avg R.Dmg   S.Dmg  Avg S.Dmg   A/WS.Dmg  Avg A/WS.Dmg   Damage %\n";
         string evasionHeader     = "Player           M.Evade   M.Evade %   R.Evade   R.Evade %\n";
         string otherDefHeader    = "Player           Parry   Parry %   Shadow   Shadow %   Anticipate  Anticipate %   Counter   Counter %\n";
@@ -271,6 +271,7 @@ namespace WaywardGamers.KParser.Plugin
                         ProcessDefenseDamage(incAttacks);
                         ProcessDefenseEvasion(incAttacks);
                         ProcessDefenseOther(incAttacks);
+                        ProcessUtsusemi(dataSet);
                         break;
                     case 1:
                         // Attacks
@@ -362,7 +363,7 @@ namespace WaywardGamers.KParser.Plugin
 
             StringBuilder sb = new StringBuilder();
 
-            //"Player           Melee   Range   Abil/Ws   Spells   Unknown   Avoided   Avoid %   Attack# %"
+            //"Player           Melee   Range   Abil/Ws   Spells   Unknown   Total   Attack# %   Avoided   Avoid %"
 
             int totalAttacks = incAttacks.Sum(b =>
                 b.Melee.Count() + b.Range.Count() + b.Abil.Count() + b.Spell.Count() + b.Unknown.Count());
@@ -403,8 +404,8 @@ namespace WaywardGamers.KParser.Plugin
                 attackPerc = (double)incHits / totalAttacks;
 
 
-                sb.AppendFormat("{0,5}{1,8}{2,10}{3,9}{4,10}{5,10}{6,10:p2}{7,12:p2}\n",
-                    mHits, rHits, aHits, sHits, uHits, avoidHits, avoidPerc, attackPerc);
+                sb.AppendFormat("{0,5}{1,8}{2,10}{3,9}{4,10}{5,8}{6,12:p2}{7,10}{8,10:p2}\n",
+                    mHits, rHits, aHits, sHits, uHits, incHits, attackPerc, avoidHits, avoidPerc);
             }
 
             sb.Append("\n\n");
@@ -558,15 +559,21 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var player in incAttacks)
             {
-                var parryableAttacks = player.Melee.Where(a =>
+                var parryableAttacks = player.Melee.Concat(
+                                       player.Unknown).Where(a =>
                     a.DefenseType != (byte) DefenseType.Evasion);
 
-                var blinkableAttacks = player.Melee.Concat(player.Range.Concat(player.Spell.Concat(player.Abil))).
-                    Where(a =>
+                var blinkableAttacks = player.Melee.Concat(
+                                       player.Range.Concat(
+                                       player.Spell.Concat(
+                                       player.Abil.Concat(
+                                       player.Unknown)))).Where(a =>
                         a.DefenseType != (byte)DefenseType.Evasion &&
                         a.DefenseType != (byte)DefenseType.Parry);
 
-                var anticableAttacks = player.Melee.Concat(player.Abil).Where(a =>
+                var anticableAttacks = player.Melee.Concat(
+                                       player.Abil.Concat(
+                                       player.Unknown)).Where(a =>
                     a.DefenseType != (byte)DefenseType.Evasion &&
                     a.DefenseType != (byte)DefenseType.Parry &&
                     a.DefenseType != (byte)DefenseType.Blink);
@@ -682,15 +689,15 @@ namespace WaywardGamers.KParser.Plugin
                                };
 
 
-            int shadsUsed = 0;
-            int ichiCast = 0;
-            int niCast = 0;
-            int ichiFin = 0;
-            int niFin = 0;
-            int numShads = 0;
-            int numShadsN = 0;
-            double effNorm = 0;
-            double effNin = 0;
+            int shadsUsed;
+            int ichiCast;
+            int niCast;
+            int ichiFin;
+            int niFin;
+            int numShads;
+            int numShadsN;
+            double effNorm;
+            double effNin;
 
 
             if (utsuByPlayer.Count() > 0)
