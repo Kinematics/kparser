@@ -160,55 +160,163 @@ namespace WaywardGamers.KParser
         }
 
         /// <summary>
-        /// Try to locate another message in the collection that has
-        /// the same message code as that provided.  It must be a
-        /// message where the actor name has been identified.
+        /// Locate a recent message in the message collection given a set of code parameters.
         /// </summary>
-        /// <param name="code">The code to look for.</param>
-        /// <returns>The message, if found.</returns>
-        internal Message FindLastMessageWithCode(uint code)
+        /// <param name="mcode">The primary code to search for.</param>
+        /// <param name="ecode1">The first extended code to search for.</param>
+        /// <param name="ecode2">The second extended code to search for.</param>
+        /// <param name="altCodes">A list of alternate primary codes to search for.</param>
+        /// <param name="timestamp">Timestamp of the original message</param>
+        /// <returns>Returns the most recent found message that matches the request.</returns>
+        internal Message FindLastMessageToMatch(MessageLine messageLine, List<uint> altCodes, Message parsedMessage)
         {
-            Message msg;
+            uint mcode = messageLine.MessageCode;
+            uint ecode1 = messageLine.ExtraCode1;
+            uint ecode2 = messageLine.ExtraCode2;
+            DateTime timestamp = messageLine.Timestamp;
+            //List<uint> altCodes = null;
+
+            if (mcode == 0)
+                throw new ArgumentOutOfRangeException("mcode", "No proper message code provided.");
+
+            if (messageCollection.Count == 0)
+                return null;
+
+            Message msg = null;
+            // Don't attach to message that are too far back in time
+            DateTime minTimestamp = timestamp - TimeSpan.FromSeconds(2);
 
             lock (messageCollection)
             {
-                // Reverse search the collection list
-                msg = messageCollection.LastOrDefault(m =>
-                    ((m.MessageCode == code) &&
-                     (m.ExtraCode1 != 0) &&  // 0-x code messages cannot be 'attached' to.
-                     (m.EventDetails != null) &&
-                     (m.EventDetails.CombatDetails != null) &&
-                     (m.EventDetails.CombatDetails.ActorName != string.Empty)));
-            }
+                // Search the last 50 messages of the collection (restricted in case of reparsing)
+                int startIndex = messageCollection.Count - 50;
+                if (startIndex < 0)
+                    startIndex = 0;
 
-            return msg;
-        }
+                var searchSet = messageCollection.Skip(startIndex);
+                Message lastMessage = messageCollection.Last();
+                // Check for lastTimestamp in case we're reading from logs
+                // where all messages from 50 message blocks will have the same
+                // timestamp, then an unknown interval before the next block.
+                DateTime lastTimestamp = lastMessage.Timestamp;
 
-        internal Message FindLastMessageWithECode(uint mcode, uint ecode1, uint ecode2)
-        {
-            Message msg;
-
-            lock (messageCollection)
-            {
-                // Reverse search the collection list
-                if (mcode != 0)
+                if ((ecode1 != 0) && (ecode2 != 0))
                 {
-                    msg = messageCollection.LastOrDefault(m =>
+                    // If we have sub codes, include those in the first pass search
+                    msg = searchSet.LastOrDefault(m =>
                         ((m.MessageCode == mcode) &&
                          (m.ExtraCode1 == ecode1) &&
                          (m.ExtraCode2 == ecode2) &&
                          (m.EventDetails != null) &&
+                         ((m.Timestamp >= minTimestamp) || (m.Timestamp == lastTimestamp)) &&
                          (m.EventDetails.CombatDetails != null) &&
-                         (m.EventDetails.CombatDetails.ActorName != string.Empty)));
+                         (m.EventDetails.CombatDetails.ActorName != string.Empty) &&
+                         (
+                          (m.EventDetails.CombatDetails.Targets == null) ||
+                          (
+                           (parsedMessage == null) ||
+                           (
+                            (parsedMessage.EventDetails.CombatDetails.Targets != null) &&
+                            (m.EventDetails.CombatDetails.Targets.Any(t =>
+                               t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false)
+                           )
+                          )
+                         ) &&
+                         (m.EventDetails.CombatDetails.HasAdditionalEffect == false)));
                 }
-                else
+
+                if (msg == null)
                 {
-                    msg = messageCollection.LastOrDefault(m =>
-                        ((m.ExtraCode1 == ecode1) &&
-                         (m.ExtraCode2 == ecode2) &&
+                    // If we're given ecodes of 0, or weren't able to find
+                    // the specified ecodes, try again.  Make sure we don't
+                    // find a message that has ecodes of 0, since we can't
+                    // attach to that.
+                    msg = searchSet.LastOrDefault(m =>
+                        ((m.MessageCode == mcode) &&
+                         (m.ExtraCode1 != 0) &&
+                         (m.ExtraCode2 != 0) &&
                          (m.EventDetails != null) &&
+                         ((m.Timestamp >= minTimestamp) || (m.Timestamp == lastTimestamp)) &&
                          (m.EventDetails.CombatDetails != null) &&
-                         (m.EventDetails.CombatDetails.ActorName != string.Empty)));
+                         (m.EventDetails.CombatDetails.ActorName != string.Empty) &&
+                         (
+                          (m.EventDetails.CombatDetails.Targets == null) ||
+                          (
+                           (parsedMessage == null) ||
+                           (
+                            (parsedMessage.EventDetails.CombatDetails.Targets != null) &&
+                            (m.EventDetails.CombatDetails.Targets.Any(t =>
+                               t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false)
+                           )
+                          )
+                         ) &&
+                         (m.EventDetails.CombatDetails.HasAdditionalEffect == false)));
+                }
+
+                if (msg == null)
+                {
+                    // If no message found, and we're given an altCode list, check each of those.
+                    if (altCodes != null)
+                    {
+                        foreach (uint altCode in altCodes)
+                        {
+                            if ((ecode1 != 0) && (ecode2 != 0))
+                            {
+                                // If we have sub codes, include those in the first pass search
+                                msg = searchSet.LastOrDefault(m =>
+                                    ((m.MessageCode == altCode) &&
+                                     (m.ExtraCode1 == ecode1) &&
+                                     (m.ExtraCode2 == ecode2) &&
+                                     (m.EventDetails != null) &&
+                                     ((m.Timestamp >= minTimestamp) || (m.Timestamp == lastTimestamp)) &&
+                                     (m.EventDetails.CombatDetails != null) &&
+                                     (m.EventDetails.CombatDetails.ActorName != string.Empty) &&
+                                     (
+                                      (m.EventDetails.CombatDetails.Targets == null) ||
+                                      (
+                                       (parsedMessage == null) ||
+                                       (
+                                        (parsedMessage.EventDetails.CombatDetails.Targets != null) &&
+                                        (m.EventDetails.CombatDetails.Targets.Any(t =>
+                                           t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false)
+                                       )
+                                      )
+                                     ) &&
+                                     (m.EventDetails.CombatDetails.HasAdditionalEffect == false)));
+                            }
+
+                            if (msg == null)
+                            {
+                                // If we're given ecodes of 0, or weren't able to find
+                                // the specified ecodes, try again.  Make sure we don't
+                                // find a message that has ecodes of 0, since we can't
+                                // attach to that.
+                                msg = searchSet.LastOrDefault(m =>
+                                    ((m.MessageCode == altCode) &&
+                                     (m.ExtraCode1 != 0) &&
+                                     (m.ExtraCode2 != 0) &&
+                                     (m.EventDetails != null) &&
+                                     ((m.Timestamp >= minTimestamp) || (m.Timestamp == lastTimestamp)) &&
+                                     (m.EventDetails.CombatDetails != null) &&
+                                     (m.EventDetails.CombatDetails.ActorName != string.Empty) &&
+                                     (
+                                      (m.EventDetails.CombatDetails.Targets == null) ||
+                                      (
+                                       (parsedMessage == null) ||
+                                       (
+                                        (parsedMessage.EventDetails.CombatDetails.Targets != null) &&
+                                        (m.EventDetails.CombatDetails.Targets.Any(t =>
+                                           t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false)
+                                       )
+                                      )
+                                     ) &&
+                                     (m.EventDetails.CombatDetails.HasAdditionalEffect == false)));
+                            }
+
+                            if (msg != null)
+                                break;
+                        }
+                    }
                 }
             }
 
