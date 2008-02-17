@@ -110,10 +110,10 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Spell/Ability Effects
-        public static readonly Regex RecoversHP         = new Regex(string.Format("^{0} recovers {1} HP\\.$", target, number));
-        public static readonly Regex RecoversMP         = new Regex(string.Format("^{0} recovers {1} MP\\.$", target, number));
-        public static readonly Regex Afflict            = new Regex(string.Format("^{0} is afflicted with {1} {2}\\.$", target, effect, afflictLvl));
-        public static readonly Regex Enfeeble           = new Regex(string.Format("{0} is {1}\\.$", target, effect));
+        public static readonly Regex RecoversHP = new Regex(string.Format("^{0} recovers {1} HP\\.$", target, number));
+        public static readonly Regex RecoversMP = new Regex(string.Format("^{0} recovers {1} MP\\.$", target, number));
+        public static readonly Regex Afflict    = new Regex(string.Format("^{0} is afflicted with {1} {2}\\.$", target, effect, afflictLvl));
+        public static readonly Regex Enfeeble   = new Regex(string.Format("{0} is {1}\\.$", target, effect));
         public static readonly Regex Buff       = new Regex(string.Format("^{0} gains the effect of {1}\\.$", target, effect));
         public static readonly Regex Debuff     = new Regex(string.Format("^{0} receives the effect of {1}\\.$", target, effect));
         public static readonly Regex Enhance    = new Regex(string.Format("^{0}'s attacks are enhanced\\.$", target));
@@ -134,6 +134,8 @@ namespace WaywardGamers.KParser
         public static readonly Regex UnableToCast = new Regex(string.Format("^Unable to cast spells at this time\\.$"));
         public static readonly Regex UnableToUse = new Regex(string.Format("^Unable to use job ability\\.$"));
         public static readonly Regex NoEffect    = new Regex(string.Format("^{0}'s {1} has no effect on {2}\\.$", name, spell, target));
+        public static readonly Regex NoEffect2   = new Regex(string.Format("^No effect on {0}\\.$", target));
+        public static readonly Regex NoEffect3   = new Regex(string.Format("^{0} casts {1} on {2}, but the spell fails to take effect\\.$", name, spell, target));
         #endregion
 
         #region Modifiers on existing lines
@@ -143,6 +145,7 @@ namespace WaywardGamers.KParser
         public static readonly Regex AdditionalStatus = new Regex(string.Format("^Additional effect: {0}\\.$", effect));
         public static readonly Regex AdditionalDrain  = new Regex(string.Format("^Additional effect: {0} HP drained from {1}\\.$", damage, target));
         public static readonly Regex AdditionalAspir  = new Regex(string.Format("^Additional effect: {0} MP drained from {1}\\.$", damage, target));
+        public static readonly Regex AdditionalHeal   = new Regex(string.Format("^Additional effect: {0} recovers {1} HP\\.$", target, damage));
         #endregion
 
         #region Combat damage
