@@ -57,9 +57,6 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-
             ResetComboBox2();
             AddToComboBox2("All");
             ResetTextBox();
@@ -104,11 +101,6 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             InitComboBox2Selection();
-
-            stopwatch.Stop();
-            Debug.WriteLine(string.Format("Internal total time to process Offense: {0} ms",
-                stopwatch.Elapsed.TotalMilliseconds));
-            //base.DatabaseOpened(dataSet);
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
@@ -193,10 +185,6 @@ namespace WaywardGamers.KParser.Plugin
             richTextBox.Clear();
             string actionSourceFilter = comboBox1.SelectedItem.ToString();
 
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Reset();
-            stopwatch.Start();
-
             #region Filtering
             string mobFilter;
 
@@ -257,7 +245,7 @@ namespace WaywardGamers.KParser.Plugin
                                    (c.CombatantType == (byte)EntityType.Pet) ||
                                    (c.CombatantType == (byte)EntityType.Fellow) ||
                                    (c.CombatantType == (byte)EntityType.Skillchain))
-                            orderby c.CombatantName
+                            orderby c.CombatantType, c.CombatantName
                             select new AttackGroup
                             {
                                 Player = c.CombatantName,
@@ -424,11 +412,6 @@ namespace WaywardGamers.KParser.Plugin
             }
             #endregion
 
-            stopwatch.Stop();
-            Debug.WriteLine(string.Format("Offense: Prep Linq section time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
-            stopwatch.Reset();
-            stopwatch.Start();
-
             if ((attackSet == null) || (attackSet.Count() == 0))
                 return;
 
@@ -447,51 +430,19 @@ namespace WaywardGamers.KParser.Plugin
                 totalDamage += localDamage;
             }
 
-            stopwatch.Stop();
-            Debug.WriteLine(string.Format("Offense: Revised Setup player list/damage time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
-            stopwatch.Reset();
-            stopwatch.Start();
-
             //ProcessMobSummary(mobSet);
 
             switch (actionSourceFilter)
             {
                 // Unknown == "All"
                 case "All":
-                    stopwatch.Start();
                     ProcessAttackSummary(attackSet);
-                    stopwatch.Stop();
-                    Debug.WriteLine(string.Format("Offense: Process Summary time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
-                    stopwatch.Reset();
-                    stopwatch.Start();
                     ProcessMeleeAttacks(attackSet);
-                    stopwatch.Stop();
-                    Debug.WriteLine(string.Format("Offense: Process Melee time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
-                    stopwatch.Reset();
-                    stopwatch.Start();
                     ProcessRangedAttacks(attackSet);
-                    stopwatch.Stop();
-                    Debug.WriteLine(string.Format("Offense: Process Ranged time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
-                    stopwatch.Reset();
-                    stopwatch.Start();
                     ProcessSpellsAttacks(attackSet);
-                    stopwatch.Stop();
-                    Debug.WriteLine(string.Format("Offense: Process Spell time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
-                    stopwatch.Reset();
-                    stopwatch.Start();
                     ProcessAbilityAttacks(attackSet);
-                    stopwatch.Stop();
-                    Debug.WriteLine(string.Format("Offense: Process Ability time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
-                    stopwatch.Reset();
-                    stopwatch.Start();
                     ProcessWeaponskillAttacks(attackSet);
-                    stopwatch.Stop();
-                    Debug.WriteLine(string.Format("Offense: Process WSkill time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
-                    stopwatch.Reset();
-                    stopwatch.Start();
                     ProcessSkillchains(attackSet);
-                    stopwatch.Stop();
-                    Debug.WriteLine(string.Format("Offense: Process SChain time: {0} ms", stopwatch.Elapsed.TotalMilliseconds));
                     //ProcessOtherAttacks(otherAttacks);
                     break;
                 case "Summary":
