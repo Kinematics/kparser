@@ -69,7 +69,7 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0x1f] = InteractionType.Aid; // <me> recovers/cures
             interactionTypeLookup[0x20] = InteractionType.Harm; // <mob> hits <pm> ??
             interactionTypeLookup[0x21] = InteractionType.Harm; // <mob> misses <pm> ??
-            interactionTypeLookup[0x22] = InteractionType.Unknown; // 
+            interactionTypeLookup[0x22] = InteractionType.Harm; // <pm> Drains
             interactionTypeLookup[0x23] = InteractionType.Aid; // <am> cures <pm>
             interactionTypeLookup[0x24] = InteractionType.Death; // <me> kills
             interactionTypeLookup[0x25] = InteractionType.Death; // <pm> kills
@@ -126,7 +126,7 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0x58] = InteractionType.Unknown; //
             interactionTypeLookup[0x59] = InteractionType.Unknown; //
             interactionTypeLookup[0x5a] = InteractionType.Aid; // <me> uses item
-            interactionTypeLookup[0x5b] = InteractionType.Unknown; //
+            interactionTypeLookup[0x5b] = InteractionType.Aid; // <pl> uses item for effect
             interactionTypeLookup[0x5c] = InteractionType.Unknown; //
             interactionTypeLookup[0x5d] = InteractionType.Unknown; //
             interactionTypeLookup[0x5e] = InteractionType.Unknown; //
@@ -197,21 +197,31 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0x9f] = InteractionType.Unknown; //
             interactionTypeLookup[0xa0] = InteractionType.Unknown; //
             interactionTypeLookup[0xa1] = InteractionType.Unknown; //
-            interactionTypeLookup[0xa2] = InteractionType.Unknown; //
+            interactionTypeLookup[0xa2] = InteractionType.Aid; // <am> cures
             interactionTypeLookup[0xa3] = InteractionType.Harm; // <am> hits
             interactionTypeLookup[0xa4] = InteractionType.Harm; // <am> misses
-            interactionTypeLookup[0xa5] = InteractionType.Unknown; //
+            interactionTypeLookup[0xa5] = InteractionType.Harm; // <mob> casts on <am>
             interactionTypeLookup[0xa6] = InteractionType.Death; // <am> kills
             interactionTypeLookup[0xa7] = InteractionType.Death; // <am> dies
             interactionTypeLookup[0xa8] = InteractionType.Unknown; //
             interactionTypeLookup[0xa9] = InteractionType.Unknown; //
             interactionTypeLookup[0xaa] = InteractionType.Harm; // <am> is resisted, or misses /ra
-            interactionTypeLookup[0xab] = InteractionType.Unknown; //
+            interactionTypeLookup[0xab] = InteractionType.Aid; // <am> uses item
             interactionTypeLookup[0xac] = InteractionType.Unknown; //
             interactionTypeLookup[0xad] = InteractionType.Unknown; //
             interactionTypeLookup[0xae] = InteractionType.Unknown; //
-            interactionTypeLookup[0xaf] = InteractionType.Unknown; //
+            interactionTypeLookup[0xaf] = InteractionType.Aid; // <am> uses self-buff
             interactionTypeLookup[0xb0] = InteractionType.Unknown; //
+            interactionTypeLookup[0xb1] = InteractionType.Unknown; //
+            interactionTypeLookup[0xb2] = InteractionType.Unknown; //
+            interactionTypeLookup[0xb3] = InteractionType.Unknown; //
+            interactionTypeLookup[0xb4] = InteractionType.Unknown; //
+            interactionTypeLookup[0xb5] = InteractionType.Unknown; //
+            interactionTypeLookup[0xb6] = InteractionType.Harm; // <am> is enfeebled
+            interactionTypeLookup[0xb7] = InteractionType.Aid; // <am> gains buff
+            interactionTypeLookup[0xb8] = InteractionType.Unknown; //
+            interactionTypeLookup[0xb9] = InteractionType.Harm; // <am> takes damage
+            interactionTypeLookup[0xba] = InteractionType.Harm; // <am> avoids damage
             interactionTypeLookup[0xbb] = InteractionType.Aid; // <am> drains
 
         }
@@ -292,7 +302,7 @@ namespace WaywardGamers.KParser
             aidTypeLookup[0x58] = AidType.None; //
             aidTypeLookup[0x59] = AidType.None; //
             aidTypeLookup[0x5a] = AidType.Item; // <me> uses item
-            aidTypeLookup[0x5b] = AidType.None; //
+            aidTypeLookup[0x5b] = AidType.Item; // <pl> uses item for effect
             aidTypeLookup[0x5c] = AidType.None; //
             aidTypeLookup[0x5d] = AidType.None; //
             aidTypeLookup[0x5e] = AidType.None; //
@@ -363,21 +373,31 @@ namespace WaywardGamers.KParser
             aidTypeLookup[0x9f] = AidType.None; //
             aidTypeLookup[0xa0] = AidType.None; //
             aidTypeLookup[0xa1] = AidType.None; //
-            aidTypeLookup[0xa2] = AidType.None; //
+            aidTypeLookup[0xa2] = AidType.Recovery; // <am> cures
             aidTypeLookup[0xa3] = AidType.None; // <am> hits
             aidTypeLookup[0xa4] = AidType.None; // <am> misses
-            aidTypeLookup[0xa5] = AidType.None; //
+            aidTypeLookup[0xa5] = AidType.None; // <mob> casts on <am>
             aidTypeLookup[0xa6] = AidType.None; // <am> kills
             aidTypeLookup[0xa7] = AidType.None; // <am> dies
             aidTypeLookup[0xa8] = AidType.None; //
             aidTypeLookup[0xa9] = AidType.None; //
             aidTypeLookup[0xaa] = AidType.None; // <am> is resisted, or misses /ra
-            aidTypeLookup[0xab] = AidType.None; //
+            aidTypeLookup[0xab] = AidType.Item; // <am> uses item
             aidTypeLookup[0xac] = AidType.None; //
             aidTypeLookup[0xad] = AidType.None; //
             aidTypeLookup[0xae] = AidType.None; //
-            aidTypeLookup[0xaf] = AidType.None; //
+            aidTypeLookup[0xaf] = AidType.Enhance; // <am> uses self-buff
             aidTypeLookup[0xb0] = AidType.None; //
+            aidTypeLookup[0xb1] = AidType.None; //
+            aidTypeLookup[0xb2] = AidType.None; //
+            aidTypeLookup[0xb3] = AidType.None; //
+            aidTypeLookup[0xb4] = AidType.None; //
+            aidTypeLookup[0xb5] = AidType.None; //
+            aidTypeLookup[0xb6] = AidType.None; //
+            aidTypeLookup[0xb7] = AidType.Enhance; // <am> gains buff
+            aidTypeLookup[0xb8] = AidType.None; //
+            aidTypeLookup[0xb9] = AidType.None; // <am> takes damage
+            aidTypeLookup[0xba] = AidType.None; // <am> avoids damage
             aidTypeLookup[0xbb] = AidType.Recovery; // <am> drains
 
         }
@@ -401,7 +421,7 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0x1f] = HarmType.None; // <me> recovers/cures
             harmTypeLookup[0x20] = HarmType.Damage; // <mob> hits <pm>
             harmTypeLookup[0x21] = HarmType.Damage; // <mob> misses <pm>
-            harmTypeLookup[0x22] = HarmType.None; // 
+            harmTypeLookup[0x22] = HarmType.Drain; // 
             harmTypeLookup[0x23] = HarmType.None; // <am> cures <pm>
             harmTypeLookup[0x24] = HarmType.None; // <me> kills
             harmTypeLookup[0x25] = HarmType.None; // <pm> kills
@@ -458,7 +478,7 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0x58] = HarmType.None; //
             harmTypeLookup[0x59] = HarmType.None; //
             harmTypeLookup[0x5a] = HarmType.None; // <me> uses item
-            harmTypeLookup[0x5b] = HarmType.None; //
+            harmTypeLookup[0x5b] = HarmType.None; // <am> uses item
             harmTypeLookup[0x5c] = HarmType.None; //
             harmTypeLookup[0x5d] = HarmType.None; //
             harmTypeLookup[0x5e] = HarmType.None; //
@@ -481,7 +501,7 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0x6f] = HarmType.None; // <other> uses buff (self-buff?)
             harmTypeLookup[0x70] = HarmType.Enfeeble; // <me> enfeebles (ability)
             harmTypeLookup[0x71] = HarmType.None; //
-            harmTypeLookup[0x72] = HarmType.Damage; // <am> uses weaponskill (ability?), misses
+            harmTypeLookup[0x72] = HarmType.Unknown; // <am> uses weaponskill (ability?), misses
             harmTypeLookup[0x73] = HarmType.None; //
             harmTypeLookup[0x74] = HarmType.None; //
             harmTypeLookup[0x75] = HarmType.None; //
@@ -532,7 +552,7 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0xa2] = HarmType.None; //
             harmTypeLookup[0xa3] = HarmType.Damage; // <am> hits
             harmTypeLookup[0xa4] = HarmType.Damage; // <am> misses
-            harmTypeLookup[0xa5] = HarmType.None; //
+            harmTypeLookup[0xa5] = HarmType.Unknown; // <mob> casts on <am>
             harmTypeLookup[0xa6] = HarmType.None; // <am> kills
             harmTypeLookup[0xa7] = HarmType.None; // <am> dies
             harmTypeLookup[0xa8] = HarmType.None; //
@@ -544,6 +564,16 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0xae] = HarmType.None; //
             harmTypeLookup[0xaf] = HarmType.None; //
             harmTypeLookup[0xb0] = HarmType.None; //
+            harmTypeLookup[0xb1] = HarmType.None; //
+            harmTypeLookup[0xb2] = HarmType.None; //
+            harmTypeLookup[0xb3] = HarmType.None; //
+            harmTypeLookup[0xb4] = HarmType.None; //
+            harmTypeLookup[0xb5] = HarmType.None; //
+            harmTypeLookup[0xb6] = HarmType.Enfeeble; // <am> is enfeebled
+            harmTypeLookup[0xb7] = HarmType.None; // <am> gains buff
+            harmTypeLookup[0xb8] = HarmType.None; //
+            harmTypeLookup[0xb9] = HarmType.Damage; // <am> takes damage
+            harmTypeLookup[0xba] = HarmType.Damage; // <am> avoids damage
             harmTypeLookup[0xbb] = HarmType.Drain; // <am> drains
 
         }
@@ -567,7 +597,7 @@ namespace WaywardGamers.KParser
             successTypeLookup[0x1f] = SuccessType.Successful; // <me> recovers/cures
             successTypeLookup[0x20] = SuccessType.Successful; // <mob> hits <pm> ??
             successTypeLookup[0x21] = SuccessType.Unsuccessful; // <mob> misses <pm> ??
-            successTypeLookup[0x22] = SuccessType.None; // 
+            successTypeLookup[0x22] = SuccessType.Successful; // 
             successTypeLookup[0x23] = SuccessType.Successful; // <am> cures <pm>
             successTypeLookup[0x24] = SuccessType.None; // <me> kills
             successTypeLookup[0x25] = SuccessType.None; // <pm> kills
@@ -624,7 +654,7 @@ namespace WaywardGamers.KParser
             successTypeLookup[0x58] = SuccessType.None; //
             successTypeLookup[0x59] = SuccessType.None; //
             successTypeLookup[0x5a] = SuccessType.Successful; // <me> uses item
-            successTypeLookup[0x5b] = SuccessType.None; //
+            successTypeLookup[0x5b] = SuccessType.Successful; // <pl> uses item for effect
             successTypeLookup[0x5c] = SuccessType.None; //
             successTypeLookup[0x5d] = SuccessType.None; //
             successTypeLookup[0x5e] = SuccessType.None; //
@@ -695,21 +725,31 @@ namespace WaywardGamers.KParser
             successTypeLookup[0x9f] = SuccessType.None; //
             successTypeLookup[0xa0] = SuccessType.None; //
             successTypeLookup[0xa1] = SuccessType.None; //
-            successTypeLookup[0xa2] = SuccessType.None; //
+            successTypeLookup[0xa2] = SuccessType.Successful; // <am> cures
             successTypeLookup[0xa3] = SuccessType.Successful; // <am> hits
             successTypeLookup[0xa4] = SuccessType.Unsuccessful; // <am> misses
-            successTypeLookup[0xa5] = SuccessType.None; //
+            successTypeLookup[0xa5] = SuccessType.Successful; // <mob> casts on <am>
             successTypeLookup[0xa6] = SuccessType.None; // <am> kills
             successTypeLookup[0xa7] = SuccessType.None; // <am> dies
             successTypeLookup[0xa8] = SuccessType.None; //
             successTypeLookup[0xa9] = SuccessType.None; //
             successTypeLookup[0xaa] = SuccessType.Unsuccessful; // <am> is resisted, or misses /ra
-            successTypeLookup[0xab] = SuccessType.None; //
+            successTypeLookup[0xab] = SuccessType.Successful; // <am> uses item
             successTypeLookup[0xac] = SuccessType.None; //
             successTypeLookup[0xad] = SuccessType.None; //
             successTypeLookup[0xae] = SuccessType.None; //
-            successTypeLookup[0xaf] = SuccessType.None; //
+            successTypeLookup[0xaf] = SuccessType.Successful; //
             successTypeLookup[0xb0] = SuccessType.None; //
+            successTypeLookup[0xb1] = SuccessType.None; //
+            successTypeLookup[0xb2] = SuccessType.None; //
+            successTypeLookup[0xb3] = SuccessType.None; //
+            successTypeLookup[0xb4] = SuccessType.None; //
+            successTypeLookup[0xb5] = SuccessType.None; //
+            successTypeLookup[0xb6] = SuccessType.Successful; // <am> is enfeebled
+            successTypeLookup[0xb7] = SuccessType.Successful; // <am> gains buff
+            successTypeLookup[0xb8] = SuccessType.None; //
+            successTypeLookup[0xb9] = SuccessType.Successful; // <am> takes damage
+            successTypeLookup[0xba] = SuccessType.Unsuccessful; // <am> avoids damage
             successTypeLookup[0xbb] = SuccessType.Successful; // <am> drains
 
         }
@@ -760,6 +800,9 @@ namespace WaywardGamers.KParser
         #region Alternate code sets
         internal List<uint> GetAlternateCodes(uint messageCode)
         {
+            // case 0x11 -- effect on additional AOE targets
+            //   return new List<uint>() { 0x12 -- possible originating message code (first target) }
+
             switch (messageCode)
             {
                 case 0x38:
@@ -776,6 +819,18 @@ namespace WaywardGamers.KParser
                     return new List<uint>() { 0x70 };
                 case 0x70:
                     return new List<uint>() { 0x66 };
+                case 0x45:
+                    return new List<uint>() { 0x39, 0x3b, 0x3d, 0x3f, 0xb6 };
+                case 0x3f:
+                    return new List<uint>() { 0x39, 0x3b, 0x3d, 0x45, 0xb6 };
+                case 0x39:
+                    return new List<uint>() { 0x45, 0x3b, 0x3d, 0x3f, 0xb6 };
+                case 0x3b:
+                    return new List<uint>() { 0x39, 0x45, 0x3d, 0x3f, 0xb6 };
+                case 0x3d:
+                    return new List<uint>() { 0x39, 0x3b, 0x45, 0x3f, 0xb6 };
+                case 0xb6:
+                    return new List<uint>() { 0x39, 0x3b, 0x45, 0x3f, 0x45 };
             }
 
             return null;
