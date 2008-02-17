@@ -134,6 +134,7 @@
     <Compile Include="ReferenceValues\Magic.cs" />
     <Compile Include="Messages\Parsing\Names.cs" />
     <Compile Include="Messages\Parsing\ParseExpressions.cs" />
+    <Compile Include="Utility\RegionProfiler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
