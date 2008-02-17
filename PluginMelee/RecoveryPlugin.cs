@@ -105,7 +105,7 @@ namespace WaywardGamers.KParser.Plugin
                              where ((c.CombatantType == (byte)EntityType.Player) ||
                                     (c.CombatantType == (byte)EntityType.Pet) ||
                                     (c.CombatantType == (byte)EntityType.Fellow))
-                             orderby c.CombatantName
+                             orderby c.CombatantType, c.CombatantName
                              select new
                              {
                                  Player = c.CombatantName,
@@ -151,13 +151,20 @@ namespace WaywardGamers.KParser.Plugin
             int numR1 = 0;
             int numR2 = 0;
             int numR3 = 0;
+
+            int ttlDmgTaken = 0;
+            int ttlDrainAmt = 0;
+            int ttlHealAmt = 0;
+            int ttlNumR1 = 0;
+            int ttlNumR2 = 0;
+            int ttlNumR3 = 0;
+
+            bool placeHeader = false;
+
             StringBuilder sb = new StringBuilder();
 
             if (playerData.Count() > 0)
             {
-                AppendBoldText("Damage Recovery\n", Color.Blue);
-                AppendBoldUnderText(dmgRecoveryHeader, Color.Black);
-
                 foreach (var player in playerData)
                 {
                     dmgTaken = player.PrimeDmgTaken.Sum() + player.SecondDmgTaken.Sum();
@@ -169,6 +176,21 @@ namespace WaywardGamers.KParser.Plugin
 
                     if ((dmgTaken + drainAmt + healAmt + numR1 + numR2 + numR3) > 0)
                     {
+                        if (placeHeader == false)
+                        {
+                            AppendBoldText("Damage Recovery\n", Color.Blue);
+                            AppendBoldUnderText(dmgRecoveryHeader, Color.Black);
+
+                            placeHeader = true;
+                        }
+
+                        ttlDmgTaken += dmgTaken;
+                        ttlDrainAmt += drainAmt;
+                        ttlHealAmt += healAmt;
+                        ttlNumR1 += numR1;
+                        ttlNumR2 += numR2;
+                        ttlNumR3 += numR3;
+
                         sb.Append(player.Player.PadRight(16));
                         sb.Append(" ");
 
@@ -184,8 +206,14 @@ namespace WaywardGamers.KParser.Plugin
                     }
                 }
 
-                sb.Append("\n\n");
-                AppendNormalText(sb.ToString());
+                if (placeHeader == true)
+                {
+                    AppendNormalText(sb.ToString());
+                    string totalString = string.Format(
+                        "{0,-17}{1,9}{2,13}{3,11}{4,9}{5,11}{6,11}\n\n\n", "Total",
+                        ttlDmgTaken, ttlDrainAmt, ttlHealAmt, ttlNumR1, ttlNumR2, ttlNumR3);
+                    AppendBoldText(totalString, Color.Black);
+                }
 
             }
         }
