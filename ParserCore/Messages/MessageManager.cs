@@ -120,7 +120,7 @@ namespace WaywardGamers.KParser
                 messageLine = new MessageLine(chatLine);
 
                 // Add this directly to the database before starting to parse.
-                DatabaseManager.Instance.AddMessageLineRecord(messageLine);
+                DatabaseManager.Instance.AddMessageToRecordLog(messageLine);
 
                 Message msg = Parser.Parse(messageLine);
 
