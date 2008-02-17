@@ -643,6 +643,21 @@ namespace WaywardGamers.KParser.Parsing
                     message.ParseSuccessful = true;
                     return;
                 }
+
+                if (combatMatch.Success == false)
+                {
+                    // Uses reraise earring; receives the effect of reraise
+                    combatMatch = ParseExpressions.Debuff.Match(currentMessageText);
+                    if (combatMatch.Success == true)
+                    {
+                        target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                        target.HarmType = msgCombatDetails.HarmType;
+                        target.AidType = msgCombatDetails.AidType;
+                        target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
+                        message.ParseSuccessful = true;
+                        return;
+                    }
+                }
             }
             else
             {
