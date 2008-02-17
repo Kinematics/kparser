@@ -15,7 +15,6 @@ namespace WaywardGamers.KParser
         #region member Variables
         string actorName = string.Empty;
         string actionName = string.Empty;
-        string additionalEffectName = string.Empty;
         #endregion
 
         #region Constructor
@@ -133,6 +132,11 @@ namespace WaywardGamers.KParser
         internal bool IsPreparing { get; set; }
 
         /// <summary>
+        /// Gets and sets whether an additional effect is present in this message.
+        /// </summary>
+        internal bool HasAdditionalEffect { get; set; }
+
+        /// <summary>
         /// Gets and sets the name of the action being used.
         /// </summary>
         internal string ActionName
@@ -191,6 +195,7 @@ namespace WaywardGamers.KParser
             sb.AppendFormat("    Harm Type: {0}\n", HarmType);
             sb.AppendFormat("    Action Type: {0}\n", ActionType);
             sb.AppendFormat("    IsPreparing: {0}\n", IsPreparing);
+            sb.AppendFormat("    HasAdditionalEffect: {0}\n", HasAdditionalEffect);
             sb.AppendFormat("    Action Name: {0}\n", ActionName);
             sb.AppendFormat("    Success Level: {0}\n", SuccessLevel);
             sb.AppendFormat("    Is Crit: {0}\n", FlagCrit);
