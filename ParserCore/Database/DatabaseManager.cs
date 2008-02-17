@@ -700,10 +700,10 @@ namespace WaywardGamers.KParser
                     action = localDB.Actions.GetAction(message.EventDetails.CombatDetails.ActionName);
 
                 // Bogus target for passing in data on incomplete messages.
-                TargetDetails checkTarget = message.EventDetails.CombatDetails.Targets.SingleOrDefault(t => t.Name == "");
+                TargetDetails bogusTarget = message.EventDetails.CombatDetails.Targets.SingleOrDefault(t => t.Name == "");
 
                 // Get the battle (if any) this interaction is associated with.
-                if ((message.EventDetails.CombatDetails.Targets.Count == 0) || (checkTarget != null))
+                if ((message.EventDetails.CombatDetails.Targets.Count == 0) || (bogusTarget != null))
                 {
                     // No targets, so preparing a move
 
@@ -743,6 +743,12 @@ namespace WaywardGamers.KParser
                             activeMobBattleList[message.EventDetails.CombatDetails.ActorName] = battle;
                         }
                     }
+                    else if (actor == null)
+                    {
+                        // No actor specified (eg: shadows absorb attack)
+                        // Place in most recent battle.
+                        battle = MostRecentActiveBattle();
+                    }
                 }
 
                 if (battle != null)
@@ -778,7 +784,7 @@ namespace WaywardGamers.KParser
                         secondAction);
 
                 }
-                else if (checkTarget != null)
+                else if (bogusTarget != null)
                 {
                     var targetRow = battle.CombatantsRowByEnemyCombatantRelation;
 
@@ -792,7 +798,7 @@ namespace WaywardGamers.KParser
                         action,
                         (byte)message.EventDetails.CombatDetails.ActionType,
                         (byte)message.EventDetails.CombatDetails.FailedActionType,
-                        (byte)checkTarget.DefenseType,
+                        (byte)bogusTarget.DefenseType,
                         0,
                         (byte)message.EventDetails.CombatDetails.AidType,
                         (byte)RecoveryType.None,
