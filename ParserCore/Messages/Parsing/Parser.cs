@@ -10,7 +10,6 @@ namespace WaywardGamers.KParser.Parsing
     internal static class Parser
     {
         #region Member Variables
-        private static ParseCodes parseCodesLookup = new ParseCodes();
         private static uint lastMessageID = 0;
         #endregion
 
@@ -58,7 +57,8 @@ namespace WaywardGamers.KParser.Parsing
                         (message.EventDetails.CombatDetails.SuccessLevel != SuccessType.Failed) &&
                         (message.EventDetails.CombatDetails.IsPreparing == false))
                     {
-                        Message prevMsg = MessageManager.Instance.FindLastMessageWithCode(messageLine.MessageCode);
+                        Message prevMsg = MessageManager.Instance.FindLastMessageToMatch(messageLine,
+                            ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), message);
 
                         if (prevMsg != null)
                         {
@@ -81,10 +81,6 @@ namespace WaywardGamers.KParser.Parsing
 
         private static Message GetAttachedMessage(MessageLine messageLine)
         {
-            int i = 0;
-            if ((messageLine.MessageCode == 0xa4) && (messageLine.TextOutput.EndsWith("ranged attack misses.")))
-                i = 1;
-
             Message msg = null;
 
             if (messageLine.EventSequence > lastMessageID)
@@ -98,22 +94,28 @@ namespace WaywardGamers.KParser.Parsing
                     {
                         // self-samba
                         case 0x1e:
-                            msg = MessageManager.Instance.FindLastMessageWithCode(0x14);
+                            msg = MessageManager.Instance.FindLastMessageToMatch(messageLine,
+                                new List<uint> {0x14}, null);
                             break;
                         // party-samba
                         case 0x22: //?
-                            msg = MessageManager.Instance.FindLastMessageWithCode(0x19);
+                            msg = MessageManager.Instance.FindLastMessageToMatch(messageLine,
+                                new List<uint> { 0x19 }, null);
                             break;
                         // other-samba
                         case 0x2a:
-                            msg = MessageManager.Instance.FindLastMessageWithCode(0x28);
+                            msg = MessageManager.Instance.FindLastMessageToMatch(messageLine,
+                                new List<uint> { 0x28 }, null);
                             break;
                         // Anything else
                         default:
-                            msg = MessageManager.Instance.FindLastMessageWithECode(messageLine.MessageCode,
-                                messageLine.ExtraCode1, messageLine.ExtraCode2);
+                            msg = MessageManager.Instance.FindLastMessageToMatch(messageLine,
+                                ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), null);
                             break;
                     }
+
+                    if (msg != null)
+                        msg.EventDetails.CombatDetails.HasAdditionalEffect = true;
                 }
                 else
                 {
@@ -121,9 +123,8 @@ namespace WaywardGamers.KParser.Parsing
                     {
                         // Recovery (possible AOE)
                         case 0x17:
-                            msg = MessageManager.Instance.FindLastMessageWithECode(0x1f,
-                                messageLine.ExtraCode1,
-                                messageLine.ExtraCode2);
+                            msg = MessageManager.Instance.FindLastMessageToMatch(messageLine,
+                                new List<uint> { 0x1f }, null);
                             break;
                     }
                 }
@@ -558,15 +559,15 @@ namespace WaywardGamers.KParser.Parsing
             // Only lookup if unknown category type.  Multi-line messages will already know this info.
             if (msgCombatDetails.InteractionType == InteractionType.Unknown)
             {
-                msgCombatDetails.InteractionType = parseCodesLookup.GetInteractionType(message.MessageCode);
+                msgCombatDetails.InteractionType = ParseCodes.Instance.GetInteractionType(message.MessageCode);
 
                 if (msgCombatDetails.InteractionType == InteractionType.Aid)
-                    msgCombatDetails.AidType = parseCodesLookup.GetAidType(message.MessageCode);
+                    msgCombatDetails.AidType = ParseCodes.Instance.GetAidType(message.MessageCode);
 
                 if (msgCombatDetails.InteractionType == InteractionType.Harm)
                 {
-                    msgCombatDetails.HarmType = parseCodesLookup.GetHarmType(message.MessageCode);
-                    msgCombatDetails.SuccessLevel = parseCodesLookup.GetSuccessType(message.MessageCode);
+                    msgCombatDetails.HarmType = ParseCodes.Instance.GetHarmType(message.MessageCode);
+                    msgCombatDetails.SuccessLevel = ParseCodes.Instance.GetSuccessType(message.MessageCode);
                 }
             }
 
@@ -1434,72 +1435,43 @@ namespace WaywardGamers.KParser.Parsing
 
             combatMatch = ParseExpressions.CastSpell.Match(currentMessageText);
             if (combatMatch.Success == true)
+            {
                 combatDetails.ActionType = ActionType.Spell;
+                combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                combatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
+            }
 
             if (combatMatch.Success == false)
             {
                 combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
                 if (combatMatch.Success == true)
-                    combatDetails.ActionType = ActionType.Ability;
-            }
-
-            if (combatMatch.Success == true)
-            {
-                message.ParseSuccessful = true;
-
-                combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-
-                switch (combatDetails.ActionType)
                 {
-                    case ActionType.Spell:
-                        combatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                        break;
-                    case ActionType.Ability:
-                        combatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                        if (Weaponskills.NamesList.Contains(combatDetails.ActionName))
-                            combatDetails.ActionType = ActionType.Weaponskill;
-                        break;
+                    combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    combatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                    if (Weaponskills.NamesList.Contains(combatDetails.ActionName))
+                        combatDetails.ActionType = ActionType.Weaponskill;
+                    else
+                        combatDetails.ActionType = ActionType.Ability;
+
+                    // Make corrections for certain special actions that are really enfeebles
+                    if (combatDetails.ActionName == "Charm")
+                        combatDetails.HarmType = HarmType.Enfeeble;
                 }
-
-                // Determine actor entity (no target is provided in the above message lines)
-                switch (message.MessageCode)
-                {
-                    case 0x15:
-                    case 0x1a:
-                        // me or party vs mob
-                        combatDetails.ActorEntityType = EntityType.Player;
-                        break;
-                    case 0x1d:
-                        // mob vs player
-                        combatDetails.ActorEntityType = EntityType.Mob;
-                        break;
-                    case 0x29:
-                        // Mob vs mob
-                        if (combatDetails.ActorEntityType == EntityType.Unknown)
-                            combatDetails.ActorEntityType = MessageManager.Instance.LookupPetEntity(combatDetails.ActorName);
-                        break;
-                    default:
-                        // other??
-                        if (combatDetails.ActorEntityType == EntityType.Unknown)
-                            combatDetails.ActorEntityType = MessageManager.Instance.LookupEntity(combatDetails.ActorName);
-                        break;
-                }
-
-                // Make corrections for certain special actions that are really enfeebles
-                if (combatDetails.ActionName == "Charm")
-                    combatDetails.HarmType = HarmType.Enfeeble;
-
-                return;
             }
-
 
             // Standalone and followup message lines
 
-            combatMatch = ParseExpressions.MeleeMiss.Match(currentMessageText);
-            if (combatMatch.Success == true)
+            if (combatMatch.Success == false)
             {
-                combatDetails.ActionType = ActionType.Melee;
-                defType = DefenseType.Evasion;
+                combatMatch = ParseExpressions.MeleeMiss.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    combatDetails.ActionType = ActionType.Melee;
+                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.DefenseType = DefenseType.Evasion;
+                    target.HarmType = combatDetails.HarmType;
+                    combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                }
             }
 
             if (combatMatch.Success == false)
@@ -1508,7 +1480,10 @@ namespace WaywardGamers.KParser.Parsing
                 if (combatMatch.Success == true)
                 {
                     combatDetails.ActionType = ActionType.Ranged;
-                    defType = DefenseType.Evasion;
+                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.DefenseType = DefenseType.Evasion;
+                    target.HarmType = combatDetails.HarmType;
+                    combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 }
             }
 
@@ -1519,14 +1494,12 @@ namespace WaywardGamers.KParser.Parsing
                 {
                     combatDetails.ActionType = ActionType.Ranged;
                     defType = DefenseType.Evasion;
-                    // No target available in this message. End here, but fill in details.
                     combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    // No target available in this message. Create a bogus target to hold state.
                     target = new TargetDetails();
+                    combatDetails.Targets.Add(target);
                     target.DefenseType = defType;
                     target.HarmType = combatDetails.HarmType;
-                    combatDetails.Targets.Add(target);
-                    message.ParseSuccessful = true;
-                    return;
                 }
             }
 
@@ -1536,7 +1509,9 @@ namespace WaywardGamers.KParser.Parsing
                 if (combatMatch.Success == true)
                 {
                     combatDetails.ActionType = ActionType.Ability;
-                    defType = DefenseType.Evasion;
+                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.DefenseType = DefenseType.Evasion;
+                    target.HarmType = combatDetails.HarmType;
                 }
             }
 
@@ -1545,7 +1520,11 @@ namespace WaywardGamers.KParser.Parsing
                 combatMatch = ParseExpressions.Blink.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
-                    defType = DefenseType.Blink;
+                    combatDetails.ActionType = ActionType.Unknown;
+                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.DefenseType = DefenseType.Blink;
+                    target.HarmType = combatDetails.HarmType;
+                    target.ShadowsUsed = byte.Parse(combatMatch.Groups[ParseFields.Number].Value);
                 }
             }
 
@@ -1554,7 +1533,23 @@ namespace WaywardGamers.KParser.Parsing
                 combatMatch = ParseExpressions.Parry.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
-                    defType = DefenseType.Parry;
+                    combatDetails.ActionType = ActionType.Unknown;
+                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.DefenseType = DefenseType.Parry;
+                    target.HarmType = combatDetails.HarmType;
+                    combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                }
+            }
+
+            if (combatMatch.Success == false)
+            {
+                combatMatch = ParseExpressions.Anticipate2.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    combatDetails.ActionType = ActionType.Unknown;
+                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.DefenseType = DefenseType.Anticipate;
+                    target.HarmType = combatDetails.HarmType;
                 }
             }
 
@@ -1563,7 +1558,11 @@ namespace WaywardGamers.KParser.Parsing
                 combatMatch = ParseExpressions.Anticipate.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
-                    defType = DefenseType.Anticipate;
+                    combatDetails.ActionType = ActionType.Unknown;
+                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.DefenseType = DefenseType.Anticipate;
+                    target.HarmType = combatDetails.HarmType;
+                    combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 }
             }
 
@@ -1572,7 +1571,10 @@ namespace WaywardGamers.KParser.Parsing
                 combatMatch = ParseExpressions.Evade.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
-                    defType = DefenseType.Evade;
+                    combatDetails.ActionType = ActionType.Unknown;
+                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.DefenseType = DefenseType.Evade;
+                    target.HarmType = combatDetails.HarmType;
                 }
             }
 
@@ -1581,7 +1583,22 @@ namespace WaywardGamers.KParser.Parsing
                 combatMatch = ParseExpressions.ResistSpell.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
-                    defType = DefenseType.Resist;
+                    combatDetails.ActionType = ActionType.Spell;
+                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.DefenseType = DefenseType.Resist;
+                    target.HarmType = combatDetails.HarmType;
+                }
+            }
+
+            if (combatMatch.Success == false)
+            {
+                combatMatch = ParseExpressions.ResistEffect.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    combatDetails.ActionType = ActionType.Ability;
+                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.DefenseType = DefenseType.Resist;
+                    target.HarmType = combatDetails.HarmType;
                 }
             }
 
@@ -1589,77 +1606,6 @@ namespace WaywardGamers.KParser.Parsing
             if (combatMatch.Success == true)
             {
                 message.ParseSuccessful = true;
-
-                target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                target.DefenseType = defType;
-
-                target.HarmType = combatDetails.HarmType;
-                target.AidType = combatDetails.AidType;
-
-                switch (defType)
-                {
-                    case DefenseType.Evasion:
-                    case DefenseType.Parry:
-                    case DefenseType.Anticipate:
-                        combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                        break;
-                }
-
-                if (defType == DefenseType.Blink)
-                    target.ShadowsUsed = byte.Parse(combatMatch.Groups[ParseFields.Number].Value);
-
-                // Determine the two entity types involved.
-                switch (message.MessageCode)
-                {
-                    case 0x15:
-                    case 0x1a:
-                        // me or party vs mob
-                        combatDetails.ActorEntityType = EntityType.Player;
-                        target.EntityType = EntityType.Mob;
-                        break;
-                    case 0x1d:
-                        // mob vs player
-                        combatDetails.ActorEntityType = EntityType.Mob;
-                        target.EntityType = EntityType.Player;
-                        break;
-                    case 0x29:
-                        // mob vs pet or pet vs mob
-                        if (combatDetails.ActorEntityType == EntityType.Unknown)
-                            combatDetails.ActorEntityType = MessageManager.Instance.LookupPetEntity(combatDetails.ActorName);
-
-                        if (combatDetails.ActorEntityType == EntityType.Unknown)
-                        {
-                            if ((target.EntityType == EntityType.Pet) || (target.EntityType == EntityType.Player))
-                            {
-                                combatDetails.ActorEntityType = EntityType.Mob;
-                                break;
-                            }
-                        }
-
-                        if (target.EntityType == EntityType.Unknown)
-                            target.EntityType = MessageManager.Instance.LookupEntity(target.Name);
-                        if (target.EntityType == EntityType.Unknown)
-                        {
-                            if ((combatDetails.ActorEntityType == EntityType.Pet) || (combatDetails.ActorEntityType == EntityType.Player))
-                            {
-                                target.EntityType = EntityType.Mob;
-                                break;
-                            }
-                        }
-
-                        if (combatDetails.ActorEntityType == target.EntityType)
-                            combatDetails.ActorEntityType = MessageManager.Instance.LookupPetEntity(combatDetails.ActorName);
-                        if (combatDetails.ActorEntityType == target.EntityType)
-                            target.EntityType = MessageManager.Instance.LookupPetEntity(target.Name);
-                        break;
-                    default:
-                        // other??
-                        if (combatDetails.ActorEntityType == EntityType.Unknown)
-                            combatDetails.ActorEntityType = MessageManager.Instance.LookupEntity(combatDetails.ActorName);
-                        if (target.EntityType == EntityType.Unknown)
-                            target.EntityType = MessageManager.Instance.LookupEntity(target.Name);
-                        break;
-                }
             }
         }
 
