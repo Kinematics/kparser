@@ -115,6 +115,8 @@ namespace WaywardGamers.KParser
         {
             menuContinueParse.Enabled = ((DatabaseManager.Instance.Database != null) &&
                 (Monitor.IsRunning == false));
+            menuSaveDataAs.Enabled = ((DatabaseManager.Instance.Database != null) &&
+                (Monitor.IsRunning == false));
         }
 
         /// <summary>
@@ -345,7 +347,15 @@ namespace WaywardGamers.KParser
                     return;
                 }
 
-                File.Copy(DatabaseManager.Instance.DatabaseFilename, sfd.FileName);
+                try
+                {
+                    Cursor.Current = Cursors.WaitCursor;
+                    File.Copy(DatabaseManager.Instance.DatabaseFilename, sfd.FileName);
+                }
+                finally
+                {
+                    Cursor.Current = Cursors.Default;
+                }
             }
         }
 
