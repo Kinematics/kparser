@@ -184,7 +184,7 @@ namespace WaywardGamers.KParser
 
             Message msg = null;
             // Don't attach to message that are too far back in time
-            DateTime minTimestamp = timestamp - TimeSpan.FromSeconds(2);
+            DateTime minTimestamp = timestamp - TimeSpan.FromSeconds(4);
 
             lock (messageCollection)
             {
@@ -218,7 +218,9 @@ namespace WaywardGamers.KParser
                            (
                             (parsedMessage.EventDetails.CombatDetails.Targets != null) &&
                             (m.EventDetails.CombatDetails.Targets.Any(t =>
-                               t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false)
+                               t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false) &&
+                            (m.EventDetails.CombatDetails.Targets.Any(t =>
+                               t.EffectName ==  parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true)
                            )
                           )
                          ) &&
@@ -246,7 +248,9 @@ namespace WaywardGamers.KParser
                            (
                             (parsedMessage.EventDetails.CombatDetails.Targets != null) &&
                             (m.EventDetails.CombatDetails.Targets.Any(t =>
-                               t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false)
+                               t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false) &&
+                            (m.EventDetails.CombatDetails.Targets.Any(t =>
+                               t.EffectName == parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true)
                            )
                           )
                          ) &&
@@ -278,7 +282,9 @@ namespace WaywardGamers.KParser
                                        (
                                         (parsedMessage.EventDetails.CombatDetails.Targets != null) &&
                                         (m.EventDetails.CombatDetails.Targets.Any(t =>
-                                           t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false)
+                                           t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false) &&
+                                        (m.EventDetails.CombatDetails.Targets.Any(t =>
+                                           t.EffectName == parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true)
                                        )
                                       )
                                      ) &&
@@ -306,7 +312,9 @@ namespace WaywardGamers.KParser
                                        (
                                         (parsedMessage.EventDetails.CombatDetails.Targets != null) &&
                                         (m.EventDetails.CombatDetails.Targets.Any(t =>
-                                           t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false)
+                                           t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false) &&
+                                        (m.EventDetails.CombatDetails.Targets.Any(t =>
+                                           t.EffectName == parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true)
                                        )
                                       )
                                      ) &&
