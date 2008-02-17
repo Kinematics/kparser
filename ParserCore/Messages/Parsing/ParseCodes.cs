@@ -7,6 +7,32 @@ namespace WaywardGamers.KParser
 {
     internal class ParseCodes
     {
+        #region Singleton Construction
+        /// <summary>
+        /// Make the class a singleton
+        /// </summary>
+        private static readonly ParseCodes instance = new ParseCodes();
+
+         /// <summary>
+        /// Private constructor ensures singleton purity.
+        /// </summary>
+        private ParseCodes()
+		{
+            InitLookupTables();
+        }
+
+		/// <summary>
+        /// Gets the singleton instance of the ParseCodes class.
+		/// </summary>
+        public static ParseCodes Instance
+		{
+			get
+			{
+				return instance;
+			}
+        }
+        #endregion
+
         #region Member lookup variables
         private Dictionary<uint, InteractionType> interactionTypeLookup;
         private Dictionary<uint, AidType> aidTypeLookup;
@@ -14,12 +40,7 @@ namespace WaywardGamers.KParser
         private Dictionary<uint, SuccessType> successTypeLookup;
         #endregion
 
-        #region Constructor
-        internal ParseCodes()
-        {
-            InitLookupTables();
-        }
-
+        #region Setup
         private void InitLookupTables()
         {
             InitCombatCategoryLookup();
@@ -374,12 +395,12 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0x19] = HarmType.Damage; // <pm> hits
             harmTypeLookup[0x1a] = HarmType.Damage; // <pm> misses
             harmTypeLookup[0x1b] = HarmType.Drain; // <mob> drains <pm>
-            harmTypeLookup[0x1c] = HarmType.Damage; // <mob> hits <me> or <pm>
-            harmTypeLookup[0x1d] = HarmType.Damage; // <mob> misses <me> or <pm>
+            harmTypeLookup[0x1c] = HarmType.Damage; // <mob> hits <me>
+            harmTypeLookup[0x1d] = HarmType.Damage; // <mob> misses <me>
             harmTypeLookup[0x1e] = HarmType.Drain; // <me> drains
             harmTypeLookup[0x1f] = HarmType.None; // <me> recovers/cures
-            harmTypeLookup[0x20] = HarmType.Damage; // <mob> hits <pm> ??
-            harmTypeLookup[0x21] = HarmType.Damage; // <mob> misses <pm> ??
+            harmTypeLookup[0x20] = HarmType.Damage; // <mob> hits <pm>
+            harmTypeLookup[0x21] = HarmType.Damage; // <mob> misses <pm>
             harmTypeLookup[0x22] = HarmType.None; // 
             harmTypeLookup[0x23] = HarmType.None; // <am> cures <pm>
             harmTypeLookup[0x24] = HarmType.None; // <me> kills
@@ -694,7 +715,7 @@ namespace WaywardGamers.KParser
         }
         #endregion
 
-        #region internal lookup calls
+        #region Internal lookup calls
         internal InteractionType GetInteractionType(uint messageCode)
         {
             InteractionType interactType;
@@ -733,6 +754,39 @@ namespace WaywardGamers.KParser
                 return successType;
             else
                 return SuccessType.Unknown;
+        }
+        #endregion
+
+        #region Alternate code sets
+        internal List<uint> GetAlternateCodes(uint messageCode)
+        {
+            List<uint> altCodeList = new List<uint>();
+
+            switch (messageCode)
+            {
+                case 0x38:
+                    altCodeList.Add(0x40);
+                    //altCodeList.Add(0x3c); ??
+                    break;
+                case 0x40:
+                    altCodeList.Add(0x38);
+                    //altCodeList.Add(0x3c); ??
+                    break;
+                case 0x65:
+                    altCodeList.Add(0x6f);
+                    break;
+                case 0x6f:
+                    altCodeList.Add(0x65);
+                    break;
+                case 0x66:
+                    altCodeList.Add(0x70);
+                    break;
+                case 0x70:
+                    altCodeList.Add(0x66);
+                    break;
+            }
+
+            return altCodeList;
         }
         #endregion
 
