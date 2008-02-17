@@ -55,7 +55,7 @@ namespace WaywardGamers.KParser.Plugin
                 DateTime startTime;
                 DateTime endTime;
                 TimeSpan partyDuration;
-                Double totalFightsLength = 0;
+                TimeSpan totalFightsLength = new TimeSpan(); ;
                 TimeSpan minTime = TimeSpan.FromSeconds(1);
 
                 int totalXP = 0;
@@ -74,7 +74,7 @@ namespace WaywardGamers.KParser.Plugin
 
                 foreach (var fight in completedFights)
                 {
-                    totalFightsLength += fight.FightLength().TotalSeconds;
+                    totalFightsLength += fight.FightLength();
 
                     chainNum = fight.ExperienceChain;
 
@@ -108,7 +108,7 @@ namespace WaywardGamers.KParser.Plugin
                     xpPerFight = totalXPDouble / totalFights;
                 }
 
-                avgFightLength = totalFightsLength / totalFights;
+                avgFightLength = totalFightsLength.TotalSeconds / totalFights;
                 timePerFight = partyDuration.TotalSeconds / totalFights;
 
 
@@ -116,8 +116,10 @@ namespace WaywardGamers.KParser.Plugin
                 sb1.AppendFormat("Number of Fights : {0}\n", totalFights);
                 sb1.AppendFormat("Start Time       : {0}\n", startTime.ToLongTimeString());
                 sb1.AppendFormat("End Time         : {0}\n", endTime.ToLongTimeString());
-                sb1.AppendFormat("Party Duration   : {0}:{1}:{2}\n",
+                sb1.AppendFormat("Party Duration   : {0:d}:{1:d2}:{2:d2}\n",
                     partyDuration.Hours, partyDuration.Minutes, partyDuration.Seconds);
+                sb1.AppendFormat("Total Fight Time : {0:d}:{1:d2}:{2:d2}\n",
+                    totalFightsLength.Hours, totalFightsLength.Minutes, totalFightsLength.Seconds);
                 sb1.AppendFormat("XP/Hour          : {0:F2}\n", xpPerHour);
                 sb1.AppendFormat("XP/Minute        : {0:F2}\n", xpPerMinute);
                 sb1.AppendFormat("XP/Fight         : {0:F2}\n", xpPerFight);
