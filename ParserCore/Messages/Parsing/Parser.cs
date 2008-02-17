@@ -21,13 +21,7 @@ namespace WaywardGamers.KParser.Parsing
         /// <param name="messageLine"></param>
         internal static Message Parse(MessageLine messageLine)
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Reset();
-  
-
             Message message = GetAttachedMessage(messageLine);
-
-            stopwatch.Start();
 
             if (message == null)
             {
@@ -38,13 +32,6 @@ namespace WaywardGamers.KParser.Parsing
             else
             {
                 ContinueParse(message, messageLine);
-            }
-
-            stopwatch.Stop();
-            if (stopwatch.ElapsedMilliseconds > 2)
-            {
-                Debug.WriteLine(string.Format("Parsing message number {0} took too long: {1} ms\nMessage: {2}",
-                    messageLine.EventSequence, stopwatch.Elapsed.TotalMilliseconds, message.CompleteMessageText));
             }
 
             if (message.ParseSuccessful == true)
