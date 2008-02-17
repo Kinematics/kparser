@@ -113,10 +113,10 @@ namespace WaywardGamers.KParser
         #region Menu Handlers
         private void fileMenu_Popup(object sender, EventArgs e)
         {
-            menuContinueParse.Enabled = ((DatabaseManager.Instance.Database != null) &&
-                (Monitor.IsRunning == false));
-            menuSaveDataAs.Enabled = ((DatabaseManager.Instance.Database != null) &&
-                (Monitor.IsRunning == false));
+            bool enableMenus = (DatabaseManager.Instance.Database != null) &&
+                (Monitor.IsRunning == false);
+            menuContinueParse.Enabled = enableMenus;
+            menuSaveDataAs.Enabled = enableMenus;
         }
 
         /// <summary>
@@ -235,21 +235,14 @@ namespace WaywardGamers.KParser
 
                     DatabaseManager.Instance.OpenDatabase(ofd.FileName);
 
-                    Stopwatch stopwatch = new Stopwatch();
-                    stopwatch.Reset();
-
                     lock (activePluginList)
                     {
                         foreach (IPlugin plugin in activePluginList)
                         {
-                            stopwatch.Start();
-
-                            plugin.DatabaseOpened(DatabaseManager.Instance.Database);
-
-                            stopwatch.Stop();
-                            Debug.WriteLine(string.Format("Opened: Time to process plugin {0}: {1} ms",
-                                plugin.TabName, stopwatch.Elapsed.TotalMilliseconds));
-                            stopwatch.Reset();
+                            using (new ProfileRegion("Opening " + plugin.TabName))
+                            {
+                                plugin.DatabaseOpened(DatabaseManager.Instance.Database);
+                            }
                         }
                     }
                 }
@@ -290,7 +283,11 @@ namespace WaywardGamers.KParser
                     try
                     {
                         toolStripStatusLabel.Text = "Reparsing...";
-                        Monitor.Reparse(outFilename);
+
+                        using (new ProfileRegion("Reparse"))
+                        {
+                            Monitor.Reparse(outFilename);
+                        }
                     }
                     catch (Exception ex)
                     {
