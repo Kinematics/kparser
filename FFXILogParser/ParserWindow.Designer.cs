@@ -46,11 +46,11 @@ namespace WaywardGamers.KParser
             this.menuSeparator2 = new System.Windows.Forms.MenuItem();
             this.menuExit = new System.Windows.Forms.MenuItem();
             this.toolsMenu = new System.Windows.Forms.MenuItem();
-            this.menuItem1 = new System.Windows.Forms.MenuItem();
+            this.menuTestItem = new System.Windows.Forms.MenuItem();
             this.databaseToolsMenu = new System.Windows.Forms.MenuItem();
-            this.databaseClearData = new System.Windows.Forms.MenuItem();
-            this.databaseUpgrade = new System.Windows.Forms.MenuItem();
             this.databaseReparse = new System.Windows.Forms.MenuItem();
+            this.databaseUpgrade = new System.Windows.Forms.MenuItem();
+            this.databaseClearData = new System.Windows.Forms.MenuItem();
             this.menuSeparator3 = new System.Windows.Forms.MenuItem();
             this.menuOptions = new System.Windows.Forms.MenuItem();
             this.windowMenu = new System.Windows.Forms.MenuItem();
@@ -179,34 +179,36 @@ namespace WaywardGamers.KParser
             // 
             this.toolsMenu.Index = 1;
             this.toolsMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.menuItem1,
+            this.menuTestItem,
             this.databaseToolsMenu,
             this.menuSeparator3,
             this.menuOptions});
             this.toolsMenu.Text = "&Tools";
+            this.toolsMenu.Popup += new System.EventHandler(this.toolsMenu_Popup);
             // 
-            // menuItem1
+            // menuTestItem
             // 
-            this.menuItem1.Index = 0;
-            this.menuItem1.Shortcut = System.Windows.Forms.Shortcut.CtrlT;
-            this.menuItem1.Text = "&Test Function";
-            this.menuItem1.Click += new System.EventHandler(this.menuItem1_Click);
+            this.menuTestItem.Index = 0;
+            this.menuTestItem.Shortcut = System.Windows.Forms.Shortcut.CtrlT;
+            this.menuTestItem.Text = "&Test Function";
+            this.menuTestItem.Click += new System.EventHandler(this.menuTestItem_Click);
             // 
             // databaseToolsMenu
             // 
             this.databaseToolsMenu.Index = 1;
             this.databaseToolsMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.databaseClearData,
+            this.databaseReparse,
             this.databaseUpgrade,
-            this.databaseReparse});
+            this.databaseClearData});
             this.databaseToolsMenu.Text = "Database";
             this.databaseToolsMenu.Popup += new System.EventHandler(this.databaseToolsMenu_Popup);
             // 
-            // databaseClearData
+            // databaseReparse
             // 
-            this.databaseClearData.Enabled = false;
-            this.databaseClearData.Index = 0;
-            this.databaseClearData.Text = "Clear Data";
+            this.databaseReparse.Enabled = false;
+            this.databaseReparse.Index = 0;
+            this.databaseReparse.Text = "Reparse";
+            this.databaseReparse.Click += new System.EventHandler(this.databaseReparse_Click);
             // 
             // databaseUpgrade
             // 
@@ -214,12 +216,11 @@ namespace WaywardGamers.KParser
             this.databaseUpgrade.Index = 1;
             this.databaseUpgrade.Text = "Upgrade";
             // 
-            // databaseReparse
+            // databaseClearData
             // 
-            this.databaseReparse.Enabled = false;
-            this.databaseReparse.Index = 2;
-            this.databaseReparse.Text = "Reparse";
-            this.databaseReparse.Click += new System.EventHandler(this.databaseReparse_Click);
+            this.databaseClearData.Enabled = false;
+            this.databaseClearData.Index = 2;
+            this.databaseClearData.Text = "Clear Data";
             // 
             // menuSeparator3
             // 
@@ -298,7 +299,7 @@ namespace WaywardGamers.KParser
         private System.Windows.Forms.MenuItem menuOptions;
         private System.Windows.Forms.MenuItem menuAbout;
         private System.Windows.Forms.TabControl pluginTabs;
-        private System.Windows.Forms.MenuItem menuItem1;
+        private System.Windows.Forms.MenuItem menuTestItem;
         private System.Windows.Forms.MenuItem windowMenu;
         private System.Windows.Forms.MenuItem menuContinueParse;
         private System.Windows.Forms.MenuItem databaseToolsMenu;
