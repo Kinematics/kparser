@@ -39,7 +39,7 @@ namespace WaywardGamers.KParser
         private static readonly string money       = @"((?<money>\d{1,4}?) gil)";
         private static readonly string spell       = @"(?<spell>\w+((: (Ichi|Ni|San))|(((('s |-)\w+)|(( \w+(?<! (on|III|II|IV|VI|V))){1,2}))?( (III|II|IV|VI|V))?))?)";
         private static readonly string ability     = @"(?<ability>\w+((: \w+)|(-\w+)|('s \w+)|( \w+)( \w+)?)?)";
-        private static readonly string effect      = @"(?<effect>\w+( \w+)?)";
+        private static readonly string effect      = @"(?<effect>\w+( \w+){0,2})";
         private static readonly string skillchain  = @"(?<skillchain>\w+)";
         
         private static readonly string afflictLvl  = @"\(lv\.\d\)";
@@ -102,7 +102,7 @@ namespace WaywardGamers.KParser
         public static readonly Regex FailsCharm   = new Regex(string.Format("^{0} fail(s)? to charm {1}\\.$", name, target));
         public static readonly Regex UseItem      = new Regex(string.Format("^{0} use(s)? {1}\\.$", name, item));
         // Corsair stuff (6f/65|70/66):
-        public static readonly Regex UseCorRoll   = new Regex(string.Format("^{0} uses {1}\\. The total comes to {2}!$", name, item, number));
+        public static readonly Regex UseCorRoll   = new Regex(string.Format("^{0} uses {1}\\. The total comes to {2}!$", name, ability, number));
         public static readonly Regex TotalCorRoll = new Regex(string.Format("^The total for {0} increases to {1}!$", ability, number));
         public static readonly Regex GainCorRoll  = new Regex(string.Format("^{0} receives the effect of {1}\\.$", playername, ability));
         public static readonly Regex BustCorRoll  = new Regex(string.Format("^Bust!$"));
@@ -115,6 +115,7 @@ namespace WaywardGamers.KParser
         public static readonly Regex Afflict    = new Regex(string.Format("^{0} is afflicted with {1} {2}\\.$", target, effect, afflictLvl));
         public static readonly Regex Enfeeble   = new Regex(string.Format("{0} is {1}\\.$", target, effect));
         public static readonly Regex Buff       = new Regex(string.Format("^{0} gains the effect of {1}\\.$", target, effect));
+        public static readonly Regex GainResistance = new Regex(string.Format("^{0} gains resistance against {1}\\.$", target, effect));
         public static readonly Regex Debuff     = new Regex(string.Format("^{0} receives the effect of {1}\\.$", target, effect));
         public static readonly Regex Enhance    = new Regex(string.Format("^{0}'s attacks are enhanced\\.$", target));
         public static readonly Regex Charmed    = new Regex(string.Format("^{0} is now under {1}'s control\\.$", target, name));
