@@ -22,7 +22,7 @@ namespace WaywardGamers.KParser.Parsing
         internal static Message Parse(MessageLine messageLine)
         {
             int i = 0;
-            if (messageLine.EventSequence == 0x0000207a)
+            if (messageLine.EventSequence == 0x479)
                 i++;
 
             Message message = GetAttachedMessage(messageLine);
@@ -1406,6 +1406,20 @@ namespace WaywardGamers.KParser.Parsing
                 if (combatMatch.Success == true)
                 {
                     combatDetails.ActionType = ActionType.Unknown;
+                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.DefenseType = DefenseType.Blink;
+                    target.HarmType = combatDetails.HarmType;
+                    target.ShadowsUsed = byte.Parse(combatMatch.Groups[ParseFields.Number].Value);
+                }
+            }
+
+            if (combatMatch.Success == false)
+            {
+                combatMatch = ParseExpressions.CounterShadow.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    combatDetails.ActionType = ActionType.Counterattack;
+                    combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     target.DefenseType = DefenseType.Blink;
                     target.HarmType = combatDetails.HarmType;

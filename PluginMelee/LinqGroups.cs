@@ -22,6 +22,7 @@ namespace WaywardGamers.KParser.Plugin
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Ability { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> WSkill { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> SC { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Counter { get; set; }
 
         internal int MeleeDmg
         {
@@ -31,13 +32,13 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
-        internal int MeleeEffectDmg
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> MeleeEffect
         {
             get
             {
                 return Melee.Where(s =>
                            s.SecondHarmType == (byte)HarmType.Damage ||
-                           s.SecondHarmType == (byte)HarmType.Drain).Sum(d => d.SecondAmount);
+                           s.SecondHarmType == (byte)HarmType.Drain);
             }
         }
 
@@ -49,13 +50,13 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
-        internal int RangeEffectDmg
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> RangeEffect
         {
             get
             {
                 return Range.Where(s =>
                            s.SecondHarmType == (byte)HarmType.Damage ||
-                           s.SecondHarmType == (byte)HarmType.Drain).Sum(d => d.SecondAmount);
+                           s.SecondHarmType == (byte)HarmType.Drain);
             }
         }
 

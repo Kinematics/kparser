@@ -170,7 +170,9 @@ namespace WaywardGamers.KParser
         public static readonly Regex Evade        = new Regex(string.Format("^{0} evade(s)? the attack\\.$", target));
         public static readonly Regex Counter      = new Regex(string.Format("^{0}'s attack is countered by {1}\\. {2} takes {3} point(s)? of damage\\.$",
             target, name, repeatname, damage));
-        public static readonly Regex ResistSpell  = new Regex(string.Format("^{0} resist(s)? the spell\\.$", target));
+        public static readonly Regex CounterShadow = new Regex(string.Format("^{0}'s attack is countered by {1}\\. {2} of {3}'s shadows absorbs the damage and disappears\\.$",
+            target, name, number, repeatname));
+        public static readonly Regex ResistSpell = new Regex(string.Format("^{0} resist(s)? the spell\\.$", target));
         public static readonly Regex ResistEffect = new Regex(string.Format("^{0} resist(s)? the effect\\.$", target));
         #endregion
 

@@ -831,28 +831,82 @@ namespace WaywardGamers.KParser
                             activeBattleList[battle] = message.Timestamp;
                     }
 
-                    localDB.Interactions.AddInteractionsRow(
-                        message.Timestamp,
-                        actor,
-                        targetRow,
-                        battle,
-                        (byte)message.EventDetails.CombatDetails.ActorType,
-                        message.EventDetails.CombatDetails.IsPreparing,
-                        action,
-                        (byte)message.EventDetails.CombatDetails.ActionType,
-                        (byte)target.FailedActionType,
-                        (byte)target.DefenseType,
-                        target.ShadowsUsed,
-                        (byte)target.AidType,
-                        (byte)target.RecoveryType,
-                        (byte)target.HarmType,
-                        target.Amount,
-                        (byte)target.DamageModifier,
-                        (byte)target.SecondaryAidType,
-                        (byte)target.SecondaryRecoveryType,
-                        (byte)target.SecondaryHarmType,
-                        target.SecondaryAmount,
-                        secondAction);
+                    // Special double-entry for counters
+                    if (message.EventDetails.CombatDetails.ActionType == ActionType.Counterattack)
+                    {
+                        // Initial attack is stopped by counter.
+                        localDB.Interactions.AddInteractionsRow(
+                           message.Timestamp,
+                           targetRow, // swap with actor
+                           actor, // swap with target
+                           battle,
+                           (byte)ActorType.Unknown,
+                           message.EventDetails.CombatDetails.IsPreparing,
+                           action,
+                           (byte)ActionType.Melee, // original attack -must- be melee to be countered
+                           (byte)target.FailedActionType,
+                           (byte)DefenseType.Counter, // defense type, of course
+                           0, // no shadows used here
+                           (byte)target.AidType,
+                           (byte)target.RecoveryType,
+                           (byte)target.HarmType,
+                           0, // no damage done
+                           (byte)target.DamageModifier,
+                           (byte)target.SecondaryAidType,
+                           (byte)target.SecondaryRecoveryType,
+                           (byte)target.SecondaryHarmType,
+                           target.SecondaryAmount,
+                           secondAction);
+
+                        // The attack that the combatant that countered got
+                        localDB.Interactions.AddInteractionsRow(
+                            message.Timestamp,
+                            actor,
+                            targetRow,
+                            battle,
+                            (byte)message.EventDetails.CombatDetails.ActorType,
+                            message.EventDetails.CombatDetails.IsPreparing,
+                            action,
+                            (byte)message.EventDetails.CombatDetails.ActionType,
+                            (byte)target.FailedActionType,
+                            (byte)target.DefenseType,
+                            target.ShadowsUsed,
+                            (byte)target.AidType,
+                            (byte)target.RecoveryType,
+                            (byte)target.HarmType,
+                            target.Amount,
+                            (byte)target.DamageModifier,
+                            (byte)target.SecondaryAidType,
+                            (byte)target.SecondaryRecoveryType,
+                            (byte)target.SecondaryHarmType,
+                            target.SecondaryAmount,
+                            secondAction);
+                    }
+                    else
+                    {
+                        localDB.Interactions.AddInteractionsRow(
+                            message.Timestamp,
+                            actor,
+                            targetRow,
+                            battle,
+                            (byte)message.EventDetails.CombatDetails.ActorType,
+                            message.EventDetails.CombatDetails.IsPreparing,
+                            action,
+                            (byte)message.EventDetails.CombatDetails.ActionType,
+                            (byte)target.FailedActionType,
+                            (byte)target.DefenseType,
+                            target.ShadowsUsed,
+                            (byte)target.AidType,
+                            (byte)target.RecoveryType,
+                            (byte)target.HarmType,
+                            target.Amount,
+                            (byte)target.DamageModifier,
+                            (byte)target.SecondaryAidType,
+                            (byte)target.SecondaryRecoveryType,
+                            (byte)target.SecondaryHarmType,
+                            target.SecondaryAmount,
+                            secondAction);
+                    }
                 }
             }
         }
