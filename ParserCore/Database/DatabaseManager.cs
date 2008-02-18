@@ -587,6 +587,20 @@ namespace WaywardGamers.KParser
                     lastKilledList[message.EventDetails.LootDetails.MobName] = lastKill;
                 }
 
+                // If last kill is more than 5 minutes 30 seconds ago (30 sec buffer for
+                // default drop time), create a new battle instead.
+                if (lastKill.EndTime < (message.Timestamp.Subtract(TimeSpan.FromSeconds(330))))
+                {
+                    // First locate the mob in the combatants table
+                    var mobCombatant = localDB.Combatants.GetCombatant(message.EventDetails.LootDetails.MobName, EntityType.Mob);
+
+                    lastKill = localDB.Battles.AddBattlesRow(mobCombatant, message.Timestamp,
+                        message.Timestamp, true, null, (byte)ActorType.Unknown, 0, 0,
+                        (byte)MobDifficulty.Unknown, false);
+
+                    lastKilledList[message.EventDetails.LootDetails.MobName] = lastKill;
+                }
+
                 // Locate the item by name in the item table.
                 var itemRow = localDB.Items.GetItem(message.EventDetails.LootDetails.ItemName);
 
