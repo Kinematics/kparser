@@ -805,20 +805,23 @@ namespace WaywardGamers.KParser
 
             switch (messageCode)
             {
+                // Enhancements
                 case 0x38:
-                    return new List<uint>() {0x40};
-                    //altCodeList.Add(0x3c); ??
+                    return new List<uint>() { 0x40, 0x6a, 0x3c };
                 case 0x40:
-                    return new List<uint>() { 0x38 };
-                    //altCodeList.Add(0x3c); ??
+                    return new List<uint>() { 0x38, 0x6a, 0x3c };
+                case 0x6a:
+                    return new List<uint>() { 0x38, 0x40, 0x3c };
+                // Corsair/etc buffs (brd songs?)
                 case 0x65:
                     return new List<uint>() { 0x6f };
                 case 0x6f:
                     return new List<uint>() { 0x65 };
                 case 0x66:
-                    return new List<uint>() { 0x70 };
+                    return new List<uint>() { 0x70, 0x6b };
                 case 0x70:
                     return new List<uint>() { 0x66 };
+                // Enfeebles (successful and resisted)
                 case 0x45:
                     return new List<uint>() { 0x39, 0x3b, 0x3d, 0x3f, 0xb6 };
                 case 0x3f:
