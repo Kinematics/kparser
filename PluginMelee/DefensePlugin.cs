@@ -601,6 +601,22 @@ namespace WaywardGamers.KParser.Plugin
             var utsu1 = dataSet.Actions.FirstOrDefault(a => a.ActionName == "Utsusemi: Ichi");
             var utsu2 = dataSet.Actions.FirstOrDefault(a => a.ActionName == "Utsusemi: Ni");
 
+            if ((utsu1 == null) && (utsu2 == null))
+                return;
+
+            KPDatabaseDataSet.InteractionsRow[] utsu1Rows;
+            KPDatabaseDataSet.InteractionsRow[] utsu2Rows;
+
+            if (utsu1 != null)
+                utsu1Rows = utsu1.GetInteractionsRows();
+            else
+                utsu1Rows = new KPDatabaseDataSet.InteractionsRow[0];
+
+            if (utsu2 != null)
+                utsu2Rows = utsu2.GetInteractionsRows();
+            else
+                utsu2Rows = new KPDatabaseDataSet.InteractionsRow[0];
+
             var utsuByPlayer = from c in dataSet.Combatants
                                where c.CombatantType == (byte)EntityType.Player
                                orderby c.CombatantName
@@ -611,10 +627,10 @@ namespace WaywardGamers.KParser.Plugin
                                                  where ((uc.DefenseType == (byte)DefenseType.Blink) &&
                                                         (uc.ShadowsUsed > 0))
                                                  select uc,
-                                   UtsuIchi = from i in utsu1.GetInteractionsRows()
+                                   UtsuIchi = from i in utsu1Rows
                                               where (i.CombatantsRowByActorCombatantRelation == c)
                                               select i,
-                                   UtsuNi = from i in utsu2.GetInteractionsRows()
+                                   UtsuNi = from i in utsu2Rows
                                             where (i.CombatantsRowByActorCombatantRelation == c)
                                             select i,
                                };
