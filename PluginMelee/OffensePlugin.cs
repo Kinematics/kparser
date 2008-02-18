@@ -175,8 +175,8 @@ namespace WaywardGamers.KParser.Plugin
         string meleeHeader      = "Player            Melee Dmg   Melee %   Hit/Miss   M.Acc %  M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
         string rangeHeader      = "Player            Range Dmg   Range %   Hit/Miss   R.Acc %  R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
         string spellHeader      = "Player            Spell Dmg   Spell %  #Spells  S.Low/Hi     S.Avg  #MagicBurst  MB.Low/Hi   MB.Avg\n";
-        string abilHeader       = "Player            Abil. Dmg   Abil. %   Hit/Miss   A.Acc %  A.Low/Hi    A.Avg\n";
-        string wskillHeader     = "Player            WSkill Dmg  WSkill %   Hit/Miss  WS.Acc %  WS.Low/Hi   WS.Avg\n";
+        string abilHeader       = "Player               Abil. Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg\n";
+        string wskillHeader     = "Player              WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg\n";
         string skillchainHeader = "Skillchain          SC Dmg  # SC  SC.Low/Hi  SC.Avg\n";
         string otherHeader      = "Player            M.AE Dmg  # M.AE  M.AE Avg  R.AE Dmg  # R.AE  R.AE Avg  CA.Dmg  CA.Hit/Miss  CA.Hi/Low  CA.Avg\n";
         #endregion
@@ -895,12 +895,22 @@ namespace WaywardGamers.KParser.Plugin
             int spellLow;
             int spellHigh;
             double spellAvg;
-            int mbCasts;
             int mbLow;
             int mbHigh;
             double mbAvg;
             int normSpellCount;
             int mbSpellCount;
+
+            int iSpellDamage;
+            double iSpellPerc;
+            int iSpellLow;
+            int iSpellHigh;
+            double iSpellAvg;
+            int iMbLow;
+            int iMbHigh;
+            double iMbAvg;
+            int iNormSpellCount;
+            int iMbSpellCount;
 
             foreach (var player in attacksByPlayer)
             {
@@ -913,7 +923,6 @@ namespace WaywardGamers.KParser.Plugin
                 spellLow = 0;
                 spellHigh = 0;
                 spellAvg = 0;
-                mbCasts = 0;
                 mbLow = 0;
                 mbHigh = 0;
                 mbAvg = 0;
@@ -930,6 +939,22 @@ namespace WaywardGamers.KParser.Plugin
                 var spellsCast = player.Spell.Where(b => b.DefenseType == (byte)DefenseType.None);
 
                 spellCasts = spellsCast.Count();
+
+                if (spellCasts > 0)
+                {
+                    if (headerDisplayed == false)
+                    {
+                        AppendBoldText("Spell Damage\n", Color.Red);
+                        AppendBoldUnderText(spellHeader, Color.Black);
+
+                        headerDisplayed = true;
+                    }
+                }
+                else
+                {
+                    continue;
+                }
+
 
                 var normSpells = spellsCast.Where(s => s.DamageModifier == (byte)DamageModifier.None);
                 var mbSpells = spellsCast.Where(s => s.DamageModifier == (byte)DamageModifier.MagicBurst);
@@ -953,14 +978,6 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (spellCasts > 0)
                 {
-                    if (headerDisplayed == false)
-                    {
-                        AppendBoldText("Spell Damage\n", Color.Red);
-                        AppendBoldUnderText(spellHeader, Color.Black);
-
-                        headerDisplayed = true;
-                    }
-
                     sb.Append(player.Player.PadRight(17));
 
                     sb.Append(spellDamage.ToString().PadLeft(10));
@@ -968,12 +985,62 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append(spellCasts.ToString().PadLeft(9));
                     sb.Append(string.Format("{0}/{1}", spellLow, spellHigh).PadLeft(10));
                     sb.Append(spellAvg.ToString("F2").PadLeft(10));
-                    sb.Append(mbCasts.ToString().PadLeft(13));
+                    sb.Append(mbSpellCount.ToString().PadLeft(13));
                     sb.Append(string.Format("{0}/{1}", mbLow, mbHigh).PadLeft(11));
                     sb.Append(mbAvg.ToString("F2").PadLeft(9));
 
                     sb.Append("\n");
                 }
+
+                var spellGroups = spellsCast.GroupBy(s => s.ActionsRow.ActionName).OrderBy(s => s.Key);
+
+                foreach (var sp in spellGroups)
+                {
+                    iSpellDamage = 0;
+                    iSpellPerc = 0;
+                    iSpellLow = 0;
+                    iSpellHigh = 0;
+                    iSpellAvg = 0;
+                    iMbLow = 0;
+                    iMbHigh = 0;
+                    iMbAvg = 0;
+                    iNormSpellCount = 0;
+                    iMbSpellCount = 0;
+
+                    string spellName = sp.Key;
+
+                    iSpellDamage = sp.Sum(s => s.Amount);
+
+                    if (spellDamage > 0)
+                        iSpellPerc = (double)iSpellDamage / spellDamage;
+
+                    var iNormSpells = sp.Where(s => s.DamageModifier == (byte)DamageModifier.None);
+                    var iMbSpells = sp.Where(s => s.DamageModifier == (byte)DamageModifier.MagicBurst);
+
+                    iNormSpellCount = iNormSpells.Count();
+                    iMbSpellCount = iMbSpells.Count();
+
+                    if (iNormSpellCount > 0)
+                    {
+                        iSpellLow = iNormSpells.Min(d => d.Amount);
+                        iSpellHigh = iNormSpells.Max(d => d.Amount);
+                        iSpellAvg = iNormSpells.Average(d => d.Amount);
+                    }
+
+                    if (iMbSpellCount > 0)
+                    {
+                        iMbLow = iMbSpells.Min(d => d.Amount);
+                        iMbHigh = iMbSpells.Max(d => d.Amount);
+                        iMbAvg = iMbSpells.Average(d => d.Amount);
+                    }
+
+
+                    sb.AppendFormat("{0,-17}{1,10}{2,10:p2}{3,9}{4,10}{5,10:f2}{6,13}{7,11}{8,9:f2}\n",
+                        string.Concat(" - ", spellName), iSpellDamage, iSpellPerc, iNormSpellCount,
+                        string.Concat(iSpellLow, "/", iSpellHigh), iSpellAvg, iMbSpellCount,
+                        string.Concat(iMbLow, "/", iMbHigh), iMbAvg);
+                }
+
             }
 
             if (headerDisplayed == true)
@@ -1004,10 +1071,28 @@ namespace WaywardGamers.KParser.Plugin
             int abilHigh;
             double abilAvg;
 
+            int iAbilDamage;
+            double iAbilPerc;
+            int iAbilUses;
+            int iAbilHits;
+            int iAbilMiss;
+            double iAbilAcc;
+            int iAbilLow;
+            int iAbilHigh;
+            double iAbilAvg;
+
             foreach (var player in attacksByPlayer)
             {
                 if (player.Ability.Count() == 0)
                     continue;
+
+                if (headerDisplayed == false)
+                {
+                    AppendBoldText("Ability Damage\n", Color.Red);
+                    AppendBoldUnderText(abilHeader, Color.Black);
+
+                    headerDisplayed = true;
+                }
 
                 abilityDamage = 0;
                 abilPerc = 0;
@@ -1044,24 +1129,61 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (abilUses > 0)
                 {
-                    if (headerDisplayed == false)
-                    {
-                        AppendBoldText("Ability Damage\n", Color.Red);
-                        AppendBoldUnderText(abilHeader, Color.Black);
-
-                        headerDisplayed = true;
-                    }
-
-                    sb.Append(player.Player.PadRight(17));
+                    sb.Append(player.Player.PadRight(20));
 
                     sb.Append(abilityDamage.ToString().PadLeft(10));
-                    sb.Append(abilPerc.ToString("P2").PadLeft(10));
-                    sb.Append(string.Format("{0}/{1}", abilHits, abilMiss).PadLeft(11));
-                    sb.Append(abilAcc.ToString("P2").PadLeft(10));
-                    sb.Append(string.Format("{0}/{1}", abilLow, abilHigh).PadLeft(10));
+                    sb.Append(abilPerc.ToString("P2").PadLeft(11));
+                    sb.Append(string.Format("{0}/{1}", abilHits, abilMiss).PadLeft(10));
+                    sb.Append(abilAcc.ToString("P2").PadLeft(11));
+                    sb.Append(string.Format("{0}/{1}", abilLow, abilHigh).PadLeft(12));
                     sb.Append(abilAvg.ToString("F2").PadLeft(9));
 
                     sb.Append("\n");
+                }
+
+
+                var abilGroups = player.Ability.GroupBy(w => w.ActionsRow.ActionName).OrderBy(s => s.Key);
+
+                foreach (var abil in abilGroups)
+                {
+                    iAbilDamage = 0;
+                    iAbilPerc = 0;
+                    iAbilUses = 0;
+                    iAbilHits = 0;
+                    iAbilMiss = 0;
+                    iAbilAcc = 0;
+                    iAbilLow = 0;
+                    iAbilHigh = 0;
+                    iAbilAvg = 0;
+
+                    string wsName = abil.Key;
+
+                    iAbilDamage = abil.Sum(w => w.Amount);
+
+                    if (abilityDamage > 0)
+                        iAbilPerc = (double)iAbilDamage / abilityDamage;
+
+                    var iWsUsed = abil.Where(h => h.DefenseType == (byte)DefenseType.None);
+
+                    iAbilHits = iWsUsed.Count();
+                    iAbilMiss = abil.Count(b => b.DefenseType != (byte)DefenseType.None);
+
+                    iAbilUses = iAbilHits + iAbilMiss;
+
+                    if (iAbilUses > 0)
+                        iAbilAcc = (double)iAbilHits / iAbilUses;
+
+                    if (iAbilHits > 0)
+                    {
+                        iAbilLow = iWsUsed.Min(d => d.Amount);
+                        iAbilHigh = iWsUsed.Max(d => d.Amount);
+                        iAbilAvg = iWsUsed.Average(d => d.Amount);
+                    }
+
+                    sb.AppendFormat("{0,-20}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}\n",
+                        string.Concat(" - ", wsName), iAbilDamage, iAbilPerc,
+                        string.Concat(iAbilHits, "/", iAbilMiss), iAbilAcc,
+                        string.Concat(iAbilLow, "/", iAbilHigh), iAbilAvg);
                 }
             }
 
@@ -1093,10 +1215,29 @@ namespace WaywardGamers.KParser.Plugin
             int wskillHigh;
             double wskillAvg;
 
+            int iWskillDamage;
+            double iWskillPerc;
+            int iWskillUses;
+            int iWskillHits;
+            int iWskillMiss;
+            double iWskillAcc;
+            int iWskillLow;
+            int iWskillHigh;
+            double iWskillAvg;
+
+
             foreach (var player in attacksByPlayer)
             {
                 if (player.WSkill.Count() == 0)
                     continue;
+
+                if (headerDisplayed == false)
+                {
+                    AppendBoldText("Weaponskill Damage\n", Color.Red);
+                    AppendBoldUnderText(wskillHeader, Color.Black);
+
+                    headerDisplayed = true;
+                }
 
                 wskillDamage = 0;
                 wskillPerc = 0;
@@ -1131,26 +1272,61 @@ namespace WaywardGamers.KParser.Plugin
                     wskillAvg = successfulHits.Average(d => d.Amount);
                 }
 
-                if (wskillUses > 0)
-                {
-                    if (headerDisplayed == false)
-                    {
-                        AppendBoldText("Weaponskill Damage\n", Color.Red);
-                        AppendBoldUnderText(wskillHeader, Color.Black);
+                sb.Append(player.Player.PadRight(20));
 
-                        headerDisplayed = true;
+                sb.Append(wskillDamage.ToString().PadLeft(10));
+                sb.Append(wskillPerc.ToString("P2").PadLeft(11));
+                sb.Append(string.Concat(wskillHits, "/", wskillMiss).PadLeft(10));
+                sb.Append(wskillAcc.ToString("P2").PadLeft(11));
+                sb.Append(string.Concat(wskillLow, "/", wskillHigh).PadLeft(12));
+                sb.Append(wskillAvg.ToString("F2").PadLeft(9));
+
+                sb.Append("\n");
+
+
+                var wsGroups = player.WSkill.GroupBy(w => w.ActionsRow.ActionName).OrderBy(s => s.Key);
+
+                foreach (var ws in wsGroups)
+                {
+                    iWskillDamage = 0;
+                    iWskillPerc = 0;
+                    iWskillUses = 0;
+                    iWskillHits = 0;
+                    iWskillMiss = 0;
+                    iWskillAcc = 0;
+                    iWskillLow = 0;
+                    iWskillHigh = 0;
+                    iWskillAvg = 0;
+
+                    string wsName = ws.Key;
+
+                    iWskillDamage = ws.Sum(w => w.Amount);
+
+                    if (wskillDamage > 0)
+                        iWskillPerc = (double)iWskillDamage / wskillDamage;
+
+                    var iWsUsed = ws.Where(h => h.DefenseType == (byte)DefenseType.None);
+
+                    iWskillHits = iWsUsed.Count();
+                    iWskillMiss = ws.Count(b => b.DefenseType != (byte)DefenseType.None);
+
+                    iWskillUses = iWskillHits + iWskillMiss;
+
+                    if (iWskillUses > 0)
+                        iWskillAcc = (double)iWskillHits / iWskillUses;
+
+                    if (iWskillHits > 0)
+                    {
+                        iWskillLow = iWsUsed.Min(d => d.Amount);
+                        iWskillHigh = iWsUsed.Max(d => d.Amount);
+                        iWskillAvg = iWsUsed.Average(d => d.Amount);
                     }
 
-                    sb.Append(player.Player.PadRight(17));
+                    sb.AppendFormat("{0,-20}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}\n",
+                        string.Concat(" - ", wsName), iWskillDamage, iWskillPerc,
+                        string.Concat(iWskillHits, "/", iWskillMiss), iWskillAcc,
+                        string.Concat(iWskillLow, "/", iWskillHigh), iWskillAvg);
 
-                    sb.Append(wskillDamage.ToString().PadLeft(10));
-                    sb.Append(wskillPerc.ToString("P2").PadLeft(11));
-                    sb.Append(string.Format("{0}/{1}", wskillHits, wskillMiss).PadLeft(11));
-                    sb.Append(wskillAcc.ToString("P2").PadLeft(10));
-                    sb.Append(string.Format("{0}/{1}", wskillLow, wskillHigh).PadLeft(10));
-                    sb.Append(wskillAvg.ToString("F2").PadLeft(10));
-
-                    sb.Append("\n");
                 }
             }
 
