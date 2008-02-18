@@ -22,7 +22,7 @@ namespace WaywardGamers.KParser.Parsing
         internal static Message Parse(MessageLine messageLine)
         {
             int i = 0;
-            if (messageLine.EventSequence == 0x479)
+            if (messageLine.EventSequence == 0x1e6)
                 i++;
 
             Message message = GetAttachedMessage(messageLine);
@@ -671,6 +671,24 @@ namespace WaywardGamers.KParser.Parsing
                     message.ParseSuccessful = true;
                     return;
                 }
+                // Corsair rolls
+                combatMatch = ParseExpressions.UseCorRoll.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                    msgCombatDetails.CorsairRoll = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.TotalCorRoll.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                    msgCombatDetails.CorsairRoll = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
+                    message.ParseSuccessful = true;
+                    return;
+                }
             }
 
             // Break down the results of the spell/ability
@@ -696,6 +714,28 @@ namespace WaywardGamers.KParser.Parsing
                         target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                         if (msgCombatDetails.ActionName == string.Empty)
                             msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Effect].Value;
+                        target.AidType = msgCombatDetails.AidType;
+                        message.ParseSuccessful = true;
+                        return;
+                    }
+                    // eg: Target's attacks are enhanced.
+                    combatMatch = ParseExpressions.GainCorRoll.Match(currentMessageText);
+                    if (combatMatch.Success == true)
+                    {
+                        target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Name].Value);
+                        target.EffectName = combatMatch.Groups[ParseFields.Ability].Value;
+                        target.AidType = msgCombatDetails.AidType;
+                        target.Amount = msgCombatDetails.CorsairRoll;
+                        message.ParseSuccessful = true;
+                        return;
+                    }
+
+                    // eg: Target's attacks are enhanced.
+                    combatMatch = ParseExpressions.GainResistance.Match(currentMessageText);
+                    if (combatMatch.Success == true)
+                    {
+                        target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                        target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
                         target.AidType = msgCombatDetails.AidType;
                         message.ParseSuccessful = true;
                         return;
@@ -1604,6 +1644,7 @@ namespace WaywardGamers.KParser.Parsing
             if (combatMatch.Success == true)
             {
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
                 target.HarmType = msgCombatDetails.HarmType;
                 target.AidType = msgCombatDetails.AidType;
                 message.ParseSuccessful = true;
@@ -1613,9 +1654,9 @@ namespace WaywardGamers.KParser.Parsing
             if (combatMatch.Success == true)
             {
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
                 target.HarmType = msgCombatDetails.HarmType;
                 target.AidType = msgCombatDetails.AidType;
-                target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
                 message.ParseSuccessful = true;
                 return;
             }
@@ -1623,6 +1664,7 @@ namespace WaywardGamers.KParser.Parsing
             if (combatMatch.Success == true)
             {
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
                 target.HarmType = msgCombatDetails.HarmType;
                 target.AidType = msgCombatDetails.AidType;
                 message.ParseSuccessful = true;
