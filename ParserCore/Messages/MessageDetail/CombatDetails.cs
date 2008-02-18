@@ -158,6 +158,11 @@ namespace WaywardGamers.KParser
         /// </summary>
         internal bool FlagCrit { get; set; }
 
+        /// <summary>
+        /// Gets and sets the value rolled by a Corsair's Phantom Roll.
+        /// State tracking to be applied to targets.
+        /// </summary>
+        internal int CorsairRoll { get; set; }
         #endregion
 
         #region Methods
