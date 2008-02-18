@@ -31,8 +31,8 @@ namespace WaywardGamers.KParser.Plugin
             comboBox1.Items.Add("Melee");
             comboBox1.Items.Add("Ranged");
             comboBox1.Items.Add("Other");
-            comboBox1.Items.Add("Ability");
             comboBox1.Items.Add("Weaponskill");
+            comboBox1.Items.Add("Ability");
             comboBox1.Items.Add("Spell");
             comboBox1.Items.Add("Skillchain");
             comboBox1.SelectedIndex = 0;
@@ -455,8 +455,8 @@ namespace WaywardGamers.KParser.Plugin
                     ProcessMeleeAttacks(attackSet);
                     ProcessRangedAttacks(attackSet);
                     ProcessOtherAttacks(attackSet);
-                    ProcessAbilityAttacks(attackSet);
                     ProcessWeaponskillAttacks(attackSet);
+                    ProcessAbilityAttacks(attackSet);
                     ProcessSpellsAttacks(attackSet);
                     ProcessSkillchains(attackSet);
                     break;
