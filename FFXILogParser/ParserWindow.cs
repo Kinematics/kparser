@@ -110,7 +110,7 @@ namespace WaywardGamers.KParser
         }
         #endregion
 
-        #region Menu Handlers
+        #region Menu Popup Handlers
         private void fileMenu_Popup(object sender, EventArgs e)
         {
             bool enableMenus = (DatabaseManager.Instance.Database != null) &&
@@ -119,72 +119,23 @@ namespace WaywardGamers.KParser
             menuSaveDataAs.Enabled = enableMenus;
         }
 
-        /// <summary>
-        /// Gets the filename to save the parse output to.  By default it uses
-        /// the current date and a numeric progression.
-        /// </summary>
-        /// <param name="fileName">The name of the file to save the parse to.</param>
-        /// <returns>True if the user ok'd the filename, false if it was cancelled.</returns>
-        private bool GetParseFileName(out string fileName)
+        private void databaseToolsMenu_Popup(object sender, EventArgs e)
         {
-            string baseDateName = string.Format("{0:D2}-{1:D2}-{2:D2}", DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
-
-            string dateNameFilter = baseDateName + "_???.sdf";
-
-            string[] files = Directory.GetFiles(defaultSaveDirectory, dateNameFilter);
-
-            int index = 1;
-
-            try
-            {
-                if (files.Length > 0)
-                {
-                    Array.Sort(files);
-
-                    string lastFullFileName = files[files.Length - 1];
-
-                    FileInfo fi = new FileInfo(lastFullFileName);
-
-                    string lastFileName = fi.Name;
-
-                    Regex rx = new Regex(@"\d{2}-\d{2}-\d{2}_(\d{3}).sdf");
-
-                    Match match = rx.Match(lastFileName);
-
-                    if (match.Success == true)
-                    {
-                        if (Int32.TryParse(match.Groups[1].Value, out index) == false)
-                        {
-                            index = files.Length;
-                        }
-
-                        index++;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(string.Format(ex.Message + "\nUsing date index 1.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error));
-            }
-
-            string dateName = Path.Combine(defaultSaveDirectory, string.Format("{0}_{1:D3}.sdf", baseDateName, index));
-
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.InitialDirectory = defaultSaveDirectory;
-            sfd.DefaultExt = "sdf";
-            sfd.FileName = dateName;
-            sfd.Title = "Select database file to save parse to...";
-
-            if (sfd.ShowDialog() == DialogResult.OK)
-            {
-                fileName = sfd.FileName;
-                return true;
-            }
-
-            fileName = "";
-            return false;
+            databaseReparse.Enabled = (DatabaseManager.Instance.Database != null);
         }
 
+        private void toolsMenu_Popup(object sender, EventArgs e)
+        {
+#if DEBUG
+            menuTestItem.Visible = true;
+#else
+            menuTestItem.Visible = false;
+#endif
+        }
+
+        #endregion
+
+        #region Menu Action Handlers
         /// <summary>
         /// Get the requested filename to save the database as and start
         /// parsing to that output file.
@@ -251,11 +202,6 @@ namespace WaywardGamers.KParser
                     Cursor.Current = Cursors.Default;
                 }
             }
-        }
-
-        private void databaseToolsMenu_Popup(object sender, EventArgs e)
-        {
-            databaseReparse.Enabled = (DatabaseManager.Instance.Database != null);
         }
 
         private void databaseReparse_Click(object sender, EventArgs e)
@@ -378,6 +324,75 @@ namespace WaywardGamers.KParser
             AboutBox aboutForm = new AboutBox();
             aboutForm.ShowDialog();
         }
+        #endregion
+
+        #region Menu Support Functions
+        /// <summary>
+        /// Gets the filename to save the parse output to.  By default it uses
+        /// the current date and a numeric progression.
+        /// </summary>
+        /// <param name="fileName">The name of the file to save the parse to.</param>
+        /// <returns>True if the user ok'd the filename, false if it was cancelled.</returns>
+        private bool GetParseFileName(out string fileName)
+        {
+            string baseDateName = string.Format("{0:D2}-{1:D2}-{2:D2}", DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+
+            string dateNameFilter = baseDateName + "_???.sdf";
+
+            string[] files = Directory.GetFiles(defaultSaveDirectory, dateNameFilter);
+
+            int index = 1;
+
+            try
+            {
+                if (files.Length > 0)
+                {
+                    Array.Sort(files);
+
+                    string lastFullFileName = files[files.Length - 1];
+
+                    FileInfo fi = new FileInfo(lastFullFileName);
+
+                    string lastFileName = fi.Name;
+
+                    Regex rx = new Regex(@"\d{2}-\d{2}-\d{2}_(\d{3}).sdf");
+
+                    Match match = rx.Match(lastFileName);
+
+                    if (match.Success == true)
+                    {
+                        if (Int32.TryParse(match.Groups[1].Value, out index) == false)
+                        {
+                            index = files.Length;
+                        }
+
+                        index++;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(string.Format(ex.Message + "\nUsing date index 1.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error));
+            }
+
+            string dateName = Path.Combine(defaultSaveDirectory, string.Format("{0}_{1:D3}.sdf", baseDateName, index));
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.InitialDirectory = defaultSaveDirectory;
+            sfd.DefaultExt = "sdf";
+            sfd.FileName = dateName;
+            sfd.Title = "Select database file to save parse to...";
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                fileName = sfd.FileName;
+                return true;
+            }
+
+            fileName = "";
+            return false;
+        }
+
         #endregion
 
         #region Plugin/Window Management
@@ -666,32 +681,16 @@ namespace WaywardGamers.KParser
         }
         #endregion
 
-        // Code for testing stuff
-        private void menuItem1_Click(object sender, EventArgs e)
+        #region Code for testing stuff
+        private void menuTestItem_Click(object sender, EventArgs e)
         {
             //MMHook.Hook("14,e8,12,80c08080,000000f6,0000010f,0019,00,01,02,00,Motenten uses Judgment.");
 
-            Match testMatch;
-
-            string target = @"(?<fullname>([Tt]he )?(?<name>\w+((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)))))))";
-            string unnamedTarget = @"(([Tt]he )?(\w+((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)((?='s )|(['\- ](\d|\w)+)))))))";
-            string effect = @"(?<effect>\w+( \w+)?)";
-            Regex Dispelled = new Regex(string.Format("^{0}'s {1} effect disappears!$", target, effect));
-            Regex uDispelled = new Regex(string.Format("^{0}'s {1} effect disappears!$", unnamedTarget, effect));
-
-            string msg = "The Wamouracampa's Blaze Spikes effect disappears!";
-
-            testMatch = Dispelled.Match(msg);
-            testMatch = uDispelled.Match(msg);
-
-            msg = "The Wamouracampa Kar-esh's Blaze Spikes effect disappears!";
-
-            testMatch = Dispelled.Match(msg);
-            testMatch = uDispelled.Match(msg);
-
-            if (testMatch.Success == true)
-            {
-            }
+            Debug.WriteLine(string.Format("Company Name: {0}\n", Application.CompanyName));
+            Debug.WriteLine(string.Format("Product Name: {0}\n", Application.ProductName));
+            Debug.WriteLine(string.Format("Product Version: {0}\n", Application.ProductVersion));
+            //Application.CommonAppDataPath;
+            //Application.UserAppDataPath;
         }
 
         private void UpgradeCode()
@@ -751,7 +750,6 @@ namespace WaywardGamers.KParser
             stopwatch.Stop();
             MessageBox.Show(string.Format("Completed convert in {0} seconds", stopwatch.Elapsed.TotalSeconds));
         }
-
-
+        #endregion
     }
 }
