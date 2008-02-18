@@ -22,7 +22,7 @@ namespace WaywardGamers.KParser.Parsing
         internal static Message Parse(MessageLine messageLine)
         {
             int i = 0;
-            if (messageLine.EventSequence == 0x1e6)
+            if (messageLine.EventSequence == 0x328)
                 i++;
 
             Message message = GetAttachedMessage(messageLine);
@@ -529,8 +529,6 @@ namespace WaywardGamers.KParser.Parsing
         #region Combat / Combat sub-category Parsing
         private static void ParseCombat(Message message)
         {
-            uint searchCode = message.MessageCode;
-
             // Entity type only needs to be resolved when damage is done (codes 14, 19, 1c and 28),
             // with misses (15, 1a, 1d and 29) being included just because they will also be
             // frequent and easily separable.  All other message codes can retrieve the entity
@@ -1650,6 +1648,41 @@ namespace WaywardGamers.KParser.Parsing
                 message.ParseSuccessful = true;
                 return;
             }
+            combatMatch = ParseExpressions.AbsorbStat.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                target.EffectName = combatMatch.Groups[ParseFields.DrainStat].Value;
+                target.HarmType = msgCombatDetails.HarmType;
+                target.AidType = msgCombatDetails.AidType;
+                message.ParseSuccessful = true;
+                return;
+            }
+            combatMatch = ParseExpressions.Drain.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                target.Amount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
+                target.HarmType = msgCombatDetails.HarmType;
+                target.AidType = msgCombatDetails.AidType;
+
+                switch (combatMatch.Groups[ParseFields.DrainType].Value)
+                {
+                    case "HP":
+                        target.RecoveryType = RecoveryType.RecoverHP;
+                        break;
+                    case "MP":
+                        target.RecoveryType = RecoveryType.RecoverMP;
+                        break;
+                    case "TP":
+                        target.RecoveryType = RecoveryType.RecoverTP;
+                        break;
+                }
+                msgCombatDetails.SuccessLevel = SuccessType.Successful;
+                message.ParseSuccessful = true;
+                return;
+            }
+
             combatMatch = ParseExpressions.Enfeeble.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
@@ -1660,6 +1693,7 @@ namespace WaywardGamers.KParser.Parsing
                 message.ParseSuccessful = true;
                 return;
             }
+
             combatMatch = ParseExpressions.Dispelled.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
@@ -1830,6 +1864,8 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.ActionType = ActionType.Spell;
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
+                if (msgCombatDetails.ActionName.StartsWith("Absorb-"))
+                    msgCombatDetails.HarmType = HarmType.Enfeeble;
                 message.ParseSuccessful = true;
                 return;
             }
@@ -1866,7 +1902,7 @@ namespace WaywardGamers.KParser.Parsing
                 target.HarmType = msgCombatDetails.HarmType;
                 target.AidType = msgCombatDetails.AidType;
 
-                switch (combatMatch.Groups[ParseFields.Fulltarget].Value)
+                switch (combatMatch.Groups[ParseFields.DrainType].Value)
                 {
                     case "HP":
                         target.RecoveryType = RecoveryType.RecoverHP;

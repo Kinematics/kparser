@@ -20,6 +20,7 @@ namespace WaywardGamers.KParser
         public static readonly string Effect     = "effect";
         public static readonly string SC         = "skillchain";
         public static readonly string DrainType  = "draintype";
+        public static readonly string DrainStat  = "drainstat";
     }
 
     // Class to store regular expressions in.
@@ -44,6 +45,7 @@ namespace WaywardGamers.KParser
         
         private static readonly string afflictLvl  = @"\(lv\.\d\)";
         private static readonly string drainType   = @"(?<draintype>(H|M|T)P)";
+        private static readonly string drainStat   = @"(?<drainstat>STR|DEX|AGI|VIT|INT|MND|CHR)";
         #endregion
 
         #region Plugin corrections
@@ -179,6 +181,7 @@ namespace WaywardGamers.KParser
 
         #region Drains
         public static readonly Regex Drain = new Regex(string.Format("^{0} {1} drained from {2}\\.$", damage, drainType, target));
+        public static readonly Regex AbsorbStat = new Regex(string.Format("^{0}'s {1} is drained\\.$", target, drainStat));
         #endregion
 
         #region Defeated
