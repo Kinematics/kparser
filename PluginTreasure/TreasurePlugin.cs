@@ -133,8 +133,8 @@ namespace WaywardGamers.KParser.Plugin
         {
             // Drop rate section
             AppendBoldText("Drop Rates\n", Color.Red);
-            string dropItemFormat = "{0,9} {1,-24} [Drop Rate: {2,8:p2}]\n";
-            string dropGilFormat  = "{0,9} {1,-24} [Average:   {2,8:f2}]\n";
+            string dropItemFormat = "{0,9} {1,-28} [Drop Rate: {2,8:p2}]\n";
+            string dropGilFormat  = "{0,9} {1,-28} [Average:   {2,8:f2}]\n";
             int mobKillCount;
 
             var lootByMob = from c in dataSet.Combatants
