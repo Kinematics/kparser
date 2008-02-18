@@ -630,9 +630,9 @@ namespace WaywardGamers.KParser.Plugin
 
                 sb.Append(ttlMeleeDmg.ToString().PadLeft(12));
                 sb.Append(ttlRangeDmg.ToString().PadLeft(12));
-                sb.Append(ttlSpellDmg.ToString().PadLeft(12));
                 sb.Append(ttlAbilDmg.ToString().PadLeft(12));
                 sb.Append(ttlWskillDmg.ToString().PadLeft(12));
+                sb.Append(ttlSpellDmg.ToString().PadLeft(12));
                 sb.Append(ttlOtherDmg.ToString().PadLeft(11));
 
                 sb.Append("\n");
