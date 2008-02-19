@@ -49,8 +49,9 @@ namespace WaywardGamers.KParser
 		Linkshell,
         Tell,
         Emote,
-        NPC
-	}
+        NPC,
+        Arena,
+    }
 
     public enum EventMessageType : byte
     {
@@ -149,6 +150,7 @@ namespace WaywardGamers.KParser
         CannotSee,
         UnableToCast,
         UnableToUse,
+        Autotarget,
     }
 
     public enum DamageModifier : byte
