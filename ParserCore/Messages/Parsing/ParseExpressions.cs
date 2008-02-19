@@ -112,14 +112,14 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Spell/Ability Effects
-        public static readonly Regex RecoversHP = new Regex(string.Format("^{0} recovers {1} HP\\.$", target, number));
-        public static readonly Regex RecoversMP = new Regex(string.Format("^{0} recovers {1} MP\\.$", target, number));
+        public static readonly Regex RecoversHP = new Regex(string.Format("^{0} recover(s)? {1} HP\\.$", target, number));
+        public static readonly Regex RecoversMP = new Regex(string.Format("^{0} recover(s)? {1} MP\\.$", target, number));
         public static readonly Regex Afflict    = new Regex(string.Format("^{0} (is|are) afflicted with {1} {2}\\.$", target, effect, afflictLvl));
         public static readonly Regex Enfeeble   = new Regex(string.Format("{0} (is|are) {1}\\.$", target, effect));
-        public static readonly Regex Buff       = new Regex(string.Format("^{0} gains the effect of {1}\\.$", target, effect));
-        public static readonly Regex GainResistance = new Regex(string.Format("^{0} gains resistance against {1}\\.$", target, effect));
-        public static readonly Regex Debuff     = new Regex(string.Format("^{0} receives the effect of {1}\\.$", target, effect));
-        public static readonly Regex Enhance    = new Regex(string.Format("^{0}'s attacks are enhanced\\.$", target));
+        public static readonly Regex Buff       = new Regex(string.Format("^{0} gain(s)? the effect of {1}\\.$", target, effect));
+        public static readonly Regex GainResistance = new Regex(string.Format("^{0} gain(s)? resistance against {1}\\.$", target, effect));
+        public static readonly Regex Debuff     = new Regex(string.Format("^{0} receive(s)? the effect of {1}\\.$", target, effect));
+        public static readonly Regex Enhance    = new Regex(string.Format("^{0}'(s)? attacks are enhanced\\.$", target));
         public static readonly Regex Charmed    = new Regex(string.Format("^{0} (is|are) now under {1}'s control\\.$", target, name));
         public static readonly Regex NotCharmed = new Regex(string.Format("^{0} (is|are) no longer charmed\\.$", target));
         public static readonly Regex Dispelled  = new Regex(string.Format("^{0}'(s)? {1} effect disappears!$", target, effect));
@@ -173,14 +173,14 @@ namespace WaywardGamers.KParser
         #region Combat defenses
         public static readonly Regex MeleeMiss    = new Regex(string.Format("^{0} miss(es)? {1}\\.$", name, target));
         public static readonly Regex RangedMiss   = new Regex(string.Format("^{0} use(s)? Ranged Attack, but miss(es)? {1}\\.$", name, target));
-        public static readonly Regex RangedMiss2  = new Regex(string.Format("^{0}'s ranged attack misses\\.$", name));
+        public static readonly Regex RangedMiss2  = new Regex(string.Format("^{0}'(s)? ranged attack misses\\.$", name));
         public static readonly Regex Blink        = new Regex(string.Format("^{0} of {1}'s shadows absorb(s)? the damage and disappear(s)?\\.$", number, target));
         public static readonly Regex Parry        = new Regex(string.Format("^{0} parr(y|ies) {1}'(s)? attack with (his|her|its) weapon\\.$", target, name));
         public static readonly Regex Anticipate   = new Regex(string.Format("^{0} anticipate(s)? {1}'(s)? attack\\.$", target, name));
         public static readonly Regex Anticipate2  = new Regex(string.Format("^{0} anticipate(s)? the attack\\.$", target));
         public static readonly Regex Evade        = new Regex(string.Format("^{0} evade(s)? the attack\\.$", target));
         public static readonly Regex Evade2       = new Regex(string.Format("^{0} evade(s)\\.$", target));
-        public static readonly Regex Counter      = new Regex(string.Format("^{0}'s attack is countered by {1}\\. {2} takes {3} point(s)? of damage\\.$",
+        public static readonly Regex Counter      = new Regex(string.Format("^{0}'(s)? attack is countered by {1}\\. {2} takes {3} point(s)? of damage\\.$",
             target, name, repeatname, damage));
         public static readonly Regex CounterShadow = new Regex(string.Format("^{0}'(s)? attack is countered by {1}\\. {2} of {3}'(s)? shadows absorbs the damage and disappears\\.$",
             target, name, number, repeatname));
