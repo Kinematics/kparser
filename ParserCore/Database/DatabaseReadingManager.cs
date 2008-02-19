@@ -70,8 +70,8 @@ namespace WaywardGamers.KParser
         private string databaseFilename;
         private string databaseConnectionString;
 
-        private KPDatabaseDataSet localDB;
-        private KPDatabaseDataSetTableAdapters.TableAdapterManager localTAManager;
+        private KPDatabaseReadOnly localDB;
+        private KPDatabaseReadOnlyTableAdapters.TableAdapterManager localTAManager;
 
         private bool disposed = false;
         #endregion
@@ -93,7 +93,7 @@ namespace WaywardGamers.KParser
             CreateConnections();
         }
 
-        public KPDatabaseDataSet Database
+        public KPDatabaseReadOnly Database
         {
             get
             {
@@ -137,19 +137,10 @@ namespace WaywardGamers.KParser
         /// </summary>
         private void CreateConnections()
         {
-            localDB = new KPDatabaseDataSet();
-            localTAManager = new TableAdapterManager();
+            localDB = new KPDatabaseReadOnly();
+            localTAManager = new KPDatabaseReadOnlyTableAdapters.TableAdapterManager();
 
-            localTAManager.CombatantsTableAdapter = new CombatantsTableAdapter();
-            localTAManager.BattlesTableAdapter = new BattlesTableAdapter();
-            localTAManager.InteractionsTableAdapter = new InteractionsTableAdapter();
-            localTAManager.ActionsTableAdapter = new ActionsTableAdapter();
-            localTAManager.LootTableAdapter = new LootTableAdapter();
-            localTAManager.ItemsTableAdapter = new ItemsTableAdapter();
-            localTAManager.RecordLogTableAdapter = new RecordLogTableAdapter();
-            localTAManager.VersionTableAdapter = new VersionTableAdapter();
-            localTAManager.ChatMessagesTableAdapter = new ChatMessagesTableAdapter();
-            localTAManager.ChatSpeakersTableAdapter = new ChatSpeakersTableAdapter();
+            localTAManager.RecordLogTableAdapter = new KPDatabaseReadOnlyTableAdapters.RecordLogTableAdapter();
 
 
             System.Data.SqlServerCe.SqlCeConnection sqlConn =
@@ -157,31 +148,12 @@ namespace WaywardGamers.KParser
 
             localTAManager.Connection = sqlConn;
 
-
-            localTAManager.CombatantsTableAdapter.Connection = sqlConn;
-            localTAManager.BattlesTableAdapter.Connection = sqlConn;
-            localTAManager.InteractionsTableAdapter.Connection = sqlConn;
-            localTAManager.ActionsTableAdapter.Connection = sqlConn;
-            localTAManager.LootTableAdapter.Connection = sqlConn;
-            localTAManager.ItemsTableAdapter.Connection = sqlConn;
-            localTAManager.ChatMessagesTableAdapter.Connection = sqlConn;
-            localTAManager.ChatSpeakersTableAdapter.Connection = sqlConn;
             localTAManager.RecordLogTableAdapter.Connection = sqlConn;
-            localTAManager.VersionTableAdapter.Connection = sqlConn;
 
 
             // If opening an existing database, need to check version info before filling data
 
-            localTAManager.CombatantsTableAdapter.Fill(localDB.Combatants);
-            localTAManager.BattlesTableAdapter.Fill(localDB.Battles);
-            localTAManager.InteractionsTableAdapter.Fill(localDB.Interactions);
-            localTAManager.ActionsTableAdapter.Fill(localDB.Actions);
-            localTAManager.LootTableAdapter.Fill(localDB.Loot);
-            localTAManager.ItemsTableAdapter.Fill(localDB.Items);
-            localTAManager.ChatMessagesTableAdapter.Fill(localDB.ChatMessages);
-            localTAManager.ChatSpeakersTableAdapter.Fill(localDB.ChatSpeakers);
             localTAManager.RecordLogTableAdapter.Fill(localDB.RecordLog);
-            localTAManager.VersionTableAdapter.Fill(localDB.Version);
         }
         #endregion
 
