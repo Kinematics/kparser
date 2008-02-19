@@ -79,32 +79,20 @@ namespace WaywardGamers.KParser
         /// Reparse an existing database into a new one.
         /// </summary>
         /// <param name="outputFileName">The name of the new database.</param>
-        public static void Reparse(string outputFileName)
+        public static void Reparse(string inFilename, string outputFileName)
         {
             if (currentReader.IsRunning == true)
                 throw new InvalidOperationException(string.Format(
                     "{0} is already running", currentReader.GetType().Name));
 
-            if (DatabaseManager.Instance.Database == null)
-                throw new InvalidOperationException("Open a database before trying to reparse.");
-
-            string oldDBName = DatabaseManager.Instance.DatabaseFilename;
-
             ParseMode = DataSource.Database;
             currentReader = DatabaseReader.Instance;
 
-            try
-            {
-                DatabaseManager.Instance.CreateDatabase(outputFileName);
-                System.Threading.Thread.Sleep(100);
-                DatabaseReadingManager.Instance.OpenDatabase(oldDBName);
+            DatabaseManager.Instance.CreateDatabase(outputFileName);
+            System.Threading.Thread.Sleep(100);
+            DatabaseReadingManager.Instance.OpenDatabase(inFilename);
 
-                currentReader.Run();
-            }
-            finally
-            {
-                DatabaseReadingManager.Instance.CloseDatabase();
-            }
+            currentReader.Run();
         }
 
         /// <summary>
