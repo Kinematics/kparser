@@ -22,7 +22,7 @@ namespace WaywardGamers.KParser.Parsing
         internal static Message Parse(MessageLine messageLine)
         {
             int i = 0;
-            if (messageLine.EventSequence == 0x1e2)
+            if (messageLine.EventSequence == 0x1d4f)
                 i++;
 
             Message message = GetAttachedMessage(messageLine);
@@ -736,6 +736,35 @@ namespace WaywardGamers.KParser.Parsing
                                 message.ParseSuccessful = true;
                                 return;
                             }
+                            // Check for additional effect: drain effects (eg: drain samba)
+                            combatMatch = ParseExpressions.AdditionalDrain.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                target = msgCombatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
+                                if (target != null)
+                                {
+                                    target.SecondaryAidType = AidType.Recovery;
+                                    target.SecondaryRecoveryType = RecoveryType.RecoverHP;
+                                    target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
+                                }
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            // Check for additional effect: aspir effects (eg: aspir samba)
+                            combatMatch = ParseExpressions.AdditionalAspir.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                target = msgCombatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
+                                if (target != null)
+                                {
+                                    target.SecondaryAidType = AidType.Recovery;
+                                    target.SecondaryRecoveryType = RecoveryType.RecoverMP;
+                                    target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
+                                }
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+
                             combatMatch = ParseExpressions.AdditionalHeal.Match(currentMessageText);
                             if (combatMatch.Success == true)
                             {
@@ -1367,38 +1396,6 @@ namespace WaywardGamers.KParser.Parsing
                     {
                         target.SecondaryHarmType = HarmType.Enfeeble;
                         target.SecondaryAction = combatMatch.Groups[ParseFields.Effect].Value;
-                    }
-                }
-            }
-
-            // Check for additional effect: drain effects (eg: drain samba)
-            if (combatMatch.Success == false)
-            {
-                combatMatch = ParseExpressions.AdditionalDrain.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    target = combatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
-                    if (target != null)
-                    {
-                        target.SecondaryAidType = AidType.Recovery;
-                        target.SecondaryRecoveryType = RecoveryType.RecoverHP;
-                        target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
-                    }
-                }
-            }
-
-            // Check for additional effect: aspir effects (eg: aspir samba)
-            if (combatMatch.Success == false)
-            {
-                combatMatch = ParseExpressions.AdditionalAspir.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    target = combatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
-                    if (target != null)
-                    {
-                        target.SecondaryAidType = AidType.Recovery;
-                        target.SecondaryRecoveryType = RecoveryType.RecoverMP;
-                        target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
                     }
                 }
             }
