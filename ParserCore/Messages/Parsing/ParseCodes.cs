@@ -156,7 +156,7 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0x76] = InteractionType.Unknown; //
             interactionTypeLookup[0x77] = InteractionType.Unknown; //
             interactionTypeLookup[0x78] = InteractionType.Unknown; //
-            interactionTypeLookup[0x79] = InteractionType.Unknown; //
+            interactionTypeLookup[0x79] = InteractionType.Aid; // <item> fails to activate
             interactionTypeLookup[0x7a] = InteractionType.Harm; // Interrupted/paralyzed/etc.  Failed action
             interactionTypeLookup[0x7b] = InteractionType.Unknown; // Red 'error' text. Ignore
             interactionTypeLookup[0x7c] = InteractionType.Unknown; //
@@ -332,7 +332,7 @@ namespace WaywardGamers.KParser
             aidTypeLookup[0x76] = AidType.None; //
             aidTypeLookup[0x77] = AidType.None; //
             aidTypeLookup[0x78] = AidType.None; //
-            aidTypeLookup[0x79] = AidType.None; //
+            aidTypeLookup[0x79] = AidType.Item; // <item> fails to activate
             aidTypeLookup[0x7a] = AidType.None; // Interrupted/paralyzed/etc.  Failed action
             aidTypeLookup[0x7b] = AidType.None; // Red 'error' text. Ignore
             aidTypeLookup[0x7c] = AidType.None; //
@@ -508,7 +508,7 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0x76] = HarmType.None; //
             harmTypeLookup[0x77] = HarmType.None; //
             harmTypeLookup[0x78] = HarmType.None; //
-            harmTypeLookup[0x79] = HarmType.None; //
+            harmTypeLookup[0x79] = HarmType.None; // <item> fails to activate
             harmTypeLookup[0x7a] = HarmType.Unknown; // Interrupted/paralyzed/etc.  Failed action
             harmTypeLookup[0x7b] = HarmType.None; // Red 'error' text. Ignore
             harmTypeLookup[0x7c] = HarmType.None; //
@@ -684,7 +684,7 @@ namespace WaywardGamers.KParser
             successTypeLookup[0x76] = SuccessType.None; //
             successTypeLookup[0x77] = SuccessType.None; //
             successTypeLookup[0x78] = SuccessType.None; //
-            successTypeLookup[0x79] = SuccessType.None; //
+            successTypeLookup[0x79] = SuccessType.Failed; // <item> fails to activate
             successTypeLookup[0x7a] = SuccessType.Failed; // Interrupted/paralyzed/etc.  Failed action
             successTypeLookup[0x7b] = SuccessType.Failed; // Red 'error' text. Ignore
             successTypeLookup[0x7c] = SuccessType.None; //
