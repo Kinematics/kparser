@@ -22,7 +22,7 @@ namespace WaywardGamers.KParser.Parsing
         internal static Message Parse(MessageLine messageLine)
         {
             int i = 0;
-            if (messageLine.EventSequence == 0x328)
+            if (messageLine.EventSequence == 0x1e2)
                 i++;
 
             Message message = GetAttachedMessage(messageLine);
@@ -186,13 +186,16 @@ namespace WaywardGamers.KParser.Parsing
         /// <param name="message">The message to parse.</param>
         private static void ParseSystem(Message message)
         {
-            switch (message.MessageCode)
+            switch (message.CurrentMessageCode)
             {
                 case 0x00:
                     message.SystemDetails.SystemMessageType = SystemMessageType.ZoneChange;
                     break;
-                case 0xce:
-                    message.SystemDetails.SystemMessageType = SystemMessageType.Echo;
+                case 0x9d:
+                    message.SystemDetails.SystemMessageType = SystemMessageType.CommandError;
+                    break;
+                case 0xa1:
+                    message.SystemDetails.SystemMessageType = SystemMessageType.ConquestUpdate;
                     break;
                 case 0xbf:
                     message.SystemDetails.SystemMessageType = SystemMessageType.EffectWearsOff;
@@ -201,14 +204,27 @@ namespace WaywardGamers.KParser.Parsing
                     if (charmCheck.Success == true)
                         MessageManager.Instance.RemovePetEntity(charmCheck.Groups[ParseFields.Fulltarget].Value);
                     break;
+                case 0xcc:
+                    message.SystemDetails.SystemMessageType = SystemMessageType.SearchComment;
+                    break;
+                case 0xcd: // Linkshell message
+                    message.MessageCategory = MessageCategoryType.Chat;
+                    message.ChatDetails.ChatMessageType = ChatMessageType.Linkshell;
+                    message.ChatDetails.ChatSpeakerName = "-Linkshell-";
+                    message.ChatDetails.ChatSpeakerType = SpeakerType.Unknown;
+                    message.ParseSuccessful = true;
+                    break;
+                case 0xce:
+                    message.SystemDetails.SystemMessageType = SystemMessageType.Echo;
+                    break;
                 case 0xd0:
                     message.SystemDetails.SystemMessageType = SystemMessageType.Examine;
                     break;
+                case 0xd1:
+                    message.SystemDetails.SystemMessageType = SystemMessageType.ReuseTime;
+                    break;
                 case 0x7b:
                     message.SystemDetails.SystemMessageType = SystemMessageType.OutOfRange;
-                    break;
-                case 0xcc:
-                    message.SystemDetails.SystemMessageType = SystemMessageType.SearchComment;
                     break;
                 case 0xbe: // Order to enter
                 case 0x92: // Arena time remaining
@@ -241,6 +257,7 @@ namespace WaywardGamers.KParser.Parsing
                 case 0x01: // <me> say
                 case 0x09: // Others say
                 case 0x98: // <npc> say
+                case 0x90: // <fellow> say
                     message.ChatDetails.ChatMessageType = ChatMessageType.Say;
                     break;
                 case 0x02: // <me> shout
@@ -294,6 +311,7 @@ namespace WaywardGamers.KParser.Parsing
                 case 0x0f: // Others emote
                     message.ChatDetails.ChatSpeakerType = SpeakerType.Player;
                     break;
+                case 0x90: // <fellow> say
                 case 0x98: // <npc> say
                 case 0x8e: // <npc> shout
                     message.ChatDetails.ChatSpeakerType = SpeakerType.NPC;
@@ -357,11 +375,13 @@ namespace WaywardGamers.KParser.Parsing
 
             if ((message.CurrentMessageText.EndsWith(".") == false) &&
                 (message.CurrentMessageText.EndsWith("!") == false) &&
-                (message.MessageCode != 0x79))
+                (message.CurrentMessageCode != 0x79))
                 return;
 
+            uint currentMsgCode = message.CurrentMessageCode;
+
             // Determine type of action message
-            switch (message.MessageCode)
+            switch (currentMsgCode)
             {
                 case 0x83: // Exp, no chain
                 case 0x79: // Item drop, Lot for item, xp chain, xp on chain, equipment changed, /recast message, /anon changed, etc)
@@ -373,10 +393,15 @@ namespace WaywardGamers.KParser.Parsing
                     message.EventDetails.EventMessageType = EventMessageType.Fishing;
                     break;
                 default: // Mark the large swaths of possible combat messages
-                    if ((message.MessageCode >= 0x13) && (message.MessageCode <= 0x84))
+                    if ((currentMsgCode >= 0x13) && (currentMsgCode <= 0x84))
                         message.EventDetails.EventMessageType = EventMessageType.Interaction;
-                    else if ((message.MessageCode >= 0xa2) && (message.MessageCode <= 0xbf))
+                    else if ((currentMsgCode >= 0xa2) && (currentMsgCode <= 0xbf))
                         message.EventDetails.EventMessageType = EventMessageType.Interaction;
+                    else if (currentMsgCode == 0x8d)
+                    {
+                        ParseCode8d(message);
+                        return;
+                    }
                     else // Everything else is ignored.
                         message.EventDetails.EventMessageType = EventMessageType.Other;
                     break;
@@ -398,6 +423,16 @@ namespace WaywardGamers.KParser.Parsing
             }
         }
 
+        private static void ParseCode8d(Message message)
+        {
+            // Can be a failed message, or Arena messages in Limbus.
+            message.MessageCategory = MessageCategoryType.Chat;
+            message.ChatDetails.ChatMessageType = ChatMessageType.Arena;
+            message.ChatDetails.ChatSpeakerName = "-Arena-";
+            message.ChatDetails.ChatSpeakerType = SpeakerType.NPC;
+            message.ParseSuccessful = true;
+        }
+
         #endregion
 
         #region Parsing of end-combat data
@@ -405,7 +440,7 @@ namespace WaywardGamers.KParser.Parsing
         {
             Match lootOrXP;
 
-            switch (message.MessageCode)
+            switch (message.CurrentMessageCode)
             {
                 // Item drop, Lot for item, equipment changed, /recast message
                 case 0x79:
@@ -562,19 +597,19 @@ namespace WaywardGamers.KParser.Parsing
 
             // Use lookup tables for general categories based on message code
             // Only lookup if unknown category type.  Multi-line messages will already know this info.
-            if (msgCombatDetails.InteractionType == InteractionType.Unknown)
-            {
-                msgCombatDetails.InteractionType = ParseCodes.Instance.GetInteractionType(message.MessageCode);
+            //if (msgCombatDetails.InteractionType == InteractionType.Unknown)
+            //{
+                msgCombatDetails.InteractionType = ParseCodes.Instance.GetInteractionType(message.CurrentMessageCode);
 
                 if (msgCombatDetails.InteractionType == InteractionType.Aid)
-                    msgCombatDetails.AidType = ParseCodes.Instance.GetAidType(message.MessageCode);
+                    msgCombatDetails.AidType = ParseCodes.Instance.GetAidType(message.CurrentMessageCode);
 
                 if (msgCombatDetails.InteractionType == InteractionType.Harm)
                 {
-                    msgCombatDetails.HarmType = ParseCodes.Instance.GetHarmType(message.MessageCode);
-                    msgCombatDetails.SuccessLevel = ParseCodes.Instance.GetSuccessType(message.MessageCode);
+                    msgCombatDetails.HarmType = ParseCodes.Instance.GetHarmType(message.CurrentMessageCode);
+                    msgCombatDetails.SuccessLevel = ParseCodes.Instance.GetSuccessType(message.CurrentMessageCode);
                 }
-            }
+            //}
 
             switch (msgCombatDetails.InteractionType)
             {
@@ -1027,7 +1062,7 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
 
-                switch (message.MessageCode)
+                switch (message.CurrentMessageCode)
                 {
                     case 0x69:
                         // Ability being used on a player
@@ -1527,6 +1562,18 @@ namespace WaywardGamers.KParser.Parsing
 
             if (combatMatch.Success == false)
             {
+                combatMatch = ParseExpressions.Evade2.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    combatDetails.ActionType = ActionType.Unknown;
+                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.DefenseType = DefenseType.Evade;
+                    target.HarmType = combatDetails.HarmType;
+                }
+            }
+
+            if (combatMatch.Success == false)
+            {
                 combatMatch = ParseExpressions.ResistSpell.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
@@ -1985,6 +2032,13 @@ namespace WaywardGamers.KParser.Parsing
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     msgCombatDetails.FailedActionType = FailedActionType.Autotarget;
                     target.FailedActionType = FailedActionType.Autotarget;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.CannotAttack.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.FailedActionType = FailedActionType.CannotAttack;
                     message.ParseSuccessful = true;
                     return;
                 }
