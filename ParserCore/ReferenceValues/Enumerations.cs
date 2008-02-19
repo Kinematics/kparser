@@ -155,6 +155,7 @@ namespace WaywardGamers.KParser
         UnableToUse,
         Autotarget,
         CannotAttack,
+        FailedToActivate
     }
 
     public enum DamageModifier : byte
