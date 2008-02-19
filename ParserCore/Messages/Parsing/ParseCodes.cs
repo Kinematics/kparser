@@ -176,7 +176,7 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0x8a] = InteractionType.Unknown; //
             interactionTypeLookup[0x8b] = InteractionType.Unknown; //
             interactionTypeLookup[0x8c] = InteractionType.Unknown; //
-            interactionTypeLookup[0x8d] = InteractionType.Unknown; //
+            interactionTypeLookup[0x8d] = InteractionType.Harm; // Cannot attack
             interactionTypeLookup[0x8e] = InteractionType.Unknown; //
             interactionTypeLookup[0x8f] = InteractionType.Unknown; //
             interactionTypeLookup[0x90] = InteractionType.Unknown; //
@@ -216,7 +216,7 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0xb2] = InteractionType.Unknown; //
             interactionTypeLookup[0xb3] = InteractionType.Unknown; //
             interactionTypeLookup[0xb4] = InteractionType.Unknown; //
-            interactionTypeLookup[0xb5] = InteractionType.Unknown; //
+            interactionTypeLookup[0xb5] = InteractionType.Harm; // <am> avoids ability
             interactionTypeLookup[0xb6] = InteractionType.Harm; // <am> is enfeebled
             interactionTypeLookup[0xb7] = InteractionType.Aid; // <am> gains buff
             interactionTypeLookup[0xb8] = InteractionType.Unknown; //
@@ -392,7 +392,7 @@ namespace WaywardGamers.KParser
             aidTypeLookup[0xb2] = AidType.None; //
             aidTypeLookup[0xb3] = AidType.None; //
             aidTypeLookup[0xb4] = AidType.None; //
-            aidTypeLookup[0xb5] = AidType.None; //
+            aidTypeLookup[0xb5] = AidType.None; // <am> avoids damage
             aidTypeLookup[0xb6] = AidType.None; //
             aidTypeLookup[0xb7] = AidType.Enhance; // <am> gains buff
             aidTypeLookup[0xb8] = AidType.None; //
@@ -528,7 +528,7 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0x8a] = HarmType.None; //
             harmTypeLookup[0x8b] = HarmType.None; //
             harmTypeLookup[0x8c] = HarmType.None; //
-            harmTypeLookup[0x8d] = HarmType.None; //
+            harmTypeLookup[0x8d] = HarmType.Unknown; // Cannot attack
             harmTypeLookup[0x8e] = HarmType.None; //
             harmTypeLookup[0x8f] = HarmType.None; //
             harmTypeLookup[0x90] = HarmType.None; //
@@ -568,7 +568,7 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0xb2] = HarmType.None; //
             harmTypeLookup[0xb3] = HarmType.None; //
             harmTypeLookup[0xb4] = HarmType.None; //
-            harmTypeLookup[0xb5] = HarmType.None; //
+            harmTypeLookup[0xb5] = HarmType.Damage; // <am> avoids ability
             harmTypeLookup[0xb6] = HarmType.Enfeeble; // <am> is enfeebled
             harmTypeLookup[0xb7] = HarmType.None; // <am> gains buff
             harmTypeLookup[0xb8] = HarmType.None; //
@@ -704,7 +704,7 @@ namespace WaywardGamers.KParser
             successTypeLookup[0x8a] = SuccessType.None; //
             successTypeLookup[0x8b] = SuccessType.None; //
             successTypeLookup[0x8c] = SuccessType.None; //
-            successTypeLookup[0x8d] = SuccessType.None; //
+            successTypeLookup[0x8d] = SuccessType.Failed; // Cannot attack
             successTypeLookup[0x8e] = SuccessType.None; //
             successTypeLookup[0x8f] = SuccessType.None; //
             successTypeLookup[0x90] = SuccessType.None; //
@@ -744,7 +744,7 @@ namespace WaywardGamers.KParser
             successTypeLookup[0xb2] = SuccessType.None; //
             successTypeLookup[0xb3] = SuccessType.None; //
             successTypeLookup[0xb4] = SuccessType.None; //
-            successTypeLookup[0xb5] = SuccessType.None; //
+            successTypeLookup[0xb5] = SuccessType.Unsuccessful; // <am> avoids ability
             successTypeLookup[0xb6] = SuccessType.Successful; // <am> is enfeebled
             successTypeLookup[0xb7] = SuccessType.Successful; // <am> gains buff
             successTypeLookup[0xb8] = SuccessType.None; //
@@ -836,6 +836,19 @@ namespace WaywardGamers.KParser
                     return new List<uint>() { 0x39, 0x3b, 0x45, 0x3f, 0xb6 };
                 case 0xb6:
                     return new List<uint>() { 0x39, 0x3b, 0x45, 0x3f, 0x45 };
+                // AOE attacks
+                // 6d = hits pm/am?, 1c = hits me
+                case 0xb9: // hits <am>
+                    return new List<uint>() { 0x6d, 0x1c, 0x20 };
+                case 0xb5: // <am> evades
+                    return new List<uint>() { 0x6d, 0x1c, 0x20 };
+                case 0x68: // <me> evades
+                    return new List<uint>() { 0x6d, 0x1c, 0x20 };
+                case 0x20: // hits <pm>
+                    return new List<uint>() { 0x6d, 0x1c };
+                // Item use
+                case 0x5b:
+                    return new List<uint>() { 0xab };
             }
 
             return null;
