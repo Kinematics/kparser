@@ -209,7 +209,7 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0xab] = InteractionType.Aid; // <am> uses item
             interactionTypeLookup[0xac] = InteractionType.Unknown; //
             interactionTypeLookup[0xad] = InteractionType.Unknown; //
-            interactionTypeLookup[0xae] = InteractionType.Unknown; //
+            interactionTypeLookup[0xae] = InteractionType.Harm; // <am> enfeebled
             interactionTypeLookup[0xaf] = InteractionType.Aid; // <am> uses self-buff
             interactionTypeLookup[0xb0] = InteractionType.Unknown; //
             interactionTypeLookup[0xb1] = InteractionType.Unknown; //
@@ -385,7 +385,7 @@ namespace WaywardGamers.KParser
             aidTypeLookup[0xab] = AidType.Item; // <am> uses item
             aidTypeLookup[0xac] = AidType.None; //
             aidTypeLookup[0xad] = AidType.None; //
-            aidTypeLookup[0xae] = AidType.None; //
+            aidTypeLookup[0xae] = AidType.None; // <am> enfeebled
             aidTypeLookup[0xaf] = AidType.Enhance; // <am> uses self-buff
             aidTypeLookup[0xb0] = AidType.None; //
             aidTypeLookup[0xb1] = AidType.None; //
@@ -561,8 +561,8 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0xab] = HarmType.None; //
             harmTypeLookup[0xac] = HarmType.None; //
             harmTypeLookup[0xad] = HarmType.None; //
-            harmTypeLookup[0xae] = HarmType.None; //
-            harmTypeLookup[0xaf] = HarmType.None; //
+            harmTypeLookup[0xae] = HarmType.Enfeeble; // <em> enfeebled
+            harmTypeLookup[0xaf] = HarmType.None; // <am> uses self-buff
             harmTypeLookup[0xb0] = HarmType.None; //
             harmTypeLookup[0xb1] = HarmType.None; //
             harmTypeLookup[0xb2] = HarmType.None; //
@@ -737,8 +737,8 @@ namespace WaywardGamers.KParser
             successTypeLookup[0xab] = SuccessType.Successful; // <am> uses item
             successTypeLookup[0xac] = SuccessType.None; //
             successTypeLookup[0xad] = SuccessType.None; //
-            successTypeLookup[0xae] = SuccessType.None; //
-            successTypeLookup[0xaf] = SuccessType.Successful; //
+            successTypeLookup[0xae] = SuccessType.Successful; // <am> enfeebled
+            successTypeLookup[0xaf] = SuccessType.Successful; // <am> uses self-buff
             successTypeLookup[0xb0] = SuccessType.None; //
             successTypeLookup[0xb1] = SuccessType.None; //
             successTypeLookup[0xb2] = SuccessType.None; //
@@ -822,6 +822,8 @@ namespace WaywardGamers.KParser
                 case 0x70:
                     return new List<uint>() { 0x66 };
                 // Enfeebles (successful and resisted)
+                case 0x44:
+                    return new List<uint>() { 0x41 };
                 case 0x45:
                     return new List<uint>() { 0x39, 0x3b, 0x3d, 0x3f, 0xb6 };
                 case 0x3f:
