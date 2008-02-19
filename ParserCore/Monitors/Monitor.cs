@@ -96,6 +96,7 @@ namespace WaywardGamers.KParser
             try
             {
                 DatabaseManager.Instance.CreateDatabase(outputFileName);
+                System.Threading.Thread.Sleep(100);
                 DatabaseReadingManager.Instance.OpenDatabase(oldDBName);
 
                 currentReader.Run();
