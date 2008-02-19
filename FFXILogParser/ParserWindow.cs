@@ -398,7 +398,7 @@ namespace WaywardGamers.KParser
             }
             else
             {
-                if (e.Running == true)
+                if (Monitoring.DatabaseReader.Instance.IsRunning == true)
                 {
                     if (e.RowsRead == e.TotalRows)
                     {
@@ -413,8 +413,15 @@ namespace WaywardGamers.KParser
                 }
                 else
                 {
+                    // ie: reparse was cancelled or errored out
+                    // stop monitoring
                     Cursor.Current = Cursors.Default;
                     Monitoring.DatabaseReader.Instance.ReparseProgressChanged -= MonitorReparse;
+
+                    // reload original database file
+                    string oldDBFile = DatabaseReadingManager.Instance.DatabaseFilename;
+                    if ((oldDBFile != null) && (oldDBFile != string.Empty))
+                        DatabaseManager.Instance.OpenDatabase(oldDBFile);
                 }
             }
         }

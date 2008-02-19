@@ -15,14 +15,12 @@ namespace WaywardGamers.KParser.Monitoring
         public int RowsRead { get; private set; }
         public int TotalRows { get; private set; }
         public bool Complete { get; private set; }
-        public bool Running { get; private set; }
 
-        internal DatabaseReparseEventArgs(int rowRead, int totalRows, bool complete, bool running)
+        internal DatabaseReparseEventArgs(int rowRead, int totalRows, bool complete)
         {
             RowsRead = rowRead;
             TotalRows = totalRows;
             Complete = complete;
-            Running = running;
         }
     }
     #endregion
@@ -150,7 +148,7 @@ namespace WaywardGamers.KParser.Monitoring
                         ChatLine chat = new ChatLine(logLine.MessageText, logLine.Timestamp);
                         MessageManager.Instance.AddChatLine(chat);
 
-                        OnRowProcessed(new DatabaseReparseEventArgs(rowCount, totalCount, completed, IsRunning));
+                        OnRowProcessed(new DatabaseReparseEventArgs(rowCount, totalCount, completed));
                     }
 
                     completed = IsRunning;
@@ -168,7 +166,7 @@ namespace WaywardGamers.KParser.Monitoring
                 else
                     MessageManager.Instance.CancelParsing();
 
-                OnRowProcessed(new DatabaseReparseEventArgs(rowCount, totalCount, completed, IsRunning));
+                OnRowProcessed(new DatabaseReparseEventArgs(rowCount, totalCount, completed));
             }
 
         }
