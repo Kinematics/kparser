@@ -147,6 +147,7 @@ namespace WaywardGamers.KParser
         public static readonly Regex AutoTarget  = new Regex(string.Format("^Auto-targeting {0}\\.$", target));
         public static readonly Regex TooFarForXP = new Regex(string.Format("^You are too far from the battle to gain experience\\.$"));
         public static readonly Regex LoseSight   = new Regex(string.Format("^You lose sight of {0}\\.$", target));
+        public static readonly Regex FailActivate = new Regex(string.Format("^{0} fails to activate\\.$", item));
         #endregion
 
         #region Modifiers on existing lines
