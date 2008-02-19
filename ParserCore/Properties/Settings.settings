@@ -22,14 +22,11 @@
     <Setting Name="FFXILogDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\Program Files\PlayOnline\SquareEnix\FINAL FANTASY XI\TEMP</Value>
     </Setting>
-    <Setting Name="DefaultSaveSubdirectory" Type="System.String" Scope="User">
-      <Value Profile="(Default)">SaveLogs</Value>
-    </Setting>
     <Setting Name="ParseExistingLogs" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="DefaultUnnamedDBFileName" Type="System.String" Scope="User">
-      <Value Profile="(Default)">KPDatabaseActive.sdf</Value>
+      <Value Profile="(Default)">KPDefaultParse.sdf</Value>
     </Setting>
     <Setting Name="dumpDebugTextToFile" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>

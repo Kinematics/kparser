@@ -80,18 +80,6 @@ namespace WaywardGamers.KParser.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("SaveLogs")]
-        public string DefaultSaveSubdirectory {
-            get {
-                return ((string)(this["DefaultSaveSubdirectory"]));
-            }
-            set {
-                this["DefaultSaveSubdirectory"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool ParseExistingLogs {
             get {
@@ -104,7 +92,7 @@ namespace WaywardGamers.KParser.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("KPDatabaseActive.sdf")]
+        [global::System.Configuration.DefaultSettingValueAttribute("KPDefaultParse.sdf")]
         public string DefaultUnnamedDBFileName {
             get {
                 return ((string)(this["DefaultUnnamedDBFileName"]));
