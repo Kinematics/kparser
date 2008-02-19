@@ -38,6 +38,9 @@ namespace WaywardGamers.KParser
         OutOfRange,
         Examine,
         SearchComment,
+        ReuseTime,
+        ConquestUpdate,
+        CommandError,
     }
 
     public enum ChatMessageType : byte
@@ -151,6 +154,7 @@ namespace WaywardGamers.KParser
         UnableToCast,
         UnableToUse,
         Autotarget,
+        CannotAttack,
     }
 
     public enum DamageModifier : byte
