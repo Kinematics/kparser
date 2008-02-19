@@ -50,10 +50,8 @@ namespace WaywardGamers.KParser
         /// </summary>
         private DatabaseManager()
 		{
-            string applicationDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            defaultSaveDirectory = Path.Combine(applicationDirectory, Properties.Settings.Default.DefaultSaveSubdirectory);
-
-            defaultCopyDatabaseFilename = Path.Combine(defaultSaveDirectory, Properties.Settings.Default.DefaultUnnamedDBFileName);
+            defaultCopyDatabaseFilename = Path.Combine(System.Windows.Forms.Application.CommonAppDataPath,
+                Properties.Settings.Default.DefaultUnnamedDBFileName);
 
             Version assemVersion = Assembly.GetExecutingAssembly().GetName().Version;
             assemblyVersionString = string.Format("{0}.{1}", assemVersion.Major, assemVersion.Minor);
@@ -101,8 +99,6 @@ namespace WaywardGamers.KParser
         #region Member Variables
         private const int databaseVersion = 1;
         private string assemblyVersionString;
-
-        private string defaultSaveDirectory;
 
         private string defaultCopyDatabaseFilename;
         private string databaseFilename;
