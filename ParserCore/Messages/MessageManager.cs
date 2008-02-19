@@ -217,7 +217,7 @@ namespace WaywardGamers.KParser
                 {
                     // If we have sub codes, include those in the first pass search
                     msg = searchSet.LastOrDefault(m =>
-                        ((m.MessageCode == mcode) &&
+                        ((m.PrimaryMessageCode == mcode) &&
                          (m.ExtraCode1 == ecode1) &&
                          (m.ExtraCode2 == ecode2) &&
                          (m.EventDetails != null) &&
@@ -247,7 +247,7 @@ namespace WaywardGamers.KParser
                     // find a message that has ecodes of 0, since we can't
                     // attach to that.
                     msg = searchSet.LastOrDefault(m =>
-                        ((m.MessageCode == mcode) &&
+                        ((m.PrimaryMessageCode == mcode) &&
                          (m.ExtraCode1 != 0) &&
                          (m.ExtraCode2 != 0) &&
                          (m.EventDetails != null) &&
@@ -281,7 +281,7 @@ namespace WaywardGamers.KParser
                             {
                                 // If we have sub codes, include those in the first pass search
                                 msg = searchSet.LastOrDefault(m =>
-                                    ((m.MessageCode == altCode) &&
+                                    ((m.PrimaryMessageCode == altCode) &&
                                      (m.ExtraCode1 == ecode1) &&
                                      (m.ExtraCode2 == ecode2) &&
                                      (m.EventDetails != null) &&
@@ -311,7 +311,7 @@ namespace WaywardGamers.KParser
                                 // find a message that has ecodes of 0, since we can't
                                 // attach to that.
                                 msg = searchSet.LastOrDefault(m =>
-                                    ((m.MessageCode == altCode) &&
+                                    ((m.PrimaryMessageCode == altCode) &&
                                      (m.ExtraCode1 != 0) &&
                                      (m.ExtraCode2 != 0) &&
                                      (m.EventDetails != null) &&
