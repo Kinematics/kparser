@@ -27,6 +27,7 @@ namespace WaywardGamers.KParser
         {
             try
             {
+                Application.EnableVisualStyles();
                 Application.Run(new ParserWindow());
             }
             catch (Exception e)

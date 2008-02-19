@@ -263,7 +263,7 @@ namespace WaywardGamers.KParser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(992, 457);
             this.Controls.Add(this.pluginTabs);
             this.Controls.Add(this.statusStrip);
