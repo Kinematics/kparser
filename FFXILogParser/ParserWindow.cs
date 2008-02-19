@@ -55,19 +55,8 @@ namespace WaywardGamers.KParser
             Properties.Settings appSettings = new WaywardGamers.KParser.Properties.Settings();
 
             applicationDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            defaultSaveDirectory = Path.Combine(applicationDirectory, appSettings.DefaultSaveSubdirectory);
 
-            if (Directory.Exists(defaultSaveDirectory) == false)
-            {
-                try
-                {
-                    Directory.CreateDirectory(defaultSaveDirectory);
-                }
-                catch (Exception)
-                {
-                    defaultSaveDirectory = applicationDirectory;
-                }
-            }
+            defaultSaveDirectory = Application.CommonAppDataPath;
         }
         #endregion
 
@@ -598,6 +587,15 @@ namespace WaywardGamers.KParser
             DatabaseManager.Instance.DatabaseChanging += MonitorDatabaseChanging;
             DatabaseManager.Instance.DatabaseChanged += MonitorDatabaseChanged;
 
+            // Reset all plugins
+            lock (activePluginList)
+            {
+                foreach (IPlugin plugin in activePluginList)
+                {
+                    plugin.Reset();
+                }
+            }
+
             try
             {
                 Monitor.Start(outputFileName);
@@ -640,42 +638,22 @@ namespace WaywardGamers.KParser
 
         private void MonitorDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Reset();
-
             lock (activePluginList)
             {
                 foreach (IPlugin plugin in activePluginList)
                 {
-                    stopwatch.Start();
-
                     plugin.WatchDatabaseChanging(sender, e);
-
-                    stopwatch.Stop();
-                    Debug.WriteLine(string.Format("Changing: Time to proces plugin {0}: {1} ms",
-                        plugin.TabName, stopwatch.Elapsed.TotalMilliseconds));
-                    stopwatch.Reset();
                 }
             }
         }
 
         private void MonitorDatabaseChanged(object sender, DatabaseWatchEventArgs e)
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Reset();
-
             lock (activePluginList)
             {
                 foreach (IPlugin plugin in activePluginList)
                 {
-                    stopwatch.Start();
-
                     plugin.WatchDatabaseChanged(sender, e);
-
-                    stopwatch.Stop();
-                    Debug.WriteLine(string.Format("Changed: Time to proces plugin {0}: {1} ms",
-                        plugin.TabName, stopwatch.Elapsed.TotalMilliseconds));
-                    stopwatch.Reset();
                 }
             }
         }
