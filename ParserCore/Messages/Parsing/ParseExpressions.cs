@@ -182,6 +182,7 @@ namespace WaywardGamers.KParser
         #region Drains
         public static readonly Regex Drain = new Regex(string.Format("^{0} {1} drained from {2}\\.$", damage, drainType, target));
         public static readonly Regex AbsorbStat = new Regex(string.Format("^{0}'s {1} is drained\\.$", target, drainStat));
+        public static readonly Regex ReduceTP = new Regex(string.Format("^{0}'s TP is reduced to 0\\.$", target));
         #endregion
 
         #region Defeated
