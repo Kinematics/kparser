@@ -132,7 +132,7 @@ namespace WaywardGamers.KParser.Monitoring
 
             try
             {
-                KPDatabaseDataSet readDataSet = DatabaseReadingManager.Instance.Database;
+                KPDatabaseReadOnly readDataSet = DatabaseReadingManager.Instance.Database;
                 if (readDataSet != null)
                 {
                     totalCount = readDataSet.RecordLog.Count;
