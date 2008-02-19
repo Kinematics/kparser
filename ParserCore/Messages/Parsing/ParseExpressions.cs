@@ -114,15 +114,15 @@ namespace WaywardGamers.KParser
         #region Spell/Ability Effects
         public static readonly Regex RecoversHP = new Regex(string.Format("^{0} recovers {1} HP\\.$", target, number));
         public static readonly Regex RecoversMP = new Regex(string.Format("^{0} recovers {1} MP\\.$", target, number));
-        public static readonly Regex Afflict    = new Regex(string.Format("^{0} is afflicted with {1} {2}\\.$", target, effect, afflictLvl));
-        public static readonly Regex Enfeeble   = new Regex(string.Format("{0} is {1}\\.$", target, effect));
+        public static readonly Regex Afflict    = new Regex(string.Format("^{0} (is|are) afflicted with {1} {2}\\.$", target, effect, afflictLvl));
+        public static readonly Regex Enfeeble   = new Regex(string.Format("{0} (is|are) {1}\\.$", target, effect));
         public static readonly Regex Buff       = new Regex(string.Format("^{0} gains the effect of {1}\\.$", target, effect));
         public static readonly Regex GainResistance = new Regex(string.Format("^{0} gains resistance against {1}\\.$", target, effect));
         public static readonly Regex Debuff     = new Regex(string.Format("^{0} receives the effect of {1}\\.$", target, effect));
         public static readonly Regex Enhance    = new Regex(string.Format("^{0}'s attacks are enhanced\\.$", target));
-        public static readonly Regex Charmed    = new Regex(string.Format("^{0} is now under {1}'s control\\.$", target, name));
-        public static readonly Regex NotCharmed = new Regex(string.Format("^{0} is no longer charmed\\.$", target));
-        public static readonly Regex Dispelled  = new Regex(string.Format("^{0}'s {1} effect disappears!$", target, effect));
+        public static readonly Regex Charmed    = new Regex(string.Format("^{0} (is|are) now under {1}'s control\\.$", target, name));
+        public static readonly Regex NotCharmed = new Regex(string.Format("^{0} (is|are) no longer charmed\\.$", target));
+        public static readonly Regex Dispelled  = new Regex(string.Format("^{0}'(s)? {1} effect disappears!$", target, effect));
         #endregion
 
         #region Failed Actions
