@@ -25,6 +25,7 @@ namespace WaywardGamers.KParser.Plugin
 
             label1.Text = "Attack Type";
             comboBox1.Left = label1.Right + 10;
+            comboBox1.MaxDropDownItems = 9;
             comboBox1.Items.Clear();
             comboBox1.Items.Add("All");
             comboBox1.Items.Add("Summary");
