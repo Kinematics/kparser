@@ -97,7 +97,7 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Member Variables
-        private const int databaseVersion = 1;
+        private const int databaseVersion = 2;
         private string assemblyVersionString;
 
         private string defaultCopyDatabaseFilename;
@@ -184,12 +184,20 @@ namespace WaywardGamers.KParser
             // Close the existing one, if applicable
             CloseDatabase();
 
-            databaseFilename = openDatabaseFilename;
-            databaseConnectionString = string.Format("Data Source={0}", databaseFilename);
+            try
+            {
+                databaseFilename = openDatabaseFilename;
+                databaseConnectionString = string.Format("Data Source={0}", databaseFilename);
 
-            Properties.Settings.Default.Properties["KPDatabaseConnectionString"].DefaultValue = databaseConnectionString;
+                Properties.Settings.Default.Properties["KPDatabaseConnectionString"].DefaultValue = databaseConnectionString;
 
-            CreateConnections();
+                CreateConnections();
+            }
+            catch (Exception)
+            {
+                CloseDatabase();
+                throw;
+            }
         }
 
         public KPDatabaseDataSet Database
@@ -690,6 +698,7 @@ namespace WaywardGamers.KParser
             KPDatabaseDataSet.BattlesRow battle = null;
             KPDatabaseDataSet.ActionsRow action = null;
             KPDatabaseDataSet.ActionsRow secondAction = null;
+            KPDatabaseDataSet.ItemsRow item = null;
 
             // Get the actor combatant, if any.
             if (message.EventDetails.CombatDetails.ActorName != string.Empty)
@@ -699,6 +708,10 @@ namespace WaywardGamers.KParser
             // Get the action row, if any is applicable to the message.
             if (message.EventDetails.CombatDetails.ActionName != string.Empty)
                 action = localDB.Actions.GetAction(message.EventDetails.CombatDetails.ActionName);
+
+            // If an item is used, get it.
+            if (message.EventDetails.CombatDetails.ItemName != string.Empty)
+                item = localDB.Items.GetItem(message.EventDetails.CombatDetails.ItemName);
 
             // Bogus target for passing in data on incomplete messages.
             TargetDetails bogusTarget = message.EventDetails.CombatDetails.Targets.SingleOrDefault(t => t.Name == "");
@@ -782,7 +795,8 @@ namespace WaywardGamers.KParser
                     (byte)RecoveryType.None,
                     (byte)HarmType.None,
                     0,
-                    secondAction);
+                    secondAction,
+                    item);
 
             }
             else if (bogusTarget != null)
@@ -810,7 +824,8 @@ namespace WaywardGamers.KParser
                     (byte)RecoveryType.None,
                     (byte)HarmType.None,
                     0,
-                    secondAction);
+                    secondAction,
+                    item);
             }
             else
             {
@@ -866,7 +881,8 @@ namespace WaywardGamers.KParser
                            (byte)target.SecondaryRecoveryType,
                            (byte)target.SecondaryHarmType,
                            target.SecondaryAmount,
-                           secondAction);
+                           secondAction,
+                           item);
 
                         // The attack that the combatant that countered got
                         localDB.Interactions.AddInteractionsRow(
@@ -890,7 +906,8 @@ namespace WaywardGamers.KParser
                             (byte)target.SecondaryRecoveryType,
                             (byte)target.SecondaryHarmType,
                             target.SecondaryAmount,
-                            secondAction);
+                            secondAction,
+                            item);
                     }
                     else
                     {
@@ -915,7 +932,8 @@ namespace WaywardGamers.KParser
                             (byte)target.SecondaryRecoveryType,
                             (byte)target.SecondaryHarmType,
                             target.SecondaryAmount,
-                            secondAction);
+                            secondAction,
+                            item);
                     }
                 }
             }
@@ -1016,6 +1034,7 @@ namespace WaywardGamers.KParser
                        (byte)target.SecondaryRecoveryType,
                        (byte)target.SecondaryHarmType,
                        target.SecondaryAmount,
+                       null,
                        null);
             }
         }
