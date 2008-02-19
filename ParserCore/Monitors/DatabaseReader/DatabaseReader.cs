@@ -133,25 +133,32 @@ namespace WaywardGamers.KParser.Monitoring
             try
             {
                 KPDatabaseDataSet readDataSet = DatabaseReadingManager.Instance.Database;
-                totalCount = readDataSet.RecordLog.Count;
-
-                // Read the (fixed) record log from the database, reconstruct
-                // the chat line, and send it to the new database.
-                using (new ProfileRegion("Reparse: Read database and parse"))
+                if (readDataSet != null)
                 {
-                    foreach (var logLine in readDataSet.RecordLog)
+                    totalCount = readDataSet.RecordLog.Count;
+
+                    // Read the (fixed) record log from the database, reconstruct
+                    // the chat line, and send it to the new database.
+                    using (new ProfileRegion("Reparse: Read database and parse"))
                     {
-                        rowCount++;
-                        if (IsRunning == false)
-                            break;
+                        foreach (var logLine in readDataSet.RecordLog)
+                        {
+                            rowCount++;
+                            if (IsRunning == false)
+                                break;
 
-                        ChatLine chat = new ChatLine(logLine.MessageText, logLine.Timestamp);
-                        MessageManager.Instance.AddChatLine(chat);
+                            ChatLine chat = new ChatLine(logLine.MessageText, logLine.Timestamp);
+                            MessageManager.Instance.AddChatLine(chat);
 
-                        OnRowProcessed(new DatabaseReparseEventArgs(rowCount, totalCount, completed));
+                            OnRowProcessed(new DatabaseReparseEventArgs(rowCount, totalCount, completed));
+                        }
+
+                        completed = IsRunning;
                     }
-
-                    completed = IsRunning;
+                }
+                else
+                {
+                    throw new InvalidDataException("No database to parse.");
                 }
             }
             catch (Exception e)
