@@ -248,8 +248,7 @@ namespace WaywardGamers.KParser
                     // attach to that.
                     msg = searchSet.LastOrDefault(m =>
                         ((m.PrimaryMessageCode == mcode) &&
-                         (m.ExtraCode1 != 0) &&
-                         (m.ExtraCode2 != 0) &&
+                         ((m.ExtraCode1 != 0) || (m.ExtraCode2 != 0)) &&
                          (m.EventDetails != null) &&
                          ((m.Timestamp >= minTimestamp) || (m.Timestamp == lastTimestamp)) &&
                          (m.EventDetails.CombatDetails != null) &&
@@ -312,8 +311,7 @@ namespace WaywardGamers.KParser
                                 // attach to that.
                                 msg = searchSet.LastOrDefault(m =>
                                     ((m.PrimaryMessageCode == altCode) &&
-                                     (m.ExtraCode1 != 0) &&
-                                     (m.ExtraCode2 != 0) &&
+                                     ((m.ExtraCode1 != 0) || (m.ExtraCode2 != 0)) &&
                                      (m.EventDetails != null) &&
                                      ((m.Timestamp >= minTimestamp) || (m.Timestamp == lastTimestamp)) &&
                                      (m.EventDetails.CombatDetails != null) &&
