@@ -210,6 +210,16 @@ namespace WaywardGamers.KParser.Parsing
                 case 0xcc:
                     message.SystemDetails.SystemMessageType = SystemMessageType.SearchComment;
                     break;
+                case 0xbe: // Order to enter
+                case 0x92: // Arena time remaining
+                case 0x94: // Arena intro/announcement
+                    // Mark these as chat messages
+                    message.MessageCategory = MessageCategoryType.Chat;
+                    message.ChatDetails.ChatMessageType = ChatMessageType.Arena;
+                    message.ChatDetails.ChatSpeakerName = "-Arena-";
+                    message.ChatDetails.ChatSpeakerType = SpeakerType.NPC;
+                    message.ParseSuccessful = true;
+                    break;
                 default:
                     message.SystemDetails.SystemMessageType = SystemMessageType.Unknown;
                     break;
@@ -1529,6 +1539,18 @@ namespace WaywardGamers.KParser.Parsing
 
             if (combatMatch.Success == false)
             {
+                combatMatch = ParseExpressions.ResistSpell2.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    combatDetails.ActionType = ActionType.Spell;
+                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.DefenseType = DefenseType.Resist;
+                    target.HarmType = combatDetails.HarmType;
+                }
+            }
+
+            if (combatMatch.Success == false)
+            {
                 combatMatch = ParseExpressions.ResistEffect.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
@@ -1737,6 +1759,18 @@ namespace WaywardGamers.KParser.Parsing
                 message.ParseSuccessful = true;
                 return;
             }
+
+            combatMatch = ParseExpressions.ResistSpell2.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                target.DefenseType = DefenseType.Resist;
+                target.HarmType = msgCombatDetails.HarmType;
+                target.AidType = msgCombatDetails.AidType;
+                message.ParseSuccessful = true;
+                return;
+            }
+            
             combatMatch = ParseExpressions.ResistEffect.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
@@ -1945,6 +1979,117 @@ namespace WaywardGamers.KParser.Parsing
             // Deal with possible Failed actions first
             if (msgCombatDetails.SuccessLevel == SuccessType.Failed)
             {
+                combatMatch = ParseExpressions.AutoTarget.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    msgCombatDetails.FailedActionType = FailedActionType.Autotarget;
+                    target.FailedActionType = FailedActionType.Autotarget;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.CannotSee.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    msgCombatDetails.FailedActionType = FailedActionType.CannotSee;
+                    target.FailedActionType = FailedActionType.CannotSee;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.CannotSee2.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    msgCombatDetails.FailedActionType = FailedActionType.CannotSee;
+                    target.FailedActionType = FailedActionType.CannotSee;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.LoseSight.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    msgCombatDetails.FailedActionType = FailedActionType.CannotSee;
+                    target.FailedActionType = FailedActionType.CannotSee;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.UnableToCast.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.FailedActionType = FailedActionType.UnableToCast;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.UnableToUse.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.FailedActionType = FailedActionType.UnableToUse;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.UnableToUse2.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.FailedActionType = FailedActionType.UnableToUse;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.NotEnoughMP.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.FailedActionType = FailedActionType.NotEnoughMP;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.NotEnoughTP.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.FailedActionType = FailedActionType.NotEnoughTP;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.NotEnoughTP2.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.FailedActionType = FailedActionType.NotEnoughTP;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.NotEnoughTP3.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    msgCombatDetails.FailedActionType = FailedActionType.NotEnoughTP;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.TooFarForXP.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.FailedActionType = FailedActionType.TooFarAway;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.TooFarAway.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    msgCombatDetails.FailedActionType = FailedActionType.TooFarAway;
+                    target.FailedActionType = FailedActionType.TooFarAway;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.OutOfRange.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    msgCombatDetails.FailedActionType = FailedActionType.OutOfRange;
+                    target.FailedActionType = FailedActionType.OutOfRange;
+                    message.ParseSuccessful = true;
+                    return;
+                }
                 combatMatch = ParseExpressions.Interrupted.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
@@ -1973,62 +2118,6 @@ namespace WaywardGamers.KParser.Parsing
                     // Adjust message category
                     msgCombatDetails.HarmType = HarmType.None;
                     msgCombatDetails.SuccessLevel = SuccessType.Unsuccessful;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-                // Matches for the following to note the line as successfully parsed.
-                combatMatch = ParseExpressions.UnableToCast.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.FailedActionType = FailedActionType.UnableToCast;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-                combatMatch = ParseExpressions.UnableToUse.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.FailedActionType = FailedActionType.UnableToUse;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-                combatMatch = ParseExpressions.CannotSee.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                    msgCombatDetails.FailedActionType = FailedActionType.CannotSee;
-                    target.FailedActionType = FailedActionType.CannotSee;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-                combatMatch = ParseExpressions.TooFarAway.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                    msgCombatDetails.FailedActionType = FailedActionType.TooFarAway;
-                    target.FailedActionType = FailedActionType.TooFarAway;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-                combatMatch = ParseExpressions.OutOfRange.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                    msgCombatDetails.FailedActionType = FailedActionType.OutOfRange;
-                    target.FailedActionType = FailedActionType.OutOfRange;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-                combatMatch = ParseExpressions.NotEnoughMP.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.FailedActionType = FailedActionType.NotEnoughMP;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-                combatMatch = ParseExpressions.NotEnoughTP.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.FailedActionType = FailedActionType.NotEnoughTP;
                     message.ParseSuccessful = true;
                     return;
                 }
@@ -2098,6 +2187,20 @@ namespace WaywardGamers.KParser.Parsing
             if (combatMatch.Success == false)
             {
                 combatMatch = ParseExpressions.ResistSpell.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.ActionType = ActionType.Spell;
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.DefenseType = DefenseType.Resist;
+                    target.HarmType = msgCombatDetails.HarmType;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+            }
+
+            if (combatMatch.Success == false)
+            {
+                combatMatch = ParseExpressions.ResistSpell2.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
                     msgCombatDetails.ActionType = ActionType.Spell;
