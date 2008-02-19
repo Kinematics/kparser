@@ -85,6 +85,19 @@ namespace WaywardGamers.KParser
         }
 
         /// <summary>
+        /// Deactivate the timer, and don't send accumulated messages to
+        /// the database.
+        /// </summary>
+        internal void CancelParsing()
+        {
+            if (periodicUpdates != null)
+            {
+                periodicUpdates.Dispose();
+                periodicUpdates = null;
+            }
+        }
+
+        /// <summary>
         /// Function to reset the state of the manager to empty.
         /// </summary>
         private void Reset()

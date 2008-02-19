@@ -23,10 +23,7 @@ namespace WaywardGamers.KParser
         /// </summary>
         private DatabaseReadingManager()
         {
-            string applicationDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            defaultSaveDirectory = Path.Combine(applicationDirectory, Properties.Settings.Default.DefaultSaveSubdirectory);
-
-            defaultCopyDatabaseFilename = Path.Combine(defaultSaveDirectory, Properties.Settings.Default.DefaultUnnamedDBFileName);
+            defaultSaveDirectory = System.Windows.Forms.Application.CommonAppDataPath;
 
             Version assemVersion = Assembly.GetExecutingAssembly().GetName().Version;
             assemblyVersionString = string.Format("{0}.{1}", assemVersion.Major, assemVersion.Minor);
@@ -70,7 +67,6 @@ namespace WaywardGamers.KParser
 
         private string defaultSaveDirectory;
 
-        private string defaultCopyDatabaseFilename;
         private string databaseFilename;
         private string databaseConnectionString;
 

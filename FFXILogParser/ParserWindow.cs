@@ -205,15 +205,17 @@ namespace WaywardGamers.KParser
                     return;
                 }
 
+                Cursor.Current = Cursors.WaitCursor;
+
                 try
                 {
-                    Cursor.Current = Cursors.WaitCursor;
-
                     // Adjust what menu options are available
                     menuStopParse.Enabled = true;
                     menuBeginDefaultParse.Enabled = false;
                     menuBeginParseWithSave.Enabled = false;
                     menuOpenSavedData.Enabled = false;
+
+                    Monitoring.DatabaseReader.Instance.ReparseProgressChanged += MonitorReparse;
 
                     try
                     {
@@ -235,30 +237,10 @@ namespace WaywardGamers.KParser
                         return;
                     }
 
-                    // Adjust what menu options are available
-                    menuStopParse.Enabled = false;
-                    menuBeginDefaultParse.Enabled = true;
-                    menuBeginParseWithSave.Enabled = true;
-                    menuOpenSavedData.Enabled = true;
-
-                    toolStripStatusLabel.Text = "Status: Stopped.";
-                    DatabaseManager.Instance.OpenDatabase(outFilename);
-
-                    lock (activePluginList)
-                    {
-                        foreach (IPlugin plugin in activePluginList)
-                        {
-                            plugin.DatabaseOpened(DatabaseManager.Instance.Database);
-                        }
-                    }
                 }
                 catch (Exception ex)
                 {
                     Logger.Instance.Log(ex);
-                }
-                finally
-                {
-                    Cursor.Current = Cursors.Default;
                 }
             }
         }
@@ -380,6 +362,61 @@ namespace WaywardGamers.KParser
 
             fileName = "";
             return false;
+        }
+
+        private void MonitorReparse(object sender, Monitoring.DatabaseReparseEventArgs e)
+        {
+            if (this.InvokeRequired)
+            {
+                Action<object, Monitoring.DatabaseReparseEventArgs> thisFunc = MonitorReparse;
+                Invoke(thisFunc, new object[] { sender, e });
+                return;
+            }
+
+            if (e.Complete == true)
+            {
+                // Adjust what menu options are available
+                menuStopParse.Enabled = false;
+                menuBeginDefaultParse.Enabled = true;
+                menuBeginParseWithSave.Enabled = true;
+                menuOpenSavedData.Enabled = true;
+
+                toolStripStatusLabel.Text = "Status: Reparse complete.";
+                //DatabaseManager.Instance.OpenDatabase(outFilename);
+
+                lock (activePluginList)
+                {
+                    foreach (IPlugin plugin in activePluginList)
+                    {
+                        plugin.DatabaseOpened(DatabaseManager.Instance.Database);
+                    }
+                }
+
+                Cursor.Current = Cursors.Default;
+                Monitoring.DatabaseReader.Instance.ReparseProgressChanged -= MonitorReparse;
+
+            }
+            else
+            {
+                if (e.Running == true)
+                {
+                    if (e.RowsRead == e.TotalRows)
+                    {
+                        toolStripStatusLabel.Text = string.Format("Status: Reparsing {0}/{1} -- Saving...",
+                            e.RowsRead, e.TotalRows);
+                    }
+                    else
+                    {
+                        toolStripStatusLabel.Text = string.Format("Status: Reparsing {0}/{1}",
+                            e.RowsRead, e.TotalRows);
+                    }
+                }
+                else
+                {
+                    Cursor.Current = Cursors.Default;
+                    Monitoring.DatabaseReader.Instance.ReparseProgressChanged -= MonitorReparse;
+                }
+            }
         }
 
         #endregion
@@ -622,6 +659,8 @@ namespace WaywardGamers.KParser
             menuBeginDefaultParse.Enabled = true;
             menuBeginParseWithSave.Enabled = true;
             menuOpenSavedData.Enabled = true;
+
+            Cursor.Current = Cursors.Default;
 
             Monitor.Stop();
             toolStripStatusLabel.Text = "Status: Stopped.";

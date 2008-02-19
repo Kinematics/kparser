@@ -91,7 +91,7 @@ namespace WaywardGamers.KParser.Monitoring
             {
                 IsRunning = false;
                 memoryWatcher.RamDataChanged -= new RamWatchEventHandler(MonitorRam);
-                MessageManager.Instance.StopParsing();
+                MessageManager.Instance.CancelParsing();
                 throw;
             }
         }

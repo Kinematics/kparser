@@ -91,7 +91,7 @@ namespace WaywardGamers.KParser.Monitoring
             {
                 IsRunning = false;
                 fileSystemWatcher.EnableRaisingEvents = false;
-                MessageManager.Instance.StopParsing();
+                MessageManager.Instance.CancelParsing();
                 throw;
             }
         }
