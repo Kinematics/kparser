@@ -1683,6 +1683,18 @@ namespace WaywardGamers.KParser.Parsing
                 return;
             }
 
+            combatMatch = ParseExpressions.ReduceTP.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                target.EffectName = "ReduceTP";
+                target.HarmType = msgCombatDetails.HarmType;
+                target.AidType = msgCombatDetails.AidType;
+                message.ParseSuccessful = true;
+                return;
+            }
+
+
             combatMatch = ParseExpressions.Enfeeble.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
