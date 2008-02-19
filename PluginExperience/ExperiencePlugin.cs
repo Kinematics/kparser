@@ -177,10 +177,13 @@ namespace WaywardGamers.KParser.Plugin
             if ((mobSet == null) || (mobSet.Count() == 0))
                 return;
 
-            string mobSetHeader = "Mob                        Base XP   Number\n";
+            string mobSetHeader = "Mob                        Base XP   Number   Avg Fight Time\n";
 
             StringBuilder sb = new StringBuilder();
             bool headerDisplayed = false;
+
+            double ttlMobFightTime;
+            double avgMobFightTime;
 
             int mobCount;
 
@@ -214,6 +217,20 @@ namespace WaywardGamers.KParser.Plugin
                             }
 
                             sb.Append(mobCount.ToString().PadLeft(9));
+
+                            // Avg fight time per level
+                            ttlMobFightTime = 0;
+                            avgMobFightTime = 0;
+
+                            var killedMobs = mobBattle.Where(m => m.Killed == true);
+                            if (killedMobs.Count() > 0)
+                            {
+                                ttlMobFightTime = killedMobs.Sum(m => m.FightLength().TotalSeconds);
+                                avgMobFightTime = ttlMobFightTime / mobCount;
+                            }
+
+                            sb.Append(avgMobFightTime.ToString("f2").PadLeft(17));
+
 
                             sb.Append("\n");
                         }
