@@ -229,8 +229,22 @@ namespace WaywardGamers.KParser.Plugin
                                 avgMobFightTime = ttlMobFightTime / mobCount;
                             }
 
-                            sb.Append(avgMobFightTime.ToString("f2").PadLeft(17));
+                            TimeSpan tsAvgFight = TimeSpan.FromSeconds(avgMobFightTime);
 
+                            string fightLengthString;
+
+                            if (avgMobFightTime > 60)
+                            {
+                                fightLengthString = string.Format("{0}:{1:d2}.{2:d2}",
+                                    tsAvgFight.Minutes, tsAvgFight.Seconds, tsAvgFight.Milliseconds/10);
+                            }
+                            else
+                            {
+                                fightLengthString = string.Format("{0}.{1:d2}",
+                                    tsAvgFight.Seconds, tsAvgFight.Milliseconds/10);
+                            }
+
+                            sb.Append(fightLengthString.PadLeft(17));
 
                             sb.Append("\n");
                         }
