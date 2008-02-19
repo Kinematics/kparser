@@ -30,16 +30,16 @@ namespace WaywardGamers.KParser
         private static readonly string playername  = @"(?<name>\w{3,16})";
         private static readonly string npcName     = @"(?<fullname>([Tt]he )?(?<name>\w+((,)|(\.\w?)|['\- ](\d|\w)+)*))";
 
-        private static readonly string name        = @"(?<fullname>([Tt]he )?(?<name>\w+(((('s (?=\w+'s))\w+)|('\w{2,})|(-(\w|\d)+)|(the \w+)|( \w+)){0,3}|(( \w+)?'s \w+))))";
-        private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+(((('s (?=\w+'s))\w+)|('\w{2,})|(-(\w|\d)+)|(the \w+)|( \w+)){0,3}|(( \w+)?'s \w+))))";
-        private static readonly string repeatname  = @"([Tt]he )?(?<repeatname>\w+(((('s (?=\w+'s))\w+)|('\w{2,})|(-(\w|\d)+)|(the \w+)|( \w+)){0,3}|(( \w+)?'s \w+)))";
+        private static readonly string name        = @"(?<fullname>([Tt]he )?(?<name>\w+(((('s (?=\w+'s))\w+)|('\w{2,}('s)?)|(-(\w|\d)+)|(the \w+)|( \w+)){0,3}|(( \w+)?'s \w+))))";
+        private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+(((('s (?=\w+'s))\w+)|('\w{2,}('s)?)|(-(\w|\d)+)|(the \w+)|( \w+)){0,3}|(( \w+)?'s \w+))))";
+        private static readonly string repeatname  = @"([Tt]he )?(?<repeatname>\w+(((('s (?=\w+'s))\w+)|('\w{2,}('s)?)|(-(\w|\d)+)|(the \w+)|( \w+)){0,3}|(( \w+)?'s \w+)))";
 
         private static readonly string damage      = @"(?<damage>\d{1,4})";
         private static readonly string number      = @"(?<number>\d{1,4})";
         private static readonly string item        = @"(([Aa]|[Aa]n|[Tt]he) )?(?<item>.{3,})";
         private static readonly string money       = @"((?<money>\d{1,4}?) gil)";
         private static readonly string spell       = @"(?<spell>\w+((: (Ichi|Ni|San))|(((('s |. |-)\w+)|(( \w+(?<! (on|III|II|IV|VI|V))){1,2}))?( (III|II|IV|VI|V))?))?)";
-        private static readonly string ability     = @"(?<ability>\w+((: \w+)|(-\w+)|('s \w+)|( \w+)( \w+)?)?)";
+        private static readonly string ability     = @"(?<ability>\w+((: \w+)|(-\w+)|('s \w+)|( \w+)( \w+)?)?( \w+'\w{2,})?)";
         private static readonly string effect      = @"(?<effect>\w+( \w+){0,2})";
         private static readonly string skillchain  = @"(?<skillchain>\w+)";
         
@@ -132,7 +132,8 @@ namespace WaywardGamers.KParser
         public static readonly Regex CannotSee2  = new Regex(string.Format("^You cannot see {0}\\.$", target));
         public static readonly Regex TooFarAway  = new Regex(string.Format("^{0} (is|are) too far away\\.$", target));
         public static readonly Regex OutOfRange  = new Regex(string.Format("^{0} (is|are) out of range\\.$", target));
-        public static readonly Regex NotEnoughTP = new Regex(string.Format("^You do not have enough TP\\.$"));
+        public static readonly Regex CannotAttack = new Regex(string.Format("^You cannot attack that target\\.$"));
+        public static readonly Regex NotEnoughTP  = new Regex(string.Format("^You do not have enough TP\\.$"));
         public static readonly Regex NotEnoughTP2 = new Regex(string.Format("^Not enough TP\\.$"));
         public static readonly Regex NotEnoughTP3 = new Regex(string.Format("^{0} does not have enough TP\\.$", name));
         public static readonly Regex NotEnoughMP  = new Regex(string.Format("^You do not have enough MP\\.$", target));
@@ -178,6 +179,7 @@ namespace WaywardGamers.KParser
         public static readonly Regex Anticipate   = new Regex(string.Format("^{0} anticipate(s)? {1}'(s)? attack\\.$", target, name));
         public static readonly Regex Anticipate2  = new Regex(string.Format("^{0} anticipate(s)? the attack\\.$", target));
         public static readonly Regex Evade        = new Regex(string.Format("^{0} evade(s)? the attack\\.$", target));
+        public static readonly Regex Evade2       = new Regex(string.Format("^{0} evade(s)\\.$", target));
         public static readonly Regex Counter      = new Regex(string.Format("^{0}'s attack is countered by {1}\\. {2} takes {3} point(s)? of damage\\.$",
             target, name, repeatname, damage));
         public static readonly Regex CounterShadow = new Regex(string.Format("^{0}'(s)? attack is countered by {1}\\. {2} of {3}'(s)? shadows absorbs the damage and disappears\\.$",
