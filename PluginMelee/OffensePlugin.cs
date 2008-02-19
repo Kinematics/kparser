@@ -60,13 +60,18 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
+            using (new ProfileRegion("Get local copy of DB"))
+            {
+                localDBCopy = DatabaseManager.Instance.Database;
+            }
+
             ResetComboBox2();
             AddToComboBox2("All");
             ResetTextBox();
 
-            if (dataSet.Battles.Count() > 1)
+            if (localDBCopy.Battles.Count() > 1)
             {
-                var mobsKilled = from b in dataSet.Battles
+                var mobsKilled = from b in localDBCopy.Battles
                                  where ((b.DefaultBattle == false) &&
                                         (b.IsEnemyIDNull() == false))
                                  orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
@@ -155,9 +160,17 @@ namespace WaywardGamers.KParser.Plugin
             }
 
 
-            if (e.DatasetChanges.Interactions.Count != 0)
+            if ((e.DatasetChanges.Interactions.Count != 0) ||
+                (e.DatasetChanges.Combatants.Count != 0) ||
+                (e.DatasetChanges.Battles.Count != 0))
             {
-                datasetToUse = e.Dataset;
+                if (localDBCopy == null)
+                    localDBCopy = new KPDatabaseDataSet();
+
+                localDBCopy.Merge(e.DatasetChanges);
+
+                //datasetToUse = e.Dataset;
+                datasetToUse = null;
                 return true;
             }
 
@@ -170,6 +183,8 @@ namespace WaywardGamers.KParser.Plugin
         int totalDamage;
         List<string> playerList = new List<string>();
         Dictionary<string, int> playerDamage = new Dictionary<string,int>();
+        KPDatabaseDataSet localDBCopy;
+        IEnumerable<AttackGroup> attackSet = null;
 
         string mobSetHeader     = "Mob                        Base XP   Number\n";
         string summaryHeader    = "Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg\n";
@@ -183,7 +198,7 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Processing sections
-        protected override void ProcessData(KPDatabaseDataSet dataSet)
+        protected override void ProcessData(KPDatabaseDataSet dataSet1)
         {
             richTextBox.Clear();
             string actionSourceFilter = comboBox1.SelectedItem.ToString();
@@ -216,7 +231,6 @@ namespace WaywardGamers.KParser.Plugin
             }
             #endregion
 
-            IEnumerable<AttackGroup> attackSet = null;
             //IEnumerable<MobGroup> mobSet = null;
 
 
@@ -243,7 +257,7 @@ namespace WaywardGamers.KParser.Plugin
 
             if (mobFilter == "All")
             {
-                attackSet = from c in dataSet.Combatants
+                attackSet = from c in localDBCopy.Combatants
                             where ((c.CombatantType == (byte)EntityType.Player) ||
                                    (c.CombatantType == (byte)EntityType.Pet) ||
                                    (c.CombatantType == (byte)EntityType.Fellow) ||
@@ -294,7 +308,7 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     // Attacks against a particular mob type of a given base xp
 
-                    attackSet = from c in dataSet.Combatants
+                    attackSet = from c in localDBCopy.Combatants
                                 where ((c.CombatantType == (byte)EntityType.Player) ||
                                        (c.CombatantType == (byte)EntityType.Pet) ||
                                        (c.CombatantType == (byte)EntityType.Fellow) ||
@@ -369,7 +383,7 @@ namespace WaywardGamers.KParser.Plugin
                 else
                 {
                     // Attacks against a particular mob type
-                    attackSet = from c in dataSet.Combatants
+                    attackSet = from c in localDBCopy.Combatants
                                 where ((c.CombatantType == (byte)EntityType.Player) ||
                                        (c.CombatantType == (byte)EntityType.Pet) ||
                                        (c.CombatantType == (byte)EntityType.Fellow) ||

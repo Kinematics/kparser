@@ -689,7 +689,10 @@ namespace WaywardGamers.KParser
             {
                 foreach (IPlugin plugin in activePluginList)
                 {
-                    plugin.WatchDatabaseChanging(sender, e);
+                    using (new ProfileRegion(string.Concat("Monitor Changing: ", plugin.TabName)))
+                    {
+                        plugin.WatchDatabaseChanging(sender, e);
+                    }
                 }
             }
         }
