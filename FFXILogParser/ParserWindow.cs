@@ -774,64 +774,6 @@ namespace WaywardGamers.KParser
             //Application.CommonAppDataPath;
             //Application.UserAppDataPath;
         }
-
-        private void UpgradeCode()
-        {
-
-            // Recreate salvage parse uniqueness.
-
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Reset();
-            stopwatch.Start();
-
-            try
-            {
-                Cursor.Current = Cursors.WaitCursor;
-
-                string inputDB = @"C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\bin\Debug\SaveLogs\Salvage.sdf";
-
-                DatabaseManager.Instance.OpenDatabase(inputDB);
-
-                KPDatabaseDataSet readDataSet = DatabaseManager.Instance.Database;
-
-                List<ChatLine> chatLineList = new List<ChatLine>(readDataSet.RecordLog.Count);
-
-                foreach (var logLine in readDataSet.RecordLog)
-                {
-                    ChatLine chat = new ChatLine(logLine.MessageText, logLine.Timestamp);
-                    chatLineList.Add(chat);
-                }
-
-                var grpChat = from c in chatLineList
-                              group c by c.ChatText into uc
-                              select uc;
-
-                var uniqChat = from c in grpChat
-                               orderby c.First().ChatText.Substring(27, 8)
-                               select c.First();
-
-
-                string outputDB = @"C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\bin\Debug\SaveLogs\Salvage-Redo.sdf";
-
-                DatabaseManager.Instance.CreateDatabase(outputDB);
-
-                KPDatabaseDataSet writeDataSet = DatabaseManager.Instance.Database;
-
-                foreach (var chat in uniqChat)
-                {
-                    writeDataSet.RecordLog.AddRecordLogRow(chat.Timestamp, chat.ChatText, false);
-                }
-
-                DatabaseManager.Instance.CloseDatabase();
-            }
-            finally
-            {
-                Cursor.Current = Cursors.Default;
-            }
-
-            stopwatch.Stop();
-            MessageBox.Show(string.Format("Completed convert in {0} seconds", stopwatch.Elapsed.TotalSeconds));
-        }
         #endregion
 
     }
