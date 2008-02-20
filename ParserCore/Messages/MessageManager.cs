@@ -10,6 +10,7 @@ namespace WaywardGamers.KParser
 {
     public class MMHook
     {
+        // Allow direct injection of a message line to see how it behaves.
         public static void Hook(string msg)
         {
             ChatLine cl = new ChatLine(msg);
@@ -217,7 +218,7 @@ namespace WaywardGamers.KParser
                 {
                     // If we have sub codes, include those in the first pass search
                     msg = searchSet.LastOrDefault(m =>
-                        ((m.MessageCode == mcode) &&
+                        ((m.PrimaryMessageCode == mcode) &&
                          (m.ExtraCode1 == ecode1) &&
                          (m.ExtraCode2 == ecode2) &&
                          (m.EventDetails != null) &&
@@ -247,9 +248,8 @@ namespace WaywardGamers.KParser
                     // find a message that has ecodes of 0, since we can't
                     // attach to that.
                     msg = searchSet.LastOrDefault(m =>
-                        ((m.MessageCode == mcode) &&
-                         (m.ExtraCode1 != 0) &&
-                         (m.ExtraCode2 != 0) &&
+                        ((m.PrimaryMessageCode == mcode) &&
+                         ((m.ExtraCode1 != 0) || (m.ExtraCode2 != 0)) &&
                          (m.EventDetails != null) &&
                          ((m.Timestamp >= minTimestamp) || (m.Timestamp == lastTimestamp)) &&
                          (m.EventDetails.CombatDetails != null) &&
@@ -281,7 +281,7 @@ namespace WaywardGamers.KParser
                             {
                                 // If we have sub codes, include those in the first pass search
                                 msg = searchSet.LastOrDefault(m =>
-                                    ((m.MessageCode == altCode) &&
+                                    ((m.PrimaryMessageCode == altCode) &&
                                      (m.ExtraCode1 == ecode1) &&
                                      (m.ExtraCode2 == ecode2) &&
                                      (m.EventDetails != null) &&
@@ -311,9 +311,8 @@ namespace WaywardGamers.KParser
                                 // find a message that has ecodes of 0, since we can't
                                 // attach to that.
                                 msg = searchSet.LastOrDefault(m =>
-                                    ((m.MessageCode == altCode) &&
-                                     (m.ExtraCode1 != 0) &&
-                                     (m.ExtraCode2 != 0) &&
+                                    ((m.PrimaryMessageCode == altCode) &&
+                                     ((m.ExtraCode1 != 0) || (m.ExtraCode2 != 0)) &&
                                      (m.EventDetails != null) &&
                                      ((m.Timestamp >= minTimestamp) || (m.Timestamp == lastTimestamp)) &&
                                      (m.EventDetails.CombatDetails != null) &&

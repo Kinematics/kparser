@@ -64,6 +64,38 @@ namespace WaywardGamers.KParser
                     return MagicNumbers.MinSQLDateTime;
             }
         }
+
+        internal uint PrimaryMessageCode
+        {
+            get
+            {
+                MessageLine lastMsgLine = MessageLineCollection.First();
+                if (lastMsgLine != null)
+                {
+                    return lastMsgLine.MessageCode;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+        internal uint CurrentMessageCode
+        {
+            get
+            {
+                MessageLine lastMsgLine = MessageLineCollection.Last();
+                if (lastMsgLine != null)
+                {
+                    return lastMsgLine.MessageCode;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
         #endregion
 
         #region Details Properties -- only created when MessageCateogory is set.

@@ -30,16 +30,16 @@ namespace WaywardGamers.KParser
         private static readonly string playername  = @"(?<name>\w{3,16})";
         private static readonly string npcName     = @"(?<fullname>([Tt]he )?(?<name>\w+((,)|(\.\w?)|['\- ](\d|\w)+)*))";
 
-        private static readonly string name        = @"(?<fullname>([Tt]he )?(?<name>\w+(((('s (?=\w+'s))\w+)|('\w{2,})|(-(\w|\d)+)|(the \w+)|( \w+)){0,3}|('s \w+))))";
-        private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+(((('s (?=\w+'s))\w+)|('\w{2,})|(-(\w|\d)+)|(the \w+)|( \w+)){0,3}|('s \w+))))";
-        private static readonly string repeatname  = @"([Tt]he )?(?<repeatname>\w+(((('s (?=\w+'s))\w+)|('\w{2,})|(-(\w|\d)+)|(the \w+)|( \w+)){0,3}|('s \w+)))";
+        private static readonly string name        = @"(?<fullname>([Tt]he )?(?<name>\w+(((('s (?=\w+'s))\w+)|('\w{2,}('s)?)|(-(\w|\d)+)|(the \w+)|( \w+)){0,3}|(( \w+)?'s \w+))))";
+        private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+(((('s (?=\w+'s))\w+)|('\w{2,}('s)?)|(-(\w|\d)+)|(the \w+)|( \w+)){0,3}|(( \w+)?'s \w+))))";
+        private static readonly string repeatname  = @"([Tt]he )?(?<repeatname>\w+(((('s (?=\w+'s))\w+)|('\w{2,}('s)?)|(-(\w|\d)+)|(the \w+)|( \w+)){0,3}|(( \w+)?'s \w+)))";
 
         private static readonly string damage      = @"(?<damage>\d{1,4})";
         private static readonly string number      = @"(?<number>\d{1,4})";
         private static readonly string item        = @"(([Aa]|[Aa]n|[Tt]he) )?(?<item>.{3,})";
         private static readonly string money       = @"((?<money>\d{1,4}?) gil)";
-        private static readonly string spell       = @"(?<spell>\w+((: (Ichi|Ni|San))|(((('s |-)\w+)|(( \w+(?<! (on|III|II|IV|VI|V))){1,2}))?( (III|II|IV|VI|V))?))?)";
-        private static readonly string ability     = @"(?<ability>\w+((: \w+)|(-\w+)|('s \w+)|( \w+)( \w+)?)?)";
+        private static readonly string spell       = @"(?<spell>\w+((: (Ichi|Ni|San))|(((('s |. |-)\w+)|(( \w+(?<! (on|III|II|IV|VI|V))){1,2}))?( (III|II|IV|VI|V))?))?)";
+        private static readonly string ability     = @"(?<ability>\w+((: \w+)|(-\w+)|('s \w+)|( \w+)( \w+)?)?( \w+'\w{2,})?)";
         private static readonly string effect      = @"(?<effect>\w+( \w+){0,2})";
         private static readonly string skillchain  = @"(?<skillchain>\w+)";
         
@@ -112,33 +112,42 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Spell/Ability Effects
-        public static readonly Regex RecoversHP = new Regex(string.Format("^{0} recovers {1} HP\\.$", target, number));
-        public static readonly Regex RecoversMP = new Regex(string.Format("^{0} recovers {1} MP\\.$", target, number));
-        public static readonly Regex Afflict    = new Regex(string.Format("^{0} is afflicted with {1} {2}\\.$", target, effect, afflictLvl));
-        public static readonly Regex Enfeeble   = new Regex(string.Format("{0} is {1}\\.$", target, effect));
-        public static readonly Regex Buff       = new Regex(string.Format("^{0} gains the effect of {1}\\.$", target, effect));
-        public static readonly Regex GainResistance = new Regex(string.Format("^{0} gains resistance against {1}\\.$", target, effect));
-        public static readonly Regex Debuff     = new Regex(string.Format("^{0} receives the effect of {1}\\.$", target, effect));
-        public static readonly Regex Enhance    = new Regex(string.Format("^{0}'s attacks are enhanced\\.$", target));
-        public static readonly Regex Charmed    = new Regex(string.Format("^{0} is now under {1}'s control\\.$", target, name));
-        public static readonly Regex NotCharmed = new Regex(string.Format("^{0} is no longer charmed\\.$", target));
-        public static readonly Regex Dispelled  = new Regex(string.Format("^{0}'s {1} effect disappears!$", target, effect));
+        public static readonly Regex RecoversHP = new Regex(string.Format("^{0} recover(s)? {1} HP\\.$", target, number));
+        public static readonly Regex RecoversMP = new Regex(string.Format("^{0} recover(s)? {1} MP\\.$", target, number));
+        public static readonly Regex Afflict    = new Regex(string.Format("^{0} (is|are) afflicted with {1} {2}\\.$", target, effect, afflictLvl));
+        public static readonly Regex Enfeeble   = new Regex(string.Format("{0} (is|are) {1}\\.$", target, effect));
+        public static readonly Regex Buff       = new Regex(string.Format("^{0} gain(s)? the effect of {1}\\.$", target, effect));
+        public static readonly Regex GainResistance = new Regex(string.Format("^{0} gain(s)? resistance against {1}\\.$", target, effect));
+        public static readonly Regex Debuff     = new Regex(string.Format("^{0} receive(s)? the effect of {1}\\.$", target, effect));
+        public static readonly Regex Enhance    = new Regex(string.Format("^{0}'(s)? attacks are enhanced\\.$", target));
+        public static readonly Regex Charmed    = new Regex(string.Format("^{0} (is|are) now under {1}'s control\\.$", target, name));
+        public static readonly Regex NotCharmed = new Regex(string.Format("^{0} (is|are) no longer charmed\\.$", target));
+        public static readonly Regex Dispelled  = new Regex(string.Format("^{0}'(s)? {1} effect disappears!$", target, effect));
         #endregion
 
         #region Failed Actions
         public static readonly Regex Interrupted = new Regex(string.Format("^{0}'(s)? casting is interrupted\\.$", name));
         public static readonly Regex Paralyzed   = new Regex(string.Format("^{0} (is|are) paralyzed\\.$", name));
         public static readonly Regex CannotSee   = new Regex(string.Format("^Unable to see {0}\\.$", target));
+        public static readonly Regex CannotSee2  = new Regex(string.Format("^You cannot see {0}\\.$", target));
         public static readonly Regex TooFarAway  = new Regex(string.Format("^{0} (is|are) too far away\\.$", target));
         public static readonly Regex OutOfRange  = new Regex(string.Format("^{0} (is|are) out of range\\.$", target));
-        public static readonly Regex NotEnoughTP = new Regex(string.Format("^You do not have enough TP\\.$", target));
-        public static readonly Regex NotEnoughMP = new Regex(string.Format("^You do not have enough MP\\.$", target));
-        public static readonly Regex Intimidated = new Regex(string.Format("^{0} (is|are) intimidated by {1}'s presence\\.$", name, target));
+        public static readonly Regex CannotAttack = new Regex(string.Format("^You cannot attack that target\\.$"));
+        public static readonly Regex NotEnoughTP  = new Regex(string.Format("^You do not have enough TP\\.$"));
+        public static readonly Regex NotEnoughTP2 = new Regex(string.Format("^Not enough TP\\.$"));
+        public static readonly Regex NotEnoughTP3 = new Regex(string.Format("^{0} does not have enough TP\\.$", name));
+        public static readonly Regex NotEnoughMP  = new Regex(string.Format("^You do not have enough MP\\.$", target));
+        public static readonly Regex Intimidated  = new Regex(string.Format("^{0} (is|are) intimidated by {1}'s presence\\.$", name, target));
         public static readonly Regex UnableToCast = new Regex(string.Format("^Unable to cast spells at this time\\.$"));
-        public static readonly Regex UnableToUse = new Regex(string.Format("^Unable to use job ability\\.$"));
-        public static readonly Regex NoEffect    = new Regex(string.Format("^{0}'s {1} has no effect on {2}\\.$", name, spell, target));
+        public static readonly Regex UnableToUse  = new Regex(string.Format("^Unable to use job ability\\.$"));
+        public static readonly Regex UnableToUse2 = new Regex(string.Format("^Unable to use weapon skill\\.$"));
+        public static readonly Regex NoEffect    = new Regex(string.Format("^{0}'(s)? {1} has no effect on {2}\\.$", name, spell, target));
         public static readonly Regex NoEffect2   = new Regex(string.Format("^No effect on {0}\\.$", target));
         public static readonly Regex NoEffect3   = new Regex(string.Format("^{0} casts {1} on {2}, but the spell fails to take effect\\.$", name, spell, target));
+        public static readonly Regex AutoTarget  = new Regex(string.Format("^Auto-targeting {0}\\.$", target));
+        public static readonly Regex TooFarForXP = new Regex(string.Format("^You are too far from the battle to gain experience\\.$"));
+        public static readonly Regex LoseSight   = new Regex(string.Format("^You lose sight of {0}\\.$", target));
+        public static readonly Regex FailActivate = new Regex(string.Format("^{0} fails to activate\\.$", item));
         #endregion
 
         #region Modifiers on existing lines
@@ -156,32 +165,35 @@ namespace WaywardGamers.KParser
         public static readonly Regex RangedAttack      = new Regex(string.Format("^{0}'(s)? ranged attack hit(s)? {1} for {2} point(s)? of damage\\.$", name, target, damage));
         public static readonly Regex RangedHit         = new Regex(string.Format("^{0} use(s)? Ranged Attack\\.$", name));
         public static readonly Regex CriticalHit       = new Regex(string.Format("^{0} score(s)? a critical hit!$", name));
-        public static readonly Regex RangedCriticalHit = new Regex(string.Format("^{0}'s ranged attack scores a critical hit!$", name));
+        public static readonly Regex RangedCriticalHit = new Regex(string.Format("^{0}'(s)? ranged attack scores a critical hit!$", name));
         public static readonly Regex TargetTakesDamage = new Regex(string.Format("{0} take(s)? {1}( additional)? point(s)? of damage\\.$", target, damage));
-        public static readonly Regex Spikes            = new Regex(string.Format("{0}'s spikes deal {1} point(s)? of damage to {2}\\.", name, damage, target));
+        public static readonly Regex Spikes            = new Regex(string.Format("{0}'(s)? spikes deal {1} point(s)? of damage to {2}\\.", name, damage, target));
         public static readonly Regex Skillchain        = new Regex(string.Format("^Skillchain: {0}\\.$", skillchain));
         #endregion
 
         #region Combat defenses
         public static readonly Regex MeleeMiss    = new Regex(string.Format("^{0} miss(es)? {1}\\.$", name, target));
         public static readonly Regex RangedMiss   = new Regex(string.Format("^{0} use(s)? Ranged Attack, but miss(es)? {1}\\.$", name, target));
-        public static readonly Regex RangedMiss2  = new Regex(string.Format("^{0}'s ranged attack misses\\.$", name));
+        public static readonly Regex RangedMiss2  = new Regex(string.Format("^{0}'(s)? ranged attack misses\\.$", name));
         public static readonly Regex Blink        = new Regex(string.Format("^{0} of {1}'s shadows absorb(s)? the damage and disappear(s)?\\.$", number, target));
-        public static readonly Regex Parry        = new Regex(string.Format("^{0} parr(y|ies) {1}'s attack with (his|her|its) weapon\\.$", target, name));
-        public static readonly Regex Anticipate   = new Regex(string.Format("^{0} anticipate(s)? {1}'s attack\\.$", target, name));
+        public static readonly Regex Parry        = new Regex(string.Format("^{0} parr(y|ies) {1}'(s)? attack with (his|her|its) weapon\\.$", target, name));
+        public static readonly Regex Anticipate   = new Regex(string.Format("^{0} anticipate(s)? {1}'(s)? attack\\.$", target, name));
         public static readonly Regex Anticipate2  = new Regex(string.Format("^{0} anticipate(s)? the attack\\.$", target));
         public static readonly Regex Evade        = new Regex(string.Format("^{0} evade(s)? the attack\\.$", target));
-        public static readonly Regex Counter      = new Regex(string.Format("^{0}'s attack is countered by {1}\\. {2} takes {3} point(s)? of damage\\.$",
+        public static readonly Regex Evade2       = new Regex(string.Format("^{0} evade(s)\\.$", target));
+        public static readonly Regex Counter      = new Regex(string.Format("^{0}'(s)? attack is countered by {1}\\. {2} takes {3} point(s)? of damage\\.$",
             target, name, repeatname, damage));
-        public static readonly Regex CounterShadow = new Regex(string.Format("^{0}'s attack is countered by {1}\\. {2} of {3}'s shadows absorbs the damage and disappears\\.$",
+        public static readonly Regex CounterShadow = new Regex(string.Format("^{0}'(s)? attack is countered by {1}\\. {2} of {3}'(s)? shadows absorbs the damage and disappears\\.$",
             target, name, number, repeatname));
-        public static readonly Regex ResistSpell = new Regex(string.Format("^{0} resist(s)? the spell\\.$", target));
+        public static readonly Regex ResistSpell  = new Regex(string.Format("^{0} resist(s)? the spell\\.$", target));
+        public static readonly Regex ResistSpell2 = new Regex(string.Format("^{0} resist(s)? the effects of the spell!$", target));
         public static readonly Regex ResistEffect = new Regex(string.Format("^{0} resist(s)? the effect\\.$", target));
         #endregion
 
         #region Drains
         public static readonly Regex Drain = new Regex(string.Format("^{0} {1} drained from {2}\\.$", damage, drainType, target));
-        public static readonly Regex AbsorbStat = new Regex(string.Format("^{0}'s {1} is drained\\.$", target, drainStat));
+        public static readonly Regex AbsorbStat = new Regex(string.Format("^{0}'(s)? {1} is drained\\.$", target, drainStat));
+        public static readonly Regex ReduceTP = new Regex(string.Format("^{0}'(s)? TP is reduced to 0\\.$", target));
         #endregion
 
         #region Defeated

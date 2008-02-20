@@ -190,7 +190,7 @@ namespace WaywardGamers.KParser.Plugin
         string summaryHeader    = "Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg\n";
         string meleeHeader      = "Player            Melee Dmg   Melee %   Hit/Miss   M.Acc %  M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
         string rangeHeader      = "Player            Range Dmg   Range %   Hit/Miss   R.Acc %  R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
-        string spellHeader      = "Player            Spell Dmg   Spell %  #Spells  S.Low/Hi     S.Avg  #MagicBurst  MB.Low/Hi   MB.Avg\n";
+        string spellHeader      = "Player               Spell Dmg   Spell %  #Spells  S.Low/Hi     S.Avg  #MagicBurst  MB.Low/Hi   MB.Avg\n";
         string abilHeader       = "Player               Abil. Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg\n";
         string wskillHeader     = "Player              WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg\n";
         string skillchainHeader = "Skillchain          SC Dmg  # SC  SC.Low/Hi  SC.Avg\n";
@@ -993,7 +993,7 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (spellCasts > 0)
                 {
-                    sb.Append(player.Player.PadRight(17));
+                    sb.Append(player.Player.PadRight(20));
 
                     sb.Append(spellDamage.ToString().PadLeft(10));
                     sb.Append(spellPerc.ToString("P2").PadLeft(10));
@@ -1050,7 +1050,7 @@ namespace WaywardGamers.KParser.Plugin
                     }
 
 
-                    sb.AppendFormat("{0,-17}{1,10}{2,10:p2}{3,9}{4,10}{5,10:f2}{6,13}{7,11}{8,9:f2}\n",
+                    sb.AppendFormat("{0,-20}{1,10}{2,10:p2}{3,9}{4,10}{5,10:f2}{6,13}{7,11}{8,9:f2}\n",
                         string.Concat(" - ", spellName), iSpellDamage, iSpellPerc, iNormSpellCount,
                         string.Concat(iSpellLow, "/", iSpellHigh), iSpellAvg, iMbSpellCount,
                         string.Concat(iMbLow, "/", iMbHigh), iMbAvg);

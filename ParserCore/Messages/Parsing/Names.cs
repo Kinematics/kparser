@@ -21,7 +21,7 @@ namespace WaywardGamers.KParser
             "Calamity", "Mistral Axe", "Decimation", "Onslaught",
             // Clubs
             "Shining Strike", "Seraph Strike", "Brainshaker", "Starlight", "Moonlight", 
-            "Skullbreaker", "True Strike", "Judgment", "Hexastrike", "Black Halo", "Randgrith",
+            "Skullbreaker", "True Strike", "Judgment", "Hexa Strike", "Black Halo", "Randgrith",
             // Daggers
             "Wasp Sting", "Gust Slash", "Shadowstitch", "Viper Bite", "Cyclone", "Dancing Edge",
             "Shark Bite", "Evisceration", "Mercy Stroke",

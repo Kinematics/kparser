@@ -90,7 +90,7 @@ namespace WaywardGamers.KParser
 
             int breakPoint;
 
-            // Drop the extraneous characters at start of loot messages.
+            // Drop the extraneous characters at start of various messages.
             // Item drops
             breakString = string.Format("{0}{1}", (char)0x1F, (char)0x79);
             breakPoint = TextOutput.IndexOf(breakString);
@@ -107,6 +107,13 @@ namespace WaywardGamers.KParser
 
             // Time limit warnings
             breakString = string.Format("{0}{1}", (char)0x1F, (char)0x3F);
+            breakPoint = TextOutput.IndexOf(breakString);
+
+            if (breakPoint == 0)
+                TextOutput = TextOutput.Substring(2);
+
+            // Limbus time limit warnings
+            breakString = string.Format("{0}{1}", (char)0x1F, (char)0x8D);
             breakPoint = TextOutput.IndexOf(breakString);
 
             if (breakPoint == 0)
@@ -150,14 +157,21 @@ namespace WaywardGamers.KParser
             TextOutput = TextOutput.Replace(itemTrans, "");
 
 			// Remove key item highlighting (purple wording)
-			// TODO: Determine actual codes for key item highlighting
 			string keyTrans;
 			// Open
-			keyTrans = string.Format("{0}{1}", (char) 0x1E, (char) 0xFA);
+			keyTrans = string.Format("{0}{1}", (char) 0x1E, (char) 0x03);
             TextOutput = TextOutput.Replace(keyTrans, "");
 			// Close
 			keyTrans = string.Format("{0}{1}", (char) 0x1E, (char) 0x01);
             TextOutput = TextOutput.Replace(keyTrans, "");
+
+            // Other version?
+            //// Open
+            //keyTrans = string.Format("{0}{1}", (char)0x1E, (char)0xFA);
+            //TextOutput = TextOutput.Replace(keyTrans, "");
+            //// Close
+            //keyTrans = string.Format("{0}{1}", (char)0x1E, (char)0x01);
+            //TextOutput = TextOutput.Replace(keyTrans, "");
 
             // Convert text encoding for display of JP characters
             byte[] originalBytes = UnicodeEncoding.Default.GetBytes(TextOutput);

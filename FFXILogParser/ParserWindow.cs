@@ -109,13 +109,10 @@ namespace WaywardGamers.KParser
             menuSaveDataAs.Enabled = enableMenus;
         }
 
-        private void databaseToolsMenu_Popup(object sender, EventArgs e)
-        {
-            databaseReparse.Enabled = (DatabaseManager.Instance.Database != null);
-        }
-
         private void toolsMenu_Popup(object sender, EventArgs e)
         {
+            databaseReparse.Enabled = (Monitor.IsRunning == false);
+
 #if DEBUG
             menuTestItem.Visible = true;
 #else
@@ -172,9 +169,23 @@ namespace WaywardGamers.KParser
 
                 try
                 {
-                    Cursor.Current = Cursors.WaitCursor;
-
                     DatabaseManager.Instance.OpenDatabase(ofd.FileName);
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.Instance.Log(ex);
+                    MessageBox.Show("Unable to open database.  You may need to reparse or upgrade the database file.",
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    Cursor.Current = Cursors.Default;
+                }
+
+                try
+                {
+                    Cursor.Current = Cursors.WaitCursor;
 
                     lock (activePluginList)
                     {
@@ -186,6 +197,11 @@ namespace WaywardGamers.KParser
                             }
                         }
                     }
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.Instance.Log(ex);
                 }
                 finally
                 {
@@ -196,10 +212,51 @@ namespace WaywardGamers.KParser
 
         private void databaseReparse_Click(object sender, EventArgs e)
         {
-            string outFilename;
+            if (Monitor.IsRunning == true)
+            {
+                MessageBox.Show("Cannot reparse while another parse is running.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            string inFilename = string.Empty;
+            string outFilename = string.Empty;
+
+            if (DatabaseManager.Instance.Database != null)
+            {
+                DialogResult reparse = MessageBox.Show("Do you want to reparse the current data?", "Reparse current data?",
+                    MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+
+                if (reparse == DialogResult.Cancel)
+                    return;
+
+                if (reparse == DialogResult.Yes)
+                {
+                    inFilename = DatabaseManager.Instance.DatabaseFilename;
+                }
+            }
+
+            if (inFilename == string.Empty)
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.InitialDirectory = defaultSaveDirectory;
+                ofd.Multiselect = false;
+                ofd.DefaultExt = "sdf";
+                ofd.Title = "Select file to reparse...";
+
+                if (ofd.ShowDialog() == DialogResult.Cancel)
+                {
+                    return;
+                }
+                else
+                {
+                    inFilename = ofd.FileName;
+                }
+            }
+
             if (GetParseFileName(out outFilename) == true)
             {
-                if (outFilename == DatabaseManager.Instance.DatabaseFilename)
+                if (outFilename == inFilename)
                 {
                     MessageBox.Show("Cannot save to the same file you want to reparse.", "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -224,7 +281,7 @@ namespace WaywardGamers.KParser
 
                         using (new ProfileRegion("Reparse"))
                         {
-                            Monitor.Reparse(outFilename);
+                            Monitor.Reparse(inFilename, outFilename);
                         }
                     }
                     catch (Exception ex)
@@ -720,64 +777,7 @@ namespace WaywardGamers.KParser
             //Application.CommonAppDataPath;
             //Application.UserAppDataPath;
         }
-
-        private void UpgradeCode()
-        {
-
-            // Recreate salvage parse uniqueness.
-
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Reset();
-            stopwatch.Start();
-
-            try
-            {
-                Cursor.Current = Cursors.WaitCursor;
-
-                string inputDB = @"C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\bin\Debug\SaveLogs\Salvage.sdf";
-
-                DatabaseManager.Instance.OpenDatabase(inputDB);
-
-                KPDatabaseDataSet readDataSet = DatabaseManager.Instance.Database;
-
-                List<ChatLine> chatLineList = new List<ChatLine>(readDataSet.RecordLog.Count);
-
-                foreach (var logLine in readDataSet.RecordLog)
-                {
-                    ChatLine chat = new ChatLine(logLine.MessageText, logLine.Timestamp);
-                    chatLineList.Add(chat);
-                }
-
-                var grpChat = from c in chatLineList
-                              group c by c.ChatText into uc
-                              select uc;
-
-                var uniqChat = from c in grpChat
-                               orderby c.First().ChatText.Substring(27, 8)
-                               select c.First();
-
-
-                string outputDB = @"C:\Documents and Settings\David\My Documents\Visual Studio 2008\Projects\FFXILogParser\FFXILogParser\bin\Debug\SaveLogs\Salvage-Redo.sdf";
-
-                DatabaseManager.Instance.CreateDatabase(outputDB);
-
-                KPDatabaseDataSet writeDataSet = DatabaseManager.Instance.Database;
-
-                foreach (var chat in uniqChat)
-                {
-                    writeDataSet.RecordLog.AddRecordLogRow(chat.Timestamp, chat.ChatText, false);
-                }
-
-                DatabaseManager.Instance.CloseDatabase();
-            }
-            finally
-            {
-                Cursor.Current = Cursors.Default;
-            }
-
-            stopwatch.Stop();
-            MessageBox.Show(string.Format("Completed convert in {0} seconds", stopwatch.Elapsed.TotalSeconds));
-        }
         #endregion
+
     }
 }

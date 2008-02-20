@@ -448,17 +448,18 @@ namespace WaywardGamers.KParser.Plugin
                     double mEvadePerc = 0;
                     int rEvaded = 0;
                     double rEvadePerc = 0;
+                    int evadableAttacks = player.Melee.Count() + player.Unknown.Count();
 
                     if (player.Melee.Count() > 0)
                     {
                         mEvaded = player.Melee.Count(h => h.DefenseType == (byte)DefenseType.Evasion);
-                        mEvadePerc = (double)mEvaded / player.Melee.Count();
+                        mEvadePerc = (double)mEvaded / evadableAttacks;
                     }
 
                     if (player.Range.Count() > 0)
                     {
                         rEvaded = player.Range.Count(h => h.DefenseType == (byte)DefenseType.Evasion);
-                        rEvadePerc = (double)rEvaded / player.Range.Count();
+                        rEvadePerc = (double)rEvaded / evadableAttacks;
                     }
 
                     if ((mEvaded + rEvaded) > 0)

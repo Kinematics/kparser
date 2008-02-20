@@ -103,6 +103,11 @@
       <DependentUpon>KPDatabaseDataSet.xsd</DependentUpon>
     </Compile>
     <Compile Include="Database\DatabaseManager.cs" />
+    <Compile Include="KPDatabaseReadOnly.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>KPDatabaseReadOnly.xsd</DependentUpon>
+    </Compile>
     <Compile Include="Messages\ChatLine.cs" />
     <Compile Include="Messages\MessageDetail\LootDetails.cs" />
     <Compile Include="Messages\MessageDetail\ActionDetails.cs" />
@@ -148,6 +153,17 @@
     </None>
     <None Include="KPDatabaseDataSet.xss">
       <DependentUpon>KPDatabaseDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="KPDatabaseReadOnly.xsc">
+      <DependentUpon>KPDatabaseReadOnly.xsd</DependentUpon>
+    </None>
+    <None Include="KPDatabaseReadOnly.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>KPDatabaseReadOnly.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="KPDatabaseReadOnly.xss">
+      <DependentUpon>KPDatabaseReadOnly.xsd</DependentUpon>
     </None>
     <None Include="Properties\Settings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>

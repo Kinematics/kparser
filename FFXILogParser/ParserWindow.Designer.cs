@@ -47,10 +47,7 @@ namespace WaywardGamers.KParser
             this.menuExit = new System.Windows.Forms.MenuItem();
             this.toolsMenu = new System.Windows.Forms.MenuItem();
             this.menuTestItem = new System.Windows.Forms.MenuItem();
-            this.databaseToolsMenu = new System.Windows.Forms.MenuItem();
             this.databaseReparse = new System.Windows.Forms.MenuItem();
-            this.databaseUpgrade = new System.Windows.Forms.MenuItem();
-            this.databaseClearData = new System.Windows.Forms.MenuItem();
             this.menuSeparator3 = new System.Windows.Forms.MenuItem();
             this.menuOptions = new System.Windows.Forms.MenuItem();
             this.windowMenu = new System.Windows.Forms.MenuItem();
@@ -180,7 +177,7 @@ namespace WaywardGamers.KParser
             this.toolsMenu.Index = 1;
             this.toolsMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuTestItem,
-            this.databaseToolsMenu,
+            this.databaseReparse,
             this.menuSeparator3,
             this.menuOptions});
             this.toolsMenu.Text = "&Tools";
@@ -193,34 +190,12 @@ namespace WaywardGamers.KParser
             this.menuTestItem.Text = "&Test Function";
             this.menuTestItem.Click += new System.EventHandler(this.menuTestItem_Click);
             // 
-            // databaseToolsMenu
-            // 
-            this.databaseToolsMenu.Index = 1;
-            this.databaseToolsMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.databaseReparse,
-            this.databaseUpgrade,
-            this.databaseClearData});
-            this.databaseToolsMenu.Text = "Database";
-            this.databaseToolsMenu.Popup += new System.EventHandler(this.databaseToolsMenu_Popup);
-            // 
             // databaseReparse
             // 
-            this.databaseReparse.Enabled = false;
-            this.databaseReparse.Index = 0;
-            this.databaseReparse.Text = "Reparse";
+            this.databaseReparse.Index = 1;
+            this.databaseReparse.Shortcut = System.Windows.Forms.Shortcut.CtrlU;
+            this.databaseReparse.Text = "Reparse/&Upgrade Database";
             this.databaseReparse.Click += new System.EventHandler(this.databaseReparse_Click);
-            // 
-            // databaseUpgrade
-            // 
-            this.databaseUpgrade.Enabled = false;
-            this.databaseUpgrade.Index = 1;
-            this.databaseUpgrade.Text = "Upgrade";
-            // 
-            // databaseClearData
-            // 
-            this.databaseClearData.Enabled = false;
-            this.databaseClearData.Index = 2;
-            this.databaseClearData.Text = "Clear Data";
             // 
             // menuSeparator3
             // 
@@ -302,10 +277,7 @@ namespace WaywardGamers.KParser
         private System.Windows.Forms.MenuItem menuTestItem;
         private System.Windows.Forms.MenuItem windowMenu;
         private System.Windows.Forms.MenuItem menuContinueParse;
-        private System.Windows.Forms.MenuItem databaseToolsMenu;
-        private System.Windows.Forms.MenuItem databaseClearData;
-        private System.Windows.Forms.MenuItem databaseUpgrade;
-        private System.Windows.Forms.MenuItem databaseReparse;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
+        private System.Windows.Forms.MenuItem databaseReparse;
     }
 }

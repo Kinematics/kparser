@@ -22,7 +22,7 @@ namespace WaywardGamers.KParser.Parsing
         internal static Message Parse(MessageLine messageLine)
         {
             int i = 0;
-            if (messageLine.EventSequence == 0x328)
+            if (messageLine.EventSequence == 0x1d4f)
                 i++;
 
             Message message = GetAttachedMessage(messageLine);
@@ -186,13 +186,16 @@ namespace WaywardGamers.KParser.Parsing
         /// <param name="message">The message to parse.</param>
         private static void ParseSystem(Message message)
         {
-            switch (message.MessageCode)
+            switch (message.CurrentMessageCode)
             {
                 case 0x00:
                     message.SystemDetails.SystemMessageType = SystemMessageType.ZoneChange;
                     break;
-                case 0xce:
-                    message.SystemDetails.SystemMessageType = SystemMessageType.Echo;
+                case 0x9d:
+                    message.SystemDetails.SystemMessageType = SystemMessageType.CommandError;
+                    break;
+                case 0xa1:
+                    message.SystemDetails.SystemMessageType = SystemMessageType.ConquestUpdate;
                     break;
                 case 0xbf:
                     message.SystemDetails.SystemMessageType = SystemMessageType.EffectWearsOff;
@@ -201,14 +204,37 @@ namespace WaywardGamers.KParser.Parsing
                     if (charmCheck.Success == true)
                         MessageManager.Instance.RemovePetEntity(charmCheck.Groups[ParseFields.Fulltarget].Value);
                     break;
+                case 0xcc:
+                    message.SystemDetails.SystemMessageType = SystemMessageType.SearchComment;
+                    break;
+                case 0xcd: // Linkshell message
+                    message.MessageCategory = MessageCategoryType.Chat;
+                    message.ChatDetails.ChatMessageType = ChatMessageType.Linkshell;
+                    message.ChatDetails.ChatSpeakerName = "-Linkshell-";
+                    message.ChatDetails.ChatSpeakerType = SpeakerType.Unknown;
+                    message.ParseSuccessful = true;
+                    break;
+                case 0xce:
+                    message.SystemDetails.SystemMessageType = SystemMessageType.Echo;
+                    break;
                 case 0xd0:
                     message.SystemDetails.SystemMessageType = SystemMessageType.Examine;
+                    break;
+                case 0xd1:
+                    message.SystemDetails.SystemMessageType = SystemMessageType.ReuseTime;
                     break;
                 case 0x7b:
                     message.SystemDetails.SystemMessageType = SystemMessageType.OutOfRange;
                     break;
-                case 0xcc:
-                    message.SystemDetails.SystemMessageType = SystemMessageType.SearchComment;
+                case 0xbe: // Order to enter
+                case 0x92: // Arena time remaining
+                case 0x94: // Arena intro/announcement
+                    // Mark these as chat messages
+                    message.MessageCategory = MessageCategoryType.Chat;
+                    message.ChatDetails.ChatMessageType = ChatMessageType.Arena;
+                    message.ChatDetails.ChatSpeakerName = "-Arena-";
+                    message.ChatDetails.ChatSpeakerType = SpeakerType.NPC;
+                    message.ParseSuccessful = true;
                     break;
                 default:
                     message.SystemDetails.SystemMessageType = SystemMessageType.Unknown;
@@ -231,6 +257,7 @@ namespace WaywardGamers.KParser.Parsing
                 case 0x01: // <me> say
                 case 0x09: // Others say
                 case 0x98: // <npc> say
+                case 0x90: // <fellow> say
                     message.ChatDetails.ChatMessageType = ChatMessageType.Say;
                     break;
                 case 0x02: // <me> shout
@@ -284,6 +311,7 @@ namespace WaywardGamers.KParser.Parsing
                 case 0x0f: // Others emote
                     message.ChatDetails.ChatSpeakerType = SpeakerType.Player;
                     break;
+                case 0x90: // <fellow> say
                 case 0x98: // <npc> say
                 case 0x8e: // <npc> shout
                     message.ChatDetails.ChatSpeakerType = SpeakerType.NPC;
@@ -347,11 +375,13 @@ namespace WaywardGamers.KParser.Parsing
 
             if ((message.CurrentMessageText.EndsWith(".") == false) &&
                 (message.CurrentMessageText.EndsWith("!") == false) &&
-                (message.MessageCode != 0x79))
+                (message.CurrentMessageCode != 0x79))
                 return;
 
+            uint currentMsgCode = message.CurrentMessageCode;
+
             // Determine type of action message
-            switch (message.MessageCode)
+            switch (currentMsgCode)
             {
                 case 0x83: // Exp, no chain
                 case 0x79: // Item drop, Lot for item, xp chain, xp on chain, equipment changed, /recast message, /anon changed, etc)
@@ -363,10 +393,15 @@ namespace WaywardGamers.KParser.Parsing
                     message.EventDetails.EventMessageType = EventMessageType.Fishing;
                     break;
                 default: // Mark the large swaths of possible combat messages
-                    if ((message.MessageCode >= 0x13) && (message.MessageCode <= 0x84))
+                    if ((currentMsgCode >= 0x13) && (currentMsgCode <= 0x84))
                         message.EventDetails.EventMessageType = EventMessageType.Interaction;
-                    else if ((message.MessageCode >= 0xa2) && (message.MessageCode <= 0xbf))
+                    else if ((currentMsgCode >= 0xa2) && (currentMsgCode <= 0xbf))
                         message.EventDetails.EventMessageType = EventMessageType.Interaction;
+                    else if (currentMsgCode == 0x8d)
+                    {
+                        ParseCode8d(message);
+                        return;
+                    }
                     else // Everything else is ignored.
                         message.EventDetails.EventMessageType = EventMessageType.Other;
                     break;
@@ -388,6 +423,16 @@ namespace WaywardGamers.KParser.Parsing
             }
         }
 
+        private static void ParseCode8d(Message message)
+        {
+            // Can be a failed message, or Arena messages in Limbus.
+            message.MessageCategory = MessageCategoryType.Chat;
+            message.ChatDetails.ChatMessageType = ChatMessageType.Arena;
+            message.ChatDetails.ChatSpeakerName = "-Arena-";
+            message.ChatDetails.ChatSpeakerType = SpeakerType.NPC;
+            message.ParseSuccessful = true;
+        }
+
         #endregion
 
         #region Parsing of end-combat data
@@ -395,7 +440,7 @@ namespace WaywardGamers.KParser.Parsing
         {
             Match lootOrXP;
 
-            switch (message.MessageCode)
+            switch (message.CurrentMessageCode)
             {
                 // Item drop, Lot for item, equipment changed, /recast message
                 case 0x79:
@@ -550,20 +595,33 @@ namespace WaywardGamers.KParser.Parsing
 
             CombatDetails msgCombatDetails = message.EventDetails.CombatDetails;
 
-            // Use lookup tables for general categories based on message code
-            // Only lookup if unknown category type.  Multi-line messages will already know this info.
-            if (msgCombatDetails.InteractionType == InteractionType.Unknown)
+            msgCombatDetails.InteractionType = ParseCodes.Instance.GetInteractionType(message.CurrentMessageCode);
+
+            // Swap types for spell-cast drains (ie: non-Additional Effect)
+            if (msgCombatDetails.InteractionType == InteractionType.Aid)
             {
-                msgCombatDetails.InteractionType = ParseCodes.Instance.GetInteractionType(message.MessageCode);
-
-                if (msgCombatDetails.InteractionType == InteractionType.Aid)
-                    msgCombatDetails.AidType = ParseCodes.Instance.GetAidType(message.MessageCode);
-
-                if (msgCombatDetails.InteractionType == InteractionType.Harm)
+                switch (message.CurrentMessageCode)
                 {
-                    msgCombatDetails.HarmType = ParseCodes.Instance.GetHarmType(message.MessageCode);
-                    msgCombatDetails.SuccessLevel = ParseCodes.Instance.GetSuccessType(message.MessageCode);
+                    case 0x1e:
+                    case 0x22:
+                    case 0x2a:
+                    case 0xbb:
+                        if (message.CurrentMessageText.StartsWith("Additional Effect:") == false)
+                            msgCombatDetails.InteractionType = InteractionType.Harm;
+                        break;
                 }
+            }
+
+            if (msgCombatDetails.InteractionType == InteractionType.Aid)
+            {
+                msgCombatDetails.AidType = ParseCodes.Instance.GetAidType(message.CurrentMessageCode);
+                msgCombatDetails.SuccessLevel = ParseCodes.Instance.GetSuccessType(message.CurrentMessageCode);
+            }
+
+            if (msgCombatDetails.InteractionType == InteractionType.Harm)
+            {
+                msgCombatDetails.HarmType = ParseCodes.Instance.GetHarmType(message.CurrentMessageCode);
+                msgCombatDetails.SuccessLevel = ParseCodes.Instance.GetSuccessType(message.CurrentMessageCode);
             }
 
             switch (msgCombatDetails.InteractionType)
@@ -618,285 +676,350 @@ namespace WaywardGamers.KParser.Parsing
             string currentMessageText = message.CurrentMessageText;
             TargetDetails target = null;
 
-            // Check first for lines where the buff is activated
-            // eg: Player casts Protectra IV.
-            combatMatch = ParseExpressions.CastSpell.Match(currentMessageText);
-            if (combatMatch.Success == true)
+
+            switch (msgCombatDetails.SuccessLevel)
             {
-                msgCombatDetails.ActionType = ActionType.Spell;
-                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                message.ParseSuccessful = true;
-                return;
-            }
-
-            // eg: Player uses a rolanberry pie.
-            if (message.EventDetails.CombatDetails.AidType == AidType.Item)
-            {
-                combatMatch = ParseExpressions.UseItem.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Item].Value;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-
-                if (combatMatch.Success == false)
-                {
-                    // Uses reraise earring; receives the effect of reraise
-                    combatMatch = ParseExpressions.Debuff.Match(currentMessageText);
+                case SuccessType.Successful:
+                    // Check first for lines where the buff is activated
+                    // eg: Player casts Protectra IV.
+                    combatMatch = ParseExpressions.CastSpell.Match(currentMessageText);
                     if (combatMatch.Success == true)
                     {
-                        target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                        target.HarmType = msgCombatDetails.HarmType;
-                        target.AidType = msgCombatDetails.AidType;
-                        target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
-                        message.ParseSuccessful = true;
-                        return;
-                    }
-                }
-            }
-            else
-            {
-                // eg: Player uses warcry
-                combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.ActionType = ActionType.Ability;
-                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-                // Corsair rolls
-                combatMatch = ParseExpressions.UseCorRoll.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                    msgCombatDetails.CorsairRoll = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
-                    message.ParseSuccessful = true;
-                    return;
-                }
-                combatMatch = ParseExpressions.TotalCorRoll.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                    msgCombatDetails.CorsairRoll = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
-                    message.ParseSuccessful = true;
-                    return;
-                }
-            }
-
-            // Break down the results of the spell/ability
-            switch (msgCombatDetails.AidType)
-            {
-                case AidType.Enhance:
-                    // eg: Target gains the effect of Protect.
-                    combatMatch = ParseExpressions.Buff.Match(currentMessageText);
-                    if (combatMatch.Success == true)
-                    {
-                        target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                        if (msgCombatDetails.ActionName == string.Empty)
-                            msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Effect].Value;
-                        target.AidType = msgCombatDetails.AidType;
-                        target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
-                        message.ParseSuccessful = true;
-                        return;
-                    }
-                    // eg: Target's attacks are enhanced.
-                    combatMatch = ParseExpressions.Enhance.Match(currentMessageText);
-                    if (combatMatch.Success == true)
-                    {
-                        target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                        if (msgCombatDetails.ActionName == string.Empty)
-                            msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Effect].Value;
-                        target.AidType = msgCombatDetails.AidType;
-                        message.ParseSuccessful = true;
-                        return;
-                    }
-                    // eg: Target's attacks are enhanced.
-                    combatMatch = ParseExpressions.GainCorRoll.Match(currentMessageText);
-                    if (combatMatch.Success == true)
-                    {
-                        target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Name].Value);
-                        target.EffectName = combatMatch.Groups[ParseFields.Ability].Value;
-                        target.AidType = msgCombatDetails.AidType;
-                        target.Amount = msgCombatDetails.CorsairRoll;
-                        message.ParseSuccessful = true;
-                        return;
-                    }
-
-                    // eg: Target's attacks are enhanced.
-                    combatMatch = ParseExpressions.GainResistance.Match(currentMessageText);
-                    if (combatMatch.Success == true)
-                    {
-                        target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                        target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
-                        target.AidType = msgCombatDetails.AidType;
-                        message.ParseSuccessful = true;
-                        return;
-                    }
-
-                    // Check in case of some out of all targets not getting affected.
-                    // eg: Player's Protect has no effect on Target.
-                    combatMatch = ParseExpressions.NoEffect.Match(currentMessageText);
-                    if (combatMatch.Success == true)
-                    {
-                        msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                        msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                        target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                        target.FailedActionType = FailedActionType.NoEffect;
-                        target.AidType = msgCombatDetails.AidType;
-                        msgCombatDetails.SuccessLevel = SuccessType.Unknown;
-                        message.ParseSuccessful = true;
-                        return;
-                    }
-
-                    // Self-target buffs have various strings which we won't check for.
-                    // Only look to see if the message has determined an actor and action, and that
-                    // the message line completes the sentence (ends in a period).
-                    if (currentMessageText.EndsWith("."))
-                    {
-                        if ((msgCombatDetails.ActorName != string.Empty) &&
-                            (msgCombatDetails.ActionName != string.Empty))
-                        {
-                            target = msgCombatDetails.AddTarget(msgCombatDetails.ActorName);
-                            target.AidType = msgCombatDetails.AidType;
-                            message.ParseSuccessful = true;
-                        }
-                        return;
-                    }
-                    break;
-                case AidType.Recovery:
-                    combatMatch = ParseExpressions.RecoversHP.Match(currentMessageText);
-                    if (combatMatch.Success == true)
-                    {
-                        target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                        target.Amount = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
-                        target.AidType = msgCombatDetails.AidType;
-                        target.RecoveryType = RecoveryType.RecoverHP;
-                        message.ParseSuccessful = true;
-                        return;
-                    }
-                    combatMatch = ParseExpressions.RecoversMP.Match(currentMessageText);
-                    if (combatMatch.Success == true)
-                    {
-                        target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                        target.Amount = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
-                        target.AidType = msgCombatDetails.AidType;
-                        target.RecoveryType = RecoveryType.RecoverMP;
-                        message.ParseSuccessful = true;
-                        return;
-                    }
-                    combatMatch = ParseExpressions.Drain.Match(currentMessageText);
-                    if (combatMatch.Success == true)
-                    {
-                        target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                        target.Amount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
-                        target.AidType = msgCombatDetails.AidType;
-                        switch (combatMatch.Groups[ParseFields.Fulltarget].Value)
-                        {
-                            case "HP":
-                                target.RecoveryType = RecoveryType.RecoverHP;
-                                break;
-                            case "MP":
-                                target.RecoveryType = RecoveryType.RecoverMP;
-                                break;
-                            case "TP":
-                                target.RecoveryType = RecoveryType.RecoverTP;
-                                break;
-                        }
-                        message.ParseSuccessful = true;
-                        return;
-                    }
-                    if (combatMatch.Success == false)
-                    {
-                        combatMatch = ParseExpressions.AdditionalHeal.Match(currentMessageText);
-                        if (combatMatch.Success == true)
-                        {
-                            target = msgCombatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
-                            if (target != null)
-                            {
-                                target.SecondaryAidType = AidType.None;
-                                target.SecondaryRecoveryType = RecoveryType.RecoverHP;
-                                target.SecondaryHarmType = HarmType.Damage;
-                                // Enter negative value for healing the mob with the attack
-                                target.SecondaryAmount = (0 - int.Parse(combatMatch.Groups[ParseFields.Damage].Value));
-                            }
-                        }
-                    }
-                    break;
-                case AidType.Unknown:
-                    combatMatch = ParseExpressions.PrepSpellOn.Match(currentMessageText);
-                    if (combatMatch.Success == true)
-                    {
-                        msgCombatDetails.IsPreparing = true;
-                        msgCombatDetails.ActionType = ActionType.Spell;
-                        msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                        msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                        target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                        // Since we have a target, try to determine the interaction type
-                        if ((msgCombatDetails.ActorEntityType != EntityType.Unknown) &&
-                            (target.EntityType != EntityType.Unknown))
-                        {
-                            if ((msgCombatDetails.ActorEntityType == EntityType.Mob) ||
-                                (target.EntityType == EntityType.Mob))
-                            {
-                                if ((msgCombatDetails.ActorEntityType == EntityType.Mob) &&
-                                    (target.EntityType == EntityType.Mob))
-                                {
-                                    // If both are mobs, aid type between mobs
-                                    msgCombatDetails.InteractionType = InteractionType.Aid;
-                                }
-                                else
-                                {
-                                    // One is mob, another is player/pet/etc, therefore must be harm
-                                    msgCombatDetails.InteractionType = InteractionType.Harm;
-                                }
-                            }
-                            else
-                            {
-                                // Neither is a mob, therefore must be aid
-                                msgCombatDetails.InteractionType = InteractionType.Aid;
-                            }
-                        }
-                        if (msgCombatDetails.InteractionType == InteractionType.Harm)
-                        {
-                            msgCombatDetails.HarmType = HarmType.Unknown;
-                            target.HarmType = HarmType.Unknown;
-                        }
-                        if (msgCombatDetails.InteractionType == InteractionType.Aid)
-                        {
-                            msgCombatDetails.AidType = AidType.Unknown;
-                            target.AidType = AidType.Unknown;
-                        }
-                        message.ParseSuccessful = true;
-                        return;
-                    }
-                    combatMatch = ParseExpressions.PrepSpell.Match(currentMessageText);
-                    if (combatMatch.Success == true)
-                    {
-                        msgCombatDetails.IsPreparing = true;
                         msgCombatDetails.ActionType = ActionType.Spell;
                         msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                         msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                         message.ParseSuccessful = true;
                         return;
                     }
-                    combatMatch = ParseExpressions.PrepAbility.Match(currentMessageText);
+                    // eg: Player uses warcry
+                    combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
                     if (combatMatch.Success == true)
                     {
-                        msgCombatDetails.IsPreparing = true;
+                        msgCombatDetails.ActionType = ActionType.Ability;
                         msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                         msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                        if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
-                            msgCombatDetails.ActionType = ActionType.Weaponskill;
-                        else
-                            msgCombatDetails.ActionType = ActionType.Ability;
                         message.ParseSuccessful = true;
                         return;
+                    }
+
+                    switch (msgCombatDetails.AidType)
+                    {
+                        case AidType.Recovery:
+                            combatMatch = ParseExpressions.RecoversHP.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                                target.Amount = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
+                                target.AidType = msgCombatDetails.AidType;
+                                target.RecoveryType = RecoveryType.RecoverHP;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            combatMatch = ParseExpressions.RecoversMP.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                                target.Amount = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
+                                target.AidType = msgCombatDetails.AidType;
+                                target.RecoveryType = RecoveryType.RecoverMP;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            combatMatch = ParseExpressions.Drain.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                                target.Amount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
+                                target.AidType = msgCombatDetails.AidType;
+                                switch (combatMatch.Groups[ParseFields.Fulltarget].Value)
+                                {
+                                    case "HP":
+                                        target.RecoveryType = RecoveryType.RecoverHP;
+                                        break;
+                                    case "MP":
+                                        target.RecoveryType = RecoveryType.RecoverMP;
+                                        break;
+                                    case "TP":
+                                        target.RecoveryType = RecoveryType.RecoverTP;
+                                        break;
+                                }
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            // Check for additional effect: drain effects (eg: drain samba)
+                            combatMatch = ParseExpressions.AdditionalDrain.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                target = msgCombatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
+                                if (target != null)
+                                {
+                                    target.SecondaryAidType = AidType.Recovery;
+                                    target.SecondaryRecoveryType = RecoveryType.RecoverHP;
+                                    target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
+                                }
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            // Check for additional effect: aspir effects (eg: aspir samba)
+                            combatMatch = ParseExpressions.AdditionalAspir.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                target = msgCombatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
+                                if (target != null)
+                                {
+                                    target.SecondaryAidType = AidType.Recovery;
+                                    target.SecondaryRecoveryType = RecoveryType.RecoverMP;
+                                    target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
+                                }
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+
+                            combatMatch = ParseExpressions.AdditionalHeal.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                target = msgCombatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
+                                if (target != null)
+                                {
+                                    target.SecondaryAidType = AidType.None;
+                                    target.SecondaryRecoveryType = RecoveryType.RecoverHP;
+                                    target.SecondaryHarmType = HarmType.Damage;
+                                    // Enter negative value for healing the mob with the attack
+                                    target.SecondaryAmount = (0 - int.Parse(combatMatch.Groups[ParseFields.Damage].Value));
+                                }
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            break;
+                        case AidType.Enhance:
+                            // Corsair rolls
+                            combatMatch = ParseExpressions.UseCorRoll.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                                msgCombatDetails.CorsairRoll = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            combatMatch = ParseExpressions.TotalCorRoll.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                                msgCombatDetails.CorsairRoll = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            // target gains a buff
+                            combatMatch = ParseExpressions.Buff.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                                if (msgCombatDetails.ActionName == string.Empty)
+                                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Effect].Value;
+                                target.AidType = msgCombatDetails.AidType;
+                                target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            // eg: Target's attacks are enhanced.
+                            combatMatch = ParseExpressions.Enhance.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                                if (msgCombatDetails.ActionName == string.Empty)
+                                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Effect].Value;
+                                target.AidType = msgCombatDetails.AidType;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            // eg: Target's attacks are enhanced.
+                            combatMatch = ParseExpressions.GainCorRoll.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Name].Value);
+                                target.EffectName = combatMatch.Groups[ParseFields.Ability].Value;
+                                target.AidType = msgCombatDetails.AidType;
+                                target.Amount = msgCombatDetails.CorsairRoll;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            combatMatch = ParseExpressions.GainResistance.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                                target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
+                                target.AidType = msgCombatDetails.AidType;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            break;
+                        case AidType.Item:
+                            // eg: Player uses a rolanberry pie.
+                            combatMatch = ParseExpressions.UseItem.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Item].Value;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            // Uses reraise earring; receives the effect of reraise
+                            combatMatch = ParseExpressions.Debuff.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                                target.HarmType = msgCombatDetails.HarmType;
+                                target.AidType = msgCombatDetails.AidType;
+                                target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            // Self-target buffs have various strings which we won't check for.
+                            // Only look to see if the message has determined an actor and action, and that
+                            // the message line completes the sentence (ends in a period).
+                            if (currentMessageText.EndsWith("."))
+                            {
+                                if ((msgCombatDetails.ActorName != string.Empty) &&
+                                    (msgCombatDetails.ActionName != string.Empty))
+                                {
+                                    target = msgCombatDetails.AddTarget(msgCombatDetails.ActorName);
+                                    target.AidType = msgCombatDetails.AidType;
+                                    message.ParseSuccessful = true;
+                                }
+                                return;
+                            }
+                            break;
+                        case AidType.Unknown:
+                            break;
+                    }
+                    break;
+                case SuccessType.Unsuccessful:
+                    switch (msgCombatDetails.AidType)
+                    {
+                        case AidType.Recovery:
+                            break;
+                        case AidType.Enhance:
+                            break;
+                        case AidType.Item:
+                            break;
+                        case AidType.Unknown:
+                            break;
+                    }
+                    break;
+                case SuccessType.Failed:
+                    switch (msgCombatDetails.AidType)
+                    {
+                        case AidType.Recovery:
+                            break;
+                        case AidType.Enhance:
+                            combatMatch = ParseExpressions.NoEffect.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
+                                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                                target.FailedActionType = FailedActionType.NoEffect;
+                                target.AidType = msgCombatDetails.AidType;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            break;
+                        case AidType.Item:
+                            combatMatch = ParseExpressions.FailActivate.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                msgCombatDetails.ItemName = combatMatch.Groups[ParseFields.Item].Value;
+                                target.FailedActionType = FailedActionType.FailedToActivate;
+                                target.AidType = msgCombatDetails.AidType;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            break;
+                        case AidType.Unknown:
+                            break;
+                    }
+                    break;
+                case SuccessType.Unknown:
+                    switch (msgCombatDetails.AidType)
+                    {
+                        case AidType.Recovery:
+                            break;
+                        case AidType.Enhance:
+                            break;
+                        case AidType.Item:
+                            break;
+                        case AidType.Unknown:
+                            combatMatch = ParseExpressions.PrepSpellOn.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                msgCombatDetails.IsPreparing = true;
+                                msgCombatDetails.ActionType = ActionType.Spell;
+                                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
+                                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                                // Since we have a target, try to determine the interaction type
+                                if ((msgCombatDetails.ActorEntityType != EntityType.Unknown) &&
+                                    (target.EntityType != EntityType.Unknown))
+                                {
+                                    if ((msgCombatDetails.ActorEntityType == EntityType.Mob) ||
+                                        (target.EntityType == EntityType.Mob))
+                                    {
+                                        if ((msgCombatDetails.ActorEntityType == EntityType.Mob) &&
+                                            (target.EntityType == EntityType.Mob))
+                                        {
+                                            // If both are mobs, aid type between mobs
+                                            msgCombatDetails.InteractionType = InteractionType.Aid;
+                                        }
+                                        else
+                                        {
+                                            // One is mob, another is player/pet/etc, therefore must be harm
+                                            msgCombatDetails.InteractionType = InteractionType.Harm;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // Neither is a mob, therefore must be aid
+                                        msgCombatDetails.InteractionType = InteractionType.Aid;
+                                    }
+                                }
+                                if (msgCombatDetails.InteractionType == InteractionType.Harm)
+                                {
+                                    msgCombatDetails.HarmType = HarmType.Unknown;
+                                    target.HarmType = HarmType.Unknown;
+                                }
+                                if (msgCombatDetails.InteractionType == InteractionType.Aid)
+                                {
+                                    msgCombatDetails.AidType = AidType.Unknown;
+                                    target.AidType = AidType.Unknown;
+                                }
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            combatMatch = ParseExpressions.PrepSpell.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                msgCombatDetails.IsPreparing = true;
+                                msgCombatDetails.ActionType = ActionType.Spell;
+                                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            combatMatch = ParseExpressions.PrepAbility.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                msgCombatDetails.IsPreparing = true;
+                                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                                if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
+                                    msgCombatDetails.ActionType = ActionType.Weaponskill;
+                                else
+                                    msgCombatDetails.ActionType = ActionType.Ability;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            break;
                     }
                     break;
             }
@@ -1017,7 +1140,7 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
 
-                switch (message.MessageCode)
+                switch (message.CurrentMessageCode)
                 {
                     case 0x69:
                         // Ability being used on a player
@@ -1287,38 +1410,6 @@ namespace WaywardGamers.KParser.Parsing
                 }
             }
 
-            // Check for additional effect: drain effects (eg: drain samba)
-            if (combatMatch.Success == false)
-            {
-                combatMatch = ParseExpressions.AdditionalDrain.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    target = combatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
-                    if (target != null)
-                    {
-                        target.SecondaryAidType = AidType.Recovery;
-                        target.SecondaryRecoveryType = RecoveryType.RecoverHP;
-                        target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
-                    }
-                }
-            }
-
-            // Check for additional effect: aspir effects (eg: aspir samba)
-            if (combatMatch.Success == false)
-            {
-                combatMatch = ParseExpressions.AdditionalAspir.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    target = combatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
-                    if (target != null)
-                    {
-                        target.SecondaryAidType = AidType.Recovery;
-                        target.SecondaryRecoveryType = RecoveryType.RecoverMP;
-                        target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
-                    }
-                }
-            }
-
             if (combatMatch.Success == false)
             {
                 combatMatch = ParseExpressions.AdditionalHeal.Match(currentMessageText);
@@ -1517,7 +1608,31 @@ namespace WaywardGamers.KParser.Parsing
 
             if (combatMatch.Success == false)
             {
+                combatMatch = ParseExpressions.Evade2.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    combatDetails.ActionType = ActionType.Unknown;
+                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.DefenseType = DefenseType.Evade;
+                    target.HarmType = combatDetails.HarmType;
+                }
+            }
+
+            if (combatMatch.Success == false)
+            {
                 combatMatch = ParseExpressions.ResistSpell.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    combatDetails.ActionType = ActionType.Spell;
+                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.DefenseType = DefenseType.Resist;
+                    target.HarmType = combatDetails.HarmType;
+                }
+            }
+
+            if (combatMatch.Success == false)
+            {
+                combatMatch = ParseExpressions.ResistSpell2.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
                     combatDetails.ActionType = ActionType.Spell;
@@ -1648,37 +1763,14 @@ namespace WaywardGamers.KParser.Parsing
                 message.ParseSuccessful = true;
                 return;
             }
-            combatMatch = ParseExpressions.AbsorbStat.Match(currentMessageText);
-            if (combatMatch.Success == true)
-            {
-                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                target.EffectName = combatMatch.Groups[ParseFields.DrainStat].Value;
-                target.HarmType = msgCombatDetails.HarmType;
-                target.AidType = msgCombatDetails.AidType;
-                message.ParseSuccessful = true;
-                return;
-            }
-            combatMatch = ParseExpressions.Drain.Match(currentMessageText);
-            if (combatMatch.Success == true)
-            {
-                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                target.Amount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
-                target.HarmType = msgCombatDetails.HarmType;
-                target.AidType = msgCombatDetails.AidType;
 
-                switch (combatMatch.Groups[ParseFields.DrainType].Value)
-                {
-                    case "HP":
-                        target.RecoveryType = RecoveryType.RecoverHP;
-                        break;
-                    case "MP":
-                        target.RecoveryType = RecoveryType.RecoverMP;
-                        break;
-                    case "TP":
-                        target.RecoveryType = RecoveryType.RecoverTP;
-                        break;
-                }
-                msgCombatDetails.SuccessLevel = SuccessType.Successful;
+            combatMatch = ParseExpressions.ReduceTP.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                target.EffectName = "ReduceTP";
+                target.HarmType = msgCombatDetails.HarmType;
+                target.AidType = msgCombatDetails.AidType;
                 message.ParseSuccessful = true;
                 return;
             }
@@ -1714,7 +1806,6 @@ namespace WaywardGamers.KParser.Parsing
                 return;
             }
 
-
             combatMatch = ParseExpressions.ResistSpell.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
@@ -1725,6 +1816,18 @@ namespace WaywardGamers.KParser.Parsing
                 message.ParseSuccessful = true;
                 return;
             }
+
+            combatMatch = ParseExpressions.ResistSpell2.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                target.DefenseType = DefenseType.Resist;
+                target.HarmType = msgCombatDetails.HarmType;
+                target.AidType = msgCombatDetails.AidType;
+                message.ParseSuccessful = true;
+                return;
+            }
+            
             combatMatch = ParseExpressions.ResistEffect.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
@@ -1891,6 +1994,16 @@ namespace WaywardGamers.KParser.Parsing
                 return;
             }
 
+            combatMatch = ParseExpressions.AbsorbStat.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                target.EffectName = combatMatch.Groups[ParseFields.DrainStat].Value;
+                target.HarmType = HarmType.Enfeeble;
+                target.AidType = AidType.None;
+                message.ParseSuccessful = true;
+                return;
+            }
 
             // Player drains XXX HP/MP/TP from target.
 
@@ -1908,9 +2021,11 @@ namespace WaywardGamers.KParser.Parsing
                         target.RecoveryType = RecoveryType.RecoverHP;
                         break;
                     case "MP":
+                        target.HarmType = HarmType.Enfeeble;
                         target.RecoveryType = RecoveryType.RecoverMP;
                         break;
                     case "TP":
+                        target.HarmType = HarmType.Enfeeble;
                         target.RecoveryType = RecoveryType.RecoverTP;
                         break;
                 }
@@ -1933,6 +2048,124 @@ namespace WaywardGamers.KParser.Parsing
             // Deal with possible Failed actions first
             if (msgCombatDetails.SuccessLevel == SuccessType.Failed)
             {
+                combatMatch = ParseExpressions.AutoTarget.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    msgCombatDetails.FailedActionType = FailedActionType.Autotarget;
+                    target.FailedActionType = FailedActionType.Autotarget;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.CannotAttack.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.FailedActionType = FailedActionType.CannotAttack;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.CannotSee.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    msgCombatDetails.FailedActionType = FailedActionType.CannotSee;
+                    target.FailedActionType = FailedActionType.CannotSee;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.CannotSee2.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    msgCombatDetails.FailedActionType = FailedActionType.CannotSee;
+                    target.FailedActionType = FailedActionType.CannotSee;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.LoseSight.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    msgCombatDetails.FailedActionType = FailedActionType.CannotSee;
+                    target.FailedActionType = FailedActionType.CannotSee;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.UnableToCast.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.FailedActionType = FailedActionType.UnableToCast;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.UnableToUse.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.FailedActionType = FailedActionType.UnableToUse;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.UnableToUse2.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.FailedActionType = FailedActionType.UnableToUse;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.NotEnoughMP.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.FailedActionType = FailedActionType.NotEnoughMP;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.NotEnoughTP.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.FailedActionType = FailedActionType.NotEnoughTP;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.NotEnoughTP2.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.FailedActionType = FailedActionType.NotEnoughTP;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.NotEnoughTP3.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    msgCombatDetails.FailedActionType = FailedActionType.NotEnoughTP;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.TooFarForXP.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.FailedActionType = FailedActionType.TooFarAway;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.TooFarAway.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    msgCombatDetails.FailedActionType = FailedActionType.TooFarAway;
+                    target.FailedActionType = FailedActionType.TooFarAway;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.OutOfRange.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    msgCombatDetails.FailedActionType = FailedActionType.OutOfRange;
+                    target.FailedActionType = FailedActionType.OutOfRange;
+                    message.ParseSuccessful = true;
+                    return;
+                }
                 combatMatch = ParseExpressions.Interrupted.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
@@ -1961,62 +2194,6 @@ namespace WaywardGamers.KParser.Parsing
                     // Adjust message category
                     msgCombatDetails.HarmType = HarmType.None;
                     msgCombatDetails.SuccessLevel = SuccessType.Unsuccessful;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-                // Matches for the following to note the line as successfully parsed.
-                combatMatch = ParseExpressions.UnableToCast.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.FailedActionType = FailedActionType.UnableToCast;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-                combatMatch = ParseExpressions.UnableToUse.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.FailedActionType = FailedActionType.UnableToUse;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-                combatMatch = ParseExpressions.CannotSee.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                    msgCombatDetails.FailedActionType = FailedActionType.CannotSee;
-                    target.FailedActionType = FailedActionType.CannotSee;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-                combatMatch = ParseExpressions.TooFarAway.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                    msgCombatDetails.FailedActionType = FailedActionType.TooFarAway;
-                    target.FailedActionType = FailedActionType.TooFarAway;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-                combatMatch = ParseExpressions.OutOfRange.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                    msgCombatDetails.FailedActionType = FailedActionType.OutOfRange;
-                    target.FailedActionType = FailedActionType.OutOfRange;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-                combatMatch = ParseExpressions.NotEnoughMP.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.FailedActionType = FailedActionType.NotEnoughMP;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-                combatMatch = ParseExpressions.NotEnoughTP.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.FailedActionType = FailedActionType.NotEnoughTP;
                     message.ParseSuccessful = true;
                     return;
                 }
@@ -2086,6 +2263,20 @@ namespace WaywardGamers.KParser.Parsing
             if (combatMatch.Success == false)
             {
                 combatMatch = ParseExpressions.ResistSpell.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.ActionType = ActionType.Spell;
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.DefenseType = DefenseType.Resist;
+                    target.HarmType = msgCombatDetails.HarmType;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+            }
+
+            if (combatMatch.Success == false)
+            {
+                combatMatch = ParseExpressions.ResistSpell2.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
                     msgCombatDetails.ActionType = ActionType.Spell;

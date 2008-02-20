@@ -19,9 +19,10 @@ namespace WaywardGamers.KParser.Plugin
 
             label1.Text = "Chat Type";
             comboBox1.Left = label1.Right + 10;
+            comboBox1.MaxDropDownItems = 9;
             comboBox1.Items.Clear();
             comboBox1.Items.Add("All");
-            for (var chat = ChatMessageType.Say; chat <= ChatMessageType.NPC; chat++)
+            for (var chat = ChatMessageType.Say; chat <= ChatMessageType.Arena; chat++)
             {
                 comboBox1.Items.Add(chat.ToString());
             }
@@ -40,10 +41,36 @@ namespace WaywardGamers.KParser.Plugin
             checkBox2.Visible = false;
         }
 
+        public override void DatabaseOpened(KPDatabaseDataSet dataSet)
+        {
+            ResetComboBox2();
+            AddToComboBox2("All");
+            ResetTextBox();
+
+            var speakerList = dataSet.ChatSpeakers.OrderBy(s => s.SpeakerName);
+
+            foreach (var speaker in speakerList)
+            {
+                AddToComboBox2(speaker.SpeakerName);
+            }
+
+            InitComboBox2Selection();
+        }
+
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
         {
-            if ((e.DatasetChanges.ChatMessages.Count != 0) ||
-                (e.DatasetChanges.ChatSpeakers.Count != 0))
+            if (e.DatasetChanges.ChatSpeakers.Count != 0)
+            {
+                foreach (var speaker in e.DatasetChanges.ChatSpeakers)
+                {
+                    AddToComboBox2(speaker.SpeakerName);
+                }
+
+                datasetToUse = e.DatasetChanges;
+                return true;
+            }
+
+            if (e.DatasetChanges.ChatMessages.Count != 0)
             {
                 datasetToUse = e.DatasetChanges;
                 return true;
@@ -55,15 +82,6 @@ namespace WaywardGamers.KParser.Plugin
 
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
-            // Update speakers drop-down list
-            foreach (var row in dataSet.ChatSpeakers)
-            {
-                if (this.comboBox2.Items.Contains(row.SpeakerName) == false)
-                {
-                    this.comboBox2.Items.Add(row.SpeakerName);
-                }
-            }
-
             // Update chat messages list based on filtering
             ChatMessageType chatFilter = (ChatMessageType)comboBox1.SelectedIndex;
             string player = comboBox2.SelectedItem.ToString();

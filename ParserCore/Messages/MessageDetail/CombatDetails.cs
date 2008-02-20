@@ -15,6 +15,7 @@ namespace WaywardGamers.KParser
         #region member Variables
         string actorName = string.Empty;
         string actionName = string.Empty;
+        string itemName = string.Empty;
         #endregion
 
         #region Constructor
@@ -145,6 +146,14 @@ namespace WaywardGamers.KParser
             set { if (value != null) actionName = value; }
         }
 
+        /// <summary>
+        /// Gets and sets the name of the item being used.
+        /// </summary>
+        internal string ItemName
+        {
+            get { return itemName; }
+            set { if (value != null) itemName = value; }
+        }
 
         /// <summary>
         /// Gets and sets the success level of this interaction.  Used for
@@ -202,6 +211,7 @@ namespace WaywardGamers.KParser
             sb.AppendFormat("    IsPreparing: {0}\n", IsPreparing);
             sb.AppendFormat("    HasAdditionalEffect: {0}\n", HasAdditionalEffect);
             sb.AppendFormat("    Action Name: {0}\n", ActionName);
+            sb.AppendFormat("    Item Name: {0}\n", ItemName);
             sb.AppendFormat("    Success Level: {0}\n", SuccessLevel);
             sb.AppendFormat("    Is Crit: {0}\n", FlagCrit);
 
