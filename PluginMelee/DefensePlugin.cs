@@ -137,6 +137,12 @@ namespace WaywardGamers.KParser.Plugin
 
                                 if (comboBox2.Items.Contains(mobWithXP) == false)
                                     AddToComboBox2(mobWithXP);
+
+                                // Check for existing entry with higher min base xp
+                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP + 1);
+
+                                if (comboBox2.Items.Contains(mobWithXP))
+                                    RemoveFromComboBox2(mobWithXP);
                             }
                         }
                     }
