@@ -218,37 +218,153 @@ namespace WaywardGamers.KParser.Plugin
             //                       select bx
             //         };
 
-            incAttacks = from cd in dataSet.Interactions
-                         where ((cd.IsTargetIDNull() == false) &&
-                                ((cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Player) ||
-                                 (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
-                                 (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Fellow)) &&
-                                ((cd.HarmType == (byte)HarmType.Damage) ||
-                                 (cd.HarmType == (byte)HarmType.Drain)))
-                         group cd by cd.CombatantsRowByTargetCombatantRelation.CombatantName into cdd
-                         orderby cdd.Key
-                         select new DefenseGroup
-                         {
-                             Player = cdd.Key,
-                             AllAttacks = from pd in cdd
-                                          select pd,
-                             Melee = from pd in cdd
-                                     where (pd.ActionType == (byte)ActionType.Melee)
-                                     select pd,
-                             Range = from pd in cdd
-                                     where (pd.ActionType == (byte)ActionType.Ranged)
-                                     select pd,
-                             Spell = from pd in cdd
-                                     where (pd.ActionType == (byte)ActionType.Spell)
-                                     select pd,
-                             Abil = from pd in cdd
-                                    where ((pd.ActionType == (byte)ActionType.Ability) ||
-                                            (pd.ActionType == (byte)ActionType.Weaponskill))
-                                    select pd,
-                             Unknown = from pd in cdd
-                                       where (pd.ActionType == (byte)ActionType.Unknown)
-                                       select pd
-                         };
+            if (mobFilter == "All")
+            {
+                // Attacks by all mobs
+
+                incAttacks = from cd in dataSet.Interactions
+                             where ((cd.IsTargetIDNull() == false) &&
+                                    ((cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Player) ||
+                                     (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
+                                     (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Fellow)) &&
+                                    ((cd.HarmType == (byte)HarmType.Damage) ||
+                                     (cd.HarmType == (byte)HarmType.Drain)))
+                             group cd by cd.CombatantsRowByTargetCombatantRelation.CombatantName into cdd
+                             orderby cdd.Key
+                             select new DefenseGroup
+                             {
+                                 Player = cdd.Key,
+                                 AllAttacks = from pd in cdd
+                                              select pd,
+                                 Melee = from pd in cdd
+                                         where (pd.ActionType == (byte)ActionType.Melee)
+                                         select pd,
+                                 Range = from pd in cdd
+                                         where (pd.ActionType == (byte)ActionType.Ranged)
+                                         select pd,
+                                 Spell = from pd in cdd
+                                         where (pd.ActionType == (byte)ActionType.Spell)
+                                         select pd,
+                                 Abil = from pd in cdd
+                                        where ((pd.ActionType == (byte)ActionType.Ability) ||
+                                                (pd.ActionType == (byte)ActionType.Weaponskill))
+                                        select pd,
+                                 Unknown = from pd in cdd
+                                           where (pd.ActionType == (byte)ActionType.Unknown)
+                                           select pd
+                             };
+            }
+            else
+            {
+                if (xp > 0)
+                {
+                    // Attacks by a particular mob type of a given base xp
+
+                    incAttacks = from cd in dataSet.Interactions
+                                 where ((cd.IsTargetIDNull() == false) &&
+                                        ((cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Player) ||
+                                         (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
+                                         (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Fellow)) &&
+                                        ((cd.HarmType == (byte)HarmType.Damage) ||
+                                         (cd.HarmType == (byte)HarmType.Drain)))
+                                 group cd by cd.CombatantsRowByTargetCombatantRelation.CombatantName into cdd
+                                 orderby cdd.Key
+                                 select new DefenseGroup
+                                 {
+                                     Player = cdd.Key,
+                                     AllAttacks = from pd in cdd
+                                                  where (pd.IsActorIDNull() == false &&
+                                                        pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
+                                                        pd.IsBattleIDNull() == false &&
+                                                        pd.BattlesRow.MinBaseExperience() == xp)
+                                                  select pd,
+                                     Melee = from pd in cdd
+                                             where (pd.ActionType == (byte)ActionType.Melee &&
+                                                    pd.IsActorIDNull() == false &&
+                                                    pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
+                                                    pd.IsBattleIDNull() == false &&
+                                                    pd.BattlesRow.MinBaseExperience() == xp)
+                                             select pd,
+                                     Range = from pd in cdd
+                                             where (pd.ActionType == (byte)ActionType.Ranged &&
+                                                    pd.IsActorIDNull() == false &&
+                                                    pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
+                                                    pd.IsBattleIDNull() == false &&
+                                                    pd.BattlesRow.MinBaseExperience() == xp)
+                                             select pd,
+                                     Spell = from pd in cdd
+                                             where (pd.ActionType == (byte)ActionType.Spell &&
+                                                    pd.IsActorIDNull() == false &&
+                                                    pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
+                                                    pd.IsBattleIDNull() == false &&
+                                                    pd.BattlesRow.MinBaseExperience() == xp)
+                                             select pd,
+                                     Abil = from pd in cdd
+                                            where (((pd.ActionType == (byte)ActionType.Ability) ||
+                                                    (pd.ActionType == (byte)ActionType.Weaponskill)) &&
+                                                    pd.IsActorIDNull() == false &&
+                                                    pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
+                                                    pd.IsBattleIDNull() == false &&
+                                                    pd.BattlesRow.MinBaseExperience() == xp)
+                                            select pd,
+                                     Unknown = from pd in cdd
+                                               where (pd.ActionType == (byte)ActionType.Unknown &&
+                                                    pd.IsActorIDNull() == false &&
+                                                    pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
+                                                    pd.IsBattleIDNull() == false &&
+                                                    pd.BattlesRow.MinBaseExperience() == xp)
+                                               select pd
+                                 };
+                }
+                else
+                {
+                    // Attacks by a particular mob type
+
+                    incAttacks = from cd in dataSet.Interactions
+                                 where ((cd.IsTargetIDNull() == false) &&
+                                        ((cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Player) ||
+                                         (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
+                                         (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Fellow)) &&
+                                        ((cd.HarmType == (byte)HarmType.Damage) ||
+                                         (cd.HarmType == (byte)HarmType.Drain)))
+                                 group cd by cd.CombatantsRowByTargetCombatantRelation.CombatantName into cdd
+                                 orderby cdd.Key
+                                 select new DefenseGroup
+                                 {
+                                     Player = cdd.Key,
+                                     AllAttacks = from pd in cdd
+                                                  where (pd.IsActorIDNull() == false &&
+                                                        pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName)
+                                                  select pd,
+                                     Melee = from pd in cdd
+                                             where (pd.ActionType == (byte)ActionType.Melee &&
+                                                    pd.IsActorIDNull() == false &&
+                                                    pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName)
+                                             select pd,
+                                     Range = from pd in cdd
+                                             where (pd.ActionType == (byte)ActionType.Ranged &&
+                                                    pd.IsActorIDNull() == false &&
+                                                    pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName)
+                                             select pd,
+                                     Spell = from pd in cdd
+                                             where (pd.ActionType == (byte)ActionType.Spell &&
+                                                    pd.IsActorIDNull() == false &&
+                                                    pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName)
+                                             select pd,
+                                     Abil = from pd in cdd
+                                            where (((pd.ActionType == (byte)ActionType.Ability) ||
+                                                    (pd.ActionType == (byte)ActionType.Weaponskill)) &&
+                                                    pd.IsActorIDNull() == false &&
+                                                    pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName)
+                                            select pd,
+                                     Unknown = from pd in cdd
+                                               where (pd.ActionType == (byte)ActionType.Unknown &&
+                                                    pd.IsActorIDNull() == false &&
+                                                    pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName)
+                                               select pd
+                                 };
+                }
+            }
             #endregion
 
             if ((incAttacks != null) && (incAttacks.Count() > 0))
@@ -334,9 +450,11 @@ namespace WaywardGamers.KParser.Plugin
 
                 avoidHits = player.AllAttacks.Count(h => h.DefenseType != (byte)DefenseType.None);
 
-                avoidPerc = (double)avoidHits / incHits;
+                if (incHits > 0)
+                    avoidPerc = (double)avoidHits / incHits;
 
-                attackPerc = (double)incHits / totalAttacks;
+                if (totalAttacks > 0)
+                    attackPerc = (double)incHits / totalAttacks;
 
 
                 sb.AppendFormat("{0,5}{1,8}{2,10}{3,9}{4,10}{5,8}{6,12:p2}{7,10}{8,10:p2}\n",
