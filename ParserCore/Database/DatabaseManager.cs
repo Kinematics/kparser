@@ -209,11 +209,7 @@ namespace WaywardGamers.KParser
 
                 lock (localDB)
                 {
-                    // Create a copy if parse is running to avoid add/read conflicts
-                    if (Monitor.IsRunning)
-                        return (KPDatabaseDataSet)localDB.Copy();
-                    else
-                        return localDB;
+                    return localDB;
                 }
             }
         }
@@ -238,57 +234,51 @@ namespace WaywardGamers.KParser
 
             int count = messageList.Count;
 
-            using (new ProfileRegion("Add messages to database"))
+            // lock database for entire process period
+            lock (localDB)
             {
-                lock (localDB)
+                using (new ProfileRegion("Add messages to database"))
                 {
                     foreach (var message in messageList)
                         AddMessageToDatabase(message);
                 }
-            }
 
-            UpdateActiveBattleList(false);
+                UpdateActiveBattleList(false);
 
-            // Only process updates every 5 seconds, unless parse is ending.
-            if (parseEnded == false)
-            {
-                DateTime currentTime = DateTime.Now;
-                if (lastUpdateTime + updateDelayWindow > currentTime)
-                    return;
-
-                lastUpdateTime = currentTime;
-            }
-
-            KPDatabaseDataSet datasetChanges = null;
-            KPDatabaseDataSet datasetCopy = null;
-
-            try
-            {
-                lock (localDB)
+                // Only process updates every 5 seconds, unless parse is ending.
+                if (parseEnded == false)
                 {
-                    datasetChanges = (KPDatabaseDataSet)localDB.GetChanges();
-                    datasetCopy = (KPDatabaseDataSet)localDB.Copy();
+                    DateTime currentTime = DateTime.Now;
+                    if (lastUpdateTime + updateDelayWindow > currentTime)
+                        return;
+
+                    lastUpdateTime = currentTime;
                 }
 
-                // Notify watchers so that they can view the database with
-                // Row changed/inserted/deleted flags still visible
-                OnDatabaseChanging(new DatabaseWatchEventArgs(datasetCopy, datasetChanges));
+                KPDatabaseDataSet datasetChanges = null;
 
-                UpdateDatabase();
+                try
+                {
+                    datasetChanges = (KPDatabaseDataSet)localDB.GetChanges();
 
-                // Notify watchers when database has been fully updated.
-                OnDatabaseChanged(new DatabaseWatchEventArgs(datasetCopy, datasetChanges));
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Log(e);
-            }
-            finally
-            {
-                if (datasetChanges != null)
-                    datasetChanges.Dispose();
-                if (datasetCopy != null)
-                    datasetCopy.Dispose();
+                    // Notify watchers so that they can view the database with
+                    // Row changed/inserted/deleted flags still visible
+                    OnDatabaseChanging(new DatabaseWatchEventArgs(localDB, datasetChanges));
+
+                    UpdateDatabase();
+
+                    // Notify watchers when database has been fully updated.
+                    OnDatabaseChanged(new DatabaseWatchEventArgs(localDB, null));
+                }
+                catch (Exception e)
+                {
+                    Logger.Instance.Log(e);
+                }
+                finally
+                {
+                    if (datasetChanges != null)
+                        datasetChanges.Dispose();
+                }
             }
 
             if (parseEnded == true)
