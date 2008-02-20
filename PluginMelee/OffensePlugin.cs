@@ -171,7 +171,6 @@ namespace WaywardGamers.KParser.Plugin
         List<string> playerList = new List<string>();
         Dictionary<string, int> playerDamage = new Dictionary<string,int>();
         IEnumerable<AttackGroup> attackSet = null;
-        string lastMobFilter = string.Empty;
 
         string summaryHeader    = "Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg\n";
         string meleeHeader      = "Player            Melee Dmg   Melee %   Hit/Miss   M.Acc %  M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
