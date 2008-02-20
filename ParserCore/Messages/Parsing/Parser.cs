@@ -595,24 +595,34 @@ namespace WaywardGamers.KParser.Parsing
 
             CombatDetails msgCombatDetails = message.EventDetails.CombatDetails;
 
-            // Use lookup tables for general categories based on message code
-            // Only lookup if unknown category type.  Multi-line messages will already know this info.
-            //if (msgCombatDetails.InteractionType == InteractionType.Unknown)
-            //{
-                msgCombatDetails.InteractionType = ParseCodes.Instance.GetInteractionType(message.CurrentMessageCode);
+            msgCombatDetails.InteractionType = ParseCodes.Instance.GetInteractionType(message.CurrentMessageCode);
 
-                if (msgCombatDetails.InteractionType == InteractionType.Aid)
+            // Swap types for spell-cast drains (ie: non-Additional Effect)
+            if (msgCombatDetails.InteractionType == InteractionType.Aid)
+            {
+                switch (message.CurrentMessageCode)
                 {
-                    msgCombatDetails.AidType = ParseCodes.Instance.GetAidType(message.CurrentMessageCode);
-                    msgCombatDetails.SuccessLevel = ParseCodes.Instance.GetSuccessType(message.CurrentMessageCode);
+                    case 0x1e:
+                    case 0x22:
+                    case 0x2a:
+                    case 0xbb:
+                        if (message.CurrentMessageText.StartsWith("Additional Effect:") == false)
+                            msgCombatDetails.InteractionType = InteractionType.Harm;
+                        break;
                 }
+            }
 
-                if (msgCombatDetails.InteractionType == InteractionType.Harm)
-                {
-                    msgCombatDetails.HarmType = ParseCodes.Instance.GetHarmType(message.CurrentMessageCode);
-                    msgCombatDetails.SuccessLevel = ParseCodes.Instance.GetSuccessType(message.CurrentMessageCode);
-                }
-            //}
+            if (msgCombatDetails.InteractionType == InteractionType.Aid)
+            {
+                msgCombatDetails.AidType = ParseCodes.Instance.GetAidType(message.CurrentMessageCode);
+                msgCombatDetails.SuccessLevel = ParseCodes.Instance.GetSuccessType(message.CurrentMessageCode);
+            }
+
+            if (msgCombatDetails.InteractionType == InteractionType.Harm)
+            {
+                msgCombatDetails.HarmType = ParseCodes.Instance.GetHarmType(message.CurrentMessageCode);
+                msgCombatDetails.SuccessLevel = ParseCodes.Instance.GetSuccessType(message.CurrentMessageCode);
+            }
 
             switch (msgCombatDetails.InteractionType)
             {
@@ -1753,40 +1763,6 @@ namespace WaywardGamers.KParser.Parsing
                 message.ParseSuccessful = true;
                 return;
             }
-            combatMatch = ParseExpressions.AbsorbStat.Match(currentMessageText);
-            if (combatMatch.Success == true)
-            {
-                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                target.EffectName = combatMatch.Groups[ParseFields.DrainStat].Value;
-                target.HarmType = msgCombatDetails.HarmType;
-                target.AidType = msgCombatDetails.AidType;
-                message.ParseSuccessful = true;
-                return;
-            }
-            combatMatch = ParseExpressions.Drain.Match(currentMessageText);
-            if (combatMatch.Success == true)
-            {
-                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                target.Amount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
-                target.HarmType = msgCombatDetails.HarmType;
-                target.AidType = msgCombatDetails.AidType;
-
-                switch (combatMatch.Groups[ParseFields.DrainType].Value)
-                {
-                    case "HP":
-                        target.RecoveryType = RecoveryType.RecoverHP;
-                        break;
-                    case "MP":
-                        target.RecoveryType = RecoveryType.RecoverMP;
-                        break;
-                    case "TP":
-                        target.RecoveryType = RecoveryType.RecoverTP;
-                        break;
-                }
-                msgCombatDetails.SuccessLevel = SuccessType.Successful;
-                message.ParseSuccessful = true;
-                return;
-            }
 
             combatMatch = ParseExpressions.ReduceTP.Match(currentMessageText);
             if (combatMatch.Success == true)
@@ -1798,7 +1774,6 @@ namespace WaywardGamers.KParser.Parsing
                 message.ParseSuccessful = true;
                 return;
             }
-
 
             combatMatch = ParseExpressions.Enfeeble.Match(currentMessageText);
             if (combatMatch.Success == true)
@@ -1830,7 +1805,6 @@ namespace WaywardGamers.KParser.Parsing
                 message.ParseSuccessful = true;
                 return;
             }
-
 
             combatMatch = ParseExpressions.ResistSpell.Match(currentMessageText);
             if (combatMatch.Success == true)
@@ -2020,6 +1994,16 @@ namespace WaywardGamers.KParser.Parsing
                 return;
             }
 
+            combatMatch = ParseExpressions.AbsorbStat.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                target.EffectName = combatMatch.Groups[ParseFields.DrainStat].Value;
+                target.HarmType = HarmType.Enfeeble;
+                target.AidType = AidType.None;
+                message.ParseSuccessful = true;
+                return;
+            }
 
             // Player drains XXX HP/MP/TP from target.
 
@@ -2037,9 +2021,11 @@ namespace WaywardGamers.KParser.Parsing
                         target.RecoveryType = RecoveryType.RecoverHP;
                         break;
                     case "MP":
+                        target.HarmType = HarmType.Enfeeble;
                         target.RecoveryType = RecoveryType.RecoverMP;
                         break;
                     case "TP":
+                        target.HarmType = HarmType.Enfeeble;
                         target.RecoveryType = RecoveryType.RecoverTP;
                         break;
                 }
