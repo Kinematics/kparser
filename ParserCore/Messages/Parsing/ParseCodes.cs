@@ -69,7 +69,7 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0x1f] = InteractionType.Aid; // <me> recovers/cures
             interactionTypeLookup[0x20] = InteractionType.Harm; // <mob> hits <pm> ??
             interactionTypeLookup[0x21] = InteractionType.Harm; // <mob> misses <pm> ??
-            interactionTypeLookup[0x22] = InteractionType.Harm; // <pm> Drains
+            interactionTypeLookup[0x22] = InteractionType.Aid; // <pm> Drains
             interactionTypeLookup[0x23] = InteractionType.Aid; // <am> cures <pm>
             interactionTypeLookup[0x24] = InteractionType.Death; // <me> kills
             interactionTypeLookup[0x25] = InteractionType.Death; // <pm> kills
@@ -245,7 +245,7 @@ namespace WaywardGamers.KParser
             aidTypeLookup[0x1f] = AidType.Recovery; // <me> recovers/cures
             aidTypeLookup[0x20] = AidType.None; // <mob> hits <pm> ??
             aidTypeLookup[0x21] = AidType.None; // <mob> misses <pm> ??
-            aidTypeLookup[0x22] = AidType.Recovery; // 
+            aidTypeLookup[0x22] = AidType.Recovery; // <pm> drains
             aidTypeLookup[0x23] = AidType.Recovery; // <am> cures <pm>
             aidTypeLookup[0x24] = AidType.None; // <me> kills
             aidTypeLookup[0x25] = AidType.None; // <pm> kills
