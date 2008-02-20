@@ -60,18 +60,13 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
-            using (new ProfileRegion("Get local copy of DB"))
-            {
-                localDBCopy = DatabaseManager.Instance.Database;
-            }
-
             ResetComboBox2();
             AddToComboBox2("All");
             ResetTextBox();
 
-            if (localDBCopy.Battles.Count() > 1)
+            if (dataSet.Battles.Count() > 1)
             {
-                var mobsKilled = from b in localDBCopy.Battles
+                var mobsKilled = from b in dataSet.Battles
                                  where ((b.DefaultBattle == false) &&
                                         (b.IsEnemyIDNull() == false))
                                  orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
@@ -159,18 +154,9 @@ namespace WaywardGamers.KParser.Plugin
                 }
             }
 
-
-            if ((e.DatasetChanges.Interactions.Count != 0) ||
-                (e.DatasetChanges.Combatants.Count != 0) ||
-                (e.DatasetChanges.Battles.Count != 0))
+            if (e.DatasetChanges.Interactions.Count != 0)
             {
-                if (localDBCopy == null)
-                    localDBCopy = new KPDatabaseDataSet();
-
-                localDBCopy.Merge(e.DatasetChanges);
-
-                //datasetToUse = e.Dataset;
-                datasetToUse = null;
+                datasetToUse = e.Dataset;
                 return true;
             }
 
@@ -183,10 +169,9 @@ namespace WaywardGamers.KParser.Plugin
         int totalDamage;
         List<string> playerList = new List<string>();
         Dictionary<string, int> playerDamage = new Dictionary<string,int>();
-        KPDatabaseDataSet localDBCopy;
         IEnumerable<AttackGroup> attackSet = null;
+        string lastMobFilter = string.Empty;
 
-        string mobSetHeader     = "Mob                        Base XP   Number\n";
         string summaryHeader    = "Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg\n";
         string meleeHeader      = "Player            Melee Dmg   Melee %   Hit/Miss   M.Acc %  M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
         string rangeHeader      = "Player            Range Dmg   Range %   Hit/Miss   R.Acc %  R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
@@ -198,7 +183,7 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Processing sections
-        protected override void ProcessData(KPDatabaseDataSet dataSet1)
+        protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
             richTextBox.Clear();
             string actionSourceFilter = comboBox1.SelectedItem.ToString();
@@ -231,13 +216,6 @@ namespace WaywardGamers.KParser.Plugin
             }
             #endregion
 
-            //IEnumerable<MobGroup> mobSet = null;
-
-
-            //int minXP = 0;
-            //if (checkBox1.Checked == true)
-            //    minXP = 1;
-
             #region LINQ queries
             //mobSet = from c in dataSet.Combatants
             //         where ((c.CombatantName == mobName) ||
@@ -257,7 +235,7 @@ namespace WaywardGamers.KParser.Plugin
 
             if (mobFilter == "All")
             {
-                attackSet = from c in localDBCopy.Combatants
+                attackSet = from c in dataSet.Combatants
                             where ((c.CombatantType == (byte)EntityType.Player) ||
                                    (c.CombatantType == (byte)EntityType.Pet) ||
                                    (c.CombatantType == (byte)EntityType.Fellow) ||
@@ -308,7 +286,7 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     // Attacks against a particular mob type of a given base xp
 
-                    attackSet = from c in localDBCopy.Combatants
+                    attackSet = from c in dataSet.Combatants
                                 where ((c.CombatantType == (byte)EntityType.Player) ||
                                        (c.CombatantType == (byte)EntityType.Pet) ||
                                        (c.CombatantType == (byte)EntityType.Fellow) ||
@@ -383,7 +361,7 @@ namespace WaywardGamers.KParser.Plugin
                 else
                 {
                     // Attacks against a particular mob type
-                    attackSet = from c in localDBCopy.Combatants
+                    attackSet = from c in dataSet.Combatants
                                 where ((c.CombatantType == (byte)EntityType.Player) ||
                                        (c.CombatantType == (byte)EntityType.Pet) ||
                                        (c.CombatantType == (byte)EntityType.Fellow) ||
@@ -502,63 +480,6 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
-        private void ProcessMobSummary(IEnumerable<MobGroup> mobSet)
-        {
-            if (mobSet == null)
-                return;
-
-            if (mobSet.Count() == 0)
-                return;
-
-            StringBuilder sb = new StringBuilder();
-            bool headerDisplayed = false;
-
-            int mobCount;
-
-            foreach (var mob in mobSet)
-            {
-                if (mob.Battles.Count() > 0)
-                {
-                    foreach (var mobBattle in mob.Battles)
-                    {
-                        mobCount = mobBattle.Count();
-
-                        if (mobCount > 0)
-                        {
-                            if (headerDisplayed == false)
-                            {
-                                AppendBoldText("Mob Listing\n", Color.Red);
-                                AppendBoldUnderText(mobSetHeader, Color.Black);
-
-                                headerDisplayed = true;
-                            }
-
-                            sb.Append(mob.Mob.PadRight(24));
-
-                            if (mobBattle.Key > 0)
-                            {
-                                sb.Append(mobBattle.Key.ToString().PadLeft(10));
-                            }
-                            else
-                            {
-                                sb.Append("---".PadLeft(10));
-                            }
-
-                            sb.Append(mobCount.ToString().PadLeft(9));
-
-                            sb.Append("\n");
-                        }
-                    }
-                }
-            }
-
-            if (headerDisplayed == true)
-            {
-                sb.Append("\n\n");
-                AppendNormalText(sb.ToString());
-            }
-        }
-
         private void ProcessAttackSummary(IEnumerable<AttackGroup> attacksByPlayer)
         {
             if (attacksByPlayer == null)
@@ -594,8 +515,6 @@ namespace WaywardGamers.KParser.Plugin
             {
                 if (playerDamage[player.Player] > 0)
                 {
-                    // Player name
-                    sb.Append(player.Player.PadRight(20));
 
                     playerDmg = playerDamage[player.Player];
                     damageShare = (double)playerDmg / totalDamage;
@@ -618,17 +537,10 @@ namespace WaywardGamers.KParser.Plugin
                     ttlWskillDmg += wskillDmg;
                     ttlOtherDmg += otherDmg;
 
-                    sb.Append(playerDmg.ToString().PadLeft(10));
-                    sb.Append(damageShare.ToString("P2").PadLeft(11));
+                    sb.AppendFormat("{0,-20}{1,10}{2,11:p2}{3,12}{4,12}{5,12}{6,12}{7,12}{8,11}\n",
+                        player.Player, playerDmg, damageShare, meleeDmg, rangeDmg,
+                        abilDmg, wskillDmg, spellDmg, otherDmg);
 
-                    sb.Append(meleeDmg.ToString().PadLeft(12));
-                    sb.Append(rangeDmg.ToString().PadLeft(12));
-                    sb.Append(abilDmg.ToString().PadLeft(12));
-                    sb.Append(wskillDmg.ToString().PadLeft(12));
-                    sb.Append(spellDmg.ToString().PadLeft(12));
-                    sb.Append(otherDmg.ToString().PadLeft(11));
-
-                    sb.Append("\n");
                 }
             }
 
