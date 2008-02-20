@@ -79,6 +79,12 @@ namespace WaywardGamers.KParser
             // Load plugins on startup and add them to the Windows menu
             FindAndLoadPlugins();
             PopulatePluginMenu();
+
+            // Handle any command line arguments, to allow us to open files
+            // directed at us.
+            string[] cla = Environment.GetCommandLineArgs();
+            if (cla.Length > 1)
+                OpenFile(cla[1]);
         }
 
         private void ParserWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -167,46 +173,7 @@ namespace WaywardGamers.KParser
             {
                 StopParsing();
 
-                try
-                {
-                    DatabaseManager.Instance.OpenDatabase(ofd.FileName);
-
-                }
-                catch (Exception ex)
-                {
-                    Logger.Instance.Log(ex);
-                    MessageBox.Show("Unable to open database.  You may need to reparse or upgrade the database file.",
-                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                finally
-                {
-                    Cursor.Current = Cursors.Default;
-                }
-
-                try
-                {
-                    Cursor.Current = Cursors.WaitCursor;
-
-                    lock (activePluginList)
-                    {
-                        foreach (IPlugin plugin in activePluginList)
-                        {
-                            using (new ProfileRegion("Opening " + plugin.TabName))
-                            {
-                                plugin.DatabaseOpened(DatabaseManager.Instance.Database);
-                            }
-                        }
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    Logger.Instance.Log(ex);
-                }
-                finally
-                {
-                    Cursor.Current = Cursors.Default;
-                }
+                OpenFile(ofd.FileName);
             }
         }
 
@@ -420,6 +387,47 @@ namespace WaywardGamers.KParser
 
             fileName = "";
             return false;
+        }
+
+        private void OpenFile(string fileName)
+        {
+            if (File.Exists(fileName) == false)
+                return;
+
+            try
+            {
+                DatabaseManager.Instance.OpenDatabase(fileName);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Log(ex);
+                MessageBox.Show("Unable to open database.  You may need to reparse or upgrade the database file.",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            try
+            {
+                Cursor.Current = Cursors.WaitCursor;
+
+                lock (activePluginList)
+                {
+                    foreach (IPlugin plugin in activePluginList)
+                    {
+                        using (new ProfileRegion("Opening " + plugin.TabName))
+                        {
+                            plugin.DatabaseOpened(DatabaseManager.Instance.Database);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Log(ex);
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+            }
         }
 
         private void MonitorReparse(object sender, Monitoring.DatabaseReparseEventArgs e)
