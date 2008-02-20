@@ -170,8 +170,9 @@ namespace WaywardGamers.KParser.Plugin
         int totalDamage;
         List<string> playerList = new List<string>();
         Dictionary<string, int> playerDamage = new Dictionary<string,int>();
+        IEnumerable<AttackGroup> attackSet = null;
+        string lastMobFilter = string.Empty;
 
-        string mobSetHeader     = "Mob                        Base XP   Number\n";
         string summaryHeader    = "Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg\n";
         string meleeHeader      = "Player            Melee Dmg   Melee %   Hit/Miss   M.Acc %  M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
         string rangeHeader      = "Player            Range Dmg   Range %   Hit/Miss   R.Acc %  R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
@@ -215,14 +216,6 @@ namespace WaywardGamers.KParser.Plugin
                 }
             }
             #endregion
-
-            IEnumerable<AttackGroup> attackSet = null;
-            //IEnumerable<MobGroup> mobSet = null;
-
-
-            //int minXP = 0;
-            //if (checkBox1.Checked == true)
-            //    minXP = 1;
 
             #region LINQ queries
             //mobSet = from c in dataSet.Combatants
@@ -488,63 +481,6 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
-        private void ProcessMobSummary(IEnumerable<MobGroup> mobSet)
-        {
-            if (mobSet == null)
-                return;
-
-            if (mobSet.Count() == 0)
-                return;
-
-            StringBuilder sb = new StringBuilder();
-            bool headerDisplayed = false;
-
-            int mobCount;
-
-            foreach (var mob in mobSet)
-            {
-                if (mob.Battles.Count() > 0)
-                {
-                    foreach (var mobBattle in mob.Battles)
-                    {
-                        mobCount = mobBattle.Count();
-
-                        if (mobCount > 0)
-                        {
-                            if (headerDisplayed == false)
-                            {
-                                AppendBoldText("Mob Listing\n", Color.Red);
-                                AppendBoldUnderText(mobSetHeader, Color.Black);
-
-                                headerDisplayed = true;
-                            }
-
-                            sb.Append(mob.Mob.PadRight(24));
-
-                            if (mobBattle.Key > 0)
-                            {
-                                sb.Append(mobBattle.Key.ToString().PadLeft(10));
-                            }
-                            else
-                            {
-                                sb.Append("---".PadLeft(10));
-                            }
-
-                            sb.Append(mobCount.ToString().PadLeft(9));
-
-                            sb.Append("\n");
-                        }
-                    }
-                }
-            }
-
-            if (headerDisplayed == true)
-            {
-                sb.Append("\n\n");
-                AppendNormalText(sb.ToString());
-            }
-        }
-
         private void ProcessAttackSummary(IEnumerable<AttackGroup> attacksByPlayer)
         {
             if (attacksByPlayer == null)
@@ -580,8 +516,6 @@ namespace WaywardGamers.KParser.Plugin
             {
                 if (playerDamage[player.Player] > 0)
                 {
-                    // Player name
-                    sb.Append(player.Player.PadRight(20));
 
                     playerDmg = playerDamage[player.Player];
                     damageShare = (double)playerDmg / totalDamage;
@@ -604,17 +538,10 @@ namespace WaywardGamers.KParser.Plugin
                     ttlWskillDmg += wskillDmg;
                     ttlOtherDmg += otherDmg;
 
-                    sb.Append(playerDmg.ToString().PadLeft(10));
-                    sb.Append(damageShare.ToString("P2").PadLeft(11));
+                    sb.AppendFormat("{0,-20}{1,10}{2,11:p2}{3,12}{4,12}{5,12}{6,12}{7,12}{8,11}\n",
+                        player.Player, playerDmg, damageShare, meleeDmg, rangeDmg,
+                        abilDmg, wskillDmg, spellDmg, otherDmg);
 
-                    sb.Append(meleeDmg.ToString().PadLeft(12));
-                    sb.Append(rangeDmg.ToString().PadLeft(12));
-                    sb.Append(abilDmg.ToString().PadLeft(12));
-                    sb.Append(wskillDmg.ToString().PadLeft(12));
-                    sb.Append(spellDmg.ToString().PadLeft(12));
-                    sb.Append(otherDmg.ToString().PadLeft(11));
-
-                    sb.Append("\n");
                 }
             }
 
