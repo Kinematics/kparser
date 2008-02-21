@@ -436,11 +436,16 @@ namespace WaywardGamers.KParser
                 // send those messages to the database
                 if (messagesToProcess.Count > 0)
                 {
-                    DatabaseManager.Instance.ProcessNewMessages(messagesToProcess, false);
-
-                    // Save dump of that data if debug flag is set.
-                    if (Properties.Settings.Default.dumpDebugTextToFile == true)
-                        DumpToFile(messagesToProcess, false, false);
+                    try
+                    {
+                        DatabaseManager.Instance.ProcessNewMessages(messagesToProcess, false);
+                    }
+                    finally
+                    {
+                        // Save dump of that data if debug flag is set.
+                        if (Properties.Settings.Default.dumpDebugTextToFile == true)
+                            DumpToFile(messagesToProcess, false, false);
+                    }
                 }
 
                 // If we're done parsing, send all remaining messages to the database as well
@@ -448,12 +453,17 @@ namespace WaywardGamers.KParser
                 {
                     lock (messageCollection)
                     {
-                        DatabaseManager.Instance.ProcessNewMessages(messageCollection, true);
-
-                        // Save dump of that data if debug flag is set.  Save out entities
-                        // at the end as well.
-                        if (Properties.Settings.Default.dumpDebugTextToFile == true)
-                            DumpToFile(messageCollection, false, true);
+                        try
+                        {
+                            DatabaseManager.Instance.ProcessNewMessages(messageCollection, true);
+                        }
+                        finally
+                        {
+                            // Save dump of that data if debug flag is set.  Save out entities
+                            // at the end as well.
+                            if (Properties.Settings.Default.dumpDebugTextToFile == true)
+                                DumpToFile(messageCollection, false, true);
+                        }
                     }
                 }
             }
