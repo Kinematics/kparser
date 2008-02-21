@@ -158,6 +158,10 @@ namespace WaywardGamers.KParser
 
         private void menuContinueParse_Click(object sender, EventArgs e)
         {
+            // Let the database notify us of changes, and we'll notify the active plugins.
+            DatabaseManager.Instance.DatabaseChanging += MonitorDatabaseChanging;
+            DatabaseManager.Instance.DatabaseChanged += MonitorDatabaseChanged;
+            
             Monitor.Continue();
         }
 
@@ -697,6 +701,8 @@ namespace WaywardGamers.KParser
             DatabaseManager.Instance.DatabaseChanging += MonitorDatabaseChanging;
             DatabaseManager.Instance.DatabaseChanged += MonitorDatabaseChanged;
 
+            bool reopeningFile = (outputFileName != string.Empty) && File.Exists(outputFileName);
+
             // Reset all plugins
             lock (activePluginList)
             {
@@ -709,6 +715,18 @@ namespace WaywardGamers.KParser
             try
             {
                 Monitor.Start(outputFileName);
+
+                if (reopeningFile == true)
+                {
+                    lock (activePluginList)
+                    {
+                        foreach (IPlugin plugin in activePluginList)
+                        {
+                            plugin.DatabaseOpened(DatabaseManager.Instance.Database);
+                        }
+                    }
+                }
+
 
                 if ((outputFileName == null) || (outputFileName == string.Empty))
                     toolStripStatusLabel.Text = "Parsing to default file.";
