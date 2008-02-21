@@ -81,12 +81,17 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Loot
-        public static readonly Regex FindLoot = new Regex(string.Format("^You find {0} (on|in) {1}\\.$", item, target));
-        public static readonly Regex GetLoot  = new Regex(string.Format("^{0} obtains {1}\\.$", playername, item));
-        public static readonly Regex GetGil   = new Regex(string.Format("^{0} obtains {1}\\.$", playername, money));
-        public static readonly Regex LootReqr = new Regex(string.Format("^You do not meet the requirements to obtain {0}\\.$", item));
-        public static readonly Regex LootLost = new Regex(string.Format("^{0} lost\\.$", item));
-        public static readonly Regex LotItem  = new Regex(string.Format("^{0}'s lot for {1}: {2} points\\.$", playername, item, number));
+        public static readonly Regex FindLootOn = new Regex(string.Format("^You find {0} on {1}\\.$", item, target));
+        public static readonly Regex FindLootIn = new Regex(string.Format("^You find {0} in {1}\\.$", item, target));
+        public static readonly Regex GetLoot    = new Regex(string.Format("^{0} obtains {1}\\.$", playername, item));
+        public static readonly Regex GetGil     = new Regex(string.Format("^{0} obtains {1}\\.$", playername, money));
+        public static readonly Regex LootReqr   = new Regex(string.Format("^You do not meet the requirements to obtain {0}\\.$", item));
+        public static readonly Regex LootLost   = new Regex(string.Format("^{0} lost\\.$", item));
+        public static readonly Regex LotItem    = new Regex(string.Format("^{0}'s lot for {1}: {2} points\\.$", playername, item, number));
+        public static readonly Regex Steal      = new Regex(string.Format("^{0} steals {1} from {2}\\.$", playername, item, target));
+        public static readonly Regex FailSteal  = new Regex(string.Format("^{0} fails to steal from {1}\\.$", playername, target));
+        public static readonly Regex Mug        = new Regex(string.Format("^{0} mugs {1} from {2}\\.$", playername, money, target));
+        public static readonly Regex FailMug    = new Regex(string.Format("^{0} fails to mug {1}\\.$", playername, target));
         #endregion
 
 

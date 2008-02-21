@@ -63,9 +63,18 @@ namespace WaywardGamers.KParser
         EndBattle,  // chain #, xp, loot, gains a level
         Experience,
         Loot,
+        Steal, // Interaction + Loot
         Fishing,
         Crafting,
         Other
+    }
+
+    public enum LootType : byte
+    {
+        Unknown,
+        Drop,
+        Steal,
+        Chest,
     }
     #endregion
 
@@ -136,6 +145,7 @@ namespace WaywardGamers.KParser
         AdditionalEffect,
         Counterattack,
         Spikes,
+        Steal,
     }
 
 
@@ -143,19 +153,19 @@ namespace WaywardGamers.KParser
     {
         None,
         NoEffect,
-        Paralyzed,
-        Interrupted,
-        Intimidated,
-        NotEnoughMP,
-        NotEnoughTP,
-        TooFarAway,
         OutOfRange,
+        TooFarAway,
         CannotSee,
+        CannotAttack,
         UnableToCast,
         UnableToUse,
+        Interrupted,
+        Intimidated,
+        FailedToActivate,
+        Paralyzed,
+        NotEnoughMP,
+        NotEnoughTP,
         Autotarget,
-        CannotAttack,
-        FailedToActivate
     }
 
     public enum DamageModifier : byte
@@ -204,6 +214,7 @@ namespace WaywardGamers.KParser
         NPC,
         Fellow,
         Skillchain,
+        TreasureChest,
     }
 
     [Flags]
@@ -214,7 +225,7 @@ namespace WaywardGamers.KParser
         Party = 0x02,
         Other = 0x04,
         Pet = 0x08,
-        NPC = 0x16,
+        NPC = 0x10,
     }
 
     public enum SpeakerType : byte

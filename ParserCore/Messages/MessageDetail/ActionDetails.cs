@@ -34,6 +34,10 @@ namespace WaywardGamers.KParser
                         if (LootDetails == null)
                             LootDetails = new LootDetails();
                         break;
+                    case EventMessageType.Steal:
+                        if (CombatDetails == null)
+                            CombatDetails = new CombatDetails();
+                        break;
                     case EventMessageType.Experience:
                         if (ExperienceDetails == null)
                             ExperienceDetails = new ExperienceDetails();
@@ -68,7 +72,8 @@ namespace WaywardGamers.KParser
             sb.AppendFormat("Action Details:\n");
             sb.AppendFormat("  Action Message Type: {0}\n", EventMessageType);
 
-            if (EventMessageType == EventMessageType.Interaction)
+            if ((EventMessageType == EventMessageType.Interaction) ||
+                (EventMessageType == EventMessageType.Steal))
                 sb.Append(CombatDetails.ToString());
             if (EventMessageType == EventMessageType.Loot)
                 sb.Append(LootDetails.ToString());

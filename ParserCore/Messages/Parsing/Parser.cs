@@ -22,7 +22,7 @@ namespace WaywardGamers.KParser.Parsing
         internal static Message Parse(MessageLine messageLine)
         {
             int i = 0;
-            if (messageLine.EventSequence == 0x1d4f)
+            if (messageLine.EventSequence == 0xb68)
                 i++;
 
             Message message = GetAttachedMessage(messageLine);
@@ -381,30 +381,33 @@ namespace WaywardGamers.KParser.Parsing
             uint currentMsgCode = message.CurrentMessageCode;
 
             // Determine type of action message
-            switch (currentMsgCode)
+            if (message.EventDetails.EventMessageType == EventMessageType.Unknown)
             {
-                case 0x83: // Exp, no chain
-                case 0x79: // Item drop, Lot for item, xp chain, xp on chain, equipment changed, /recast message, /anon changed, etc)
-                case 0x7f: // Item obtained
-                    message.EventDetails.EventMessageType = EventMessageType.EndBattle;
-                    break;
-                case 0x92: // <me> caught a fish!
-                case 0x94: // other fishing messages, other stuff
-                    message.EventDetails.EventMessageType = EventMessageType.Fishing;
-                    break;
-                default: // Mark the large swaths of possible combat messages
-                    if ((currentMsgCode >= 0x13) && (currentMsgCode <= 0x84))
-                        message.EventDetails.EventMessageType = EventMessageType.Interaction;
-                    else if ((currentMsgCode >= 0xa2) && (currentMsgCode <= 0xbf))
-                        message.EventDetails.EventMessageType = EventMessageType.Interaction;
-                    else if (currentMsgCode == 0x8d)
-                    {
-                        ParseCode8d(message);
-                        return;
-                    }
-                    else // Everything else is ignored.
-                        message.EventDetails.EventMessageType = EventMessageType.Other;
-                    break;
+                switch (currentMsgCode)
+                {
+                    case 0x83: // Exp, no chain
+                    case 0x79: // Item drop, Lot for item, xp chain, xp on chain, equipment changed, /recast message, /anon changed, etc)
+                    case 0x7f: // Item obtained
+                        message.EventDetails.EventMessageType = EventMessageType.EndBattle;
+                        break;
+                    case 0x92: // <me> caught a fish!
+                    case 0x94: // other fishing messages, other stuff
+                        message.EventDetails.EventMessageType = EventMessageType.Fishing;
+                        break;
+                    default: // Mark the large swaths of possible combat messages
+                        if ((currentMsgCode >= 0x13) && (currentMsgCode <= 0x84))
+                            message.EventDetails.EventMessageType = EventMessageType.Interaction;
+                        else if ((currentMsgCode >= 0xa2) && (currentMsgCode <= 0xbf))
+                            message.EventDetails.EventMessageType = EventMessageType.Interaction;
+                        else if (currentMsgCode == 0x8d)
+                        {
+                            ParseCode8d(message);
+                            return;
+                        }
+                        else // Everything else is ignored.
+                            message.EventDetails.EventMessageType = EventMessageType.Other;
+                        break;
+                }
             }
 
             // Based on event subcategory, continue parsing
@@ -416,11 +419,82 @@ namespace WaywardGamers.KParser.Parsing
                 case EventMessageType.EndBattle:
                     ParseEndBattle(message);
                     break;
+                case EventMessageType.Steal:
+                    ParseStealing(message);
+                    break;
                 default:
                     // Ignore Fishing for now
                     // Ignore Other always
                     break;
             }
+        }
+
+        private static bool ParseStealing(Message message)
+        {
+            Match stealMatch = null;
+            CombatDetails msgCombatDetails = message.EventDetails.CombatDetails;
+            string currentMessageText = message.CurrentMessageText;
+            TargetDetails target = null;
+
+            stealMatch = ParseExpressions.Steal.Match(currentMessageText);
+            if (stealMatch.Success == true)
+            {
+                msgCombatDetails.ActorName = stealMatch.Groups[ParseFields.Name].Value;
+                msgCombatDetails.ActionName = "Steal";
+                target = msgCombatDetails.AddTarget(stealMatch.Groups[ParseFields.Fulltarget].Value);
+                msgCombatDetails.ActionType = ActionType.Steal;
+                msgCombatDetails.ItemName = stealMatch.Groups[ParseFields.Item].Value;
+                msgCombatDetails.HarmType = HarmType.None;
+                msgCombatDetails.AidType = AidType.None;
+                message.ParseSuccessful = true;
+                return true;
+            }
+
+            stealMatch = ParseExpressions.FailSteal.Match(currentMessageText);
+            if (stealMatch.Success == true)
+            {
+                msgCombatDetails.ActorName = stealMatch.Groups[ParseFields.Name].Value;
+                msgCombatDetails.ActionName = "Steal";
+                target = msgCombatDetails.AddTarget(stealMatch.Groups[ParseFields.Fulltarget].Value);
+                msgCombatDetails.ActionType = ActionType.Steal;
+                msgCombatDetails.FailedActionType = FailedActionType.NoEffect;
+                target.FailedActionType = FailedActionType.NoEffect;
+                msgCombatDetails.HarmType = HarmType.None;
+                msgCombatDetails.AidType = AidType.None;
+                message.ParseSuccessful = true;
+                return true;
+            }
+
+            stealMatch = ParseExpressions.Mug.Match(currentMessageText);
+            if (stealMatch.Success == true)
+            {
+                msgCombatDetails.ActorName = stealMatch.Groups[ParseFields.Name].Value;
+                msgCombatDetails.ActionName = "Mug";
+                target = msgCombatDetails.AddTarget(stealMatch.Groups[ParseFields.Fulltarget].Value);
+                msgCombatDetails.ActionType = ActionType.Steal;
+                target.Amount = int.Parse(stealMatch.Groups[ParseFields.Money].Value);
+                msgCombatDetails.HarmType = HarmType.None;
+                msgCombatDetails.AidType = AidType.None;
+                message.ParseSuccessful = true;
+                return true;
+            }
+
+            stealMatch = ParseExpressions.FailMug.Match(currentMessageText);
+            if (stealMatch.Success == true)
+            {
+                msgCombatDetails.ActorName = stealMatch.Groups[ParseFields.Name].Value;
+                msgCombatDetails.ActionName = "Mug";
+                target = msgCombatDetails.AddTarget(stealMatch.Groups[ParseFields.Fulltarget].Value);
+                msgCombatDetails.ActionType = ActionType.Steal;
+                msgCombatDetails.FailedActionType = FailedActionType.NoEffect;
+                target.FailedActionType = FailedActionType.NoEffect;
+                msgCombatDetails.HarmType = HarmType.None;
+                msgCombatDetails.AidType = AidType.None;
+                message.ParseSuccessful = true;
+                return true;
+            }
+
+            return false;
         }
 
         private static void ParseCode8d(Message message)
@@ -468,13 +542,26 @@ namespace WaywardGamers.KParser.Parsing
                                 return;
                             }
                             // Loot found/dropped by mob
-                            lootOrXP = ParseExpressions.FindLoot.Match(message.CurrentMessageText);
+                            lootOrXP = ParseExpressions.FindLootOn.Match(message.CurrentMessageText);
                             if (lootOrXP.Success == true)
                             {
                                 message.EventDetails.EventMessageType = EventMessageType.Loot;
                                 message.EventDetails.LootDetails.IsFoundMessage = true;
                                 message.EventDetails.LootDetails.ItemName = lootOrXP.Groups[ParseFields.Item].Value;
-                                message.EventDetails.LootDetails.MobName = lootOrXP.Groups[ParseFields.Target].Value;
+                                message.EventDetails.LootDetails.TargetName = lootOrXP.Groups[ParseFields.Target].Value;
+                                message.EventDetails.LootDetails.TargetType = EntityType.Mob;
+                                message.ParseSuccessful = true;
+                                break;
+                            }
+                            // Loot found in a chest/coffer
+                            lootOrXP = ParseExpressions.FindLootIn.Match(message.CurrentMessageText);
+                            if (lootOrXP.Success == true)
+                            {
+                                message.EventDetails.EventMessageType = EventMessageType.Loot;
+                                message.EventDetails.LootDetails.IsFoundMessage = true;
+                                message.EventDetails.LootDetails.ItemName = lootOrXP.Groups[ParseFields.Item].Value;
+                                message.EventDetails.LootDetails.TargetName = lootOrXP.Groups[ParseFields.Target].Value;
+                                message.EventDetails.LootDetails.TargetType = EntityType.TreasureChest;
                                 message.ParseSuccessful = true;
                                 break;
                             }
@@ -624,6 +711,13 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.SuccessLevel = ParseCodes.Instance.GetSuccessType(message.CurrentMessageCode);
             }
 
+            if ((msgCombatDetails.HarmType == HarmType.Unknown) ||
+                (msgCombatDetails.AidType == AidType.Unknown))
+            {
+                if (ParseStealing(message) == true)
+                    return;
+            }
+
             switch (msgCombatDetails.InteractionType)
             {
                 case InteractionType.Aid:
@@ -699,6 +793,10 @@ namespace WaywardGamers.KParser.Parsing
                         msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                         msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                         message.ParseSuccessful = true;
+
+                        if ((msgCombatDetails.ActionName == "Steal") || (msgCombatDetails.ActionName == "Mug"))
+                            message.EventDetails.EventMessageType = EventMessageType.Steal;
+                        
                         return;
                     }
 
@@ -1299,6 +1397,9 @@ namespace WaywardGamers.KParser.Parsing
                         combatDetails.ActionType = ActionType.Ability;
                     combatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                     combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+
+                    if ((combatDetails.ActionName == "Steal") || (combatDetails.ActionName == "Mug"))
+                        message.EventDetails.EventMessageType = EventMessageType.Steal;
                 }
             }
 
@@ -1471,6 +1572,9 @@ namespace WaywardGamers.KParser.Parsing
                     // Make corrections for certain special actions that are really enfeebles
                     if (combatDetails.ActionName == "Charm")
                         combatDetails.HarmType = HarmType.Enfeeble;
+
+                    if ((combatDetails.ActionName == "Steal") || (combatDetails.ActionName == "Mug"))
+                        message.EventDetails.EventMessageType = EventMessageType.Steal;
                 }
             }
 
@@ -1734,6 +1838,10 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                 message.ParseSuccessful = true;
+
+                if ((msgCombatDetails.ActionName == "Steal") || (msgCombatDetails.ActionName == "Mug"))
+                    message.EventDetails.EventMessageType = EventMessageType.Steal;
+                
                 return;
             }
 
@@ -1979,6 +2087,10 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                 message.ParseSuccessful = true;
+
+                if ((msgCombatDetails.ActionName == "Steal") || (msgCombatDetails.ActionName == "Mug"))
+                    message.EventDetails.EventMessageType = EventMessageType.Steal;
+                
                 return;
             }
             combatMatch = ParseExpressions.UseAbilityOn.Match(currentMessageText);
@@ -2256,6 +2368,23 @@ namespace WaywardGamers.KParser.Parsing
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                     message.ParseSuccessful = true;
+                    return;
+                }
+            }
+
+            if (combatMatch.Success == false)
+            {
+                combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.ActionType = ActionType.Ability;
+                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                    message.ParseSuccessful = true;
+
+                    if ((msgCombatDetails.ActionName == "Steal") || (msgCombatDetails.ActionName == "Mug"))
+                        message.EventDetails.EventMessageType = EventMessageType.Steal;
+
                     return;
                 }
             }
