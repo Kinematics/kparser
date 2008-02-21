@@ -57,7 +57,6 @@ namespace WaywardGamers.KParser
             assemblyVersionString = string.Format("{0}.{1}", assemVersion.Major, assemVersion.Minor);
 
             // Initialize record-keeping variables
-            lastKilledList = new Dictionary<string, KPDatabaseDataSet.BattlesRow>();
             activeBattleList = new Dictionary<KPDatabaseDataSet.BattlesRow, DateTime>();
             activeMobBattleList = new Dictionary<string, KPDatabaseDataSet.BattlesRow>();
         }
@@ -115,7 +114,6 @@ namespace WaywardGamers.KParser
 
         private bool disposed = false;
 
-        private Dictionary<string, KPDatabaseDataSet.BattlesRow> lastKilledList;
         private KPDatabaseDataSet.BattlesRow lastFinishedBattle;
 
         private Dictionary<KPDatabaseDataSet.BattlesRow, DateTime> activeBattleList;
@@ -309,7 +307,6 @@ namespace WaywardGamers.KParser
         {
             UpdateActiveBattleList(true);
 
-            lastKilledList.Clear();
             activeBattleList.Clear();
             activeMobBattleList.Clear();
 
@@ -332,7 +329,6 @@ namespace WaywardGamers.KParser
                 localDB = null;
             }
 
-            lastKilledList.Clear();
             activeBattleList.Clear();
             activeMobBattleList.Clear();
 
@@ -487,6 +483,7 @@ namespace WaywardGamers.KParser
                         case EventMessageType.Loot:
                             InsertLoot(message);
                             break;
+                        case EventMessageType.Steal:
                         case EventMessageType.Interaction:
                             InsertCombat(message);
                             break;
@@ -563,43 +560,45 @@ namespace WaywardGamers.KParser
             // Messages for when items are found on mob.
             if (message.EventDetails.LootDetails.IsFoundMessage == true)
             {
-                // Check our local list of recent kills
-                KPDatabaseDataSet.BattlesRow lastKill = null;
+                // First locate the target (mob or chest) in the combatants table
+                var targetCombatant = localDB.Combatants.GetCombatant(message.EventDetails.LootDetails.TargetName,
+                    message.EventDetails.LootDetails.TargetType);
 
-                if (lastKilledList.TryGetValue(message.EventDetails.LootDetails.MobName, out lastKill) == false)
+                // Get all battles the target has been involved in
+                var targetBattles = targetCombatant.GetBattlesRowsByEnemyCombatantRelation();
+
+                KPDatabaseDataSet.BattlesRow lastBattle = null;
+
+                // If any battles, get the last one.
+                if ((targetBattles != null) && (targetBattles.Count() > 0))
                 {
-                    // No record of the last kill for this mob type; create a
-                    // new battle record for it.
-
-                    // First locate the mob in the combatants table
-                    var mobCombatant = localDB.Combatants.GetCombatant(message.EventDetails.LootDetails.MobName, EntityType.Mob);
-
-                    lastKill = localDB.Battles.AddBattlesRow(mobCombatant, message.Timestamp,
-                        message.Timestamp, true, null, (byte)ActorType.Unknown, 0, 0,
-                        (byte)MobDifficulty.Unknown, false);
-
-                    lastKilledList[message.EventDetails.LootDetails.MobName] = lastKill;
+                    lastBattle = targetBattles.OrderBy(b => b.EndTime).Last();
                 }
 
-                // If last kill is more than 5 minutes 30 seconds ago (30 sec buffer for
-                // default drop time), create a new battle instead.
-                if (lastKill.EndTime < (message.Timestamp.Subtract(TimeSpan.FromSeconds(330))))
+                // If we found one, make sure it's within 1:00 of Now.  This is
+                // for initial 'found' messages.
+                if (lastBattle != null)
                 {
-                    // First locate the mob in the combatants table
-                    var mobCombatant = localDB.Combatants.GetCombatant(message.EventDetails.LootDetails.MobName, EntityType.Mob);
-
-                    lastKill = localDB.Battles.AddBattlesRow(mobCombatant, message.Timestamp,
+                    if (lastBattle.EndTime < (message.Timestamp.Subtract(TimeSpan.FromSeconds(60))))
+                    {
+                        lastBattle = localDB.Battles.AddBattlesRow(targetCombatant, message.Timestamp,
+                            message.Timestamp, true, null, (byte)ActorType.Unknown, 0, 0,
+                            (byte)MobDifficulty.Unknown, false);
+                    }
+                }
+                else
+                {
+                    // Or if we didn't find any battles for this target, create a new one.
+                    lastBattle = localDB.Battles.AddBattlesRow(targetCombatant, message.Timestamp,
                         message.Timestamp, true, null, (byte)ActorType.Unknown, 0, 0,
                         (byte)MobDifficulty.Unknown, false);
-
-                    lastKilledList[message.EventDetails.LootDetails.MobName] = lastKill;
                 }
-
+                
                 // Locate the item by name in the item table.
                 var itemRow = localDB.Items.GetItem(message.EventDetails.LootDetails.ItemName);
 
                 // Add the entry to the loot table.
-                localDB.Loot.AddLootRow(itemRow, lastKill, null, 0, false);
+                localDB.Loot.AddLootRow(itemRow, lastBattle, null, 0, false);
             }
             else
             {
@@ -975,7 +974,6 @@ namespace WaywardGamers.KParser
                             (byte)MobDifficulty.Unknown, false);
                     }
 
-                    lastKilledList[target.Name] = battle;
                     lastFinishedBattle = battle;
                 }
                 else
