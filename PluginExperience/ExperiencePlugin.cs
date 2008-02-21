@@ -122,9 +122,9 @@ namespace WaywardGamers.KParser.Plugin
                     totalFightsLength.Hours, totalFightsLength.Minutes, totalFightsLength.Seconds);
                 sb1.AppendFormat("Avg Time/Fight   : {0:F2} seconds\n", timePerFight);
                 sb1.AppendFormat("Avg Fight Length : {0:F2} seconds\n", avgFightLength);
-                sb1.AppendFormat("XP/Hour          : {0:F2}\n", xpPerHour);
-                sb1.AppendFormat("XP/Minute        : {0:F2}\n", xpPerMinute);
                 sb1.AppendFormat("XP/Fight         : {0:F2}\n", xpPerFight);
+                sb1.AppendFormat("XP/Minute        : {0:F2}\n", xpPerMinute);
+                sb1.AppendFormat("XP/Hour          : {0:F2}\n", xpPerHour);
                 sb1.Append("\n\n");
 
 
