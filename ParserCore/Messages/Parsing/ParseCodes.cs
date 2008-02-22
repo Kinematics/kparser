@@ -821,6 +821,8 @@ namespace WaywardGamers.KParser
                     return new List<uint>() { 0x70, 0x6b };
                 case 0x70:
                     return new List<uint>() { 0x66 };
+                case 0x6b:
+                    return new List<uint>() { 0x66, 0x70 };
                 case 0x72:
                     return new List<uint>() { 0x65, 0x6f };
                 // Enfeebles (successful and resisted)

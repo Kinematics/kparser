@@ -22,7 +22,7 @@ namespace WaywardGamers.KParser.Parsing
         internal static Message Parse(MessageLine messageLine)
         {
             int i = 0;
-            if (messageLine.EventSequence == 0xb68)
+            if (messageLine.EventSequence == 0x2e7d)
                 i++;
 
             Message message = GetAttachedMessage(messageLine);
@@ -417,6 +417,8 @@ namespace WaywardGamers.KParser.Parsing
                     ParseCombat(message);
                     break;
                 case EventMessageType.EndBattle:
+                case EventMessageType.Experience:
+                case EventMessageType.Loot:
                     ParseEndBattle(message);
                     break;
                 case EventMessageType.Steal:
@@ -2220,6 +2222,14 @@ namespace WaywardGamers.KParser.Parsing
                 combatMatch = ParseExpressions.UnableToUse2.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
+                    msgCombatDetails.FailedActionType = FailedActionType.UnableToUse;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.UnableToUse3.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.FailedActionType = FailedActionType.UnableToUse;
                     message.ParseSuccessful = true;
                     return;

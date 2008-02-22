@@ -146,7 +146,8 @@ namespace WaywardGamers.KParser
         public static readonly Regex UnableToCast = new Regex(string.Format("^Unable to cast spells at this time\\.$"));
         public static readonly Regex UnableToUse  = new Regex(string.Format("^Unable to use job ability\\.$"));
         public static readonly Regex UnableToUse2 = new Regex(string.Format("^Unable to use weapon skill\\.$"));
-        public static readonly Regex NoEffect    = new Regex(string.Format("^{0}'(s)? {1} has no effect on {2}\\.$", name, spell, target));
+        public static readonly Regex UnableToUse3 = new Regex(string.Format("^{0} is unable to use weapon skills\\.$", name));
+        public static readonly Regex NoEffect     = new Regex(string.Format("^{0}'(s)? {1} has no effect on {2}\\.$", name, spell, target));
         public static readonly Regex NoEffect2   = new Regex(string.Format("^No effect on {0}\\.$", target));
         public static readonly Regex NoEffect3   = new Regex(string.Format("^{0} casts {1} on {2}, but the spell fails to take effect\\.$", name, spell, target));
         public static readonly Regex AutoTarget  = new Regex(string.Format("^Auto-targeting {0}\\.$", target));
