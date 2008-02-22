@@ -257,17 +257,20 @@ namespace WaywardGamers.KParser.Plugin
                                 Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                         where (n.ActionType == (byte)ActionType.Spell &&
                                                (n.HarmType == (byte)HarmType.Damage ||
-                                                n.HarmType == (byte)HarmType.Drain))
+                                                n.HarmType == (byte)HarmType.Drain) &&
+                                                n.Preparing == false)
                                         select n,
                                 Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                           where (n.ActionType == (byte)ActionType.Ability &&
                                                (n.HarmType == (byte)HarmType.Damage ||
-                                                n.HarmType == (byte)HarmType.Drain))
+                                                n.HarmType == (byte)HarmType.Drain) &&
+                                                n.Preparing == false)
                                           select n,
                                 WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                          where (n.ActionType == (byte)ActionType.Weaponskill &&
                                                (n.HarmType == (byte)HarmType.Damage ||
-                                                n.HarmType == (byte)HarmType.Drain))
+                                                n.HarmType == (byte)HarmType.Drain) &&
+                                                n.Preparing == false)
                                          select n,
                                 SC = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                      where (n.ActionType == (byte)ActionType.Skillchain &&
