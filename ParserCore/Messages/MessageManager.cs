@@ -234,7 +234,9 @@ namespace WaywardGamers.KParser
                             (m.EventDetails.CombatDetails.Targets.Any(t =>
                                t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false) &&
                             (m.EventDetails.CombatDetails.Targets.Any(t =>
-                               t.EffectName ==  parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true)
+                               t.EffectName == parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true) &&
+                            (m.EventDetails.CombatDetails.Targets.Any(t =>
+                               t.EntityType == parsedMessage.EventDetails.CombatDetails.Targets.First().EntityType) == true)
                            )
                           )
                          ) &&
@@ -263,7 +265,9 @@ namespace WaywardGamers.KParser
                             (m.EventDetails.CombatDetails.Targets.Any(t =>
                                t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false) &&
                             (m.EventDetails.CombatDetails.Targets.Any(t =>
-                               t.EffectName == parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true)
+                               t.EffectName == parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true) &&
+                            (m.EventDetails.CombatDetails.Targets.Any(t =>
+                               t.EntityType == parsedMessage.EventDetails.CombatDetails.Targets.First().EntityType) == true)
                            )
                           )
                          ) &&
@@ -297,7 +301,9 @@ namespace WaywardGamers.KParser
                                         (m.EventDetails.CombatDetails.Targets.Any(t =>
                                            t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false) &&
                                         (m.EventDetails.CombatDetails.Targets.Any(t =>
-                                           t.EffectName == parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true)
+                                           t.EffectName == parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true) &&
+                                        (m.EventDetails.CombatDetails.Targets.Any(t =>
+                                           t.EntityType == parsedMessage.EventDetails.CombatDetails.Targets.First().EntityType) == true)
                                        )
                                       )
                                      ) &&
@@ -326,7 +332,9 @@ namespace WaywardGamers.KParser
                                         (m.EventDetails.CombatDetails.Targets.Any(t =>
                                            t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false) &&
                                         (m.EventDetails.CombatDetails.Targets.Any(t =>
-                                           t.EffectName == parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true)
+                                           t.EffectName == parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true) &&
+                                        (m.EventDetails.CombatDetails.Targets.Any(t =>
+                                           t.EntityType == parsedMessage.EventDetails.CombatDetails.Targets.First().EntityType) == true)
                                        )
                                       )
                                      ) &&
