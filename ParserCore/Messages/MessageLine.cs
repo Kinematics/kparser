@@ -91,6 +91,29 @@ namespace WaywardGamers.KParser
             int breakPoint;
 
             // Drop the extraneous characters at start of various messages.
+
+            char[] textOutputCharArray = TextOutput.ToCharArray();
+            char[] clippedTextOutputCharArray;
+
+            if (textOutputCharArray.Length > 2)
+            {
+                if (textOutputCharArray[0] == 0x1F)
+                {
+                    if ((textOutputCharArray[1] == 0x79) || // Item drops
+                        (textOutputCharArray[1] == 0x7F) || // Item distribution
+                        (textOutputCharArray[1] == 0x3F) || // Time limit warning
+                        (textOutputCharArray[1] == 0x8D) || // Limbus time limit
+                        (textOutputCharArray[1] == 0x2019))   // Assault time limit, byte=0x92
+                    {
+                        clippedTextOutputCharArray = new char[textOutputCharArray.Length - 2];
+                        Array.Copy(textOutputCharArray, 2, clippedTextOutputCharArray, 0, clippedTextOutputCharArray.Length);
+
+                        TextOutput = new string(clippedTextOutputCharArray);
+                    }
+                }
+            }
+
+            /*
             // Item drops
             breakString = string.Format("{0}{1}", (char)0x1F, (char)0x79);
             breakPoint = TextOutput.IndexOf(breakString);
@@ -119,12 +142,20 @@ namespace WaywardGamers.KParser
             if (breakPoint == 0)
                 TextOutput = TextOutput.Substring(2);
 
+            // Assault time limit warnings
+            breakString = string.Format("{0}{1}", (char)0x1F, (char)0x92);
+            breakPoint = TextOutput.IndexOf(breakString);
+
+            if (breakPoint == 0)
+                TextOutput = TextOutput.Substring(2);
+
             // System error messages (eg: "There are no party members.")
             breakString = string.Format("{0}{1}", (char)0x1F, (char)0x7B);
             breakPoint = TextOutput.IndexOf(breakString);
 
             if (breakPoint == 0)
                 TextOutput = TextOutput.Substring(2);
+            */
 
 
             // Drop the extraneous characters at the end of non-chat messages.
