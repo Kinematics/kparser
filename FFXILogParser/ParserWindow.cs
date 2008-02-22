@@ -792,11 +792,11 @@ namespace WaywardGamers.KParser
         #region Code for testing stuff
         private void menuTestItem_Click(object sender, EventArgs e)
         {
-            //MMHook.Hook("14,e8,12,80c08080,000000f6,0000010f,0019,00,01,02,00,Motenten uses Judgment.");
+            //MMHook.Hook("92,02,00,80808080,00002ccc,00003447,002c,00,01,00,00,’Time remaining: 10 minutes (Earth time).1");
 
-            Debug.WriteLine(string.Format("Company Name: {0}\n", Application.CompanyName));
-            Debug.WriteLine(string.Format("Product Name: {0}\n", Application.ProductName));
-            Debug.WriteLine(string.Format("Product Version: {0}\n", Application.ProductVersion));
+            //Debug.WriteLine(string.Format("Company Name: {0}\n", Application.CompanyName));
+            //Debug.WriteLine(string.Format("Product Name: {0}\n", Application.ProductName));
+            //Debug.WriteLine(string.Format("Product Version: {0}\n", Application.ProductVersion));
             //Application.CommonAppDataPath;
             //Application.UserAppDataPath;
         }
