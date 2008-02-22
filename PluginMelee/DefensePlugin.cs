@@ -57,7 +57,8 @@ namespace WaywardGamers.KParser.Plugin
             {
                 var mobsKilled = from b in dataSet.Battles
                                  where ((b.DefaultBattle == false) &&
-                                        (b.IsEnemyIDNull() == false))
+                                        (b.IsEnemyIDNull() == false) &&
+                                        (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
                                  orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
                                  group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
                                  select new
@@ -108,7 +109,8 @@ namespace WaywardGamers.KParser.Plugin
             {
                 var mobsFought = from b in e.DatasetChanges.Battles
                                  where ((b.DefaultBattle == false) &&
-                                        (b.IsEnemyIDNull() == false))
+                                        (b.IsEnemyIDNull() == false) &&
+                                        (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
                                  group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
                                  select new
                                  {
