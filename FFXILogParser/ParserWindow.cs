@@ -109,10 +109,20 @@ namespace WaywardGamers.KParser
         #region Menu Popup Handlers
         private void fileMenu_Popup(object sender, EventArgs e)
         {
-            bool enableMenus = (DatabaseManager.Instance.Database != null) &&
-                (Monitor.IsRunning == false);
-            menuContinueParse.Enabled = enableMenus;
-            menuSaveDataAs.Enabled = enableMenus;
+            bool monitorState = Monitor.IsRunning;
+            bool databaseOpen = DatabaseManager.Instance.Database != null;
+
+            // Can't start a parse if one is running.
+            menuBeginDefaultParse.Enabled = !monitorState;
+            menuBeginParseWithSave.Enabled = !monitorState;
+            menuOpenSavedData.Enabled = !monitorState;
+
+            // Can only stop a parse if one is running.
+            menuStopParse.Enabled = monitorState;
+
+            // Can only continue or save if none running, and database is opened
+            menuContinueParse.Enabled = (!monitorState) && (databaseOpen);
+            menuSaveDataAs.Enabled = (!monitorState) && (databaseOpen);
         }
 
         private void toolsMenu_Popup(object sender, EventArgs e)
@@ -158,11 +168,15 @@ namespace WaywardGamers.KParser
 
         private void menuContinueParse_Click(object sender, EventArgs e)
         {
+            
             // Let the database notify us of changes, and we'll notify the active plugins.
             DatabaseManager.Instance.DatabaseChanging += MonitorDatabaseChanging;
             DatabaseManager.Instance.DatabaseChanged += MonitorDatabaseChanged;
             
             Monitor.Continue();
+
+            toolStripStatusLabel.Text = string.Format("Continuing parse: {0}.",
+                (new FileInfo(DatabaseManager.Instance.DatabaseFilename)).Name);
         }
 
         private void menuOpenSavedData_Click(object sender, EventArgs e)
@@ -238,12 +252,6 @@ namespace WaywardGamers.KParser
 
                 try
                 {
-                    // Adjust what menu options are available
-                    menuStopParse.Enabled = true;
-                    menuBeginDefaultParse.Enabled = false;
-                    menuBeginParseWithSave.Enabled = false;
-                    menuOpenSavedData.Enabled = false;
-
                     Monitoring.DatabaseReader.Instance.ReparseProgressChanged += MonitorReparse;
 
                     try
@@ -423,6 +431,9 @@ namespace WaywardGamers.KParser
                         }
                     }
                 }
+
+                toolStripStatusLabel.Text = string.Format("Current open parse: {0}.",
+                    (new FileInfo(fileName)).Name);
             }
             catch (Exception ex)
             {
@@ -432,6 +443,8 @@ namespace WaywardGamers.KParser
             {
                 Cursor.Current = Cursors.Default;
             }
+
+
         }
 
         private void MonitorReparse(object sender, Monitoring.DatabaseReparseEventArgs e)
@@ -445,25 +458,21 @@ namespace WaywardGamers.KParser
 
             if (e.Complete == true)
             {
-                // Adjust what menu options are available
-                menuStopParse.Enabled = false;
-                menuBeginDefaultParse.Enabled = true;
-                menuBeginParseWithSave.Enabled = true;
-                menuOpenSavedData.Enabled = true;
+                Monitoring.DatabaseReader.Instance.ReparseProgressChanged -= MonitorReparse;
 
                 toolStripStatusLabel.Text = "Status: Reparse complete.";
-                //DatabaseManager.Instance.OpenDatabase(outFilename);
 
-                lock (activePluginList)
-                {
-                    foreach (IPlugin plugin in activePluginList)
-                    {
-                        plugin.DatabaseOpened(DatabaseManager.Instance.Database);
-                    }
-                }
+                OpenFile(DatabaseManager.Instance.DatabaseFilename);
 
-                Cursor.Current = Cursors.Default;
-                Monitoring.DatabaseReader.Instance.ReparseProgressChanged -= MonitorReparse;
+                //lock (activePluginList)
+                //{
+                //    foreach (IPlugin plugin in activePluginList)
+                //    {
+                //        plugin.DatabaseOpened(DatabaseManager.Instance.Database);
+                //    }
+                //}
+
+                //Cursor.Current = Cursors.Default;
 
             }
             else
@@ -489,9 +498,7 @@ namespace WaywardGamers.KParser
                     Monitoring.DatabaseReader.Instance.ReparseProgressChanged -= MonitorReparse;
 
                     // reload original database file
-                    string oldDBFile = DatabaseReadingManager.Instance.DatabaseFilename;
-                    if ((oldDBFile != null) && (oldDBFile != string.Empty))
-                        DatabaseManager.Instance.OpenDatabase(oldDBFile);
+                    OpenFile(DatabaseReadingManager.Instance.DatabaseFilename);
                 }
             }
         }
@@ -691,12 +698,6 @@ namespace WaywardGamers.KParser
         #region Parsing Control Methods
         private void StartParsing(string outputFileName)
         {
-            // Adjust what menu options are available
-            menuStopParse.Enabled = true;
-            menuBeginDefaultParse.Enabled = false;
-            menuBeginParseWithSave.Enabled = false;
-            menuOpenSavedData.Enabled = false;
-
             // Let the database notify us of changes, and we'll notify the active plugins.
             DatabaseManager.Instance.DatabaseChanging += MonitorDatabaseChanging;
             DatabaseManager.Instance.DatabaseChanged += MonitorDatabaseChanged;
@@ -745,12 +746,6 @@ namespace WaywardGamers.KParser
 
         private void StopParsing()
         {
-            // Adjust what menu options are available
-            menuStopParse.Enabled = false;
-            menuBeginDefaultParse.Enabled = true;
-            menuBeginParseWithSave.Enabled = true;
-            menuOpenSavedData.Enabled = true;
-
             Cursor.Current = Cursors.Default;
 
             Monitor.Stop();
