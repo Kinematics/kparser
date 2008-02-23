@@ -198,9 +198,7 @@ namespace WaywardGamers.KParser
             target, name, repeatname, damage));
         public static readonly Regex CounterShadow = new Regex(string.Format("^{0}'(s)? attack is countered by {1}\\. {2} of {3}'(s)? shadows absorbs the damage and disappears\\.$",
             target, name, number, repeatname));
-        public static readonly Regex ResistSpell  = new Regex(string.Format("^{0} resist(s)? the spell\\.$", target));
-        public static readonly Regex ResistSpell2 = new Regex(string.Format("^{0} resist(s)? the effects of the spell!$", target));
-        public static readonly Regex ResistSpell3 = new Regex(string.Format("^Resist! {0} resist(s)? the effects of the spell!$", target));
+        public static readonly Regex ResistSpell  = new Regex(string.Format("^(Resist! )?{0} resist(s)? the (effects of the )?spell(\\.|!)$", target));
         public static readonly Regex ResistEffect = new Regex(string.Format("^{0} resist(s)? the effect\\.$", target));
         #endregion
 

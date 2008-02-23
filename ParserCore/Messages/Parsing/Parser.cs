@@ -1780,30 +1780,6 @@ namespace WaywardGamers.KParser.Parsing
 
             if (combatMatch.Success == false)
             {
-                combatMatch = ParseExpressions.ResistSpell2.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    combatDetails.ActionType = ActionType.Spell;
-                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                    target.DefenseType = DefenseType.Resist;
-                    target.HarmType = combatDetails.HarmType;
-                }
-            }
-
-            if (combatMatch.Success == false)
-            {
-                combatMatch = ParseExpressions.ResistSpell3.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    combatDetails.ActionType = ActionType.Spell;
-                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                    target.DefenseType = DefenseType.Resist;
-                    target.HarmType = combatDetails.HarmType;
-                }
-            }
-
-            if (combatMatch.Success == false)
-            {
                 combatMatch = ParseExpressions.ResistEffect.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
@@ -1971,30 +1947,6 @@ namespace WaywardGamers.KParser.Parsing
             }
 
             combatMatch = ParseExpressions.ResistSpell.Match(currentMessageText);
-            if (combatMatch.Success == true)
-            {
-                msgCombatDetails.ActionType = ActionType.Spell;
-                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                target.DefenseType = DefenseType.Resist;
-                target.HarmType = msgCombatDetails.HarmType;
-                target.AidType = msgCombatDetails.AidType;
-                message.ParseSuccessful = true;
-                return;
-            }
-
-            combatMatch = ParseExpressions.ResistSpell2.Match(currentMessageText);
-            if (combatMatch.Success == true)
-            {
-                msgCombatDetails.ActionType = ActionType.Spell;
-                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                target.DefenseType = DefenseType.Resist;
-                target.HarmType = msgCombatDetails.HarmType;
-                target.AidType = msgCombatDetails.AidType;
-                message.ParseSuccessful = true;
-                return;
-            }
-
-            combatMatch = ParseExpressions.ResistSpell3.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
                 msgCombatDetails.ActionType = ActionType.Spell;
@@ -2504,34 +2456,6 @@ namespace WaywardGamers.KParser.Parsing
             if (combatMatch.Success == false)
             {
                 combatMatch = ParseExpressions.ResistSpell.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.ActionType = ActionType.Spell;
-                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                    target.DefenseType = DefenseType.Resist;
-                    target.HarmType = msgCombatDetails.HarmType;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-            }
-
-            if (combatMatch.Success == false)
-            {
-                combatMatch = ParseExpressions.ResistSpell2.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.ActionType = ActionType.Spell;
-                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                    target.DefenseType = DefenseType.Resist;
-                    target.HarmType = msgCombatDetails.HarmType;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-            }
-
-            if (combatMatch.Success == false)
-            {
-                combatMatch = ParseExpressions.ResistSpell3.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
                     msgCombatDetails.ActionType = ActionType.Spell;
