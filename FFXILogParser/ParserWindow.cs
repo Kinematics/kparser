@@ -42,6 +42,7 @@ namespace WaywardGamers.KParser
         private string defaultSaveDirectory;
 
         Properties.WindowSettings windowSettings = new WaywardGamers.KParser.Properties.WindowSettings();
+        Properties.Settings appSettings = new WaywardGamers.KParser.Properties.Settings();
 
         private List<IPlugin> pluginList = new List<IPlugin>();
         private List<IPlugin> activePluginList = new List<IPlugin>();
@@ -52,8 +53,6 @@ namespace WaywardGamers.KParser
         public ParserWindow()
         {
             InitializeComponent();
-
-            Properties.Settings appSettings = new WaywardGamers.KParser.Properties.Settings();
 
             applicationDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
@@ -134,6 +133,44 @@ namespace WaywardGamers.KParser
 #else
             menuTestItem.Visible = false;
 #endif
+        }
+
+        private void windowMenu_Popup(object sender, EventArgs e)
+        {
+            appSettings.Reload();
+
+            bool inDebugMode = appSettings.DebugMode;
+
+#if DEBUG
+            inDebugMode = true;
+#endif
+
+            if (inDebugMode == true)
+            {
+                for (int i = 2; i < windowMenu.MenuItems.Count; i++)
+                {
+                    windowMenu.MenuItems[i].Enabled = true;
+                }
+            }
+            else
+            {
+                IPlugin plugin;
+                for (int i = 2; i < windowMenu.MenuItems.Count; i++)
+                {
+                    plugin = pluginList[i - 2];
+                    if (plugin.IsDebug == true)
+                    {
+                        if (windowMenu.MenuItems[i].Checked == true)
+                            menuPlugin_Click(windowMenu.MenuItems[i], null);
+
+                        windowMenu.MenuItems[i].Enabled = false;
+                    }
+                    else
+                    {
+                        windowMenu.MenuItems[i].Enabled = true;
+                    }
+                }
+            }
         }
 
         #endregion
@@ -324,7 +361,8 @@ namespace WaywardGamers.KParser
         private void menuOptions_Click(object sender, EventArgs e)
         {
             Options optionsForm = new Options(Monitor.IsRunning);
-            optionsForm.ShowDialog();
+            if (optionsForm.ShowDialog() == DialogResult.OK)
+                windowMenu_Popup(windowMenu, null);
         }
 
         private void menuAbout_Click(object sender, EventArgs e)

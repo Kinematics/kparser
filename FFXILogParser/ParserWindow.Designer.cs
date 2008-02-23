@@ -214,6 +214,7 @@ namespace WaywardGamers.KParser
             this.windowMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuAbout});
             this.windowMenu.Text = "Windows";
+            this.windowMenu.Popup += new System.EventHandler(this.windowMenu_Popup);
             // 
             // menuAbout
             // 
