@@ -23,6 +23,7 @@ namespace WaywardGamers.KParser.Plugin
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> WSkill { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> SC { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Counter { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Spikes { get; set; }
 
         internal int MeleeDmg
         {
@@ -89,6 +90,14 @@ namespace WaywardGamers.KParser.Plugin
             get
             {
                 return SC.Sum(d => d.Amount);
+            }
+        }
+
+        internal int SpikesDmg
+        {
+            get
+            {
+                return Spikes.Sum(d => d.Amount);
             }
         }
 

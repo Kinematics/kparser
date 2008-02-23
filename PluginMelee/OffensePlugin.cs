@@ -181,7 +181,8 @@ namespace WaywardGamers.KParser.Plugin
         string abilHeader       = "Player               Abil. Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg\n";
         string wskillHeader     = "Player              WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg\n";
         string skillchainHeader = "Skillchain          SC Dmg  # SC  SC.Low/Hi  SC.Avg\n";
-        string otherHeader      = "Player            M.AE Dmg  # M.AE  M.AE Avg  R.AE Dmg  # R.AE  R.AE Avg  CA.Dmg  CA.Hit/Miss  CA.Hi/Low  CA.Avg\n";
+        string otherMHeader     = "Player            M.AE Dmg  # M.AE  M.AE Avg   R.AE Dmg  # R.AE  R.AE Avg   Spk.Dmg  # Spike  Spk.Avg\n";
+        string otherPHeader     = "Player            CA.Dmg  CA.Hit/Miss  CA.Hi/Low  CA.Avg\n";
         #endregion
 
         #region Processing sections
@@ -281,7 +282,10 @@ namespace WaywardGamers.KParser.Plugin
                                      select n,
                                 Counter = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                           where n.ActionType == (byte)ActionType.Counterattack
-                                          select n
+                                          select n,
+                                Spikes = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                         where n.ActionType == (byte)ActionType.Spikes
+                                         select n
                             };
 
             }
@@ -361,6 +365,13 @@ namespace WaywardGamers.KParser.Plugin
                                                      n.IsBattleIDNull() == false &&
                                                      n.BattlesRow.MinBaseExperience() == xp)
                                               select n,
+                                    Spikes = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                             where (n.ActionType == (byte)ActionType.Spikes &&
+                                                    n.IsTargetIDNull() == false &&
+                                                    n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                                    n.IsBattleIDNull() == false &&
+                                                    n.BattlesRow.MinBaseExperience() == xp)
+                                             select n,
                                 };
                 }
                 else
@@ -421,7 +432,12 @@ namespace WaywardGamers.KParser.Plugin
                                               where (n.ActionType == (byte)ActionType.Counterattack &&
                                                      n.IsTargetIDNull() == false &&
                                                      n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
-                                              select n
+                                              select n,
+                                    Spikes = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                             where (n.ActionType == (byte)ActionType.Spikes &&
+                                                    n.IsTargetIDNull() == false &&
+                                                    n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
+                                             select n,
                                 };
                 }
             }
@@ -531,7 +547,8 @@ namespace WaywardGamers.KParser.Plugin
                     wskillDmg = player.WSkillDmg;
                     otherDmg = player.Counter.Sum(c => c.Amount) +
                         player.MeleeEffect.Sum(e => e.SecondAmount) +
-                        player.RangeEffect.Sum(e => e.SecondAmount);
+                        player.RangeEffect.Sum(e => e.SecondAmount) +
+                        player.SpikesDmg;
 
                     ttlPlayerDmg += playerDmg;
                     ttlDamageShare += damageShare;
@@ -1358,6 +1375,9 @@ namespace WaywardGamers.KParser.Plugin
             int raeDmg;
             int raeNum;
             double raeAvg;
+            int spkDmg;
+            int spkNum;
+            double spkAvg;
             int caDmg;
             int caHit;
             int caMiss;
@@ -1368,6 +1388,7 @@ namespace WaywardGamers.KParser.Plugin
             StringBuilder sb = new StringBuilder();
             bool headerDisplayed = false;
 
+            // Other magical damage
             foreach (var player in attacksByPlayer)
             {
                 maeDmg = 0;
@@ -1376,12 +1397,9 @@ namespace WaywardGamers.KParser.Plugin
                 raeDmg = 0;
                 raeNum = 0;
                 raeAvg = 0;
-                caDmg = 0;
-                caHit = 0;
-                caMiss = 0;
-                caHigh = 0;
-                caLow = 0;
-                caAvg = 0;
+                spkDmg = 0;
+                spkNum = 0;
+                spkAvg = 0;
 
 
                 maeNum = player.MeleeEffect.Count();
@@ -1399,6 +1417,50 @@ namespace WaywardGamers.KParser.Plugin
                     raeDmg = player.RangeEffect.Sum(e => e.SecondAmount);
                     raeAvg = (double)raeDmg / raeNum;
                 }
+
+                spkNum = player.Spikes.Count();
+
+                if (spkNum > 0)
+                {
+                    spkDmg = player.SpikesDmg;
+                    spkAvg = (double) spkDmg / spkNum;
+                }
+
+                if ((maeNum + raeNum + spkNum) > 0)
+                {
+                    if (headerDisplayed == false)
+                    {
+                        AppendBoldText("Other Magical Damage  (Additional Effects and Spikes)\n", Color.Red);
+                        AppendBoldUnderText(otherMHeader, Color.Black);
+
+                        headerDisplayed = true;
+                    }
+
+                    sb.AppendFormat("{0,-17}{1,9}{2,8}{3,10:f2}{4,11}{5,8}{6,10:f2}{7,10}{8,9}{9,9:f2}\n",
+                        player.Player, maeDmg, maeNum, maeAvg, raeDmg, raeNum, raeAvg,
+                        spkDmg, spkNum, spkAvg);
+                }
+            }
+
+
+            if (headerDisplayed == true)
+            {
+                sb.Append("\n\n");
+                AppendNormalText(sb.ToString());
+            }
+
+            sb = new StringBuilder();
+            headerDisplayed = false;
+
+            // Other physical damage
+            foreach (var player in attacksByPlayer)
+            {
+                caDmg = 0;
+                caHit = 0;
+                caMiss = 0;
+                caHigh = 0;
+                caLow = 0;
+                caAvg = 0;
 
                 if (player.Counter.Count() > 0)
                 {
@@ -1426,22 +1488,21 @@ namespace WaywardGamers.KParser.Plugin
                     }
                 }
 
-                if ((maeNum + raeNum + caMiss + caHit) > 0)
+                if ((caMiss + caHit) > 0)
                 {
                     if (headerDisplayed == false)
                     {
-                        AppendBoldText("Other Physical Damage  (Additional effects and Counterattacks)\n", Color.Red);
-                        AppendBoldUnderText(otherHeader, Color.Black);
+                        AppendBoldText("Other Physical Damage  (Counterattacks)\n", Color.Red);
+                        AppendBoldUnderText(otherPHeader, Color.Black);
 
                         headerDisplayed = true;
                     }
 
-                    sb.AppendFormat("{0,-17}{1,9}{2,8}{3,10:f2}{4,10}{5,8}{6,10:f2}{7,8}{8,13}{9,11}{10,8:f2}\n",
-                        player.Player, maeDmg, maeNum, maeAvg, raeDmg, raeNum, raeAvg,
+                    sb.AppendFormat("{0,-17}{1,7}{2,13}{3,11}{4,8:f2}\n",
+                        player.Player,
                         caDmg, string.Concat(caHit, "/", caMiss), string.Concat(caHigh, "/", caLow), caAvg);
                 }
             }
-
 
             if (headerDisplayed == true)
             {
