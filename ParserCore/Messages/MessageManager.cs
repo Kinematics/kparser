@@ -50,6 +50,8 @@ namespace WaywardGamers.KParser
         Dictionary<string, EntityType> entityCollection = new Dictionary<string, EntityType>();
 
         Timer periodicUpdates;
+
+        Properties.Settings programSettings = new WaywardGamers.KParser.Properties.Settings();
         #endregion
 
         #region Parsing state control methods
@@ -60,6 +62,8 @@ namespace WaywardGamers.KParser
         internal void StartParsing(bool activateTimer)
         {
             Reset();
+
+            programSettings.Reload();
 
             if (activateTimer == true)
             {
@@ -399,6 +403,11 @@ namespace WaywardGamers.KParser
         {
             try
             {
+                bool dumpDebugToFile = programSettings.DumpDebugTextToFile;
+#if DEBUG
+                dumpDebugToFile = true;
+#endif
+
                 bool parseEnding = false;
                 if (stateInfo != null)
                     parseEnding = (bool)stateInfo;
@@ -488,7 +497,7 @@ namespace WaywardGamers.KParser
                     finally
                     {
                         // Save dump of that data if debug flag is set.
-                        if (Properties.Settings.Default.dumpDebugTextToFile == true)
+                        if (dumpDebugToFile == true)
                             DumpToFile(messagesToProcess, false, false);
                     }
                 }
@@ -506,7 +515,7 @@ namespace WaywardGamers.KParser
                         {
                             // Save dump of that data if debug flag is set.  Save out entities
                             // at the end as well.
-                            if (Properties.Settings.Default.dumpDebugTextToFile == true)
+                            if (dumpDebugToFile == true)
                                 DumpToFile(messageCollection, false, true);
                         }
                     }
