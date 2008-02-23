@@ -116,7 +116,7 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0x4e] = InteractionType.Unknown; //
             interactionTypeLookup[0x4f] = InteractionType.Unknown; //
             interactionTypeLookup[0x50] = InteractionType.Unknown; //
-            interactionTypeLookup[0x51] = InteractionType.Unknown; //
+            interactionTypeLookup[0x51] = InteractionType.Aid; // <me> uses item for effect
             interactionTypeLookup[0x52] = InteractionType.Unknown; //
             interactionTypeLookup[0x53] = InteractionType.Unknown; //
             interactionTypeLookup[0x54] = InteractionType.Unknown; //
@@ -292,7 +292,7 @@ namespace WaywardGamers.KParser
             aidTypeLookup[0x4e] = AidType.None; //
             aidTypeLookup[0x4f] = AidType.None; //
             aidTypeLookup[0x50] = AidType.None; //
-            aidTypeLookup[0x51] = AidType.None; //
+            aidTypeLookup[0x51] = AidType.Item; // <me> uses item for effect
             aidTypeLookup[0x52] = AidType.None; //
             aidTypeLookup[0x53] = AidType.None; //
             aidTypeLookup[0x54] = AidType.None; //
@@ -468,7 +468,7 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0x4e] = HarmType.None; //
             harmTypeLookup[0x4f] = HarmType.None; //
             harmTypeLookup[0x50] = HarmType.None; //
-            harmTypeLookup[0x51] = HarmType.None; //
+            harmTypeLookup[0x51] = HarmType.None; // <me> uses item for effect
             harmTypeLookup[0x52] = HarmType.None; //
             harmTypeLookup[0x53] = HarmType.None; //
             harmTypeLookup[0x54] = HarmType.None; //
@@ -644,7 +644,7 @@ namespace WaywardGamers.KParser
             successTypeLookup[0x4e] = SuccessType.None; //
             successTypeLookup[0x4f] = SuccessType.None; //
             successTypeLookup[0x50] = SuccessType.None; //
-            successTypeLookup[0x51] = SuccessType.None; //
+            successTypeLookup[0x51] = SuccessType.Successful; // <me> uses item for effect
             successTypeLookup[0x52] = SuccessType.None; //
             successTypeLookup[0x53] = SuccessType.None; //
             successTypeLookup[0x54] = SuccessType.None; //
