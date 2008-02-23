@@ -168,6 +168,7 @@ namespace WaywardGamers.KParser
         NotEnoughMP,
         NotEnoughTP,
         Autotarget,
+        CannotAct,
     }
 
     public enum DamageModifier : byte
