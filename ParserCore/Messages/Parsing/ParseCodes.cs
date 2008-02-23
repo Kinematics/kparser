@@ -860,6 +860,10 @@ namespace WaywardGamers.KParser
                 // Item use
                 case 0x5b:
                     return new List<uint>() { 0xab };
+                case 0x17:
+                    return new List<uint>() { 0x51 };
+                case 0x18:
+                    return new List<uint>() { 0x55 };
             }
 
             return null;
