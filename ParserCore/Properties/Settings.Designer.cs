@@ -104,18 +104,6 @@ namespace WaywardGamers.KParser.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool dumpDebugTextToFile {
-            get {
-                return ((bool)(this["dumpDebugTextToFile"]));
-            }
-            set {
-                this["dumpDebugTextToFile"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("7")]
         public uint DaysToRetainErrorLogs {
             get {
@@ -135,6 +123,18 @@ namespace WaywardGamers.KParser.Properties {
             }
             set {
                 this["ErrorLoggingLevel"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DumpDebugTextToFile {
+            get {
+                return ((bool)(this["DumpDebugTextToFile"]));
+            }
+            set {
+                this["DumpDebugTextToFile"] = value;
             }
         }
     }

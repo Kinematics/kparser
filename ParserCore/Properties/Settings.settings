@@ -28,14 +28,14 @@
     <Setting Name="DefaultUnnamedDBFileName" Type="System.String" Scope="User">
       <Value Profile="(Default)">KPDefaultParse.sdf</Value>
     </Setting>
-    <Setting Name="dumpDebugTextToFile" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
     <Setting Name="DaysToRetainErrorLogs" Type="System.UInt32" Scope="User">
       <Value Profile="(Default)">7</Value>
     </Setting>
     <Setting Name="ErrorLoggingLevel" Type="WaywardGamers.KParser.ErrorLevel" Scope="User">
       <Value Profile="(Default)">Debug</Value>
+    </Setting>
+    <Setting Name="DumpDebugTextToFile" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>
