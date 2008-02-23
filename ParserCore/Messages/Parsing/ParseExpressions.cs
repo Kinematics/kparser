@@ -92,6 +92,7 @@ namespace WaywardGamers.KParser
         public static readonly Regex FailSteal  = new Regex(string.Format("^{0} fails to steal from {1}\\.$", playername, target));
         public static readonly Regex Mug        = new Regex(string.Format("^{0} mugs {1} from {2}\\.$", playername, money, target));
         public static readonly Regex FailMug    = new Regex(string.Format("^{0} fails to mug {1}\\.$", playername, target));
+        public static readonly Regex DiceRoll   = new Regex(string.Format("^Dice roll! {0} rolls {1}!$", playername, number));
         #endregion
 
 
@@ -103,6 +104,7 @@ namespace WaywardGamers.KParser
 
         #region Completes action
         public static readonly Regex CastSpell    = new Regex(string.Format("^{0} cast(s)? {1}\\.$", name, spell));
+        public static readonly Regex CastSpellOn  = new Regex(string.Format("^{0} cast(s)? {1} on {2}\\.$", name, spell, target));
         public static readonly Regex UseAbility   = new Regex(string.Format("^{0} use(s)? {1}\\.$", name, ability));
         public static readonly Regex UseAbilityOn = new Regex(string.Format("^{0} use(s)? {1} on {2}\\.$", name, ability, target));
         public static readonly Regex MissAbility  = new Regex(string.Format("^{0} use(s)? {1}, but miss(es)? {2}\\.$", name, ability, target));
@@ -128,6 +130,8 @@ namespace WaywardGamers.KParser
         public static readonly Regex Charmed    = new Regex(string.Format("^{0} (is|are) now under {1}'s control\\.$", target, name));
         public static readonly Regex NotCharmed = new Regex(string.Format("^{0} (is|are) no longer charmed\\.$", target));
         public static readonly Regex Dispelled  = new Regex(string.Format("^{0}'(s)? {1} effect disappears!$", target, effect));
+        public static readonly Regex ItemBuff   = new Regex(string.Format("^{0} receive(s)? the effect of {1}\\.$", target, effect));
+        public static readonly Regex ItemCleanse = new Regex(string.Format("^{0} is no longer {1}\\.$", target, effect));
         #endregion
 
         #region Failed Actions
