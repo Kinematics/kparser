@@ -108,6 +108,7 @@ namespace WaywardGamers.KParser
         public static readonly Regex UseAbility   = new Regex(string.Format("^{0} use(s)? {1}\\.$", name, ability));
         public static readonly Regex UseAbilityOn = new Regex(string.Format("^{0} use(s)? {1} on {2}\\.$", name, ability, target));
         public static readonly Regex MissAbility  = new Regex(string.Format("^{0} use(s)? {1}, but miss(es)? {2}\\.$", name, ability, target));
+        public static readonly Regex MissAbility2 = new Regex(string.Format("^{0} use(s)? {1}, but miss(es)?\\.$", name, ability, target));
         public static readonly Regex FailsCharm   = new Regex(string.Format("^{0} fail(s)? to charm {1}\\.$", name, target));
         public static readonly Regex UseItem      = new Regex(string.Format("^{0} use(s)? {1}\\.$", name, item));
         // Corsair stuff (6f/65|70/66):

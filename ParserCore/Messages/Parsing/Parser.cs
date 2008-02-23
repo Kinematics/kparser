@@ -2503,11 +2503,23 @@ namespace WaywardGamers.KParser.Parsing
                 combatMatch = ParseExpressions.MissAbility.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
-                    msgCombatDetails.ActionType = ActionType.Spell;
+                    msgCombatDetails.ActionType = ActionType.Ability;
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     target.DefenseType = DefenseType.Evasion;
                     target.HarmType = msgCombatDetails.HarmType;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+            }
+
+            if (combatMatch.Success == false)
+            {
+                combatMatch = ParseExpressions.MissAbility2.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.ActionType = ActionType.Ability;
+                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     message.ParseSuccessful = true;
                     return;
                 }
