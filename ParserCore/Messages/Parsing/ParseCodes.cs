@@ -850,6 +850,13 @@ namespace WaywardGamers.KParser
                     return new List<uint>() { 0x6d, 0x1c, 0x20 };
                 case 0x20: // hits <pm>
                     return new List<uint>() { 0x6d, 0x1c };
+                // AOE Drain
+                case 0x16:
+                    return new List<uint>() { 0x1b, 0xa5 };
+                case 0x1b:
+                    return new List<uint>() { 0x16, 0xa5 };
+                case 0xa5:
+                    return new List<uint>() { 0x16, 0x1b };
                 // Item use
                 case 0x5b:
                     return new List<uint>() { 0xab };
