@@ -182,6 +182,8 @@ namespace WaywardGamers.KParser
                         e.Cancel = true;
 
                     coreSettings.ParseExistingLogs = this.ParseExistingLogs;
+
+                    coreSettings.DebugMode = this.debugMode.Checked;
                 }
             }
         }
