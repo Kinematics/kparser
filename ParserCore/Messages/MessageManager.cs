@@ -403,7 +403,7 @@ namespace WaywardGamers.KParser
         {
             try
             {
-                bool dumpDebugToFile = programSettings.DumpDebugTextToFile;
+                bool dumpDebugToFile = programSettings.DebugMode;
 #if DEBUG
                 dumpDebugToFile = true;
 #endif
