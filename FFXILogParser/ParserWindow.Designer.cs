@@ -30,6 +30,7 @@ namespace WaywardGamers.KParser
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ParserWindow));
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -243,6 +244,7 @@ namespace WaywardGamers.KParser
             this.ClientSize = new System.Drawing.Size(992, 457);
             this.Controls.Add(this.pluginTabs);
             this.Controls.Add(this.statusStrip);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Menu = this.mainMenu;
             this.Name = "ParserWindow";
             this.Text = "K-Parser";

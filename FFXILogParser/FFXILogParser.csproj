@@ -6,7 +6,7 @@
     <ProjectGuid>{1BD73407-4C1F-4280-A322-150FB545A7FB}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ApplicationIcon>Resources\App.ico</ApplicationIcon>
+    <ApplicationIcon>Gobby.ico</ApplicationIcon>
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
     <AssemblyName>KParser</AssemblyName>
@@ -125,6 +125,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Gobby.ico" />
     <Content Include="Resources\App.ico" />
     <Compile Include="Forms\AboutBox.cs">
       <SubType>Form</SubType>
