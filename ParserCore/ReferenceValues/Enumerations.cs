@@ -113,6 +113,7 @@ namespace WaywardGamers.KParser
         Enhance,
         Recovery,
         Item,
+        UnDebuff,
     }
 
     public enum RecoveryType : byte
@@ -121,6 +122,7 @@ namespace WaywardGamers.KParser
         RecoverHP,
         RecoverMP,
         RecoverTP,
+        Life,
     }
 
     public enum DamageType : byte
