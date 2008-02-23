@@ -868,7 +868,8 @@ namespace WaywardGamers.KParser.Plugin
                     spellPerc = (double)spellDamage / playerDamage[player.Player];
 
 
-                var spellsCast = player.Spell.Where(b => b.DefenseType == (byte)DefenseType.None);
+                var spellsCast = player.Spell.Where(b => b.DefenseType == (byte)DefenseType.None)
+                                             .GroupBy(b => b.Timestamp);
 
                 spellCasts = spellsCast.Count();
 
@@ -888,24 +889,24 @@ namespace WaywardGamers.KParser.Plugin
                 }
 
 
-                var normSpells = spellsCast.Where(s => s.DamageModifier == (byte)DamageModifier.None);
-                var mbSpells = spellsCast.Where(s => s.DamageModifier == (byte)DamageModifier.MagicBurst);
+                var normSpells = spellsCast.Where(s => s.All(sg => sg.DamageModifier == (byte)DamageModifier.None));
+                var mbSpells = spellsCast.Where(s => s.Any(sg => sg.DamageModifier == (byte)DamageModifier.MagicBurst));
 
                 normSpellCount = normSpells.Count();
                 mbSpellCount = mbSpells.Count();
 
                 if (normSpellCount > 0)
                 {
-                    spellLow = normSpells.Min(d => d.Amount);
-                    spellHigh = normSpells.Max(d => d.Amount);
-                    spellAvg = normSpells.Average(d => d.Amount);
+                    spellLow = normSpells.Min(d => d.Sum(s => s.Amount));
+                    spellHigh = normSpells.Max(d => d.Sum(s => s.Amount));
+                    spellAvg = normSpells.Average(d => d.Sum(s => s.Amount));
                 }
 
                 if (mbSpellCount > 0)
                 {
-                    mbLow = mbSpells.Min(d => d.Amount);
-                    mbHigh = mbSpells.Max(d => d.Amount);
-                    mbAvg = mbSpells.Average(d => d.Amount);
+                    mbLow = mbSpells.Min(d => d.Sum(s => s.Amount));
+                    mbHigh = mbSpells.Max(d => d.Sum(s => s.Amount));
+                    mbAvg = mbSpells.Average(d => d.Sum(s => s.Amount));
                 }
 
                 if (spellCasts > 0)
@@ -924,7 +925,7 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append("\n");
                 }
 
-                var spellGroups = spellsCast.GroupBy(s => s.ActionsRow.ActionName).OrderBy(s => s.Key);
+                var spellGroups = spellsCast.GroupBy(s => s.First().ActionsRow.ActionName).OrderBy(s => s.Key);
 
                 foreach (var sp in spellGroups)
                 {
@@ -941,29 +942,29 @@ namespace WaywardGamers.KParser.Plugin
 
                     string spellName = sp.Key;
 
-                    iSpellDamage = sp.Sum(s => s.Amount);
+                    iSpellDamage = sp.Sum(s => s.Sum(sg => sg.Amount));
 
                     if (spellDamage > 0)
                         iSpellPerc = (double)iSpellDamage / spellDamage;
 
-                    var iNormSpells = sp.Where(s => s.DamageModifier == (byte)DamageModifier.None);
-                    var iMbSpells = sp.Where(s => s.DamageModifier == (byte)DamageModifier.MagicBurst);
+                    var iNormSpells = sp.Where(s => s.All(sg => sg.DamageModifier == (byte)DamageModifier.None));
+                    var iMbSpells = sp.Where(s => s.Any(sg => sg.DamageModifier == (byte)DamageModifier.MagicBurst));
 
                     iNormSpellCount = iNormSpells.Count();
                     iMbSpellCount = iMbSpells.Count();
 
                     if (iNormSpellCount > 0)
                     {
-                        iSpellLow = iNormSpells.Min(d => d.Amount);
-                        iSpellHigh = iNormSpells.Max(d => d.Amount);
-                        iSpellAvg = iNormSpells.Average(d => d.Amount);
+                        iSpellLow = iNormSpells.Min(d => d.Sum(s => s.Amount));
+                        iSpellHigh = iNormSpells.Max(d => d.Sum(s => s.Amount));
+                        iSpellAvg = iNormSpells.Average(d => d.Sum(s => s.Amount));
                     }
 
                     if (iMbSpellCount > 0)
                     {
-                        iMbLow = iMbSpells.Min(d => d.Amount);
-                        iMbHigh = iMbSpells.Max(d => d.Amount);
-                        iMbAvg = iMbSpells.Average(d => d.Amount);
+                        iMbLow = iMbSpells.Min(d => d.Sum(s => s.Amount));
+                        iMbHigh = iMbSpells.Max(d => d.Sum(s => s.Amount));
+                        iMbAvg = iMbSpells.Average(d => d.Sum(s => s.Amount));
                     }
 
 
