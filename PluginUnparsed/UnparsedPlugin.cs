@@ -13,6 +13,14 @@ namespace WaywardGamers.KParser.Plugin
             get { return "Unparsed Data"; }
         }
 
+        public override bool IsDebug
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public override void Reset()
         {
             richTextBox.Clear();

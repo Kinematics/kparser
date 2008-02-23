@@ -68,6 +68,8 @@
 
         protected System.Windows.Forms.ListView listView;
 
+        public virtual bool IsDebug
+        { get { return false; } }
 
 
     }

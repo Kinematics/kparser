@@ -18,5 +18,7 @@ namespace WaywardGamers.KParser.Plugin
 
         void DatabaseOpened(KPDatabaseDataSet dataSet);
         void Reset();
+
+        bool IsDebug { get; }
     }
 }

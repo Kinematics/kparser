@@ -65,6 +65,8 @@ namespace WaywardGamers.KParser.Plugin
             throw new NotImplementedException();
         }
 
+        public virtual bool IsDebug
+        { get { return false; } }
         #endregion
 
         #region Assistant Methods for datamining
