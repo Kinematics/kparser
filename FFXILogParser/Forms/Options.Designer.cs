@@ -32,44 +32,48 @@ namespace WaywardGamers.KParser
             this.memoryOffsetAddress = new System.Windows.Forms.TextBox();
             this.logDirectory = new System.Windows.Forms.TextBox();
             this.memoryLabel = new System.Windows.Forms.Label();
-            this.getMemoryAddress = new System.Windows.Forms.Button();
             this.directoryLabel = new System.Windows.Forms.Label();
             this.getLogDirectory = new System.Windows.Forms.Button();
             this.dataSourceRam = new System.Windows.Forms.RadioButton();
             this.dataSourceLogs = new System.Windows.Forms.RadioButton();
             this.ok = new System.Windows.Forms.Button();
             this.cancel = new System.Windows.Forms.Button();
-            this.logFileGroup = new System.Windows.Forms.GroupBox();
             this.readExistingLogs = new System.Windows.Forms.CheckBox();
             this.reset = new System.Windows.Forms.Button();
+            this.debugMode = new System.Windows.Forms.CheckBox();
+            this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.otherGroup = new System.Windows.Forms.GroupBox();
+            this.editMemoryAddress = new System.Windows.Forms.CheckBox();
             this.dataSourceGroup.SuspendLayout();
-            this.logFileGroup.SuspendLayout();
+            this.otherGroup.SuspendLayout();
             this.SuspendLayout();
             // 
             // dataSourceGroup
             // 
+            this.dataSourceGroup.Controls.Add(this.editMemoryAddress);
+            this.dataSourceGroup.Controls.Add(this.readExistingLogs);
             this.dataSourceGroup.Controls.Add(this.memoryOffsetAddress);
             this.dataSourceGroup.Controls.Add(this.logDirectory);
             this.dataSourceGroup.Controls.Add(this.memoryLabel);
-            this.dataSourceGroup.Controls.Add(this.getMemoryAddress);
             this.dataSourceGroup.Controls.Add(this.directoryLabel);
             this.dataSourceGroup.Controls.Add(this.getLogDirectory);
             this.dataSourceGroup.Controls.Add(this.dataSourceRam);
             this.dataSourceGroup.Controls.Add(this.dataSourceLogs);
             this.dataSourceGroup.Location = new System.Drawing.Point(12, 12);
             this.dataSourceGroup.Name = "dataSourceGroup";
-            this.dataSourceGroup.Size = new System.Drawing.Size(305, 155);
+            this.dataSourceGroup.Size = new System.Drawing.Size(305, 181);
             this.dataSourceGroup.TabIndex = 0;
             this.dataSourceGroup.TabStop = false;
             this.dataSourceGroup.Text = "Data Source";
             // 
             // memoryOffsetAddress
             // 
-            this.memoryOffsetAddress.Location = new System.Drawing.Point(28, 117);
+            this.memoryOffsetAddress.Location = new System.Drawing.Point(28, 149);
             this.memoryOffsetAddress.Name = "memoryOffsetAddress";
             this.memoryOffsetAddress.ReadOnly = true;
-            this.memoryOffsetAddress.Size = new System.Drawing.Size(236, 20);
+            this.memoryOffsetAddress.Size = new System.Drawing.Size(226, 20);
             this.memoryOffsetAddress.TabIndex = 5;
+            this.memoryOffsetAddress.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.memoryOffsetAddress_KeyPress);
             // 
             // logDirectory
             // 
@@ -82,20 +86,11 @@ namespace WaywardGamers.KParser
             // memoryLabel
             // 
             this.memoryLabel.AutoSize = true;
-            this.memoryLabel.Location = new System.Drawing.Point(25, 101);
+            this.memoryLabel.Location = new System.Drawing.Point(25, 133);
             this.memoryLabel.Name = "memoryLabel";
-            this.memoryLabel.Size = new System.Drawing.Size(116, 13);
+            this.memoryLabel.Size = new System.Drawing.Size(184, 13);
             this.memoryLabel.TabIndex = 7;
-            this.memoryLabel.Text = "Memory offset address:";
-            // 
-            // getMemoryAddress
-            // 
-            this.getMemoryAddress.Location = new System.Drawing.Point(270, 117);
-            this.getMemoryAddress.Name = "getMemoryAddress";
-            this.getMemoryAddress.Size = new System.Drawing.Size(25, 20);
-            this.getMemoryAddress.TabIndex = 6;
-            this.getMemoryAddress.Text = "...";
-            this.getMemoryAddress.UseVisualStyleBackColor = true;
+            this.memoryLabel.Text = "Memory offset address (hexadecimal):";
             // 
             // directoryLabel
             // 
@@ -114,11 +109,12 @@ namespace WaywardGamers.KParser
             this.getLogDirectory.TabIndex = 3;
             this.getLogDirectory.Text = "...";
             this.getLogDirectory.UseVisualStyleBackColor = true;
+            this.getLogDirectory.Click += new System.EventHandler(this.getLogDirectory_Click);
             // 
             // dataSourceRam
             // 
             this.dataSourceRam.AutoSize = true;
-            this.dataSourceRam.Location = new System.Drawing.Point(6, 81);
+            this.dataSourceRam.Location = new System.Drawing.Point(6, 113);
             this.dataSourceRam.Name = "dataSourceRam";
             this.dataSourceRam.Size = new System.Drawing.Size(85, 17);
             this.dataSourceRam.TabIndex = 1;
@@ -142,7 +138,7 @@ namespace WaywardGamers.KParser
             // 
             this.ok.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.ok.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.ok.Location = new System.Drawing.Point(161, 241);
+            this.ok.Location = new System.Drawing.Point(161, 265);
             this.ok.Name = "ok";
             this.ok.Size = new System.Drawing.Size(75, 23);
             this.ok.TabIndex = 1;
@@ -153,27 +149,17 @@ namespace WaywardGamers.KParser
             // 
             this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancel.Location = new System.Drawing.Point(242, 241);
+            this.cancel.Location = new System.Drawing.Point(242, 265);
             this.cancel.Name = "cancel";
             this.cancel.Size = new System.Drawing.Size(75, 23);
             this.cancel.TabIndex = 2;
             this.cancel.Text = "Cancel";
             this.cancel.UseVisualStyleBackColor = true;
             // 
-            // logFileGroup
-            // 
-            this.logFileGroup.Controls.Add(this.readExistingLogs);
-            this.logFileGroup.Location = new System.Drawing.Point(12, 173);
-            this.logFileGroup.Name = "logFileGroup";
-            this.logFileGroup.Size = new System.Drawing.Size(304, 52);
-            this.logFileGroup.TabIndex = 3;
-            this.logFileGroup.TabStop = false;
-            this.logFileGroup.Text = "Log File Preferences";
-            // 
             // readExistingLogs
             // 
             this.readExistingLogs.AutoSize = true;
-            this.readExistingLogs.Location = new System.Drawing.Point(6, 19);
+            this.readExistingLogs.Location = new System.Drawing.Point(28, 81);
             this.readExistingLogs.Name = "readExistingLogs";
             this.readExistingLogs.Size = new System.Drawing.Size(128, 17);
             this.readExistingLogs.TabIndex = 0;
@@ -182,7 +168,8 @@ namespace WaywardGamers.KParser
             // 
             // reset
             // 
-            this.reset.Location = new System.Drawing.Point(18, 241);
+            this.reset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.reset.Location = new System.Drawing.Point(18, 265);
             this.reset.Name = "reset";
             this.reset.Size = new System.Drawing.Size(75, 23);
             this.reset.TabIndex = 4;
@@ -190,15 +177,47 @@ namespace WaywardGamers.KParser
             this.reset.UseVisualStyleBackColor = true;
             this.reset.Click += new System.EventHandler(this.reset_Click);
             // 
+            // debugMode
+            // 
+            this.debugMode.AutoSize = true;
+            this.debugMode.Location = new System.Drawing.Point(15, 19);
+            this.debugMode.Name = "debugMode";
+            this.debugMode.Size = new System.Drawing.Size(88, 17);
+            this.debugMode.TabIndex = 5;
+            this.debugMode.Text = "Debug Mode";
+            this.debugMode.UseVisualStyleBackColor = true;
+            // 
+            // otherGroup
+            // 
+            this.otherGroup.Controls.Add(this.debugMode);
+            this.otherGroup.Location = new System.Drawing.Point(12, 199);
+            this.otherGroup.Name = "otherGroup";
+            this.otherGroup.Size = new System.Drawing.Size(305, 52);
+            this.otherGroup.TabIndex = 6;
+            this.otherGroup.TabStop = false;
+            this.otherGroup.Text = "Other";
+            // 
+            // editMemoryAddress
+            // 
+            this.editMemoryAddress.Appearance = System.Windows.Forms.Appearance.Button;
+            this.editMemoryAddress.AutoSize = true;
+            this.editMemoryAddress.Location = new System.Drawing.Point(260, 146);
+            this.editMemoryAddress.Name = "editMemoryAddress";
+            this.editMemoryAddress.Size = new System.Drawing.Size(35, 23);
+            this.editMemoryAddress.TabIndex = 6;
+            this.editMemoryAddress.Text = "Edit";
+            this.editMemoryAddress.UseVisualStyleBackColor = true;
+            this.editMemoryAddress.CheckedChanged += new System.EventHandler(this.editMemoryAddress_CheckedChanged);
+            // 
             // Options
             // 
             this.AcceptButton = this.ok;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancel;
-            this.ClientSize = new System.Drawing.Size(329, 276);
+            this.ClientSize = new System.Drawing.Size(329, 300);
+            this.Controls.Add(this.otherGroup);
             this.Controls.Add(this.reset);
-            this.Controls.Add(this.logFileGroup);
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.ok);
             this.Controls.Add(this.dataSourceGroup);
@@ -213,8 +232,8 @@ namespace WaywardGamers.KParser
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Options_FormClosing);
             this.dataSourceGroup.ResumeLayout(false);
             this.dataSourceGroup.PerformLayout();
-            this.logFileGroup.ResumeLayout(false);
-            this.logFileGroup.PerformLayout();
+            this.otherGroup.ResumeLayout(false);
+            this.otherGroup.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -230,10 +249,12 @@ namespace WaywardGamers.KParser
         private System.Windows.Forms.Button getLogDirectory;
         private System.Windows.Forms.TextBox logDirectory;
         private System.Windows.Forms.Label memoryLabel;
-        private System.Windows.Forms.Button getMemoryAddress;
         private System.Windows.Forms.TextBox memoryOffsetAddress;
-        private System.Windows.Forms.GroupBox logFileGroup;
         private System.Windows.Forms.CheckBox readExistingLogs;
         private System.Windows.Forms.Button reset;
+        private System.Windows.Forms.CheckBox debugMode;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
+        private System.Windows.Forms.GroupBox otherGroup;
+        private System.Windows.Forms.CheckBox editMemoryAddress;
     }
 }

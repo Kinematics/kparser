@@ -120,10 +120,43 @@ namespace WaywardGamers.KParser
             SetEnabledFields();
         }
 
+        private void getLogDirectory_Click(object sender, EventArgs e)
+        {
+            folderBrowserDialog.SelectedPath = coreSettings.FFXILogDirectory;
+
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                logDirectory.Text = folderBrowserDialog.SelectedPath;
+            }
+        }
+
+        private void editMemoryAddress_CheckedChanged(object sender, EventArgs e)
+        {
+            memoryOffsetAddress.ReadOnly = !(editMemoryAddress.Checked);
+        }
+
+        private void memoryOffsetAddress_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (char.IsDigit(e.KeyChar))
+                return;
+
+            if (char.IsControl(e.KeyChar))
+                return;
+
+            if (char.IsLetter(e.KeyChar))
+            {
+                if (((e.KeyChar >= 'a') && (e.KeyChar <= 'f')) ||
+                    ((e.KeyChar >= 'A') && (e.KeyChar <= 'F')))
+                    return;
+            }
+
+            e.Handled = true;
+        }
+
         private void reset_Click(object sender, EventArgs e)
         {
             // Reset the app settings and refill the window data.
-            windowSettings.Reset();
+            coreSettings.Reset();
             LoadSettingsValues();
         }
 
@@ -142,8 +175,9 @@ namespace WaywardGamers.KParser
                     else
                         e.Cancel = true;
 
-                    if (this.MemoryOffset != 0)
-                        coreSettings.MemoryOffset = this.MemoryOffset;
+                    uint memory = this.MemoryOffset;
+                    if (memory != 0)
+                        coreSettings.MemoryOffset = memory;
                     else
                         e.Cancel = true;
 
@@ -160,7 +194,7 @@ namespace WaywardGamers.KParser
             {
                 if (this.DialogResult == DialogResult.OK)
                 {
-                    windowSettings.Save();
+                    coreSettings.Save();
                 }
             }
         }
@@ -175,6 +209,8 @@ namespace WaywardGamers.KParser
             memoryOffsetAddress.Text = string.Format("{0:X8}", coreSettings.MemoryOffset);
 
             readExistingLogs.Checked = coreSettings.ParseExistingLogs;
+
+            debugMode.Checked = coreSettings.DebugMode;
         }
 
         private void SetEnabledFields()
@@ -184,13 +220,13 @@ namespace WaywardGamers.KParser
             directoryLabel.Enabled = dataSourceLogs.Checked;
             logDirectory.Enabled = dataSourceLogs.Checked;
             getLogDirectory.Enabled = dataSourceLogs.Checked;
-            logFileGroup.Enabled = dataSourceLogs.Checked;
+            readExistingLogs.Enabled = dataSourceLogs.Checked;
 
             // Enable/disable these controls based on whether the
             // option to read from memory is set.
             memoryLabel.Enabled = dataSourceRam.Checked;
             memoryOffsetAddress.Enabled = dataSourceRam.Checked;
-            getMemoryAddress.Enabled = dataSourceRam.Checked;
+            editMemoryAddress.Enabled = dataSourceRam.Checked;
         }
         #endregion
 
