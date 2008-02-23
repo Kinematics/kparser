@@ -159,6 +159,7 @@ namespace WaywardGamers.KParser
         public static readonly Regex TooFarForXP = new Regex(string.Format("^You are too far from the battle to gain experience\\.$"));
         public static readonly Regex LoseSight   = new Regex(string.Format("^You lose sight of {0}\\.$", target));
         public static readonly Regex FailActivate = new Regex(string.Format("^{0} fails to activate\\.$", item));
+        public static readonly Regex CannotPerform = new Regex(string.Format("^{0} cannot perform that action\\.$", name));
         #endregion
 
         #region Modifiers on existing lines
@@ -184,6 +185,7 @@ namespace WaywardGamers.KParser
 
         #region Combat defenses
         public static readonly Regex MeleeMiss    = new Regex(string.Format("^{0} miss(es)? {1}\\.$", name, target));
+        public static readonly Regex MeleeDodge   = new Regex(string.Format("^{0} dodges the attack\\.$", target));
         public static readonly Regex RangedMiss   = new Regex(string.Format("^{0} use(s)? Ranged Attack, but miss(es)? {1}\\.$", name, target));
         public static readonly Regex RangedMiss2  = new Regex(string.Format("^{0}'(s)? ranged attack misses\\.$", name));
         public static readonly Regex Blink        = new Regex(string.Format("^{0} of {1}'s shadows absorb(s)? the damage and disappear(s)?\\.$", number, target));
