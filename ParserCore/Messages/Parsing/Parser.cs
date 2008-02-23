@@ -1756,6 +1756,18 @@ namespace WaywardGamers.KParser.Parsing
 
             if (combatMatch.Success == false)
             {
+                combatMatch = ParseExpressions.MeleeDodge.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    combatDetails.ActionType = ActionType.Melee;
+                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.DefenseType = DefenseType.Evasion;
+                    target.HarmType = HarmType.Damage;
+                }
+            }
+
+            if (combatMatch.Success == false)
+            {
                 combatMatch = ParseExpressions.ResistSpell.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
@@ -2156,7 +2168,7 @@ namespace WaywardGamers.KParser.Parsing
             {
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                 target.Amount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
-                target.HarmType = msgCombatDetails.HarmType;
+                target.HarmType = HarmType.Drain;
                 target.AidType = msgCombatDetails.AidType;
 
                 switch (combatMatch.Groups[ParseFields.DrainType].Value)
@@ -2316,6 +2328,14 @@ namespace WaywardGamers.KParser.Parsing
                 {
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.FailedActionType = FailedActionType.NotEnoughTP;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.CannotPerform.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    msgCombatDetails.FailedActionType = FailedActionType.CannotAct;
                     message.ParseSuccessful = true;
                     return;
                 }
@@ -2541,6 +2561,9 @@ namespace WaywardGamers.KParser.Parsing
                     return;
                 }
             }
+
+            // Check for drain messages
+            ParseAttackDrain(message);
         }
 
         #endregion
