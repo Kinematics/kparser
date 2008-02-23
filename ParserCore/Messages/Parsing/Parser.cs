@@ -596,6 +596,14 @@ namespace WaywardGamers.KParser.Parsing
                                 message.ParseSuccessful = true;
                                 break;
                             }
+                            lootOrXP = ParseExpressions.DiceRoll.Match(message.CurrentMessageText);
+                            if (lootOrXP.Success == true)
+                            {
+                                // Don't record rolls at this time. Just mark the message as parsed.
+                                message.EventDetails.EventMessageType = EventMessageType.Other;
+                                message.ParseSuccessful = true;
+                                break;
+                            }
                             break;
                         case 2:
                             // Obtaining temporary items, Salvage restriction removal
@@ -953,28 +961,6 @@ namespace WaywardGamers.KParser.Parsing
                                 message.ParseSuccessful = true;
                                 return;
                             }
-                            break;
-                        case AidType.Item:
-                            // eg: Player uses a rolanberry pie.
-                            combatMatch = ParseExpressions.UseItem.Match(currentMessageText);
-                            if (combatMatch.Success == true)
-                            {
-                                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Item].Value;
-                                message.ParseSuccessful = true;
-                                return;
-                            }
-                            // Uses reraise earring; receives the effect of reraise
-                            combatMatch = ParseExpressions.Debuff.Match(currentMessageText);
-                            if (combatMatch.Success == true)
-                            {
-                                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                                target.HarmType = msgCombatDetails.HarmType;
-                                target.AidType = msgCombatDetails.AidType;
-                                target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
-                                message.ParseSuccessful = true;
-                                return;
-                            }
                             // Self-target buffs have various strings which we won't check for.
                             // Only look to see if the message has determined an actor and action, and that
                             // the message line completes the sentence (ends in a period).
@@ -987,6 +973,50 @@ namespace WaywardGamers.KParser.Parsing
                                     target.AidType = msgCombatDetails.AidType;
                                     message.ParseSuccessful = true;
                                 }
+                                return;
+                            }
+                            break;
+                        case AidType.Item:
+                            // eg: Player uses a rolanberry pie.
+                            combatMatch = ParseExpressions.UseItem.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                                msgCombatDetails.ItemName = combatMatch.Groups[ParseFields.Item].Value;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            // Uses reraise earring; receives the effect of reraise
+                            combatMatch = ParseExpressions.ItemBuff.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                                target.HarmType = msgCombatDetails.HarmType;
+                                target.AidType = msgCombatDetails.AidType;
+                                target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            // Uses echo drops; is no longer silenced
+                            combatMatch = ParseExpressions.ItemCleanse.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                                target.HarmType = HarmType.None;
+                                target.AidType = msgCombatDetails.AidType;
+                                target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            // Uses poison potion; is poisoned
+                            combatMatch = ParseExpressions.Enfeeble.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                                target.HarmType = HarmType.Enfeeble;
+                                target.AidType = msgCombatDetails.AidType;
+                                target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
+                                message.ParseSuccessful = true;
                                 return;
                             }
                             break;
@@ -2162,6 +2192,32 @@ namespace WaywardGamers.KParser.Parsing
             // Deal with possible Failed actions first
             if (msgCombatDetails.SuccessLevel == SuccessType.Failed)
             {
+                // Special: Raises are given the same parse code as certain failed actions.
+                // Check for them first.
+                combatMatch = ParseExpressions.CastSpellOn.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.IsPreparing = false;
+                    msgCombatDetails.ActionType = ActionType.Spell;
+                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
+                    msgCombatDetails.SuccessLevel = SuccessType.Successful;
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    if (msgCombatDetails.ActionName.StartsWith("Raise"))
+                    {
+                        target.AidType = AidType.Recovery;
+                        target.RecoveryType = RecoveryType.Life;
+                        target.HarmType = HarmType.None;
+                        msgCombatDetails.InteractionType = InteractionType.Aid;
+                        msgCombatDetails.AidType = AidType.Recovery;
+                        msgCombatDetails.HarmType = HarmType.None;
+                        msgCombatDetails.FailedActionType = FailedActionType.None;
+                    }
+                    message.ParseSuccessful = true;
+                    return;
+                }
+
+                // Remainder are Failed actions.
                 combatMatch = ParseExpressions.AutoTarget.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
