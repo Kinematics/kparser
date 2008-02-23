@@ -192,8 +192,7 @@ namespace WaywardGamers.KParser
         public static readonly Regex Parry        = new Regex(string.Format("^{0} parr(y|ies) {1}'(s)? attack with (his|her|its) weapon\\.$", target, name));
         public static readonly Regex Anticipate   = new Regex(string.Format("^{0} anticipate(s)? {1}'(s)? attack\\.$", target, name));
         public static readonly Regex Anticipate2  = new Regex(string.Format("^{0} anticipate(s)? the attack\\.$", target));
-        public static readonly Regex Evade        = new Regex(string.Format("^{0} evade(s)? the attack\\.$", target));
-        public static readonly Regex Evade2       = new Regex(string.Format("^{0} evade(s)\\.$", target));
+        public static readonly Regex Evade        = new Regex(string.Format("^{0} evade(s)?( the attack)?\\.$", target));
         public static readonly Regex Counter      = new Regex(string.Format("^{0}'(s)? attack is countered by {1}\\. {2} takes {3} point(s)? of damage\\.$",
             target, name, repeatname, damage));
         public static readonly Regex CounterShadow = new Regex(string.Format("^{0}'(s)? attack is countered by {1}\\. {2} of {3}'(s)? shadows absorbs the damage and disappears\\.$",

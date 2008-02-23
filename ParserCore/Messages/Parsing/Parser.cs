@@ -1744,18 +1744,6 @@ namespace WaywardGamers.KParser.Parsing
 
             if (combatMatch.Success == false)
             {
-                combatMatch = ParseExpressions.Evade2.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    combatDetails.ActionType = ActionType.Unknown;
-                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                    target.DefenseType = DefenseType.Evade;
-                    target.HarmType = combatDetails.HarmType;
-                }
-            }
-
-            if (combatMatch.Success == false)
-            {
                 combatMatch = ParseExpressions.MeleeDodge.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
