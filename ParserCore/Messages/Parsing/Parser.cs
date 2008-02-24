@@ -22,7 +22,7 @@ namespace WaywardGamers.KParser.Parsing
         internal static Message Parse(MessageLine messageLine)
         {
             int i = 0;
-            if (messageLine.EventSequence == 0x2a1)
+            if (messageLine.EventSequence == 0x15ba)
                 i++;
 
             Message message = GetAttachedMessage(messageLine);
@@ -958,6 +958,17 @@ namespace WaywardGamers.KParser.Parsing
                                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                                 target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
                                 target.AidType = msgCombatDetails.AidType;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            combatMatch = ParseExpressions.RemoveStatus.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                                target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
+                                target.SecondaryAction = combatMatch.Groups[ParseFields.Effect].Value;
+                                target.AidType = AidType.RemoveStatus;
                                 message.ParseSuccessful = true;
                                 return;
                             }
@@ -1917,13 +1928,36 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.Dispelled.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
+                msgCombatDetails.HarmType = HarmType.Dispel;
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                 target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
-                target.HarmType = msgCombatDetails.HarmType;
+                target.SecondaryAction = combatMatch.Groups[ParseFields.Ability].Value;
+                target.HarmType = HarmType.Dispel;
                 target.AidType = msgCombatDetails.AidType;
                 message.ParseSuccessful = true;
                 return;
             }
+
+            combatMatch = ParseExpressions.BustCorRoll.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                msgCombatDetails.HarmType = HarmType.Dispel;
+                message.ParseSuccessful = true;
+                return;
+            }
+
+            combatMatch = ParseExpressions.LoseCorRoll.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Name].Value);
+                target.EffectName = combatMatch.Groups[ParseFields.Ability].Value;
+                target.SecondaryAction = combatMatch.Groups[ParseFields.Ability].Value;
+                target.HarmType = HarmType.Dispel;
+                target.AidType = msgCombatDetails.AidType;
+                message.ParseSuccessful = true;
+                return;
+            }
+
             combatMatch = ParseExpressions.Afflict.Match(currentMessageText);
             if (combatMatch.Success == true)
             {

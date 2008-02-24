@@ -104,6 +104,7 @@ namespace WaywardGamers.KParser
         Enfeeble,
         Drain,
         Aspir,
+        Dispel,
     }
 
     public enum AidType : byte
@@ -113,7 +114,7 @@ namespace WaywardGamers.KParser
         Enhance,
         Recovery,
         Item,
-        UnDebuff,
+        RemoveStatus,
     }
 
     public enum RecoveryType : byte
