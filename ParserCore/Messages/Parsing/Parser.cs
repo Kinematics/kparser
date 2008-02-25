@@ -1669,7 +1669,14 @@ namespace WaywardGamers.KParser.Parsing
                 combatMatch = ParseExpressions.MissAbility.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
-                    combatDetails.ActionType = ActionType.Ability;
+                    combatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                    if (Weaponskills.NamesList.Contains(combatDetails.ActionName))
+                    {
+                        combatDetails.ActionType = ActionType.Weaponskill;
+                        combatDetails.HarmType = HarmType.Damage;
+                    }
+                    else
+                        combatDetails.ActionType = ActionType.Ability;
                     target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     target.DefenseType = DefenseType.Evasion;
                     target.HarmType = combatDetails.HarmType;
@@ -1880,9 +1887,16 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.MissAbility.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
-                msgCombatDetails.ActionType = ActionType.Ability;
-                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
+                {
+                    msgCombatDetails.ActionType = ActionType.Weaponskill;
+                    msgCombatDetails.HarmType = HarmType.Damage;
+                }
+                else
+                    msgCombatDetails.ActionType = ActionType.Ability;
+
+                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                 target.DefenseType = DefenseType.Evade;
                 target.HarmType = msgCombatDetails.HarmType;
@@ -2509,7 +2523,14 @@ namespace WaywardGamers.KParser.Parsing
                 combatMatch = ParseExpressions.MissAbility.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
-                    msgCombatDetails.ActionType = ActionType.Ability;
+                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                    if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
+                    {
+                        msgCombatDetails.ActionType = ActionType.Weaponskill;
+                        msgCombatDetails.HarmType = HarmType.Damage;
+                    }
+                    else
+                        msgCombatDetails.ActionType = ActionType.Ability;
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     target.DefenseType = DefenseType.Evasion;
@@ -2524,7 +2545,12 @@ namespace WaywardGamers.KParser.Parsing
                 combatMatch = ParseExpressions.MissAbility2.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
-                    msgCombatDetails.ActionType = ActionType.Ability;
+                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                    if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
+                        msgCombatDetails.ActionType = ActionType.Weaponskill;
+                    else
+                        msgCombatDetails.ActionType = ActionType.Ability;
+
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     message.ParseSuccessful = true;
                     return;
