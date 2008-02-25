@@ -110,52 +110,54 @@ namespace WaywardGamers.KParser.Plugin
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
         {
             // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
-            if (e.DatasetChanges.Battles.Count > 0)
+            if (e.DatasetChanges.Battles != null)
             {
-                var mobsFought = from b in e.DatasetChanges.Battles
-                                 where ((b.DefaultBattle == false) &&
-                                        (b.IsEnemyIDNull() == false) &&
-                                        (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
-                                 group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
-                                 select new
-                                 {
-                                     Name = bn.Key,
-                                     XP = from xb in bn
-                                          group xb by xb.MinBaseExperience() into xbn
-                                          orderby xbn.Key
-                                          select new { BaseXP = xbn.Key }
-                                 };
-
-
-                if (mobsFought.Count() > 0)
+                if (e.DatasetChanges.Battles.Count > 0)
                 {
-                    string mobWithXP;
+                    var mobsFought = from b in e.DatasetChanges.Battles
+                                     where ((b.DefaultBattle == false) &&
+                                            (b.IsEnemyIDNull() == false) &&
+                                            (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
+                                     group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
+                                     select new
+                                     {
+                                         Name = bn.Key,
+                                         XP = from xb in bn
+                                              group xb by xb.MinBaseExperience() into xbn
+                                              orderby xbn.Key
+                                              select new { BaseXP = xbn.Key }
+                                     };
 
-                    foreach (var mob in mobsFought)
+
+                    if (mobsFought.Count() > 0)
                     {
-                        if (comboBox2.Items.Contains(mob.Name) == false)
-                            AddToComboBox2(mob.Name);
+                        string mobWithXP;
 
-                        foreach (var xp in mob.XP)
+                        foreach (var mob in mobsFought)
                         {
-                            if (xp.BaseXP > 0)
+                            if (comboBox2.Items.Contains(mob.Name) == false)
+                                AddToComboBox2(mob.Name);
+
+                            foreach (var xp in mob.XP)
                             {
-                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP);
+                                if (xp.BaseXP > 0)
+                                {
+                                    mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP);
 
-                                if (comboBox2.Items.Contains(mobWithXP) == false)
-                                    AddToComboBox2(mobWithXP);
+                                    if (comboBox2.Items.Contains(mobWithXP) == false)
+                                        AddToComboBox2(mobWithXP);
 
-                                // Check for existing entry with higher min base xp
-                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP+1);
+                                    // Check for existing entry with higher min base xp
+                                    mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP + 1);
 
-                                if (comboBox2.Items.Contains(mobWithXP))
-                                    RemoveFromComboBox2(mobWithXP);
+                                    if (comboBox2.Items.Contains(mobWithXP))
+                                        RemoveFromComboBox2(mobWithXP);
+                                }
                             }
                         }
                     }
                 }
             }
-
 
             if (e.DatasetChanges.Interactions.Count != 0)
             {
