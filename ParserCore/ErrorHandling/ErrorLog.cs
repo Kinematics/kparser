@@ -110,6 +110,28 @@ namespace WaywardGamers.KParser
 			}
 		}
 
+        internal void Log(string label, Message message)
+        {
+            programSettings.Reload();
+
+            // If error logging is turned off, just return.
+            if (programSettings.ErrorLoggingLevel == ErrorLevel.None)
+                return;
+
+            try
+            {
+                using (StreamWriter sw = File.AppendText(logFileName))
+                {
+                    WriteHeader(sw, label, message.ToString(), ErrorLevel.Debug);
+                    WriteFooter(sw);
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Error writing log.");
+            }
+        }
+
         /// <summary>
 		/// Shortcut versions for the call to log exceptions.
 		/// </summary>
