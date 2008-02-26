@@ -22,7 +22,7 @@ namespace WaywardGamers.KParser.Parsing
         internal static Message Parse(MessageLine messageLine)
         {
             int i = 0;
-            if (messageLine.EventSequence == 0x15ba)
+            if (messageLine.EventSequence == 0x29f)
                 i++;
 
             Message message = GetAttachedMessage(messageLine);
@@ -703,7 +703,8 @@ namespace WaywardGamers.KParser.Parsing
                     case 0x22:
                     case 0x2a:
                     case 0xbb:
-                        if (message.CurrentMessageText.StartsWith("Additional Effect:") == false)
+                        if ((message.CurrentMessageText.StartsWith("Additional Effect:") == false) &&
+                            (message.CurrentMessageText.StartsWith("Additional effect:") == false))
                             msgCombatDetails.InteractionType = InteractionType.Harm;
                         break;
                 }
