@@ -973,6 +973,17 @@ namespace WaywardGamers.KParser.Parsing
                                 message.ParseSuccessful = true;
                                 return;
                             }
+                            combatMatch = ParseExpressions.Dispelled.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                // Erased
+                                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                                target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
+                                target.SecondaryAction = combatMatch.Groups[ParseFields.Effect].Value;
+                                target.AidType = AidType.RemoveStatus;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
                             // Self-target buffs have various strings which we won't check for.
                             // Only look to see if the message has determined an actor and action, and that
                             // the message line completes the sentence (ends in a period).
@@ -1033,10 +1044,12 @@ namespace WaywardGamers.KParser.Parsing
                             }
                             break;
                         case AidType.Unknown:
+                            Logger.Instance.Log("Successful Buff, AidType.Unknown", message);
                             break;
                     }
                     break;
                 case SuccessType.Unsuccessful:
+                    Logger.Instance.Log("Unsuccessful Buff", message);
                     switch (msgCombatDetails.AidType)
                     {
                         case AidType.Recovery:
@@ -1053,6 +1066,7 @@ namespace WaywardGamers.KParser.Parsing
                     switch (msgCombatDetails.AidType)
                     {
                         case AidType.Recovery:
+                            Logger.Instance.Log("Failed Recovery", message);
                             break;
                         case AidType.Enhance:
                             combatMatch = ParseExpressions.NoEffect.Match(currentMessageText);
@@ -1079,6 +1093,7 @@ namespace WaywardGamers.KParser.Parsing
                             }
                             break;
                         case AidType.Unknown:
+                            Logger.Instance.Log("Failed, Unknown Aid type", message);
                             break;
                     }
                     break;
