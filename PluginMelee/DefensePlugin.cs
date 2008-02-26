@@ -643,8 +643,9 @@ namespace WaywardGamers.KParser.Plugin
                 var counterableAttacks = player.Melee.Where(a =>
                     a.DefenseType != (byte)DefenseType.Evasion &&
                     a.DefenseType != (byte)DefenseType.Parry &&
-                    a.DefenseType != (byte)DefenseType.Blink &&
-                    a.DefenseType != (byte)DefenseType.Anticipate);
+                    a.DefenseType != (byte)DefenseType.Blink).Concat(
+                                         player.Unknown.Where(a =>
+                                             a.DefenseType == (byte)DefenseType.Anticipate));
 
 
                 int parryableCount = parryableAttacks.Count();
