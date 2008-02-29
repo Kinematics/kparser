@@ -448,26 +448,29 @@ namespace WaywardGamers.KParser
                         // for at least 2 minutes in case of log file cross-over.
                         lock (messageCollection)
                         {
-                            Message lastMessage = messageCollection.Last();
-                            int numberOfMessagesToLeave = 0;
-
-                            // But only if they haven't crossed the long time threshhold (2 minutes)
-                            if (lastMessage.Timestamp.CompareTo(longCheckTime) >= 0)
-                                numberOfMessagesToLeave = messageCollection.Count(m => m.Timestamp == lastMessage.Timestamp);
-
-                            // cap at 10
-                            if (numberOfMessagesToLeave > 20)
-                                numberOfMessagesToLeave = 20;
-
-                            int numberOfMessagesToTake = messageCollection.Count() - numberOfMessagesToLeave;
-
-                            if (numberOfMessagesToTake < 0)
-                                numberOfMessagesToTake = 0;
-
-                            if (numberOfMessagesToTake > 0)
+                            if (messageCollection.Count > 0)
                             {
-                                messagesToProcess.AddRange(messageCollection.Take(numberOfMessagesToTake));
-                                messageCollection.RemoveRange(0, numberOfMessagesToTake);
+                                Message lastMessage = messageCollection.Last();
+                                int numberOfMessagesToLeave = 0;
+
+                                // But only if they haven't crossed the long time threshhold (2 minutes)
+                                if (lastMessage.Timestamp.CompareTo(longCheckTime) >= 0)
+                                    numberOfMessagesToLeave = messageCollection.Count(m => m.Timestamp == lastMessage.Timestamp);
+
+                                // cap at 10
+                                if (numberOfMessagesToLeave > 20)
+                                    numberOfMessagesToLeave = 20;
+
+                                int numberOfMessagesToTake = messageCollection.Count() - numberOfMessagesToLeave;
+
+                                if (numberOfMessagesToTake < 0)
+                                    numberOfMessagesToTake = 0;
+
+                                if (numberOfMessagesToTake > 0)
+                                {
+                                    messagesToProcess.AddRange(messageCollection.Take(numberOfMessagesToTake));
+                                    messageCollection.RemoveRange(0, numberOfMessagesToTake);
+                                }
                             }
                         }
                         break;
