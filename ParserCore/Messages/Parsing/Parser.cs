@@ -1031,6 +1031,16 @@ namespace WaywardGamers.KParser.Parsing
                                 message.ParseSuccessful = true;
                                 return;
                             }
+                            // Uses demoralizer
+                            combatMatch = ParseExpressions.ItemReduceTP.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                                target.HarmType = HarmType.None;
+                                target.AidType = msgCombatDetails.AidType;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
                             // Uses poison potion; is poisoned
                             combatMatch = ParseExpressions.Enfeeble.Match(currentMessageText);
                             if (combatMatch.Success == true)
