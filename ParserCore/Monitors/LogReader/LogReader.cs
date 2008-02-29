@@ -71,6 +71,9 @@ namespace WaywardGamers.KParser.Monitoring
                 // Get the settings so that we know where to look for the log files.
                 appSettings.Reload();
 
+                // Notify MessageManager that we're starting.
+                MessageManager.Instance.StartParsing(true);
+
                 // Run the parser on any logs already in existance before starting to monitor,
                 // if that option is set.
                 if (appSettings.ParseExistingLogs == true)
@@ -83,9 +86,6 @@ namespace WaywardGamers.KParser.Monitoring
 
                 // Begin watching.
                 fileSystemWatcher.EnableRaisingEvents = true;
-
-                // Notify MessageManager that we're starting.
-                MessageManager.Instance.StartParsing(true);
             }
             catch (Exception)
             {
