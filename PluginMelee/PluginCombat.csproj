@@ -49,6 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EnfeeblePlugin.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="EnhancePlugin.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="LinqGroups.cs">
     </Compile>
     <Compile Include="DefensePlugin.cs">
