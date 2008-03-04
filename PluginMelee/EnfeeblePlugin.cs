@@ -26,7 +26,8 @@ namespace WaywardGamers.KParser.Plugin
             label1.Text = "Category";
             comboBox1.Left = label1.Right + 10;
             comboBox1.Items.Clear();
-            comboBox1.Items.Add("All");
+            comboBox1.Items.Add("Debuff Mobs");
+            comboBox1.Items.Add("Debuff Players");
             comboBox1.SelectedIndex = 0;
 
             label2.Left = comboBox1.Right + 20;
@@ -165,11 +166,175 @@ namespace WaywardGamers.KParser.Plugin
         }
         #endregion
 
+        #region Member Variables
+        string debuffMobHeader    = "Debuff              Used on             # Times   # Successful   % Successful\n";
+        string debuffPlayerHeader = "Debuff              Used on             # Times   # Successful   % Successful\n";
+        #endregion
+
         #region Processing sections
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
+            richTextBox.Clear();
+
+            if (comboBox1.SelectedIndex == 0)
+                ProcessDebuffsUsed(dataSet);
+            else
+                ProcessDebuffsReceived(dataSet);
+        }
+
+        private void ProcessDebuffsUsed(KPDatabaseDataSet dataSet)
+        {
+            var debuffs = from c in dataSet.Combatants
+                          where ((c.CombatantType == (byte)EntityType.Player) ||
+                                (c.CombatantType == (byte)EntityType.Pet) ||
+                                (c.CombatantType == (byte)EntityType.Fellow))
+                          orderby c.CombatantType, c.CombatantName
+                          select new
+                          {
+                              Name = c.CombatantName,
+                              Debuffs = from b in c.GetInteractionsRowsByActorCombatantRelation()
+                                        where (b.HarmType == (byte)HarmType.Enfeeble ||
+                                               b.HarmType == (byte)HarmType.Dispel) &&
+                                              b.Preparing == false
+                                        group b by b.ActionsRow.ActionName into ba
+                                        orderby ba.Key
+                                        select new
+                                        {
+                                            DebuffName = ba.Key,
+                                            DebuffTargets = from bt in ba
+                                                            where bt.IsTargetIDNull() == false
+                                                            group bt by bt.CombatantsRowByTargetCombatantRelation.CombatantName into btn
+                                                            orderby btn.Key
+                                                            select new
+                                                            {
+                                                                TargetName = btn.Key,
+                                                                Debuffs = btn.OrderBy(i => i.Timestamp)
+                                                            }
+                                        }
+                          };
+
+
+            int used;
+            int successful;
+            double percSuccess;
+            string debuffName;
+
+            foreach (var player in debuffs)
+            {
+                if ((player.Debuffs == null) || (player.Debuffs.Count() == 0))
+                    continue;
+
+                AppendBoldText(string.Format("{0}\n", player.Name), Color.Blue);
+                AppendBoldUnderText(debuffMobHeader, Color.Black);
+
+                foreach (var debuff in player.Debuffs)
+                {
+                    debuffName = debuff.DebuffName;
+
+                    foreach (var target in debuff.DebuffTargets)
+                    {
+                        AppendNormalText(debuffName.PadRight(20));
+                        debuffName = "";
+
+                        used = target.Debuffs.Count();
+                        AppendNormalText(target.TargetName.PadRight(20));
+
+                        successful = target.Debuffs.Count(d => d.DefenseType == (byte)DefenseType.None);
+
+                        percSuccess = (double)successful / used;
+
+                        AppendNormalText(string.Format("{0,7:d}{1,15:d}{2,15:p2}", used, successful, percSuccess));
+
+
+                        AppendNormalText("\n");
+                    }
+                }
+
+                AppendNormalText("\n");
+            }
+        }
+
+        private void ProcessDebuffsReceived(KPDatabaseDataSet dataSet)
+        {
+            var debuffs = from c in dataSet.Combatants
+                          where (c.CombatantType == (byte)EntityType.Mob)
+                          orderby c.CombatantType, c.CombatantName
+                          select new
+                          {
+                              Name = c.CombatantName,
+                              Debuffs = from b in c.GetInteractionsRowsByActorCombatantRelation()
+                                        where (b.HarmType == (byte)HarmType.Enfeeble ||
+                                               b.HarmType == (byte)HarmType.Dispel) &&
+                                              b.Preparing == false
+                                        group b by b.ActionsRow.ActionName into ba
+                                        orderby ba.Key
+                                        select new
+                                        {
+                                            DebuffName = ba.Key,
+                                            DebuffTargets = from bt in ba
+                                                            where bt.IsTargetIDNull() == false
+                                                            group bt by bt.CombatantsRowByTargetCombatantRelation.CombatantName into btn
+                                                            orderby btn.Key
+                                                            select new
+                                                            {
+                                                                TargetName = btn.Key,
+                                                                Debuffs = btn.OrderBy(i => i.Timestamp)
+                                                            }
+                                        }
+                          };
+
+
+            int used;
+            int successful;
+            double percSuccess;
+            string debuffName;
+
+            foreach (var mob in debuffs)
+            {
+                if ((mob.Debuffs == null) || (mob.Debuffs.Count() == 0))
+                    continue;
+
+                AppendBoldText(string.Format("{0}\n", mob.Name), Color.Blue);
+                AppendBoldUnderText(debuffPlayerHeader, Color.Black);
+
+                foreach (var debuff in mob.Debuffs)
+                {
+                    debuffName = debuff.DebuffName;
+
+                    foreach (var target in debuff.DebuffTargets)
+                    {
+                        AppendNormalText(debuffName.PadRight(20));
+                        debuffName = "";
+
+                        used = target.Debuffs.Count();
+                        AppendNormalText(target.TargetName.PadRight(20));
+
+                        successful = target.Debuffs.Count(d => d.DefenseType == (byte)DefenseType.None);
+
+                        percSuccess = (double)successful / used;
+
+                        AppendNormalText(string.Format("{0,7:d}{1,15:d}{2,15:p2}", used, successful, percSuccess));
+
+
+                        AppendNormalText("\n");
+                    }
+                }
+
+                AppendNormalText("\n");
+            }
         }
         #endregion
 
+        #region Event Handlers
+        protected override void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            HandleDataset(DatabaseManager.Instance.Database);
+        }
+
+        protected override void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            HandleDataset(DatabaseManager.Instance.Database);
+        }
+        #endregion
     }
 }

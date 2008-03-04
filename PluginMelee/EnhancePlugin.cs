@@ -63,7 +63,7 @@ namespace WaywardGamers.KParser.Plugin
 
         #region Member Variables
         string buffUsedHeader = "Buff                Used on             # Times   Min Interval   Max Interval   Avg Interval\n";
-        string buffRecHeader = "Buff                Used by             # Times   Min Interval   Max Interval   Avg Interval\n";
+        string buffRecHeader  = "Buff                Used by             # Times   Min Interval   Max Interval   Avg Interval\n";
         #endregion
 
         #region Processing sections
@@ -89,7 +89,8 @@ namespace WaywardGamers.KParser.Plugin
                         {
                             Name = c.CombatantName,
                             Buffs = from b in c.GetInteractionsRowsByActorCombatantRelation()
-                                    where b.AidType == (byte)AidType.Enhance &&
+                                    where (b.AidType == (byte)AidType.Enhance ||
+                                           b.AidType == (byte)AidType.RemoveStatus) &&
                                           b.Preparing == false
                                     group b by b.ActionsRow.ActionName into ba
                                     orderby ba.Key
@@ -185,7 +186,8 @@ namespace WaywardGamers.KParser.Plugin
                         {
                             Name = c.CombatantName,
                             Buffs = from b in c.GetInteractionsRowsByTargetCombatantRelation()
-                                    where b.AidType == (byte)AidType.Enhance &&
+                                    where (b.AidType == (byte)AidType.Enhance ||
+                                           b.AidType == (byte)AidType.RemoveStatus) &&
                                           b.Preparing == false
                                     group b by b.ActionsRow.ActionName into ba
                                     orderby ba.Key
