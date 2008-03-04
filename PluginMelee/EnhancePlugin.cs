@@ -91,7 +91,8 @@ namespace WaywardGamers.KParser.Plugin
                             Buffs = from b in c.GetInteractionsRowsByActorCombatantRelation()
                                     where (b.AidType == (byte)AidType.Enhance ||
                                            b.AidType == (byte)AidType.RemoveStatus) &&
-                                          b.Preparing == false
+                                          b.Preparing == false &&
+                                          b.IsActionIDNull() == false
                                     group b by b.ActionsRow.ActionName into ba
                                     orderby ba.Key
                                     select new
@@ -188,7 +189,8 @@ namespace WaywardGamers.KParser.Plugin
                             Buffs = from b in c.GetInteractionsRowsByTargetCombatantRelation()
                                     where (b.AidType == (byte)AidType.Enhance ||
                                            b.AidType == (byte)AidType.RemoveStatus) &&
-                                          b.Preparing == false
+                                          b.Preparing == false &&
+                                          b.IsActionIDNull() == false
                                     group b by b.ActionsRow.ActionName into ba
                                     orderby ba.Key
                                     select new
