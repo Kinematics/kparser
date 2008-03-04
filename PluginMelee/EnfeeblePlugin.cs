@@ -167,8 +167,8 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Member Variables
-        string debuffMobHeader    = "Debuff              Used on             # Times   # Successful   % Successful\n";
-        string debuffPlayerHeader = "Debuff              Used on             # Times   # Successful   % Successful\n";
+        string debuffMobHeader    = "Debuff              Used on             # Times   # Successful   # No Effect   % Successful\n";
+        string debuffPlayerHeader = "Debuff              Used on             # Times   # Successful   # No Effect   % Successful\n";
         #endregion
 
         #region Processing sections
@@ -216,6 +216,7 @@ namespace WaywardGamers.KParser.Plugin
 
             int used;
             int successful;
+            int noEffect;
             double percSuccess;
             string debuffName;
 
@@ -233,20 +234,26 @@ namespace WaywardGamers.KParser.Plugin
 
                     foreach (var target in debuff.DebuffTargets)
                     {
-                        AppendNormalText(debuffName.PadRight(20));
-                        debuffName = "";
-
                         used = target.Debuffs.Count();
-                        AppendNormalText(target.TargetName.PadRight(20));
 
-                        successful = target.Debuffs.Count(d => d.DefenseType == (byte)DefenseType.None);
+                        if (used > 0)
+                        {
+                            AppendNormalText(debuffName.PadRight(20));
+                            debuffName = "";
 
-                        percSuccess = (double)successful / used;
+                            AppendNormalText(target.TargetName.PadRight(20));
 
-                        AppendNormalText(string.Format("{0,7:d}{1,15:d}{2,15:p2}", used, successful, percSuccess));
+                            successful = target.Debuffs.Count(d =>
+                                (d.DefenseType == (byte)DefenseType.None) &&
+                                (d.FailedActionType == (byte)FailedActionType.None));
 
+                            noEffect = target.Debuffs.Count(d => d.FailedActionType == (byte)FailedActionType.NoEffect);
 
-                        AppendNormalText("\n");
+                            percSuccess = (double)successful / used;
+
+                            AppendNormalText(string.Format("{0,7:d}{1,15:d}{2,14:d}{3,15:p2}\n",
+                                used, successful, noEffect, percSuccess));
+                        }
                     }
                 }
 
@@ -286,6 +293,7 @@ namespace WaywardGamers.KParser.Plugin
 
             int used;
             int successful;
+            int noEffect;
             double percSuccess;
             string debuffName;
 
@@ -303,20 +311,27 @@ namespace WaywardGamers.KParser.Plugin
 
                     foreach (var target in debuff.DebuffTargets)
                     {
-                        AppendNormalText(debuffName.PadRight(20));
-                        debuffName = "";
-
                         used = target.Debuffs.Count();
-                        AppendNormalText(target.TargetName.PadRight(20));
 
-                        successful = target.Debuffs.Count(d => d.DefenseType == (byte)DefenseType.None);
-
-                        percSuccess = (double)successful / used;
-
-                        AppendNormalText(string.Format("{0,7:d}{1,15:d}{2,15:p2}", used, successful, percSuccess));
+                        if (used > 0)
+                        {
+                            AppendNormalText(debuffName.PadRight(20));
+                            debuffName = "";
 
 
-                        AppendNormalText("\n");
+                            AppendNormalText(target.TargetName.PadRight(20));
+
+                            successful = target.Debuffs.Count(d =>
+                                (d.DefenseType == (byte)DefenseType.None) &&
+                                (d.FailedActionType == (byte)FailedActionType.None));
+
+                            noEffect = target.Debuffs.Count(d => d.FailedActionType == (byte)FailedActionType.NoEffect);
+
+                            percSuccess = (double)successful / used;
+
+                            AppendNormalText(string.Format("{0,7:d}{1,15:d}{2,14:d}{3,15:p2}\n",
+                                used, successful, noEffect, percSuccess));
+                        }
                     }
                 }
 
