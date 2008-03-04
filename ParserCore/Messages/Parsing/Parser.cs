@@ -22,7 +22,7 @@ namespace WaywardGamers.KParser.Parsing
         internal static Message Parse(MessageLine messageLine)
         {
             int i = 0;
-            if (messageLine.EventSequence == 0x29f)
+            if (messageLine.EventSequence == 0x1100)
                 i++;
 
             Message message = GetAttachedMessage(messageLine);
@@ -939,6 +939,7 @@ namespace WaywardGamers.KParser.Parsing
                                 if (msgCombatDetails.ActionName == string.Empty)
                                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Effect].Value;
                                 target.AidType = msgCombatDetails.AidType;
+                                target.EffectName = "EnhanceAttack";
                                 message.ParseSuccessful = true;
                                 return;
                             }
@@ -2073,8 +2074,26 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                 target.FailedActionType = FailedActionType.NoEffect;
-                target.HarmType = msgCombatDetails.HarmType;
-                target.AidType = msgCombatDetails.AidType;
+                if (msgCombatDetails.ActorEntityType == target.EntityType)
+                {
+                    if ((msgCombatDetails.ActionName == SpellNames.Erase) ||
+                        (msgCombatDetails.ActionName.EndsWith(SpellNames.RemoveStatus)))
+                        target.AidType = AidType.RemoveStatus;
+                    else
+                        target.AidType = AidType.Enhance;
+
+                    target.HarmType = HarmType.None;
+                }
+                else
+                {
+                    if ((msgCombatDetails.ActionName == SpellNames.Dispel) ||
+                        (msgCombatDetails.ActionName == SpellNames.Finale))
+                        target.HarmType = HarmType.Dispel;
+                    else
+                        target.HarmType = HarmType.Enfeeble;
+
+                    target.AidType = AidType.None;
+                }
                 msgCombatDetails.SuccessLevel = SuccessType.Failed;
                 message.ParseSuccessful = true;
                 return;
@@ -2083,9 +2102,11 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.NoEffect2.Match(currentMessageText);
             if (combatMatch.Success == true)
             {
-                msgCombatDetails.ActionType = ActionType.Spell;
+                if (msgCombatDetails.ActionType == ActionType.Unknown)
+                    msgCombatDetails.ActionType = ActionType.Spell;
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                 target.FailedActionType = FailedActionType.NoEffect;
+                target.HarmType = msgCombatDetails.HarmType;
                 msgCombatDetails.SuccessLevel = SuccessType.Failed;
                 message.ParseSuccessful = true;
                 return;
