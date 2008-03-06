@@ -11,6 +11,7 @@ namespace WaywardGamers.KParser.Parsing
     {
         #region Member Variables
         private static uint lastMessageID = 0;
+        private static Random random = new Random();
         #endregion
 
         #region Top-level category breakdown
@@ -200,9 +201,9 @@ namespace WaywardGamers.KParser.Parsing
                 case 0xbf:
                     message.SystemDetails.SystemMessageType = SystemMessageType.EffectWearsOff;
 
-                    Match charmCheck = ParseExpressions.NotCharmed.Match(message.CurrentMessageText);
-                    if (charmCheck.Success == true)
-                        MessageManager.Instance.RemovePetEntity(charmCheck.Groups[ParseFields.Fulltarget].Value);
+                    //Match charmCheck = ParseExpressions.NotCharmed.Match(message.CurrentMessageText);
+                    //if (charmCheck.Success == true)
+                    //    MessageManager.Instance.RemovePetEntity(charmCheck.Groups[ParseFields.Fulltarget].Value);
                     break;
                 case 0xcc:
                     message.SystemDetails.SystemMessageType = SystemMessageType.SearchComment;
@@ -1518,6 +1519,60 @@ namespace WaywardGamers.KParser.Parsing
                 {
                     target.HarmType = combatDetails.HarmType;
                     target.AidType = combatDetails.AidType;
+
+
+                    // Handle identifying charmed pet entities
+                    if (target.EntityType == EntityType.Mob && combatDetails.ActorEntityType == EntityType.Mob)
+                    {
+                        EntityType checkTarg = MessageManager.Instance.LookupPetEntity(target.Name);
+                        EntityType checkActor = MessageManager.Instance.LookupPetEntity(combatDetails.ActorName);
+
+                        if ((checkActor == EntityType.Pet) ^ (checkTarg == EntityType.Pet))
+                        {
+                            // If only one shows up as being a pet, use that.
+                            target.EntityType = checkTarg;
+                            combatDetails.ActorEntityType = checkActor;
+                        }
+                        else if ((checkActor == EntityType.Pet) && (checkTarg == EntityType.Pet))
+                        {
+                            // If both show up as being a pet, check the last charmed mob
+                            // to break the tie.
+                            string lastPetName = MessageManager.Instance.LastAddedPetEntity;
+
+                            if (lastPetName != string.Empty)
+                            {
+                                // Check to make sure we don't have dhalmel fighting dhalmel, or whatever.
+                                if (target.Name != combatDetails.ActorName)
+                                {
+                                    if (target.Name == lastPetName)
+                                    {
+                                        target.EntityType = EntityType.Pet;
+                                    }
+                                    else if (combatDetails.ActorName == lastPetName)
+                                    {
+                                        combatDetails.ActorEntityType = EntityType.Pet;
+                                    }
+                                }
+                                else
+                                {
+                                    // actor and target are same mob type; cannot accurately determine
+                                    // which is the mob and which is the pet; random?
+                                    if (random.Next(1000) < 500)
+                                    {
+                                        target.EntityType = EntityType.Pet;
+                                    }
+                                    else
+                                    {
+                                        combatDetails.ActorEntityType = EntityType.Pet;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // if no last pet entry, ignore
+                            }
+                        }
+                    }
                 }
 
                 message.ParseSuccessful = true;
@@ -1621,6 +1676,60 @@ namespace WaywardGamers.KParser.Parsing
                 {
                     target.HarmType = combatDetails.HarmType;
                     target.AidType = combatDetails.AidType;
+
+
+                    // Handle identifying charmed pet entities
+                    if (target.EntityType == EntityType.Mob && combatDetails.ActorEntityType == EntityType.Mob)
+                    {
+                        EntityType checkTarg = MessageManager.Instance.LookupPetEntity(target.Name);
+                        EntityType checkActor = MessageManager.Instance.LookupPetEntity(combatDetails.ActorName);
+
+                        if ((checkActor == EntityType.Pet) ^ (checkTarg == EntityType.Pet))
+                        {
+                            // If only one shows up as being a pet, use that.
+                            target.EntityType = checkTarg;
+                            combatDetails.ActorEntityType = checkActor;
+                        }
+                        else if ((checkActor == EntityType.Pet) && (checkTarg == EntityType.Pet))
+                        {
+                            // If both show up as being a pet, check the last charmed mob
+                            // to break the tie.
+                            string lastPetName = MessageManager.Instance.LastAddedPetEntity;
+
+                            if (lastPetName != string.Empty)
+                            {
+                                // Check to make sure we don't have dhalmel fighting dhalmel, or whatever.
+                                if (target.Name != combatDetails.ActorName)
+                                {
+                                    if (target.Name == lastPetName)
+                                    {
+                                        target.EntityType = EntityType.Pet;
+                                    }
+                                    else if (combatDetails.ActorName == lastPetName)
+                                    {
+                                        combatDetails.ActorEntityType = EntityType.Pet;
+                                    }
+                                }
+                                else
+                                {
+                                    // actor and target are same mob type; cannot accurately determine
+                                    // which is the mob and which is the pet; random?
+                                    if (random.Next(1000) < 500)
+                                    {
+                                        target.EntityType = EntityType.Pet;
+                                    }
+                                    else
+                                    {
+                                        combatDetails.ActorEntityType = EntityType.Pet;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // if no last pet entry, ignore
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -1841,6 +1950,63 @@ namespace WaywardGamers.KParser.Parsing
 
             if (combatMatch.Success == true)
             {
+                if (target != null)
+                {
+                    // Handle identifying charmed pet entities
+                    if (target.EntityType == EntityType.Mob && combatDetails.ActorEntityType == EntityType.Mob)
+                    {
+                        EntityType checkTarg = MessageManager.Instance.LookupPetEntity(target.Name);
+                        EntityType checkActor = MessageManager.Instance.LookupPetEntity(combatDetails.ActorName);
+
+                        if ((checkActor == EntityType.Pet) ^ (checkTarg == EntityType.Pet))
+                        {
+                            // If only one shows up as being a pet, use that.
+                            target.EntityType = checkTarg;
+                            combatDetails.ActorEntityType = checkActor;
+                        }
+                        else if ((checkActor == EntityType.Pet) && (checkTarg == EntityType.Pet))
+                        {
+                            // If both show up as being a pet, check the last charmed mob
+                            // to break the tie.
+                            string lastPetName = MessageManager.Instance.LastAddedPetEntity;
+
+                            if (lastPetName != string.Empty)
+                            {
+                                // Check to make sure we don't have dhalmel fighting dhalmel, or whatever.
+                                if (target.Name != combatDetails.ActorName)
+                                {
+                                    if (target.Name == lastPetName)
+                                    {
+                                        target.EntityType = EntityType.Pet;
+                                    }
+                                    else if (combatDetails.ActorName == lastPetName)
+                                    {
+                                        combatDetails.ActorEntityType = EntityType.Pet;
+                                    }
+                                }
+                                else
+                                {
+                                    // actor and target are same mob type; cannot accurately determine
+                                    // which is the mob and which is the pet; random?
+                                    if (random.Next(1000) < 500)
+                                    {
+                                        target.EntityType = EntityType.Pet;
+                                    }
+                                    else
+                                    {
+                                        combatDetails.ActorEntityType = EntityType.Pet;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // if no last pet entry, ignore
+                            }
+                        }
+                    }
+                }
+
+
                 message.ParseSuccessful = true;
             }
         }
@@ -2635,6 +2801,23 @@ namespace WaywardGamers.KParser.Parsing
                     return;
                 }
             }
+
+            if (combatMatch.Success == false)
+            {
+                combatMatch = ParseExpressions.FailsCharm.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.ActionType = ActionType.Ability;
+                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.DefenseType = DefenseType.Resist;
+                    target.HarmType = msgCombatDetails.HarmType;
+                    target.AidType = msgCombatDetails.AidType;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+            }
+
 
             // Check for drain messages
             ParseAttackDrain(message);
