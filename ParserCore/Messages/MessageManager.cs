@@ -48,6 +48,7 @@ namespace WaywardGamers.KParser
         #region Member Variables
         List<Message> messageCollection = new List<Message>();
         Dictionary<string, EntityType> entityCollection = new Dictionary<string, EntityType>();
+        internal string LastAddedPetEntity { get; set; }
 
         Timer periodicUpdates;
 
@@ -114,6 +115,7 @@ namespace WaywardGamers.KParser
 
             entityCollection.Clear();
             LastMessageEventNumber = 0;
+            LastAddedPetEntity = string.Empty;
         }
         #endregion
 
@@ -630,9 +632,12 @@ namespace WaywardGamers.KParser
                 return;
 
             string petName = name + "_Pet";
+            LastAddedPetEntity = name;
 
             if (entityCollection.ContainsKey(petName) == false)
+            {
                 entityCollection[petName] = EntityType.Pet;
+            }
         }
 
         /// <summary>
