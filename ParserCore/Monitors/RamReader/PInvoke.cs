@@ -85,57 +85,42 @@ namespace WaywardGamers.KParser.Monitoring.Memory
 
     #endregion
 
+    /// <summary>
+    /// Class to handling calling kernal functions.
+    /// </summary>
     internal class PInvoke
     {
-        // Wrap the first three calls, below.
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr CreateFileMapping(IntPtr fileHandle, SecurityAttributes attributes,
-            uint protection, uint maxSizeHigh, uint maxSizeLow, string name);
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr MapViewOfFile(IntPtr fileMappingHandle, uint desiredAccess, uint fileOffsetHigh,
-            uint fileOffsetLow, uint numBytesToMap);
-
+        /// <summary>
+        /// Import kernal function to read process memory.
+        /// </summary>
+        /// <param name="processHandle">A handle to the process with memory that is being read.
+        /// The handle must have PROCESS_VM_READ access to the process.</param>
+        /// <param name="address">A pointer to the base address in the specified process from which to read.</param>
+        /// <param name="outputBuffer">A pointer to a buffer that receives the contents from the address
+        /// space of the specified process.</param>
+        /// <param name="nBufferSize">The number of bytes to be read from the specified process.</param>
+        /// <param name="lpNumberOfBytesRead">A pointer to a variable that receives the number of bytes
+        /// transferred into the specified buffer. If lpNumberOfBytesRead is NULL,
+        /// the parameter is ignored.</param>
+        /// <returns>Returns true if completed successfully, false otherwise.</returns>
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern bool ReadProcessMemory(IntPtr processHandle, IntPtr address, IntPtr outputBuffer,
             UIntPtr nBufferSize, out UIntPtr lpNumberOfBytesRead);
 
-        // These three can be called directly
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, EntryPoint = "MoveMemory", SetLastError = true)]
-        internal static extern bool MoveMemory(IntPtr destination, IntPtr source, int length);
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, EntryPoint = "UnmapViewOfFile", SetLastError = true)]
-        internal static extern bool UnmapViewOfFile(IntPtr viewHandle);
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, EntryPoint = "CloseHandle", SetLastError = true)]
-        internal static extern bool CloseHandle(IntPtr handle);
+        //[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        //private static extern bool ReadProcessMemory(IntPtr processHandle, IntPtr address, IntPtr outputBuffer,
+        //    UIntPtr nBufferSize, out UIntPtr lpNumberOfBytesRead);
 
 
-
-        internal static IntPtr CreateFileMapping(IntPtr fileHandle, FileMappingProtection protection, long maxMappingSize, string mappingName)
-        {
-            uint mappingLow = (uint)(maxMappingSize & 0xFFFFFFFF);
-            uint mappingHigh = (uint)(maxMappingSize >> 32);
-
-            IntPtr result = CreateFileMapping(fileHandle, null, (uint)protection, mappingHigh, mappingLow, mappingName);
-            if (result == IntPtr.Zero)
-                throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
-
-            return result;
-        }
-
-        internal static IntPtr MapViewOfFile(IntPtr fileMappingHandle, FileMappingAccess access, long fileOffset, uint numBytesToMap)
-        {
-            uint fileOffsetLow = (uint)(fileOffset & 0xFFFFFFFF);
-            uint fileOffsetHigh = (uint)(fileOffset >> 32);
-
-            IntPtr result = MapViewOfFile(fileMappingHandle, (uint)access, fileOffsetHigh, fileOffsetLow, numBytesToMap);
-            if (result == IntPtr.Zero)
-                throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
-
-            return result;
-        }
-
+        /// <summary>
+        /// Wrapper to read process memory with error handling.
+        /// </summary>
+        /// <param name="processHandle">See above.</param>
+        /// <param name="address">See above.  Note that this is platform-specific,
+        /// so an x64 OS will have a 64 bit pointer.</param>
+        /// <param name="nBytesToRead">See above.</param>
+        /// <returns>Returns a pointer to a global memory buffer.
+        /// Call DoneReadingProcessMemory to release the memory.</returns>
         internal static IntPtr ReadProcessMemory(IntPtr processHandle, IntPtr address, uint nBytesToRead)
         {
             IntPtr buffer = Marshal.AllocHGlobal((int)nBytesToRead);

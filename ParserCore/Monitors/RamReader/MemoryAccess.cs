@@ -45,117 +45,27 @@ namespace WaywardGamers.KParser.Monitoring.Memory
     internal class MemoryAccess
     {
         #region Private internal classes
-        private class POLProcess
+
+        private class POL
         {
-            private Process polProcess;
-            private IntPtr baseAddress;
+            internal Process Process { get; private set; }
+            internal IntPtr BaseAddress { get; private set; }
 
-            internal POLProcess(Process process, IntPtr address)
+            internal POL(Process process, IntPtr address)
             {
-                polProcess = process;
-                baseAddress = address;
-            }
-
-            internal IntPtr Handle
-            {
-                get
-                {
-                    return polProcess.Handle;
-                }
-            }
-
-            internal IntPtr BaseAddress
-            {
-                get
-                {
-                    return baseAddress;
-                }
+                Process = process;
+                BaseAddress = address;
             }
         }
 
         private class ChatLogLocationInfo
         {
-            IntPtr chatLogOffset;
+            internal IntPtr ChatLogOffset { get; private set; }
 
             internal ChatLogLocationInfo(IntPtr offset)
             {
-                chatLogOffset = offset;
+                ChatLogOffset = offset;
             }
-
-            internal IntPtr ChatLogOffset
-            {
-                get
-                {
-                    return chatLogOffset;
-                }
-            }
-        }
-
-        //[StructLayout(LayoutKind.Explicit)]
-        //private struct ChatLogInfoStruct
-        //{
-        //    [FieldOffset(0)]
-        //    internal byte NumberOfLines;
-        //    [FieldOffset(4)]
-        //    internal IntPtr NewChatLogPtr;
-        //    [FieldOffset(8)]
-        //    internal IntPtr OldChatLogPtr;
-        //    [FieldOffset(12)]
-        //    internal int ChatLogBytes;
-        //    [FieldOffset(16)]
-        //    internal short FinalOffset;
-        //}
-
-        //private class ChatLogDetails
-        //{
-        //    internal short[] OldLogOffsets = new short[50];
-        //    internal short[] NewLogOffsets = new short[50];
-
-        //    internal ChatLogInfoStruct Info;
-
-        //    internal override bool Equals(object obj)
-        //    {
-        //        ChatLogDetails rhs = obj as ChatLogDetails;
-        //        if (rhs == null)
-        //            return false;
-        //        if (Info.NumberOfLines != rhs.Info.NumberOfLines)
-        //            return false;
-        //        if (Info.NewChatLogPtr != rhs.Info.NewChatLogPtr)
-        //            return false;
-        //        if (Info.OldChatLogPtr != rhs.Info.OldChatLogPtr)
-        //            return false;
-        //        if (Info.FinalOffset != rhs.Info.FinalOffset)
-        //            return false;
-        //        if (Info.ChatLogBytes != rhs.Info.ChatLogBytes)
-        //            return false;
-        //        return true;
-        //    }
-
-        //    internal override int GetHashCode()
-        //    {
-        //        return Info.NewChatLogPtr.GetHashCode() ^ Info.OldChatLogPtr.GetHashCode();
-        //    }
-        //}
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct ChatLogInfoStruct
-        {
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 50)]
-            internal short[] newLogOffsets;
-            
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 50)]
-            internal short[] oldLogOffsets;
-
-            internal byte NumberOfLines;
-
-            internal byte dummy1;
-            internal byte dummy2;
-            internal byte dummy3;
-
-            internal IntPtr NewChatLogPtr;
-            internal IntPtr OldChatLogPtr;
-            internal int ChatLogBytes;
-            internal short FinalOffset;
         }
 
         private class ChatLogDetails
@@ -185,11 +95,33 @@ namespace WaywardGamers.KParser.Monitoring.Memory
                 return Info.NewChatLogPtr.GetHashCode() ^ Info.OldChatLogPtr.GetHashCode();
             }
         }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct ChatLogInfoStruct
+        {
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 50)]
+            internal short[] newLogOffsets;
+            
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 50)]
+            internal short[] oldLogOffsets;
+
+            internal byte NumberOfLines;
+
+            internal byte dummy1;
+            internal byte dummy2;
+            internal byte dummy3;
+
+            internal IntPtr NewChatLogPtr;
+            internal IntPtr OldChatLogPtr;
+            internal int ChatLogBytes;
+            internal short FinalOffset;
+        }
+
         #endregion
 
         #region Member Variables
         uint initialMemoryOffset;
-        POLProcess polProcess;
+        POL pol;
         ChatLogLocationInfo chatLogLocation;
 
         bool abortMonitorThread;
@@ -235,7 +167,7 @@ namespace WaywardGamers.KParser.Monitoring.Memory
                 while (abortMonitorThread == false)
                 {
                     // If polProcess is ever lost (player disconnects), block on trying to reacquire it.
-                    if (polProcess == null)
+                    if (pol == null)
                     {
                         if (FindFFXIProcess() == false)
                         {
@@ -444,7 +376,7 @@ namespace WaywardGamers.KParser.Monitoring.Memory
             try
             {
                 // Read the raw databuffer from the process space
-                linesBuffer = PInvoke.ReadProcessMemory(polProcess.Handle, bufferStart, (uint)bufferSize);
+                linesBuffer = PInvoke.ReadProcessMemory(pol.Process.Handle, bufferStart, (uint)bufferSize);
                 if (linesBuffer == IntPtr.Zero)
                     return new string[0];
 
@@ -487,18 +419,12 @@ namespace WaywardGamers.KParser.Monitoring.Memory
                 // 50 offsets to new log records (short): 100 bytes
                 // 50 offsets to old log offsets (short): 100 bytes
                 // ChatLogInfoStruct block
-                //uint bytesToRead = (uint)(200 + Marshal.SizeOf(typeof(ChatLogInfoStruct)));
                 uint bytesToRead = (uint)(Marshal.SizeOf(typeof(ChatLogInfoStruct)));
 
                 // Get the pointer to the overall structure.
-                lineOffsetsBuffer = PInvoke.ReadProcessMemory(polProcess.Handle, chatLogLocation.ChatLogOffset, bytesToRead);
-
-                //Marshal.Copy(lineOffsetsBuffer, details.NewLogOffsets, 0, 50);
-
-                //Marshal.Copy(IncrementPointer(lineOffsetsBuffer, 100), details.OldLogOffsets, 0, 50);
+                lineOffsetsBuffer = PInvoke.ReadProcessMemory(pol.Process.Handle, chatLogLocation.ChatLogOffset, bytesToRead);
 
                 // Copy the structure from memory buffer to managed class.
-                //details.Info = (ChatLogInfoStruct)Marshal.PtrToStructure(IncrementPointer(lineOffsetsBuffer, 200), typeof(ChatLogInfoStruct));
                 details.Info = (ChatLogInfoStruct)Marshal.PtrToStructure(lineOffsetsBuffer, typeof(ChatLogInfoStruct));
 
                 return details;
@@ -526,7 +452,7 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         internal void polExited(object sender, EventArgs e)
         {
             // Halt monitoring
-            polProcess = null;
+            pol = null;
         }
         #endregion
 
@@ -583,7 +509,7 @@ namespace WaywardGamers.KParser.Monitoring.Memory
                                 if (string.Compare(module.ModuleName, "ffximain.dll", true) == 0)
                                 {
                                     Trace.WriteLine(string.Format("Module: {0}  Base Address: {1:X8}", module.ModuleName, module.BaseAddress));
-                                    polProcess = new POLProcess(process, module.BaseAddress);
+                                    pol = new POL(process, module.BaseAddress);
                                     process.Exited += new EventHandler(polExited);
                                     LocateChatLog();
                                     return true;
@@ -617,7 +543,7 @@ namespace WaywardGamers.KParser.Monitoring.Memory
                 //first pointer in the hierarchy of FFXI's chat log data structures.  Obviously,
                 //it is an offset from the base address that FFXIMain.dll is loaded at.
                 // :: This is a pointer to a data structure we want to read
-                IntPtr rootAddress = IncrementPointer(polProcess.BaseAddress, initialMemoryOffset);
+                IntPtr rootAddress = IncrementPointer(pol.BaseAddress, initialMemoryOffset);
 
                 //Dereference that pointer to get our next address.
                 IntPtr dataStructurePointer = FollowPointer(rootAddress);
@@ -676,13 +602,15 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         /// Returns IntPtr.Zero (null pointer) if we are unable to read the memory address.</returns>
         private IntPtr FollowPointer(IntPtr pointerToFollow)
         {
-            IntPtr pointerToRead = PInvoke.ReadProcessMemory(polProcess.Handle, pointerToFollow, (uint)IntPtr.Size);
-            
-            if (pointerToRead == IntPtr.Zero)
-                return IntPtr.Zero;
+            IntPtr pointerToRead = IntPtr.Zero;
 
             try
             {
+                pointerToRead = PInvoke.ReadProcessMemory(pol.Process.Handle, pointerToFollow, (uint)IntPtr.Size);
+
+                if (pointerToRead == IntPtr.Zero)
+                    return IntPtr.Zero;
+
                 return Marshal.ReadIntPtr(pointerToRead);
             }
             finally
