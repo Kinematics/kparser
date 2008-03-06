@@ -530,8 +530,21 @@ namespace WaywardGamers.KParser
         {
             var chatSpeakerRow = localDB.ChatSpeakers.GetSpeaker(message.ChatDetails.ChatSpeakerName);
 
+            // If total chat line is longer than the database will accept, chop it up
+            // into 256-char sequences.
+            string limitChatMessage = message.CompleteMessageText;
+            string frontChatMessage;
+            while (limitChatMessage.Length > 256)
+            {
+                frontChatMessage = limitChatMessage.Substring(0, 256);
+                limitChatMessage = limitChatMessage.Substring(256);
+
+                localDB.ChatMessages.AddChatMessagesRow(message.Timestamp, (byte)message.ChatDetails.ChatMessageType,
+                    chatSpeakerRow, frontChatMessage);
+            }
+
             localDB.ChatMessages.AddChatMessagesRow(message.Timestamp, (byte)message.ChatDetails.ChatMessageType,
-                 chatSpeakerRow, message.CompleteMessageText);
+                 chatSpeakerRow, limitChatMessage);
         }
 
         /// <summary>
