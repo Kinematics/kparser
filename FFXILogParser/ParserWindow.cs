@@ -47,6 +47,8 @@ namespace WaywardGamers.KParser
         private List<IPlugin> pluginList = new List<IPlugin>();
         private List<IPlugin> activePluginList = new List<IPlugin>();
         private List<TabPage> tabList = new List<TabPage>();
+
+        TabPage currentTab = null;
         #endregion
 
         #region Constructor
@@ -72,12 +74,26 @@ namespace WaywardGamers.KParser
 
             if (windowSettings.activePluginList == null)
                 windowSettings.activePluginList = new StringCollection();
+
+            // Cleanup in case of corruption:
+            StringCollection tmpStrings = new StringCollection();
+            foreach (string str in windowSettings.activePluginList)
+            {
+                if (tmpStrings.Contains(str) == false)
+                    tmpStrings.Add(str);
+            }
+
+            windowSettings.activePluginList.Clear();
+            foreach (string str in tmpStrings)
+                windowSettings.activePluginList.Add(str);
+            // End cleanup
+
             if (windowSettings.fullPluginList == null)
                 windowSettings.fullPluginList = new StringCollection();
 
             // Load plugins on startup and add them to the Windows menu
             FindAndLoadPlugins();
-            PopulatePluginMenu();
+            PopulateTabsMenu();
 
             // Handle any command line arguments, to allow us to open files
             // directed at us.
@@ -112,30 +128,30 @@ namespace WaywardGamers.KParser
             bool databaseOpen = DatabaseManager.Instance.Database != null;
 
             // Can't start a parse if one is running.
-            menuBeginDefaultParse.Enabled = !monitorState;
-            menuBeginParseWithSave.Enabled = !monitorState;
-            menuOpenSavedData.Enabled = !monitorState;
+            beginDefaultParseMenuItem.Enabled = !monitorState;
+            beginParseAndSaveDataMenuItem.Enabled = !monitorState;
+            openSavedDataMenuItem.Enabled = !monitorState;
 
             // Can only stop a parse if one is running.
-            menuStopParse.Enabled = monitorState;
+            quitParsingMenuItem.Enabled = monitorState;
 
             // Can only continue or save if none running, and database is opened
-            menuContinueParse.Enabled = (!monitorState) && (databaseOpen);
-            menuSaveDataAs.Enabled = (!monitorState) && (databaseOpen);
+            continueParsingMenuItem.Enabled = (!monitorState) && (databaseOpen);
+            saveCurrentDataAsMenuItem.Enabled = (!monitorState) && (databaseOpen);
         }
 
         private void toolsMenu_Popup(object sender, EventArgs e)
         {
-            databaseReparse.Enabled = (Monitor.IsRunning == false);
+            toolsReparseMenuItem.Enabled = (Monitor.IsRunning == false);
 
 #if DEBUG
-            menuTestItem.Visible = true;
+            toolsTestFunctionMenuItem.Visible = true;
 #else
-            menuTestItem.Visible = false;
+            toolsTestFunctionMenuItem.Visible = false;
 #endif
         }
 
-        private void windowMenu_Popup(object sender, EventArgs e)
+        private void windowsMenu_Popup(object sender, EventArgs e)
         {
             appSettings.Reload();
 
@@ -147,27 +163,30 @@ namespace WaywardGamers.KParser
 
             if (inDebugMode == true)
             {
-                for (int i = 2; i < windowMenu.MenuItems.Count; i++)
+                for (int i = 2; i < windowsMenu.DropDownItems.Count; i++)
                 {
-                    windowMenu.MenuItems[i].Enabled = true;
+                    windowsMenu.DropDownItems[i].Enabled = true;
                 }
             }
             else
             {
                 IPlugin plugin;
-                for (int i = 2; i < windowMenu.MenuItems.Count; i++)
+                for (int i = 2; i < windowsMenu.DropDownItems.Count; i++)
                 {
                     plugin = pluginList[i - 2];
                     if (plugin.IsDebug == true)
                     {
-                        if (windowMenu.MenuItems[i].Checked == true)
-                            menuPlugin_Click(windowMenu.MenuItems[i], null);
+                        ToolStripMenuItem tsmi = windowsMenu.DropDownItems[i] as ToolStripMenuItem;
+                        if (tsmi != null)
+                        {
+                            tsmi.Checked = false;
+                        }
 
-                        windowMenu.MenuItems[i].Enabled = false;
+                        windowsMenu.DropDownItems[i].Enabled = false;
                     }
                     else
                     {
-                        windowMenu.MenuItems[i].Enabled = true;
+                        windowsMenu.DropDownItems[i].Enabled = true;
                     }
                 }
             }
@@ -355,14 +374,14 @@ namespace WaywardGamers.KParser
         private void menuExit_Click(object sender, EventArgs e)
         {
             this.Shutdown();
-            this.Close();
+            Application.Exit();
         }
 
         private void menuOptions_Click(object sender, EventArgs e)
         {
             Options optionsForm = new Options(Monitor.IsRunning);
             if (optionsForm.ShowDialog() == DialogResult.OK)
-                windowMenu_Popup(windowMenu, null);
+                windowsMenu_Popup(windowsMenu, null);
         }
 
         private void menuAbout_Click(object sender, EventArgs e)
@@ -586,6 +605,7 @@ namespace WaywardGamers.KParser
                 if (windowSettings.fullPluginList.Contains(plug.TabName) == false)
                 {
                     windowSettings.fullPluginList.Add(plug.TabName);
+                    windowSettings.activePluginList.Add(plug.TabName);
                     activePluginList.Add(plug);
                 }
                 else if (windowSettings.activePluginList.Contains(plug.TabName) == true)
@@ -599,7 +619,7 @@ namespace WaywardGamers.KParser
         /// Called on startup, this adds the names of the plugins to the Window
         /// menu so that the user can enable/disable individual plugins.
         /// </summary>
-        private void PopulatePluginMenu()
+        private void PopulateTabsMenu()
         {
             // This is only run once.
 
@@ -607,8 +627,7 @@ namespace WaywardGamers.KParser
             // any plugins available.
             if (pluginList.Count > 0)
             {
-                MenuItem sep = new MenuItem("-");
-                windowMenu.MenuItems.Add(sep);
+                windowsMenu.DropDownItems.Add(windowsToolStripSeparator);
             }
             else
             {
@@ -618,21 +637,23 @@ namespace WaywardGamers.KParser
             // Create a menu item and tab page for each plugin, with synced indexes.
             for (int i = 0; i < pluginList.Count; i++)
             {
-                MenuItem mi = new MenuItem(pluginList[i].TabName);
-                mi.Checked = activePluginList.Contains(pluginList[i]);
-                mi.Click += new EventHandler(menuPlugin_Click);
-
-                windowMenu.MenuItems.Add(i + 2, mi);
+                ToolStripMenuItem tsmi = new ToolStripMenuItem(pluginList[i].TabName);
+                tsmi.Name = pluginList[i].TabName;
+                tsmi.CheckOnClick = true;
+                tsmi.CheckedChanged += new EventHandler(tabMenuItem_CheckedChanged);
+                windowsMenu.DropDownItems.Add(tsmi);
 
                 TabPage tp = new TabPage(pluginList[i].TabName);
                 tp.Tag = i.ToString();
                 tabList.Add(tp);
 
                 BuildTab(tp, pluginList[i]);
+
+                tsmi.Checked = activePluginList.Contains(pluginList[i]);
             }
 
-            // Make sure active plugin tabs are visible.
-            UpdateTabs();
+            if (pluginTabs.TabCount > 0)
+                pluginTabs.SelectedIndex = 0;
         }
 
         /// <summary>
@@ -652,84 +673,153 @@ namespace WaywardGamers.KParser
         }
 
         /// <summary>
-        /// When a plugin is checked/unchecked from the Window menu, update
-        /// the visible tabs.
+        /// When a plugin is checked/unchecked from the Window menu, add or
+        /// remove it from active plugin list, then update the visible tabs.
         /// </summary>
-        private void UpdateTabs()
+        void tabMenuItem_CheckedChanged(object sender, EventArgs e)
         {
-            TabPage tabToCheckFor;
+            ToolStripMenuItem tsmi = sender as ToolStripMenuItem;
 
-            foreach (var plugin in pluginList)
+            if (tsmi == null)
+                return;
+
+            TabPage tabFromMenu = tabList.FirstOrDefault(t => t.Text == tsmi.Text);
+
+            if (tabFromMenu != null)
             {
-                tabToCheckFor = tabList[pluginList.IndexOf(plugin)];
-
-                if (activePluginList.Contains(plugin))
+                if (tsmi.Checked == false)
                 {
-                    if (pluginTabs.Contains(tabToCheckFor) == false)
+                    lock (activePluginList)
                     {
-                        pluginTabs.TabPages.Add(tabToCheckFor);
-                        tabToCheckFor.Focus();
+                        var plugin = pluginList.FirstOrDefault(p => p.TabName == tsmi.Text);
+                        if (plugin != null)
+                        {
+                            activePluginList.Remove(plugin);
+                            windowSettings.activePluginList.Remove(plugin.TabName);
+                        }
                     }
+
+                    if (tabFromMenu != null)
+                        pluginTabs.TabPages.Remove(tabFromMenu);
                 }
                 else
                 {
-                    if (pluginTabs.Contains(tabToCheckFor) == true)
+                    var plugin = pluginList.FirstOrDefault(p => p.TabName == tsmi.Text);
+
+                    if (plugin != null)
                     {
-                        pluginTabs.TabPages.Remove(tabToCheckFor);
+                        pluginTabs.TabPages.Add(tabFromMenu);
+
+                        lock (activePluginList)
+                        {
+                            activePluginList.Add(plugin);
+                            if (!windowSettings.activePluginList.Contains(plugin.TabName))
+                                windowSettings.activePluginList.Add(plugin.TabName);
+                        }
+
+                        if (DatabaseManager.Instance.Database != null)
+                        {
+                            try
+                            {
+                                Cursor.Current = Cursors.WaitCursor;
+
+                                plugin.DatabaseOpened(DatabaseManager.Instance.Database);
+                            }
+                            finally
+                            {
+                                Cursor.Current = Cursors.Default;
+                            }
+                        }
+
+                        pluginTabs.SelectedTab = tabFromMenu;
                     }
                 }
             }
         }
 
         /// <summary>
-        /// When a plugin is checked/unchecked from the Window menu, add or
-        /// remove it from active plugin list, then update the visible tabs.
+        /// Close the tab currently under the cursor.
         /// </summary>
-        private void menuPlugin_Click(object sender, EventArgs e)
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void closeTabToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MenuItem mi = sender as MenuItem;
-
-            if (mi == null)
-                return;
-
-            // Toggle the checkmark
-            mi.Checked = mi.Checked ^ true;
-
-            if (mi.Checked == false)
+            try
             {
-                lock (activePluginList)
+                if (currentTab != null)
                 {
-                    var plugin = pluginList[mi.Index - 2];
-                    activePluginList.Remove(plugin);
-                    windowSettings.activePluginList.Remove(plugin.TabName);
-                }
-            }
-            else
-            {
-                var plugin = pluginList[mi.Index - 2];
+                    int index = windowsMenu.DropDownItems.IndexOfKey(currentTab.Text);
 
-                lock (activePluginList)
-                {
-                    activePluginList.Add(plugin);
-                    windowSettings.activePluginList.Add(plugin.TabName);
-                }
-
-                if (DatabaseManager.Instance.Database != null)
-                {
-                    try
+                    if (index > 1)
                     {
-                        Cursor.Current = Cursors.WaitCursor;
-
-                        plugin.DatabaseOpened(DatabaseManager.Instance.Database);
-                    }
-                    finally
-                    {
-                        Cursor.Current = Cursors.Default;
+                        ToolStripMenuItem windowsTSMI = windowsMenu.DropDownItems[index] as ToolStripMenuItem;
+                        if (windowsTSMI != null)
+                            windowsTSMI.Checked = false;
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                Logger.Instance.Log(ex);
+            }
+        }
 
-            UpdateTabs();
+        /// <summary>
+        /// Close all tabs other than the one currently under the cursor.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void closeOtherTabsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (currentTab != null)
+                {
+                    int index = windowsMenu.DropDownItems.IndexOfKey(currentTab.Text);
+
+                    for (int i = 2; i < windowsMenu.DropDownItems.Count; i++)
+                    {
+                        if (i != index)
+                        {
+                            ToolStripMenuItem windowsTSMI = windowsMenu.DropDownItems[i] as ToolStripMenuItem;
+                            if (windowsTSMI != null)
+                                windowsTSMI.Checked = false;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Log(ex);
+            }
+        }
+
+        /// <summary>
+        /// Determine which tab is currently under the cursor.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void pluginTabs_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (pluginTabs == sender)
+            {
+                // tab height
+                int height = pluginTabs.ItemSize.Height;
+
+                if (e.Y > height)
+                    return;
+
+                currentTab = null;
+
+                for (int index = 0; index < pluginTabs.TabCount; index++)
+                {
+                    if (pluginTabs.GetTabRect(index).Contains(e.X, e.Y))
+                    {
+                        currentTab = pluginTabs.TabPages[index];
+                        break;
+                    }
+                }
+            }
         }
         #endregion
 
