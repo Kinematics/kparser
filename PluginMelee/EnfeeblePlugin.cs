@@ -194,8 +194,10 @@ namespace WaywardGamers.KParser.Plugin
                               Name = c.CombatantName,
                               Debuffs = from b in c.GetInteractionsRowsByActorCombatantRelation()
                                         where (b.HarmType == (byte)HarmType.Enfeeble ||
-                                               b.HarmType == (byte)HarmType.Dispel) &&
-                                              b.Preparing == false
+                                               b.HarmType == (byte)HarmType.Dispel ||
+                                               b.HarmType == (byte)HarmType.Unknown) &&
+                                              b.Preparing == false &&
+                                              b.IsActionIDNull() == false
                                         group b by b.ActionsRow.ActionName into ba
                                         orderby ba.Key
                                         select new
@@ -271,8 +273,10 @@ namespace WaywardGamers.KParser.Plugin
                               Name = c.CombatantName,
                               Debuffs = from b in c.GetInteractionsRowsByActorCombatantRelation()
                                         where (b.HarmType == (byte)HarmType.Enfeeble ||
-                                               b.HarmType == (byte)HarmType.Dispel) &&
-                                              b.Preparing == false
+                                               b.HarmType == (byte)HarmType.Dispel ||
+                                               b.HarmType == (byte)HarmType.Unknown) &&
+                                              b.Preparing == false &&
+                                              b.IsActionIDNull() == false
                                         group b by b.ActionsRow.ActionName into ba
                                         orderby ba.Key
                                         select new
