@@ -83,6 +83,7 @@ namespace WaywardGamers.KParser
         #region Loot
         internal static readonly Regex FindLootOn = new Regex(string.Format("^You find {0} on {1}\\.$", item, target));
         internal static readonly Regex FindLootIn = new Regex(string.Format("^You find {0} in {1}\\.$", item, target));
+        internal static readonly Regex OpenChest  = new Regex(string.Format("^{0} opens {1} and finds {2}\\.$", playername, target, item));
         internal static readonly Regex GetLoot    = new Regex(string.Format("^{0} obtains {1}\\.$", playername, item));
         internal static readonly Regex GetGil     = new Regex(string.Format("^{0} obtains {1}\\.$", playername, money));
         internal static readonly Regex LootReqr   = new Regex(string.Format("^You do not meet the requirements to obtain {0}\\.$", item));

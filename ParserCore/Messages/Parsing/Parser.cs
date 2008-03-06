@@ -388,6 +388,7 @@ namespace WaywardGamers.KParser.Parsing
                     case 0x83: // Exp, no chain
                     case 0x79: // Item drop, Lot for item, xp chain, xp on chain, equipment changed, /recast message, /anon changed, etc)
                     case 0x7f: // Item obtained
+                    case 0x95: // Item found in a chest
                         message.EventDetails.EventMessageType = EventMessageType.EndBattle;
                         break;
                     case 0x92: // <me> caught a fish!
@@ -662,6 +663,20 @@ namespace WaywardGamers.KParser.Parsing
                         message.EventDetails.ExperienceDetails.ExperienceRecipient = lootOrXP.Groups[ParseFields.Name].Value;
                         message.ParseSuccessful = true;
                         return;
+                    }
+                    break;
+                // Item found in a chest
+                case 0x95:
+                    lootOrXP = ParseExpressions.OpenChest.Match(message.CurrentMessageText);
+                    if (lootOrXP.Success == true)
+                    {
+                        message.EventDetails.EventMessageType = EventMessageType.Loot;
+                        message.EventDetails.LootDetails.IsFoundMessage = true;
+                        message.EventDetails.LootDetails.ItemName = lootOrXP.Groups[ParseFields.Item].Value;
+                        message.EventDetails.LootDetails.TargetName = lootOrXP.Groups[ParseFields.Target].Value;
+                        message.EventDetails.LootDetails.TargetType = EntityType.TreasureChest;
+                        message.ParseSuccessful = true;
+                        break;
                     }
                     break;
             }
