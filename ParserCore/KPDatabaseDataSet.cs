@@ -287,7 +287,7 @@ namespace WaywardGamers.KParser
                 if (itemName == string.Empty)
                     throw new ArgumentOutOfRangeException("itemName", "Name cannot be empty.");
 
-                return this.SingleOrDefault(i => i.ItemName == itemName);
+                return this.SingleOrDefault(i => string.Compare(i.ItemName, itemName, true) == 0);
             }
 
             /// <summary>
@@ -336,7 +336,7 @@ namespace WaywardGamers.KParser
                 if (actionName == string.Empty)
                     throw new ArgumentOutOfRangeException("actionName", "Name cannot be empty.");
 
-                return this.SingleOrDefault(i => i.ActionName.ToLower() == actionName.ToLower());
+                return this.SingleOrDefault(i => string.Compare(i.ActionName, actionName, true) == 0);
             }
 
             /// <summary>
@@ -393,7 +393,7 @@ namespace WaywardGamers.KParser
                 if (speakerName == string.Empty)
                     throw new ArgumentOutOfRangeException("speakerName", "Name cannot be empty.");
 
-                return this.SingleOrDefault(cs => cs.SpeakerName == speakerName);
+                return this.SingleOrDefault(cs => string.Compare(cs.SpeakerName, speakerName, true) == 0);
             }
 
             /// <summary>
