@@ -303,7 +303,7 @@ namespace WaywardGamers.KParser.Plugin
                                        (c.CombatantType == (byte)EntityType.Pet) ||
                                        (c.CombatantType == (byte)EntityType.Fellow) ||
                                        (c.CombatantType == (byte)EntityType.Skillchain))
-                                orderby c.CombatantName
+                                orderby c.CombatantType, c.CombatantName
                                 select new AttackGroup
                                 {
                                     Player = c.CombatantName,
@@ -386,7 +386,7 @@ namespace WaywardGamers.KParser.Plugin
                                        (c.CombatantType == (byte)EntityType.Pet) ||
                                        (c.CombatantType == (byte)EntityType.Fellow) ||
                                        (c.CombatantType == (byte)EntityType.Skillchain))
-                                orderby c.CombatantName
+                                orderby c.CombatantType, c.CombatantName
                                 select new AttackGroup
                                 {
                                     Player = c.CombatantName,
