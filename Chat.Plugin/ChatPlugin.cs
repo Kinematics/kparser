@@ -29,7 +29,7 @@ namespace WaywardGamers.KParser.Plugin
             comboBox1.SelectedIndex = 0;
 
             label2.Left = comboBox1.Right + 20;
-            label2.Text = "Player";
+            label2.Text = "Speaker";
             comboBox2.Left = label2.Right + 10;
             comboBox2.Items.Clear();
             comboBox2.Items.Add("All");
