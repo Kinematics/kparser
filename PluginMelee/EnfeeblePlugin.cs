@@ -167,8 +167,8 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Member Variables
-        string debuffMobHeader    = "Debuff              Used on             # Times   # Successful   # No Effect   % Successful\n";
-        string debuffPlayerHeader = "Debuff              Used on             # Times   # Successful   # No Effect   % Successful\n";
+        string debuffMobHeader    = "Debuff              Used on                 # Times   # Successful   # No Effect   % Successful\n";
+        string debuffPlayerHeader = "Debuff              Used on                 # Times   # Successful   # No Effect   % Successful\n";
         #endregion
 
         #region Processing sections
@@ -243,7 +243,7 @@ namespace WaywardGamers.KParser.Plugin
                             AppendNormalText(debuffName.PadRight(20));
                             debuffName = "";
 
-                            AppendNormalText(target.TargetName.PadRight(20));
+                            AppendNormalText(target.TargetName.PadRight(24));
 
                             successful = target.Debuffs.Count(d =>
                                 (d.DefenseType == (byte)DefenseType.None) &&
@@ -323,7 +323,7 @@ namespace WaywardGamers.KParser.Plugin
                             debuffName = "";
 
 
-                            AppendNormalText(target.TargetName.PadRight(20));
+                            AppendNormalText(target.TargetName.PadRight(24));
 
                             successful = target.Debuffs.Count(d =>
                                 (d.DefenseType == (byte)DefenseType.None) &&
