@@ -1545,58 +1545,7 @@ namespace WaywardGamers.KParser.Parsing
                             target.SecondaryAction = "Cover";
                     }
 
-                    // Handle identifying charmed pet entities
-                    if (target.EntityType == EntityType.Mob && combatDetails.ActorEntityType == EntityType.Mob)
-                    {
-                        EntityType checkTarg = MessageManager.Instance.LookupPetEntity(target.Name);
-                        EntityType checkActor = MessageManager.Instance.LookupPetEntity(combatDetails.ActorName);
-
-                        if ((checkActor == EntityType.Pet) ^ (checkTarg == EntityType.Pet))
-                        {
-                            // If only one shows up as being a pet, use that.
-                            target.EntityType = checkTarg;
-                            combatDetails.ActorEntityType = checkActor;
-                        }
-                        else if ((checkActor == EntityType.Pet) && (checkTarg == EntityType.Pet))
-                        {
-                            // If both show up as being a pet, check the last charmed mob
-                            // to break the tie.
-                            string lastPetName = MessageManager.Instance.LastAddedPetEntity;
-
-                            if (lastPetName != string.Empty)
-                            {
-                                // Check to make sure we don't have dhalmel fighting dhalmel, or whatever.
-                                if (target.Name != combatDetails.ActorName)
-                                {
-                                    if (target.Name == lastPetName)
-                                    {
-                                        target.EntityType = EntityType.Pet;
-                                    }
-                                    else if (combatDetails.ActorName == lastPetName)
-                                    {
-                                        combatDetails.ActorEntityType = EntityType.Pet;
-                                    }
-                                }
-                                else
-                                {
-                                    // actor and target are same mob type; cannot accurately determine
-                                    // which is the mob and which is the pet; random?
-                                    if (random.Next(1000) < 500)
-                                    {
-                                        target.EntityType = EntityType.Pet;
-                                    }
-                                    else
-                                    {
-                                        combatDetails.ActorEntityType = EntityType.Pet;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // if no last pet entry, ignore
-                            }
-                        }
-                    }
+                    DetermineCharmedPet(ref combatDetails, ref target);
                 }
 
                 message.ParseSuccessful = true;
@@ -1707,59 +1656,7 @@ namespace WaywardGamers.KParser.Parsing
                             target.SecondaryAction = "Cover";
                     }
 
-
-                    // Handle identifying charmed pet entities
-                    if (target.EntityType == EntityType.Mob && combatDetails.ActorEntityType == EntityType.Mob)
-                    {
-                        EntityType checkTarg = MessageManager.Instance.LookupPetEntity(target.Name);
-                        EntityType checkActor = MessageManager.Instance.LookupPetEntity(combatDetails.ActorName);
-
-                        if ((checkActor == EntityType.Pet) ^ (checkTarg == EntityType.Pet))
-                        {
-                            // If only one shows up as being a pet, use that.
-                            target.EntityType = checkTarg;
-                            combatDetails.ActorEntityType = checkActor;
-                        }
-                        else if ((checkActor == EntityType.Pet) && (checkTarg == EntityType.Pet))
-                        {
-                            // If both show up as being a pet, check the last charmed mob
-                            // to break the tie.
-                            string lastPetName = MessageManager.Instance.LastAddedPetEntity;
-
-                            if (lastPetName != string.Empty)
-                            {
-                                // Check to make sure we don't have dhalmel fighting dhalmel, or whatever.
-                                if (target.Name != combatDetails.ActorName)
-                                {
-                                    if (target.Name == lastPetName)
-                                    {
-                                        target.EntityType = EntityType.Pet;
-                                    }
-                                    else if (combatDetails.ActorName == lastPetName)
-                                    {
-                                        combatDetails.ActorEntityType = EntityType.Pet;
-                                    }
-                                }
-                                else
-                                {
-                                    // actor and target are same mob type; cannot accurately determine
-                                    // which is the mob and which is the pet; random?
-                                    if (random.Next(1000) < 500)
-                                    {
-                                        target.EntityType = EntityType.Pet;
-                                    }
-                                    else
-                                    {
-                                        combatDetails.ActorEntityType = EntityType.Pet;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // if no last pet entry, ignore
-                            }
-                        }
-                    }
+                    DetermineCharmedPet(ref combatDetails, ref target);
                 }
             }
         }
@@ -1997,61 +1894,8 @@ namespace WaywardGamers.KParser.Parsing
                             target.SecondaryAction = "Cover";
                     }
 
-
-                    // Handle identifying charmed pet entities
-                    if (target.EntityType == EntityType.Mob && combatDetails.ActorEntityType == EntityType.Mob)
-                    {
-                        EntityType checkTarg = MessageManager.Instance.LookupPetEntity(target.Name);
-                        EntityType checkActor = MessageManager.Instance.LookupPetEntity(combatDetails.ActorName);
-
-                        if ((checkActor == EntityType.Pet) ^ (checkTarg == EntityType.Pet))
-                        {
-                            // If only one shows up as being a pet, use that.
-                            target.EntityType = checkTarg;
-                            combatDetails.ActorEntityType = checkActor;
-                        }
-                        else if ((checkActor == EntityType.Pet) && (checkTarg == EntityType.Pet))
-                        {
-                            // If both show up as being a pet, check the last charmed mob
-                            // to break the tie.
-                            string lastPetName = MessageManager.Instance.LastAddedPetEntity;
-
-                            if (lastPetName != string.Empty)
-                            {
-                                // Check to make sure we don't have dhalmel fighting dhalmel, or whatever.
-                                if (target.Name != combatDetails.ActorName)
-                                {
-                                    if (target.Name == lastPetName)
-                                    {
-                                        target.EntityType = EntityType.Pet;
-                                    }
-                                    else if (combatDetails.ActorName == lastPetName)
-                                    {
-                                        combatDetails.ActorEntityType = EntityType.Pet;
-                                    }
-                                }
-                                else
-                                {
-                                    // actor and target are same mob type; cannot accurately determine
-                                    // which is the mob and which is the pet; random?
-                                    if (random.Next(1000) < 500)
-                                    {
-                                        target.EntityType = EntityType.Pet;
-                                    }
-                                    else
-                                    {
-                                        combatDetails.ActorEntityType = EntityType.Pet;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // if no last pet entry, ignore
-                            }
-                        }
-                    }
+                    DetermineCharmedPet(ref combatDetails, ref target);
                 }
-
 
                 message.ParseSuccessful = true;
             }
@@ -2365,13 +2209,15 @@ namespace WaywardGamers.KParser.Parsing
             }
             finally
             {
-                if (msgCombatDetails.FlagCover == true)
+                if (target != null)
                 {
-                    if (target != null)
+                    if (msgCombatDetails.FlagCover == true)
                     {
                         if (target.SecondaryAction == string.Empty)
                             target.SecondaryAction = "Cover";
                     }
+
+                    DetermineCharmedPet(ref msgCombatDetails, ref target);
                 }
             }
         }
@@ -2383,123 +2229,131 @@ namespace WaywardGamers.KParser.Parsing
             string currentMessageText = message.CurrentMessageText;
             TargetDetails target = null;
 
-            // First check for prepping spells or abilities
-            combatMatch = ParseExpressions.PrepSpellOn.Match(currentMessageText);
-            if (combatMatch.Success == true)
+            try
             {
-                msgCombatDetails.IsPreparing = true;
-                msgCombatDetails.ActionType = ActionType.Spell;
-                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                target.HarmType = msgCombatDetails.HarmType;
-                target.AidType = msgCombatDetails.AidType;
-                message.ParseSuccessful = true;
-                return;
-            }
-            combatMatch = ParseExpressions.PrepSpell.Match(currentMessageText);
-            if (combatMatch.Success == true)
-            {
-                msgCombatDetails.IsPreparing = true;
-                msgCombatDetails.ActionType = ActionType.Spell;
-                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                message.ParseSuccessful = true;
-                return;
-            }
-            combatMatch = ParseExpressions.PrepAbility.Match(currentMessageText);
-            if (combatMatch.Success == true)
-            {
-                msgCombatDetails.IsPreparing = true;
-                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
-                    msgCombatDetails.ActionType = ActionType.Weaponskill;
-                else
-                    msgCombatDetails.ActionType = ActionType.Ability;
-                message.ParseSuccessful = true;
-                return;
-            }
-
-
-            // Then check for lines where the action is activated
-            combatMatch = ParseExpressions.CastSpell.Match(currentMessageText);
-            if (combatMatch.Success == true)
-            {
-                msgCombatDetails.ActionType = ActionType.Spell;
-                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                if (msgCombatDetails.ActionName.StartsWith("Absorb-"))
-                    msgCombatDetails.HarmType = HarmType.Enfeeble;
-                message.ParseSuccessful = true;
-                return;
-            }
-            combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
-            if (combatMatch.Success == true)
-            {
-                msgCombatDetails.ActionType = ActionType.Ability;
-                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                message.ParseSuccessful = true;
-
-                if ((msgCombatDetails.ActionName == "Steal") || (msgCombatDetails.ActionName == "Mug"))
-                    message.EventDetails.EventMessageType = EventMessageType.Steal;
-                
-                return;
-            }
-            combatMatch = ParseExpressions.UseAbilityOn.Match(currentMessageText);
-            if (combatMatch.Success == true)
-            {
-                msgCombatDetails.ActionType = ActionType.Ability;
-                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                target.HarmType = msgCombatDetails.HarmType;
-                target.AidType = msgCombatDetails.AidType;
-                message.ParseSuccessful = true;
-                return;
-            }
-
-            combatMatch = ParseExpressions.AbsorbStat.Match(currentMessageText);
-            if (combatMatch.Success == true)
-            {
-                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                target.EffectName = combatMatch.Groups[ParseFields.DrainStat].Value;
-                target.HarmType = HarmType.Enfeeble;
-                target.AidType = AidType.None;
-                message.ParseSuccessful = true;
-                return;
-            }
-
-            // Player drains XXX HP/MP/TP from target.
-
-            combatMatch = ParseExpressions.Drain.Match(currentMessageText);
-            if (combatMatch.Success == true)
-            {
-                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                target.Amount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
-                target.HarmType = HarmType.Drain;
-                target.AidType = msgCombatDetails.AidType;
-
-                switch (combatMatch.Groups[ParseFields.DrainType].Value)
+                // First check for prepping spells or abilities
+                combatMatch = ParseExpressions.PrepSpellOn.Match(currentMessageText);
+                if (combatMatch.Success == true)
                 {
-                    case "HP":
-                        target.RecoveryType = RecoveryType.RecoverHP;
-                        break;
-                    case "MP":
-                        target.HarmType = HarmType.Enfeeble;
-                        target.RecoveryType = RecoveryType.RecoverMP;
-                        break;
-                    case "TP":
-                        target.HarmType = HarmType.Enfeeble;
-                        target.RecoveryType = RecoveryType.RecoverTP;
-                        break;
+                    msgCombatDetails.IsPreparing = true;
+                    msgCombatDetails.ActionType = ActionType.Spell;
+                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.HarmType = msgCombatDetails.HarmType;
+                    target.AidType = msgCombatDetails.AidType;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.PrepSpell.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.IsPreparing = true;
+                    msgCombatDetails.ActionType = ActionType.Spell;
+                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.PrepAbility.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.IsPreparing = true;
+                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                    if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
+                        msgCombatDetails.ActionType = ActionType.Weaponskill;
+                    else
+                        msgCombatDetails.ActionType = ActionType.Ability;
+                    message.ParseSuccessful = true;
+                    return;
                 }
 
-                msgCombatDetails.SuccessLevel = SuccessType.Successful;
 
-                message.ParseSuccessful = true;
-                return;
+                // Then check for lines where the action is activated
+                combatMatch = ParseExpressions.CastSpell.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.ActionType = ActionType.Spell;
+                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
+                    if (msgCombatDetails.ActionName.StartsWith("Absorb-"))
+                        msgCombatDetails.HarmType = HarmType.Enfeeble;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+                combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.ActionType = ActionType.Ability;
+                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                    message.ParseSuccessful = true;
+
+                    if ((msgCombatDetails.ActionName == "Steal") || (msgCombatDetails.ActionName == "Mug"))
+                        message.EventDetails.EventMessageType = EventMessageType.Steal;
+
+                    return;
+                }
+                combatMatch = ParseExpressions.UseAbilityOn.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.ActionType = ActionType.Ability;
+                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.HarmType = msgCombatDetails.HarmType;
+                    target.AidType = msgCombatDetails.AidType;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+
+                combatMatch = ParseExpressions.AbsorbStat.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.EffectName = combatMatch.Groups[ParseFields.DrainStat].Value;
+                    target.HarmType = HarmType.Enfeeble;
+                    target.AidType = AidType.None;
+                    message.ParseSuccessful = true;
+                    return;
+                }
+
+                // Player drains XXX HP/MP/TP from target.
+
+                combatMatch = ParseExpressions.Drain.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.Amount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
+                    target.HarmType = HarmType.Drain;
+                    target.AidType = msgCombatDetails.AidType;
+
+                    switch (combatMatch.Groups[ParseFields.DrainType].Value)
+                    {
+                        case "HP":
+                            target.RecoveryType = RecoveryType.RecoverHP;
+                            break;
+                        case "MP":
+                            target.HarmType = HarmType.Enfeeble;
+                            target.RecoveryType = RecoveryType.RecoverMP;
+                            break;
+                        case "TP":
+                            target.HarmType = HarmType.Enfeeble;
+                            target.RecoveryType = RecoveryType.RecoverTP;
+                            break;
+                    }
+
+                    msgCombatDetails.SuccessLevel = SuccessType.Successful;
+
+                    message.ParseSuccessful = true;
+                    return;
+                }
+            }
+            finally
+            {
+                if (target != null)
+                    DetermineCharmedPet(ref msgCombatDetails, ref target);
             }
         }
 
@@ -2525,7 +2379,7 @@ namespace WaywardGamers.KParser.Parsing
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                     msgCombatDetails.SuccessLevel = SuccessType.Successful;
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                    if (msgCombatDetails.ActionName.StartsWith("Raise"))
+                    if (msgCombatDetails.ActionName.StartsWith(SpellNames.Raise))
                     {
                         target.AidType = AidType.Recovery;
                         target.RecoveryType = RecoveryType.Life;
@@ -2694,14 +2548,18 @@ namespace WaywardGamers.KParser.Parsing
                 if (combatMatch.Success == true)
                 {
                     // Treat intimidation as a defense type, like Parry
+                    // Applies to spell casts and melee attacks.  Can we distinguish?
+                    // Apply to just melee for now.
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    msgCombatDetails.ActionType = ActionType.Melee;
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     target.HarmType = msgCombatDetails.HarmType;
                     target.AidType = msgCombatDetails.AidType;
                     target.DefenseType = DefenseType.Intimidate;
                     // Adjust message category
-                    msgCombatDetails.HarmType = HarmType.None;
                     msgCombatDetails.SuccessLevel = SuccessType.Unsuccessful;
+                    // Check for mobs vs pets intimidating each other
+                    DetermineCharmedPet(ref msgCombatDetails, ref target);
                     message.ParseSuccessful = true;
                     return;
                 }
@@ -2710,182 +2568,190 @@ namespace WaywardGamers.KParser.Parsing
             }
             #endregion
 
-            // For prepping attack spells or abilities
-            combatMatch = ParseExpressions.PrepSpellOn.Match(currentMessageText);
-            if (combatMatch.Success == true)
+            try
             {
-                msgCombatDetails.IsPreparing = true;
-                msgCombatDetails.ActionType = ActionType.Spell;
-                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                message.ParseSuccessful = true;
-                return;
-            }
-
-            if (combatMatch.Success == false)
-            {
-                combatMatch = ParseExpressions.PrepSpell.Match(currentMessageText);
+                // For prepping attack spells or abilities
+                combatMatch = ParseExpressions.PrepSpellOn.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
                     msgCombatDetails.IsPreparing = true;
                     msgCombatDetails.ActionType = ActionType.Spell;
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-            }
-
-            if (combatMatch.Success == false)
-            {
-                combatMatch = ParseExpressions.PrepAbility.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.IsPreparing = true;
-                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                    if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
-                        msgCombatDetails.ActionType = ActionType.Weaponskill;
-                    else
-                        msgCombatDetails.ActionType = ActionType.Ability;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-            }
-
-            // got through the prep checks; clarify certain actions which aren't defined precisely by code
-            if (combatMatch.Success == false)
-            {
-                combatMatch = ParseExpressions.CastSpell.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.ActionType = ActionType.Spell;
-                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-            }
-
-            if (combatMatch.Success == false)
-            {
-                combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.ActionType = ActionType.Ability;
-                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                    message.ParseSuccessful = true;
-
-                    if ((msgCombatDetails.ActionName == "Steal") || (msgCombatDetails.ActionName == "Mug"))
-                        message.EventDetails.EventMessageType = EventMessageType.Steal;
-
-                    return;
-                }
-            }
-
-            if (combatMatch.Success == false)
-            {
-                combatMatch = ParseExpressions.ResistSpell.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.ActionType = ActionType.Spell;
-                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                    target.DefenseType = DefenseType.Resist;
-                    target.HarmType = msgCombatDetails.HarmType;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-            }
-
-            if (combatMatch.Success == false)
-            {
-                combatMatch = ParseExpressions.NoEffect.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.ActionType = ActionType.Spell;
-                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                    msgCombatDetails.SuccessLevel = SuccessType.Failed;
-                    msgCombatDetails.FailedActionType = FailedActionType.NoEffect;
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     message.ParseSuccessful = true;
                     return;
                 }
-            }
 
-            if (combatMatch.Success == false)
-            {
-                combatMatch = ParseExpressions.MissAbility.Match(currentMessageText);
-                if (combatMatch.Success == true)
+                if (combatMatch.Success == false)
                 {
-                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                    if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
+                    combatMatch = ParseExpressions.PrepSpell.Match(currentMessageText);
+                    if (combatMatch.Success == true)
                     {
-                        msgCombatDetails.ActionType = ActionType.Weaponskill;
-                        msgCombatDetails.HarmType = HarmType.Damage;
+                        msgCombatDetails.IsPreparing = true;
+                        msgCombatDetails.ActionType = ActionType.Spell;
+                        msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                        msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
+                        message.ParseSuccessful = true;
+                        return;
                     }
-                    else
+                }
+
+                if (combatMatch.Success == false)
+                {
+                    combatMatch = ParseExpressions.PrepAbility.Match(currentMessageText);
+                    if (combatMatch.Success == true)
+                    {
+                        msgCombatDetails.IsPreparing = true;
+                        msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                        msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                        if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
+                            msgCombatDetails.ActionType = ActionType.Weaponskill;
+                        else
+                            msgCombatDetails.ActionType = ActionType.Ability;
+                        message.ParseSuccessful = true;
+                        return;
+                    }
+                }
+
+                // got through the prep checks; clarify certain actions which aren't defined precisely by code
+                if (combatMatch.Success == false)
+                {
+                    combatMatch = ParseExpressions.CastSpell.Match(currentMessageText);
+                    if (combatMatch.Success == true)
+                    {
+                        msgCombatDetails.ActionType = ActionType.Spell;
+                        msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                        msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
+                        message.ParseSuccessful = true;
+                        return;
+                    }
+                }
+
+                if (combatMatch.Success == false)
+                {
+                    combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
+                    if (combatMatch.Success == true)
+                    {
                         msgCombatDetails.ActionType = ActionType.Ability;
-                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                    target.DefenseType = DefenseType.Evasion;
-                    target.HarmType = msgCombatDetails.HarmType;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-            }
+                        msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                        msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                        message.ParseSuccessful = true;
 
-            if (combatMatch.Success == false)
-            {
-                combatMatch = ParseExpressions.MissAbility2.Match(currentMessageText);
-                if (combatMatch.Success == true)
+                        if ((msgCombatDetails.ActionName == "Steal") || (msgCombatDetails.ActionName == "Mug"))
+                            message.EventDetails.EventMessageType = EventMessageType.Steal;
+
+                        return;
+                    }
+                }
+
+                if (combatMatch.Success == false)
                 {
-                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                    if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
-                        msgCombatDetails.ActionType = ActionType.Weaponskill;
-                    else
+                    combatMatch = ParseExpressions.ResistSpell.Match(currentMessageText);
+                    if (combatMatch.Success == true)
+                    {
+                        msgCombatDetails.ActionType = ActionType.Spell;
+                        target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                        target.DefenseType = DefenseType.Resist;
+                        target.HarmType = msgCombatDetails.HarmType;
+                        message.ParseSuccessful = true;
+                        return;
+                    }
+                }
+
+                if (combatMatch.Success == false)
+                {
+                    combatMatch = ParseExpressions.NoEffect.Match(currentMessageText);
+                    if (combatMatch.Success == true)
+                    {
+                        msgCombatDetails.ActionType = ActionType.Spell;
+                        msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                        msgCombatDetails.SuccessLevel = SuccessType.Failed;
+                        msgCombatDetails.FailedActionType = FailedActionType.NoEffect;
+                        target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                        message.ParseSuccessful = true;
+                        return;
+                    }
+                }
+
+                if (combatMatch.Success == false)
+                {
+                    combatMatch = ParseExpressions.MissAbility.Match(currentMessageText);
+                    if (combatMatch.Success == true)
+                    {
+                        msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                        if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
+                        {
+                            msgCombatDetails.ActionType = ActionType.Weaponskill;
+                            msgCombatDetails.HarmType = HarmType.Damage;
+                        }
+                        else
+                            msgCombatDetails.ActionType = ActionType.Ability;
+                        msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                        target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                        target.DefenseType = DefenseType.Evasion;
+                        target.HarmType = msgCombatDetails.HarmType;
+                        message.ParseSuccessful = true;
+                        return;
+                    }
+                }
+
+                if (combatMatch.Success == false)
+                {
+                    combatMatch = ParseExpressions.MissAbility2.Match(currentMessageText);
+                    if (combatMatch.Success == true)
+                    {
+                        msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                        if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
+                            msgCombatDetails.ActionType = ActionType.Weaponskill;
+                        else
+                            msgCombatDetails.ActionType = ActionType.Ability;
+
+                        msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                        message.ParseSuccessful = true;
+                        return;
+                    }
+                }
+
+                if (combatMatch.Success == false)
+                {
+                    combatMatch = ParseExpressions.RangedMiss2.Match(currentMessageText);
+                    if (combatMatch.Success == true)
+                    {
+                        msgCombatDetails.ActionType = ActionType.Ranged;
+                        msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                        // No target available in this message. Create a bogus target to hold state.
+                        target = new TargetDetails();
+                        msgCombatDetails.Targets.Add(target);
+                        target.DefenseType = DefenseType.Evasion;
+                        target.HarmType = msgCombatDetails.HarmType;
+                        message.ParseSuccessful = true;
+                        return;
+                    }
+                }
+
+                if (combatMatch.Success == false)
+                {
+                    combatMatch = ParseExpressions.FailsCharm.Match(currentMessageText);
+                    if (combatMatch.Success == true)
+                    {
                         msgCombatDetails.ActionType = ActionType.Ability;
-
-                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                    message.ParseSuccessful = true;
-                    return;
+                        msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                        target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                        target.DefenseType = DefenseType.Resist;
+                        target.HarmType = msgCombatDetails.HarmType;
+                        target.AidType = msgCombatDetails.AidType;
+                        message.ParseSuccessful = true;
+                        return;
+                    }
                 }
-            }
 
-            if (combatMatch.Success == false)
+            }
+            finally
             {
-                combatMatch = ParseExpressions.RangedMiss2.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.ActionType = ActionType.Ranged;
-                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                    // No target available in this message. Create a bogus target to hold state.
-                    target = new TargetDetails();
-                    msgCombatDetails.Targets.Add(target);
-                    target.DefenseType = DefenseType.Evasion;
-                    target.HarmType = msgCombatDetails.HarmType;
-                    message.ParseSuccessful = true;
-                    return;
-                }
+                if (target != null)
+                    DetermineCharmedPet(ref msgCombatDetails, ref target);
             }
-
-            if (combatMatch.Success == false)
-            {
-                combatMatch = ParseExpressions.FailsCharm.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.ActionType = ActionType.Ability;
-                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                    target.DefenseType = DefenseType.Resist;
-                    target.HarmType = msgCombatDetails.HarmType;
-                    target.AidType = msgCombatDetails.AidType;
-                    message.ParseSuccessful = true;
-                    return;
-                }
-            }
-
 
             // Check for drain messages
             ParseAttackDrain(message);
@@ -2894,6 +2760,69 @@ namespace WaywardGamers.KParser.Parsing
         #endregion
 
         #region Helper Functions
+        private static void DetermineCharmedPet(ref CombatDetails combatDetails, ref TargetDetails target)
+        {
+            if (combatDetails == null)
+                throw new ArgumentNullException("combatDetails");
+
+            if (target == null)
+                throw new ArgumentNullException("target");
+
+
+            // Handle identifying charmed pet entities
+            if (target.EntityType == EntityType.Mob && combatDetails.ActorEntityType == EntityType.Mob)
+            {
+                EntityType checkTarg = MessageManager.Instance.LookupPetEntity(target.Name);
+                EntityType checkActor = MessageManager.Instance.LookupPetEntity(combatDetails.ActorName);
+
+                if ((checkActor == EntityType.Pet) ^ (checkTarg == EntityType.Pet))
+                {
+                    // If only one shows up as being a pet, use that.
+                    target.EntityType = checkTarg;
+                    combatDetails.ActorEntityType = checkActor;
+                }
+                else if ((checkActor == EntityType.Pet) && (checkTarg == EntityType.Pet))
+                {
+                    // If both show up as being a pet, check the last charmed mob
+                    // to break the tie.
+                    string lastPetName = MessageManager.Instance.LastAddedPetEntity;
+
+                    if (lastPetName != string.Empty)
+                    {
+                        // Check to make sure we don't have dhalmel fighting dhalmel, or whatever.
+                        if (target.Name != combatDetails.ActorName)
+                        {
+                            if (target.Name == lastPetName)
+                            {
+                                target.EntityType = EntityType.Pet;
+                            }
+                            else if (combatDetails.ActorName == lastPetName)
+                            {
+                                combatDetails.ActorEntityType = EntityType.Pet;
+                            }
+                        }
+                        else
+                        {
+                            // actor and target are same mob type; cannot accurately determine
+                            // which is the mob and which is the pet; random?
+                            if (random.Next(1000) < 500)
+                            {
+                                target.EntityType = EntityType.Pet;
+                            }
+                            else
+                            {
+                                combatDetails.ActorEntityType = EntityType.Pet;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // if no last pet entry, ignore
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Function to determine if a mob-type entity is an actual mob or a pet.
         /// </summary>

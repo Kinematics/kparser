@@ -226,7 +226,8 @@ namespace WaywardGamers.KParser
     // Special spell names we want to check for, but also allow for localization
     internal class SpellNames
     {
-        // spells
+        internal static readonly string Raise = "Raise";
+
         internal static readonly string Dispel = "Dispel";
         internal static readonly string Finale = "Magic Finale";
         internal static readonly string Erase = "Erase";

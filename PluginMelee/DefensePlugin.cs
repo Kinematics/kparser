@@ -167,11 +167,11 @@ namespace WaywardGamers.KParser.Plugin
         Dictionary<string, int> playerDamage = new Dictionary<string, int>();
 
         string incAttacksHeader = "Player           Melee   Range   Abil/Ws   Spells   Unknown   Total   Attack# %   Avoided   Avoid %\n";
-        string incDamageHeader = "Player           M.Dmg   Avg M.Dmg   R.Dmg  Avg R.Dmg   S.Dmg  Avg S.Dmg   A/WS.Dmg  Avg A/WS.Dmg   Damage %\n";
-        string evasionHeader = "Player           M.Evade   M.Evade %   R.Evade   R.Evade %\n";
-        string otherDefHeader = "Player           Parry   Parry %   Shadow   Shadow %   Anticipate  Anticipate %   Counter   Counter %\n";
+        string incDamageHeader  = "Player           M.Dmg   Avg M.Dmg   R.Dmg  Avg R.Dmg   S.Dmg  Avg S.Dmg   A/WS.Dmg  Avg A/WS.Dmg   Damage %\n";
+        string evasionHeader    = "Player           M.Evade   M.Evade %   R.Evade   R.Evade %   Shadow   Shadow %\n";
+        string otherDefHeader   = "Player           Parry   Parry %   Intimidate   Intimidate %   Anticipate  Anticipate %   Counter   Counter %\n";
 
-        string utsuHeader = "Player           Shadows Used   Ichi Cast  Ichi Fin  Ni Cast  Ni Fin  Shadows  Shadows(N)  Efficiency  Efficiency(N)\n";
+        string utsuHeader       = "Player           Shadows Used   Ichi Cast  Ichi Fin  Ni Cast  Ni Fin   Count  Count(N)  Efficiency  Effic.(N)\n";
         #endregion
 
         #region Processing sections
@@ -735,8 +735,6 @@ namespace WaywardGamers.KParser.Plugin
         {
             bool headerPrinted = false;
 
-            //Player           M.Evade   M.Evade %   R.Evade   R.Evade %
-
             StringBuilder sb = new StringBuilder();
 
             foreach (var player in incAttacks)
@@ -744,11 +742,26 @@ namespace WaywardGamers.KParser.Plugin
                 if ((player.Melee.Count() + player.Range.Count()) > 0)
                 {
                     int mEvaded = 0;
-                    double mEvadePerc = 0;
                     int rEvaded = 0;
+                    int blinkedAttacks = 0;
+                    double mEvadePerc = 0;
                     double rEvadePerc = 0;
+                    double blinkPerc = 0;
+                    
                     int mEvadableAttacks = player.Melee.Count() + player.Unknown.Count();
                     int rEvadableAttacks = player.Range.Count();
+
+                    var blinkableAttacks = player.Melee.Concat(
+                                           player.Range.Concat(
+                                           player.Spell.Concat(
+                                           player.Abil.Concat(
+                                           player.Unknown)))).Where(a =>
+                            a.DefenseType != (byte)DefenseType.Evasion &&
+                            a.DefenseType != (byte)DefenseType.Parry &&
+                            a.DefenseType != (byte)DefenseType.Intimidate);
+
+                    int blinkableCount = blinkableAttacks.Count();
+
 
                     if (player.Melee.Count() > 0)
                     {
@@ -762,18 +775,25 @@ namespace WaywardGamers.KParser.Plugin
                         rEvadePerc = (double)rEvaded / rEvadableAttacks;
                     }
 
-                    if ((mEvaded + rEvaded) > 0)
+                    if (blinkableCount > 0)
+                    {
+                        blinkedAttacks = blinkableAttacks.Count(a => a.DefenseType == (byte)DefenseType.Blink);
+                        blinkPerc = (double)blinkedAttacks / blinkableCount;
+                    }
+
+
+                    if ((mEvaded + rEvaded + blinkedAttacks) > 0)
                     {
                         if (headerPrinted == false)
                         {
-                            AppendBoldText("Evasion\n", Color.Blue);
+                            AppendBoldText("Evasion & Shadows\n", Color.Blue);
                             AppendBoldUnderText(evasionHeader, Color.Black);
 
                             headerPrinted = true;
                         }
 
-                        sb.AppendFormat("{0,-17}{1,7}{2,12:p2}{3,10}{4,12:p2}\n",
-                            player.Player, mEvaded, mEvadePerc, rEvaded, rEvadePerc);
+                        sb.AppendFormat("{0,-17}{1,7}{2,12:p2}{3,10}{4,12:p2}{5,9}{6,11:p2}\n",
+                            player.Player, mEvaded, mEvadePerc, rEvaded, rEvadePerc, blinkedAttacks, blinkPerc);
                     }
                 }
             }
@@ -789,8 +809,6 @@ namespace WaywardGamers.KParser.Plugin
         {
             bool headerPrinted = false;
 
-            //Player           Parry   Parry %   Blink   Blink %   Anticipate  Anticipate %   Counter   Counter %
-
             StringBuilder sb = new StringBuilder();
 
             foreach (var player in incAttacks)
@@ -799,46 +817,41 @@ namespace WaywardGamers.KParser.Plugin
                                        player.Unknown).Where(a =>
                     a.DefenseType != (byte)DefenseType.Evasion);
 
-                var blinkableAttacks = player.Melee.Concat(
-                                       player.Range.Concat(
-                                       player.Spell.Concat(
-                                       player.Abil.Concat(
-                                       player.Unknown)))).Where(a =>
-                        a.DefenseType != (byte)DefenseType.Evasion &&
-                        a.DefenseType != (byte)DefenseType.Parry);
-
                 var anticableAttacks = player.Melee.Concat(
                                        player.Abil.Concat(
                                        player.Unknown)).Where(a =>
                     a.DefenseType != (byte)DefenseType.Evasion &&
                     a.DefenseType != (byte)DefenseType.Parry &&
-                    a.DefenseType != (byte)DefenseType.Blink);
+                    a.DefenseType != (byte)DefenseType.Blink &&
+                    a.DefenseType != (byte)DefenseType.Intimidate);
 
                 var counterableAttacks = player.Melee.Where(a =>
                     a.DefenseType != (byte)DefenseType.Evasion &&
                     a.DefenseType != (byte)DefenseType.Parry &&
-                    a.DefenseType != (byte)DefenseType.Blink).Concat(
+                    a.DefenseType != (byte)DefenseType.Blink &&
+                    a.DefenseType != (byte)DefenseType.Intimidate).Concat(
                                          player.Unknown.Where(a =>
                                              a.DefenseType == (byte)DefenseType.Anticipate));
 
+                var intimidateableAttacks = player.Melee.Concat(player.Unknown);
 
                 int parryableCount = parryableAttacks.Count();
-                int blinkableCount = blinkableAttacks.Count();
                 int anticibleCount = anticableAttacks.Count();
                 int counterableCount = counterableAttacks.Count();
+                int intimidatableCount = intimidateableAttacks.Count();
 
                 int parriedAttacks = 0;
-                int blinkedAttacks = 0;
                 int anticipatedAttacks = 0;
                 int counteredAttacks = 0;
+                int intimidatedAttacks = 0;
 
                 double parryPerc = 0;
-                double blinkPerc = 0;
                 double antiPerc = 0;
                 double counterPerc = 0;
+                double intimidatedPerc = 0;
 
 
-                if ((parryableCount + blinkableCount + anticibleCount + counterableCount) > 0)
+                if ((parryableCount + intimidatableCount + anticibleCount + counterableCount) > 0)
                 {
                     if (parryableCount > 0)
                     {
@@ -846,10 +859,10 @@ namespace WaywardGamers.KParser.Plugin
                         parryPerc = (double)parriedAttacks / parryableCount;
                     }
 
-                    if (blinkableCount > 0)
+                    if (intimidatableCount > 0)
                     {
-                        blinkedAttacks = blinkableAttacks.Count(a => a.DefenseType == (byte)DefenseType.Blink);
-                        blinkPerc = (double)blinkedAttacks / blinkableCount;
+                        intimidatedAttacks = intimidateableAttacks.Count(a => a.DefenseType == (byte)DefenseType.Intimidate);
+                        intimidatedPerc = (double)intimidatedAttacks / intimidatableCount;
                     }
 
                     if (anticibleCount > 0)
@@ -865,7 +878,7 @@ namespace WaywardGamers.KParser.Plugin
                     }
 
 
-                    if ((parriedAttacks + blinkedAttacks + anticipatedAttacks + counteredAttacks) > 0)
+                    if ((parriedAttacks + intimidatedAttacks + anticipatedAttacks + counteredAttacks) > 0)
                     {
                         if (headerPrinted == false)
                         {
@@ -874,13 +887,12 @@ namespace WaywardGamers.KParser.Plugin
                             headerPrinted = true;
                         }
 
-                        sb.Append(player.Player.PadRight(16));
-                        sb.Append(" ");
+                        sb.Append(player.Player.PadRight(17));
 
                         sb.Append(parriedAttacks.ToString().PadLeft(5));
                         sb.Append(parryPerc.ToString("P2").PadLeft(10));
-                        sb.Append(blinkedAttacks.ToString().PadLeft(9));
-                        sb.Append(blinkPerc.ToString("P2").PadLeft(11));
+                        sb.Append(intimidatedAttacks.ToString().PadLeft(13));
+                        sb.Append(intimidatedPerc.ToString("P2").PadLeft(15));
                         sb.Append(anticipatedAttacks.ToString().PadLeft(13));
                         sb.Append(antiPerc.ToString("P2").PadLeft(14));
                         sb.Append(counteredAttacks.ToString().PadLeft(10));
@@ -993,10 +1005,10 @@ namespace WaywardGamers.KParser.Plugin
                         sb.Append(ichiFin.ToString().PadLeft(10));
                         sb.Append(niCast.ToString().PadLeft(9));
                         sb.Append(niFin.ToString().PadLeft(8));
-                        sb.Append(numShads.ToString().PadLeft(9));
-                        sb.Append(numShadsN.ToString().PadLeft(11));
-                        sb.Append(effNorm.ToString("P2").PadLeft(13));
-                        sb.Append(effNin.ToString("P2").PadLeft(14));
+                        sb.Append(numShads.ToString().PadLeft(8));
+                        sb.Append(numShadsN.ToString().PadLeft(10));
+                        sb.Append(effNorm.ToString("P2").PadLeft(12));
+                        sb.Append(effNin.ToString("P2").PadLeft(11));
 
                         sb.Append("\n");
                     }
