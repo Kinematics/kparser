@@ -2158,6 +2158,7 @@ namespace WaywardGamers.KParser.Parsing
                     if (msgCombatDetails.ActorEntityType == target.EntityType)
                     {
                         if ((msgCombatDetails.ActionName == SpellNames.Erase) ||
+                            (msgCombatDetails.ActionName == SpellNames.HealWaltz) ||
                             (msgCombatDetails.ActionName.EndsWith(SpellNames.RemoveStatus)))
                             target.AidType = AidType.RemoveStatus;
                         else
@@ -2189,6 +2190,17 @@ namespace WaywardGamers.KParser.Parsing
                     target.FailedActionType = FailedActionType.NoEffect;
                     target.HarmType = msgCombatDetails.HarmType;
                     msgCombatDetails.SuccessLevel = SuccessType.Failed;
+                    if (msgCombatDetails.ActorEntityType == target.EntityType)
+                    {
+                        if ((msgCombatDetails.ActionName == SpellNames.Erase) ||
+                            (msgCombatDetails.ActionName == SpellNames.HealWaltz) ||
+                            (msgCombatDetails.ActionName.EndsWith(SpellNames.RemoveStatus)))
+                            target.AidType = AidType.RemoveStatus;
+                        else
+                            target.AidType = AidType.Enhance;
+
+                        target.HarmType = HarmType.None;
+                    }
                     message.ParseSuccessful = true;
                     return;
                 }

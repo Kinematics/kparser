@@ -230,7 +230,10 @@ namespace WaywardGamers.KParser
 
         internal static readonly string Dispel = "Dispel";
         internal static readonly string Finale = "Magic Finale";
+
         internal static readonly string Erase = "Erase";
+        internal static readonly string HealWaltz = "Healing Waltz";
+
         internal static readonly string RemoveStatus = "na";
     }
 }
