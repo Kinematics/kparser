@@ -21,6 +21,7 @@ namespace WaywardGamers.KParser
         internal static readonly string SC         = "skillchain";
         internal static readonly string DrainType  = "draintype";
         internal static readonly string DrainStat  = "drainstat";
+        internal static readonly string Remainder  = "remainder";
     }
 
     // Class to store regular expressions in.
@@ -46,6 +47,8 @@ namespace WaywardGamers.KParser
         private static readonly string afflictLvl  = @"\(lv\.\d\)";
         private static readonly string drainType   = @"(?<draintype>(H|M|T)P)";
         private static readonly string drainStat   = @"(?<drainstat>STR|DEX|AGI|VIT|INT|MND|CHR)";
+
+        private static readonly string remainder   = @"(?<remainder>.*)";
         #endregion
 
         #region Plugin corrections
@@ -118,6 +121,8 @@ namespace WaywardGamers.KParser
         internal static readonly Regex GainCorRoll  = new Regex(string.Format("^{0} receives the effect of {1}\\.$", playername, ability));
         internal static readonly Regex BustCorRoll  = new Regex(string.Format("^Bust!$"));
         internal static readonly Regex LoseCorRoll  = new Regex(string.Format("^{0} loses the effect of {1}\\.$", playername, ability));
+        // Cover
+        internal static readonly Regex UseCover     = new Regex(string.Format("^{0} covers {1}\\.$", name, target));
         #endregion
 
         #region Spell/Ability Effects
@@ -166,8 +171,9 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Modifiers on existing lines
-        internal static readonly Regex AdditionalEffect = new Regex(@"^Additional effect:");
+        internal static readonly Regex AdditionalEffect = new Regex(@"^Additional (E|e)ffect:");
         internal static readonly Regex MagicBurst       = new Regex(@"^Magic Burst!");
+        internal static readonly Regex Cover            = new Regex(string.Format("^Cover! {0}", remainder));
         internal static readonly Regex AdditionalDamage = new Regex(string.Format("^Additional effect: {0} point(s)? of damage\\.$", damage));
         internal static readonly Regex AdditionalStatus = new Regex(string.Format("^Additional effect: {0}\\.$", effect));
         internal static readonly Regex AdditionalDrain  = new Regex(string.Format("^Additional effect: {0} HP drained from {1}\\.$", damage, target));
@@ -220,6 +226,7 @@ namespace WaywardGamers.KParser
     // Special spell names we want to check for, but also allow for localization
     internal class SpellNames
     {
+        // spells
         internal static readonly string Dispel = "Dispel";
         internal static readonly string Finale = "Magic Finale";
         internal static readonly string Erase = "Erase";

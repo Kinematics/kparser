@@ -168,6 +168,12 @@ namespace WaywardGamers.KParser
         internal bool FlagCrit { get; set; }
 
         /// <summary>
+        /// Gets and sets whether an attack was a covered.  Used for
+        /// state tracking.
+        /// </summary>
+        internal bool FlagCover { get; set; }
+
+        /// <summary>
         /// Gets and sets the value rolled by a Corsair's Phantom Roll.
         /// State tracking to be applied to targets.
         /// </summary>
@@ -214,6 +220,7 @@ namespace WaywardGamers.KParser
             sb.AppendFormat("    Item Name: {0}\n", ItemName);
             sb.AppendFormat("    Success Level: {0}\n", SuccessLevel);
             sb.AppendFormat("    Is Crit: {0}\n", FlagCrit);
+            sb.AppendFormat("    Is Covered: {0}\n", FlagCover);
 
             foreach (TargetDetails target in Targets)
                 sb.Append(target.ToString());
