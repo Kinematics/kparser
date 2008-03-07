@@ -712,7 +712,8 @@ namespace WaywardGamers.KParser
 
                         lock (activePluginList)
                         {
-                            activePluginList.Add(plugin);
+                            if (activePluginList.Contains(plugin) == false)
+                                activePluginList.Add(plugin);
                             if (!windowSettings.activePluginList.Contains(plugin.TabName))
                                 windowSettings.activePluginList.Add(plugin.TabName);
                         }
