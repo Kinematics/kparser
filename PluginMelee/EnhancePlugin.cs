@@ -106,7 +106,11 @@ namespace WaywardGamers.KParser.Plugin
                                                       {
                                                           TargetName = btn.Key,
                                                           Buffs = btn.OrderBy(i => i.Timestamp)
-                                                      }
+                                                      },
+                                        Untargeted = from bt in ba
+                                                     where bt.IsTargetIDNull() == true
+                                                     orderby bt.Timestamp
+                                                     select bt
                                     }
                         };
 
@@ -135,50 +139,72 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     buffName = buff.BuffName;
 
-                    if (buff.BuffTargets.Count() == 0)
+                    if (buff.Untargeted.Count() > 0)
                     {
                         AppendNormalText(buffName.PadRight(20));
-
                         AppendNormalText("Self".PadRight(20));
-                        //AppendNormalText(used.ToString().PadLeft(7));
+
+                        used = buff.Untargeted.Count();
+
+                        AppendNormalText(used.ToString().PadLeft(7));
+
+                        if (used > 1)
+                        {
+                            avgInterval = TimeSpan.FromSeconds(
+                                (buff.Untargeted.Last().Timestamp - buff.Untargeted.First().Timestamp).TotalSeconds / (used - 1));
+
+                            intervalList.Clear();
+
+                            for (int i = 1; i < used; i++)
+                            {
+                                var curr = buff.Untargeted.ElementAt(i);
+                                var last = buff.Untargeted.ElementAt(i - 1);
+
+                                intervalList.Add(curr.Timestamp - last.Timestamp);
+                            }
+
+                            minInterval = intervalList.Min();
+                            maxInterval = intervalList.Max();
+
+                            AppendNormalText(string.Format("{0,15}{1,15}{2,15}",
+                                TimespanString(minInterval), TimespanString(maxInterval), TimespanString(avgInterval)));
+                        }
 
                         AppendNormalText("\n");
                     }
-                    else
+
+                    foreach (var target in buff.BuffTargets)
                     {
-                        foreach (var target in buff.BuffTargets)
+                        AppendNormalText(buffName.PadRight(20));
+                        buffName = "";
+
+                        used = target.Buffs.Count();
+                        AppendNormalText(target.TargetName.PadRight(20));
+                        AppendNormalText(used.ToString().PadLeft(7));
+
+                        if (used > 1)
                         {
-                            AppendNormalText(buffName.PadRight(20));
-                            buffName = "";
+                            avgInterval = TimeSpan.FromSeconds(
+                                (target.Buffs.Last().Timestamp - target.Buffs.First().Timestamp).TotalSeconds / (used - 1));
 
-                            used = target.Buffs.Count();
-                            AppendNormalText(target.TargetName.PadRight(20));
-                            AppendNormalText(used.ToString().PadLeft(7));
+                            intervalList.Clear();
 
-                            if (used > 1)
+                            for (int i = 1; i < used; i++)
                             {
-                                avgInterval = TimeSpan.FromSeconds(
-                                    (target.Buffs.Last().Timestamp - target.Buffs.First().Timestamp).TotalSeconds / (used - 1));
+                                var curr = target.Buffs.ElementAt(i);
+                                var last = target.Buffs.ElementAt(i - 1);
 
-                                intervalList.Clear();
-
-                                for (int i = 1; i < used; i++)
-                                {
-                                    var curr = target.Buffs.ElementAt(i);
-                                    var last = target.Buffs.ElementAt(i - 1);
-
-                                    intervalList.Add(curr.Timestamp - last.Timestamp);
-                                }
-
-                                minInterval = intervalList.Min();
-                                maxInterval = intervalList.Max();
-
-                                AppendNormalText(string.Format("{0,15}{1,15}{2,15}",
-                                    TimespanString(minInterval), TimespanString(maxInterval), TimespanString(avgInterval)));
+                                intervalList.Add(curr.Timestamp - last.Timestamp);
                             }
 
-                            AppendNormalText("\n");
+                            minInterval = intervalList.Min();
+                            maxInterval = intervalList.Max();
+
+                            AppendNormalText(string.Format("{0,15}{1,15}{2,15}",
+                                TimespanString(minInterval), TimespanString(maxInterval), TimespanString(avgInterval)));
                         }
+
+                        AppendNormalText("\n");
                     }
                 }
 
@@ -215,8 +241,20 @@ namespace WaywardGamers.KParser.Plugin
                                                       {
                                                           CasterName = btn.Key,
                                                           Buffs = btn.OrderBy(i => i.Timestamp)
-                                                      }
-                                    }
+                                                      },
+                                    },
+                            UntargetedBuffs = from bt in c.GetInteractionsRowsByActorCombatantRelation()
+                                              where bt.AidType == (byte)AidType.Enhance &&
+                                                    bt.IsTargetIDNull() == true &&
+                                                    bt.Preparing == false &&
+                                                    bt.IsActionIDNull() == false
+                                              group bt by bt.ActionsRow.ActionName into bu
+                                              orderby bu.Key
+                                              select new
+                                              {
+                                                  BuffName = bu.Key,
+                                                  Buffs = bu,
+                                              }
                         };
 
 
@@ -240,30 +278,73 @@ namespace WaywardGamers.KParser.Plugin
                 AppendBoldText(string.Format("{0}\n", player.Name), Color.Blue);
                 AppendBoldUnderText(buffRecHeader, Color.Black);
 
-                foreach (var buff in player.Buffs)
+                if (player.Buffs.Count() > 0)
                 {
-                    buffName = buff.BuffName;
-
-                    foreach (var target in buff.BuffCasters)
+                    foreach (var buff in player.Buffs)
                     {
-                        AppendNormalText(buffName.PadRight(20));
-                        buffName = "";
+                        buffName = buff.BuffName;
 
-                        used = target.Buffs.Count();
-                        AppendNormalText(target.CasterName.PadRight(20));
+                        foreach (var target in buff.BuffCasters)
+                        {
+                            AppendNormalText(buffName.PadRight(20));
+                            buffName = "";
+
+                            used = target.Buffs.Count();
+                            AppendNormalText(target.CasterName.PadRight(20));
+                            AppendNormalText(used.ToString().PadLeft(7));
+
+                            if (used > 1)
+                            {
+                                avgInterval = TimeSpan.FromSeconds(
+                                    (target.Buffs.Last().Timestamp - target.Buffs.First().Timestamp).TotalSeconds / (used - 1));
+
+                                intervalList.Clear();
+
+                                for (int i = 1; i < used; i++)
+                                {
+                                    var curr = target.Buffs.ElementAt(i);
+                                    var last = target.Buffs.ElementAt(i - 1);
+
+                                    intervalList.Add(curr.Timestamp - last.Timestamp);
+                                }
+
+                                minInterval = intervalList.Min();
+                                maxInterval = intervalList.Max();
+
+                                AppendNormalText(string.Format("{0,15}{1,15}{2,15}",
+                                    TimespanString(minInterval), TimespanString(maxInterval), TimespanString(avgInterval)));
+                            }
+
+
+                            AppendNormalText("\n");
+                        }
+                    }
+                }
+
+                if (player.UntargetedBuffs.Count() > 0)
+                {
+                    foreach (var buff in player.UntargetedBuffs)
+                    {
+                        buffName = buff.BuffName;
+                        
+                        AppendNormalText(buffName.PadRight(20));
+                        AppendNormalText("Self".PadRight(20));
+
+                        used = buff.Buffs.Count();
+
                         AppendNormalText(used.ToString().PadLeft(7));
 
                         if (used > 1)
                         {
                             avgInterval = TimeSpan.FromSeconds(
-                                (target.Buffs.Last().Timestamp - target.Buffs.First().Timestamp).TotalSeconds / (used - 1));
+                                (buff.Buffs.Last().Timestamp - buff.Buffs.First().Timestamp).TotalSeconds / (used - 1));
 
                             intervalList.Clear();
 
                             for (int i = 1; i < used; i++)
                             {
-                                var curr = target.Buffs.ElementAt(i);
-                                var last = target.Buffs.ElementAt(i - 1);
+                                var curr = buff.Buffs.ElementAt(i);
+                                var last = buff.Buffs.ElementAt(i - 1);
 
                                 intervalList.Add(curr.Timestamp - last.Timestamp);
                             }
@@ -275,10 +356,10 @@ namespace WaywardGamers.KParser.Plugin
                                 TimespanString(minInterval), TimespanString(maxInterval), TimespanString(avgInterval)));
                         }
 
-
                         AppendNormalText("\n");
                     }
                 }
+
 
                 AppendNormalText("\n");
             }
