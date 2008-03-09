@@ -1227,12 +1227,15 @@ namespace WaywardGamers.KParser.Parsing
         private static void ParseDeath(Message message)
         {
             Match combatMatch = null;
+            CombatDetails combatDetails = message.EventDetails.CombatDetails;
+            TargetDetails target = null;
 
             combatMatch = ParseExpressions.Defeat.Match(message.CurrentMessageText);
             if (combatMatch.Success == true)
             {
-                message.EventDetails.CombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                message.EventDetails.CombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                DetermineCharmedPet(ref combatDetails, ref target);
                 message.ParseSuccessful = true;
                 return;
             }
@@ -1240,8 +1243,9 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.Defeated.Match(message.CurrentMessageText);
             if (combatMatch.Success == true)
             {
-                message.EventDetails.CombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                message.EventDetails.CombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                DetermineCharmedPet(ref combatDetails, ref target);
                 message.ParseSuccessful = true;
                 return;
             }
@@ -1249,7 +1253,7 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.Dies.Match(message.CurrentMessageText);
             if (combatMatch.Success == true)
             {
-                message.EventDetails.CombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                 message.ParseSuccessful = true;
                 return;
             }
