@@ -847,10 +847,27 @@ namespace WaywardGamers.KParser
                     {
                         if (activeMobBattleList.TryGetValue(target.Name, out battle) == false)
                         {
-                            battle = localDB.Battles.AddBattlesRow(targetRow, message.Timestamp,
-                                MagicNumbers.MinSQLDateTime, false, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
+                            // No active battle for this mob.  Check if this is spillover
+                            // messaging for a mob that just died (less than 4 seconds ago).
 
-                            activeMobBattleList[target.Name] = battle;
+                            var recentKills = localDB.Battles.Where(b =>
+                                b.Killed == true &&
+                                b.EndTime >= (message.Timestamp.AddSeconds(-4)));
+
+                            if (recentKills.Count() > 0)
+                            {
+                                battle = recentKills.LastOrDefault(b =>
+                                    b.CombatantsRowByEnemyCombatantRelation.CombatantName == target.Name);
+                            }
+
+                            // If none found, create a new battle.
+                            if (battle == null)
+                            {
+                                battle = localDB.Battles.AddBattlesRow(targetRow, message.Timestamp,
+                                    MagicNumbers.MinSQLDateTime, false, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
+
+                                activeMobBattleList[target.Name] = battle;
+                            }
                         }
 
                         // Update the most recent activity record for the fight.
