@@ -14,8 +14,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginCombat", "PluginMelee
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginExperience", "PluginExperience\PluginExperience.csproj", "{497E79CF-92E1-4D78-9C5D-DE62B292945C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginDPS", "PluginDPS\PluginDPS.csproj", "{ECD0D848-0ED1-4365-B90E-A34453F2CD2C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,14 +78,6 @@ Global
 		{497E79CF-92E1-4D78-9C5D-DE62B292945C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{497E79CF-92E1-4D78-9C5D-DE62B292945C}.Release|x86.ActiveCfg = Release|Any CPU
 		{497E79CF-92E1-4D78-9C5D-DE62B292945C}.Release|x86.Build.0 = Release|Any CPU
-		{ECD0D848-0ED1-4365-B90E-A34453F2CD2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ECD0D848-0ED1-4365-B90E-A34453F2CD2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ECD0D848-0ED1-4365-B90E-A34453F2CD2C}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{ECD0D848-0ED1-4365-B90E-A34453F2CD2C}.Debug|x86.Build.0 = Debug|Any CPU
-		{ECD0D848-0ED1-4365-B90E-A34453F2CD2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ECD0D848-0ED1-4365-B90E-A34453F2CD2C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ECD0D848-0ED1-4365-B90E-A34453F2CD2C}.Release|x86.ActiveCfg = Release|Any CPU
-		{ECD0D848-0ED1-4365-B90E-A34453F2CD2C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

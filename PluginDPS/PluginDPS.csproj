@@ -47,12 +47,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DPSPlugin.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="DPSPlugin.Designer.cs">
-      <DependentUpon>DPSPlugin.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -60,12 +54,6 @@
       <Project>{626318E4-447D-4BD7-BC3A-294A8E37B07F}</Project>
       <Name>ParserCore</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="DPSPlugin.resx">
-      <DependentUpon>DPSPlugin.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
