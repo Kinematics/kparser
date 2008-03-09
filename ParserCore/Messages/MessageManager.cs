@@ -204,7 +204,7 @@ namespace WaywardGamers.KParser
 
             Message msg = null;
             // Don't attach to message that are too far back in time
-            DateTime minTimestamp = timestamp - TimeSpan.FromSeconds(4);
+            DateTime minTimestamp = timestamp - TimeSpan.FromSeconds(10);
 
             lock (messageCollection)
             {
@@ -295,47 +295,41 @@ namespace WaywardGamers.KParser
                     // If no message found, and we're given an altCode list, check each of those.
                     if (altCodes != null)
                     {
-                        foreach (uint altCode in altCodes)
-                        {
-                            // If checking alt codes, we cannot expect the ecodes to match,
-                            // therefore don't bother checking against them (but still make
-                            // sure they aren't 0).
+                        // If checking alt codes, we cannot expect the ecodes to match,
+                        // therefore don't bother checking against them (but still make
+                        // sure they aren't 0).
 
-                            msg = searchSet.LastOrDefault(m =>
-                                ((m.PrimaryMessageCode == altCode) &&
-                                 (m.EventDetails != null) &&
-                                 (m.EventDetails.CombatDetails != null) &&
-                                 ((m.ExtraCode1 != 0) ||
-                                  (m.ExtraCode2 != 0) ||
-                                  (m.EventDetails.CombatDetails.AidType == AidType.Item)
-                                 ) &&
-                                 ((m.Timestamp >= minTimestamp) || (m.Timestamp == lastTimestamp)) &&
-                                 (m.EventDetails.CombatDetails.ActorName != string.Empty) &&
-                                 (
-                                  (m.EventDetails.CombatDetails.Targets.Count == 0) ||
-                                  (
-                                   (parsedMessage == null) ||
-                                   (
-                                    (parsedMessage.EventDetails.CombatDetails.Targets.Count > 0) &&
-                                    (m.EventDetails.CombatDetails.Targets.Any(t =>
-                                       t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false) &&
-                                    ((m.EventDetails.CombatDetails.Targets.Any(t =>
-                                       t.EffectName == parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true) ||
-                                     (parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName == string.Empty)) &&
-                                    (m.EventDetails.CombatDetails.Targets.Any(t =>
-                                       t.EntityType == parsedMessage.EventDetails.CombatDetails.Targets.First().EntityType) == true) &&
-                                    ((parsedMessage.EventDetails.CombatDetails.Targets.First().RecoveryType == RecoveryType.None) ||
-                                     (m.EventDetails.CombatDetails.Targets.Any(t =>
-                                       t.RecoveryType == parsedMessage.EventDetails.CombatDetails.Targets.First().RecoveryType))
-                                    )
-                                   )
-                                  )
-                                 ) &&
-                                 (m.EventDetails.CombatDetails.HasAdditionalEffect == false)));
-
-                            if (msg != null)
-                                break;
-                        }
+                        msg = searchSet.LastOrDefault(m =>
+                            ((altCodes.Contains(m.PrimaryMessageCode)) &&
+                             (m.EventDetails != null) &&
+                             (m.EventDetails.CombatDetails != null) &&
+                             ((m.ExtraCode1 != 0) ||
+                              (m.ExtraCode2 != 0) ||
+                              (m.EventDetails.CombatDetails.AidType == AidType.Item)
+                             ) &&
+                             ((m.Timestamp >= minTimestamp) || (m.Timestamp == lastTimestamp)) &&
+                             (m.EventDetails.CombatDetails.ActorName != string.Empty) &&
+                             (
+                              (m.EventDetails.CombatDetails.Targets.Count == 0) ||
+                              (
+                               (parsedMessage == null) ||
+                               (
+                                (parsedMessage.EventDetails.CombatDetails.Targets.Count > 0) &&
+                                (m.EventDetails.CombatDetails.Targets.Any(t =>
+                                   t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false) &&
+                                ((m.EventDetails.CombatDetails.Targets.Any(t =>
+                                   t.EffectName == parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true) ||
+                                 (parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName == string.Empty)) &&
+                                (m.EventDetails.CombatDetails.Targets.Any(t =>
+                                   t.EntityType == parsedMessage.EventDetails.CombatDetails.Targets.First().EntityType) == true) &&
+                                ((parsedMessage.EventDetails.CombatDetails.Targets.First().RecoveryType == RecoveryType.None) ||
+                                 (m.EventDetails.CombatDetails.Targets.Any(t =>
+                                   t.RecoveryType == parsedMessage.EventDetails.CombatDetails.Targets.First().RecoveryType))
+                                )
+                               )
+                              )
+                             ) &&
+                             (m.EventDetails.CombatDetails.HasAdditionalEffect == false)));
 
                         if (msg == null)
                         {
@@ -344,47 +338,42 @@ namespace WaywardGamers.KParser
                             {
                                 minTimestamp = timestamp - TimeSpan.FromSeconds(30);
 
-                                foreach (uint altCode in altCodes)
-                                {
-                                    // If checking alt codes, we cannot expect the ecodes to match,
-                                    // therefore don't bother checking against them (but still make
-                                    // sure they aren't 0).
+                                // If checking alt codes, we cannot expect the ecodes to match,
+                                // therefore don't bother checking against them (but still make
+                                // sure they aren't 0).
 
-                                    msg = searchSet.LastOrDefault(m =>
-                                        ((m.PrimaryMessageCode == altCode) &&
-                                         (m.EventDetails != null) &&
-                                         (m.EventDetails.CombatDetails != null) &&
-                                         ((m.ExtraCode1 != 0) ||
-                                          (m.ExtraCode2 != 0) ||
-                                          (m.EventDetails.CombatDetails.AidType == AidType.Item)
-                                         ) &&
-                                         ((m.Timestamp >= minTimestamp) || (m.Timestamp == lastTimestamp)) &&
-                                         (m.EventDetails.CombatDetails.ActorName != string.Empty) &&
-                                         (
-                                          (m.EventDetails.CombatDetails.Targets.Count == 0) ||
-                                          (
-                                           (parsedMessage == null) ||
-                                           (
-                                            (parsedMessage.EventDetails.CombatDetails.Targets.Count > 0) &&
-                                            (m.EventDetails.CombatDetails.Targets.Any(t =>
-                                               t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false) &&
-                                            ((m.EventDetails.CombatDetails.Targets.Any(t =>
-                                               t.EffectName == parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true) ||
-                                             (parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName == string.Empty)) &&
-                                            (m.EventDetails.CombatDetails.Targets.Any(t =>
-                                               t.EntityType == parsedMessage.EventDetails.CombatDetails.Targets.First().EntityType) == true) &&
-                                            ((parsedMessage.EventDetails.CombatDetails.Targets.First().RecoveryType == RecoveryType.None) ||
-                                             (m.EventDetails.CombatDetails.Targets.Any(t =>
-                                               t.RecoveryType == parsedMessage.EventDetails.CombatDetails.Targets.First().RecoveryType))
-                                            )
-                                           )
-                                          )
-                                         ) &&
-                                         (m.EventDetails.CombatDetails.HasAdditionalEffect == false)));
+                                msg = searchSet.LastOrDefault(m =>
+                                    ((altCodes.Contains(m.PrimaryMessageCode)) &&
+                                     (m.EventDetails != null) &&
+                                     (m.EventDetails.CombatDetails != null) &&
+                                     ((m.ExtraCode1 != 0) ||
+                                      (m.ExtraCode2 != 0) ||
+                                      (m.EventDetails.CombatDetails.AidType == AidType.Item)
+                                     ) &&
+                                     ((m.Timestamp >= minTimestamp) || (m.Timestamp == lastTimestamp)) &&
+                                     (m.EventDetails.CombatDetails.ActorName != string.Empty) &&
+                                     (
+                                      (m.EventDetails.CombatDetails.Targets.Count == 0) ||
+                                      (
+                                       (parsedMessage == null) ||
+                                       (
+                                        (parsedMessage.EventDetails.CombatDetails.Targets.Count > 0) &&
+                                        (m.EventDetails.CombatDetails.Targets.Any(t =>
+                                           t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false) &&
+                                        ((m.EventDetails.CombatDetails.Targets.Any(t =>
+                                           t.EffectName == parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true) ||
+                                         (parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName == string.Empty)) &&
+                                        (m.EventDetails.CombatDetails.Targets.Any(t =>
+                                           t.EntityType == parsedMessage.EventDetails.CombatDetails.Targets.First().EntityType) == true) &&
+                                        ((parsedMessage.EventDetails.CombatDetails.Targets.First().RecoveryType == RecoveryType.None) ||
+                                         (m.EventDetails.CombatDetails.Targets.Any(t =>
+                                           t.RecoveryType == parsedMessage.EventDetails.CombatDetails.Targets.First().RecoveryType))
+                                        )
+                                       )
+                                      )
+                                     ) &&
+                                     (m.EventDetails.CombatDetails.HasAdditionalEffect == false)));
 
-                                    if (msg != null)
-                                        break;
-                                }
                             }
                         }
                     }
