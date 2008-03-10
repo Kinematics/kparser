@@ -336,6 +336,7 @@ namespace WaywardGamers.KParser
 
             activeBattleList.Clear();
             activeMobBattleList.Clear();
+            mostRecentTimestamp = MagicNumbers.MinSQLDateTime;
 
             lastFinishedBattle = null;
 
@@ -1017,7 +1018,7 @@ namespace WaywardGamers.KParser
                     else
                     {
                         // Make a new one if one doesn't exist, created already killed
-                        battle = localDB.Battles.AddBattlesRow(actor, message.Timestamp, message.Timestamp,
+                        battle = localDB.Battles.AddBattlesRow(targetRow, message.Timestamp, message.Timestamp,
                             true, actor, (byte)message.EventDetails.CombatDetails.ActorType, 0, 0,
                             (byte)MobDifficulty.Unknown, false);
                     }
