@@ -108,6 +108,7 @@ namespace WaywardGamers.KParser
 
         private DateTime lastUpdateTime = DateTime.Now;
         private TimeSpan updateDelayWindow = TimeSpan.FromSeconds(5);
+        private DateTime mostRecentTimestamp = MagicNumbers.MinSQLDateTime;
 
         public event DatabaseWatchEventHandler DatabaseChanging;
         public event DatabaseWatchEventHandler DatabaseChanged;
@@ -238,7 +239,11 @@ namespace WaywardGamers.KParser
                 using (new ProfileRegion("Add messages to database"))
                 {
                     foreach (var message in messageList)
+                    {
                         AddMessageToDatabase(message);
+                        if (message.Timestamp > mostRecentTimestamp)
+                            mostRecentTimestamp = message.Timestamp;
+                    }
                 }
 
                 UpdateActiveBattleList(false);
@@ -496,28 +501,41 @@ namespace WaywardGamers.KParser
             }
         }
 
+        /// <summary>
+        /// Close out inactive battles.  And parse is ending, close out all remaining battles.
+        /// </summary>
+        /// <param name="closeOutAllBattles">Flag to indicate whether the
+        /// parse is ending and all battles should be closed.</param>
         private void UpdateActiveBattleList(bool closeOutAllBattles)
         {
+            List<KPDatabaseDataSet.BattlesRow> battlesToRemove = new List<KPDatabaseDataSet.BattlesRow>();
+            DateTime tenMinutesAgo = mostRecentTimestamp.Subtract(TimeSpan.FromMinutes(10));
+
             lock (activeBattleList)
             {
-                // When closing database, close out all remaining active battles.
-                var oldBattles = activeBattleList.Where(b => true);
-
-                // Search for any battles in our active list that haven't had any
-                // activity in the last 10 minutes.  Close them out.
-                if (closeOutAllBattles == false)
+                foreach (var activeBattle in activeBattleList)
                 {
-                    DateTime tenMinutesAgo = DateTime.Now.Subtract(TimeSpan.FromMinutes(10));
-                    oldBattles = activeBattleList.Where(b => b.Value < tenMinutesAgo);
+                    // Never close out the default battle, if it's in the list.
+                    if (activeBattle.Key.DefaultBattle == false)
+                    {
+                        // Anything that hasn't had any activity in more than
+                        // 10 minutes is marked for removal.
+                        if ((closeOutAllBattles == true) || (activeBattle.Value < tenMinutesAgo))
+                        {
+                            battlesToRemove.Add(activeBattle.Key);
+                        }
+                    }
                 }
 
-                // Cannot use a foreach loop here since modifying the battlerow endtime
-                // causes the enumeration to break.
-                while (oldBattles.Count() > 0)
+                foreach (var battleToRemove in battlesToRemove)
                 {
-                    oldBattles.First().Key.EndTime = DateTime.Now;
-                    activeBattleList.Remove(oldBattles.First().Key);
-                    //oldBattles = oldBattles.Skip(1);
+                    // If the battle hasn't been marked as ended, set the
+                    // ending timestamp to match the most recent message's.
+                    // If reparsing, this will be the last message in the
+                    // log.
+                    if (battleToRemove.EndTime == MagicNumbers.MinSQLDateTime)
+                        battleToRemove.EndTime = mostRecentTimestamp;
+                    activeBattleList.Remove(battleToRemove);
                 }
             }
         }
