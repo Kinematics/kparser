@@ -5,7 +5,6 @@ using System.Data;
 using System.Text;
 using System.Drawing;
 
-
 namespace WaywardGamers.KParser.Plugin
 {
     public class ExperiencePlugin : BasePluginControl
@@ -47,7 +46,9 @@ namespace WaywardGamers.KParser.Plugin
             StringBuilder sb1 = new StringBuilder();
             StringBuilder sb2 = new StringBuilder();
 
-            var completedFights = dataSet.Battles.Where(b => b.Killed == true);
+            var completedFights = dataSet.Battles.Where(b =>
+                b.Killed == true &&
+                b.EndTime > b.StartTime);
             int totalFights = completedFights.Count();
 
             if (totalFights > 0)

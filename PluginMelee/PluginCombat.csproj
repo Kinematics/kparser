@@ -55,6 +55,9 @@
     <Compile Include="EnhancePlugin.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="FightsPlugin.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="LinqGroups.cs">
     </Compile>
     <Compile Include="DefensePlugin.cs">
