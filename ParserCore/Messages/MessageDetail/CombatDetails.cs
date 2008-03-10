@@ -174,6 +174,12 @@ namespace WaywardGamers.KParser
         internal bool FlagCover { get; set; }
 
         /// <summary>
+        /// Gets and sets whether this message should be held pending
+        /// info about whether the death is of a pet or a mob.
+        /// </summary>
+        internal bool FlagPetDeath { get; set; }
+
+        /// <summary>
         /// Gets and sets the value rolled by a Corsair's Phantom Roll.
         /// State tracking to be applied to targets.
         /// </summary>

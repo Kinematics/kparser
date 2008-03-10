@@ -1235,7 +1235,7 @@ namespace WaywardGamers.KParser.Parsing
             {
                 combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                DetermineCharmedPet(ref combatDetails, ref target);
+                DetermineCharmedPet(ref combatDetails, ref target, true);
                 message.ParseSuccessful = true;
                 return;
             }
@@ -1245,7 +1245,7 @@ namespace WaywardGamers.KParser.Parsing
             {
                 combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                DetermineCharmedPet(ref combatDetails, ref target);
+                DetermineCharmedPet(ref combatDetails, ref target, true);
                 message.ParseSuccessful = true;
                 return;
             }
@@ -1549,7 +1549,7 @@ namespace WaywardGamers.KParser.Parsing
                             target.SecondaryAction = "Cover";
                     }
 
-                    DetermineCharmedPet(ref combatDetails, ref target);
+                    DetermineCharmedPet(ref combatDetails, ref target, false);
                 }
 
                 message.ParseSuccessful = true;
@@ -1660,7 +1660,7 @@ namespace WaywardGamers.KParser.Parsing
                             target.SecondaryAction = "Cover";
                     }
 
-                    DetermineCharmedPet(ref combatDetails, ref target);
+                    DetermineCharmedPet(ref combatDetails, ref target, false);
                 }
             }
         }
@@ -1898,7 +1898,7 @@ namespace WaywardGamers.KParser.Parsing
                             target.SecondaryAction = "Cover";
                     }
 
-                    DetermineCharmedPet(ref combatDetails, ref target);
+                    DetermineCharmedPet(ref combatDetails, ref target, false);
                 }
 
                 message.ParseSuccessful = true;
@@ -2233,7 +2233,7 @@ namespace WaywardGamers.KParser.Parsing
                             target.SecondaryAction = "Cover";
                     }
 
-                    DetermineCharmedPet(ref msgCombatDetails, ref target);
+                    DetermineCharmedPet(ref msgCombatDetails, ref target, false);
                 }
             }
         }
@@ -2369,7 +2369,7 @@ namespace WaywardGamers.KParser.Parsing
             finally
             {
                 if (target != null)
-                    DetermineCharmedPet(ref msgCombatDetails, ref target);
+                    DetermineCharmedPet(ref msgCombatDetails, ref target, false);
             }
         }
 
@@ -2575,7 +2575,7 @@ namespace WaywardGamers.KParser.Parsing
                     // Adjust message category
                     msgCombatDetails.SuccessLevel = SuccessType.Unsuccessful;
                     // Check for mobs vs pets intimidating each other
-                    DetermineCharmedPet(ref msgCombatDetails, ref target);
+                    DetermineCharmedPet(ref msgCombatDetails, ref target, false);
                     message.ParseSuccessful = true;
                     return;
                 }
@@ -2766,7 +2766,7 @@ namespace WaywardGamers.KParser.Parsing
             finally
             {
                 if (target != null)
-                    DetermineCharmedPet(ref msgCombatDetails, ref target);
+                    DetermineCharmedPet(ref msgCombatDetails, ref target, false);
             }
 
             // Check for drain messages
@@ -2776,7 +2776,7 @@ namespace WaywardGamers.KParser.Parsing
         #endregion
 
         #region Helper Functions
-        private static void DetermineCharmedPet(ref CombatDetails combatDetails, ref TargetDetails target)
+        private static void DetermineCharmedPet(ref CombatDetails combatDetails, ref TargetDetails target, bool death)
         {
             if (combatDetails == null)
                 throw new ArgumentNullException("combatDetails");
@@ -2821,13 +2821,20 @@ namespace WaywardGamers.KParser.Parsing
                         {
                             // actor and target are same mob type; cannot accurately determine
                             // which is the mob and which is the pet; random?
-                            if (random.Next(1000) < 500)
+                            if (death == true)
                             {
-                                target.EntityType = EntityType.Pet;
+                                combatDetails.FlagPetDeath = true;
                             }
                             else
                             {
-                                combatDetails.ActorEntityType = EntityType.Pet;
+                                if (random.Next(1000) < 500)
+                                {
+                                    target.EntityType = EntityType.Pet;
+                                }
+                                else
+                                {
+                                    combatDetails.ActorEntityType = EntityType.Pet;
+                                }
                             }
                         }
                     }
@@ -2837,89 +2844,6 @@ namespace WaywardGamers.KParser.Parsing
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Function to determine if a mob-type entity is an actual mob or a pet.
-        /// </summary>
-        /// <param name="name">The mob name to check.</param>
-        /// <returns>Returns the entity type determination.</returns>
-        private static EntityType DetermineIfMobOrPet(string name)
-        {
-            if ((name == null) || (name == string.Empty))
-                return EntityType.Unknown;
-
-            if (name.StartsWith("The") || name.StartsWith("the"))
-                return EntityType.Mob;
-
-            Match nameMatch = null;
-
-            nameMatch = ParseExpressions.MobNameTest.Match(name);
-
-            if (nameMatch.Success == true)
-            {
-                // Probably a mob, but possibly a puppet
-                if (Puppets.ShortNamesList.Contains(name))
-                    return EntityType.Pet;
-                else
-                    return EntityType.Mob;
-            }
-
-            nameMatch = ParseExpressions.BstJugPetName.Match(name);
-            if (nameMatch.Success == true)
-                return EntityType.Pet;
-
-            if (Avatars.NamesList.Contains(name))
-                return EntityType.Pet;
-
-            if (Wyverns.NamesList.Contains(name))
-                return EntityType.Pet;
-
-            if (Puppets.NamesList.Contains(name))
-                return EntityType.Pet;
-
-            // Unable to determine
-            return EntityType.Unknown;
-        }
-
-        private static EntityType DetermineBaseEntityType(string name)
-        {
-            if ((name == null) || (name == string.Empty))
-                return EntityType.Unknown;
-
-            // If the name starts with 'the' it's a mob, though possibly a charmed one.
-            if (name.StartsWith("The") || name.StartsWith("the"))
-                return EntityType.Mob;
-
-            // Check for characters that only show up in mob names.
-            Match nameMatch = ParseExpressions.MobNameTest.Match(name);
-
-            if (nameMatch.Success == true)
-            {
-                // Probably a mob, but possibly a puppet
-                if (Puppets.ShortNamesList.Contains(name))
-                    return EntityType.Pet;
-                else
-                    return EntityType.Mob;
-            }
-
-            // Check for the pattern of beastmaster jug pet names.
-            nameMatch = ParseExpressions.BstJugPetName.Match(name);
-            if (nameMatch.Success == true)
-                return EntityType.Pet;
-
-            // Check known pet lists
-            if (Avatars.NamesList.Contains(name))
-                return EntityType.Pet;
-
-            if (Wyverns.NamesList.Contains(name))
-                return EntityType.Pet;
-
-            if (Puppets.NamesList.Contains(name))
-                return EntityType.Pet;
-
-            // Anything else must be a player.
-            return EntityType.Player;
         }
         #endregion
 

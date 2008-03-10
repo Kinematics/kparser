@@ -50,6 +50,8 @@ namespace WaywardGamers.KParser
         Dictionary<string, EntityType> entityCollection = new Dictionary<string, EntityType>();
         internal string LastAddedPetEntity { get; set; }
 
+        List<Message> pendingCollection = new List<Message>();
+
         Timer periodicUpdates;
 
         Properties.Settings programSettings = new WaywardGamers.KParser.Properties.Settings();
@@ -146,6 +148,73 @@ namespace WaywardGamers.KParser
 
                 UpdateEntityCollection(msg);
 
+
+                // Special handling for death messages where one might be a pet
+                if (msg.EventDetails != null)
+                {
+                    if (msg.EventDetails.CombatDetails != null)
+                    {
+                        if (msg.EventDetails.CombatDetails.FlagPetDeath == true)
+                        {
+                            // If the message is flagged for pending, store it and move on
+                            pendingCollection.Add(msg);
+                            return;
+                        }
+                    }
+                }
+
+                // If we've built up any pending messages, look for xp reward
+                // messages.  That marks the death as death of mob, so mark
+                // actor of pending message as pet.
+                if (pendingCollection.Count > 0)
+                {
+                    if (msg.EventDetails != null)
+                    {
+                        if (msg.EventDetails.EventMessageType == EventMessageType.Experience)
+                        {
+                            var pendingDeath = pendingCollection.First();
+                            pendingCollection = pendingCollection.Skip(1).ToList();
+
+                            pendingDeath.EventDetails.CombatDetails.ActorEntityType = EntityType.Pet;
+
+                            lock (messageCollection)
+                            {
+                                if (messageCollection.Contains(pendingDeath) == false)
+                                {
+                                    messageCollection.Add(pendingDeath);
+                                }
+                            }
+                        }
+                    }
+
+                    // If pending messages are still lying around 5+ seconds after
+                    // originally sent, assume it was a mob killing a pet instead, and mark
+                    // them as such.
+                    if (pendingCollection.Count > 0)
+                    {
+                        var oldPending = pendingCollection.Where(m => m.Timestamp < msg.Timestamp.AddSeconds(-5)).ToList();
+
+                        foreach (var pending in oldPending)
+                        {
+                            foreach (var target in pending.EventDetails.CombatDetails.Targets)
+                            {
+                                target.EntityType = EntityType.Pet;
+                            }
+
+                            lock (messageCollection)
+                            {
+                                if (messageCollection.Contains(pending) == false)
+                                {
+                                    messageCollection.Add(pending);
+                                }
+                            }
+
+                            pendingCollection.Remove(pending);
+                        }
+                    }
+                }
+
+                // Done with pending messages; add regular messages to the normal queue.
                 lock (messageCollection)
                 {
                     if (messageCollection.Contains(msg) == false)
