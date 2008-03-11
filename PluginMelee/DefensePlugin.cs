@@ -777,7 +777,7 @@ namespace WaywardGamers.KParser.Plugin
 
                     if (blinkableCount > 0)
                     {
-                        blinkedAttacks = blinkableAttacks.Count(a => a.DefenseType == (byte)DefenseType.Blink);
+                        blinkedAttacks = blinkableAttacks.Count(a => a.DefenseType == (byte)DefenseType.Shadow);
                         blinkPerc = (double)blinkedAttacks / blinkableCount;
                     }
 
@@ -822,13 +822,13 @@ namespace WaywardGamers.KParser.Plugin
                                        player.Unknown)).Where(a =>
                     a.DefenseType != (byte)DefenseType.Evasion &&
                     a.DefenseType != (byte)DefenseType.Parry &&
-                    a.DefenseType != (byte)DefenseType.Blink &&
+                    a.DefenseType != (byte)DefenseType.Shadow &&
                     a.DefenseType != (byte)DefenseType.Intimidate);
 
                 var counterableAttacks = player.Melee.Where(a =>
                     a.DefenseType != (byte)DefenseType.Evasion &&
                     a.DefenseType != (byte)DefenseType.Parry &&
-                    a.DefenseType != (byte)DefenseType.Blink &&
+                    a.DefenseType != (byte)DefenseType.Shadow &&
                     a.DefenseType != (byte)DefenseType.Intimidate).Concat(
                                          player.Unknown.Where(a =>
                                              a.DefenseType == (byte)DefenseType.Anticipate));
@@ -938,7 +938,7 @@ namespace WaywardGamers.KParser.Plugin
                                {
                                    Player = c.CombatantName,
                                    ShadowsUsed = from uc in c.GetInteractionsRowsByTargetCombatantRelation()
-                                                 where ((uc.DefenseType == (byte)DefenseType.Blink) &&
+                                                 where ((uc.DefenseType == (byte)DefenseType.Shadow) &&
                                                         (uc.ShadowsUsed > 0))
                                                  select uc,
                                    UtsuIchi = from i in utsu1Rows

@@ -149,6 +149,7 @@ namespace WaywardGamers.KParser
         Counterattack,
         Spikes,
         Steal,
+        Retaliation,
     }
 
 
@@ -184,7 +185,7 @@ namespace WaywardGamers.KParser
         None,
         Evasion,
         Evade,
-        Blink,
+        Shadow,
         Parry,
         Anticipate,
         Counter,

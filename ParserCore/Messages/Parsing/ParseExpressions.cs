@@ -204,10 +204,14 @@ namespace WaywardGamers.KParser
         internal static readonly Regex Evade        = new Regex(string.Format("^{0} evade(s)?( the attack)?\\.$", target));
         internal static readonly Regex Counter      = new Regex(string.Format("^{0}'(s)? attack is countered by {1}\\. {2} takes {3} point(s)? of damage\\.$",
             target, name, repeatname, damage));
-        internal static readonly Regex CounterShadow = new Regex(string.Format("^{0}'(s)? attack is countered by {1}\\. {2} of {3}'(s)? shadows absorbs the damage and disappears\\.$",
+        internal static readonly Regex CounterShadow   = new Regex(string.Format("^{0}'(s)? attack is countered by {1}\\. {2} of {3}'(s)? shadows absorbs the damage and disappears\\.$",
             target, name, number, repeatname));
-        internal static readonly Regex ResistSpell  = new Regex(string.Format("^(Resist! )?{0} resist(s)? the (effects of the )?spell(\\.|!)$", target));
-        internal static readonly Regex ResistEffect = new Regex(string.Format("^{0} resist(s)? the effect\\.$", target));
+        internal static readonly Regex Retaliate       = new Regex(string.Format("^{0} retaliates\\. {1} takes {2} points? of damage\\.$",
+            name, target, damage));
+        internal static readonly Regex RetaliateShadow = new Regex(string.Format("^{0} retaliates\\. {1} of {2}'s? shadows absorbs the damage and disappears\\.$",
+            name, number, target));
+        internal static readonly Regex ResistSpell     = new Regex(string.Format("^(Resist! )?{0} resist(s)? the (effects of the )?spell(\\.|!)$", target));
+        internal static readonly Regex ResistEffect    = new Regex(string.Format("^{0} resist(s)? the effect\\.$", target));
         #endregion
 
         #region Drains

@@ -184,7 +184,7 @@ namespace WaywardGamers.KParser.Plugin
         string wskillHeader     = "Player                 WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg\n";
         string skillchainHeader = "Skillchain          SC Dmg  # SC  SC.Low/Hi  SC.Avg\n";
         string otherMHeader     = "Player            M.AE Dmg  # M.AE  M.AE Avg   R.AE Dmg  # R.AE  R.AE Avg   Spk.Dmg  # Spike  Spk.Avg\n";
-        string otherPHeader     = "Player            CA.Dmg  CA.Hit/Miss  CA.Hi/Low  CA.Avg\n";
+        string otherPHeader     = "Player            CA.Dmg  CA.Hit/Miss  CA.Hi/Low  CA.Avg   Ret.Dmg  Ret.Hit/Miss  Ret.Hi/Low  Ret.Avg\n";
         #endregion
 
         #region Processing sections
@@ -286,6 +286,9 @@ namespace WaywardGamers.KParser.Plugin
                                 Counter = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                           where n.ActionType == (byte)ActionType.Counterattack
                                           select n,
+                                Retaliate = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                            where n.ActionType == (byte)ActionType.Retaliation
+                                            select n,
                                 Spikes = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                          where n.ActionType == (byte)ActionType.Spikes
                                          select n
@@ -369,6 +372,13 @@ namespace WaywardGamers.KParser.Plugin
                                                      n.IsBattleIDNull() == false &&
                                                      n.BattlesRow.MinBaseExperience() == xp)
                                               select n,
+                                    Retaliate = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                where (n.ActionType == (byte)ActionType.Retaliation &&
+                                                       n.IsTargetIDNull() == false &&
+                                                       n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                                       n.IsBattleIDNull() == false &&
+                                                       n.BattlesRow.MinBaseExperience() == xp)
+                                                select n,
                                     Spikes = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                              where (n.ActionType == (byte)ActionType.Spikes &&
                                                     n.IsTargetIDNull() == false &&
@@ -438,6 +448,11 @@ namespace WaywardGamers.KParser.Plugin
                                                      n.IsTargetIDNull() == false &&
                                                      n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
                                               select n,
+                                    Retaliate = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                where (n.ActionType == (byte)ActionType.Retaliation &&
+                                                       n.IsTargetIDNull() == false &&
+                                                       n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName)
+                                                select n,
                                     Spikes = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                              where (n.ActionType == (byte)ActionType.Spikes &&
                                                     n.IsTargetIDNull() == false &&
@@ -1397,6 +1412,12 @@ namespace WaywardGamers.KParser.Plugin
             int caHigh;
             int caLow;
             double caAvg;
+            int retDmg;
+            int retHit;
+            int retMiss;
+            int retLow;
+            int retHigh;
+            double retAvg;
 
             StringBuilder sb = new StringBuilder();
             bool headerDisplayed = false;
@@ -1474,6 +1495,12 @@ namespace WaywardGamers.KParser.Plugin
                 caHigh = 0;
                 caLow = 0;
                 caAvg = 0;
+                retDmg = 0;
+                retHit = 0;
+                retMiss = 0;
+                retLow = 0;
+                retHigh = 0;
+                retAvg = 0;
 
                 if (player.Counter.Count() > 0)
                 {
@@ -1501,19 +1528,47 @@ namespace WaywardGamers.KParser.Plugin
                     }
                 }
 
-                if ((caMiss + caHit) > 0)
+                if (player.Retaliate.Count() > 0)
+                {
+                    var retHits = player.Retaliate.Where(c => c.DefenseType == (byte)DefenseType.None);
+                    retHit = retHits.Count();
+                    retMiss = player.Retaliate.Where(c => c.DefenseType != (byte)DefenseType.None).Count();
+
+                    if (retHit > 0)
+                    {
+                        retLow = retHits.First().Amount;
+                        retHigh = retHits.First().Amount;
+
+                        foreach (var hit in retHits)
+                        {
+                            if (hit.Amount < retLow)
+                                retLow = hit.Amount;
+
+                            if (hit.Amount > retHigh)
+                                retHigh = hit.Amount;
+
+                            retDmg += hit.Amount;
+                        }
+
+                        retAvg = (double)retDmg / retHit;
+                    }
+                }
+
+
+                if ((caMiss + caHit + retMiss + retHit) > 0)
                 {
                     if (headerDisplayed == false)
                     {
-                        AppendBoldText("Other Physical Damage  (Counterattacks)\n", Color.Red);
+                        AppendBoldText("Other Physical Damage  (Counterattacks and Retaliations)\n", Color.Red);
                         AppendBoldUnderText(otherPHeader, Color.Black);
 
                         headerDisplayed = true;
                     }
 
-                    sb.AppendFormat("{0,-17}{1,7}{2,13}{3,11}{4,8:f2}\n",
+                    sb.AppendFormat("{0,-17}{1,7}{2,13}{3,11}{4,8:f2}{5,10}{6,14}{7,12}{8,9:f2}\n",
                         player.Player,
-                        caDmg, string.Concat(caHit, "/", caMiss), string.Concat(caHigh, "/", caLow), caAvg);
+                        caDmg, string.Concat(caHit, "/", caMiss), string.Concat(caHigh, "/", caLow), caAvg,
+                        retDmg, string.Concat(retHit, "/", retMiss), string.Concat(retHigh, "/", retLow), retAvg);
                 }
             }
 

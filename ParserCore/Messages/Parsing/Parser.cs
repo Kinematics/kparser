@@ -1474,6 +1474,18 @@ namespace WaywardGamers.KParser.Parsing
 
             if (combatMatch.Success == false)
             {
+                combatMatch = ParseExpressions.Retaliate.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    combatDetails.ActionType = ActionType.Retaliation;
+                    combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.Amount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
+                }
+            }
+
+            if (combatMatch.Success == false)
+            {
                 combatMatch = ParseExpressions.Spikes.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
@@ -1781,7 +1793,7 @@ namespace WaywardGamers.KParser.Parsing
                 {
                     combatDetails.ActionType = ActionType.Unknown;
                     target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                    target.DefenseType = DefenseType.Blink;
+                    target.DefenseType = DefenseType.Shadow;
                     target.HarmType = combatDetails.HarmType;
                     target.ShadowsUsed = byte.Parse(combatMatch.Groups[ParseFields.Number].Value);
                 }
@@ -1795,7 +1807,21 @@ namespace WaywardGamers.KParser.Parsing
                     combatDetails.ActionType = ActionType.Counterattack;
                     combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                    target.DefenseType = DefenseType.Blink;
+                    target.DefenseType = DefenseType.Shadow;
+                    target.HarmType = combatDetails.HarmType;
+                    target.ShadowsUsed = byte.Parse(combatMatch.Groups[ParseFields.Number].Value);
+                }
+            }
+
+            if (combatMatch.Success == false)
+            {
+                combatMatch = ParseExpressions.RetaliateShadow.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    combatDetails.ActionType = ActionType.Retaliation;
+                    combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.DefenseType = DefenseType.Shadow;
                     target.HarmType = combatDetails.HarmType;
                     target.ShadowsUsed = byte.Parse(combatMatch.Groups[ParseFields.Number].Value);
                 }
