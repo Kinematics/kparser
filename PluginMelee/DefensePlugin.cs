@@ -168,8 +168,8 @@ namespace WaywardGamers.KParser.Plugin
 
         string incAttacksHeader = "Player           Melee   Range   Abil/Ws   Spells   Unknown   Total   Attack# %   Avoided   Avoid %\n";
         string incDamageHeader  = "Player           M.Dmg   Avg M.Dmg   R.Dmg  Avg R.Dmg   S.Dmg  Avg S.Dmg   A/WS.Dmg  Avg A/WS.Dmg   Damage %\n";
-        string evasionHeader    = "Player           M.Evade   M.Evade %   R.Evade   R.Evade %   Shadow   Shadow %\n";
-        string otherDefHeader   = "Player           Parry   Parry %   Intimidate   Intimidate %   Anticipate  Anticipate %   Counter   Counter %\n";
+        string standardDefHeader= "Player           M.Evade  M.Evade %   R.Evade  R.Evade %   Shadow  Shadow %   Parry  Parry %\n";
+        string otherDefHeader   = "Player           Intimidate  Intimidate %   Anticipate  Anticipate %   Counter  Counter %   Retaliate  Retaliate %\n";
 
         string utsuHeader       = "Player           Shadows Used   Ichi Cast  Ichi Fin  Ni Cast  Ni Fin   Count  Count(N)  Efficiency  Effic.(N)\n";
         #endregion
@@ -211,22 +211,6 @@ namespace WaywardGamers.KParser.Plugin
             #endregion
 
             #region LINQ queries
-            //mobSet = from c in dataSet.Combatants
-            //         where ((c.CombatantName == mobName) ||
-            //                ((mobName == "All") && (c.CombatantType == (byte)EntityType.Mob)))
-            //         orderby c.CombatantName
-            //         select new MobGroup
-            //         {
-            //             Mob = c.CombatantName,
-            //             Battles = from b in c.GetBattlesRowsByEnemyCombatantRelation()
-            //                       where ((b.Killed == false) ||
-            //                              (xp == 0) ||
-            //                              (b.BaseExperience() == xp))
-            //                       group b by b.BaseExperience() into bx
-            //                       orderby bx.Key
-            //                       select bx
-            //         };
-
             if (mobFilter == "All")
             {
                 // Attacks by all mobs
@@ -270,41 +254,10 @@ namespace WaywardGamers.KParser.Plugin
                                                    (da.HarmType == (byte)HarmType.Drain)) &&
                                                   (da.ActionType == (byte)ActionType.Unknown))
                                            select da,
+                                 Retaliations = from da in c.GetInteractionsRowsByActorCombatantRelation()
+                                                where da.ActionType == (byte)ActionType.Retaliation
+                                                select da,
                              };
-
-
-                /*
-                incAttacks = from cd in dataSet.Interactions
-                             where ((cd.IsTargetIDNull() == false) &&
-                                    ((cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Player) ||
-                                     (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
-                                     (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Fellow)) &&
-                                    ((cd.HarmType == (byte)HarmType.Damage) ||
-                                     (cd.HarmType == (byte)HarmType.Drain)))
-                             group cd by cd.CombatantsRowByTargetCombatantRelation.CombatantName into cdd
-                             orderby cdd.Key
-                             select new DefenseGroup
-                             {
-                                 Player = cdd.Key,
-                                 AllAttacks = from pd in cdd
-                                              select pd,
-                                 Melee = from pd in cdd
-                                         where (pd.ActionType == (byte)ActionType.Melee)
-                                         select pd,
-                                 Range = from pd in cdd
-                                         where (pd.ActionType == (byte)ActionType.Ranged)
-                                         select pd,
-                                 Spell = from pd in cdd
-                                         where (pd.ActionType == (byte)ActionType.Spell)
-                                         select pd,
-                                 Abil = from pd in cdd
-                                        where ((pd.ActionType == (byte)ActionType.Ability) ||
-                                                (pd.ActionType == (byte)ActionType.Weaponskill))
-                                        select pd,
-                                 Unknown = from pd in cdd
-                                           where (pd.ActionType == (byte)ActionType.Unknown)
-                                           select pd
-                             };*/
             }
             else
             {
@@ -375,66 +328,10 @@ namespace WaywardGamers.KParser.Plugin
                                                       da.IsBattleIDNull() == false &&
                                                       da.BattlesRow.MinBaseExperience() == xp)
                                                select da,
+                                     Retaliations = from da in c.GetInteractionsRowsByActorCombatantRelation()
+                                                    where da.ActionType == (byte)ActionType.Retaliation
+                                                    select da,
                                  };
-
-
-
-                    /*
-                    incAttacks = from cd in dataSet.Interactions
-                                 where ((cd.IsTargetIDNull() == false) &&
-                                        ((cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Player) ||
-                                         (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
-                                         (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Fellow)) &&
-                                        ((cd.HarmType == (byte)HarmType.Damage) ||
-                                         (cd.HarmType == (byte)HarmType.Drain)))
-                                 group cd by cd.CombatantsRowByTargetCombatantRelation.CombatantName into cdd
-                                 orderby cdd.Key
-                                 select new DefenseGroup
-                                 {
-                                     Player = cdd.Key,
-                                     AllAttacks = from pd in cdd
-                                                  where (pd.IsActorIDNull() == false &&
-                                                        pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
-                                                        pd.IsBattleIDNull() == false &&
-                                                        pd.BattlesRow.MinBaseExperience() == xp)
-                                                  select pd,
-                                     Melee = from pd in cdd
-                                             where (pd.ActionType == (byte)ActionType.Melee &&
-                                                    pd.IsActorIDNull() == false &&
-                                                    pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
-                                                    pd.IsBattleIDNull() == false &&
-                                                    pd.BattlesRow.MinBaseExperience() == xp)
-                                             select pd,
-                                     Range = from pd in cdd
-                                             where (pd.ActionType == (byte)ActionType.Ranged &&
-                                                    pd.IsActorIDNull() == false &&
-                                                    pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
-                                                    pd.IsBattleIDNull() == false &&
-                                                    pd.BattlesRow.MinBaseExperience() == xp)
-                                             select pd,
-                                     Spell = from pd in cdd
-                                             where (pd.ActionType == (byte)ActionType.Spell &&
-                                                    pd.IsActorIDNull() == false &&
-                                                    pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
-                                                    pd.IsBattleIDNull() == false &&
-                                                    pd.BattlesRow.MinBaseExperience() == xp)
-                                             select pd,
-                                     Abil = from pd in cdd
-                                            where (((pd.ActionType == (byte)ActionType.Ability) ||
-                                                    (pd.ActionType == (byte)ActionType.Weaponskill)) &&
-                                                    pd.IsActorIDNull() == false &&
-                                                    pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
-                                                    pd.IsBattleIDNull() == false &&
-                                                    pd.BattlesRow.MinBaseExperience() == xp)
-                                            select pd,
-                                     Unknown = from pd in cdd
-                                               where (pd.ActionType == (byte)ActionType.Unknown &&
-                                                    pd.IsActorIDNull() == false &&
-                                                    pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
-                                                    pd.IsBattleIDNull() == false &&
-                                                    pd.BattlesRow.MinBaseExperience() == xp)
-                                               select pd
-                                 };*/
                 }
                 else
                 {
@@ -492,53 +389,11 @@ namespace WaywardGamers.KParser.Plugin
                                                      (da.IsActorIDNull() == false &&
                                                       da.CombatantsRowByActorCombatantRelation.CombatantName == mobName)
                                                select da,
+                                     Retaliations = from da in c.GetInteractionsRowsByActorCombatantRelation()
+                                                    where da.ActionType == (byte)ActionType.Retaliation
+                                                    select da,
                                  };
 
-
-                    /*
-                    incAttacks = from cd in dataSet.Interactions
-                                 where ((cd.IsTargetIDNull() == false) &&
-                                        ((cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Player) ||
-                                         (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Pet) ||
-                                         (cd.CombatantsRowByTargetCombatantRelation.CombatantType == (byte)EntityType.Fellow)) &&
-                                        ((cd.HarmType == (byte)HarmType.Damage) ||
-                                         (cd.HarmType == (byte)HarmType.Drain)))
-                                 group cd by cd.CombatantsRowByTargetCombatantRelation.CombatantName into cdd
-                                 orderby cdd.Key
-                                 select new DefenseGroup
-                                 {
-                                     Player = cdd.Key,
-                                     AllAttacks = from pd in cdd
-                                                  where (pd.IsActorIDNull() == false &&
-                                                        pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName)
-                                                  select pd,
-                                     Melee = from pd in cdd
-                                             where (pd.ActionType == (byte)ActionType.Melee &&
-                                                    pd.IsActorIDNull() == false &&
-                                                    pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName)
-                                             select pd,
-                                     Range = from pd in cdd
-                                             where (pd.ActionType == (byte)ActionType.Ranged &&
-                                                    pd.IsActorIDNull() == false &&
-                                                    pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName)
-                                             select pd,
-                                     Spell = from pd in cdd
-                                             where (pd.ActionType == (byte)ActionType.Spell &&
-                                                    pd.IsActorIDNull() == false &&
-                                                    pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName)
-                                             select pd,
-                                     Abil = from pd in cdd
-                                            where (((pd.ActionType == (byte)ActionType.Ability) ||
-                                                    (pd.ActionType == (byte)ActionType.Weaponskill)) &&
-                                                    pd.IsActorIDNull() == false &&
-                                                    pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName)
-                                            select pd,
-                                     Unknown = from pd in cdd
-                                               where (pd.ActionType == (byte)ActionType.Unknown &&
-                                                    pd.IsActorIDNull() == false &&
-                                                    pd.CombatantsRowByActorCombatantRelation.CombatantName == mobName)
-                                               select pd
-                                 };*/
                 }
             }
             #endregion
@@ -553,7 +408,7 @@ namespace WaywardGamers.KParser.Plugin
                         // All
                         ProcessDefenseAttacks(incAttacks);
                         ProcessDefenseDamage(incAttacks);
-                        ProcessDefenseEvasion(incAttacks);
+                        ProcessDefenseStandard(incAttacks);
                         ProcessDefenseOther(incAttacks);
                         ProcessUtsusemi(dataSet);
                         break;
@@ -567,7 +422,7 @@ namespace WaywardGamers.KParser.Plugin
                         break;
                     case 3:
                         // Evasion
-                        ProcessDefenseEvasion(incAttacks);
+                        ProcessDefenseStandard(incAttacks);
                         break;
                     case 4:
                         // Other
@@ -731,7 +586,7 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
-        private void ProcessDefenseEvasion(IEnumerable<DefenseGroup> incAttacks)
+        private void ProcessDefenseStandard(IEnumerable<DefenseGroup> incAttacks)
         {
             bool headerPrinted = false;
 
@@ -744,13 +599,12 @@ namespace WaywardGamers.KParser.Plugin
                     int mEvaded = 0;
                     int rEvaded = 0;
                     int blinkedAttacks = 0;
+                    int parriedAttacks = 0;
                     double mEvadePerc = 0;
                     double rEvadePerc = 0;
                     double blinkPerc = 0;
-                    
-                    int mEvadableAttacks = player.Melee.Count() + player.Unknown.Count();
-                    int rEvadableAttacks = player.Range.Count();
-
+                    double parryPerc = 0;
+      
                     var blinkableAttacks = player.Melee.Concat(
                                            player.Range.Concat(
                                            player.Spell.Concat(
@@ -760,19 +614,33 @@ namespace WaywardGamers.KParser.Plugin
                             a.DefenseType != (byte)DefenseType.Parry &&
                             a.DefenseType != (byte)DefenseType.Intimidate);
 
+                    var parryableAttacks = player.Melee.Concat(
+                                           player.Unknown).Where(a =>
+                            a.DefenseType != (byte)DefenseType.Evasion);
+
+
+                    int mEvadableCount = player.Melee.Count() + player.Unknown.Count();
+                    int rEvadableCount = player.Range.Count();
+                    int parryableCount = parryableAttacks.Count();
                     int blinkableCount = blinkableAttacks.Count();
 
 
                     if (player.Melee.Count() > 0)
                     {
                         mEvaded = player.Melee.Count(h => h.DefenseType == (byte)DefenseType.Evasion);
-                        mEvadePerc = (double)mEvaded / mEvadableAttacks;
+                        mEvadePerc = (double)mEvaded / mEvadableCount;
                     }
 
                     if (player.Range.Count() > 0)
                     {
                         rEvaded = player.Range.Count(h => h.DefenseType == (byte)DefenseType.Evasion);
-                        rEvadePerc = (double)rEvaded / rEvadableAttacks;
+                        rEvadePerc = (double)rEvaded / rEvadableCount;
+                    }
+
+                    if (parryableCount > 0)
+                    {
+                        parriedAttacks = parryableAttacks.Count(a => a.DefenseType == (byte)DefenseType.Parry);
+                        parryPerc = (double)parriedAttacks / parryableCount;
                     }
 
                     if (blinkableCount > 0)
@@ -786,14 +654,15 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         if (headerPrinted == false)
                         {
-                            AppendBoldText("Evasion & Shadows\n", Color.Blue);
-                            AppendBoldUnderText(evasionHeader, Color.Black);
+                            AppendBoldText("Standard Defenses\n", Color.Blue);
+                            AppendBoldUnderText(standardDefHeader, Color.Black);
 
                             headerPrinted = true;
                         }
 
-                        sb.AppendFormat("{0,-17}{1,7}{2,12:p2}{3,10}{4,12:p2}{5,9}{6,11:p2}\n",
-                            player.Player, mEvaded, mEvadePerc, rEvaded, rEvadePerc, blinkedAttacks, blinkPerc);
+                        sb.AppendFormat("{0,-17}{1,7}{2,11:p2}{3,10}{4,11:p2}{5,9}{6,10:p2}{7,8}{8,9:p2}\n",
+                            player.Player, mEvaded, mEvadePerc, rEvaded, rEvadePerc,
+                            blinkedAttacks, blinkPerc, parriedAttacks, parryPerc);
                     }
                 }
             }
@@ -813,10 +682,6 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var player in incAttacks)
             {
-                var parryableAttacks = player.Melee.Concat(
-                                       player.Unknown).Where(a =>
-                    a.DefenseType != (byte)DefenseType.Evasion);
-
                 var anticableAttacks = player.Melee.Concat(
                                        player.Abil.Concat(
                                        player.Unknown)).Where(a =>
@@ -833,32 +698,29 @@ namespace WaywardGamers.KParser.Plugin
                                          player.Unknown.Where(a =>
                                              a.DefenseType == (byte)DefenseType.Anticipate));
 
+                var retaliableAttacks = player.Melee.Where(a =>
+                    a.DefenseType == (byte)DefenseType.None);
+
                 var intimidateableAttacks = player.Melee.Concat(player.Unknown);
 
-                int parryableCount = parryableAttacks.Count();
                 int anticibleCount = anticableAttacks.Count();
                 int counterableCount = counterableAttacks.Count();
                 int intimidatableCount = intimidateableAttacks.Count();
+                int retaliableCount = retaliableAttacks.Count();
 
-                int parriedAttacks = 0;
                 int anticipatedAttacks = 0;
                 int counteredAttacks = 0;
                 int intimidatedAttacks = 0;
+                int retaliatedAttacks = 0;
 
-                double parryPerc = 0;
                 double antiPerc = 0;
                 double counterPerc = 0;
                 double intimidatedPerc = 0;
+                double retaliatedPerc = 0;
 
 
-                if ((parryableCount + intimidatableCount + anticibleCount + counterableCount) > 0)
+                if ((intimidatableCount + anticibleCount + counterableCount + retaliableCount) > 0)
                 {
-                    if (parryableCount > 0)
-                    {
-                        parriedAttacks = parryableAttacks.Count(a => a.DefenseType == (byte)DefenseType.Parry);
-                        parryPerc = (double)parriedAttacks / parryableCount;
-                    }
-
                     if (intimidatableCount > 0)
                     {
                         intimidatedAttacks = intimidateableAttacks.Count(a => a.DefenseType == (byte)DefenseType.Intimidate);
@@ -874,11 +736,17 @@ namespace WaywardGamers.KParser.Plugin
                     if (counterableCount > 0)
                     {
                         counteredAttacks = counterableAttacks.Count(a => a.DefenseType == (byte)DefenseType.Counter);
-                        counterPerc = (double)counteredAttacks / counterableAttacks.Count();
+                        counterPerc = (double)counteredAttacks / counterableCount;
+                    }
+
+                    if (retaliableCount > 0)
+                    {
+                        retaliatedAttacks = player.Retaliations.Count();
+                        retaliatedPerc = (double)retaliatedAttacks / retaliableCount;
                     }
 
 
-                    if ((parriedAttacks + intimidatedAttacks + anticipatedAttacks + counteredAttacks) > 0)
+                    if ((intimidatedAttacks + anticipatedAttacks + counteredAttacks + retaliatedAttacks) > 0)
                     {
                         if (headerPrinted == false)
                         {
@@ -889,14 +757,14 @@ namespace WaywardGamers.KParser.Plugin
 
                         sb.Append(player.Player.PadRight(17));
 
-                        sb.Append(parriedAttacks.ToString().PadLeft(5));
-                        sb.Append(parryPerc.ToString("P2").PadLeft(10));
-                        sb.Append(intimidatedAttacks.ToString().PadLeft(13));
-                        sb.Append(intimidatedPerc.ToString("P2").PadLeft(15));
+                        sb.Append(intimidatedAttacks.ToString().PadLeft(10));
+                        sb.Append(intimidatedPerc.ToString("P2").PadLeft(14));
                         sb.Append(anticipatedAttacks.ToString().PadLeft(13));
                         sb.Append(antiPerc.ToString("P2").PadLeft(14));
                         sb.Append(counteredAttacks.ToString().PadLeft(10));
-                        sb.Append(counterPerc.ToString("P2").PadLeft(12));
+                        sb.Append(counterPerc.ToString("P2").PadLeft(11));
+                        sb.Append(retaliatedAttacks.ToString().PadLeft(12));
+                        sb.Append(retaliatedPerc.ToString("P2").PadLeft(13));
 
                         sb.Append("\n");
                     }
