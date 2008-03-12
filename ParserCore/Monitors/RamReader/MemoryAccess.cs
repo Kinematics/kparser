@@ -117,10 +117,23 @@ namespace WaywardGamers.KParser.Monitoring.Memory
             internal short FinalOffset;
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MemScanStringStruct
+        {
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1024)]
+            internal char[] memScanCharacters;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MemScanAddressStruct
+        {
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1024)]
+            internal uint[] addressValues;
+        }
+
         #endregion
 
         #region Member Variables
-        uint initialMemoryOffset;
         POL pol;
         ChatLogLocationInfo chatLogLocation;
 
@@ -457,17 +470,7 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         #endregion
 
         #region Properties
-        internal uint InitialMemoryOffset
-        {
-            get
-            {
-                return initialMemoryOffset;
-            }
-            set
-            {
-                initialMemoryOffset = value;
-            }
-        }
+        internal uint InitialMemoryOffset { get; set; }
 
         internal RamWatchEventHandler RamDataChanged
         {
@@ -511,6 +514,7 @@ namespace WaywardGamers.KParser.Monitoring.Memory
                                     Trace.WriteLine(string.Format("Module: {0}  Base Address: {1:X8}", module.ModuleName, module.BaseAddress));
                                     pol = new POL(process, module.BaseAddress);
                                     process.Exited += new EventHandler(polExited);
+                                    // Turn this off if scanning ram:
                                     LocateChatLog();
                                     return true;
                                 }
@@ -543,7 +547,7 @@ namespace WaywardGamers.KParser.Monitoring.Memory
                 //first pointer in the hierarchy of FFXI's chat log data structures.  Obviously,
                 //it is an offset from the base address that FFXIMain.dll is loaded at.
                 // :: This is a pointer to a data structure we want to read
-                IntPtr rootAddress = IncrementPointer(pol.BaseAddress, initialMemoryOffset);
+                IntPtr rootAddress = IncrementPointer(pol.BaseAddress, InitialMemoryOffset);
 
                 //Dereference that pointer to get our next address.
                 IntPtr dataStructurePointer = FollowPointer(rootAddress);
@@ -620,5 +624,145 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         }
         #endregion
 
+        #region Functions for examining RAM to determine new base address
+        internal void ScanRAM()
+        {
+            //if (FindFFXIProcess() == false)
+            //    return;
+
+            // Locate a known string in memory space.  From there, determine the start
+            // of the array of chat log messages.
+            //FindString();
+            // Result: 0x03EC0FC8
+
+            // Locate a pointer to the start of the chat log messages. (0x03ec0fac)
+            // From that, determine the start of the ChatLogInfoStruct.
+            //FindAddress();
+            // Result: 0x03EC0EE0
+
+            // Examine the ChatLogInfoStruct from the previous address
+            // to make sure things match up.
+            //CheckStructure();
+
+            // Since we know where the structure lives, find the address
+            // that points to that.
+            //FindAddress();
+            // Result: 0x03EC0EBC
+
+            // That pointer is the second in a structure that is pointed
+            // to by an initial address point.  Search for previous pointer - 4 (0x03EC0EB8)
+            //FindAddress();
+            // Result: 0x0203DA48
+
+            // Base offset address is the above pointer relative to the
+            // POL base address.  Remove that value.
+            // Result: 0x0203DA48 - 0x01ad0000 == 0x0056DA48
+
+            // Base address before patch for 2008-03-10: 0x0056A788
+            // Base address after patch for 2008-03-10:  0x0056DA48
+        }
+
+        private void CheckStructure()
+        {
+            try
+            {
+                //Dereference that pointer to get our next address.
+                IntPtr dataStructurePointer = new IntPtr(0x03EC0EE0);
+
+                ChatLogLocationInfo scanChatLogLocation = new ChatLogLocationInfo(dataStructurePointer);
+
+                ChatLogDetails examineDetails = ReadChatLogDetails(scanChatLogLocation);
+
+                string[] scanChatLines = ReadChatLines(examineDetails.Info.NewChatLogPtr,
+                        examineDetails.Info.FinalOffset, examineDetails.Info.NumberOfLines);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Log(e);
+            }
+            finally
+            {
+            }
+        }
+
+        private void FindAddress()
+        {
+            uint scanMemoryOffset = 0;
+            MemScanAddressStruct scanStruct = new MemScanAddressStruct();
+
+            uint bytesToRead = (uint)(Marshal.SizeOf(typeof(MemScanAddressStruct)));
+
+            //uint findTotalAddress = 0x03EC0FC8;
+            //uint findTotalAddress = 0x03EC0EE0;
+            uint findTotalAddress = 0x03EC0EB8;
+
+            for (int i = 0; i < 64000; i++)
+            {
+                IntPtr scanAddress = IncrementPointer(pol.BaseAddress, scanMemoryOffset);
+                IntPtr scanResults = IntPtr.Zero;
+
+                try
+                {
+                    scanResults = PInvoke.ReadProcessMemory(pol.Process.Handle, scanAddress, bytesToRead);
+
+                    scanStruct = (MemScanAddressStruct)Marshal.PtrToStructure(scanResults, typeof(MemScanAddressStruct));
+
+                    int j = Array.IndexOf(scanStruct.addressValues, findTotalAddress);
+                    if (j >= 0)
+                        Trace.WriteLine(string.Format("Total Index j = {0}\n", j));
+                }
+                catch (Exception e)
+                {
+                    Logger.Instance.Log(e);
+                }
+                finally
+                {
+                    PInvoke.DoneReadingProcessMemory(scanResults);
+                }
+
+                scanMemoryOffset += bytesToRead;
+            }
+        }
+
+        private void FindString()
+        {
+            uint scanMemoryOffset = 0;
+            uint blockSize = 1024;
+            uint blockOffset = blockSize - 32;
+            MemScanStringStruct scanStruct = new MemScanStringStruct();
+
+            string byteString;
+
+            for (int i = 0; i < 64000; i++)
+            {
+                IntPtr scanAddress = IncrementPointer(pol.BaseAddress, scanMemoryOffset);
+                IntPtr scanResults = IntPtr.Zero;
+
+                try
+                {
+                    scanResults = PInvoke.ReadProcessMemory(pol.Process.Handle, scanAddress, blockSize);
+
+                    scanStruct = (MemScanStringStruct)Marshal.PtrToStructure(scanResults, typeof(MemScanStringStruct));
+
+                    byteString = new string(scanStruct.memScanCharacters);
+
+                    int j = byteString.IndexOf("Unicorn Claymore");
+
+                    if (j >= 0)
+                        Trace.WriteLine(string.Format("Index j = {0}\n", j));
+                }
+                catch (Exception e)
+                {
+                    Logger.Instance.Log(e);
+                }
+                finally
+                {
+                    PInvoke.DoneReadingProcessMemory(scanResults);
+                }
+
+                scanMemoryOffset += blockOffset;
+            }
+        }
+        #endregion
     }
 }

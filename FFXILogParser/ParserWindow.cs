@@ -923,6 +923,8 @@ namespace WaywardGamers.KParser
             //Debug.WriteLine(string.Format("Product Version: {0}\n", Application.ProductVersion));
             //Application.CommonAppDataPath;
             //Application.UserAppDataPath;
+
+            //Monitor.ScanRAM();
         }
         #endregion
 

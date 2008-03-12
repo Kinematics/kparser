@@ -138,5 +138,19 @@ namespace WaywardGamers.KParser.Monitoring
         }
         #endregion
 
+        internal void ScanRAM()
+        {
+            try
+            {
+                IsRunning = true;
+                memoryWatcher.InitialMemoryOffset = appSettings.MemoryOffset;
+
+                memoryWatcher.ScanRAM();
+            }
+            finally
+            {
+                IsRunning = false;
+            }
+        }
     }
 }

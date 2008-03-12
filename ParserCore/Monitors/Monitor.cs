@@ -115,5 +115,11 @@ namespace WaywardGamers.KParser
         /// Gets the current parse mode, as far as the monitor is aware.
         /// </summary>
         public static DataSource ParseMode { get; private set; }
+
+        public static void ScanRAM()
+        {
+            currentReader = RamReader.Instance;
+            RamReader.Instance.ScanRAM();
+        }
     }
 }
