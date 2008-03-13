@@ -38,6 +38,8 @@ namespace WaywardGamers.KParser
         private Dictionary<uint, AidType> aidTypeLookup;
         private Dictionary<uint, HarmType> harmTypeLookup;
         private Dictionary<uint, SuccessType> successTypeLookup;
+        private Dictionary<uint, EntityType> actorEntityTypeLookup;
+        private Dictionary<uint, EntityType> targetEntityTypeLookup;
         #endregion
 
         #region Setup
@@ -47,6 +49,8 @@ namespace WaywardGamers.KParser
             InitAidTypeLookup();
             InitHarmTypeLookup();
             InitSuccessTypeLookup();
+            InitActorEntityTypeLookup();
+            InitTargetEntityTypeLookup();
         }
         #endregion
 
@@ -753,6 +757,356 @@ namespace WaywardGamers.KParser
             successTypeLookup[0xbb] = SuccessType.Successful; // <am> drains
 
         }
+
+        private void InitActorEntityTypeLookup()
+        {
+            // Actor entity types for an action
+            actorEntityTypeLookup = new Dictionary<uint, EntityType>(256);
+
+            actorEntityTypeLookup[0x14] = EntityType.Player; // <me> hits
+            actorEntityTypeLookup[0x15] = EntityType.Player; // <me> misses
+            actorEntityTypeLookup[0x16] = EntityType.Mob; // <mob> drains <me>
+            actorEntityTypeLookup[0x17] = EntityType.Player; // <me> cures?, <mob> converts damage to healing (???)
+            actorEntityTypeLookup[0x18] = EntityType.Player; // <pm> cures
+            actorEntityTypeLookup[0x19] = EntityType.Player; // <pm> hits
+            actorEntityTypeLookup[0x1a] = EntityType.Player; // <pm> misses
+            actorEntityTypeLookup[0x1b] = EntityType.Mob; // <mob> drains <pm>
+            actorEntityTypeLookup[0x1c] = EntityType.Mob; // <mob> hits <me> or <pm>
+            actorEntityTypeLookup[0x1d] = EntityType.Mob; // <mob> misses <me> or <pm>
+            actorEntityTypeLookup[0x1e] = EntityType.Player; // <me> drains
+            actorEntityTypeLookup[0x1f] = EntityType.Player; // <me> recovers/cures
+            actorEntityTypeLookup[0x20] = EntityType.Mob; // <mob> hits <pm> ??
+            actorEntityTypeLookup[0x21] = EntityType.Mob; // <mob> misses <pm> ??
+            actorEntityTypeLookup[0x22] = EntityType.Unknown; // 
+            actorEntityTypeLookup[0x23] = EntityType.Player; // <am> cures <pm>
+            actorEntityTypeLookup[0x24] = EntityType.Player; // <me> kills
+            actorEntityTypeLookup[0x25] = EntityType.Player; // <pm> kills
+            actorEntityTypeLookup[0x26] = EntityType.Mob; // <me> dies
+            actorEntityTypeLookup[0x27] = EntityType.Mob; // <pm> dies
+            actorEntityTypeLookup[0x28] = EntityType.Unknown; // <other> hits <other>
+            actorEntityTypeLookup[0x29] = EntityType.Unknown; // <other> miss <other>
+            actorEntityTypeLookup[0x2a] = EntityType.Unknown; // <other> drains
+            actorEntityTypeLookup[0x2b] = EntityType.Unknown; // <other> heals <other>
+            actorEntityTypeLookup[0x2c] = EntityType.Unknown; // <other> kills
+            actorEntityTypeLookup[0x2d] = EntityType.Unknown; // 
+            actorEntityTypeLookup[0x2e] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x2f] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x30] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x31] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x32] = EntityType.Player; // <me> prep spell/ability (unknown)
+            actorEntityTypeLookup[0x33] = EntityType.Unknown; // prep spell/ability, target known (not me)
+            actorEntityTypeLookup[0x34] = EntityType.Unknown; // prep spell/ability, target me, or unknown
+            actorEntityTypeLookup[0x35] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x36] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x37] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x38] = EntityType.Player; // buff <me>
+            actorEntityTypeLookup[0x39] = EntityType.Mob; // enfeeble <me>
+            actorEntityTypeLookup[0x3a] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x3b] = EntityType.Unknown; // enfeeble <me>, resisted (failed enhance?)
+            actorEntityTypeLookup[0x3c] = EntityType.Player; // buff <pm>
+            actorEntityTypeLookup[0x3d] = EntityType.Mob; // enfeeble <pm>
+            actorEntityTypeLookup[0x3e] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x3f] = EntityType.Unknown; // enfeeble <pm>, resisted
+            actorEntityTypeLookup[0x40] = EntityType.Unknown; // buff <pm>, other?
+            actorEntityTypeLookup[0x41] = EntityType.Unknown; // enfeeble target (any)
+            actorEntityTypeLookup[0x42] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x43] = EntityType.Unknown; // enfeeble, no effect (any target?)
+            actorEntityTypeLookup[0x44] = EntityType.Unknown; // enfeeble, resisted (any target?)
+            actorEntityTypeLookup[0x45] = EntityType.Unknown; // no effect or resisted
+            actorEntityTypeLookup[0x46] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x47] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x48] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x49] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x4a] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x4b] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x4c] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x4d] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x4e] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x4f] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x50] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x51] = EntityType.Player; // <me> uses item for effect
+            actorEntityTypeLookup[0x52] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x53] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x54] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x55] = EntityType.Player; // <pm> uses item
+            actorEntityTypeLookup[0x56] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x57] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x58] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x59] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x5a] = EntityType.Player; // <me> uses item
+            actorEntityTypeLookup[0x5b] = EntityType.Player; // <pl> uses item for effect
+            actorEntityTypeLookup[0x5c] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x5d] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x5e] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x5f] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x60] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x61] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x62] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x63] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x64] = EntityType.Unknown; // prep ability, unknown target
+            actorEntityTypeLookup[0x65] = EntityType.Player; // <me> uses buff (self-buff?)
+            actorEntityTypeLookup[0x66] = EntityType.Unknown; // <me> is enfeebled
+            actorEntityTypeLookup[0x67] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x68] = EntityType.Mob; // <mob> uses ability, misses <me>
+            actorEntityTypeLookup[0x69] = EntityType.Unknown; // <mob> readies dmg move, no target specified
+            actorEntityTypeLookup[0x6a] = EntityType.Player; // <party> uses buff (self-buff?)
+            actorEntityTypeLookup[0x6b] = EntityType.Mob; // <mob> uses ability, enfeebles <pm>
+            actorEntityTypeLookup[0x6c] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x6d] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x6e] = EntityType.Unknown; // <me/party> prep weaponskill, <bt> prep self-buff
+            actorEntityTypeLookup[0x6f] = EntityType.Unknown; // <other> uses buff (self-buff?)
+            actorEntityTypeLookup[0x70] = EntityType.Player; // <me> enfeebles (ability)
+            actorEntityTypeLookup[0x71] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x72] = EntityType.Player; // <am> uses weaponskill (ability?), misses
+            actorEntityTypeLookup[0x73] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x74] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x75] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x76] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x77] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x78] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x79] = EntityType.Unknown; // <item> fails to activate
+            actorEntityTypeLookup[0x7a] = EntityType.Unknown; // Interrupted/paralyzed/etc.  Failed action
+            actorEntityTypeLookup[0x7b] = EntityType.Unknown; // Red 'error' text. Ignore
+            actorEntityTypeLookup[0x7c] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x7d] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x7e] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x7f] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x80] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x81] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x82] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x83] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x84] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x85] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x86] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x87] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x88] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x89] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x8a] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x8b] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x8c] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x8d] = EntityType.Unknown; // Cannot attack
+            actorEntityTypeLookup[0x8e] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x8f] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x90] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x91] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x92] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x93] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x94] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x95] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x96] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x97] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x98] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x99] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x9a] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x9b] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x9c] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x9d] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x9e] = EntityType.Unknown; //
+            actorEntityTypeLookup[0x9f] = EntityType.Unknown; //
+            actorEntityTypeLookup[0xa0] = EntityType.Unknown; //
+            actorEntityTypeLookup[0xa1] = EntityType.Unknown; //
+            actorEntityTypeLookup[0xa2] = EntityType.Player; // <am> cures
+            actorEntityTypeLookup[0xa3] = EntityType.Player; // <am> hits
+            actorEntityTypeLookup[0xa4] = EntityType.Player; // <am> misses
+            actorEntityTypeLookup[0xa5] = EntityType.Mob; // <mob> casts on <am>
+            actorEntityTypeLookup[0xa6] = EntityType.Player; // <am> kills
+            actorEntityTypeLookup[0xa7] = EntityType.Unknown; // <am> dies
+            actorEntityTypeLookup[0xa8] = EntityType.Unknown; //
+            actorEntityTypeLookup[0xa9] = EntityType.Unknown; //
+            actorEntityTypeLookup[0xaa] = EntityType.Player; // <am> is resisted, or misses /ra
+            actorEntityTypeLookup[0xab] = EntityType.Player; // <am> uses item
+            actorEntityTypeLookup[0xac] = EntityType.Unknown; //
+            actorEntityTypeLookup[0xad] = EntityType.Unknown; //
+            actorEntityTypeLookup[0xae] = EntityType.Unknown; // <am> enfeebled
+            actorEntityTypeLookup[0xaf] = EntityType.Player; // <am> uses self-buff
+            actorEntityTypeLookup[0xb0] = EntityType.Unknown; //
+            actorEntityTypeLookup[0xb1] = EntityType.Unknown; //
+            actorEntityTypeLookup[0xb2] = EntityType.Unknown; //
+            actorEntityTypeLookup[0xb3] = EntityType.Unknown; //
+            actorEntityTypeLookup[0xb4] = EntityType.Unknown; //
+            actorEntityTypeLookup[0xb5] = EntityType.Unknown; // <am> avoids ability
+            actorEntityTypeLookup[0xb6] = EntityType.Unknown; // <am> is enfeebled
+            actorEntityTypeLookup[0xb7] = EntityType.Player; // <am> gains buff
+            actorEntityTypeLookup[0xb8] = EntityType.Unknown; //
+            actorEntityTypeLookup[0xb9] = EntityType.Mob; // <am> takes damage
+            actorEntityTypeLookup[0xba] = EntityType.Mob; // <am> avoids damage
+            actorEntityTypeLookup[0xbb] = EntityType.Player; // <am> drains
+        }
+
+        private void InitTargetEntityTypeLookup()
+        {
+            // Target entity types for an action
+            targetEntityTypeLookup = new Dictionary<uint, EntityType>(256);
+
+            targetEntityTypeLookup[0x14] = EntityType.Mob; // <me> hits
+            targetEntityTypeLookup[0x15] = EntityType.Mob; // <me> misses
+            targetEntityTypeLookup[0x16] = EntityType.Player; // <mob> drains <me>
+            targetEntityTypeLookup[0x17] = EntityType.Unknown; // <me> cures?, <mob> converts damage to healing (???)
+            targetEntityTypeLookup[0x18] = EntityType.Player; // <pm> cures
+            targetEntityTypeLookup[0x19] = EntityType.Mob; // <pm> hits
+            targetEntityTypeLookup[0x1a] = EntityType.Mob; // <pm> misses
+            targetEntityTypeLookup[0x1b] = EntityType.Player; // <mob> drains <pm>
+            targetEntityTypeLookup[0x1c] = EntityType.Player; // <mob> hits <me> or <pm>
+            targetEntityTypeLookup[0x1d] = EntityType.Player; // <mob> misses <me> or <pm>
+            targetEntityTypeLookup[0x1e] = EntityType.Mob; // <me> drains
+            targetEntityTypeLookup[0x1f] = EntityType.Player; // <me> recovers/cures
+            targetEntityTypeLookup[0x20] = EntityType.Player; // <mob> hits <pm> ??
+            targetEntityTypeLookup[0x21] = EntityType.Player; // <mob> misses <pm> ??
+            targetEntityTypeLookup[0x22] = EntityType.Unknown; // 
+            targetEntityTypeLookup[0x23] = EntityType.Player; // <am> cures <pm>
+            targetEntityTypeLookup[0x24] = EntityType.Mob; // <me> kills
+            targetEntityTypeLookup[0x25] = EntityType.Mob; // <pm> kills
+            targetEntityTypeLookup[0x26] = EntityType.Player; // <me> dies
+            targetEntityTypeLookup[0x27] = EntityType.Player; // <pm> dies
+            targetEntityTypeLookup[0x28] = EntityType.Unknown; // <other> hits <other>
+            targetEntityTypeLookup[0x29] = EntityType.Unknown; // <other> miss <other>
+            targetEntityTypeLookup[0x2a] = EntityType.Unknown; // <other> drains
+            targetEntityTypeLookup[0x2b] = EntityType.Unknown; // <other> heals <other>
+            targetEntityTypeLookup[0x2c] = EntityType.Unknown; // <other> kills
+            targetEntityTypeLookup[0x2d] = EntityType.Unknown; // 
+            targetEntityTypeLookup[0x2e] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x2f] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x30] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x31] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x32] = EntityType.Unknown; // <me> prep spell/ability (unknown)
+            targetEntityTypeLookup[0x33] = EntityType.Unknown; // prep spell/ability, target known (not me)
+            targetEntityTypeLookup[0x34] = EntityType.Unknown; // prep spell/ability, target me, or unknown
+            targetEntityTypeLookup[0x35] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x36] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x37] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x38] = EntityType.Player; // buff <me>
+            targetEntityTypeLookup[0x39] = EntityType.Player; // enfeeble <me>
+            targetEntityTypeLookup[0x3a] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x3b] = EntityType.Player; // enfeeble <me>, resisted (failed enhance?)
+            targetEntityTypeLookup[0x3c] = EntityType.Player; // buff <pm>
+            targetEntityTypeLookup[0x3d] = EntityType.Player; // enfeeble <pm>
+            targetEntityTypeLookup[0x3e] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x3f] = EntityType.Player; // enfeeble <pm>, resisted
+            targetEntityTypeLookup[0x40] = EntityType.Unknown; // buff <pm>, other?
+            targetEntityTypeLookup[0x41] = EntityType.Unknown; // enfeeble target (any)
+            targetEntityTypeLookup[0x42] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x43] = EntityType.Unknown; // enfeeble, no effect (any target?)
+            targetEntityTypeLookup[0x44] = EntityType.Unknown; // enfeeble, resisted (any target?)
+            targetEntityTypeLookup[0x45] = EntityType.Unknown; // no effect or resisted
+            targetEntityTypeLookup[0x46] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x47] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x48] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x49] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x4a] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x4b] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x4c] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x4d] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x4e] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x4f] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x50] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x51] = EntityType.Unknown; // <me> uses item for effect
+            targetEntityTypeLookup[0x52] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x53] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x54] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x55] = EntityType.Unknown; // <pm> uses item
+            targetEntityTypeLookup[0x56] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x57] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x58] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x59] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x5a] = EntityType.Unknown; // <me> uses item
+            targetEntityTypeLookup[0x5b] = EntityType.Unknown; // <pl> uses item for effect
+            targetEntityTypeLookup[0x5c] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x5d] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x5e] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x5f] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x60] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x61] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x62] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x63] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x64] = EntityType.Unknown; // prep ability, unknown target
+            targetEntityTypeLookup[0x65] = EntityType.Player; // <me> uses buff (self-buff?)
+            targetEntityTypeLookup[0x66] = EntityType.Unknown; // <me> is enfeebled
+            targetEntityTypeLookup[0x67] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x68] = EntityType.Player; // <mob> uses ability, misses <me>
+            targetEntityTypeLookup[0x69] = EntityType.Unknown; // <mob> readies dmg move, no target specified
+            targetEntityTypeLookup[0x6a] = EntityType.Player; // <party> uses buff (self-buff?)
+            targetEntityTypeLookup[0x6b] = EntityType.Player; // <mob> uses ability, enfeebles <pm>
+            targetEntityTypeLookup[0x6c] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x6d] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x6e] = EntityType.Unknown; // <me/party> prep weaponskill, <bt> prep self-buff
+            targetEntityTypeLookup[0x6f] = EntityType.Unknown; // <other> uses buff (self-buff?)
+            targetEntityTypeLookup[0x70] = EntityType.Mob; // <me> enfeebles (ability)
+            targetEntityTypeLookup[0x71] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x72] = EntityType.Mob; // <am> uses weaponskill (ability?), misses
+            targetEntityTypeLookup[0x73] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x74] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x75] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x76] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x77] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x78] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x79] = EntityType.Unknown; // <item> fails to activate
+            targetEntityTypeLookup[0x7a] = EntityType.Unknown; // Interrupted/paralyzed/etc.  Failed action
+            targetEntityTypeLookup[0x7b] = EntityType.Unknown; // Red 'error' text. Ignore
+            targetEntityTypeLookup[0x7c] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x7d] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x7e] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x7f] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x80] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x81] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x82] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x83] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x84] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x85] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x86] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x87] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x88] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x89] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x8a] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x8b] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x8c] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x8d] = EntityType.Unknown; // Cannot attack
+            targetEntityTypeLookup[0x8e] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x8f] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x90] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x91] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x92] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x93] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x94] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x95] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x96] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x97] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x98] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x99] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x9a] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x9b] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x9c] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x9d] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x9e] = EntityType.Unknown; //
+            targetEntityTypeLookup[0x9f] = EntityType.Unknown; //
+            targetEntityTypeLookup[0xa0] = EntityType.Unknown; //
+            targetEntityTypeLookup[0xa1] = EntityType.Unknown; //
+            targetEntityTypeLookup[0xa2] = EntityType.Player; // <am> cures
+            targetEntityTypeLookup[0xa3] = EntityType.Mob; // <am> hits
+            targetEntityTypeLookup[0xa4] = EntityType.Mob; // <am> misses
+            targetEntityTypeLookup[0xa5] = EntityType.Player; // <mob> casts on <am>
+            targetEntityTypeLookup[0xa6] = EntityType.Mob; // <am> kills
+            targetEntityTypeLookup[0xa7] = EntityType.Player; // <am> dies
+            targetEntityTypeLookup[0xa8] = EntityType.Unknown; //
+            targetEntityTypeLookup[0xa9] = EntityType.Unknown; //
+            targetEntityTypeLookup[0xaa] = EntityType.Unknown; // <am> is resisted, or misses /ra
+            targetEntityTypeLookup[0xab] = EntityType.Unknown; // <am> uses item
+            targetEntityTypeLookup[0xac] = EntityType.Unknown; //
+            targetEntityTypeLookup[0xad] = EntityType.Unknown; //
+            targetEntityTypeLookup[0xae] = EntityType.Unknown; // <am> enfeebled
+            targetEntityTypeLookup[0xaf] = EntityType.Player; // <am> uses self-buff
+            targetEntityTypeLookup[0xb0] = EntityType.Unknown; //
+            targetEntityTypeLookup[0xb1] = EntityType.Unknown; //
+            targetEntityTypeLookup[0xb2] = EntityType.Unknown; //
+            targetEntityTypeLookup[0xb3] = EntityType.Unknown; //
+            targetEntityTypeLookup[0xb4] = EntityType.Unknown; //
+            targetEntityTypeLookup[0xb5] = EntityType.Unknown; // <am> avoids ability
+            targetEntityTypeLookup[0xb6] = EntityType.Unknown; // <am> is enfeebled
+            targetEntityTypeLookup[0xb7] = EntityType.Player; // <am> gains buff
+            targetEntityTypeLookup[0xb8] = EntityType.Unknown; //
+            targetEntityTypeLookup[0xb9] = EntityType.Player; // <am> takes damage
+            targetEntityTypeLookup[0xba] = EntityType.Player; // <am> avoids damage
+            targetEntityTypeLookup[0xbb] = EntityType.Mob; // <am> drains
+        }
         #endregion
 
         #region Internal lookup calls
@@ -794,6 +1148,26 @@ namespace WaywardGamers.KParser
                 return successType;
             else
                 return SuccessType.Unknown;
+        }
+
+        internal EntityType GetActorEntityType(uint messageCode)
+        {
+            EntityType successType;
+
+            if (actorEntityTypeLookup.TryGetValue(messageCode, out successType))
+                return successType;
+            else
+                return EntityType.Unknown;
+        }
+
+        internal EntityType GetTargetEntityType(uint messageCode)
+        {
+            EntityType successType;
+
+            if (targetEntityTypeLookup.TryGetValue(messageCode, out successType))
+                return successType;
+            else
+                return EntityType.Unknown;
         }
         #endregion
 

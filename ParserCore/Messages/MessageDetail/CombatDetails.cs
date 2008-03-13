@@ -60,7 +60,7 @@ namespace WaywardGamers.KParser
                 else
                     ShortActorName = actorName;
 
-                ActorEntityType = Parsing.ClassifyEntity.Classify(actorName);
+                ActorEntityType = Parsing.ClassifyEntity.ClassifyByName(actorName);
             }
         }
 

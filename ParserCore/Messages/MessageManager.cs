@@ -755,6 +755,15 @@ namespace WaywardGamers.KParser
 
             return EntityType.Unknown;
         }
+
+        internal void OverridePlayerToMob(string name)
+        {
+            if (entityCollection.ContainsKey(name))
+            {
+                if (entityCollection[name] == EntityType.Player)
+                    entityCollection[name] = EntityType.Mob;
+            }
+        }
         #endregion
 
         #region Debug output

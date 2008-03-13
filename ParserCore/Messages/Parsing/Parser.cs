@@ -1235,7 +1235,7 @@ namespace WaywardGamers.KParser.Parsing
             {
                 combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                DetermineCharmedPet(ref combatDetails, ref target, true);
+                ClassifyEntity.VerifyEntities(ref message, ref target, true);
                 message.ParseSuccessful = true;
                 return;
             }
@@ -1245,7 +1245,7 @@ namespace WaywardGamers.KParser.Parsing
             {
                 combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                DetermineCharmedPet(ref combatDetails, ref target, true);
+                ClassifyEntity.VerifyEntities(ref message, ref target, true);
                 message.ParseSuccessful = true;
                 return;
             }
@@ -1561,7 +1561,7 @@ namespace WaywardGamers.KParser.Parsing
                             target.SecondaryAction = "Cover";
                     }
 
-                    DetermineCharmedPet(ref combatDetails, ref target, false);
+                    ClassifyEntity.VerifyEntities(ref message, ref target, false);
                 }
 
                 message.ParseSuccessful = true;
@@ -1672,7 +1672,7 @@ namespace WaywardGamers.KParser.Parsing
                             target.SecondaryAction = "Cover";
                     }
 
-                    DetermineCharmedPet(ref combatDetails, ref target, false);
+                    ClassifyEntity.VerifyEntities(ref message, ref target, false);
                 }
             }
         }
@@ -1924,7 +1924,7 @@ namespace WaywardGamers.KParser.Parsing
                             target.SecondaryAction = "Cover";
                     }
 
-                    DetermineCharmedPet(ref combatDetails, ref target, false);
+                    ClassifyEntity.VerifyEntities(ref message, ref target, false);
                 }
 
                 message.ParseSuccessful = true;
@@ -2259,7 +2259,7 @@ namespace WaywardGamers.KParser.Parsing
                             target.SecondaryAction = "Cover";
                     }
 
-                    DetermineCharmedPet(ref msgCombatDetails, ref target, false);
+                    ClassifyEntity.VerifyEntities(ref message, ref target, false);
                 }
             }
         }
@@ -2395,7 +2395,7 @@ namespace WaywardGamers.KParser.Parsing
             finally
             {
                 if (target != null)
-                    DetermineCharmedPet(ref msgCombatDetails, ref target, false);
+                    ClassifyEntity.VerifyEntities(ref message, ref target, false);
             }
         }
 
@@ -2601,7 +2601,7 @@ namespace WaywardGamers.KParser.Parsing
                     // Adjust message category
                     msgCombatDetails.SuccessLevel = SuccessType.Unsuccessful;
                     // Check for mobs vs pets intimidating each other
-                    DetermineCharmedPet(ref msgCombatDetails, ref target, false);
+                    ClassifyEntity.VerifyEntities(ref message, ref target, false);
                     message.ParseSuccessful = true;
                     return;
                 }
@@ -2792,7 +2792,7 @@ namespace WaywardGamers.KParser.Parsing
             finally
             {
                 if (target != null)
-                    DetermineCharmedPet(ref msgCombatDetails, ref target, false);
+                    ClassifyEntity.VerifyEntities(ref message, ref target, false);
             }
 
             // Check for drain messages
@@ -2800,78 +2800,5 @@ namespace WaywardGamers.KParser.Parsing
         }
 
         #endregion
-
-        #region Helper Functions
-        private static void DetermineCharmedPet(ref CombatDetails combatDetails, ref TargetDetails target, bool death)
-        {
-            if (combatDetails == null)
-                throw new ArgumentNullException("combatDetails");
-
-            if (target == null)
-                throw new ArgumentNullException("target");
-
-
-            // Handle identifying charmed pet entities
-            if (target.EntityType == EntityType.Mob && combatDetails.ActorEntityType == EntityType.Mob)
-            {
-                EntityType checkTarg = MessageManager.Instance.LookupPetEntity(target.Name);
-                EntityType checkActor = MessageManager.Instance.LookupPetEntity(combatDetails.ActorName);
-
-                if ((checkActor == EntityType.Pet) ^ (checkTarg == EntityType.Pet))
-                {
-                    // If only one shows up as being a pet, use that.
-                    target.EntityType = checkTarg;
-                    combatDetails.ActorEntityType = checkActor;
-                }
-                else if ((checkActor == EntityType.Pet) && (checkTarg == EntityType.Pet))
-                {
-                    // If both show up as being a pet, check the last charmed mob
-                    // to break the tie.
-                    string lastPetName = MessageManager.Instance.LastAddedPetEntity;
-
-                    if (lastPetName != string.Empty)
-                    {
-                        // Check to make sure we don't have dhalmel fighting dhalmel, or whatever.
-                        if (target.Name != combatDetails.ActorName)
-                        {
-                            if (target.Name == lastPetName)
-                            {
-                                target.EntityType = EntityType.Pet;
-                            }
-                            else if (combatDetails.ActorName == lastPetName)
-                            {
-                                combatDetails.ActorEntityType = EntityType.Pet;
-                            }
-                        }
-                        else
-                        {
-                            // actor and target are same mob type; cannot accurately determine
-                            // which is the mob and which is the pet; random?
-                            if (death == true)
-                            {
-                                combatDetails.FlagPetDeath = true;
-                            }
-                            else
-                            {
-                                if (random.Next(1000) < 500)
-                                {
-                                    target.EntityType = EntityType.Pet;
-                                }
-                                else
-                                {
-                                    combatDetails.ActorEntityType = EntityType.Pet;
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // if no last pet entry, ignore
-                    }
-                }
-            }
-        }
-        #endregion
-
     }
 }

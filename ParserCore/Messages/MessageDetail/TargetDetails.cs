@@ -46,7 +46,7 @@ namespace WaywardGamers.KParser
             else
                 Name = targetName;
 
-            EntityType = Parsing.ClassifyEntity.Classify(targetName);
+            EntityType = Parsing.ClassifyEntity.ClassifyByName(targetName);
         }
         #endregion
 
