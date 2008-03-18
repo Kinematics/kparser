@@ -45,6 +45,20 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -65,6 +79,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Database\DatabaseReadingManager.cs" />
+    <Compile Include="Database\ImportDirectParseManager.cs" />
+    <Compile Include="DPDatabaseImportV1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DPDatabaseImportV1.xsd</DependentUpon>
+    </Compile>
     <Compile Include="ErrorHandling\ErrorLog.cs" />
     <Compile Include="ErrorHandling\KAppException.cs" />
     <Compile Include="Interface\BasePluginControl.cs">
@@ -143,6 +163,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="DPDatabaseImportV1.xsc">
+      <DependentUpon>DPDatabaseImportV1.xsd</DependentUpon>
+    </None>
+    <None Include="DPDatabaseImportV1.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DPDatabaseImportV1.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="DPDatabaseImportV1.xss">
+      <DependentUpon>DPDatabaseImportV1.xsd</DependentUpon>
+    </None>
     <None Include="KPDatabaseDataSet.xsc">
       <DependentUpon>KPDatabaseDataSet.xsd</DependentUpon>
     </None>
