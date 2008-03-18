@@ -6,7 +6,6 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Diagnostics;
-using WaywardGamers.KParser.KPDatabaseDataSetTableAdapters;
 
 namespace WaywardGamers.KParser
 {
@@ -24,9 +23,6 @@ namespace WaywardGamers.KParser
         private DatabaseReadingManager()
         {
             defaultSaveDirectory = System.Windows.Forms.Application.CommonAppDataPath;
-
-            Version assemVersion = Assembly.GetExecutingAssembly().GetName().Version;
-            assemblyVersionString = string.Format("{0}.{1}", assemVersion.Major, assemVersion.Minor);
         }
 
         /// <summary>
@@ -62,9 +58,6 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Member Variables
-        private const int databaseVersion = 1;
-        private string assemblyVersionString;
-
         private string defaultSaveDirectory;
 
         private string databaseFilename;
@@ -99,11 +92,6 @@ namespace WaywardGamers.KParser
             {
                 return localDB;
             }
-        }
-
-        public int DatabaseVersion
-        {
-            get { return databaseVersion; }
         }
 
         public string DatabaseFilename
