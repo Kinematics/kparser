@@ -58,6 +58,8 @@ namespace WaywardGamers.KParser
             this.windowsMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
+            this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.statusStrip.SuspendLayout();
             this.tabContextMenuStrip.SuspendLayout();
             this.mainMenuStrip.SuspendLayout();
@@ -148,6 +150,8 @@ namespace WaywardGamers.KParser
             this.saveCurrentDataAsMenuItem,
             this.saveReportMenuItem,
             this.toolStripSeparator2,
+            this.importToolStripMenuItem,
+            this.toolStripSeparator4,
             this.exitMenuItem});
             this.fileMenu.Name = "fileMenu";
             this.fileMenu.Size = new System.Drawing.Size(35, 20);
@@ -280,14 +284,26 @@ namespace WaywardGamers.KParser
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.menuAbout_Click);
             // 
             // windowsToolStripSeparator
             // 
             this.windowsToolStripSeparator.Name = "windowsToolStripSeparator";
-            this.windowsToolStripSeparator.Size = new System.Drawing.Size(149, 6);
+            this.windowsToolStripSeparator.Size = new System.Drawing.Size(130, 6);
+            // 
+            // importToolStripMenuItem
+            // 
+            this.importToolStripMenuItem.Name = "importToolStripMenuItem";
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(265, 22);
+            this.importToolStripMenuItem.Text = "Import...";
+            this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(262, 6);
             // 
             // ParserWindow
             // 
@@ -343,5 +359,7 @@ namespace WaywardGamers.KParser
         private System.Windows.Forms.ToolStripSeparator windowsToolStripSeparator;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
     }
 }

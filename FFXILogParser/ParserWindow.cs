@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using WaywardGamers.KParser.Plugin;
+using WaywardGamers.KParser.Forms;
 
 namespace WaywardGamers.KParser
 {
@@ -49,6 +50,8 @@ namespace WaywardGamers.KParser
         private List<TabPage> tabList = new List<TabPage>();
 
         TabPage currentTab = null;
+
+        private ReparseMode ReparseMode;
         #endregion
 
         #region Constructor
@@ -124,20 +127,23 @@ namespace WaywardGamers.KParser
         #region Menu Popup Handlers
         private void fileMenu_Popup(object sender, EventArgs e)
         {
-            bool monitorState = Monitor.IsRunning;
+            bool monitorRunning = Monitor.IsRunning;
             bool databaseOpen = DatabaseManager.Instance.Database != null;
 
             // Can't start a parse if one is running.
-            beginDefaultParseMenuItem.Enabled = !monitorState;
-            beginParseAndSaveDataMenuItem.Enabled = !monitorState;
-            openSavedDataMenuItem.Enabled = !monitorState;
+            beginDefaultParseMenuItem.Enabled = !monitorRunning;
+            beginParseAndSaveDataMenuItem.Enabled = !monitorRunning;
+            openSavedDataMenuItem.Enabled = !monitorRunning;
 
             // Can only stop a parse if one is running.
-            quitParsingMenuItem.Enabled = monitorState;
+            quitParsingMenuItem.Enabled = monitorRunning;
 
             // Can only continue or save if none running, and database is opened
-            continueParsingMenuItem.Enabled = (!monitorState) && (databaseOpen);
-            saveCurrentDataAsMenuItem.Enabled = (!monitorState) && (databaseOpen);
+            continueParsingMenuItem.Enabled = (!monitorRunning) && (databaseOpen);
+            saveCurrentDataAsMenuItem.Enabled = (!monitorRunning) && (databaseOpen);
+
+            // Can't import if a parse is running.
+            importToolStripMenuItem.Enabled = !monitorRunning;
         }
 
         private void toolsMenu_Popup(object sender, EventArgs e)
@@ -305,6 +311,7 @@ namespace WaywardGamers.KParser
                 }
 
                 Cursor.Current = Cursors.WaitCursor;
+                ReparseMode = ReparseMode.Reparse;
 
                 try
                 {
@@ -325,6 +332,101 @@ namespace WaywardGamers.KParser
                         toolStripStatusLabel.Text = "Error.  Parsing stopped.";
                         Logger.Instance.Log(ex);
                         MessageBox.Show(ex.Message, "Error while attempting to reparse.",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        return;
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.Instance.Log(ex);
+                }
+            }
+        }
+
+        private void importToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Monitor.IsRunning == true)
+            {
+                MessageBox.Show("Cannot import while another parse is running.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            ImportType importTypeForm = new ImportType();
+            if (importTypeForm.ShowDialog(this) == DialogResult.Cancel)
+                return;
+
+            ImportSource importSource = importTypeForm.ImportSource;
+
+            string inFilename = string.Empty;
+            string outFilename = string.Empty;
+
+            if (inFilename == string.Empty)
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.InitialDirectory = defaultSaveDirectory;
+                ofd.Multiselect = false;
+                ofd.Filter = "DVS/Direct Parse Files (*.dvsd)|*.dvsd|Database Files (*.sdf)|*.sdf|All Files (*.*)|*.*";
+                ofd.FilterIndex = 0;
+                ofd.Title = "Select file to import...";
+
+                if (ofd.ShowDialog() == DialogResult.Cancel)
+                {
+                    return;
+                }
+                else
+                {
+                    inFilename = ofd.FileName;
+                }
+            }
+
+            outFilename = Path.Combine(defaultSaveDirectory, Path.GetFileNameWithoutExtension(inFilename));
+            outFilename = Path.ChangeExtension(outFilename, "sdf");
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.InitialDirectory = defaultSaveDirectory;
+            sfd.Filter = "Database Files (*.sdf)|*.sdf|All Files (*.*)|*.*";
+            sfd.FilterIndex = 0;
+            sfd.DefaultExt = "sdf";
+            sfd.FileName = outFilename;
+            sfd.Title = "Select database file to save parse to...";
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                outFilename = sfd.FileName;
+
+                if (outFilename == inFilename)
+                {
+                    MessageBox.Show("Cannot save to the same file you want to import.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                Cursor.Current = Cursors.WaitCursor;
+                ReparseMode = ReparseMode.Import;
+
+                try
+                {
+                    Monitoring.DatabaseReader.Instance.ReparseProgressChanged += MonitorReparse;
+
+                    try
+                    {
+
+                        toolStripStatusLabel.Text = "Importing...";
+
+                        using (new ProfileRegion("Import"))
+                        {
+                            Monitor.Import(inFilename, outFilename, importSource);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        StopParsing();
+                        toolStripStatusLabel.Text = "Error.  Parsing stopped.";
+                        Logger.Instance.Log(ex);
+                        MessageBox.Show(ex.Message, "Error while attempting to import.",
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                         return;
@@ -517,20 +619,13 @@ namespace WaywardGamers.KParser
             {
                 Monitoring.DatabaseReader.Instance.ReparseProgressChanged -= MonitorReparse;
 
-                toolStripStatusLabel.Text = "Status: Reparse complete.";
+                if (ReparseMode == ReparseMode.Reparse)
+                    toolStripStatusLabel.Text = "Status: Reparse complete.";
+                else
+                    toolStripStatusLabel.Text = "Status: Import complete.";
+
 
                 OpenFile(DatabaseManager.Instance.DatabaseFilename);
-
-                //lock (activePluginList)
-                //{
-                //    foreach (IPlugin plugin in activePluginList)
-                //    {
-                //        plugin.DatabaseOpened(DatabaseManager.Instance.Database);
-                //    }
-                //}
-
-                //Cursor.Current = Cursors.Default;
-
             }
             else
             {
@@ -538,13 +633,21 @@ namespace WaywardGamers.KParser
                 {
                     if (e.RowsRead == e.TotalRows)
                     {
-                        toolStripStatusLabel.Text = string.Format("Status: Reparsing {0}/{1} -- Saving...",
-                            e.RowsRead, e.TotalRows);
+                        if (ReparseMode == ReparseMode.Reparse)
+                            toolStripStatusLabel.Text = string.Format("Status: Reparsing {0}/{1} -- Saving...",
+                                e.RowsRead, e.TotalRows);
+                        else
+                            toolStripStatusLabel.Text = string.Format("Status: Importing {0}/{1} -- Saving...",
+                                e.RowsRead, e.TotalRows);
                     }
                     else
                     {
-                        toolStripStatusLabel.Text = string.Format("Status: Reparsing {0}/{1}",
-                            e.RowsRead, e.TotalRows);
+                        if (ReparseMode == ReparseMode.Reparse)
+                            toolStripStatusLabel.Text = string.Format("Status: Reparsing {0}/{1}",
+                                e.RowsRead, e.TotalRows);
+                        else
+                            toolStripStatusLabel.Text = string.Format("Status: Importing {0}/{1}",
+                                e.RowsRead, e.TotalRows);
                     }
                 }
                 else
