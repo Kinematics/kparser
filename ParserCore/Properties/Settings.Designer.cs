@@ -56,7 +56,7 @@ namespace WaywardGamers.KParser.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5691976")]
+        [global::System.Configuration.DefaultSettingValueAttribute("5691984")]
         public uint MemoryOffset {
             get {
                 return ((uint)(this["MemoryOffset"]));
@@ -135,6 +135,16 @@ namespace WaywardGamers.KParser.Properties {
             }
             set {
                 this["DebugMode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=|DataDirectory|\\DvsParse-Save.sdf")]
+        public string DvsParse_SaveConnectionString {
+            get {
+                return ((string)(this["DvsParse_SaveConnectionString"]));
             }
         }
     }
