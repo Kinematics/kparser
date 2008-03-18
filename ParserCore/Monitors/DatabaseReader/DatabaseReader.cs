@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.IO;
+using System.Text.RegularExpressions;
+using System.Globalization;
 using WaywardGamers.KParser.Interface;
 
 namespace WaywardGamers.KParser.Monitoring
@@ -121,6 +123,7 @@ namespace WaywardGamers.KParser.Monitoring
                 Logger.Instance.Log(e);
                 IsRunning = false;
                 MessageManager.Instance.CancelParsing();
+                DatabaseReadingManager.Instance.CloseDatabase();
             }
         }
 
@@ -174,8 +177,8 @@ namespace WaywardGamers.KParser.Monitoring
                     MessageManager.Instance.CancelParsing();
 
                 OnRowProcessed(new DatabaseReparseEventArgs(rowCount, totalCount, completed));
+                DatabaseReadingManager.Instance.CloseDatabase();
             }
-
         }
 
         /// <summary>
@@ -190,6 +193,146 @@ namespace WaywardGamers.KParser.Monitoring
             MessageManager.Instance.CancelParsing();
 
             IsRunning = false;
+        }
+
+
+        public void Import(ImportSource importSource)
+        {
+            switch (importSource)
+            {
+                case ImportSource.DVSParse:
+                case ImportSource.DirectParse:
+                    ImportDirectParseV1();
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+        #endregion
+
+        #region Import functions (slightly rewritten Reparse functions)
+        private void ImportDirectParseV1()
+        {
+            IsRunning = true;
+
+            try
+            {
+                // Reset the thread
+                if ((readerThread != null) && (readerThread.ThreadState == System.Threading.ThreadState.Running))
+                {
+                    readerThread.Abort();
+                }
+
+                // Begin the thread
+                readerThread = new Thread(ImportDirectParseV1IMPL);
+                readerThread.IsBackground = true;
+                readerThread.Name = "Import database thread";
+                readerThread.Start();
+
+                // Notify MessageManager that we're starting.
+                MessageManager.Instance.StartParsing(false);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Log(e);
+                IsRunning = false;
+                MessageManager.Instance.CancelParsing();
+                ImportDirectParseManager.Instance.CloseDatabase();
+            }
+        }
+
+        private void ImportDirectParseV1IMPL()
+        {
+            int rowCount = 0;
+            int totalCount = 0;
+            bool completed = false;
+
+            string originalChatLine;
+            string breakCodes;
+            string breakCodesChars;
+            uint breakCharVal;
+            char breakChar;
+
+            // logLine.RawHeader == "bf,00,00,60808080,00000288,000002f1,0034,00,01,00,00,(1E011E01)"
+            // logLine.Text == "The Goblin Tinkerer seems like a decent challenge."
+            // Need to combine those two lines back into the original
+
+            Regex rawHeaderRegex = new Regex(@"^(?<codes>((\w|\d)+,){11})\((?<breakCodes>(\w|\d)+)\)$");
+            Match rawHeaderMatch;
+
+            try
+            {
+
+                DPDatabaseImportV1 readDataSet = ImportDirectParseManager.Instance.Database;
+                if (readDataSet != null)
+                {
+                    totalCount = readDataSet.ChatLog.Count;
+
+                    // Read the (fixed) record log from the database, reconstruct
+                    // the chat line, and send it to the new database.
+                    using (new ProfileRegion("Import: Read database and parse"))
+                    {
+                        foreach (var logLine in readDataSet.ChatLog)
+                        {
+                            rowCount++;
+                            if (IsRunning == false)
+                                break;
+
+                            rawHeaderMatch = rawHeaderRegex.Match(logLine.RawHeader);
+
+                            if (rawHeaderMatch.Success == true)
+                            {
+                                originalChatLine = rawHeaderMatch.Groups["codes"].Value;
+                                breakCodes = rawHeaderMatch.Groups["breakCodes"].Value;
+
+                                while (breakCodes.Length > 0)
+                                {
+                                    breakCodesChars = breakCodes.Substring(0, 2);
+
+                                    if (uint.TryParse(breakCodesChars, NumberStyles.AllowHexSpecifier, null, out breakCharVal))
+                                    {
+                                        breakChar = (char)breakCharVal;
+                                        originalChatLine += breakChar;
+                                    }
+
+                                    if (breakCodes.Length > 2)
+                                        breakCodes = breakCodes.Substring(2);
+                                    else
+                                        breakCodes = string.Empty;
+                                }
+
+                                originalChatLine += logLine.Text;
+
+                                ChatLine chat = new ChatLine(originalChatLine, logLine.DateTime);
+                                MessageManager.Instance.AddChatLine(chat);
+                            }
+
+                            OnRowProcessed(new DatabaseReparseEventArgs(rowCount, totalCount, completed));
+                        }
+
+                        completed = IsRunning;
+                    }
+                }
+                else
+                {
+                    throw new InvalidDataException("No database to parse.");
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Log(e);
+            }
+            finally
+            {
+                IsRunning = false;
+                if (completed == true)
+                    MessageManager.Instance.StopParsing();
+                else
+                    MessageManager.Instance.CancelParsing();
+
+                OnRowProcessed(new DatabaseReparseEventArgs(rowCount, totalCount, completed));
+                ImportDirectParseManager.Instance.CloseDatabase();
+            }
         }
         #endregion
 

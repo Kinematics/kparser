@@ -11,5 +11,7 @@ namespace WaywardGamers.KParser.Interface
         void Stop();
 
         bool IsRunning { get; }
+
+        void Import(ImportSource importSource);
     }
 }

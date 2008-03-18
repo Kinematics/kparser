@@ -21,6 +21,19 @@ namespace WaywardGamers.KParser
         Database,
     }
 
+    public enum ImportSource
+    {
+        Unknown,
+        DVSParse,
+        DirectParse,
+    }
+
+    public enum ReparseMode
+    {
+        Reparse,
+        Import,
+    }
+
     #region General message types
     public enum MessageCategoryType : byte
 	{

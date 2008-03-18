@@ -113,6 +113,12 @@ namespace WaywardGamers.KParser.Monitoring
 
             IsRunning = false;
         }
+
+
+        public void Import(ImportSource importSource)
+        {
+            throw new InvalidOperationException();
+        }
         #endregion
 
         #region Event handlers

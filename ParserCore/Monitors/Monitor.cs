@@ -96,6 +96,35 @@ namespace WaywardGamers.KParser
         }
 
         /// <summary>
+        /// Import data from another parser's database (DVS, DirectParse, etc)
+        /// </summary>
+        /// <param name="outputFileName">The name of the new database.</param>
+        public static void Import(string inFilename, string outputFileName, ImportSource importSource)
+        {
+            if (currentReader.IsRunning == true)
+                throw new InvalidOperationException(string.Format(
+                    "{0} is already running", currentReader.GetType().Name));
+
+            ParseMode = DataSource.Database;
+            currentReader = DatabaseReader.Instance;
+
+            DatabaseManager.Instance.CreateDatabase(outputFileName);
+            System.Threading.Thread.Sleep(100);
+
+            switch (importSource)
+            {
+                case ImportSource.DirectParse:
+                case ImportSource.DVSParse:
+                    ImportDirectParseManager.Instance.OpenDatabase(inFilename);
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
+
+            currentReader.Import(importSource);
+        }
+
+        /// <summary>
         /// Stop the current reader's monitoring.
         /// </summary>
         public static void Stop()
@@ -120,6 +149,11 @@ namespace WaywardGamers.KParser
         {
             currentReader = RamReader.Instance;
             RamReader.Instance.ScanRAM();
+        }
+
+        public static void Import(string inFilename, string outFilename)
+        {
+            throw new NotImplementedException();
         }
     }
 }
