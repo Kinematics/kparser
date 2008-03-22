@@ -79,14 +79,29 @@ namespace WaywardGamers.KParser
             string preMsg = msg.Substring(0, endCodesBreakPoint);
 
             // Locate the beginning of the text string
-            int beingTextBreakPoint = msg.IndexOf(breakString, endCodesBreakPoint + breakString.Length);
+            int beginTextBreakPoint = msg.IndexOf(breakString, endCodesBreakPoint + breakString.Length);
 
-            if (beingTextBreakPoint < 0)
+            if (beginTextBreakPoint < 0)
                 throw new FormatException("Message string does not contain the proper breakpoint values (position 2).\n"
                     + msg);
 
             // Extract the display text from the back half of the message.
-            TextOutput = msg.Substring(beingTextBreakPoint + breakString.Length);
+            TextOutput = msg.Substring(beginTextBreakPoint + breakString.Length);
+
+            // There may be a third instance of the break code.  Check for it.
+            beginTextBreakPoint = TextOutput.IndexOf(breakString);
+
+            if (beginTextBreakPoint == 0)
+                TextOutput = TextOutput.Substring(breakString.Length);
+
+
+            // Extract timestamp plugin modification from onscreen text, if applicable
+            Match tsCheck = ParseExpressions.TimestampPlugin.Match(TextOutput);
+            if (tsCheck.Success == true)
+            {
+                TextOutput = tsCheck.Groups[ParseFields.Remainder].Value;
+            }
+
 
             int breakPoint;
 
@@ -103,7 +118,7 @@ namespace WaywardGamers.KParser
                         (textOutputCharArray[1] == 0x7F) || // Item distribution
                         (textOutputCharArray[1] == 0x3F) || // Time limit warning
                         (textOutputCharArray[1] == 0x8D) || // Limbus time limit
-                        (textOutputCharArray[1] == 0x2019))   // Assault time limit, byte=0x92
+                        (textOutputCharArray[1] == 0x2019)) // Assault time limit, byte=0x92
                     {
                         clippedTextOutputCharArray = new char[textOutputCharArray.Length - 2];
                         Array.Copy(textOutputCharArray, 2, clippedTextOutputCharArray, 0, clippedTextOutputCharArray.Length);
@@ -170,12 +185,17 @@ namespace WaywardGamers.KParser
 			// Convert auto-translated characters to []'s
             // 10/18/2006 - Update changed 0xEF+0x27/8 to 0x3F+0x27/8
             // 01/08/2008 - Unknown update changed 3F back to EF
+            // 03/21/2008 - Appears that both version exist.
 			string autoTrans;
 			// Open
 			autoTrans = string.Format("{0}{1}", (char) 0xEF, (char) 0x27);
             TextOutput = TextOutput.Replace(autoTrans, "[");
-			// Close
+            autoTrans = string.Format("{0}{1}", (char)0x3F, (char)0x27);
+            TextOutput = TextOutput.Replace(autoTrans, "[");
+            // Close
 			autoTrans = string.Format("{0}{1}", (char) 0xEF, (char) 0x28);
+            TextOutput = TextOutput.Replace(autoTrans, "]");
+            autoTrans = string.Format("{0}{1}", (char)0x3F, (char)0x28);
             TextOutput = TextOutput.Replace(autoTrans, "]");
 
 			// Remove item highlighting (green wording)
@@ -209,13 +229,6 @@ namespace WaywardGamers.KParser
             byte[] convertedBytes = Encoding.Convert(Encoding.GetEncoding("Shift-JIS"), Encoding.Unicode, originalBytes);
             this.TextOutput = Encoding.Unicode.GetString(convertedBytes).Trim();
 
-
-            // Extract timestamp plugin modification from onscreen text, if applicable
-            Match tsCheck = ParseExpressions.timestampPlugin.Match(TextOutput);
-            if (tsCheck.Success == true)
-            {
-                TextOutput = tsCheck.Groups[1].Value;
-            }
 
 			// Break up the code sequence values into their individual entries
 			string delimStr = ",";

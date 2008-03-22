@@ -52,7 +52,8 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Plugin corrections
-        internal static readonly Regex timestampPlugin = new Regex(@"^\[\d{2}:\d{2}:\d{2}\] (.*)$");
+        internal static readonly Regex TimestampPlugin =
+            new Regex(@"^\x1e(\x3f|\xfa)\[\d{2}:\d{2}:\d{2}\] \x1e\x01(?<remainder>.*)$");
         #endregion
 
         #region Chat name extractions
