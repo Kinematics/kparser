@@ -227,6 +227,7 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0xb9] = InteractionType.Harm; // <am> takes damage
             interactionTypeLookup[0xba] = InteractionType.Harm; // <am> avoids damage
             interactionTypeLookup[0xbb] = InteractionType.Aid; // <am> drains
+            interactionTypeLookup[0xbc] = InteractionType.Aid; // <am> cures
 
         }
 
@@ -403,6 +404,7 @@ namespace WaywardGamers.KParser
             aidTypeLookup[0xb9] = AidType.None; // <am> takes damage
             aidTypeLookup[0xba] = AidType.None; // <am> avoids damage
             aidTypeLookup[0xbb] = AidType.Recovery; // <am> drains
+            aidTypeLookup[0xbc] = AidType.Recovery; // <am> cures
 
         }
 
@@ -579,13 +581,13 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0xb9] = HarmType.Damage; // <am> takes damage
             harmTypeLookup[0xba] = HarmType.Damage; // <am> avoids damage
             harmTypeLookup[0xbb] = HarmType.Drain; // <am> drains
+            harmTypeLookup[0xbc] = HarmType.None; // <am> cures
 
         }
 
         private void InitSuccessTypeLookup()
         {
             successTypeLookup = new Dictionary<uint, SuccessType>(256);
-
 
             successTypeLookup[0x14] = SuccessType.Successful; // <me> hits
             successTypeLookup[0x15] = SuccessType.Unsuccessful; // <me> misses
@@ -755,6 +757,7 @@ namespace WaywardGamers.KParser
             successTypeLookup[0xb9] = SuccessType.Successful; // <am> takes damage
             successTypeLookup[0xba] = SuccessType.Unsuccessful; // <am> avoids damage
             successTypeLookup[0xbb] = SuccessType.Successful; // <am> drains
+            successTypeLookup[0xbc] = SuccessType.Successful; // <am> cures
 
         }
 
@@ -931,6 +934,7 @@ namespace WaywardGamers.KParser
             actorEntityTypeLookup[0xb9] = EntityType.Mob; // <am> takes damage
             actorEntityTypeLookup[0xba] = EntityType.Mob; // <am> avoids damage
             actorEntityTypeLookup[0xbb] = EntityType.Player; // <am> drains
+            actorEntityTypeLookup[0xbc] = EntityType.Player; // <am> cures
         }
 
         private void InitTargetEntityTypeLookup()
@@ -1106,6 +1110,7 @@ namespace WaywardGamers.KParser
             targetEntityTypeLookup[0xb9] = EntityType.Player; // <am> takes damage
             targetEntityTypeLookup[0xba] = EntityType.Player; // <am> avoids damage
             targetEntityTypeLookup[0xbb] = EntityType.Mob; // <am> drains
+            targetEntityTypeLookup[0xbc] = EntityType.Player; // <am> cures
         }
         #endregion
 
