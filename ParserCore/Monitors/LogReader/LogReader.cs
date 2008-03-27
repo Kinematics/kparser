@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using WaywardGamers.KParser.Interface;
 
@@ -48,7 +49,11 @@ namespace WaywardGamers.KParser.Monitoring
         #region Member Variables
         Properties.Settings appSettings;
 
+        DriveInfo driveInfo;
         FileSystemWatcher fileSystemWatcher;
+        Timer networkWatchTimer;
+
+        DateTime networkWatchTimestamp;
         #endregion
 
         #region Interface Control Methods and Properties
@@ -71,6 +76,13 @@ namespace WaywardGamers.KParser.Monitoring
                 // Get the settings so that we know where to look for the log files.
                 appSettings.Reload();
 
+                // Verify the drive
+                string directoryRoot = Path.GetPathRoot(appSettings.FFXILogDirectory);
+                driveInfo = new DriveInfo(directoryRoot);
+
+                if (driveInfo.IsReady == false)
+                    throw new InvalidOperationException("Drive for the specified log directory is not available.");
+
                 // Notify MessageManager that we're starting.
                 MessageManager.Instance.StartParsing(true);
 
@@ -81,20 +93,77 @@ namespace WaywardGamers.KParser.Monitoring
                     ReadExistingFFXILogs(appSettings.FFXILogDirectory);
                 }
 
+                if ((driveInfo.DriveType != DriveType.Fixed) && (driveInfo.DriveType != DriveType.Network))
+                {
+                    // Stop the message manager in case user wants to just run parse on existing
+                    // files from a fixed medium (eg: CDROM).
+                    MessageManager.Instance.StopParsing();
+                    throw new InvalidOperationException("Drive is not of a type that can be monitored");
+                }
+
                 // Set up monitoring of log files for changes.
                 fileSystemWatcher.Path = appSettings.FFXILogDirectory;
 
                 // Begin watching.
-                fileSystemWatcher.EnableRaisingEvents = true;
+                if (driveInfo.DriveType == DriveType.Fixed)
+                    fileSystemWatcher.EnableRaisingEvents = true;
+                else if (driveInfo.DriveType == DriveType.Network)
+                    StartMonitorNetworkDrive();
             }
             catch (Exception)
             {
                 IsRunning = false;
                 fileSystemWatcher.EnableRaisingEvents = false;
+                if (networkWatchTimer != null)
+                {
+                    networkWatchTimer.Dispose();
+                    networkWatchTimer = null;
+                }
                 MessageManager.Instance.CancelParsing();
                 throw;
             }
         }
+
+        private void StartMonitorNetworkDrive()
+        {
+            // Create timer to run every 5 seconds.
+            networkWatchTimer = new Timer(MonitorNetworkDrive, null, 5000, 5000);
+            networkWatchTimestamp = DateTime.Now;
+        }
+
+        private void MonitorNetworkDrive(Object stateInfo)
+        {
+            // Reuse info from fileSystemWatcher
+            string watchDirectory = fileSystemWatcher.Path;
+
+            string[] files = Directory.GetFiles(watchDirectory, "*.log");
+
+            // Sort files by modification timestamp
+            SortedList<DateTime, FileInfo> sortedFiles = new SortedList<DateTime, FileInfo>(files.Length);
+            FileInfo fi;
+
+            foreach (string file in files)
+            {
+                fi = new FileInfo(file);
+                sortedFiles.Add(fi.LastWriteTimeUtc, fi);
+            }
+
+            // Check each entry in the sorted list.  If it's a newly modified file,
+            // generate a new event for it.
+            for (int i = 0; i < sortedFiles.Count; i++)
+            {
+                if (sortedFiles.Values[i].LastWriteTime > networkWatchTimestamp)
+                {
+                    FileSystemEventArgs eArgs = new FileSystemEventArgs(WatcherChangeTypes.Changed,
+                        sortedFiles.Values[i].Directory.Name, sortedFiles.Values[i].Name);
+
+                    MonitorLogDirectory(this, eArgs);
+
+                    networkWatchTimestamp = sortedFiles.Values[i].LastWriteTime;
+                }
+            }
+        }
+
 
         /// <summary>
         /// Stop monitoring the FFXI log directory.
@@ -106,6 +175,12 @@ namespace WaywardGamers.KParser.Monitoring
 
             // Stop watching for new files.
             fileSystemWatcher.EnableRaisingEvents = false;
+
+            if (networkWatchTimer != null)
+            {
+                networkWatchTimer.Dispose();
+                networkWatchTimer = null;
+            }
         
             // Notify MessageManager that we're done so it can turn off its timer loop.
             MessageManager.Instance.StopParsing();
