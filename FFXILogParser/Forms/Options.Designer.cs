@@ -29,6 +29,8 @@ namespace WaywardGamers.KParser
         private void InitializeComponent()
         {
             this.dataSourceGroup = new System.Windows.Forms.GroupBox();
+            this.editMemoryAddress = new System.Windows.Forms.CheckBox();
+            this.readExistingLogs = new System.Windows.Forms.CheckBox();
             this.memoryOffsetAddress = new System.Windows.Forms.TextBox();
             this.logDirectory = new System.Windows.Forms.TextBox();
             this.memoryLabel = new System.Windows.Forms.Label();
@@ -38,12 +40,10 @@ namespace WaywardGamers.KParser
             this.dataSourceLogs = new System.Windows.Forms.RadioButton();
             this.ok = new System.Windows.Forms.Button();
             this.cancel = new System.Windows.Forms.Button();
-            this.readExistingLogs = new System.Windows.Forms.CheckBox();
             this.reset = new System.Windows.Forms.Button();
             this.debugMode = new System.Windows.Forms.CheckBox();
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.otherGroup = new System.Windows.Forms.GroupBox();
-            this.editMemoryAddress = new System.Windows.Forms.CheckBox();
             this.dataSourceGroup.SuspendLayout();
             this.otherGroup.SuspendLayout();
             this.SuspendLayout();
@@ -65,6 +65,28 @@ namespace WaywardGamers.KParser
             this.dataSourceGroup.TabIndex = 0;
             this.dataSourceGroup.TabStop = false;
             this.dataSourceGroup.Text = "Data Source";
+            // 
+            // editMemoryAddress
+            // 
+            this.editMemoryAddress.Appearance = System.Windows.Forms.Appearance.Button;
+            this.editMemoryAddress.AutoSize = true;
+            this.editMemoryAddress.Location = new System.Drawing.Point(260, 146);
+            this.editMemoryAddress.Name = "editMemoryAddress";
+            this.editMemoryAddress.Size = new System.Drawing.Size(35, 23);
+            this.editMemoryAddress.TabIndex = 6;
+            this.editMemoryAddress.Text = "Edit";
+            this.editMemoryAddress.UseVisualStyleBackColor = true;
+            this.editMemoryAddress.CheckedChanged += new System.EventHandler(this.editMemoryAddress_CheckedChanged);
+            // 
+            // readExistingLogs
+            // 
+            this.readExistingLogs.AutoSize = true;
+            this.readExistingLogs.Location = new System.Drawing.Point(28, 81);
+            this.readExistingLogs.Name = "readExistingLogs";
+            this.readExistingLogs.Size = new System.Drawing.Size(128, 17);
+            this.readExistingLogs.TabIndex = 0;
+            this.readExistingLogs.Text = "Read existing log files";
+            this.readExistingLogs.UseVisualStyleBackColor = true;
             // 
             // memoryOffsetAddress
             // 
@@ -156,16 +178,6 @@ namespace WaywardGamers.KParser
             this.cancel.Text = "Cancel";
             this.cancel.UseVisualStyleBackColor = true;
             // 
-            // readExistingLogs
-            // 
-            this.readExistingLogs.AutoSize = true;
-            this.readExistingLogs.Location = new System.Drawing.Point(28, 81);
-            this.readExistingLogs.Name = "readExistingLogs";
-            this.readExistingLogs.Size = new System.Drawing.Size(128, 17);
-            this.readExistingLogs.TabIndex = 0;
-            this.readExistingLogs.Text = "Read existing log files";
-            this.readExistingLogs.UseVisualStyleBackColor = true;
-            // 
             // reset
             // 
             this.reset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -197,18 +209,6 @@ namespace WaywardGamers.KParser
             this.otherGroup.TabStop = false;
             this.otherGroup.Text = "Other";
             // 
-            // editMemoryAddress
-            // 
-            this.editMemoryAddress.Appearance = System.Windows.Forms.Appearance.Button;
-            this.editMemoryAddress.AutoSize = true;
-            this.editMemoryAddress.Location = new System.Drawing.Point(260, 146);
-            this.editMemoryAddress.Name = "editMemoryAddress";
-            this.editMemoryAddress.Size = new System.Drawing.Size(35, 23);
-            this.editMemoryAddress.TabIndex = 6;
-            this.editMemoryAddress.Text = "Edit";
-            this.editMemoryAddress.UseVisualStyleBackColor = true;
-            this.editMemoryAddress.CheckedChanged += new System.EventHandler(this.editMemoryAddress_CheckedChanged);
-            // 
             // Options
             // 
             this.AcceptButton = this.ok;
@@ -226,6 +226,7 @@ namespace WaywardGamers.KParser
             this.MinimizeBox = false;
             this.Name = "Options";
             this.ShowIcon = false;
+            this.ShowInTaskbar = false;
             this.Text = "Options";
             this.Load += new System.EventHandler(this.Options_Load);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Options_FormClosed);
