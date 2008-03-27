@@ -610,6 +610,16 @@ namespace WaywardGamers.KParser.Parsing
                             break;
                         case 2:
                             // Obtaining temporary items, Salvage restriction removal
+                            lootOrXP = ParseExpressions.GetLoot.Match(message.CurrentMessageText);
+                            if (lootOrXP.Success == true)
+                            {
+                                message.EventDetails.EventMessageType = EventMessageType.Loot;
+                                message.EventDetails.LootDetails.IsFoundMessage = false;
+                                message.EventDetails.LootDetails.ItemName = lootOrXP.Groups[ParseFields.Item].Value;
+                                message.EventDetails.LootDetails.WhoObtained = lootOrXP.Groups[ParseFields.Name].Value;
+                                message.ParseSuccessful = true;
+                                break;
+                            }
                             message.EventDetails.EventMessageType = EventMessageType.Other;
                             message.ParseSuccessful = true;
                             break;

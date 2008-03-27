@@ -37,7 +37,7 @@ namespace WaywardGamers.KParser
 
         private static readonly string damage      = @"(?<damage>\d{1,4})";
         private static readonly string number      = @"(?<number>\d{1,4})";
-        private static readonly string item        = @"(([Aa]|[Aa]n|[Tt]he) )?(?<item>.{3,})";
+        private static readonly string item        = @"(([Aa]|[Aa]n|[Tt]he) )?(?<item>(\?\?\? )?.{3,})";
         private static readonly string money       = @"((?<money>\d{1,4}?) gil)";
         private static readonly string spell       = @"(?<spell>\w+((: (Ichi|Ni|San))|(((('s |. |-)\w+)|(( \w+(?<! (on|III|II|IV|VI|V))){1,2}))?( (III|II|IV|VI|V))?))?)";
         private static readonly string ability     = @"(?<ability>\w+((: \w+)|(-\w+)( \w+)?|('s \w+)|( \w+)( \w+)?)?( \w+'\w{2,})?)";
@@ -88,7 +88,7 @@ namespace WaywardGamers.KParser
         internal static readonly Regex FindLootOn = new Regex(string.Format("^You find {0} on {1}\\.$", item, target));
         internal static readonly Regex FindLootIn = new Regex(string.Format("^You find {0} in {1}\\.$", item, target));
         internal static readonly Regex OpenChest  = new Regex(string.Format("^{0} opens {1} and finds {2}\\.$", playername, target, item));
-        internal static readonly Regex GetLoot    = new Regex(string.Format("^{0} obtains {1}\\.$", playername, item));
+        internal static readonly Regex GetLoot    = new Regex(string.Format("^{0} obtains {1}(\\.|!)$", playername, item));
         internal static readonly Regex GetGil     = new Regex(string.Format("^{0} obtains {1}\\.$", playername, money));
         internal static readonly Regex LootReqr   = new Regex(string.Format("^You do not meet the requirements to obtain {0}\\.$", item));
         internal static readonly Regex LootLost   = new Regex(string.Format("^{0} lost\\.$", item));
