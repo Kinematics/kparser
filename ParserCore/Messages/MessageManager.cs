@@ -368,6 +368,9 @@ namespace WaywardGamers.KParser
                         // therefore don't bother checking against them (but still make
                         // sure they aren't 0).
 
+                        // First run through, give preference to prior messages with targets
+                        // that have the same EffectName as the current one.
+
                         msg = searchSet.LastOrDefault(m =>
                             ((altCodes.Contains(m.PrimaryMessageCode)) &&
                              (m.EventDetails != null) &&
@@ -379,7 +382,6 @@ namespace WaywardGamers.KParser
                              ((m.Timestamp >= minTimestamp) || (m.Timestamp == lastTimestamp)) &&
                              (m.EventDetails.CombatDetails.ActorName != string.Empty) &&
                              (
-                              (m.EventDetails.CombatDetails.Targets.Count == 0) ||
                               (
                                (parsedMessage == null) ||
                                (
@@ -387,8 +389,7 @@ namespace WaywardGamers.KParser
                                 (m.EventDetails.CombatDetails.Targets.Any(t =>
                                    t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false) &&
                                 ((m.EventDetails.CombatDetails.Targets.Any(t =>
-                                   t.EffectName == parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true) ||
-                                 (parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName == string.Empty)) &&
+                                   t.EffectName == parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true)) &&
                                 (m.EventDetails.CombatDetails.Targets.Any(t =>
                                    t.EntityType == parsedMessage.EventDetails.CombatDetails.Targets.First().EntityType) == true) &&
                                 ((parsedMessage.EventDetails.CombatDetails.Targets.First().RecoveryType == RecoveryType.None) ||
@@ -399,6 +400,45 @@ namespace WaywardGamers.KParser
                               )
                              ) &&
                              (m.EventDetails.CombatDetails.HasAdditionalEffect == false)));
+
+                        // If we didn't find one explicitly with the current effect name,
+                        // go back to general search.
+
+                        if (msg == null)
+                        {
+                            msg = searchSet.LastOrDefault(m =>
+                                ((altCodes.Contains(m.PrimaryMessageCode)) &&
+                                 (m.EventDetails != null) &&
+                                 (m.EventDetails.CombatDetails != null) &&
+                                 ((m.ExtraCode1 != 0) ||
+                                  (m.ExtraCode2 != 0) ||
+                                  (m.EventDetails.CombatDetails.AidType == AidType.Item)
+                                 ) &&
+                                 ((m.Timestamp >= minTimestamp) || (m.Timestamp == lastTimestamp)) &&
+                                 (m.EventDetails.CombatDetails.ActorName != string.Empty) &&
+                                 (
+                                  (m.EventDetails.CombatDetails.Targets.Count == 0) ||
+                                  (
+                                   (parsedMessage == null) ||
+                                   (
+                                    (parsedMessage.EventDetails.CombatDetails.Targets.Count > 0) &&
+                                    (m.EventDetails.CombatDetails.Targets.Any(t =>
+                                       t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false) &&
+                                    ((m.EventDetails.CombatDetails.Targets.Any(t =>
+                                       t.EffectName == parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true) ||
+                                     (parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName == string.Empty)) &&
+                                    (m.EventDetails.CombatDetails.Targets.Any(t =>
+                                       t.EntityType == parsedMessage.EventDetails.CombatDetails.Targets.First().EntityType) == true) &&
+                                    ((parsedMessage.EventDetails.CombatDetails.Targets.First().RecoveryType == RecoveryType.None) ||
+                                     (m.EventDetails.CombatDetails.Targets.Any(t =>
+                                       t.RecoveryType == parsedMessage.EventDetails.CombatDetails.Targets.First().RecoveryType))
+                                    )
+                                   )
+                                  )
+                                 ) &&
+                                 (m.EventDetails.CombatDetails.HasAdditionalEffect == false)));
+
+                        }
 
                         if (msg == null)
                         {
