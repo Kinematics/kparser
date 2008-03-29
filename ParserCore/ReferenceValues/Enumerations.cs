@@ -128,6 +128,7 @@ namespace WaywardGamers.KParser
         Recovery,
         Item,
         RemoveStatus,
+        RemoveEnmity,
     }
 
     public enum RecoveryType : byte

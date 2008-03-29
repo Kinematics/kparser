@@ -1022,6 +1022,15 @@ namespace WaywardGamers.KParser.Parsing
                                 message.ParseSuccessful = true;
                                 return;
                             }
+                            combatMatch = ParseExpressions.StealEnmity.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                // Erased
+                                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                                target.AidType = AidType.RemoveEnmity;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
                             // Self-target buffs have various strings which we won't check for.
                             // Only look to see if the message has determined an actor and action, and that
                             // the message line completes the sentence (ends in a period).

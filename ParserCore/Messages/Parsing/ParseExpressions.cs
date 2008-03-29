@@ -124,6 +124,8 @@ namespace WaywardGamers.KParser
         internal static readonly Regex LoseCorRoll  = new Regex(string.Format("^{0} loses the effect of {1}\\.$", playername, ability));
         // Cover
         internal static readonly Regex UseCover     = new Regex(string.Format("^{0} covers {1}\\.$", name, target));
+        // Accomplice/Collaborator
+        internal static readonly Regex StealEnmity = new Regex(string.Format("^Enmity is stolen from {0}\\.$", target));
         #endregion
 
         #region Spell/Ability Effects
