@@ -43,16 +43,19 @@ namespace WaywardGamers.KParser.Plugin
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
         {
-            if (e.DatasetChanges.Interactions.Count != 0)
+            if (e.DatasetChanges.Interactions != null)
             {
-                var enhancements = from i in e.DatasetChanges.Interactions
-                                   where i.AidType == (byte)AidType.Enhance
-                                   select i;
-
-                if (enhancements.Count() > 0)
+                if (e.DatasetChanges.Interactions.Count != 0)
                 {
-                    datasetToUse = e.Dataset;
-                    return true;
+                    var enhancements = from i in e.DatasetChanges.Interactions
+                                       where i.AidType == (byte)AidType.Enhance
+                                       select i;
+
+                    if (enhancements.Count() > 0)
+                    {
+                        datasetToUse = e.Dataset;
+                        return true;
+                    }
                 }
             }
 
