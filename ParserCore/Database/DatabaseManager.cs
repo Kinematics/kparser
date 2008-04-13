@@ -466,11 +466,16 @@ namespace WaywardGamers.KParser
             // message.
             foreach (var msgLine in message.MessageLineCollection)
             {
-                var recordRow = localDB.RecordLog.Where(t => t.Timestamp == msgLine.Timestamp)
-                    .Where(t => t.MessageText == msgLine.OriginalText).SingleOrDefault();
+                var recordRows = localDB.RecordLog.Where(t => t.Timestamp == msgLine.Timestamp);
 
-                if (recordRow != null)
-                    recordRow.ParseSuccessful = true;
+                if (recordRows.Count() > 0)
+                    recordRows = recordRows.Where(t => t.MessageText == msgLine.OriginalText);
+
+                if (recordRows.Count() > 0)
+                    recordRows = recordRows.Where(t => t.ParseSuccessful == false);
+
+                if (recordRows.Count() > 0)
+                    recordRows.First().ParseSuccessful = true;
             }
 
             // Call functions depending on type of message.
