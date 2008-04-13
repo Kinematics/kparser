@@ -324,6 +324,10 @@ namespace WaywardGamers.KParser.Monitoring.Memory
                         // Set for the next time through the loop
                         oldDetails = currentDetails;
                     }
+                    catch (Exception e)
+                    {
+                        Logger.Instance.Log(e);
+                    }
                     finally
                     {
                         // Make sure the thread doesn't hammer the system with constant
