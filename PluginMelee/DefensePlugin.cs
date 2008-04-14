@@ -849,10 +849,18 @@ namespace WaywardGamers.KParser.Plugin
                     effNin = 0;
 
                     shadsUsed = player.ShadowsUsed.Sum(u => u.ShadowsUsed);
-                    ichiCast = player.UtsuIchi.Count(u => u.Preparing == true);
-                    niCast = player.UtsuNi.Count(u => u.Preparing == true);
-                    ichiFin = player.UtsuIchi.Count(u => u.Preparing == false);
-                    niFin = player.UtsuNi.Count(u => u.Preparing == false);
+
+                    if (player.UtsuIchi != null)
+                    {
+                        ichiCast = player.UtsuIchi.Count(u => u.Preparing == true);
+                        ichiFin = player.UtsuIchi.Count(u => u.Preparing == false);
+                    }
+
+                    if (player.UtsuNi != null)
+                    {
+                        niCast = player.UtsuNi.Count(u => u.Preparing == true);
+                        niFin = player.UtsuNi.Count(u => u.Preparing == false);
+                    }
 
                     numShads = ichiFin * 3 + niFin * 3;
                     numShadsN = ichiFin * 3 + niFin * 4;
