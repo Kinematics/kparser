@@ -631,47 +631,64 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         #region Functions for examining RAM to determine new base address
         internal void ScanRAM()
         {
-            //if (FindFFXIProcess() == false)
-            //    return;
+            // Note: Disable LocateChatLog in FindFFXIProcess() before running this function.
+
+            if (FindFFXIProcess() == false)
+                return;
 
             // Locate a known string in memory space.  From there, determine the start
             // of the array of chat log messages.
             //FindString();
+            // Take scanAddress and increment it by the index in scanStruct.memScanCharacters
             // Result: 0x03EC0FC8
+            // Result: 0x043e86a0 + 0x1c8 = 0x043E8868
 
             // Locate a pointer to the start of the chat log messages. (0x03ec0fac)
             // From that, determine the start of the ChatLogInfoStruct.
-            //FindAddress();
+            //FindAddress(0x043E8868);
+            // Take scanAddress + j*4 at breakpoint
             // Result: 0x03EC0EE0
+            // Result: 0x043e8000 + 0x213*4 = 0x043e884c
+            // The start of ChatLogInfoStruct is (4 bytes + 50 shorts + 50 shorts =
+            // 204 bytes (0xCC) before the located pointer.
+            // Result: 0x043e884c - 0xCC = 0x043E8780
+
 
             // Examine the ChatLogInfoStruct from the previous address
             // to make sure things match up.
-            //CheckStructure();
+            //CheckStructure(0x043E8780);
 
             // Since we know where the structure lives, find the address
             // that points to that.
-            //FindAddress();
+            //FindAddress(0x043E8780);
+            // Take scanAddress + j*4 at breakpoint
             // Result: 0x03EC0EBC
+            // Result: 0x043e8000 + 0x1d7*4 = 0x043E875C
 
             // That pointer is the second in a structure that is pointed
-            // to by an initial address point.  Search for previous pointer - 4 (0x03EC0EB8)
-            //FindAddress();
+            // to by an initial address point.  Locate the address of our
+            // pointer - 4.
+            //FindAddress(0x043E8758);
+            // Take scanAddress + j*4 at breakpoint
             // Result: 0x0203DA48
+            // Result: 0x02065000 + 0x25a*4 = 0x02065968
 
             // Base offset address is the above pointer relative to the
             // POL base address.  Remove that value.
             // Result: 0x0203DA48 - 0x01ad0000 == 0x0056DA48
+            // Result: 0x02065968 - 0x01af0000 == 0x00575968
 
             // Base address before patch for 2008-03-10: 0x0056A788
             // Base address after patch for 2008-03-10:  0x0056DA48
+            // Base address after update on 2008-06-09:  0x00575968
         }
 
-        private void CheckStructure()
+        private void CheckStructure(uint checkAddress)
         {
             try
             {
                 //Dereference that pointer to get our next address.
-                IntPtr dataStructurePointer = new IntPtr(0x03EC0EE0);
+                IntPtr dataStructurePointer = new IntPtr(checkAddress);
 
                 ChatLogLocationInfo scanChatLogLocation = new ChatLogLocationInfo(dataStructurePointer);
 
@@ -689,7 +706,7 @@ namespace WaywardGamers.KParser.Monitoring.Memory
             }
         }
 
-        private void FindAddress()
+        private void FindAddress(uint findTotalAddress)
         {
             uint scanMemoryOffset = 0;
             MemScanAddressStruct scanStruct = new MemScanAddressStruct();
@@ -698,7 +715,7 @@ namespace WaywardGamers.KParser.Monitoring.Memory
 
             //uint findTotalAddress = 0x03EC0FC8;
             //uint findTotalAddress = 0x03EC0EE0;
-            uint findTotalAddress = 0x03EC0EB8;
+            //uint findTotalAddress = 0x03EC0EB8;
 
             for (int i = 0; i < 64000; i++)
             {
