@@ -23,7 +23,7 @@ namespace WaywardGamers.KParser.Parsing
         internal static Message Parse(MessageLine messageLine)
         {
             int i = 0;
-            if (messageLine.EventSequence == 0x1100)
+            if (messageLine.EventSequence == 0x0963)
                 i++;
 
             Message message = GetAttachedMessage(messageLine);
@@ -823,18 +823,21 @@ namespace WaywardGamers.KParser.Parsing
                         return;
                     }
                     // eg: Player uses warcry
-                    combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
-                    if (combatMatch.Success == true)
+                    if (msgCombatDetails.AidType != AidType.Item)
                     {
-                        msgCombatDetails.ActionType = ActionType.Ability;
-                        msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                        msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                        message.ParseSuccessful = true;
+                        combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
+                        if (combatMatch.Success == true)
+                        {
+                            msgCombatDetails.ActionType = ActionType.Ability;
+                            msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                            msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                            message.ParseSuccessful = true;
 
-                        if ((msgCombatDetails.ActionName == "Steal") || (msgCombatDetails.ActionName == "Mug"))
-                            message.EventDetails.EventMessageType = EventMessageType.Steal;
-                        
-                        return;
+                            if ((msgCombatDetails.ActionName == "Steal") || (msgCombatDetails.ActionName == "Mug"))
+                                message.EventDetails.EventMessageType = EventMessageType.Steal;
+
+                            return;
+                        }
                     }
 
                     switch (msgCombatDetails.AidType)
@@ -2257,12 +2260,15 @@ namespace WaywardGamers.KParser.Parsing
                 combatMatch = ParseExpressions.NoEffect3.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
+                    // Fails to take effect due to full resist (Blu spells) (?)
                     msgCombatDetails.ActionType = ActionType.Spell;
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     target.FailedActionType = FailedActionType.NoEffect;
-                    target.HarmType = msgCombatDetails.HarmType;
+                    //target.HarmType = msgCombatDetails.HarmType;
+                    target.HarmType = HarmType.Damage;
+                    target.DefenseType = DefenseType.Resist;
                     msgCombatDetails.SuccessLevel = SuccessType.Failed;
                     message.ParseSuccessful = true;
                     return;
