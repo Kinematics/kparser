@@ -80,12 +80,25 @@ namespace WaywardGamers.KParser
         {
             get
             {
-                // For reference: Default at the moment is 0x55AEC8
+                // For reference: Default at the moment (6/9/08) is 0x00575968
+
+                // Be resilient in parsing the value
+
+                // Clear leading/trailing whitespace
+                string tmpMemOffset = memoryOffsetAddress.Text.Trim();
+
+                // If entered as 0x#####, strip the 0x prefix before trying to parse the value.
+                if (tmpMemOffset.StartsWith("0x", StringComparison.CurrentCultureIgnoreCase) == true)
+                    tmpMemOffset = tmpMemOffset.Substring(2);
+
+                // If entered as #####h, remove the 'h' before trying to parse the value.
+                if (tmpMemOffset.EndsWith("h", StringComparison.CurrentCultureIgnoreCase) == true)
+                    tmpMemOffset = tmpMemOffset.Substring(0, tmpMemOffset.Length - 1);
 
                 uint result = 0;
                 System.Globalization.NumberFormatInfo nfi = System.Globalization.CultureInfo.CurrentCulture.NumberFormat;
 
-                if (uint.TryParse(memoryOffsetAddress.Text, System.Globalization.NumberStyles.HexNumber, nfi, out result) == true)
+                if (uint.TryParse(tmpMemOffset, System.Globalization.NumberStyles.HexNumber, nfi, out result) == true)
                     return result;
                 else
                     return 0;
@@ -137,6 +150,8 @@ namespace WaywardGamers.KParser
 
         private void memoryOffsetAddress_KeyPress(object sender, KeyPressEventArgs e)
         {
+            // disable
+            /*
             if (char.IsDigit(e.KeyChar))
                 return;
 
@@ -151,6 +166,7 @@ namespace WaywardGamers.KParser
             }
 
             e.Handled = true;
+             * */
         }
 
         private void reset_Click(object sender, EventArgs e)
@@ -158,6 +174,16 @@ namespace WaywardGamers.KParser
             // Reset the app settings and refill the window data.
             coreSettings.Reset();
             LoadSettingsValues();
+        }
+
+        private void ok_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void cancel_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
 
         private void Options_FormClosing(object sender, FormClosingEventArgs e)
@@ -170,16 +196,30 @@ namespace WaywardGamers.KParser
                 {
                     coreSettings.ParseMode = this.DataSource;
 
-                    if (Directory.Exists(logDirectory.Text) == true)
-                        coreSettings.FFXILogDirectory = logDirectory.Text;
-                    else
-                        e.Cancel = true;
+                    if (coreSettings.ParseMode == DataSource.Log)
+                    {
+                        if (Directory.Exists(logDirectory.Text) == true)
+                            coreSettings.FFXILogDirectory = logDirectory.Text;
+                        else
+                        {
+                            MessageBox.Show("Specified directory for FFXI log files does not exist.",
+                                "Directory does not exist.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            e.Cancel = true;
+                        }
+                    }
 
-                    uint memory = this.MemoryOffset;
-                    if (memory != 0)
-                        coreSettings.MemoryOffset = memory;
-                    else
-                        e.Cancel = true;
+                    if (coreSettings.ParseMode == DataSource.Ram)
+                    {
+                        uint memory = this.MemoryOffset;
+                        if (memory != 0)
+                            coreSettings.MemoryOffset = memory;
+                        else
+                        {
+                            MessageBox.Show("Specified memory offset value is not valid.",
+                                "Directory does not exist.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            e.Cancel = true;
+                        }
+                    }
 
                     coreSettings.ParseExistingLogs = this.ParseExistingLogs;
 

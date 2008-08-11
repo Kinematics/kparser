@@ -166,6 +166,7 @@ namespace WaywardGamers.KParser
             this.ok.TabIndex = 1;
             this.ok.Text = "OK";
             this.ok.UseVisualStyleBackColor = true;
+            this.ok.Click += new System.EventHandler(this.ok_Click);
             // 
             // cancel
             // 
@@ -177,6 +178,7 @@ namespace WaywardGamers.KParser
             this.cancel.TabIndex = 2;
             this.cancel.Text = "Cancel";
             this.cancel.UseVisualStyleBackColor = true;
+            this.cancel.Click += new System.EventHandler(this.cancel_Click);
             // 
             // reset
             // 
