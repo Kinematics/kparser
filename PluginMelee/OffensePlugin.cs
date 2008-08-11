@@ -179,7 +179,7 @@ namespace WaywardGamers.KParser.Plugin
         string summaryHeader    = "Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg\n";
         string meleeHeader      = "Player            Melee Dmg   Melee %   Hit/Miss   M.Acc %  M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
         string rangeHeader      = "Player            Range Dmg   Range %   Hit/Miss   R.Acc %  R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
-        string spellHeader      = "Player                  Spell Dmg   Spell %  #Spells  S.Low/Hi     S.Avg  #MagicBurst  MB.Low/Hi   MB.Avg\n";
+        string spellHeader      = "Player                  Spell Dmg   Spell %  #Spells  #Fail  S.Low/Hi     S.Avg  #MBurst  MB.Low/Hi   MB.Avg\n";
         string abilHeader       = "Player                  Abil. Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg\n";
         string wskillHeader     = "Player                 WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg\n";
         string skillchainHeader = "Skillchain          SC Dmg  # SC  SC.Low/Hi  SC.Avg\n";
@@ -861,6 +861,7 @@ namespace WaywardGamers.KParser.Plugin
             int spellDamage;
             double spellPerc;
             int spellCasts;
+            int spellFails;
             int spellLow;
             int spellHigh;
             double spellAvg;
@@ -879,6 +880,7 @@ namespace WaywardGamers.KParser.Plugin
             int iMbHigh;
             double iMbAvg;
             int iNormSpellCount;
+            int iFailSpellCount;
             int iMbSpellCount;
 
             foreach (var player in attacksByPlayer)
@@ -889,6 +891,7 @@ namespace WaywardGamers.KParser.Plugin
                 spellDamage = 0;
                 spellPerc = 0;
                 spellCasts = 0;
+                spellFails = 0;
                 spellLow = 0;
                 spellHigh = 0;
                 spellAvg = 0;
@@ -908,9 +911,13 @@ namespace WaywardGamers.KParser.Plugin
                 var spellsCast = player.Spell.Where(b => b.DefenseType == (byte)DefenseType.None)
                                              .GroupBy(b => b.Timestamp);
 
-                spellCasts = spellsCast.Count();
+                var spellsFailed = player.Spell.Where(b => b.DefenseType == (byte)DefenseType.Resist)
+                                             .GroupBy(b => b.Timestamp);
 
-                if (spellCasts > 0)
+                spellCasts = spellsCast.Count();
+                spellFails = spellsFailed.Count();
+
+                if ((spellCasts + spellFails) > 0)
                 {
                     if (headerDisplayed == false)
                     {
@@ -953,16 +960,22 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append(spellDamage.ToString().PadLeft(10));
                     sb.Append(spellPerc.ToString("P2").PadLeft(10));
                     sb.Append(spellCasts.ToString().PadLeft(9));
+                    sb.Append(spellFails.ToString().PadLeft(7));
                     sb.Append(string.Format("{0}/{1}", spellLow, spellHigh).PadLeft(10));
                     sb.Append(spellAvg.ToString("F2").PadLeft(10));
-                    sb.Append(mbSpellCount.ToString().PadLeft(13));
+                    sb.Append(mbSpellCount.ToString().PadLeft(9));
                     sb.Append(string.Format("{0}/{1}", mbLow, mbHigh).PadLeft(11));
                     sb.Append(mbAvg.ToString("F2").PadLeft(9));
 
                     sb.Append("\n");
                 }
 
-                var spellGroups = spellsCast.GroupBy(s => s.First().ActionsRow.ActionName).OrderBy(s => s.Key);
+
+                var spellsCastOrFailed = player.Spell.Where(b => (b.DefenseType == (byte)DefenseType.None)
+                             || (b.DefenseType == (byte)DefenseType.Resist)).GroupBy(b => b.Timestamp);
+
+
+                var spellGroups = spellsCastOrFailed.GroupBy(s => s.First().ActionsRow.ActionName).OrderBy(s => s.Key);
 
                 foreach (var sp in spellGroups)
                 {
@@ -975,6 +988,7 @@ namespace WaywardGamers.KParser.Plugin
                     iMbHigh = 0;
                     iMbAvg = 0;
                     iNormSpellCount = 0;
+                    iFailSpellCount = 0;
                     iMbSpellCount = 0;
 
                     string spellName = sp.Key;
@@ -986,9 +1000,11 @@ namespace WaywardGamers.KParser.Plugin
 
                     var iNormSpells = sp.Where(s => s.All(sg => sg.DamageModifier == (byte)DamageModifier.None));
                     var iMbSpells = sp.Where(s => s.Any(sg => sg.DamageModifier == (byte)DamageModifier.MagicBurst));
+                    var iFailSpells = sp.Where(s => s.All(sg => sg.DefenseType == (byte)DefenseType.Resist));
 
                     iNormSpellCount = iNormSpells.Count();
                     iMbSpellCount = iMbSpells.Count();
+                    iFailSpellCount = iFailSpells.Count();
 
                     if (iNormSpellCount > 0)
                     {
@@ -1005,8 +1021,9 @@ namespace WaywardGamers.KParser.Plugin
                     }
 
 
-                    sb.AppendFormat("{0,-23}{1,10}{2,10:p2}{3,9}{4,10}{5,10:f2}{6,13}{7,11}{8,9:f2}\n",
+                    sb.AppendFormat("{0,-23}{1,10}{2,10:p2}{3,9}{4,7}{5,10}{6,10:f2}{7,9}{8,11}{9,9:f2}\n",
                         string.Concat(" - ", spellName), iSpellDamage, iSpellPerc, iNormSpellCount,
+                        iFailSpellCount,
                         string.Concat(iSpellLow, "/", iSpellHigh), iSpellAvg, iMbSpellCount,
                         string.Concat(iMbLow, "/", iMbHigh), iMbAvg);
                 }
