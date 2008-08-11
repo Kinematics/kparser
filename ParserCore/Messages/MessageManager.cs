@@ -54,17 +54,30 @@ namespace WaywardGamers.KParser
 
         Timer periodicUpdates;
 
+        bool prepared;
+
         Properties.Settings programSettings = new WaywardGamers.KParser.Properties.Settings();
         #endregion
 
         #region Parsing state control methods
+        internal void PrepareToStartParsing()
+        {
+            if (periodicUpdates == null)
+            {
+                Reset();
+                DumpToFile(null, true, false);
+                prepared = true;
+            }
+        }
+
         /// <summary>
         /// Activate the timer so that we periodically pass accumulated messages
         /// on to the DatabaseManager to be committed to the database.
         /// </summary>
         internal void StartParsing(bool activateTimer)
         {
-            Reset();
+            if (prepared == false)
+                Reset();
 
             programSettings.Reload();
 
@@ -74,7 +87,8 @@ namespace WaywardGamers.KParser
                     periodicUpdates = new Timer(ProcessMessageList, null, 3000, 3000);
             }
 
-            DumpToFile(null, true, false);
+            if (prepared == false)
+                DumpToFile(null, true, false);
         }
 
         /// <summary>
@@ -90,6 +104,7 @@ namespace WaywardGamers.KParser
             }
 
             ProcessMessageList(true);
+            prepared = false;
         }
 
         /// <summary>
@@ -103,6 +118,8 @@ namespace WaywardGamers.KParser
                 periodicUpdates.Dispose();
                 periodicUpdates = null;
             }
+
+            prepared = false;
         }
 
         /// <summary>
@@ -118,6 +135,8 @@ namespace WaywardGamers.KParser
             entityCollection.Clear();
             LastMessageEventNumber = 0;
             LastAddedPetEntity = string.Empty;
+
+            prepared = false;
         }
         #endregion
 

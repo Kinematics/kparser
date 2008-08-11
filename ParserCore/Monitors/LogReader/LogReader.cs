@@ -83,8 +83,7 @@ namespace WaywardGamers.KParser.Monitoring
                 if (driveInfo.IsReady == false)
                     throw new InvalidOperationException("Drive for the specified log directory is not available.");
 
-                // Notify MessageManager that we're starting.
-                MessageManager.Instance.StartParsing(true);
+                MessageManager.Instance.PrepareToStartParsing();
 
                 // Run the parser on any logs already in existance before starting to monitor,
                 // if that option is set.
@@ -92,6 +91,9 @@ namespace WaywardGamers.KParser.Monitoring
                 {
                     ReadExistingFFXILogs(appSettings.FFXILogDirectory);
                 }
+
+                // Notify MessageManager that we're starting.
+                MessageManager.Instance.StartParsing(true);
 
                 if ((driveInfo.DriveType != DriveType.Fixed) && (driveInfo.DriveType != DriveType.Network))
                 {
