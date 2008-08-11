@@ -112,6 +112,9 @@ namespace WaywardGamers.KParser
             if (msgLine == null)
                 return;
 
+            if (parseSuccessful == true)
+                return;
+
             msgLineCollection.Add(msgLine);
             activeMessageStrings.Add(msgLine.TextOutput);
         }
