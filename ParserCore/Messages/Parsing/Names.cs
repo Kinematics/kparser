@@ -58,7 +58,7 @@ namespace WaywardGamers.KParser
             "Savage Blade", "Knights of Round",
             // Automaton
             "Slapstick", "Arcuballista", "String Clipper", "Chimera Ripper", "Knockout", "Daze",
-            "Cannibal Blade",
+            "Cannibal Blade", "Armor Piercer", "Bone Crusher", "Magic Mortar"
         };
     }
 
