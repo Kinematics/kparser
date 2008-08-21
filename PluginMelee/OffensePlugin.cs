@@ -1101,10 +1101,13 @@ namespace WaywardGamers.KParser.Plugin
                     if (playerDamage[player.Player] > 0)
                         abilPerc = (double)abilityDamage / playerDamage[player.Player];
 
-                    var successfulHits = player.Ability.Where(h => h.DefenseType == (byte)DefenseType.None);
+                    var damageAbilities = player.Ability.Where(a => a.HarmType == (byte)HarmType.Damage ||
+                        a.HarmType == (byte)HarmType.Drain);
+
+                    var successfulHits = damageAbilities.Where(h => h.DefenseType == (byte)DefenseType.None);
 
                     abilHits = successfulHits.Count();
-                    abilMiss = player.Ability.Count(b => b.DefenseType != (byte)DefenseType.None);
+                    abilMiss = damageAbilities.Count(b => b.DefenseType != (byte)DefenseType.None);
 
                     abilUses = abilHits + abilMiss;
 
@@ -1137,7 +1140,8 @@ namespace WaywardGamers.KParser.Plugin
 
                     foreach (var abil in abilGroups)
                     {
-                        if (abil.Any(a => a.HarmType == (byte)HarmType.Damage || a.HarmType == (byte)HarmType.Drain))
+                        if (abil.Any(a => a.HarmType == (byte)HarmType.Damage ||
+                            a.HarmType == (byte)HarmType.Drain))
                         {
                             iAbilDamage = 0;
                             iAbilPerc = 0;
