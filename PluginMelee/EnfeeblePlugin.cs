@@ -176,58 +176,139 @@ namespace WaywardGamers.KParser.Plugin
         {
             richTextBox.Clear();
 
-            if (comboBox1.SelectedIndex == 0)
-                ProcessDebuffsUsed(dataSet);
+            #region Filtering
+            string mobFilter;
+            string mobName;
+            int mobXP;
+
+            GetMobFilter(comboBox2, out mobFilter, out mobName, out mobXP);
+            #endregion
+
+            #region LINQ group construction
+
+            IEnumerable<DebuffGroup> debuffSet = null;
+            bool processPlayerDebuffs = (comboBox1.SelectedIndex == 0);
+
+            if (processPlayerDebuffs == true)
+            {
+                // Process debuffs used by players
+
+                debuffSet = from c in dataSet.Combatants
+                            where ((c.CombatantType == (byte)EntityType.Player) ||
+                                  (c.CombatantType == (byte)EntityType.Pet) ||
+                                  (c.CombatantType == (byte)EntityType.Fellow))
+                            orderby c.CombatantType, c.CombatantName
+                            select new DebuffGroup
+                            {
+                                DebufferName = c.CombatantName,
+                                Debuffs = from b in c.GetInteractionsRowsByActorCombatantRelation()
+                                          where (b.HarmType == (byte)HarmType.Enfeeble ||
+                                                 b.HarmType == (byte)HarmType.Dispel ||
+                                                 b.HarmType == (byte)HarmType.Unknown) &&
+                                                b.Preparing == false &&
+                                                b.IsActionIDNull() == false
+                                          group b by b.ActionsRow.ActionName into ba
+                                          orderby ba.Key
+                                          select new Debuffs
+                                          {
+                                              DebuffName = ba.Key,
+                                              DebuffTargets = from bt in ba
+                                                              where (bt.IsTargetIDNull() == false &&
+                                                                      // all mobs if mobFilter == All
+                                                                     ((mobFilter == "All") ||
+                                                                      // else make sure mob name matches and
+                                                                      (bt.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                                                        // either no xp requirement
+                                                                       (mobXP == 0 ||
+                                                                        // or there's a battle entry and it has the specified XP amount
+                                                                        (bt.IsBattleIDNull() == false &&
+                                                                         bt.BattlesRow.MinBaseExperience() == mobXP)
+                                                                       )
+                                                                      )
+                                                                     )
+                                                                    )
+                                                              group bt by bt.CombatantsRowByTargetCombatantRelation.CombatantName into btn
+                                                              orderby btn.Key
+                                                              select new DebuffTargets
+                                                              {
+                                                                  TargetName = btn.Key,
+                                                                  DebuffData = btn.OrderBy(i => i.Timestamp)
+                                                              }
+                                          }
+                            };
+
+            }
             else
-                ProcessDebuffsReceived(dataSet);
+            {
+                // Process debuffs used by mobs
+
+                debuffSet = from c in dataSet.Combatants
+                            where (c.CombatantType == (byte)EntityType.Mob &&
+                                    // all mobs if mobFilter == All
+                                   (mobFilter == "All" ||
+                                    // else make sure mob name matches and
+                                    c.CombatantName == mobName)
+                                  )
+                            orderby c.CombatantType, c.CombatantName
+                            select new DebuffGroup
+                            {
+                                DebufferName = c.CombatantName,
+                                Debuffs = from b in c.GetInteractionsRowsByActorCombatantRelation()
+                                          where ((b.HarmType == (byte)HarmType.Enfeeble ||
+                                                 b.HarmType == (byte)HarmType.Dispel ||
+                                                 b.HarmType == (byte)HarmType.Unknown) &&
+                                                 b.Preparing == false &&
+                                                 b.IsActionIDNull() == false) &&
+                                                 // either no xp requirement
+                                                (mobXP == 0 ||
+                                                 // or there's a battle entry and it has the specified XP amount
+                                                 (b.IsBattleIDNull() == false &&
+                                                  b.BattlesRow.MinBaseExperience() == mobXP)
+                                                )
+                                          group b by b.ActionsRow.ActionName into ba
+                                          orderby ba.Key
+                                          select new Debuffs
+                                          {
+                                              DebuffName = ba.Key,
+                                              DebuffTargets = from bt in ba
+                                                              where (bt.IsTargetIDNull() == false)
+                                                              group bt by bt.CombatantsRowByTargetCombatantRelation.CombatantName into btn
+                                                              orderby btn.Key
+                                                              select new DebuffTargets
+                                                              {
+                                                                  TargetName = btn.Key,
+                                                                  DebuffData = btn.OrderBy(i => i.Timestamp)
+                                                              }
+                                          }
+                            };
+
+            }
+            #endregion
+
+
+            if (processPlayerDebuffs == true)
+                ProcessPlayerDebuffs(debuffSet);
+            else
+                ProcessMobDebuffs(debuffSet);
         }
 
-        private void ProcessDebuffsUsed(KPDatabaseDataSet dataSet)
+        private void ProcessPlayerDebuffs(IEnumerable<DebuffGroup> debuffSet)
         {
-            var debuffs = from c in dataSet.Combatants
-                          where ((c.CombatantType == (byte)EntityType.Player) ||
-                                (c.CombatantType == (byte)EntityType.Pet) ||
-                                (c.CombatantType == (byte)EntityType.Fellow))
-                          orderby c.CombatantType, c.CombatantName
-                          select new
-                          {
-                              Name = c.CombatantName,
-                              Debuffs = from b in c.GetInteractionsRowsByActorCombatantRelation()
-                                        where (b.HarmType == (byte)HarmType.Enfeeble ||
-                                               b.HarmType == (byte)HarmType.Dispel ||
-                                               b.HarmType == (byte)HarmType.Unknown) &&
-                                              b.Preparing == false &&
-                                              b.IsActionIDNull() == false
-                                        group b by b.ActionsRow.ActionName into ba
-                                        orderby ba.Key
-                                        select new
-                                        {
-                                            DebuffName = ba.Key,
-                                            DebuffTargets = from bt in ba
-                                                            where bt.IsTargetIDNull() == false
-                                                            group bt by bt.CombatantsRowByTargetCombatantRelation.CombatantName into btn
-                                                            orderby btn.Key
-                                                            select new
-                                                            {
-                                                                TargetName = btn.Key,
-                                                                Debuffs = btn.OrderBy(i => i.Timestamp)
-                                                            }
-                                        }
-                          };
-
-
             int used;
             int successful;
             int noEffect;
             double percSuccess;
             string debuffName;
 
-            foreach (var player in debuffs)
+            foreach (var player in debuffSet)
             {
                 if ((player.Debuffs == null) || (player.Debuffs.Count() == 0))
                     continue;
 
-                AppendBoldText(string.Format("{0}\n", player.Name), Color.Blue);
+                if (player.Debuffs.Sum(d => d.DebuffTargets.Count()) == 0)
+                    continue;
+
+                AppendBoldText(string.Format("{0}\n", player.DebufferName), Color.Blue);
                 AppendBoldUnderText(debuffMobHeader, Color.Black);
 
                 foreach (var debuff in player.Debuffs)
@@ -236,7 +317,7 @@ namespace WaywardGamers.KParser.Plugin
 
                     foreach (var target in debuff.DebuffTargets)
                     {
-                        used = target.Debuffs.Count();
+                        used = target.DebuffData.Count();
 
                         if (used > 0)
                         {
@@ -245,11 +326,11 @@ namespace WaywardGamers.KParser.Plugin
 
                             AppendNormalText(target.TargetName.PadRight(24));
 
-                            successful = target.Debuffs.Count(d =>
+                            successful = target.DebuffData.Count(d =>
                                 (d.DefenseType == (byte)DefenseType.None) &&
                                 (d.FailedActionType == (byte)FailedActionType.None));
 
-                            noEffect = target.Debuffs.Count(d => d.FailedActionType == (byte)FailedActionType.NoEffect);
+                            noEffect = target.DebuffData.Count(d => d.FailedActionType == (byte)FailedActionType.NoEffect);
 
                             percSuccess = (double)successful / used;
 
@@ -263,50 +344,23 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
-        private void ProcessDebuffsReceived(KPDatabaseDataSet dataSet)
+        private void ProcessMobDebuffs(IEnumerable<DebuffGroup> debuffSet)
         {
-            var debuffs = from c in dataSet.Combatants
-                          where (c.CombatantType == (byte)EntityType.Mob)
-                          orderby c.CombatantType, c.CombatantName
-                          select new
-                          {
-                              Name = c.CombatantName,
-                              Debuffs = from b in c.GetInteractionsRowsByActorCombatantRelation()
-                                        where (b.HarmType == (byte)HarmType.Enfeeble ||
-                                               b.HarmType == (byte)HarmType.Dispel ||
-                                               b.HarmType == (byte)HarmType.Unknown) &&
-                                              b.Preparing == false &&
-                                              b.IsActionIDNull() == false
-                                        group b by b.ActionsRow.ActionName into ba
-                                        orderby ba.Key
-                                        select new
-                                        {
-                                            DebuffName = ba.Key,
-                                            DebuffTargets = from bt in ba
-                                                            where bt.IsTargetIDNull() == false
-                                                            group bt by bt.CombatantsRowByTargetCombatantRelation.CombatantName into btn
-                                                            orderby btn.Key
-                                                            select new
-                                                            {
-                                                                TargetName = btn.Key,
-                                                                Debuffs = btn.OrderBy(i => i.Timestamp)
-                                                            }
-                                        }
-                          };
-
-
             int used;
             int successful;
             int noEffect;
             double percSuccess;
             string debuffName;
 
-            foreach (var mob in debuffs)
+            foreach (var mob in debuffSet)
             {
                 if ((mob.Debuffs == null) || (mob.Debuffs.Count() == 0))
                     continue;
 
-                AppendBoldText(string.Format("{0}\n", mob.Name), Color.Blue);
+                if (mob.Debuffs.Sum(d => d.DebuffTargets.Count()) == 0)
+                    continue;
+
+                AppendBoldText(string.Format("{0}\n", mob.DebufferName), Color.Blue);
                 AppendBoldUnderText(debuffPlayerHeader, Color.Black);
 
                 foreach (var debuff in mob.Debuffs)
@@ -315,7 +369,7 @@ namespace WaywardGamers.KParser.Plugin
 
                     foreach (var target in debuff.DebuffTargets)
                     {
-                        used = target.Debuffs.Count();
+                        used = target.DebuffData.Count();
 
                         if (used > 0)
                         {
@@ -325,11 +379,11 @@ namespace WaywardGamers.KParser.Plugin
 
                             AppendNormalText(target.TargetName.PadRight(24));
 
-                            successful = target.Debuffs.Count(d =>
+                            successful = target.DebuffData.Count(d =>
                                 (d.DefenseType == (byte)DefenseType.None) &&
                                 (d.FailedActionType == (byte)FailedActionType.None));
 
-                            noEffect = target.Debuffs.Count(d => d.FailedActionType == (byte)FailedActionType.NoEffect);
+                            noEffect = target.DebuffData.Count(d => d.FailedActionType == (byte)FailedActionType.NoEffect);
 
                             percSuccess = (double)successful / used;
 

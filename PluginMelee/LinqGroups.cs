@@ -133,4 +133,33 @@ namespace WaywardGamers.KParser.Plugin
         }
     }
 
+    internal class DebuffGroup
+    {
+        internal string DebufferName { get; set; }
+        internal IEnumerable<Debuffs> Debuffs { get; set; }
+
+        public DebuffGroup()
+        {
+        }
+    }
+
+    internal class Debuffs
+    {
+        internal string DebuffName { get; set; }
+        internal IEnumerable<DebuffTargets> DebuffTargets { get; set; }
+
+        public Debuffs()
+        {
+        }
+    }
+
+    internal class DebuffTargets
+    {
+        internal string TargetName { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> DebuffData { get; set; }
+
+        public DebuffTargets()
+        {
+        }
+    }
 }
