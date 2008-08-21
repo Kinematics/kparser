@@ -1,0 +1,15 @@
+
+KParser 1.0.8
+Misc fixes for exception handling and null references.
+Fix issues in Options dialog error handling.
+Add additional Puppet weaponskills.
+Fix issue of parsing item use improperly.
+Show failed spells in spell damage section.
+Better parsing of damage abilities vs debuffs.
+Fix so that broken synths don't show up in the loot tables as 'lost' items.
+Updated Debuff section to allow proper filtering by mob.
+Added parsing of HELM activities in the Loot plugin.
+
+Thanks to Eryvinim for suggesting and putting together the basics of parsing mining from the chat log.  I've reimplimented it in the Loot plugin for all HELM activities (though no Chocobo digging at the moment).  The next time the database changes, I'll add in the function to parse HELM and synthing such that items are stored in the appropriate table.
+
+
