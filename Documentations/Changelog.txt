@@ -1,8 +1,9 @@
 
 KParser 1.0.8
-Misc fixes for exception handling and null references.
+Misc fixes for exception handling and null references for stability.
 Fix issues in Options dialog error handling.
 Add additional Puppet weaponskills.
+Fix parsing of missed Puppet ranged attacks.
 Fix issue of parsing item use improperly.
 Show failed spells in spell damage section.
 Better parsing of damage abilities vs debuffs.
