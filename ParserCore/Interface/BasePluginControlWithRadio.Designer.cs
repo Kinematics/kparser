@@ -43,6 +43,7 @@ namespace WaywardGamers.KParser.Plugin
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton3 = new System.Windows.Forms.RadioButton();
+            this.radioButton4 = new System.Windows.Forms.RadioButton();
             this.SuspendLayout();
             // 
             // richTextBox
@@ -94,15 +95,28 @@ namespace WaywardGamers.KParser.Plugin
             this.radioButton3.UseVisualStyleBackColor = true;
             this.radioButton3.CheckedChanged += new System.EventHandler(this.radioButton3_CheckedChanged);
             // 
-            // BasePluginControlWithRTFAndRadio
+            // radioButton4
+            // 
+            this.radioButton4.AutoSize = true;
+            this.radioButton4.Location = new System.Drawing.Point(396, 6);
+            this.radioButton4.Name = "radioButton4";
+            this.radioButton4.Size = new System.Drawing.Size(85, 17);
+            this.radioButton4.TabIndex = 4;
+            this.radioButton4.TabStop = true;
+            this.radioButton4.Text = "radioButton4";
+            this.radioButton4.UseVisualStyleBackColor = true;
+            this.radioButton4.CheckedChanged += new System.EventHandler(this.radioButton4_CheckedChanged);
+            // 
+            // BasePluginControlWithRadio
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.radioButton4);
             this.Controls.Add(this.radioButton3);
             this.Controls.Add(this.radioButton2);
             this.Controls.Add(this.radioButton1);
             this.Controls.Add(this.richTextBox);
-            this.Name = "BasePluginControlWithRTFAndRadio";
+            this.Name = "BasePluginControlWithRadio";
             this.Size = new System.Drawing.Size(540, 312);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -115,6 +129,7 @@ namespace WaywardGamers.KParser.Plugin
         protected RadioButton radioButton1;
         protected RadioButton radioButton2;
         protected RadioButton radioButton3;
+        protected RadioButton radioButton4;
 
     }
 }

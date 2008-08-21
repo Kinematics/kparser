@@ -172,6 +172,12 @@ namespace WaywardGamers.KParser.Plugin
         {
 
         }
+
+        protected virtual void radioButton4_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
         #endregion
+
     }
 }
