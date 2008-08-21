@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Drawing;
 
 namespace WaywardGamers.KParser.Plugin
@@ -23,6 +24,8 @@ namespace WaywardGamers.KParser.Plugin
             radioButton2.Text = "Drop Rates";
             radioButton3.Left = radioButton2.Right + 30;
             radioButton3.Text = "Stealing";
+            radioButton4.Left = radioButton3.Right + 30;
+            radioButton4.Text = "HELM";
 
             radioButton1.Checked = true;
         }
@@ -84,6 +87,8 @@ namespace WaywardGamers.KParser.Plugin
                 ProcessDropRates(dataSet);
             else if (radioButton3.Checked == true)
                 ProcessStealing(dataSet);
+            else if (radioButton4.Checked == true)
+                ProcessHELM(dataSet);
         }
 
         private void ProcessSummary(KPDatabaseDataSet dataSet)
@@ -391,6 +396,137 @@ namespace WaywardGamers.KParser.Plugin
                 AppendNormalText("\n\n");
             }
         }
+
+        #region HELM strings
+        private static readonly string item = @"(([Aa]|[Aa]n|[Tt]he) )?(?<item>(\?\?\? )?.{3,})";
+
+        private static readonly string harvestSuccess = "You successfully harvest ";
+        private static readonly string loggingSuccess = "You successfully log ";
+        private static readonly string exMineSuccess  = "You successfully dig up ";
+
+        private static readonly string harvestToolBreak = "Your sickle breaks!";
+        private static readonly string loggingToolBreak = "Your hatchet breaks!";
+        private static readonly string exMineToolBreak  = "Your pickaxe breaks!";
+
+        private static readonly string harvestToolBreakOnSuccess = ", but your sickle breaks in the process";
+        private static readonly string loggingToolBreakOnSuccess = ", but your hatchet breaks in the process";
+        private static readonly string exMineToolBreakOnSuccess  = ", but your pickaxe breaks in the process";
+
+        private static readonly Regex Log     = new Regex(string.Format("^{0}{1}({2})?.$", loggingSuccess, item, loggingToolBreakOnSuccess));
+        private static readonly Regex Harvest = new Regex(string.Format("^{0}{1}({2})?.$", harvestSuccess, item, harvestToolBreakOnSuccess));
+        private static readonly Regex Mine    = new Regex(string.Format("^{0}{1}({2})?.$", exMineSuccess, item, exMineToolBreakOnSuccess));
+        #endregion
+
+        private void ProcessHELM(KPDatabaseDataSet dataSet)
+        {
+            richTextBox.Clear();
+
+            #region LINQ queries
+            var arenaChat = dataSet.ChatMessages.Where(m => (ChatMessageType)m.ChatType == ChatMessageType.Arena);
+
+            var harvestedItems = from ac in arenaChat
+                                 where Harvest.Match(ac.Message).Success == true
+                                 group ac by Harvest.Match(ac.Message).Groups["item"].ToString() into acn
+                                 orderby acn.Key
+                                 select new
+                                 {
+                                     Item = acn.Key,
+                                     Count = acn.Count()
+                                 };
+
+            var harvestingBreaks = from ac in arenaChat
+                                   where (ac.Message == harvestToolBreak ||
+                                   ac.Message.EndsWith(harvestToolBreakOnSuccess + "."))
+                                   group ac by "Sickle";
+
+            var loggedItems = from ac in arenaChat
+                              where Log.Match(ac.Message).Success == true
+                              group ac by Log.Match(ac.Message).Groups["item"].ToString() into acn
+                              orderby acn.Key
+                              select new
+                              {
+                                  Item = acn.Key,
+                                  Count = acn.Count()
+                              };
+
+            var loggingBreaks = from ac in arenaChat
+                                where (ac.Message == loggingToolBreak ||
+                                   ac.Message.EndsWith(loggingToolBreakOnSuccess + "."))
+                                group ac by "Hatchet";
+
+            var minedItems = from ac in arenaChat
+                             where Mine.Match(ac.Message).Success == true
+                             group ac by Mine.Match(ac.Message).Groups["item"].ToString() into acn
+                             orderby acn.Key
+                             select new
+                             {
+                                 Item = acn.Key,
+                                 Count = acn.Count()
+                             };
+
+            var miningBreaks = from ac in arenaChat
+                               where (ac.Message == exMineToolBreak ||
+                                   ac.Message.EndsWith(exMineToolBreakOnSuccess + "."))
+                               group ac by "Pick";
+            #endregion
+
+            if (harvestedItems.Count() > 0 || harvestingBreaks.Count() > 0)
+            {
+                AppendBoldText("Harvesting:\n", Color.Red);
+
+                foreach (var item in harvestedItems)
+                {
+                    AppendNormalText(string.Format("  {0,15} {1,-5}\n", item.Item, item.Count));
+                }
+
+                if (harvestedItems.Count() > 0)
+                    AppendNormalText(string.Format("\n  Total: {0}\n",
+                        harvestedItems.Sum(li => li.Count)));
+
+                AppendNormalText(string.Format("\n  Breaks: {0}\n", harvestingBreaks.Count()));
+
+                AppendNormalText("\n");
+            }
+
+            if (loggedItems.Count() > 0 || loggingBreaks.Count() > 0)
+            {
+                AppendBoldText("Logging:\n", Color.Red);
+
+                foreach (var item in loggedItems)
+                {
+                    AppendNormalText(string.Format("  {0,15} {1,-5}\n", item.Item, item.Count));
+                }
+
+                if (loggedItems.Count() > 0)
+                    AppendNormalText(string.Format("\n  Total: {0}\n",
+                        loggedItems.Sum(li => li.Count)));
+
+                AppendNormalText(string.Format("\n  Breaks: {0}\n", harvestingBreaks.Count()));
+                
+                AppendNormalText("\n");
+            }
+
+            if (minedItems.Count() > 0 || miningBreaks.Count() > 0)
+            {
+                AppendBoldText("Mining/Excavation:\n", Color.Red);
+
+                foreach (var item in minedItems)
+                {
+                    AppendNormalText(string.Format("  {0,15} {1,-5}\n", item.Item, item.Count));
+                }
+
+                if (minedItems.Count() > 0)
+                    AppendNormalText(string.Format("\n  Total: {0}\n",
+                        minedItems.Sum(li => li.Count)));
+
+                AppendNormalText(string.Format("\n  Breaks: {0}\n", harvestingBreaks.Count()));
+                
+                AppendNormalText("\n");
+            }
+
+
+        }
+
         #endregion
 
     }
