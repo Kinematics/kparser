@@ -22,6 +22,6 @@ Extract "KParser 1.0.x.zip" file into its own directory and run the .exe file.
 
 If you are running Windows Vista, you may need to adjust the runtime permisssions for the program.
 
-Right click select Properties on the .exe file. Go to the Compatibility tab and check the check box "Run this program as an Administrator".
+Right click on the .exe file and select Properties. Go to the Compatibility tab and check the check box "Run this program as an Administrator".
 
 
