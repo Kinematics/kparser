@@ -222,22 +222,6 @@ namespace WaywardGamers.KParser.Plugin
             #endregion
 
             #region LINQ queries
-            //mobSet = from c in dataSet.Combatants
-            //         where ((c.CombatantName == mobName) ||
-            //                ((mobName == "All") && (c.CombatantType == (byte)EntityType.Mob)))
-            //         orderby c.CombatantName
-            //         select new MobGroup
-            //         {
-            //             Mob = c.CombatantName,
-            //             Battles = from b in c.GetBattlesRowsByEnemyCombatantRelation()
-            //                       where ((b.Killed == false) ||
-            //                              (xp == 0) ||
-            //                              (b.BaseExperience() == xp))
-            //                       group b by b.BaseExperience() into bx
-            //                       orderby bx.Key
-            //                       select bx
-            //         };
-
             if (mobFilter == "All")
             {
                 attackSet = from c in dataSet.Combatants
