@@ -426,7 +426,7 @@ namespace WaywardGamers.KParser.Plugin
 
             var harvestedItems = from ac in arenaChat
                                  where Harvest.Match(ac.Message).Success == true
-                                 group ac by Harvest.Match(ac.Message).Groups["item"].ToString() into acn
+                                 group ac by Harvest.Match(ac.Message).Groups["item"].Value into acn
                                  orderby acn.Key
                                  select new
                                  {
@@ -441,7 +441,7 @@ namespace WaywardGamers.KParser.Plugin
 
             var loggedItems = from ac in arenaChat
                               where Log.Match(ac.Message).Success == true
-                              group ac by Log.Match(ac.Message).Groups["item"].ToString() into acn
+                              group ac by Log.Match(ac.Message).Groups["item"].Value into acn
                               orderby acn.Key
                               select new
                               {
@@ -456,7 +456,7 @@ namespace WaywardGamers.KParser.Plugin
 
             var minedItems = from ac in arenaChat
                              where Mine.Match(ac.Message).Success == true
-                             group ac by Mine.Match(ac.Message).Groups["item"].ToString() into acn
+                             group ac by Mine.Match(ac.Message).Groups["item"].Value into acn
                              orderby acn.Key
                              select new
                              {
