@@ -2746,14 +2746,25 @@ namespace WaywardGamers.KParser.Parsing
                     combatMatch = ParseExpressions.MissAbility.Match(currentMessageText);
                     if (combatMatch.Success == true)
                     {
-                        msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                        if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
+                        string possibleActionName = combatMatch.Groups[ParseFields.Ability].Value;
+
+                        if (possibleActionName == "Ranged Attack")
                         {
-                            msgCombatDetails.ActionType = ActionType.Weaponskill;
+                            msgCombatDetails.ActionType = ActionType.Ranged;
                             msgCombatDetails.HarmType = HarmType.Damage;
                         }
                         else
-                            msgCombatDetails.ActionType = ActionType.Ability;
+                        {
+                            msgCombatDetails.ActionName = possibleActionName;
+                            if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
+                            {
+                                msgCombatDetails.ActionType = ActionType.Weaponskill;
+                                msgCombatDetails.HarmType = HarmType.Damage;
+                            }
+                            else
+                                msgCombatDetails.ActionType = ActionType.Ability;
+                        }
+
                         msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                         target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                         target.DefenseType = DefenseType.Evasion;
