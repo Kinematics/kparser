@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace WaywardGamers.KParser.Plugin
@@ -116,7 +117,37 @@ namespace WaywardGamers.KParser.Plugin
 
         #endregion
 
-        #region Helper Methods for updating the UI via secondary threads.
+        #region Helper Methods for reading and/or updating the UI via secondary threads.
+        protected void GetMobFilter(ComboBox combo, out string mobFilterSet, out string mobName, out int mobXP)
+        {
+            if (combo == null)
+                throw new ArgumentNullException("combo");
+
+            if (combo.SelectedIndex >= 0)
+                mobFilterSet = combo.SelectedItem.ToString();
+            else
+                mobFilterSet = "All";
+
+            mobName = "All";
+            mobXP = 0;
+
+            if (mobFilterSet != "All")
+            {
+                Regex mobAndXP = new Regex(@"((?<mobName>.*(?<! \())) \(((?<xp>\d+)\))|(?<mobName>.*)");
+                Match mobAndXPMatch = mobAndXP.Match(mobFilterSet);
+
+                if (mobAndXPMatch.Success == true)
+                {
+                    mobName = mobAndXPMatch.Groups["mobName"].Value;
+
+                    if ((mobAndXPMatch.Groups["xp"] != null) && (mobAndXPMatch.Groups["xp"].Value != string.Empty))
+                    {
+                        mobXP = int.Parse(mobAndXPMatch.Groups["xp"].Value);
+                    }
+                }
+            }
+        }
+
         protected void ResetTextBox()
         {
             if (this.InvokeRequired)
