@@ -184,7 +184,7 @@ namespace WaywardGamers.KParser.Plugin
         string wskillHeader     = "Player                 WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg\n";
         string skillchainHeader = "Skillchain          SC Dmg  # SC  SC.Low/Hi  SC.Avg\n";
         string otherMHeader     = "Player            M.AE Dmg  # M.AE  M.AE Avg   R.AE Dmg  # R.AE  R.AE Avg   Spk.Dmg  # Spike  Spk.Avg\n";
-        string otherPHeader     = "Player            CA.Dmg  CA.Hit/Miss  CA.Hi/Low  CA.Avg   Ret.Dmg  Ret.Hit/Miss  Ret.Hi/Low  Ret.Avg\n";
+        string otherPHeader     = "Player            CA.Dmg  CA.Hit/Miss  CA.Low/Hi  CA.Avg   Ret.Dmg  Ret.Hit/Miss  Ret.Low/Hi  Ret.Avg\n";
         #endregion
 
         #region Processing sections
@@ -1584,8 +1584,8 @@ namespace WaywardGamers.KParser.Plugin
 
                     sb.AppendFormat("{0,-17}{1,7}{2,13}{3,11}{4,8:f2}{5,10}{6,14}{7,12}{8,9:f2}\n",
                         player.Player,
-                        caDmg, string.Concat(caHit, "/", caMiss), string.Concat(caHigh, "/", caLow), caAvg,
-                        retDmg, string.Concat(retHit, "/", retMiss), string.Concat(retHigh, "/", retLow), retAvg);
+                        caDmg, string.Concat(caHit, "/", caMiss), string.Concat(caLow, "/", caHigh), caAvg,
+                        retDmg, string.Concat(retHit, "/", retMiss), string.Concat(retLow, "/", retHigh), retAvg);
                 }
             }
 
