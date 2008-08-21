@@ -517,7 +517,7 @@ namespace WaywardGamers.KParser.Plugin
 
             if (totalDmg > 0)
             {
-                AppendBoldText("Damage Against:\n", Color.Blue);
+                AppendBoldText("Damage To:\n", Color.Blue);
                 AppendBoldUnderText(incDamageHeader, Color.Black);
 
                 StringBuilder sb = new StringBuilder();
