@@ -73,7 +73,7 @@ namespace WaywardGamers.KParser.Plugin
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(216, 6);
+            this.label2.Location = new System.Drawing.Point(184, 6);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(35, 13);
             this.label2.TabIndex = 2;
@@ -83,7 +83,7 @@ namespace WaywardGamers.KParser.Plugin
             // 
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(66, 3);
+            this.comboBox1.Location = new System.Drawing.Point(47, 3);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(121, 21);
             this.comboBox1.TabIndex = 3;
@@ -93,7 +93,7 @@ namespace WaywardGamers.KParser.Plugin
             // 
             this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(276, 3);
+            this.comboBox2.Location = new System.Drawing.Point(225, 3);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(121, 21);
             this.comboBox2.TabIndex = 4;
@@ -102,7 +102,7 @@ namespace WaywardGamers.KParser.Plugin
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(435, 6);
+            this.checkBox1.Location = new System.Drawing.Point(385, 7);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(80, 17);
             this.checkBox1.TabIndex = 5;
@@ -113,7 +113,7 @@ namespace WaywardGamers.KParser.Plugin
             // checkBox2
             // 
             this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(587, 6);
+            this.checkBox2.Location = new System.Drawing.Point(489, 7);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(80, 17);
             this.checkBox2.TabIndex = 6;
