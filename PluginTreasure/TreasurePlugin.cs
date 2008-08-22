@@ -418,6 +418,7 @@ namespace WaywardGamers.KParser.Plugin
         #region HELM strings
         private static readonly string item = @"((a|an|the) )?(?<item>\w+( \w+)*)";
 
+        // HELM messages:
         // You successfully harvest a clump of red moko grass!
         // You are unable to harvest anything.
         // You harvest a bunch of gysahl greens, but your sickle breaks.
@@ -438,6 +439,15 @@ namespace WaywardGamers.KParser.Plugin
         private static readonly Regex harvestBreak = new Regex(@"sickle breaks( in the process)?(\.|!)$");
         private static readonly Regex loggingBreak = new Regex(@"hatchet breaks( in the process)?(\.|!)$");
         private static readonly Regex exMineBreak = new Regex(@"pickaxe breaks( in the process)?(\.|!)$");
+
+        // Chocobo digging messages:
+        // You dig and you dig, but find nothing.
+        // Obtained: Lauan log.
+        // Obtained: Pebble.
+
+        string chocoDigFail = "You dig and you dig, but find nothing.";
+        private static readonly Regex Dig = new Regex(string.Format("^Obtained: {0}{1}$", item, @"\."));
+
         #endregion
 
         private void ProcessHELM(KPDatabaseDataSet dataSet)
@@ -495,8 +505,21 @@ namespace WaywardGamers.KParser.Plugin
             int miningFailures = arenaChat.Count(a => a.Message == exMineFail ||
                 a.Message == exMineToolBreak);
 
+
+            var chocoboItems = from ac in arenaChat
+                               where Dig.Match(ac.Message).Success == true
+                               group ac by Dig.Match(ac.Message).Groups["item"].Value into acn
+                               orderby acn.Key
+                               select new
+                               {
+                                   Item = acn.Key,
+                                   Count = acn.Count()
+                               };
+
+            int chocoboDiggingFailures = arenaChat.Count(ac => ac.Message == chocoDigFail);
             #endregion
 
+            int totalItems;
             int totalCount;
             double avgResult;
             string lineFormat = "  {0,-34} {1,5}  [{2,8:p2}]\n";
@@ -506,7 +529,8 @@ namespace WaywardGamers.KParser.Plugin
             {
                 AppendBoldText("Harvesting:\n", Color.Red);
 
-                totalCount = harvestedItems.Sum(a => a.Count) + harvestingFailures;
+                totalItems = harvestedItems.Sum(a => a.Count);
+                totalCount = totalItems + harvestingFailures;
 
                 foreach (var item in harvestedItems)
                 {
@@ -521,7 +545,10 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (harvestedItems.Count() > 0)
                     AppendNormalText(string.Format("\n  {0,-34} {1,5}\n",
-                        "Total:", harvestedItems.Sum(li => li.Count)));
+                        "Total Items:", totalItems));
+
+                AppendNormalText(string.Format("  {0,-34} {1,5}\n",
+                    "Total Tries:", totalCount));
 
                 avgResult = (double)harvestingBreaks / totalCount;
                 AppendNormalText(string.Format("\n  {0,-34} {1,5}  [{2,8:p2}]\n",
@@ -535,7 +562,8 @@ namespace WaywardGamers.KParser.Plugin
             {
                 AppendBoldText("Logging:\n", Color.Red);
 
-                totalCount = loggedItems.Sum(a => a.Count) + loggingFailures;
+                totalItems = loggedItems.Sum(a => a.Count);
+                totalCount = totalItems + loggingFailures;
 
                 foreach (var item in loggedItems)
                 {
@@ -550,7 +578,10 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (loggedItems.Count() > 0)
                     AppendNormalText(string.Format("\n  {0,-34} {1,5}\n",
-                        "Total:", loggedItems.Sum(li => li.Count)));
+                        "Total Items:", totalItems));
+
+                AppendNormalText(string.Format("  {0,-34} {1,5}\n",
+                    "Total Tries:", totalCount));
 
                 avgResult = (double)loggingBreaks / totalCount;
                 AppendNormalText(string.Format("\n  {0,-34} {1,5}  [{2,8:p2}]\n",
@@ -564,7 +595,8 @@ namespace WaywardGamers.KParser.Plugin
             {
                 AppendBoldText("Mining/Excavation:\n", Color.Red);
 
-                totalCount = minedItems.Sum(a => a.Count) + miningFailures;
+                totalItems = minedItems.Sum(a => a.Count);
+                totalCount = totalItems + miningFailures;
 
                 foreach (var item in minedItems)
                 {
@@ -579,7 +611,10 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (minedItems.Count() > 0)
                     AppendNormalText(string.Format("\n  {0,-34} {1,5}\n",
-                        "Total:", minedItems.Sum(li => li.Count)));
+                        "Total Items:", totalItems));
+
+                AppendNormalText(string.Format("  {0,-34} {1,5}\n",
+                    "Total Tries:", totalCount));
 
                 avgResult = (double)miningBreaks / totalCount;
                 AppendNormalText(string.Format("\n  {0,-34} {1,5}  [{2,8:p2}]\n",
@@ -588,6 +623,33 @@ namespace WaywardGamers.KParser.Plugin
                 AppendNormalText("\n");
             }
 
+            // Chocobo results
+            if (chocoboItems.Count() > 0 || chocoboDiggingFailures > 0)
+            {
+                AppendBoldText("Chocobo Digging:\n", Color.Red);
+
+                totalCount = chocoboItems.Sum(a => a.Count) + chocoboDiggingFailures;
+
+                foreach (var item in chocoboItems)
+                {
+                    avgResult = (double)item.Count / totalCount;
+                    AppendNormalText(string.Format(lineFormat,
+                        item.Item, item.Count, avgResult));
+                }
+
+                avgResult = (double)chocoboDiggingFailures / totalCount;
+                AppendNormalText(string.Format(lineFormat,
+                   "Nothing", chocoboDiggingFailures, avgResult));
+
+                if (chocoboItems.Count() > 0)
+                    AppendNormalText(string.Format("\n  {0,-34} {1,5}\n",
+                        "Total Items:", chocoboItems.Sum(li => li.Count)));
+
+                AppendNormalText(string.Format("  {0,-34} {1,5}\n",
+                    "Total Tries:", totalCount));
+
+                AppendNormalText("\n");
+            }
 
         }
 
