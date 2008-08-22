@@ -290,6 +290,11 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Private Methods
+        public void RequestUpdate()
+        {
+            UpdateDatabase();
+        }
+
         private void UpdateDatabase()
         {
             if ((localTAManager == null) || (localDB == null))
