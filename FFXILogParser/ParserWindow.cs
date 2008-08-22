@@ -491,6 +491,22 @@ namespace WaywardGamers.KParser
             AboutBox aboutForm = new AboutBox();
             aboutForm.ShowDialog();
         }
+
+        private void playerInformationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            bool databaseOpen = DatabaseManager.Instance.Database != null;
+
+            if (databaseOpen == false)
+            {
+                MessageBox.Show("You must open or start a parse first.", "No parse file.",
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
+            }
+
+            PlayerInfo infoForm = new PlayerInfo();
+            infoForm.Show(this);
+        }
+
         #endregion
 
         #region Menu Support Functions
