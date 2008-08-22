@@ -72,6 +72,9 @@
     <Compile Include="FightsPlugin.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="FrequencyData.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="LinqGroups.cs">
     </Compile>
     <Compile Include="DefensePlugin.cs">
