@@ -1,5 +1,10 @@
+KParser Change Log
 
-KParser 1.0.8
+1.0.9
+Added dialog to allow access to database field to store small bits of info (100 characters of data) about combatants.  This field will probably be expanded when the database is next modified.
+
+
+1.0.8
 Misc fixes for exception handling and null references for stability.
 Fix issues in Options dialog error handling.
 Add additional Puppet weaponskills.
