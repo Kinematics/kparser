@@ -41,6 +41,15 @@ namespace WaywardGamers.KParser.Plugin
                 return true;
             }
 
+            if (radioButton4.Checked == true)
+            {
+                if (e.DatasetChanges.ChatMessages.Any())
+                {
+                    datasetToUse = e.Dataset;
+                    return true;
+                }
+            }
+
             datasetToUse = null;
             return false;
         }
@@ -68,6 +77,15 @@ namespace WaywardGamers.KParser.Plugin
         protected override void radioButton3_CheckedChanged(object sender, EventArgs e)
         {
             if (radioButton3.Checked == true)
+            {
+                richTextBox.Clear();
+                HandleDataset(DatabaseManager.Instance.Database);
+            }
+        }
+
+        protected override void radioButton4_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton4.Checked == true)
             {
                 richTextBox.Clear();
                 HandleDataset(DatabaseManager.Instance.Database);
@@ -398,23 +416,28 @@ namespace WaywardGamers.KParser.Plugin
         }
 
         #region HELM strings
-        private static readonly string item = @"(([Aa]|[Aa]n|[Tt]he) )?(?<item>(\?\?\? )?.{3,})";
+        private static readonly string item = @"((a|an|the) )?(?<item>\w+( \w+)*)";
 
-        private static readonly string harvestSuccess = "You successfully harvest ";
-        private static readonly string loggingSuccess = "You successfully log ";
-        private static readonly string exMineSuccess  = "You successfully dig up ";
+        // You successfully harvest a clump of red moko grass!
+        // You are unable to harvest anything.
+        // You harvest a bunch of gysahl greens, but your sickle breaks.
+        // Your sickle breaks!
+
+        private static readonly Regex Harvest = new Regex(string.Format("You (successfully )?harvest {0}(, but your sickle breaks)?(.|!)$", item));
+        private static readonly Regex Log     = new Regex(string.Format("You (successfully )?log {0}(, but your hatchet breaks)?(.|!)$", item));
+        private static readonly Regex Mine    = new Regex(string.Format("You (successfully )?dig up {0}(, but your pickaxe breaks)?(.|!)$", item));
+
+        private static readonly string harvestFail = "You are unable to harvest anything.";
+        private static readonly string loggingFail = "You are unable to log anything.";
+        private static readonly string exMineFail = "You are unable to dig up anything.";
 
         private static readonly string harvestToolBreak = "Your sickle breaks!";
         private static readonly string loggingToolBreak = "Your hatchet breaks!";
-        private static readonly string exMineToolBreak  = "Your pickaxe breaks!";
+        private static readonly string exMineToolBreak = "Your pickaxe breaks!";
 
-        private static readonly string harvestToolBreakOnSuccess = ", but your sickle breaks in the process";
-        private static readonly string loggingToolBreakOnSuccess = ", but your hatchet breaks in the process";
-        private static readonly string exMineToolBreakOnSuccess  = ", but your pickaxe breaks in the process";
-
-        private static readonly Regex Log     = new Regex(string.Format("^{0}{1}({2})?.$", loggingSuccess, item, loggingToolBreakOnSuccess));
-        private static readonly Regex Harvest = new Regex(string.Format("^{0}{1}({2})?.$", harvestSuccess, item, harvestToolBreakOnSuccess));
-        private static readonly Regex Mine    = new Regex(string.Format("^{0}{1}({2})?.$", exMineSuccess, item, exMineToolBreakOnSuccess));
+        private static readonly Regex harvestBreak = new Regex(@"sickle breaks( in the process)?(\.|!)$");
+        private static readonly Regex loggingBreak = new Regex(@"hatchet breaks( in the process)?(\.|!)$");
+        private static readonly Regex exMineBreak = new Regex(@"pickaxe breaks( in the process)?(\.|!)$");
         #endregion
 
         private void ProcessHELM(KPDatabaseDataSet dataSet)
@@ -434,10 +457,11 @@ namespace WaywardGamers.KParser.Plugin
                                      Count = acn.Count()
                                  };
 
-            var harvestingBreaks = from ac in arenaChat
-                                   where (ac.Message == harvestToolBreak ||
-                                   ac.Message.EndsWith(harvestToolBreakOnSuccess + "."))
-                                   group ac by "Sickle";
+            int harvestingBreaks = arenaChat.Count(ac => harvestBreak.Match(ac.Message).Success == true);
+
+            int harvestingFailures = arenaChat.Count(a => a.Message == harvestFail ||
+                a.Message == harvestToolBreak);
+
 
             var loggedItems = from ac in arenaChat
                               where Log.Match(ac.Message).Success == true
@@ -449,10 +473,11 @@ namespace WaywardGamers.KParser.Plugin
                                   Count = acn.Count()
                               };
 
-            var loggingBreaks = from ac in arenaChat
-                                where (ac.Message == loggingToolBreak ||
-                                   ac.Message.EndsWith(loggingToolBreakOnSuccess + "."))
-                                group ac by "Hatchet";
+            int loggingBreaks = arenaChat.Count(ac => loggingBreak.Match(ac.Message).Success == true);
+
+            int loggingFailures = arenaChat.Count(a => a.Message == loggingFail ||
+                a.Message == loggingToolBreak);
+
 
             var minedItems = from ac in arenaChat
                              where Mine.Match(ac.Message).Success == true
@@ -464,62 +489,101 @@ namespace WaywardGamers.KParser.Plugin
                                  Count = acn.Count()
                              };
 
-            var miningBreaks = from ac in arenaChat
-                               where (ac.Message == exMineToolBreak ||
-                                   ac.Message.EndsWith(exMineToolBreakOnSuccess + "."))
-                               group ac by "Pick";
+
+            int miningBreaks = arenaChat.Count(ac => exMineBreak.Match(ac.Message).Success == true);
+
+            int miningFailures = arenaChat.Count(a => a.Message == exMineFail ||
+                a.Message == exMineToolBreak);
+
             #endregion
 
-            if (harvestedItems.Count() > 0 || harvestingBreaks.Count() > 0)
+            int totalCount;
+            double avgResult;
+            string lineFormat = "  {0,-34} {1,5}  [{2,8:p2}]\n";
+
+            // Harvesting results
+            if (harvestedItems.Count() > 0 || harvestingBreaks > 0)
             {
                 AppendBoldText("Harvesting:\n", Color.Red);
 
+                totalCount = harvestedItems.Sum(a => a.Count) + harvestingFailures;
+
                 foreach (var item in harvestedItems)
                 {
-                    AppendNormalText(string.Format("  {0,15} {1,-5}\n", item.Item, item.Count));
+                    avgResult = (double)item.Count / totalCount;
+                    AppendNormalText(string.Format(lineFormat,
+                        item.Item, item.Count, avgResult));
                 }
 
-                if (harvestedItems.Count() > 0)
-                    AppendNormalText(string.Format("\n  Total: {0}\n",
-                        harvestedItems.Sum(li => li.Count)));
+                avgResult = (double)harvestingFailures / totalCount;
+                AppendNormalText(string.Format(lineFormat,
+                    "Nothing", harvestingFailures, avgResult));
 
-                AppendNormalText(string.Format("\n  Breaks: {0}\n", harvestingBreaks.Count()));
+                if (harvestedItems.Count() > 0)
+                    AppendNormalText(string.Format("\n  {0,-34} {1,5}\n",
+                        "Total:", harvestedItems.Sum(li => li.Count)));
+
+                avgResult = (double)harvestingBreaks / totalCount;
+                AppendNormalText(string.Format("\n  {0,-34} {1,5}  [{2,8:p2}]\n",
+                    "Breaks:", harvestingBreaks, avgResult));
 
                 AppendNormalText("\n");
             }
 
-            if (loggedItems.Count() > 0 || loggingBreaks.Count() > 0)
+            // Logging results
+            if (loggedItems.Count() > 0 || loggingBreaks > 0)
             {
                 AppendBoldText("Logging:\n", Color.Red);
 
+                totalCount = loggedItems.Sum(a => a.Count) + loggingFailures;
+
                 foreach (var item in loggedItems)
                 {
-                    AppendNormalText(string.Format("  {0,15} {1,-5}\n", item.Item, item.Count));
+                    avgResult = (double)item.Count / totalCount;
+                    AppendNormalText(string.Format(lineFormat,
+                        item.Item, item.Count, avgResult));
                 }
 
-                if (loggedItems.Count() > 0)
-                    AppendNormalText(string.Format("\n  Total: {0}\n",
-                        loggedItems.Sum(li => li.Count)));
+                avgResult = (double)loggingFailures / totalCount;
+                AppendNormalText(string.Format(lineFormat,
+                    "Nothing", loggingFailures, avgResult));
 
-                AppendNormalText(string.Format("\n  Breaks: {0}\n", harvestingBreaks.Count()));
+                if (loggedItems.Count() > 0)
+                    AppendNormalText(string.Format("\n  {0,-34} {1,5}\n",
+                        "Total:", loggedItems.Sum(li => li.Count)));
+
+                avgResult = (double)loggingBreaks / totalCount;
+                AppendNormalText(string.Format("\n  {0,-34} {1,5}  [{2,8:p2}]\n",
+                    "Breaks:", loggingBreaks, avgResult));
                 
                 AppendNormalText("\n");
             }
 
-            if (minedItems.Count() > 0 || miningBreaks.Count() > 0)
+            // Mining results
+            if (minedItems.Count() > 0 || miningBreaks > 0)
             {
                 AppendBoldText("Mining/Excavation:\n", Color.Red);
 
+                totalCount = minedItems.Sum(a => a.Count) + miningFailures;
+
                 foreach (var item in minedItems)
                 {
-                    AppendNormalText(string.Format("  {0,15} {1,-5}\n", item.Item, item.Count));
+                    avgResult = (double)item.Count / totalCount;
+                    AppendNormalText(string.Format(lineFormat,
+                        item.Item, item.Count, avgResult));
                 }
 
-                if (minedItems.Count() > 0)
-                    AppendNormalText(string.Format("\n  Total: {0}\n",
-                        minedItems.Sum(li => li.Count)));
+                avgResult = (double)miningFailures / totalCount;
+                AppendNormalText(string.Format(lineFormat,
+                   "Nothing", miningFailures, avgResult));
 
-                AppendNormalText(string.Format("\n  Breaks: {0}\n", harvestingBreaks.Count()));
+                if (minedItems.Count() > 0)
+                    AppendNormalText(string.Format("\n  {0,-34} {1,5}\n",
+                        "Total:", minedItems.Sum(li => li.Count)));
+
+                avgResult = (double)miningBreaks / totalCount;
+                AppendNormalText(string.Format("\n  {0,-34} {1,5}  [{2,8:p2}]\n",
+                    "Breaks:", miningBreaks, avgResult));
                 
                 AppendNormalText("\n");
             }
