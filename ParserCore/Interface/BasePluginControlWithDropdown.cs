@@ -160,6 +160,18 @@ namespace WaywardGamers.KParser.Plugin
             this.richTextBox.Clear();
         }
 
+        protected void ResetComboBox1()
+        {
+            if (this.InvokeRequired)
+            {
+                Action thisFunc = ResetComboBox2;
+                Invoke(thisFunc);
+                return;
+            }
+
+            this.comboBox1.Items.Clear();
+        }
+
         protected void ResetComboBox2()
         {
             if (this.InvokeRequired)
@@ -170,6 +182,18 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             this.comboBox2.Items.Clear();
+        }
+
+        protected void AddToComboBox1(string p)
+        {
+            if (this.InvokeRequired)
+            {
+                Action<string> thisFunc = AddToComboBox2;
+                Invoke(thisFunc, new object[] { p });
+                return;
+            }
+
+            this.comboBox1.Items.Add(p);
         }
 
         protected void AddToComboBox2(string p)
@@ -184,6 +208,30 @@ namespace WaywardGamers.KParser.Plugin
             this.comboBox2.Items.Add(p);
         }
 
+        protected void AddToComboBox1(string[] p)
+        {
+            if (this.InvokeRequired)
+            {
+                Action<string> thisFunc = AddToComboBox2;
+                Invoke(thisFunc, new object[] { p });
+                return;
+            }
+
+            this.comboBox1.Items.AddRange(p);
+        }
+
+        protected void AddToComboBox2(string[] p)
+        {
+            if (this.InvokeRequired)
+            {
+                Action<string> thisFunc = AddToComboBox2;
+                Invoke(thisFunc, new object[] { p });
+                return;
+            }
+
+            this.comboBox2.Items.AddRange(p);
+        }
+
         protected void RemoveFromComboBox2(string p)
         {
             if (this.InvokeRequired)
@@ -196,6 +244,19 @@ namespace WaywardGamers.KParser.Plugin
             int foundIndex = this.comboBox2.Items.IndexOf(p);
             if (foundIndex > 0)
                 this.comboBox2.Items.RemoveAt(foundIndex);
+        }
+
+        protected void InitComboBox1Selection()
+        {
+            if (this.InvokeRequired)
+            {
+                Action thisFunc = InitComboBox2Selection;
+                Invoke(thisFunc);
+                return;
+            }
+
+            if (this.comboBox1.Items.Count > 0)
+                this.comboBox1.SelectedIndex = 0;
         }
 
         protected void InitComboBox2Selection()
