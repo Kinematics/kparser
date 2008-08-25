@@ -56,6 +56,8 @@ namespace WaywardGamers.KParser.Plugin
             //checkBox2.Checked = false;
             checkBox2.Enabled = false;
             checkBox2.Visible = false;
+
+            richTextBox.Clear();
         }
 
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
@@ -64,45 +66,38 @@ namespace WaywardGamers.KParser.Plugin
             AddToComboBox2("All");
             ResetTextBox();
 
-            if (dataSet.Battles.Count() > 1)
+            // Enemy group listing
+
+            var mobsKilled = from b in dataSet.Battles
+                             where ((b.DefaultBattle == false) &&
+                                    (b.IsEnemyIDNull() == false) &&
+                                    (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
+                             orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
+                             group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
+                             select new
+                             {
+                                 Name = bn.Key,
+                                 XP = from xb in bn
+                                      group xb by xb.MinBaseExperience() into xbn
+                                      orderby xbn.Key
+                                      select new { BaseXP = xbn.Key }
+                             };
+
+            List<string> mobXPStrings = new List<string>();
+
+            foreach (var mob in mobsKilled)
             {
-                var mobsKilled = from b in dataSet.Battles
-                                 where ((b.DefaultBattle == false) &&
-                                        (b.IsEnemyIDNull() == false) &&
-                                        (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
-                                 orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
-                                 group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
-                                 select new
-                                 {
-                                     Name = bn.Key,
-                                     XP = from xb in bn
-                                          group xb by xb.MinBaseExperience() into xbn
-                                          orderby xbn.Key
-                                          select new { BaseXP = xbn.Key }
-                                 };
+                mobXPStrings.Add(mob.Name);
 
-                if (mobsKilled.Count() > 0)
+                foreach (var xp in mob.XP)
                 {
-                    // Add to the Reset list
-
-                    string mobWithXP;
-
-                    foreach (var mob in mobsKilled)
-                    {
-                        AddToComboBox2(mob.Name);
-
-                        if (mob.XP.Count() > 1)
-                        {
-                            foreach (var xp in mob.XP)
-                            {
-                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP);
-
-                                AddToComboBox2(mobWithXP);
-                            }
-                        }
-                    }
+                    if (xp.BaseXP > 0)
+                        mobXPStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
                 }
             }
+
+            if (mobXPStrings.Count > 0)
+                AddToComboBox2(mobXPStrings.ToArray());
 
             InitComboBox2Selection();
         }
