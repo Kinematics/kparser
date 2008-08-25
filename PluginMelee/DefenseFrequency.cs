@@ -10,7 +10,7 @@ using System.Diagnostics;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class OffenseFrequencyDataPlugin : BasePluginControlWithDropdown
+    public class DefenseFrequencyDataPlugin : BasePluginControlWithDropdown
     {
         #region Member variables
         bool checkBox1Changed = false;
@@ -19,7 +19,7 @@ namespace WaywardGamers.KParser.Plugin
         #region IPlugin Overrides
         public override string TabName
         {
-            get { return "Offense Detail"; }
+            get { return "Defense Detail"; }
         }
 
         public override void Reset()
@@ -130,15 +130,15 @@ namespace WaywardGamers.KParser.Plugin
             AddToComboBox1("All");
 
             var playersFighting = from b in dataSet.Combatants
-                                         where ((b.CombatantType == (byte)EntityType.Player ||
-                                                b.CombatantType == (byte)EntityType.Pet ||
-                                                b.CombatantType == (byte)EntityType.Fellow) &&
-                                                b.GetInteractionsRowsByActorCombatantRelation().Any() == true)
-                                         orderby b.CombatantName
-                                         select new
-                                         {
-                                             Name = b.CombatantName
-                                         };
+                                  where ((b.CombatantType == (byte)EntityType.Player ||
+                                         b.CombatantType == (byte)EntityType.Pet ||
+                                         b.CombatantType == (byte)EntityType.Fellow) &&
+                                         b.GetInteractionsRowsByActorCombatantRelation().Any() == true)
+                                  orderby b.CombatantName
+                                  select new
+                                  {
+                                      Name = b.CombatantName
+                                  };
 
             List<string> playerStrings = new List<string>();
 
@@ -287,26 +287,26 @@ namespace WaywardGamers.KParser.Plugin
                             select new AttackGroup
                             {
                                 Player = c.CombatantName,
-                                Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Melee = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Melee &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                         select n,
-                                Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Range = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Ranged &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                         select n,
-                                Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Spell = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Spell &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
                                                 n.Preparing == false &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                         select n,
-                                Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Ability = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                           where ((ActionType)n.ActionType == ActionType.Ability &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain ||
@@ -314,28 +314,28 @@ namespace WaywardGamers.KParser.Plugin
                                                 n.Preparing == false &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                           select n,
-                                WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                WSkill = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                          where ((ActionType)n.ActionType == ActionType.Weaponskill &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
                                                 n.Preparing == false &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                          select n,
-                                SC = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                SC = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                      where ((ActionType)n.ActionType == ActionType.Skillchain &&
                                             ((HarmType)n.HarmType == HarmType.Damage ||
                                              (HarmType)n.HarmType == HarmType.Drain) &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                      select n,
-                                Counter = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Counter = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                           where (ActionType)n.ActionType == ActionType.Counterattack &&
                                                ((DefenseType)n.DefenseType == DefenseType.None)
                                           select n,
-                                Retaliate = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Retaliate = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                             where (ActionType)n.ActionType == ActionType.Retaliation &&
                                                ((DefenseType)n.DefenseType == DefenseType.None)
                                             select n,
-                                Spikes = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Spikes = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                          where (ActionType)n.ActionType == ActionType.Spikes &&
                                                ((DefenseType)n.DefenseType == DefenseType.None)
                                          select n
@@ -374,95 +374,95 @@ namespace WaywardGamers.KParser.Plugin
                             select new AttackGroup
                             {
                                 Player = c.CombatantName,
-                                Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Melee = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Melee &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
                                                n.IsTargetIDNull() == false &&
-                                               n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                               n.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
                                                n.IsBattleIDNull() == false &&
                                                (xp == 0 ||
                                                n.BattlesRow.MinBaseExperience() == xp) &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                         select n,
-                                Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Range = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Ranged &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
                                                n.IsTargetIDNull() == false &&
-                                               n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                               n.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
                                                n.IsBattleIDNull() == false &&
                                                (xp == 0 ||
                                                n.BattlesRow.MinBaseExperience() == xp) &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                         select n,
-                                Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Spell = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Spell &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
                                                n.IsTargetIDNull() == false &&
-                                               n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                               n.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
                                                n.IsBattleIDNull() == false &&
                                                (xp == 0 ||
                                                n.BattlesRow.MinBaseExperience() == xp) &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                         select n,
-                                Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Ability = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                           where ((ActionType)n.ActionType == ActionType.Ability &&
                                                  ((HarmType)n.HarmType == HarmType.Damage ||
                                                   (HarmType)n.HarmType == HarmType.Drain ||
                                                   (HarmType)n.HarmType == HarmType.Unknown) &&
                                                  n.IsTargetIDNull() == false &&
-                                                 n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                                 n.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
                                                  n.IsBattleIDNull() == false &&
                                                  (xp == 0 ||
                                                  n.BattlesRow.MinBaseExperience() == xp) &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                           select n,
-                                WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                WSkill = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                          where ((ActionType)n.ActionType == ActionType.Weaponskill &&
                                                 ((HarmType)n.HarmType == HarmType.Damage ||
                                                  (HarmType)n.HarmType == HarmType.Drain) &&
                                                 n.IsTargetIDNull() == false &&
-                                                n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                                n.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
                                                 n.IsBattleIDNull() == false &&
                                                 (xp == 0 ||
                                                 n.BattlesRow.MinBaseExperience() == xp) &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                          select n,
-                                SC = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                SC = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                      where ((ActionType)n.ActionType == ActionType.Skillchain &&
                                             ((HarmType)n.HarmType == HarmType.Damage ||
                                              (HarmType)n.HarmType == HarmType.Drain) &&
                                             n.IsTargetIDNull() == false &&
-                                            n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                            n.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
                                             n.IsBattleIDNull() == false &&
                                             (xp == 0 ||
                                             n.BattlesRow.MinBaseExperience() == xp) &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                      select n,
-                                Counter = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Counter = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                           where ((ActionType)n.ActionType == ActionType.Counterattack &&
                                                  n.IsTargetIDNull() == false &&
-                                                 n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                                 n.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
                                                  n.IsBattleIDNull() == false &&
                                                  (xp == 0 ||
                                                  n.BattlesRow.MinBaseExperience() == xp) &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                           select n,
-                                Retaliate = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Retaliate = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                             where ((ActionType)n.ActionType == ActionType.Retaliation &&
                                                    n.IsTargetIDNull() == false &&
-                                                   n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                                   n.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
                                                    n.IsBattleIDNull() == false &&
                                                    (xp == 0 ||
                                                    n.BattlesRow.MinBaseExperience() == xp) &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                             select n,
-                                Spikes = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Spikes = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                          where ((ActionType)n.ActionType == ActionType.Spikes &&
                                                 n.IsTargetIDNull() == false &&
-                                                n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                                n.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
                                                 n.IsBattleIDNull() == false &&
                                                 (xp == 0 ||
                                                 n.BattlesRow.MinBaseExperience() == xp) &&
@@ -494,7 +494,7 @@ namespace WaywardGamers.KParser.Plugin
                             select new AttackGroup
                             {
                                 Player = c.CombatantName,
-                                Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Melee = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                         where ((n.IsBattleIDNull() == false) &&
                                                (n.BattleID == battleID) &&
                                                ((ActionType)n.ActionType == ActionType.Melee) &&
@@ -502,7 +502,7 @@ namespace WaywardGamers.KParser.Plugin
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                         select n,
-                                Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Range = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                         where ((n.IsBattleIDNull() == false) &&
                                                (n.BattleID == battleID) &&
                                                ((ActionType)n.ActionType == ActionType.Ranged) &&
@@ -510,7 +510,7 @@ namespace WaywardGamers.KParser.Plugin
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                         select n,
-                                Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Spell = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                         where ((n.IsBattleIDNull() == false) &&
                                                (n.BattleID == battleID) &&
                                                ((ActionType)n.ActionType == ActionType.Spell) &&
@@ -519,7 +519,7 @@ namespace WaywardGamers.KParser.Plugin
                                                 n.Preparing == false &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                         select n,
-                                Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Ability = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                           where ((n.IsBattleIDNull() == false) &&
                                                (n.BattleID == battleID) &&
                                                ((ActionType)n.ActionType == ActionType.Ability) &&
@@ -529,7 +529,7 @@ namespace WaywardGamers.KParser.Plugin
                                                 n.Preparing == false &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                           select n,
-                                WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                WSkill = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                          where ((n.IsBattleIDNull() == false) &&
                                                (n.BattleID == battleID) &&
                                                ((ActionType)n.ActionType == ActionType.Weaponskill) &&
@@ -538,26 +538,26 @@ namespace WaywardGamers.KParser.Plugin
                                                 n.Preparing == false &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                          select n,
-                                SC = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                SC = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                      where ((n.IsBattleIDNull() == false) &&
                                                (n.BattleID == battleID) &&
                                                ((ActionType)n.ActionType == ActionType.Skillchain) &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain))
                                      select n,
-                                Counter = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Counter = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                           where (n.IsBattleIDNull() == false) &&
                                                (n.BattleID == battleID) &&
                                                ((ActionType)n.ActionType == ActionType.Counterattack &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                           select n,
-                                Retaliate = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Retaliate = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                             where (n.IsBattleIDNull() == false) &&
                                                (n.BattleID == battleID) &&
                                                ((ActionType)n.ActionType == ActionType.Retaliation &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                             select n,
-                                Spikes = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                Spikes = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                          where (n.IsBattleIDNull() == false) &&
                                                (n.BattleID == battleID) &&
                                                ((ActionType)n.ActionType == ActionType.Spikes)
