@@ -63,6 +63,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DefenseFrequency.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="EnfeeblePlugin.cs">
       <SubType>UserControl</SubType>
     </Compile>
