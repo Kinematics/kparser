@@ -64,7 +64,7 @@
     <Compile Include="ExperienceListViewPlugin.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PlayerInfo.cs">
+    <Compile Include="PlayerInfoPlugin.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
