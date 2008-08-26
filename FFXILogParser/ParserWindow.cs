@@ -753,22 +753,24 @@ namespace WaywardGamers.KParser
                 return;
             }
 
+            var sortedPluginList = pluginList.OrderBy(p => p.TabName).ToList();
+
             // Create a menu item and tab page for each plugin, with synced indexes.
-            for (int i = 0; i < pluginList.Count; i++)
+            for (int i = 0; i < sortedPluginList.Count; i++)
             {
-                ToolStripMenuItem tsmi = new ToolStripMenuItem(pluginList[i].TabName);
-                tsmi.Name = pluginList[i].TabName;
+                ToolStripMenuItem tsmi = new ToolStripMenuItem(sortedPluginList[i].TabName);
+                tsmi.Name = sortedPluginList[i].TabName;
                 tsmi.CheckOnClick = true;
                 tsmi.CheckedChanged += new EventHandler(tabMenuItem_CheckedChanged);
                 windowsMenu.DropDownItems.Add(tsmi);
 
-                TabPage tp = new TabPage(pluginList[i].TabName);
+                TabPage tp = new TabPage(sortedPluginList[i].TabName);
                 tp.Tag = i.ToString();
                 tabList.Add(tp);
 
                 BuildTab(tp, pluginList[i]);
 
-                tsmi.Checked = activePluginList.Contains(pluginList[i]);
+                tsmi.Checked = activePluginList.Contains(sortedPluginList[i]);
             }
 
             if (pluginTabs.TabCount > 0)
