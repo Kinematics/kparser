@@ -76,6 +76,9 @@ namespace WaywardGamers.KParser.Plugin
             // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
             if (e.DatasetChanges.Battles != null)
             {
+                if (checkBox1.Checked == true)
+                    checkBox1.Checked = false;
+
                 UpdateMobList(e.Dataset);
                 InitComboBox2SelectionLast();
             }
