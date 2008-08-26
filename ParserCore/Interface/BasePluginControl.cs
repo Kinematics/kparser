@@ -113,6 +113,17 @@ namespace WaywardGamers.KParser.Plugin
             throw new NotImplementedException();
         }
 
+        protected void ResetTextBox()
+        {
+            if (this.InvokeRequired)
+            {
+                Action thisFunc = ResetTextBox;
+                Invoke(thisFunc);
+                return;
+            }
+
+            this.richTextBox.Clear();
+        }
         #endregion
 
         #region Helper Methods for adding text to RTF control
