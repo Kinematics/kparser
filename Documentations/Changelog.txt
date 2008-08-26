@@ -2,8 +2,8 @@ KParser Change Log
 
 1.0.9
 + Added dialog to allow access to database field to store small bits of info (100 characters of data) about combatants.  This field will probably be expanded when the database is next modified.
-+ Addition of Offense and Defense detail/frequency plugins.  Note that these are processor-intensive, and should not be open during normal parsing.
-+ For Frequency plugins, a '+' denotes a mode value (occurs most frequently in sample set) and a '^' denotes a median value (frequency of occurances above and below the given sample is roughly equal).
++ Addition of Offense and Defense detail/frequency plugins.  Note that these are processor-intensive when run on the full dataset, so the filtering is automatically set to single-battle only while parsing is active.
++ For Frequency plugins, a '+' denotes a mode value (occurs most frequently in sample set, may occur multiple times) and a '^' denotes a median value (frequency of occurances above and below the given sample is roughly equal).
 * Plugin menu is sorted by name.
 
 
