@@ -292,7 +292,33 @@ namespace WaywardGamers.KParser
         #region Private Methods
         public void RequestUpdate()
         {
-            UpdateDatabase();
+            KPDatabaseDataSet datasetChanges = null;
+
+            lock (localDB)
+            {
+                try
+                {
+                    datasetChanges = (KPDatabaseDataSet)localDB.GetChanges();
+
+                    // Notify watchers so that they can view the database with
+                    // Row changed/inserted/deleted flags still visible
+                    OnDatabaseChanging(new DatabaseWatchEventArgs(localDB, datasetChanges));
+
+                    UpdateDatabase();
+
+                    // Notify watchers when database has been fully updated.
+                    OnDatabaseChanged(new DatabaseWatchEventArgs(localDB, null));
+                }
+                catch (Exception e)
+                {
+                    Logger.Instance.Log(e);
+                }
+                finally
+                {
+                    if (datasetChanges != null)
+                        datasetChanges.Dispose();
+                }
+            }
         }
 
         private void UpdateDatabase()
