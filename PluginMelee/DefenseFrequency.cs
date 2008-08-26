@@ -57,65 +57,33 @@ namespace WaywardGamers.KParser.Plugin
             ResetTextBox();
 
             UpdatePlayerList(dataSet);
+            InitComboBox1Selection();
+
             UpdateMobList(dataSet);
+            InitComboBox2Selection();
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
         {
+            string currentlySelectedPlayer = comboBox1.SelectedValue.ToString();
+
+            // Check for new combatants
+            if (e.DatasetChanges.Combatants != null)
+            {
+                UpdatePlayerList(e.Dataset);
+            }
+
             // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
             if (e.DatasetChanges.Battles != null)
             {
-                if (e.DatasetChanges.Battles.Count > 0)
-                {
-                    var mobsFought = from b in e.DatasetChanges.Battles
-                                     where ((b.DefaultBattle == false) &&
-                                            (b.IsEnemyIDNull() == false) &&
-                                            (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
-                                     group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
-                                     select new
-                                     {
-                                         Name = bn.Key,
-                                         XP = from xb in bn
-                                              group xb by xb.MinBaseExperience() into xbn
-                                              orderby xbn.Key
-                                              select new { BaseXP = xbn.Key }
-                                     };
-
-
-                    if (mobsFought.Count() > 0)
-                    {
-                        string mobWithXP;
-
-                        foreach (var mob in mobsFought)
-                        {
-                            if (comboBox2.Items.Contains(mob.Name) == false)
-                                AddToComboBox2(mob.Name);
-
-                            foreach (var xp in mob.XP)
-                            {
-                                if (xp.BaseXP > 0)
-                                {
-                                    mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP);
-
-                                    if (comboBox2.Items.Contains(mobWithXP) == false)
-                                        AddToComboBox2(mobWithXP);
-
-                                    // Check for existing entry with higher min base xp
-                                    mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP + 1);
-
-                                    if (comboBox2.Items.Contains(mobWithXP))
-                                        RemoveFromComboBox2(mobWithXP);
-                                }
-                            }
-                        }
-                    }
-                }
+                UpdateMobList(e.Dataset);
+                InitComboBox2SelectionLast();
             }
 
-            if (e.DatasetChanges.Interactions.Count != 0)
+            if ((comboBox1.SelectedIndex < 0) ||
+                (currentlySelectedPlayer != comboBox1.SelectedValue.ToString()))
             {
-                datasetToUse = e.Dataset;
-                return true;
+                InitComboBox1Selection(currentlySelectedPlayer);
             }
 
             datasetToUse = null;
@@ -127,7 +95,6 @@ namespace WaywardGamers.KParser.Plugin
         private void UpdatePlayerList(KPDatabaseDataSet dataSet)
         {
             ResetComboBox1();
-            AddToComboBox1("All");
 
             var playersFighting = from b in dataSet.Combatants
                                   where ((b.CombatantType == (byte)EntityType.Player ||
@@ -141,6 +108,7 @@ namespace WaywardGamers.KParser.Plugin
                                   };
 
             List<string> playerStrings = new List<string>();
+            playerStrings.Add("All");
 
             foreach (var player in playersFighting)
                 playerStrings.Add(player.Name);
@@ -154,7 +122,6 @@ namespace WaywardGamers.KParser.Plugin
         private void UpdateMobList(KPDatabaseDataSet dataSet)
         {
             ResetComboBox2();
-            AddToComboBox2("All");
 
             // Group enemies check
 
@@ -178,6 +145,7 @@ namespace WaywardGamers.KParser.Plugin
                                  };
 
                 List<string> mobXPStrings = new List<string>();
+                mobXPStrings.Add("All");
 
                 foreach (var mob in mobsKilled)
                 {
@@ -209,6 +177,7 @@ namespace WaywardGamers.KParser.Plugin
                                  };
 
                 List<string> mobXPStrings = new List<string>();
+                mobXPStrings.Add("All");
 
                 int numMobsKilled = mobsKilled.Count();
 
@@ -220,8 +189,6 @@ namespace WaywardGamers.KParser.Plugin
 
                 AddToComboBox2(mobXPStrings.ToArray());
             }
-
-            InitComboBox2Selection();
         }
         #endregion
 
@@ -243,6 +210,7 @@ namespace WaywardGamers.KParser.Plugin
             {
                 checkBox1Changed = false;
                 UpdateMobList(dataSet);
+                InitComboBox2Selection();
             }
 
 
