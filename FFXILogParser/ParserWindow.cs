@@ -230,7 +230,6 @@ namespace WaywardGamers.KParser
 
         private void menuContinueParse_Click(object sender, EventArgs e)
         {
-            
             // Let the database notify us of changes, and we'll notify the active plugins.
             DatabaseManager.Instance.DatabaseChanging += MonitorDatabaseChanging;
             DatabaseManager.Instance.DatabaseChanged += MonitorDatabaseChanged;
@@ -503,7 +502,8 @@ namespace WaywardGamers.KParser
                 return;
             }
 
-            PlayerInfo infoForm = new PlayerInfo();
+            AddMonitorChanging();
+            PlayerInfo infoForm = new PlayerInfo(this);
             infoForm.Show(this);
         }
 
@@ -618,8 +618,6 @@ namespace WaywardGamers.KParser
             {
                 Cursor.Current = Cursors.Default;
             }
-
-
         }
 
         private void MonitorReparse(object sender, Monitoring.DatabaseReparseEventArgs e)
@@ -1020,6 +1018,16 @@ namespace WaywardGamers.KParser
                     plugin.WatchDatabaseChanging(sender, e);
                 }
             }
+        }
+
+        private void AddMonitorChanging()
+        {
+            DatabaseManager.Instance.DatabaseChanging += MonitorDatabaseChanging;
+        }
+
+        public void RemoveMonitorChanging()
+        {
+            DatabaseManager.Instance.DatabaseChanging -= MonitorDatabaseChanging;
         }
 
         private void MonitorDatabaseChanged(object sender, DatabaseWatchEventArgs e)
