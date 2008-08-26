@@ -246,6 +246,19 @@ namespace WaywardGamers.KParser.Plugin
                 this.comboBox2.Items.RemoveAt(foundIndex);
         }
 
+        protected void InitComboBox1Selection(string newSelection)
+        {
+            if (this.InvokeRequired)
+            {
+                Action thisFunc = InitComboBox2Selection;
+                Invoke(thisFunc);
+                return;
+            }
+
+            if (this.comboBox1.Items.Count > 0)
+                this.comboBox1.SelectedValue = newSelection;
+        }
+
         protected void InitComboBox1Selection()
         {
             if (this.InvokeRequired)
@@ -259,6 +272,32 @@ namespace WaywardGamers.KParser.Plugin
                 this.comboBox1.SelectedIndex = 0;
         }
 
+        protected void InitComboBox1SelectionLast()
+        {
+            if (this.InvokeRequired)
+            {
+                Action thisFunc = InitComboBox2Selection;
+                Invoke(thisFunc);
+                return;
+            }
+
+            if (this.comboBox1.Items.Count > 0)
+                this.comboBox1.SelectedIndex = this.comboBox1.Items.Count - 1;
+        }
+
+        protected void InitComboBox2Selection(string newSelection)
+        {
+            if (this.InvokeRequired)
+            {
+                Action thisFunc = InitComboBox2Selection;
+                Invoke(thisFunc);
+                return;
+            }
+
+            if (this.comboBox2.Items.Count > 0)
+                this.comboBox2.SelectedValue = newSelection;
+        }
+
         protected void InitComboBox2Selection()
         {
             if (this.InvokeRequired)
@@ -270,6 +309,19 @@ namespace WaywardGamers.KParser.Plugin
 
             if (this.comboBox2.Items.Count > 0)
                 this.comboBox2.SelectedIndex = 0;
+        }
+
+        protected void InitComboBox2SelectionLast()
+        {
+            if (this.InvokeRequired)
+            {
+                Action thisFunc = InitComboBox2Selection;
+                Invoke(thisFunc);
+                return;
+            }
+
+            if (this.comboBox2.Items.Count > 0)
+                this.comboBox2.SelectedIndex = comboBox2.Items.Count - 1;
         }
 
         protected void AppendBoldText(string textToInsert, Color color)
