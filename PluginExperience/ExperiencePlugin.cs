@@ -16,7 +16,7 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void Reset()
         {
-            richTextBox.Clear();
+            ResetTextBox();
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
@@ -36,7 +36,7 @@ namespace WaywardGamers.KParser.Plugin
 
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
-            richTextBox.Clear();
+            ResetTextBox();
             ProcessExperience(dataSet);
             ProcessMobs(dataSet);
         }
