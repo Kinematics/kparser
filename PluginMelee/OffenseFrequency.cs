@@ -55,8 +55,6 @@ namespace WaywardGamers.KParser.Plugin
             checkBox2.Text = "Show Detail";
             flagNoUpdate = true;
             checkBox2.Checked = false;
-
-            richTextBox.Clear();
         }
 
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
