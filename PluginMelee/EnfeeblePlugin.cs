@@ -28,6 +28,7 @@ namespace WaywardGamers.KParser.Plugin
             comboBox1.Items.Clear();
             comboBox1.Items.Add("Debuff Mobs");
             comboBox1.Items.Add("Debuff Players");
+            flagNoUpdate = true;
             comboBox1.SelectedIndex = 0;
 
             label2.Left = comboBox1.Right + 20;
@@ -36,6 +37,7 @@ namespace WaywardGamers.KParser.Plugin
             comboBox2.Width = 150;
             comboBox2.Items.Clear();
             comboBox2.Items.Add("All");
+            flagNoUpdate = true;
             comboBox2.SelectedIndex = 0;
 
             checkBox1.Enabled = false;
@@ -46,57 +48,14 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
-            ResetComboBox2();
-            AddStringToComboBox2("All");
             ResetTextBox();
 
-            if (dataSet.Battles.Count > 1)
-            {
-                var mobsKilled = from b in dataSet.Battles
-                                 where ((b.DefaultBattle == false) &&
-                                        (b.IsEnemyIDNull() == false) &&
-                                        (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
-                                 orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
-                                 group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
-                                 select new
-                                 {
-                                     Name = bn.Key,
-                                     XP = from xb in bn
-                                          group xb by xb.MinBaseExperience() into xbn
-                                          orderby xbn.Key
-                                          select new { BaseXP = xbn.Key }
-                                 };
+            UpdateMobList(dataSet);
 
-                if (mobsKilled.Count() > 0)
-                {
-                    // Add to the Reset list
-
-                    string mobWithXP;
-
-                    foreach (var mob in mobsKilled)
-                    {
-                        AddStringToComboBox2(mob.Name);
-
-                        if (mob.XP.Count() > 1)
-                        {
-                            foreach (var xp in mob.XP)
-                            {
-                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP);
-
-                                AddStringToComboBox2(mobWithXP);
-
-                                // Check for existing entry with higher min base xp
-                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP + 1);
-
-                                if (comboBox2.Items.Contains(mobWithXP))
-                                    RemoveFromComboBox2(mobWithXP);
-                            }
-                        }
-                    }
-                }
-            }
-
+            flagNoUpdate = true;
             InitComboBox2Selection();
+
+            ProcessData(dataSet);
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
@@ -166,8 +125,52 @@ namespace WaywardGamers.KParser.Plugin
         }
         #endregion
 
+        #region Private functions
+        private void UpdateMobList(KPDatabaseDataSet dataSet)
+        {
+            ResetComboBox2();
+
+            // Enemy group listing
+
+            var mobsKilled = from b in dataSet.Battles
+                             where ((b.DefaultBattle == false) &&
+                                    (b.IsEnemyIDNull() == false) &&
+                                    (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
+                             orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
+                             group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
+                             select new
+                             {
+                                 Name = bn.Key,
+                                 XP = from xb in bn
+                                      group xb by xb.MinBaseExperience() into xbn
+                                      orderby xbn.Key
+                                      select new { BaseXP = xbn.Key }
+                             };
+
+            List<string> mobXPStrings = new List<string>();
+            mobXPStrings.Add("All");
+
+            foreach (var mob in mobsKilled)
+            {
+                mobXPStrings.Add(mob.Name);
+
+                foreach (var xp in mob.XP)
+                {
+                    if (xp.BaseXP > 0)
+                        mobXPStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
+                }
+            }
+
+            AddArrayToComboBox2(mobXPStrings.ToArray());
+
+        }
+        #endregion
+
+
         #region Member Variables
-        string debuffMobHeader    = "Debuff              Used on                 # Times   # Successful   # No Effect   % Successful\n";
+        bool flagNoUpdate = false;
+
+        string debuffMobHeader = "Debuff              Used on                 # Times   # Successful   # No Effect   % Successful\n";
         string debuffPlayerHeader = "Debuff              Used on                 # Times   # Successful   # No Effect   % Successful\n";
         #endregion
 
@@ -401,12 +404,18 @@ namespace WaywardGamers.KParser.Plugin
         #region Event Handlers
         protected override void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            HandleDataset(DatabaseManager.Instance.Database);
+            if (flagNoUpdate == false)
+                HandleDataset(DatabaseManager.Instance.Database);
+
+            flagNoUpdate = false;
         }
 
         protected override void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            HandleDataset(DatabaseManager.Instance.Database);
+            if (flagNoUpdate == false)
+                HandleDataset(DatabaseManager.Instance.Database);
+
+            flagNoUpdate = false;
         }
         #endregion
     }
