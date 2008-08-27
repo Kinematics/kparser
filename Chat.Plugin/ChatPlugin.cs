@@ -44,14 +44,14 @@ namespace WaywardGamers.KParser.Plugin
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
             ResetComboBox2();
-            AddToComboBox2("All");
+            AddStringToComboBox2("All");
             ResetTextBox();
 
             var speakerList = dataSet.ChatSpeakers.OrderBy(s => s.SpeakerName);
 
             foreach (var speaker in speakerList)
             {
-                AddToComboBox2(speaker.SpeakerName);
+                AddStringToComboBox2(speaker.SpeakerName);
             }
 
             InitComboBox2Selection();
@@ -63,7 +63,7 @@ namespace WaywardGamers.KParser.Plugin
             {
                 foreach (var speaker in e.DatasetChanges.ChatSpeakers)
                 {
-                    AddToComboBox2(speaker.SpeakerName);
+                    AddStringToComboBox2(speaker.SpeakerName);
                 }
 
                 datasetToUse = e.DatasetChanges;
