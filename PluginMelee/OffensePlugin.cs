@@ -161,8 +161,6 @@ namespace WaywardGamers.KParser.Plugin
         {
             ResetComboBox2();
 
-            // Group enemies check
-
             // Enemy group listing
 
             var mobsKilled = from b in dataSet.Battles
