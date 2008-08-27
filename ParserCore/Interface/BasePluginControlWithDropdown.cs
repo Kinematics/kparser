@@ -355,7 +355,7 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             if (comboBox1.SelectedIndex >= 0)
-                return comboBox1.SelectedValue.ToString();
+                return comboBox1.SelectedItem.ToString();
             else
                 return "";
         }
@@ -369,7 +369,7 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             if (comboBox2.SelectedIndex >= 0)
-                return comboBox2.SelectedValue.ToString();
+                return comboBox2.SelectedItem.ToString();
             else
                 return "";
         }
