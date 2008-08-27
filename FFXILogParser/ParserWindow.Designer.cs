@@ -56,11 +56,11 @@ namespace WaywardGamers.KParser
             this.toolsTestFunctionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsReparseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.playerInformationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
-            this.playerInformationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip.SuspendLayout();
             this.tabContextMenuStrip.SuspendLayout();
             this.mainMenuStrip.SuspendLayout();
@@ -164,7 +164,7 @@ namespace WaywardGamers.KParser
             this.beginParseAndSaveDataMenuItem.Name = "beginParseAndSaveDataMenuItem";
             this.beginParseAndSaveDataMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
             this.beginParseAndSaveDataMenuItem.Size = new System.Drawing.Size(265, 22);
-            this.beginParseAndSaveDataMenuItem.Text = "Begin Parse and Save Data...";
+            this.beginParseAndSaveDataMenuItem.Text = "Begin &Parse and Save Data...";
             this.beginParseAndSaveDataMenuItem.Click += new System.EventHandler(this.menuBeginParseWithSave_Click);
             // 
             // beginDefaultParseMenuItem
@@ -172,7 +172,7 @@ namespace WaywardGamers.KParser
             this.beginDefaultParseMenuItem.Name = "beginDefaultParseMenuItem";
             this.beginDefaultParseMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
             this.beginDefaultParseMenuItem.Size = new System.Drawing.Size(265, 22);
-            this.beginDefaultParseMenuItem.Text = "Begin Default Parse";
+            this.beginDefaultParseMenuItem.Text = "Begin &Default Parse";
             this.beginDefaultParseMenuItem.Click += new System.EventHandler(this.menuBeginDefaultParse_Click);
             // 
             // quitParsingMenuItem
@@ -180,7 +180,7 @@ namespace WaywardGamers.KParser
             this.quitParsingMenuItem.Name = "quitParsingMenuItem";
             this.quitParsingMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
             this.quitParsingMenuItem.Size = new System.Drawing.Size(265, 22);
-            this.quitParsingMenuItem.Text = "Quit Parsing";
+            this.quitParsingMenuItem.Text = "&Quit Parsing";
             this.quitParsingMenuItem.Click += new System.EventHandler(this.menuStopParse_Click);
             // 
             // toolStripSeparator1
@@ -193,7 +193,7 @@ namespace WaywardGamers.KParser
             this.openSavedDataMenuItem.Name = "openSavedDataMenuItem";
             this.openSavedDataMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.openSavedDataMenuItem.Size = new System.Drawing.Size(265, 22);
-            this.openSavedDataMenuItem.Text = "Open Saved Data";
+            this.openSavedDataMenuItem.Text = "&Open Saved Data";
             this.openSavedDataMenuItem.Click += new System.EventHandler(this.menuOpenSavedData_Click);
             // 
             // continueParsingMenuItem
@@ -208,15 +208,15 @@ namespace WaywardGamers.KParser
             this.saveCurrentDataAsMenuItem.Name = "saveCurrentDataAsMenuItem";
             this.saveCurrentDataAsMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveCurrentDataAsMenuItem.Size = new System.Drawing.Size(265, 22);
-            this.saveCurrentDataAsMenuItem.Text = "Save Current Data As...";
+            this.saveCurrentDataAsMenuItem.Text = "&Save Current Data As...";
             this.saveCurrentDataAsMenuItem.Click += new System.EventHandler(this.menuSaveDataAs_Click);
             // 
             // saveReportMenuItem
             // 
-            this.saveReportMenuItem.Enabled = false;
             this.saveReportMenuItem.Name = "saveReportMenuItem";
             this.saveReportMenuItem.Size = new System.Drawing.Size(265, 22);
-            this.saveReportMenuItem.Text = "Save Report";
+            this.saveReportMenuItem.Text = "Save Report...";
+            this.saveReportMenuItem.Click += new System.EventHandler(this.menuSaveReport_Click);
             // 
             // toolStripSeparator2
             // 
@@ -240,7 +240,7 @@ namespace WaywardGamers.KParser
             this.exitMenuItem.Name = "exitMenuItem";
             this.exitMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
             this.exitMenuItem.Size = new System.Drawing.Size(265, 22);
-            this.exitMenuItem.Text = "Exit";
+            this.exitMenuItem.Text = "E&xit";
             this.exitMenuItem.Click += new System.EventHandler(this.menuExit_Click);
             // 
             // toolsMenu
@@ -269,13 +269,21 @@ namespace WaywardGamers.KParser
             this.toolsReparseMenuItem.Name = "toolsReparseMenuItem";
             this.toolsReparseMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
             this.toolsReparseMenuItem.Size = new System.Drawing.Size(258, 22);
-            this.toolsReparseMenuItem.Text = "Reparse/Upgrade Database";
+            this.toolsReparseMenuItem.Text = "Reparse/&Upgrade Database";
             this.toolsReparseMenuItem.Click += new System.EventHandler(this.databaseReparse_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(255, 6);
+            // 
+            // playerInformationToolStripMenuItem
+            // 
+            this.playerInformationToolStripMenuItem.Name = "playerInformationToolStripMenuItem";
+            this.playerInformationToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
+            this.playerInformationToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.playerInformationToolStripMenuItem.Text = "Player &Information";
+            this.playerInformationToolStripMenuItem.Click += new System.EventHandler(this.playerInformationToolStripMenuItem_Click);
             // 
             // optionsToolStripMenuItem
             // 
@@ -306,14 +314,6 @@ namespace WaywardGamers.KParser
             // 
             this.windowsToolStripSeparator.Name = "windowsToolStripSeparator";
             this.windowsToolStripSeparator.Size = new System.Drawing.Size(149, 6);
-            // 
-            // playerInformationToolStripMenuItem
-            // 
-            this.playerInformationToolStripMenuItem.Name = "playerInformationToolStripMenuItem";
-            this.playerInformationToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
-            this.playerInformationToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
-            this.playerInformationToolStripMenuItem.Text = "Player &Information";
-            this.playerInformationToolStripMenuItem.Click += new System.EventHandler(this.playerInformationToolStripMenuItem_Click);
             // 
             // ParserWindow
             // 
