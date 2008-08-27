@@ -21,14 +21,14 @@ namespace WaywardGamers.KParser.Plugin
         IEnumerable<AttackGroup> attackSet = null;
 
         string summaryHeader = "Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg\n";
-        string meleeHeader = "Player            Melee Dmg   Melee %   Hit/Miss   M.Acc %  M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
-        string rangeHeader = "Player            Range Dmg   Range %   Hit/Miss   R.Acc %  R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
-        string spellHeader = "Player                  Spell Dmg   Spell %  #Spells  #Fail  S.Low/Hi     S.Avg  #MBurst  MB.Low/Hi   MB.Avg\n";
-        string abilHeader = "Player                  Abil. Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg\n";
-        string wskillHeader = "Player                 WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg\n";
+        string meleeHeader   = "Player            Melee Dmg   Melee %   Hit/Miss   M.Acc %  M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
+        string rangeHeader   = "Player            Range Dmg   Range %   Hit/Miss   R.Acc %  R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
+        string spellHeader   = "Player                  Spell Dmg   Spell %  #Spells  #Fail  S.Low/Hi     S.Avg  #MBurst  MB.Low/Hi   MB.Avg\n";
+        string abilHeader    = "Player                  Abil. Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg\n";
+        string wskillHeader  = "Player                 WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg\n";
         string skillchainHeader = "Skillchain          SC Dmg  # SC  SC.Low/Hi  SC.Avg\n";
-        string otherMHeader = "Player            M.AE Dmg  # M.AE  M.AE Avg   R.AE Dmg  # R.AE  R.AE Avg   Spk.Dmg  # Spike  Spk.Avg\n";
-        string otherPHeader = "Player            CA.Dmg  CA.Hit/Miss  CA.Low/Hi  CA.Avg   Ret.Dmg  Ret.Hit/Miss  Ret.Low/Hi  Ret.Avg\n";
+        string otherMHeader  = "Player            M.AE Dmg  # M.AE  M.AE Avg   R.AE Dmg  # R.AE  R.AE Avg   Spk.Dmg  # Spike  Spk.Avg\n";
+        string otherPHeader  = "Player            CA.Dmg  CA.Hit/Miss  CA.Low/Hi  CA.Avg   Ret.Dmg  Ret.Hit/Miss  Ret.Low/Hi  Ret.Avg\n";
         #endregion
 
         #region IPlugin Overrides
@@ -475,47 +475,53 @@ namespace WaywardGamers.KParser.Plugin
                 totalDamage += localDamage;
             }
 
+            List<StringMods> strModList = new List<StringMods>();
+            StringBuilder sb = new StringBuilder();
+
             switch (actionSourceFilter)
             {
                 // Unknown == "All"
                 case "All":
-                    ProcessAttackSummary(attackSet);
-                    ProcessMeleeAttacks(attackSet);
-                    ProcessRangedAttacks(attackSet);
-                    ProcessOtherAttacks(attackSet);
-                    ProcessWeaponskillAttacks(attackSet);
-                    ProcessAbilityAttacks(attackSet);
-                    ProcessSpellsAttacks(attackSet);
-                    ProcessSkillchains(attackSet);
+                    ProcessAttackSummary(attackSet, ref sb, ref strModList);
+                    ProcessMeleeAttacks(attackSet, ref sb, ref strModList);
+                    ProcessRangedAttacks(attackSet, ref sb, ref strModList);
+                    ProcessOtherAttacks(attackSet, ref sb, ref strModList);
+                    ProcessWeaponskillAttacks(attackSet, ref sb, ref strModList);
+                    ProcessAbilityAttacks(attackSet, ref sb, ref strModList);
+                    ProcessSpellsAttacks(attackSet, ref sb, ref strModList);
+                    ProcessSkillchains(attackSet, ref sb, ref strModList);
                     break;
                 case "Summary":
-                    ProcessAttackSummary(attackSet);
+                    ProcessAttackSummary(attackSet, ref sb, ref strModList);
                     break;
                 case "Melee":
-                    ProcessMeleeAttacks(attackSet);
+                    ProcessMeleeAttacks(attackSet, ref sb, ref strModList);
                     break;
                 case "Ranged":
-                    ProcessRangedAttacks(attackSet);
+                    ProcessRangedAttacks(attackSet, ref sb, ref strModList);
                     break;
                 case "Spell":
-                    ProcessSpellsAttacks(attackSet);
+                    ProcessSpellsAttacks(attackSet, ref sb, ref strModList);
                     break;
                 case "Ability":
-                    ProcessAbilityAttacks(attackSet);
+                    ProcessAbilityAttacks(attackSet, ref sb, ref strModList);
                     break;
                 case "Weaponskill":
-                    ProcessWeaponskillAttacks(attackSet);
+                    ProcessWeaponskillAttacks(attackSet, ref sb, ref strModList);
                     break;
                 case "Skillchain":
-                    ProcessSkillchains(attackSet);
+                    ProcessSkillchains(attackSet, ref sb, ref strModList);
                     break;
                 case "Other":
-                    ProcessOtherAttacks(attackSet);
+                    ProcessOtherAttacks(attackSet, ref sb, ref strModList);
                     break;
             }
+
+            PushStrings(sb, strModList);
         }
 
-        private void ProcessAttackSummary(IEnumerable<AttackGroup> attacksByPlayer)
+        private void ProcessAttackSummary(IEnumerable<AttackGroup> attacksByPlayer,
+            ref StringBuilder sb, ref List<StringMods> strModList)
         {
             if (attacksByPlayer == null)
                 return;
@@ -523,8 +529,25 @@ namespace WaywardGamers.KParser.Plugin
             if (attacksByPlayer.Count() == 0)
                 return;
 
-            AppendBoldText("Damage Summary\n", Color.Red);
-            AppendBoldUnderText(summaryHeader, Color.Black);
+            string tmpText = "Damage Summary\n";
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = tmpText.Length,
+                Bold = true,
+                Color = Color.Red
+            });
+            sb.Append(tmpText);
+
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = summaryHeader.Length,
+                Bold = true,
+                Underline = true,
+                Color = Color.Black
+            });
+            sb.Append(summaryHeader);
 
             int playerDmg;
             double damageShare;
@@ -543,8 +566,6 @@ namespace WaywardGamers.KParser.Plugin
             int ttlAbilDmg = 0;
             int ttlWskillDmg = 0;
             int ttlOtherDmg = 0;
-
-            StringBuilder sb = new StringBuilder();
 
             foreach (var player in attacksByPlayer)
             {
@@ -580,32 +601,39 @@ namespace WaywardGamers.KParser.Plugin
                 }
             }
 
-            AppendNormalText(sb.ToString());
-
-            sb = new StringBuilder();
+            StringBuilder subSB = new StringBuilder();
 
             if (ttlPlayerDmg > 0)
             {
-                sb.Append("Total".PadRight(20));
-                
-                sb.Append(ttlPlayerDmg.ToString().PadLeft(10));
-                sb.Append(ttlDamageShare.ToString("P2").PadLeft(11));
+                subSB.Append("Total".PadRight(20));
 
-                sb.Append(ttlMeleeDmg.ToString().PadLeft(12));
-                sb.Append(ttlRangeDmg.ToString().PadLeft(12));
-                sb.Append(ttlAbilDmg.ToString().PadLeft(12));
-                sb.Append(ttlWskillDmg.ToString().PadLeft(12));
-                sb.Append(ttlSpellDmg.ToString().PadLeft(12));
-                sb.Append(ttlOtherDmg.ToString().PadLeft(11));
+                subSB.Append(ttlPlayerDmg.ToString().PadLeft(10));
+                subSB.Append(ttlDamageShare.ToString("P2").PadLeft(11));
 
-                sb.Append("\n");
-                AppendBoldText(sb.ToString(), Color.Black);
+                subSB.Append(ttlMeleeDmg.ToString().PadLeft(12));
+                subSB.Append(ttlRangeDmg.ToString().PadLeft(12));
+                subSB.Append(ttlAbilDmg.ToString().PadLeft(12));
+                subSB.Append(ttlWskillDmg.ToString().PadLeft(12));
+                subSB.Append(ttlSpellDmg.ToString().PadLeft(12));
+                subSB.Append(ttlOtherDmg.ToString().PadLeft(11));
+
+                subSB.Append("\n");
+
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = subSB.Length,
+                    Bold = true,
+                    Color = Color.Black
+                });
+                sb.Append(subSB.ToString());
             }
 
-            AppendNormalText("\n\n");
+            sb.Append("\n\n");
         }
 
-        private void ProcessMeleeAttacks(IEnumerable<AttackGroup> attacksByPlayer)
+        private void ProcessMeleeAttacks(IEnumerable<AttackGroup> attacksByPlayer,
+            ref StringBuilder sb, ref List<StringMods> strModList)
         {
             if (attacksByPlayer == null)
                 return;
@@ -613,7 +641,6 @@ namespace WaywardGamers.KParser.Plugin
             if (attacksByPlayer.Count() == 0)
                 return;
 
-            StringBuilder sb = new StringBuilder();
             bool headerDisplayed = false;
 
             int meleeDmg;
@@ -693,8 +720,25 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     if (headerDisplayed == false)
                     {
-                        AppendBoldText("Melee Damage\n", Color.Red);
-                        AppendBoldUnderText(meleeHeader, Color.Black);
+                        string tmpText = "Melee Damage\n";
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = tmpText.Length,
+                            Bold = true,
+                            Color = Color.Red
+                        });
+                        sb.Append(tmpText);
+
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = meleeHeader.Length,
+                            Bold = true,
+                            Underline = true,
+                            Color = Color.Black
+                        });
+                        sb.Append(meleeHeader);
 
                         headerDisplayed = true;
                     }
@@ -719,11 +763,11 @@ namespace WaywardGamers.KParser.Plugin
             if (headerDisplayed == true)
             {
                 sb.Append("\n\n");
-                AppendNormalText(sb.ToString());
             }
         }
 
-        private void ProcessRangedAttacks(IEnumerable<AttackGroup> attacksByPlayer)
+        private void ProcessRangedAttacks(IEnumerable<AttackGroup> attacksByPlayer,
+            ref StringBuilder sb, ref List<StringMods> strModList)
         {
             if (attacksByPlayer == null)
                 return;
@@ -731,7 +775,6 @@ namespace WaywardGamers.KParser.Plugin
             if (attacksByPlayer.Count() == 0)
                 return;
 
-            StringBuilder sb = new StringBuilder();
             bool headerDisplayed = false;
 
             int rangeDmg = 0;
@@ -810,8 +853,25 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     if (headerDisplayed == false)
                     {
-                        AppendBoldText("Ranged Damage\n", Color.Red);
-                        AppendBoldUnderText(rangeHeader, Color.Black);
+                        string tmpText = "Ranged Damage\n";
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = tmpText.Length,
+                            Bold = true,
+                            Color = Color.Red
+                        });
+                        sb.Append(tmpText);
+
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = rangeHeader.Length,
+                            Bold = true,
+                            Underline = true,
+                            Color = Color.Black
+                        });
+                        sb.Append(rangeHeader);
 
                         headerDisplayed = true;
                     }
@@ -837,11 +897,11 @@ namespace WaywardGamers.KParser.Plugin
             if (headerDisplayed == true)
             {
                 sb.Append("\n\n");
-                AppendNormalText(sb.ToString());
             }
         }
 
-        private void ProcessSpellsAttacks(IEnumerable<AttackGroup> attacksByPlayer)
+        private void ProcessSpellsAttacks(IEnumerable<AttackGroup> attacksByPlayer,
+            ref StringBuilder sb, ref List<StringMods> strModList)
         {
             if (attacksByPlayer == null)
                 return;
@@ -849,7 +909,6 @@ namespace WaywardGamers.KParser.Plugin
             if (attacksByPlayer.Count() == 0)
                 return;
 
-            StringBuilder sb = new StringBuilder();
             bool headerDisplayed = false;
 
             int spellDamage;
@@ -915,8 +974,25 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     if (headerDisplayed == false)
                     {
-                        AppendBoldText("Spell Damage\n", Color.Red);
-                        AppendBoldUnderText(spellHeader, Color.Black);
+                        string tmpText = "Spell Damage\n";
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = tmpText.Length,
+                            Bold = true,
+                            Color = Color.Red
+                        });
+                        sb.Append(tmpText);
+
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = spellHeader.Length,
+                            Bold = true,
+                            Underline = true,
+                            Color = Color.Black
+                        });
+                        sb.Append(spellHeader);
 
                         headerDisplayed = true;
                     }
@@ -1027,11 +1103,11 @@ namespace WaywardGamers.KParser.Plugin
             if (headerDisplayed == true)
             {
                 sb.Append("\n\n");
-                AppendNormalText(sb.ToString());
             }
         }
 
-        private void ProcessAbilityAttacks(IEnumerable<AttackGroup> attacksByPlayer)
+        private void ProcessAbilityAttacks(IEnumerable<AttackGroup> attacksByPlayer,
+            ref StringBuilder sb, ref List<StringMods> strModList)
         {
             if (attacksByPlayer == null)
                 return;
@@ -1039,7 +1115,6 @@ namespace WaywardGamers.KParser.Plugin
             if (attacksByPlayer.Count() == 0)
                 return;
 
-            StringBuilder sb = new StringBuilder();
             bool headerDisplayed = false;
 
             int abilityDamage;
@@ -1073,8 +1148,25 @@ namespace WaywardGamers.KParser.Plugin
 
                     if (headerDisplayed == false)
                     {
-                        AppendBoldText("Ability Damage\n", Color.Red);
-                        AppendBoldUnderText(abilHeader, Color.Black);
+                        string tmpText = "Ability Damage\n";
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = tmpText.Length,
+                            Bold = true,
+                            Color = Color.Red
+                        });
+                        sb.Append(tmpText);
+
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = abilHeader.Length,
+                            Bold = true,
+                            Underline = true,
+                            Color = Color.Black
+                        });
+                        sb.Append(abilHeader);
 
                         headerDisplayed = true;
                     }
@@ -1183,11 +1275,11 @@ namespace WaywardGamers.KParser.Plugin
             if (headerDisplayed == true)
             {
                 sb.Append("\n\n");
-                AppendNormalText(sb.ToString());
             }
         }
 
-        private void ProcessWeaponskillAttacks(IEnumerable<AttackGroup> attacksByPlayer)
+        private void ProcessWeaponskillAttacks(IEnumerable<AttackGroup> attacksByPlayer,
+            ref StringBuilder sb, ref List<StringMods> strModList)
         {
             if (attacksByPlayer == null)
                 return;
@@ -1195,7 +1287,6 @@ namespace WaywardGamers.KParser.Plugin
             if (attacksByPlayer.Count() == 0)
                 return;
 
-            StringBuilder sb = new StringBuilder();
             bool headerDisplayed = false;
 
             int wskillDamage;
@@ -1226,8 +1317,25 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (headerDisplayed == false)
                 {
-                    AppendBoldText("Weaponskill Damage\n", Color.Red);
-                    AppendBoldUnderText(wskillHeader, Color.Black);
+                    string tmpText = "Weaponskill Damage\n";
+                    strModList.Add(new StringMods
+                    {
+                        Start = sb.Length,
+                        Length = tmpText.Length,
+                        Bold = true,
+                        Color = Color.Red
+                    });
+                    sb.Append(tmpText);
+
+                    strModList.Add(new StringMods
+                    {
+                        Start = sb.Length,
+                        Length = wskillHeader.Length,
+                        Bold = true,
+                        Underline = true,
+                        Color = Color.Black
+                    });
+                    sb.Append(wskillHeader);
 
                     headerDisplayed = true;
                 }
@@ -1326,11 +1434,11 @@ namespace WaywardGamers.KParser.Plugin
             if (headerDisplayed == true)
             {
                 sb.Append("\n\n");
-                AppendNormalText(sb.ToString());
             }
         }
 
-        private void ProcessSkillchains(IEnumerable<AttackGroup> attacksByPlayer)
+        private void ProcessSkillchains(IEnumerable<AttackGroup> attacksByPlayer,
+            ref StringBuilder sb, ref List<StringMods> strModList)
         {
             if (attacksByPlayer == null)
                 return;
@@ -1338,7 +1446,6 @@ namespace WaywardGamers.KParser.Plugin
             if (attacksByPlayer.Count() == 0)
                 return;
 
-            StringBuilder sb = new StringBuilder();
             bool headerDisplayed = false;
 
             int scDamage;
@@ -1379,8 +1486,25 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     if (headerDisplayed == false)
                     {
-                        AppendBoldText("Skillchain Damage\n", Color.Red);
-                        AppendBoldUnderText(skillchainHeader, Color.Black);
+                        string tmpText = "Skillchain Damage\n";
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = tmpText.Length,
+                            Bold = true,
+                            Color = Color.Red
+                        });
+                        sb.Append(tmpText);
+
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = skillchainHeader.Length,
+                            Bold = true,
+                            Underline = true,
+                            Color = Color.Black
+                        });
+                        sb.Append(skillchainHeader);
 
                         headerDisplayed = true;
                     }
@@ -1399,11 +1523,11 @@ namespace WaywardGamers.KParser.Plugin
             if (headerDisplayed == true)
             {
                 sb.Append("\n\n");
-                AppendNormalText(sb.ToString());
             }
         }
 
-        private void ProcessOtherAttacks(IEnumerable<AttackGroup> attacksByPlayer)
+        private void ProcessOtherAttacks(IEnumerable<AttackGroup> attacksByPlayer,
+            ref StringBuilder sb, ref List<StringMods> strModList)
         {
             if (attacksByPlayer == null)
                 return;
@@ -1434,7 +1558,6 @@ namespace WaywardGamers.KParser.Plugin
             int retHigh;
             double retAvg;
 
-            StringBuilder sb = new StringBuilder();
             bool headerDisplayed = false;
 
             // Other magical damage
@@ -1472,15 +1595,32 @@ namespace WaywardGamers.KParser.Plugin
                 if (spkNum > 0)
                 {
                     spkDmg = player.SpikesDmg;
-                    spkAvg = (double) spkDmg / spkNum;
+                    spkAvg = (double)spkDmg / spkNum;
                 }
 
                 if ((maeNum + raeNum + spkNum) > 0)
                 {
                     if (headerDisplayed == false)
                     {
-                        AppendBoldText("Other Magical Damage  (Additional Effects and Spikes)\n", Color.Red);
-                        AppendBoldUnderText(otherMHeader, Color.Black);
+                        string tmpText = "Other Magical Damage  (Additional Effects and Spikes)\n";
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = tmpText.Length,
+                            Bold = true,
+                            Color = Color.Red
+                        });
+                        sb.Append(tmpText);
+
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = otherMHeader.Length,
+                            Bold = true,
+                            Underline = true,
+                            Color = Color.Black
+                        });
+                        sb.Append(otherMHeader);
 
                         headerDisplayed = true;
                     }
@@ -1495,10 +1635,8 @@ namespace WaywardGamers.KParser.Plugin
             if (headerDisplayed == true)
             {
                 sb.Append("\n\n");
-                AppendNormalText(sb.ToString());
             }
 
-            sb = new StringBuilder();
             headerDisplayed = false;
 
             // Other physical damage
@@ -1574,8 +1712,25 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     if (headerDisplayed == false)
                     {
-                        AppendBoldText("Other Physical Damage  (Counterattacks and Retaliations)\n", Color.Red);
-                        AppendBoldUnderText(otherPHeader, Color.Black);
+                        string tmpText = "Other Physical Damage  (Counterattacks and Retaliations)\n";
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = tmpText.Length,
+                            Bold = true,
+                            Color = Color.Red
+                        });
+                        sb.Append(tmpText);
+
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = otherPHeader.Length,
+                            Bold = true,
+                            Underline = true,
+                            Color = Color.Black
+                        });
+                        sb.Append(otherPHeader);
 
                         headerDisplayed = true;
                     }
@@ -1590,7 +1745,6 @@ namespace WaywardGamers.KParser.Plugin
             if (headerDisplayed == true)
             {
                 sb.Append("\n\n");
-                AppendNormalText(sb.ToString());
             }
         }
 
