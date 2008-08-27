@@ -270,11 +270,9 @@ namespace WaywardGamers.KParser
         /// <summary>
         /// Locate a recent message in the message collection given a set of code parameters.
         /// </summary>
-        /// <param name="mcode">The primary code to search for.</param>
-        /// <param name="ecode1">The first extended code to search for.</param>
-        /// <param name="ecode2">The second extended code to search for.</param>
+        /// <param name="messageLine">The original text line.</param>
         /// <param name="altCodes">A list of alternate primary codes to search for.</param>
-        /// <param name="timestamp">Timestamp of the original message</param>
+        /// <param name="parsedMessage">The message as it was previously parsed.</param>
         /// <returns>Returns the most recent found message that matches the request.</returns>
         internal Message FindLastMessageToMatch(MessageLine messageLine, List<uint> altCodes, Message parsedMessage)
         {
@@ -502,6 +500,56 @@ namespace WaywardGamers.KParser
                                      ) &&
                                      (m.EventDetails.CombatDetails.HasAdditionalEffect == false)));
 
+                            }
+                        }
+                    }
+                }
+
+                // No normal message search found a match, and no alt codes
+                // found a match.  Do one last check to match the msg code,
+                // but allow the ecodes to be anything.
+                if (msg == null)
+                {
+                    // Searching for multiple targets of -ga damage.  May have
+                    // the same name if they're mobs.
+                    if (parsedMessage != null)
+                    {
+                        if (parsedMessage.EventDetails != null)
+                        {
+                            if (parsedMessage.EventDetails.CombatDetails != null)
+                            {
+                                if (parsedMessage.EventDetails.CombatDetails.Targets != null)
+                                {
+                                    if ((ecode1 != 0) && (ecode2 != 0))
+                                    {
+                                        // If we have sub codes, include those in the first pass search
+                                        msg = searchSet.LastOrDefault(m =>
+                                            ((m.PrimaryMessageCode == mcode) &&
+                                             (m.EventDetails != null) &&
+                                             ((m.Timestamp >= minTimestamp) || (m.Timestamp == lastTimestamp)) &&
+                                             (m.EventDetails.CombatDetails != null) &&
+                                             (m.EventDetails.CombatDetails.ActorName != string.Empty) &&
+                                             (
+                                              (m.EventDetails.CombatDetails.Targets.Count == 0) ||
+                                              (
+                                               (parsedMessage == null) ||
+                                               (
+                                                (parsedMessage.EventDetails.CombatDetails.Targets.Count > 0) &&
+                                                ((m.EventDetails.CombatDetails.Targets.Any(t =>
+                                                   t.EffectName == parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true) ||
+                                                 (parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName == string.Empty)) &&
+                                                (m.EventDetails.CombatDetails.Targets.Any(t =>
+                                                   t.EntityType == parsedMessage.EventDetails.CombatDetails.Targets.First().EntityType) == true) &&
+                                                ((parsedMessage.EventDetails.CombatDetails.Targets.First().RecoveryType == RecoveryType.None) ||
+                                                 (m.EventDetails.CombatDetails.Targets.Any(t =>
+                                                   t.RecoveryType == parsedMessage.EventDetails.CombatDetails.Targets.First().RecoveryType))
+                                                )
+                                               )
+                                              )
+                                             ) &&
+                                             (m.EventDetails.CombatDetails.HasAdditionalEffect == false)));
+                                    }
+                                }
                             }
                         }
                     }
