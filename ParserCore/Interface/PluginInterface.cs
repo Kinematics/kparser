@@ -12,6 +12,7 @@ namespace WaywardGamers.KParser.Plugin
     {
         string TabName { get; }
         UserControl Control { get; }
+        string TextContents { get; }
 
         void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e);
         void WatchDatabaseChanged(object sender, DatabaseWatchEventArgs e);

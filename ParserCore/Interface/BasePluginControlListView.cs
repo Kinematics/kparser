@@ -39,6 +39,11 @@ namespace WaywardGamers.KParser.Plugin
             get { return (this as UserControl); }
         }
 
+        public string TextContents
+        {
+            get { throw new NotImplementedException(); }
+        }
+
         public void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
             KPDatabaseDataSet dataSet;

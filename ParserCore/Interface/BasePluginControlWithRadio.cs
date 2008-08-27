@@ -40,6 +40,11 @@ namespace WaywardGamers.KParser.Plugin
             get { return (this as UserControl); }
         }
 
+        public string TextContents
+        {
+            get { return this.richTextBox.Text; }
+        }
+
         public void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
             KPDatabaseDataSet dataSet;
