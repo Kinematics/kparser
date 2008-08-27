@@ -164,7 +164,7 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (this.InvokeRequired)
             {
-                Action thisFunc = ResetComboBox2;
+                Action thisFunc = ResetComboBox1;
                 Invoke(thisFunc);
                 return;
             }
@@ -251,7 +251,7 @@ namespace WaywardGamers.KParser.Plugin
             if (this.InvokeRequired)
             {
                 Action<string> thisFunc = InitComboBox1Selection;
-                Invoke(thisFunc, new object[] { p });
+                Invoke(thisFunc, new object[] { newSelection });
                 return;
             }
 
@@ -290,7 +290,7 @@ namespace WaywardGamers.KParser.Plugin
             if (this.InvokeRequired)
             {
                 Action<string> thisFunc = InitComboBox2Selection;
-                Invoke(thisFunc, new object[] { p });
+                Invoke(thisFunc, new object[] { newSelection });
                 return;
             }
 
@@ -323,6 +323,57 @@ namespace WaywardGamers.KParser.Plugin
             if (this.comboBox2.Items.Count > 0)
                 this.comboBox2.SelectedIndex = comboBox2.Items.Count - 1;
         }
+
+        protected int GetComboBox1Index()
+        {
+            if (this.InvokeRequired)
+            {
+                Func<int> thisFunc = GetComboBox1Index;
+                return ((int)Invoke(thisFunc));
+            }
+
+            return comboBox1.SelectedIndex;
+        }
+
+        protected int GetComboBox2Index()
+        {
+            if (this.InvokeRequired)
+            {
+                Func<int> thisFunc = GetComboBox2Index;
+                return ((int)Invoke(thisFunc));
+            }
+
+            return comboBox2.SelectedIndex;
+        }
+
+        protected string GetComboBox1Value()
+        {
+            if (this.InvokeRequired)
+            {
+                Func<string> thisFunc = GetComboBox1Value;
+                return ((string)Invoke(thisFunc));
+            }
+
+            if (comboBox1.SelectedIndex >= 0)
+                return comboBox1.SelectedValue.ToString();
+            else
+                return "";
+        }
+
+        protected string GetComboBox2Value()
+        {
+            if (this.InvokeRequired)
+            {
+                Func<string> thisFunc = GetComboBox2Value;
+                return ((string)Invoke(thisFunc));
+            }
+
+            if (comboBox2.SelectedIndex >= 0)
+                return comboBox2.SelectedValue.ToString();
+            else
+                return "";
+        }
+
 
         protected void AppendBoldText(string textToInsert, Color color)
         {
