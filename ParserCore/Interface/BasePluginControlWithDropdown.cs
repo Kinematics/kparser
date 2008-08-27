@@ -184,11 +184,11 @@ namespace WaywardGamers.KParser.Plugin
             this.comboBox2.Items.Clear();
         }
 
-        protected void AddToComboBox1(string p)
+        protected void AddStringToComboBox1(string p)
         {
             if (this.InvokeRequired)
             {
-                Action<string> thisFunc = AddToComboBox2;
+                Action<string> thisFunc = AddStringToComboBox1;
                 Invoke(thisFunc, new object[] { p });
                 return;
             }
@@ -196,11 +196,11 @@ namespace WaywardGamers.KParser.Plugin
             this.comboBox1.Items.Add(p);
         }
 
-        protected void AddToComboBox2(string p)
+        protected void AddStringToComboBox2(string p)
         {
             if (this.InvokeRequired)
             {
-                Action<string> thisFunc = AddToComboBox2;
+                Action<string> thisFunc = AddStringToComboBox2;
                 Invoke(thisFunc, new object[] { p });
                 return;
             }
@@ -208,11 +208,11 @@ namespace WaywardGamers.KParser.Plugin
             this.comboBox2.Items.Add(p);
         }
 
-        protected void AddToComboBox1(string[] p)
+        protected void AddArrayToComboBox1(string[] p)
         {
             if (this.InvokeRequired)
             {
-                Action<string> thisFunc = AddToComboBox2;
+                Action<string[]> thisFunc = AddArrayToComboBox1;
                 Invoke(thisFunc, new object[] { p });
                 return;
             }
@@ -220,11 +220,11 @@ namespace WaywardGamers.KParser.Plugin
             this.comboBox1.Items.AddRange(p);
         }
 
-        protected void AddToComboBox2(string[] p)
+        protected void AddArrayToComboBox2(string[] p)
         {
             if (this.InvokeRequired)
             {
-                Action<string> thisFunc = AddToComboBox2;
+                Action<string[]> thisFunc = AddArrayToComboBox2;
                 Invoke(thisFunc, new object[] { p });
                 return;
             }
@@ -236,7 +236,7 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (this.InvokeRequired)
             {
-                Action<string> thisFunc = AddToComboBox2;
+                Action<string> thisFunc = RemoveFromComboBox2;
                 Invoke(thisFunc, new object[] { p });
                 return;
             }
@@ -250,8 +250,8 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (this.InvokeRequired)
             {
-                Action thisFunc = InitComboBox2Selection;
-                Invoke(thisFunc);
+                Action<string> thisFunc = InitComboBox1Selection;
+                Invoke(thisFunc, new object[] { p });
                 return;
             }
 
@@ -263,7 +263,7 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (this.InvokeRequired)
             {
-                Action thisFunc = InitComboBox2Selection;
+                Action thisFunc = InitComboBox1Selection;
                 Invoke(thisFunc);
                 return;
             }
@@ -276,7 +276,7 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (this.InvokeRequired)
             {
-                Action thisFunc = InitComboBox2Selection;
+                Action thisFunc = InitComboBox1SelectionLast;
                 Invoke(thisFunc);
                 return;
             }
@@ -289,8 +289,8 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (this.InvokeRequired)
             {
-                Action thisFunc = InitComboBox2Selection;
-                Invoke(thisFunc);
+                Action<string> thisFunc = InitComboBox2Selection;
+                Invoke(thisFunc, new object[] { p });
                 return;
             }
 
@@ -315,7 +315,7 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (this.InvokeRequired)
             {
-                Action thisFunc = InitComboBox2Selection;
+                Action thisFunc = InitComboBox2SelectionLast;
                 Invoke(thisFunc);
                 return;
             }
