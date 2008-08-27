@@ -14,6 +14,7 @@ namespace WaywardGamers.KParser.Plugin
     {
         #region Member variables
         bool checkBox1Changed = false;
+        bool flagNoUpdate = false;
         #endregion
 
         #region IPlugin Overrides
@@ -31,6 +32,9 @@ namespace WaywardGamers.KParser.Plugin
             comboBox1.Left = label1.Right + 10;
             comboBox1.MaxDropDownItems = 9;
             comboBox1.Items.Clear();
+            comboBox1.Items.Add("All");
+            flagNoUpdate = true;
+            comboBox1.SelectedIndex = 0;
 
             label2.Left = comboBox1.Right + 20;
             label2.Text = "Enemies";
@@ -39,14 +43,17 @@ namespace WaywardGamers.KParser.Plugin
             comboBox2.MaxDropDownItems = 10;
             comboBox2.Items.Clear();
             comboBox2.Items.Add("All");
+            flagNoUpdate = true;
             comboBox2.SelectedIndex = 0;
 
             checkBox1.Left = comboBox2.Right + 20;
             checkBox1.Text = "Group Enemies";
+            flagNoUpdate = true;
             checkBox1.Checked = false;
 
             checkBox2.Left = checkBox1.Right + 10;
             checkBox2.Text = "Show Detail";
+            flagNoUpdate = true;
             checkBox2.Checked = false;
 
             richTextBox.Clear();
@@ -57,20 +64,28 @@ namespace WaywardGamers.KParser.Plugin
             ResetTextBox();
 
             UpdatePlayerList(dataSet);
+            UpdateMobList(dataSet);
+
+            // Don't generate an update on the first combo box change
+            flagNoUpdate = true;
             InitComboBox1Selection();
 
-            UpdateMobList(dataSet);
+            // Setting the second combo box will cause the display to load.
             InitComboBox2Selection();
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
         {
-            string currentlySelectedPlayer = comboBox1.SelectedValue.ToString();
+            bool changesFound = false;
+            string currentlySelectedPlayer = "All";
 
-            // Check for new combatants
+            if (GetComboBox1Index() > 0)
+                currentlySelectedPlayer = GetComboBox1Value();
+
             if (e.DatasetChanges.Combatants != null)
             {
                 UpdatePlayerList(e.Dataset);
+                changesFound = true;
             }
 
             // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
@@ -80,17 +95,29 @@ namespace WaywardGamers.KParser.Plugin
                     checkBox1.Checked = false;
 
                 UpdateMobList(e.Dataset);
+                changesFound = true;
+
+                flagNoUpdate = true;
                 InitComboBox2SelectionLast();
             }
 
-            if ((comboBox1.SelectedIndex < 0) ||
-                (currentlySelectedPlayer != comboBox1.SelectedValue.ToString()))
+            if ((GetComboBox1Index() < 0) ||
+                (currentlySelectedPlayer != GetComboBox1Value()))
             {
+                flagNoUpdate = true;
                 InitComboBox1Selection(currentlySelectedPlayer);
             }
 
-            datasetToUse = null;
-            return false;
+            if (changesFound == true)
+            {
+                datasetToUse = e.Dataset;
+                return true;
+            }
+            else
+            {
+                datasetToUse = null;
+                return false;
+            }
         }
         #endregion
 
@@ -116,10 +143,7 @@ namespace WaywardGamers.KParser.Plugin
             foreach (var player in playersFighting)
                 playerStrings.Add(player.Name);
 
-            if (playersFighting.Count() > 0)
-                AddToComboBox1(playerStrings.ToArray());
-
-            InitComboBox1Selection();
+            AddArrayToComboBox1(playerStrings.ToArray());
         }
 
         private void UpdateMobList(KPDatabaseDataSet dataSet)
@@ -161,8 +185,7 @@ namespace WaywardGamers.KParser.Plugin
                     }
                 }
 
-                if (mobXPStrings.Count > 0)
-                    AddToComboBox2(mobXPStrings.ToArray());
+                AddArrayToComboBox2(mobXPStrings.ToArray());
             }
             else
             {
@@ -172,7 +195,7 @@ namespace WaywardGamers.KParser.Plugin
                                  where ((b.DefaultBattle == false) &&
                                         (b.IsEnemyIDNull() == false) &&
                                         ((EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.Mob))
-                                 orderby b.EndTime
+                                 orderby b.BattleID
                                  select new
                                  {
                                      Name = b.CombatantsRowByEnemyCombatantRelation.CombatantName,
@@ -182,15 +205,13 @@ namespace WaywardGamers.KParser.Plugin
                 List<string> mobXPStrings = new List<string>();
                 mobXPStrings.Add("All");
 
-                int numMobsKilled = mobsKilled.Count();
-
                 foreach (var mob in mobsKilled)
                 {
                     mobXPStrings.Add(string.Format("{0,3}: {1}", mob.Battle,
                             mob.Name));
                 }
 
-                AddToComboBox2(mobXPStrings.ToArray());
+                AddArrayToComboBox2(mobXPStrings.ToArray());
             }
         }
         #endregion
@@ -768,23 +789,37 @@ namespace WaywardGamers.KParser.Plugin
         #region Event Handlers
         protected override void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            HandleDataset(DatabaseManager.Instance.Database);
+            if (flagNoUpdate == false)
+                HandleDataset(DatabaseManager.Instance.Database);
+
+            flagNoUpdate = false;
         }
 
         protected override void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            HandleDataset(DatabaseManager.Instance.Database);
+            if (flagNoUpdate == false)
+                HandleDataset(DatabaseManager.Instance.Database);
+
+            flagNoUpdate = false;
         }
 
         protected override void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            checkBox1Changed = true;
-            HandleDataset(DatabaseManager.Instance.Database);
+            if (flagNoUpdate == false)
+            {
+                checkBox1Changed = true;
+                HandleDataset(DatabaseManager.Instance.Database);
+            }
+
+            flagNoUpdate = false;
         }
 
         protected override void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
-            HandleDataset(DatabaseManager.Instance.Database);
+            if (flagNoUpdate == false)
+                HandleDataset(DatabaseManager.Instance.Database);
+
+            flagNoUpdate = false;
         }
         #endregion
 
