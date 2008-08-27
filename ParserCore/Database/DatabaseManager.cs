@@ -287,6 +287,40 @@ namespace WaywardGamers.KParser
             if (parseEnded == true)
                 DoneParsing();
         }
+
+        public void PurgeChatInfo()
+        {
+            lock (localDB)
+            {
+                // First delete all non-Arena rows in the message table.
+                foreach (KPDatabaseDataSet.ChatMessagesRow row in localDB.ChatMessages)
+                {
+                    if ((ChatMessageType)row.ChatType != ChatMessageType.Arena)
+                        row.Delete();
+                }
+
+                // Then all the speakers (parent row to messages).
+                foreach (KPDatabaseDataSet.ChatSpeakersRow row in localDB.ChatSpeakers)
+                {
+                    if (row.GetChatMessagesRows().Count() == 0)
+                        row.Delete();
+                }
+
+                // Then all chat messages from the original parse log.
+                string[] chatCode = new string[] { "01", "02", "03", "04", "05", "06", "07",
+                    "09", "0a", "0b", "0c", "0d", "0e", "0f", "8e", "90", "98"};
+                string rowChatValue;
+
+                foreach (KPDatabaseDataSet.RecordLogRow row in localDB.RecordLog.Rows)
+                {
+                    rowChatValue = row.MessageText.Substring(0, 2);
+                    if (chatCode.Contains(rowChatValue) == true)
+                        row.Delete();
+                }
+
+                UpdateDatabase();
+            }
+        }
         #endregion
 
         #region Private Methods
