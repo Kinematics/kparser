@@ -12,6 +12,25 @@ namespace WaywardGamers.KParser.Plugin
 {
     public class OffensePlugin : BasePluginControlWithDropdown
     {
+        #region Member Variables
+        bool flagNoUpdate = false;
+
+        int totalDamage;
+        List<string> playerList = new List<string>();
+        Dictionary<string, int> playerDamage = new Dictionary<string, int>();
+        IEnumerable<AttackGroup> attackSet = null;
+
+        string summaryHeader = "Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg\n";
+        string meleeHeader = "Player            Melee Dmg   Melee %   Hit/Miss   M.Acc %  M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
+        string rangeHeader = "Player            Range Dmg   Range %   Hit/Miss   R.Acc %  R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
+        string spellHeader = "Player                  Spell Dmg   Spell %  #Spells  #Fail  S.Low/Hi     S.Avg  #MBurst  MB.Low/Hi   MB.Avg\n";
+        string abilHeader = "Player                  Abil. Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg\n";
+        string wskillHeader = "Player                 WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg\n";
+        string skillchainHeader = "Skillchain          SC Dmg  # SC  SC.Low/Hi  SC.Avg\n";
+        string otherMHeader = "Player            M.AE Dmg  # M.AE  M.AE Avg   R.AE Dmg  # R.AE  R.AE Avg   Spk.Dmg  # Spike  Spk.Avg\n";
+        string otherPHeader = "Player            CA.Dmg  CA.Hit/Miss  CA.Low/Hi  CA.Avg   Ret.Dmg  Ret.Hit/Miss  Ret.Low/Hi  Ret.Avg\n";
+        #endregion
+
         #region IPlugin Overrides
         public override string TabName
         {
@@ -36,6 +55,7 @@ namespace WaywardGamers.KParser.Plugin
             comboBox1.Items.Add("Ability");
             comboBox1.Items.Add("Spell");
             comboBox1.Items.Add("Skillchain");
+            flagNoUpdate = true;
             comboBox1.SelectedIndex = 0;
 
             label2.Left = comboBox1.Right + 20;
@@ -44,11 +64,12 @@ namespace WaywardGamers.KParser.Plugin
             comboBox2.Width = 150;
             comboBox2.Items.Clear();
             comboBox2.Items.Add("All");
+            flagNoUpdate = true;
             comboBox2.SelectedIndex = 0;
-            //comboBox2.Enabled = false;
 
             checkBox1.Left = comboBox2.Right + 20;
             checkBox1.Text = "Exclude 0 XP Mobs";
+            flagNoUpdate = true;
             checkBox1.Checked = false;
 
             //checkBox2.Left = checkBox1.Right + 10;
@@ -62,44 +83,14 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
-            ResetComboBox2();
-            AddStringToComboBox2("All");
             ResetTextBox();
 
-            // Enemy group listing
+            UpdateMobList(dataSet);
 
-            var mobsKilled = from b in dataSet.Battles
-                             where ((b.DefaultBattle == false) &&
-                                    (b.IsEnemyIDNull() == false) &&
-                                    (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
-                             orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
-                             group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
-                             select new
-                             {
-                                 Name = bn.Key,
-                                 XP = from xb in bn
-                                      group xb by xb.MinBaseExperience() into xbn
-                                      orderby xbn.Key
-                                      select new { BaseXP = xbn.Key }
-                             };
-
-            List<string> mobXPStrings = new List<string>();
-
-            foreach (var mob in mobsKilled)
-            {
-                mobXPStrings.Add(mob.Name);
-
-                foreach (var xp in mob.XP)
-                {
-                    if (xp.BaseXP > 0)
-                        mobXPStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
-                }
-            }
-
-            if (mobXPStrings.Count > 0)
-                AddArrayToComboBox2(mobXPStrings.ToArray());
-
+            flagNoUpdate = true;
             InitComboBox2Selection();
+
+            ProcessData(dataSet);
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
@@ -165,21 +156,47 @@ namespace WaywardGamers.KParser.Plugin
         }
         #endregion
 
-        #region Member Variables
-        int totalDamage;
-        List<string> playerList = new List<string>();
-        Dictionary<string, int> playerDamage = new Dictionary<string,int>();
-        IEnumerable<AttackGroup> attackSet = null;
+        #region Private functions
+        private void UpdateMobList(KPDatabaseDataSet dataSet)
+        {
+            ResetComboBox2();
 
-        string summaryHeader    = "Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg\n";
-        string meleeHeader      = "Player            Melee Dmg   Melee %   Hit/Miss   M.Acc %  M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
-        string rangeHeader      = "Player            Range Dmg   Range %   Hit/Miss   R.Acc %  R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
-        string spellHeader      = "Player                  Spell Dmg   Spell %  #Spells  #Fail  S.Low/Hi     S.Avg  #MBurst  MB.Low/Hi   MB.Avg\n";
-        string abilHeader       = "Player                  Abil. Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg\n";
-        string wskillHeader     = "Player                 WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg\n";
-        string skillchainHeader = "Skillchain          SC Dmg  # SC  SC.Low/Hi  SC.Avg\n";
-        string otherMHeader     = "Player            M.AE Dmg  # M.AE  M.AE Avg   R.AE Dmg  # R.AE  R.AE Avg   Spk.Dmg  # Spike  Spk.Avg\n";
-        string otherPHeader     = "Player            CA.Dmg  CA.Hit/Miss  CA.Low/Hi  CA.Avg   Ret.Dmg  Ret.Hit/Miss  Ret.Low/Hi  Ret.Avg\n";
+            // Group enemies check
+
+            // Enemy group listing
+
+            var mobsKilled = from b in dataSet.Battles
+                             where ((b.DefaultBattle == false) &&
+                                    (b.IsEnemyIDNull() == false) &&
+                                    (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
+                             orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
+                             group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
+                             select new
+                             {
+                                 Name = bn.Key,
+                                 XP = from xb in bn
+                                      group xb by xb.MinBaseExperience() into xbn
+                                      orderby xbn.Key
+                                      select new { BaseXP = xbn.Key }
+                             };
+
+            List<string> mobXPStrings = new List<string>();
+            mobXPStrings.Add("All");
+
+            foreach (var mob in mobsKilled)
+            {
+                mobXPStrings.Add(mob.Name);
+
+                foreach (var xp in mob.XP)
+                {
+                    if (xp.BaseXP > 0)
+                        mobXPStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
+                }
+            }
+
+            AddArrayToComboBox2(mobXPStrings.ToArray());
+
+        }
         #endregion
 
         #region Processing sections
@@ -1584,22 +1601,34 @@ namespace WaywardGamers.KParser.Plugin
         #region Event Handlers
         protected override void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            HandleDataset(DatabaseManager.Instance.Database);
+            if (flagNoUpdate == false)
+                HandleDataset(DatabaseManager.Instance.Database);
+
+            flagNoUpdate = false;
         }
 
         protected override void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            HandleDataset(DatabaseManager.Instance.Database);
+            if (flagNoUpdate == false)
+                HandleDataset(DatabaseManager.Instance.Database);
+
+            flagNoUpdate = false;
         }
 
         protected override void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            HandleDataset(DatabaseManager.Instance.Database);
+            if (flagNoUpdate == false)
+                HandleDataset(DatabaseManager.Instance.Database);
+
+            flagNoUpdate = false;
         }
 
         protected override void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
-            HandleDataset(DatabaseManager.Instance.Database);
+            if (flagNoUpdate == false)
+                HandleDataset(DatabaseManager.Instance.Database);
+
+            flagNoUpdate = false;
         }
         #endregion
     }
