@@ -82,14 +82,19 @@ namespace WaywardGamers.KParser.Plugin
             if (GetComboBox1Index() > 0)
                 currentlySelectedPlayer = GetComboBox1Value();
 
-            if (e.DatasetChanges.Combatants != null)
+            if ((e.DatasetChanges.Combatants != null) &&
+                (e.DatasetChanges.Combatants.Count > 0))
             {
                 UpdatePlayerList(e.Dataset);
                 changesFound = true;
+
+                flagNoUpdate = true;
+                InitComboBox1Selection();
             }
 
             // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
-            if (e.DatasetChanges.Battles != null)
+            if ((e.DatasetChanges.Battles != null) &&
+                (e.DatasetChanges.Battles.Count > 0))
             {
                 if (checkBox1.Checked == true)
                     checkBox1.Checked = false;
@@ -238,8 +243,8 @@ namespace WaywardGamers.KParser.Plugin
             }
 
 
-            string selectedPlayer = comboBox1.SelectedItem.ToString();
-            string selectedMob = comboBox2.SelectedItem.ToString();
+            string selectedPlayer = GetComboBox1Value();
+            string selectedMob = GetComboBox2Value();
 
             List<string> playerList = new List<string>();
 
