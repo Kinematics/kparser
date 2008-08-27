@@ -67,6 +67,8 @@ namespace WaywardGamers.KParser.Plugin
                     AppendNormalText(string.Format("\n    {0}\n\n", player.Description));
                 }
             }
+
+            AppendNormalText("\n");
         }
     }
 }
