@@ -21,8 +21,6 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
-            ResetTextBox();
-
             ProcessData(dataSet);
         }
 
@@ -30,7 +28,8 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (e.DatasetChanges != null)
             {
-                if (e.DatasetChanges.Combatants != null)
+                if ((e.DatasetChanges.Combatants != null) &&
+                    (e.DatasetChanges.Combatants.Count > 0))
                 {
                     datasetToUse = e.Dataset;
                     return true;
