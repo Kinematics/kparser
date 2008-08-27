@@ -63,7 +63,7 @@ namespace WaywardGamers.KParser.Plugin
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
             ResetComboBox2();
-            AddToComboBox2("All");
+            AddStringToComboBox2("All");
             ResetTextBox();
 
             // Enemy group listing
@@ -97,7 +97,7 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             if (mobXPStrings.Count > 0)
-                AddToComboBox2(mobXPStrings.ToArray());
+                AddArrayToComboBox2(mobXPStrings.ToArray());
 
             InitComboBox2Selection();
         }
@@ -131,7 +131,7 @@ namespace WaywardGamers.KParser.Plugin
                         foreach (var mob in mobsFought)
                         {
                             if (comboBox2.Items.Contains(mob.Name) == false)
-                                AddToComboBox2(mob.Name);
+                                AddStringToComboBox2(mob.Name);
 
                             foreach (var xp in mob.XP)
                             {
@@ -140,7 +140,7 @@ namespace WaywardGamers.KParser.Plugin
                                     mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP);
 
                                     if (comboBox2.Items.Contains(mobWithXP) == false)
-                                        AddToComboBox2(mobWithXP);
+                                        AddStringToComboBox2(mobWithXP);
 
                                     // Check for existing entry with higher min base xp
                                     mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP + 1);
