@@ -1015,6 +1015,14 @@ namespace WaywardGamers.KParser
         #region Parsing Control Methods
         private void StartParsing(string outputFileName)
         {
+            appSettings.Reload();
+
+            if (appSettings.SpecifyPID == true)
+            {
+                SelectPOLProcess selectPID = new SelectPOLProcess();
+                selectPID.ShowDialog();
+            }
+
             // Let the database notify us of changes, and we'll notify the active plugins.
             DatabaseManager.Instance.DatabaseChanging += MonitorDatabaseChanging;
             DatabaseManager.Instance.DatabaseChanged += MonitorDatabaseChanged;

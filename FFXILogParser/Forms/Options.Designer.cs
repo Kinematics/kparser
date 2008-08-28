@@ -29,6 +29,7 @@ namespace WaywardGamers.KParser
         private void InitializeComponent()
         {
             this.dataSourceGroup = new System.Windows.Forms.GroupBox();
+            this.specifyPID = new System.Windows.Forms.CheckBox();
             this.editMemoryAddress = new System.Windows.Forms.CheckBox();
             this.readExistingLogs = new System.Windows.Forms.CheckBox();
             this.memoryOffsetAddress = new System.Windows.Forms.TextBox();
@@ -50,6 +51,9 @@ namespace WaywardGamers.KParser
             // 
             // dataSourceGroup
             // 
+            this.dataSourceGroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.dataSourceGroup.Controls.Add(this.specifyPID);
             this.dataSourceGroup.Controls.Add(this.editMemoryAddress);
             this.dataSourceGroup.Controls.Add(this.readExistingLogs);
             this.dataSourceGroup.Controls.Add(this.memoryOffsetAddress);
@@ -61,10 +65,20 @@ namespace WaywardGamers.KParser
             this.dataSourceGroup.Controls.Add(this.dataSourceLogs);
             this.dataSourceGroup.Location = new System.Drawing.Point(12, 12);
             this.dataSourceGroup.Name = "dataSourceGroup";
-            this.dataSourceGroup.Size = new System.Drawing.Size(305, 181);
+            this.dataSourceGroup.Size = new System.Drawing.Size(305, 206);
             this.dataSourceGroup.TabIndex = 0;
             this.dataSourceGroup.TabStop = false;
             this.dataSourceGroup.Text = "Data Source";
+            // 
+            // specifyPID
+            // 
+            this.specifyPID.AutoSize = true;
+            this.specifyPID.Location = new System.Drawing.Point(28, 175);
+            this.specifyPID.Name = "specifyPID";
+            this.specifyPID.Size = new System.Drawing.Size(167, 17);
+            this.specifyPID.TabIndex = 8;
+            this.specifyPID.Text = "Specify process when starting";
+            this.specifyPID.UseVisualStyleBackColor = true;
             // 
             // editMemoryAddress
             // 
@@ -119,9 +133,9 @@ namespace WaywardGamers.KParser
             this.directoryLabel.AutoSize = true;
             this.directoryLabel.Location = new System.Drawing.Point(25, 39);
             this.directoryLabel.Name = "directoryLabel";
-            this.directoryLabel.Size = new System.Drawing.Size(98, 13);
+            this.directoryLabel.Size = new System.Drawing.Size(92, 13);
             this.directoryLabel.TabIndex = 4;
-            this.directoryLabel.Text = "FFXI Log Directory:";
+            this.directoryLabel.Text = "FFXI log directory:";
             // 
             // getLogDirectory
             // 
@@ -160,7 +174,7 @@ namespace WaywardGamers.KParser
             // 
             this.ok.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.ok.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.ok.Location = new System.Drawing.Point(161, 265);
+            this.ok.Location = new System.Drawing.Point(161, 290);
             this.ok.Name = "ok";
             this.ok.Size = new System.Drawing.Size(75, 23);
             this.ok.TabIndex = 1;
@@ -172,7 +186,7 @@ namespace WaywardGamers.KParser
             // 
             this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancel.Location = new System.Drawing.Point(242, 265);
+            this.cancel.Location = new System.Drawing.Point(242, 290);
             this.cancel.Name = "cancel";
             this.cancel.Size = new System.Drawing.Size(75, 23);
             this.cancel.TabIndex = 2;
@@ -183,7 +197,7 @@ namespace WaywardGamers.KParser
             // reset
             // 
             this.reset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.reset.Location = new System.Drawing.Point(18, 265);
+            this.reset.Location = new System.Drawing.Point(18, 290);
             this.reset.Name = "reset";
             this.reset.Size = new System.Drawing.Size(75, 23);
             this.reset.TabIndex = 4;
@@ -196,15 +210,16 @@ namespace WaywardGamers.KParser
             this.debugMode.AutoSize = true;
             this.debugMode.Location = new System.Drawing.Point(15, 19);
             this.debugMode.Name = "debugMode";
-            this.debugMode.Size = new System.Drawing.Size(88, 17);
+            this.debugMode.Size = new System.Drawing.Size(87, 17);
             this.debugMode.TabIndex = 5;
-            this.debugMode.Text = "Debug Mode";
+            this.debugMode.Text = "Debug mode";
             this.debugMode.UseVisualStyleBackColor = true;
             // 
             // otherGroup
             // 
+            this.otherGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.otherGroup.Controls.Add(this.debugMode);
-            this.otherGroup.Location = new System.Drawing.Point(12, 199);
+            this.otherGroup.Location = new System.Drawing.Point(12, 224);
             this.otherGroup.Name = "otherGroup";
             this.otherGroup.Size = new System.Drawing.Size(305, 52);
             this.otherGroup.TabIndex = 6;
@@ -217,7 +232,7 @@ namespace WaywardGamers.KParser
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancel;
-            this.ClientSize = new System.Drawing.Size(329, 300);
+            this.ClientSize = new System.Drawing.Size(329, 325);
             this.Controls.Add(this.otherGroup);
             this.Controls.Add(this.reset);
             this.Controls.Add(this.cancel);
@@ -259,5 +274,6 @@ namespace WaywardGamers.KParser
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
         private System.Windows.Forms.GroupBox otherGroup;
         private System.Windows.Forms.CheckBox editMemoryAddress;
+        private System.Windows.Forms.CheckBox specifyPID;
     }
 }
