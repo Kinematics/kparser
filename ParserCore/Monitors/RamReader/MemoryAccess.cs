@@ -498,6 +498,8 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         /// false if monitoring was aborted before it was found.</returns>
         private bool FindFFXIProcess()
         {
+            KParser.Properties.Settings kpSettings = new WaywardGamers.KParser.Properties.Settings();
+
             // Keep going as long as we're still attempting to monitor
             while (abortMonitorThread == false)
             {
@@ -505,32 +507,67 @@ namespace WaywardGamers.KParser.Monitoring.Memory
                 {
                     Trace.WriteLine(Thread.CurrentThread.Name + ": Attempting to connect to Final Fantasy.");
 
-                    Process[] polProcesses = Process.GetProcessesByName("pol");
-
-                    if (polProcesses != null)
+                    kpSettings.Reload();
+                    if (kpSettings.SpecifyPID == true)
                     {
-                        foreach (Process process in polProcesses)
+                        Process processByID = Process.GetProcessById(kpSettings.RequestedPID);
+
+                        if (string.Compare(processByID.ProcessName, "pol", true) == 0)
                         {
-                            foreach (ProcessModule module in process.Modules)
+                            foreach (ProcessModule module in processByID.Modules)
                             {
                                 if (string.Compare(module.ModuleName, "ffximain.dll", true) == 0)
                                 {
                                     Trace.WriteLine(string.Format("Module: {0}  Base Address: {1:X8}", module.ModuleName, module.BaseAddress));
-                                    pol = new POL(process, module.BaseAddress);
-                                    process.Exited += new EventHandler(polExited);
+                                    pol = new POL(processByID, module.BaseAddress);
+                                    processByID.Exited += new EventHandler(polExited);
                                     // Turn this off if scanning ram:
                                     LocateChatLog();
                                     return true;
                                 }
                             }
                         }
-                    }
 
-                    System.Threading.Thread.Sleep(5000);
+                        System.Windows.Forms.MessageBox.Show(
+                            string.Format("Specified process ID ({0}) is not a POL process.",
+                              kpSettings.RequestedPID),
+                            "Process not found", System.Windows.Forms.MessageBoxButtons.OK);
+                    }
+                    else
+                    {
+                        Process[] polProcesses = Process.GetProcessesByName("pol");
+
+                        if (polProcesses != null)
+                        {
+                            foreach (Process process in polProcesses)
+                            {
+                                foreach (ProcessModule module in process.Modules)
+                                {
+                                    if (string.Compare(module.ModuleName, "ffximain.dll", true) == 0)
+                                    {
+                                        Trace.WriteLine(string.Format("Module: {0}  Base Address: {1:X8}", module.ModuleName, module.BaseAddress));
+                                        pol = new POL(process, module.BaseAddress);
+                                        process.Exited += new EventHandler(polExited);
+                                        // Turn this off if scanning ram:
+                                        LocateChatLog();
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (ArgumentException e)
+                {
+                    System.Windows.Forms.MessageBox.Show(e.Message, "Process not found", System.Windows.Forms.MessageBoxButtons.OK);
                 }
                 catch (Exception e)
                 {
                     Logger.Instance.Log("Memory access", String.Format(Thread.CurrentThread.Name + ": ERROR: An exception occured while trying to connect to Final Fantasy.  Message = {0}", e.Message));
+                    System.Threading.Thread.Sleep(5000);
+                }
+                finally
+                {
                     System.Threading.Thread.Sleep(5000);
                 }
             }
