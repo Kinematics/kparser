@@ -147,5 +147,29 @@ namespace WaywardGamers.KParser.Properties {
                 return ((string)(this["DvsParse_SaveConnectionString"]));
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SpecifyPID {
+            get {
+                return ((bool)(this["SpecifyPID"]));
+            }
+            set {
+                this["SpecifyPID"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int RequestedPID {
+            get {
+                return ((int)(this["RequestedPID"]));
+            }
+            set {
+                this["RequestedPID"] = value;
+            }
+        }
     }
 }
