@@ -14,7 +14,8 @@ namespace WaywardGamers.KParser.Plugin
     /// </summary>
     internal class AttackGroup
     {
-        internal string Player { get; set; }
+        internal string Name { get; set; }
+        internal EntityType ComType { get; set; }
         internal int BaseXP { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Melee { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Range { get; set; }
@@ -109,7 +110,7 @@ namespace WaywardGamers.KParser.Plugin
 
     internal class DefenseGroup
     {
-        internal string Player { get; set; }
+        internal string Name { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> AllAttacks { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Melee { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Range { get; set; }

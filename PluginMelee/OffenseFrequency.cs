@@ -280,7 +280,7 @@ namespace WaywardGamers.KParser.Plugin
                             where (selectedPlayers.Contains(c.CombatantName))
                             select new AttackGroup
                             {
-                                Player = c.CombatantName,
+                                Name = c.CombatantName,
                                 Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Melee &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
@@ -367,7 +367,7 @@ namespace WaywardGamers.KParser.Plugin
                             where (selectedPlayers.Contains(c.CombatantName))
                             select new AttackGroup
                             {
-                                Player = c.CombatantName,
+                                Name = c.CombatantName,
                                 Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Melee &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
@@ -487,7 +487,7 @@ namespace WaywardGamers.KParser.Plugin
                             where (selectedPlayers.Contains(c.CombatantName))
                             select new AttackGroup
                             {
-                                Player = c.CombatantName,
+                                Name = c.CombatantName,
                                 Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                         where ((n.IsBattleIDNull() == false) &&
                                                (n.BattleID == battleID) &&
@@ -582,7 +582,7 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (countAttacks > 0)
                 {
-                    AppendBoldText(player.Player + "\n", Color.Red);
+                    AppendBoldText(player.Name + "\n", Color.Red);
 
                     if ((player.Melee.Count() > 0) &&
                         (player.Melee.Any(n => (DamageModifier)n.DamageModifier != DamageModifier.Critical)))
