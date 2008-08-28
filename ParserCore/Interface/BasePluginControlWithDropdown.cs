@@ -376,7 +376,7 @@ namespace WaywardGamers.KParser.Plugin
             if (comboBox2.SelectedIndex >= 0)
                 return comboBox2.SelectedItem.ToString();
             else
-                return "";
+                return string.Empty;
         }
 
 
