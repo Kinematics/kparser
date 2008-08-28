@@ -219,6 +219,8 @@ namespace WaywardGamers.KParser
                                 "Directory does not exist.", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             e.Cancel = true;
                         }
+
+                        coreSettings.SpecifyPID = specifyPID.Checked;
                     }
 
                     coreSettings.ParseExistingLogs = this.ParseExistingLogs;
@@ -251,6 +253,7 @@ namespace WaywardGamers.KParser
             memoryOffsetAddress.Text = string.Format("{0:X8}", coreSettings.MemoryOffset);
 
             readExistingLogs.Checked = coreSettings.ParseExistingLogs;
+            specifyPID.Checked = coreSettings.SpecifyPID;
 
             debugMode.Checked = coreSettings.DebugMode;
         }
@@ -269,8 +272,8 @@ namespace WaywardGamers.KParser
             memoryLabel.Enabled = dataSourceRam.Checked;
             memoryOffsetAddress.Enabled = dataSourceRam.Checked;
             editMemoryAddress.Enabled = dataSourceRam.Checked;
+            specifyPID.Enabled = dataSourceRam.Checked;
         }
         #endregion
-
     }
 }
