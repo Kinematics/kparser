@@ -77,8 +77,6 @@ namespace WaywardGamers.KParser.Plugin
             //checkBox2.Checked = false;
             checkBox2.Enabled = false;
             checkBox2.Visible = false;
-
-            richTextBox.Clear();
         }
 
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
@@ -242,7 +240,7 @@ namespace WaywardGamers.KParser.Plugin
                             orderby c.CombatantType, c.CombatantName
                             select new AttackGroup
                             {
-                                Player = c.CombatantName,
+                                Name = c.CombatantName,
                                 Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                         where (n.ActionType == (byte)ActionType.Melee &&
                                                (n.HarmType == (byte)HarmType.Damage ||
@@ -303,7 +301,7 @@ namespace WaywardGamers.KParser.Plugin
                                 orderby c.CombatantType, c.CombatantName
                                 select new AttackGroup
                                 {
-                                    Player = c.CombatantName,
+                                    Name = c.CombatantName,
                                     Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                             where (n.ActionType == (byte)ActionType.Melee &&
                                                    (n.HarmType == (byte)HarmType.Damage ||
@@ -393,7 +391,7 @@ namespace WaywardGamers.KParser.Plugin
                                 orderby c.CombatantType, c.CombatantName
                                 select new AttackGroup
                                 {
-                                    Player = c.CombatantName,
+                                    Name = c.CombatantName,
                                     Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                             where (n.ActionType == (byte)ActionType.Melee &&
                                                    (n.HarmType == (byte)HarmType.Damage ||
@@ -466,12 +464,12 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var player in attackSet)
             {
-                playerDamage[player.Player] = 0;
+                playerDamage[player.Name] = 0;
 
                 localDamage = player.MeleeDmg + player.MeleeEffect.Sum(d => d.SecondAmount) +
                     player.RangeDmg + player.RangeEffect.Sum(d => d.SecondAmount) + player.SpellDmg +
                     player.AbilityDmg + player.WSkillDmg + player.SCDmg;
-                playerDamage[player.Player] = localDamage;
+                playerDamage[player.Name] = localDamage;
                 totalDamage += localDamage;
             }
 
@@ -569,10 +567,10 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var player in attacksByPlayer)
             {
-                if (playerDamage[player.Player] > 0)
+                if (playerDamage[player.Name] > 0)
                 {
 
-                    playerDmg = playerDamage[player.Player];
+                    playerDmg = playerDamage[player.Name];
                     damageShare = (double)playerDmg / totalDamage;
 
                     meleeDmg = player.MeleeDmg;
@@ -595,7 +593,7 @@ namespace WaywardGamers.KParser.Plugin
                     ttlOtherDmg += otherDmg;
 
                     sb.AppendFormat("{0,-20}{1,10}{2,11:p2}{3,12}{4,12}{5,12}{6,12}{7,12}{8,11}\n",
-                        player.Player, playerDmg, damageShare, meleeDmg, rangeDmg,
+                        player.Name, playerDmg, damageShare, meleeDmg, rangeDmg,
                         abilDmg, wskillDmg, spellDmg, otherDmg);
 
                 }
@@ -682,8 +680,8 @@ namespace WaywardGamers.KParser.Plugin
 
                 meleeDmg = player.MeleeDmg;
 
-                if (playerDamage[player.Player] > 0)
-                    meleePerc = (double)meleeDmg / playerDamage[player.Player];
+                if (playerDamage[player.Name] > 0)
+                    meleePerc = (double)meleeDmg / playerDamage[player.Name];
 
                 var successfulHits = player.Melee.Where(h => h.DefenseType == (byte)DefenseType.None);
 
@@ -743,7 +741,7 @@ namespace WaywardGamers.KParser.Plugin
                         headerDisplayed = true;
                     }
 
-                    sb.Append(player.Player.PadRight(17));
+                    sb.Append(player.Name.PadRight(17));
 
                     sb.Append(meleeDmg.ToString().PadLeft(10));
                     sb.Append(meleePerc.ToString("P2").PadLeft(10));
@@ -815,8 +813,8 @@ namespace WaywardGamers.KParser.Plugin
 
                 rangeDmg = player.RangeDmg;
 
-                if (playerDamage[player.Player] > 0)
-                    rangePerc = (double)rangeDmg / playerDamage[player.Player];
+                if (playerDamage[player.Name] > 0)
+                    rangePerc = (double)rangeDmg / playerDamage[player.Name];
 
                 var successfulHits = player.Range.Where(h => h.DefenseType == (byte)DefenseType.None);
 
@@ -876,7 +874,7 @@ namespace WaywardGamers.KParser.Plugin
                         headerDisplayed = true;
                     }
 
-                    sb.Append(player.Player.PadRight(17));
+                    sb.Append(player.Name.PadRight(17));
 
                     sb.Append(rangeDmg.ToString().PadLeft(10));
                     sb.Append(rangePerc.ToString("P2").PadLeft(10));
@@ -957,8 +955,8 @@ namespace WaywardGamers.KParser.Plugin
                 // Spell damage
                 spellDamage = player.SpellDmg;
 
-                if (playerDamage[player.Player] > 0)
-                    spellPerc = (double)spellDamage / playerDamage[player.Player];
+                if (playerDamage[player.Name] > 0)
+                    spellPerc = (double)spellDamage / playerDamage[player.Name];
 
 
                 var spellsCast = player.Spell.Where(b => b.DefenseType == (byte)DefenseType.None)
@@ -1025,7 +1023,7 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (spellCasts > 0)
                 {
-                    sb.Append(player.Player.PadRight(23));
+                    sb.Append(player.Name.PadRight(23));
 
                     sb.Append(spellDamage.ToString().PadLeft(10));
                     sb.Append(spellPerc.ToString("P2").PadLeft(10));
@@ -1184,8 +1182,8 @@ namespace WaywardGamers.KParser.Plugin
                     // Spell damage
                     abilityDamage = player.AbilityDmg;
 
-                    if (playerDamage[player.Player] > 0)
-                        abilPerc = (double)abilityDamage / playerDamage[player.Player];
+                    if (playerDamage[player.Name] > 0)
+                        abilPerc = (double)abilityDamage / playerDamage[player.Name];
 
                     var damageAbilities = player.Ability.Where(a => a.HarmType == (byte)HarmType.Damage ||
                         a.HarmType == (byte)HarmType.Drain);
@@ -1209,7 +1207,7 @@ namespace WaywardGamers.KParser.Plugin
 
                     if (abilUses > 0)
                     {
-                        sb.Append(player.Player.PadRight(23));
+                        sb.Append(player.Name.PadRight(23));
 
                         sb.Append(abilityDamage.ToString().PadLeft(10));
                         sb.Append(abilPerc.ToString("P2").PadLeft(11));
@@ -1353,8 +1351,8 @@ namespace WaywardGamers.KParser.Plugin
                 // Spell damage
                 wskillDamage = player.WSkillDmg;
 
-                if (playerDamage[player.Player] > 0)
-                    wskillPerc = (double)wskillDamage / playerDamage[player.Player];
+                if (playerDamage[player.Name] > 0)
+                    wskillPerc = (double)wskillDamage / playerDamage[player.Name];
 
                 var successfulHits = player.WSkill.Where(h => h.DefenseType == (byte)DefenseType.None);
 
@@ -1373,7 +1371,7 @@ namespace WaywardGamers.KParser.Plugin
                     wskillAvg = successfulHits.Average(d => d.Amount);
                 }
 
-                sb.Append(player.Player.PadRight(23));
+                sb.Append(player.Name.PadRight(23));
 
                 sb.Append(wskillDamage.ToString().PadLeft(10));
                 sb.Append(wskillPerc.ToString("P2").PadLeft(11));
@@ -1470,8 +1468,8 @@ namespace WaywardGamers.KParser.Plugin
                 // Spell damage
                 scDamage = player.SCDmg;
 
-                if (playerDamage[player.Player] > 0)
-                    scPerc = (double)scDamage / playerDamage[player.Player];
+                if (playerDamage[player.Name] > 0)
+                    scPerc = (double)scDamage / playerDamage[player.Name];
 
                 numSCs = player.SC.Count();
 
@@ -1509,7 +1507,7 @@ namespace WaywardGamers.KParser.Plugin
                         headerDisplayed = true;
                     }
 
-                    sb.Append(player.Player.PadRight(20));
+                    sb.Append(player.Name.PadRight(20));
 
                     sb.Append(scDamage.ToString().PadLeft(6));
                     sb.Append(numSCs.ToString().PadLeft(6));
@@ -1626,7 +1624,7 @@ namespace WaywardGamers.KParser.Plugin
                     }
 
                     sb.AppendFormat("{0,-17}{1,9}{2,8}{3,10:f2}{4,11}{5,8}{6,10:f2}{7,10}{8,9}{9,9:f2}\n",
-                        player.Player, maeDmg, maeNum, maeAvg, raeDmg, raeNum, raeAvg,
+                        player.Name, maeDmg, maeNum, maeAvg, raeDmg, raeNum, raeAvg,
                         spkDmg, spkNum, spkAvg);
                 }
             }
@@ -1736,7 +1734,7 @@ namespace WaywardGamers.KParser.Plugin
                     }
 
                     sb.AppendFormat("{0,-17}{1,7}{2,13}{3,11}{4,8:f2}{5,10}{6,14}{7,12}{8,9:f2}\n",
-                        player.Player,
+                        player.Name,
                         caDmg, string.Concat(caHit, "/", caMiss), string.Concat(caLow, "/", caHigh), caAvg,
                         retDmg, string.Concat(retHit, "/", retMiss), string.Concat(retLow, "/", retHigh), retAvg);
                 }

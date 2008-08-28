@@ -222,7 +222,7 @@ namespace WaywardGamers.KParser.Plugin
                              orderby c.CombatantType, c.CombatantName
                              select new DefenseGroup
                              {
-                                 Player = c.CombatantName,
+                                 Name = c.CombatantName,
                                  AllAttacks = from da in c.GetInteractionsRowsByTargetCombatantRelation()
                                               where ((da.HarmType == (byte)HarmType.Damage) ||
                                                      (da.HarmType == (byte)HarmType.Drain))
@@ -272,7 +272,7 @@ namespace WaywardGamers.KParser.Plugin
                                  orderby c.CombatantType, c.CombatantName
                                  select new DefenseGroup
                                  {
-                                     Player = c.CombatantName,
+                                     Name = c.CombatantName,
                                      AllAttacks = from da in c.GetInteractionsRowsByTargetCombatantRelation()
                                                   where ((da.HarmType == (byte)HarmType.Damage) ||
                                                          (da.HarmType == (byte)HarmType.Drain)) &&
@@ -345,7 +345,7 @@ namespace WaywardGamers.KParser.Plugin
                                  orderby c.CombatantType, c.CombatantName
                                  select new DefenseGroup
                                  {
-                                     Player = c.CombatantName,
+                                     Name = c.CombatantName,
                                      AllAttacks = from da in c.GetInteractionsRowsByTargetCombatantRelation()
                                                   where ((da.HarmType == (byte)HarmType.Damage) ||
                                                          (da.HarmType == (byte)HarmType.Drain)) &&
@@ -490,7 +490,7 @@ namespace WaywardGamers.KParser.Plugin
                         attackPerc = (double)incHits / totalAttacks;
 
 
-                    sb.Append(player.Player.PadRight(17));
+                    sb.Append(player.Name.PadRight(17));
 
                     sb.AppendFormat("{0,5}{1,8}{2,10}{3,9}{4,10}{5,8}{6,12:p2}{7,10}{8,10:p2}\n",
                         mHits, rHits, aHits, sHits, uHits, incHits, attackPerc, avoidHits, avoidPerc);
@@ -509,10 +509,10 @@ namespace WaywardGamers.KParser.Plugin
             playerDamage.Clear();
             foreach (var player in incAttacks)
             {
-                playerDamage[player.Player] = player.Melee.Concat(player.Range.Concat(player.Spell.Concat(player.Abil))).
+                playerDamage[player.Name] = player.Melee.Concat(player.Range.Concat(player.Spell.Concat(player.Abil))).
                     Sum(a => a.Amount);
 
-                totalDmg += playerDamage[player.Player];
+                totalDmg += playerDamage[player.Name];
             }
 
             if (totalDmg > 0)
@@ -524,9 +524,9 @@ namespace WaywardGamers.KParser.Plugin
 
                 foreach (var player in incAttacks)
                 {
-                    if (playerDamage[player.Player] > 0)
+                    if (playerDamage[player.Name] > 0)
                     {
-                        sb.Append(player.Player.PadRight(16));
+                        sb.Append(player.Name.PadRight(16));
                         sb.Append(" ");
 
                         int mDmg = 0;
@@ -574,7 +574,7 @@ namespace WaywardGamers.KParser.Plugin
 
                         double dmgPerc = 0;
                         if (totalDmg > 0)
-                            dmgPerc = (double)playerDamage[player.Player] / totalDmg;
+                            dmgPerc = (double)playerDamage[player.Name] / totalDmg;
 
                         sb.AppendFormat("{0,5}{1,12:f2}{2,8}{3,11:f2}{4,8}{5,11:f2}{6,11}{7,14:f2}{8,11:p2}\n",
                             mDmg, mAvg, rDmg, rAvg, sDmg, sAvg, aDmg, aAvg, dmgPerc);
@@ -661,7 +661,7 @@ namespace WaywardGamers.KParser.Plugin
                         }
 
                         sb.AppendFormat("{0,-17}{1,7}{2,11:p2}{3,10}{4,11:p2}{5,9}{6,10:p2}{7,8}{8,9:p2}\n",
-                            player.Player, mEvaded, mEvadePerc, rEvaded, rEvadePerc,
+                            player.Name, mEvaded, mEvadePerc, rEvaded, rEvadePerc,
                             blinkedAttacks, blinkPerc, parriedAttacks, parryPerc);
                     }
                 }
@@ -755,7 +755,7 @@ namespace WaywardGamers.KParser.Plugin
                             headerPrinted = true;
                         }
 
-                        sb.Append(player.Player.PadRight(17));
+                        sb.Append(player.Name.PadRight(17));
 
                         sb.Append(intimidatedAttacks.ToString().PadLeft(10));
                         sb.Append(intimidatedPerc.ToString("P2").PadLeft(14));
