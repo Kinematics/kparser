@@ -139,7 +139,10 @@
             this.Controls.Add(this.ok);
             this.Controls.Add(this.label1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "PlayerInfo";
+            this.ShowInTaskbar = false;
             this.Text = "PlayerInfo";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PlayerInfo_FormClosing);
             this.ResumeLayout(false);
