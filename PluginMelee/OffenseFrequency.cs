@@ -610,6 +610,22 @@ namespace WaywardGamers.KParser.Plugin
                         ShowFrequency(critFreq);
                     }
 
+                    if ((player.Melee.Count() > 0) &&
+                        (player.Melee.Any(n => (HarmType)n.SecondHarmType == HarmType.Damage ||
+                            (HarmType)n.SecondHarmType == HarmType.Drain)))
+                    {
+                        AppendBoldText("  Melee Additional Effects\n", Color.Blue);
+                        if (checkBox2.Checked == true)
+                            ShowDetailedSecondaryDamage(player.Melee.Where(n => (HarmType)n.SecondHarmType == HarmType.Damage ||
+                            (HarmType)n.SecondHarmType == HarmType.Drain));
+
+                        var meleeFreq = player.Melee.Where(n => (HarmType)n.SecondHarmType == HarmType.Damage ||
+                            (HarmType)n.SecondHarmType == HarmType.Drain)
+                            .GroupBy(m => m.SecondAmount).OrderBy(m => m.Key);
+
+                        ShowFrequency(meleeFreq);
+                    }
+
                     if ((player.Range.Count() > 0) &&
                         (player.Range.Any(n => (DamageModifier)n.DamageModifier != DamageModifier.Critical)))
                     {
@@ -634,6 +650,22 @@ namespace WaywardGamers.KParser.Plugin
                             .GroupBy(m => m.Amount).OrderBy(m => m.Key);
 
                         ShowFrequency(critFreq);
+                    }
+
+                    if ((player.Range.Count() > 0) &&
+                        (player.Range.Any(n => (HarmType)n.SecondHarmType == HarmType.Damage ||
+                            (HarmType)n.SecondHarmType == HarmType.Drain)))
+                    {
+                        AppendBoldText("  Range Additional Effects\n", Color.Blue);
+                        if (checkBox2.Checked == true)
+                            ShowDetailedSecondaryDamage(player.Range.Where(n => (HarmType)n.SecondHarmType == HarmType.Damage ||
+                            (HarmType)n.SecondHarmType == HarmType.Drain));
+
+                        var rangeFreq = player.Range.Where(n => (HarmType)n.SecondHarmType == HarmType.Damage ||
+                            (HarmType)n.SecondHarmType == HarmType.Drain)
+                            .GroupBy(m => m.SecondAmount).OrderBy(m => m.Key);
+
+                        ShowFrequency(rangeFreq);
                     }
 
                     if ((player.Spell.Count() > 0) &&
@@ -720,6 +752,18 @@ namespace WaywardGamers.KParser.Plugin
                         }
                     }
 
+                    if (player.Spikes.Count() > 0)
+                    {
+                        AppendBoldText("  Spikes\n", Color.Blue);
+                        if (checkBox2.Checked == true)
+                            ShowDetailedDamage(player.Spikes);
+
+                        var spikeFreq = player.Spikes
+                            .GroupBy(m => m.Amount).OrderBy(m => m.Key);
+
+                        ShowFrequency(spikeFreq);
+                    }
+
                     AppendNormalText("\n");
                 }
             }
@@ -774,6 +818,35 @@ namespace WaywardGamers.KParser.Plugin
                     strBuilder.Append("   ");
 
                 strBuilder.AppendFormat(" {0,4}", row.Amount);
+
+                if (count % 10 == 9)
+                    strBuilder.Append("\n");
+
+                count++;
+            }
+
+            if (count % 10 != 0)
+                strBuilder.Append("\n");
+
+            AppendNormalText(strBuilder.ToString());
+        }
+
+        /// <summary>
+        /// Show detailed damage listing for the provided group.
+        /// </summary>
+        /// <param name="rows"></param>
+        private void ShowDetailedSecondaryDamage(IEnumerable<KPDatabaseDataSet.InteractionsRow> rows)
+        {
+            int count = 0;
+
+            StringBuilder strBuilder = new StringBuilder();
+
+            foreach (var row in rows)
+            {
+                if (count % 10 == 0)
+                    strBuilder.Append("   ");
+
+                strBuilder.AppendFormat(" {0,4}", row.SecondAmount);
 
                 if (count % 10 == 9)
                     strBuilder.Append("\n");
