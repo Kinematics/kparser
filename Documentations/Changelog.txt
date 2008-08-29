@@ -1,5 +1,13 @@
 KParser Change Log
 
+1.0.10
++ Added ability to save a copy of the database stripped of all chat information (excluding arena/HELM messages) for privacy when sharing database files.
++ Implemented initial report function, allowing user to save current plugin text window to a text file.
++ Added option to allow specifying the particular POL process to monitor when parsing starts.
+* Revamped handling of data in the Offense tab to improve speed (~40% load improvement, even more during parsing).  Will update other high-cost tabs in similar ways over time.
+* Added melee and ranged Additional Effects and Spikes damage to details reports.
+
+
 1.0.9
 + Added dialog to allow access to database field to store small bits of info (100 characters of data) about combatants.  This field will probably be expanded when the database is next modified.
 + Addition of Offense and Defense detail/frequency plugins.  Note that these are processor-intensive when run on the full dataset, so the filtering is automatically set to single-battle only while parsing is active.
