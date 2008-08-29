@@ -210,6 +210,8 @@ namespace WaywardGamers.KParser.Plugin
                 if (e.DatasetChanges.Battles.Count > 0)
                 {
                     string currentSelection = GetComboBox2Value();
+                    if (currentSelection == string.Empty)
+                        currentSelection = "All";
 
                     UpdateMobList(e.Dataset);
                     flagNoUpdate = true;
@@ -279,10 +281,12 @@ namespace WaywardGamers.KParser.Plugin
         {
             #region Filtering
             string mobFilter = GetComboBox2Value();
+            if (mobFilter == string.Empty)
+                mobFilter = "All";
             string mobName = "All";
             int xp = 0;
 
-            if ((mobFilter != "All") && (mobFilter != string.Empty))
+            if (mobFilter != "All")
             {
                 Regex mobAndXP = new Regex(@"((?<mobName>.*(?<! \())) \(((?<xp>\d+)\))|(?<mobName>.*)");
                 Match mobAndXPMatch = mobAndXP.Match(mobFilter);
@@ -842,7 +846,7 @@ namespace WaywardGamers.KParser.Plugin
                     #region Other Magic
                     if (player.MeleeEffect.Count() > 0)
                     {
-                        int dmg = player.MeleeEffect.Sum(a => a.Amount);
+                        int dmg = player.MeleeEffect.Sum(a => a.SecondAmount);
 
                         mainAcc.MAENum += player.MeleeEffect.Count();
                         mainAcc.MAEDmg += dmg;
@@ -852,7 +856,7 @@ namespace WaywardGamers.KParser.Plugin
 
                     if (player.RangeEffect.Count() > 0)
                     {
-                        int dmg = player.RangeEffect.Sum(a => a.Amount);
+                        int dmg = player.RangeEffect.Sum(a => a.SecondAmount);
 
                         mainAcc.RAENum += player.RangeEffect.Count();
                         mainAcc.RAEDmg += dmg;
