@@ -261,7 +261,7 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             if (this.comboBox1.Items.Count > 0)
-                this.comboBox1.SelectedValue = newSelection;
+                this.comboBox1.SelectedItem = newSelection;
         }
 
         protected void InitComboBox1Selection()
@@ -300,7 +300,7 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             if (this.comboBox2.Items.Count > 0)
-                this.comboBox2.SelectedValue = newSelection;
+                this.comboBox2.SelectedItem = newSelection;
         }
 
         protected void InitComboBox2Selection()
