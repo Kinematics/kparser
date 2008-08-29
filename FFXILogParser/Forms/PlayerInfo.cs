@@ -40,29 +40,32 @@ namespace WaywardGamers.KParser.Forms
 
             databaseFilename = db.DatabaseFilename;
 
-            var playerData = from com in db.Database.Combatants
-                             where ((EntityType)com.CombatantType == EntityType.Player ||
-                                (EntityType)com.CombatantType == EntityType.Pet ||
-                                (EntityType)com.CombatantType == EntityType.Fellow)
-                             orderby com.CombatantName
-                             select new CombatantData
-                             {
-                                 Name = com.CombatantName,
-                                 CombatantType = (EntityType)com.CombatantType,
-                                 Description = com.PlayerInfo
-                             };
-
-            // Put the acquired data in the listbox
-
-            playerDataList = playerData.ToArray();
-
-            combatantListBox.Items.Clear();
-            foreach (var player in playerDataList)
+            if (db.Database.Combatants.Count > 0)
             {
-                combatantListBox.Items.Add(player.Name);
-            }
+                var playerData = from com in db.Database.Combatants
+                                 where ((EntityType)com.CombatantType == EntityType.Player ||
+                                    (EntityType)com.CombatantType == EntityType.Pet ||
+                                    (EntityType)com.CombatantType == EntityType.Fellow)
+                                 orderby com.CombatantName
+                                 select new CombatantData
+                                 {
+                                     Name = com.CombatantName,
+                                     CombatantType = (EntityType)com.CombatantType,
+                                     Description = com.PlayerInfo
+                                 };
 
-            combatantListBox.SelectedIndex = 0;
+                // Put the acquired data in the listbox
+
+                playerDataList = playerData.ToArray();
+
+                combatantListBox.Items.Clear();
+                foreach (var player in playerDataList)
+                {
+                    combatantListBox.Items.Add(player.Name);
+                }
+
+                combatantListBox.SelectedIndex = 0;
+            }
         }
         #endregion
 
@@ -102,49 +105,52 @@ namespace WaywardGamers.KParser.Forms
                 {
                     if (this.DialogResult == DialogResult.OK)
                     {
-                        DatabaseManager db = DatabaseManager.Instance;
-
-                        // Make sure the database is still open
-                        if (db == null)
+                        if (playerDataList.Length > 0)
                         {
-                            MessageBox.Show("The parse file is no longer open.", "Cannot save",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
+                            DatabaseManager db = DatabaseManager.Instance;
 
-                        // Make sure it's the same database file as originally loaded
-                        if (db.DatabaseFilename != databaseFilename)
-                        {
-                            MessageBox.Show("The current parse file is not the same one as was used to open this dialog.",
-                                "Cannot save", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
-
-                        // Verify all the combatant names before proceeding.
-                        foreach (var player in playerDataList)
-                        {
-                            if (db.Database.Combatants.Any(cm => cm.CombatantName == player.Name &&
-                                (EntityType)cm.CombatantType == player.CombatantType) == false)
+                            // Make sure the database is still open
+                            if (db == null)
                             {
-                                MessageBox.Show("The current parse file does not have the same players as when this dialog opened.",
+                                MessageBox.Show("The parse file is no longer open.", "Cannot save",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return;
+                            }
+
+                            // Make sure it's the same database file as originally loaded
+                            if (db.DatabaseFilename != databaseFilename)
+                            {
+                                MessageBox.Show("The current parse file is not the same one as was used to open this dialog.",
                                     "Cannot save", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 return;
                             }
-                        }
 
-                        // Ok, we're good to go.
-                        foreach (var player in playerDataList)
-                        {
-                            var dbPlayer = db.Database.Combatants.FirstOrDefault(cm => cm.CombatantName == player.Name &&
-                                (EntityType)cm.CombatantType == player.CombatantType);
-
-                            if (dbPlayer != null)
+                            // Verify all the combatant names before proceeding.
+                            foreach (var player in playerDataList)
                             {
-                                dbPlayer.PlayerInfo = player.Description;
+                                if (db.Database.Combatants.Any(cm => cm.CombatantName == player.Name &&
+                                    (EntityType)cm.CombatantType == player.CombatantType) == false)
+                                {
+                                    MessageBox.Show("The current parse file does not have the same players as when this dialog opened.",
+                                        "Cannot save", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    return;
+                                }
                             }
-                        }
 
-                        db.RequestUpdate();
+                            // Ok, we're good to go.
+                            foreach (var player in playerDataList)
+                            {
+                                var dbPlayer = db.Database.Combatants.FirstOrDefault(cm => cm.CombatantName == player.Name &&
+                                    (EntityType)cm.CombatantType == player.CombatantType);
+
+                                if (dbPlayer != null)
+                                {
+                                    dbPlayer.PlayerInfo = player.Description;
+                                }
+                            }
+
+                            db.RequestUpdate();
+                        }
                     }
                 }
             }
