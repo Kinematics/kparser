@@ -23,7 +23,7 @@ namespace WaywardGamers.KParser.Parsing
         internal static Message Parse(MessageLine messageLine)
         {
             int i = 0;
-            if (messageLine.EventSequence == 0x0963)
+            if (messageLine.EventSequence == 0x0df9)
                 i++;
 
             Message message = GetAttachedMessage(messageLine);
@@ -2093,6 +2093,17 @@ namespace WaywardGamers.KParser.Parsing
                 {
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
+                    // If player is Overloaded, this is actually a Failed Action of an Enhancement.
+                    if (target.EffectName == Effectnames.Overloaded)
+                    {
+                        target.FailedActionType = FailedActionType.Overloaded;
+                        msgCombatDetails.ActionType = ActionType.Ability;
+                        msgCombatDetails.InteractionType = InteractionType.Aid;
+                        msgCombatDetails.HarmType = HarmType.None;
+                        msgCombatDetails.AidType = AidType.Enhance;
+                        msgCombatDetails.FailedActionType = FailedActionType.Overloaded;
+                        msgCombatDetails.SuccessLevel = SuccessType.Failed;
+                    }
                     target.HarmType = msgCombatDetails.HarmType;
                     target.AidType = msgCombatDetails.AidType;
                     message.ParseSuccessful = true;

@@ -1034,7 +1034,7 @@ namespace WaywardGamers.KParser
             targetEntityTypeLookup[0x6d] = EntityType.Unknown; //
             targetEntityTypeLookup[0x6e] = EntityType.Unknown; // <me/party> prep weaponskill, <bt> prep self-buff
             targetEntityTypeLookup[0x6f] = EntityType.Unknown; // <other> uses buff (self-buff?)
-            targetEntityTypeLookup[0x70] = EntityType.Mob; // <me> enfeebles (ability)
+            targetEntityTypeLookup[0x70] = EntityType.Unknown; // <me> enfeebles (ability) (possible self-enfeeble)
             targetEntityTypeLookup[0x71] = EntityType.Unknown; //
             targetEntityTypeLookup[0x72] = EntityType.Mob; // <am> uses weaponskill (ability?), misses
             targetEntityTypeLookup[0x73] = EntityType.Unknown; //

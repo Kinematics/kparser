@@ -243,4 +243,11 @@ namespace WaywardGamers.KParser
 
         internal static readonly string RemoveStatus = "na";
     }
+
+    // Special other names we want to check for, but also allow for localization
+    internal class Effectnames
+    {
+        internal static readonly string Overloaded = "Overloaded";
+    }
+
 }
