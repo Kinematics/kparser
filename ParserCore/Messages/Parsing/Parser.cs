@@ -1028,9 +1028,18 @@ namespace WaywardGamers.KParser.Parsing
                             combatMatch = ParseExpressions.StealEnmity.Match(currentMessageText);
                             if (combatMatch.Success == true)
                             {
-                                // Erased
                                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                                 target.AidType = AidType.RemoveEnmity;
+                                message.ParseSuccessful = true;
+                                return;
+                            }
+                            combatMatch = ParseExpressions.Hide.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                // Player hides
+                                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                                msgCombatDetails.ActionName = "Hide";
+                                msgCombatDetails.ActionType = ActionType.Ability;
                                 message.ParseSuccessful = true;
                                 return;
                             }
@@ -2094,7 +2103,7 @@ namespace WaywardGamers.KParser.Parsing
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
                     // If player is Overloaded, this is actually a Failed Action of an Enhancement.
-                    if (target.EffectName == Effectnames.Overloaded)
+                    if (target.EffectName == EffectNames.Overloaded)
                     {
                         target.FailedActionType = FailedActionType.Overloaded;
                         msgCombatDetails.ActionType = ActionType.Ability;
