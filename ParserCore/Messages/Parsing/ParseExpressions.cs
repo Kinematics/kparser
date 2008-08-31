@@ -144,6 +144,7 @@ namespace WaywardGamers.KParser
         internal static readonly Regex ItemBuff    = new Regex(string.Format("^{0} receive(s)? the effect of {1}\\.$", target, effect));
         internal static readonly Regex ItemCleanse = new Regex(string.Format("^{0} is no longer {1}\\.$", target, effect));
         internal static readonly Regex ItemReduceTP = new Regex(string.Format("^{0}'s TP is reduced\\.$", target));
+        internal static readonly Regex Hide        = new Regex(string.Format("^{0} hides!$", name));
         #endregion
 
         #region Failed Actions
@@ -171,6 +172,7 @@ namespace WaywardGamers.KParser
         internal static readonly Regex LoseSight   = new Regex(string.Format("^You lose sight of {0}\\.$", target));
         internal static readonly Regex FailActivate = new Regex(string.Format("^{0} fails to activate\\.$", item));
         internal static readonly Regex CannotPerform = new Regex(string.Format("^{0} cannot perform that action\\.$", name));
+        internal static readonly Regex HideSpotted = new Regex(string.Format("^{0} spots {1}!$", target, name));
         #endregion
 
         #region Modifiers on existing lines
@@ -245,7 +247,7 @@ namespace WaywardGamers.KParser
     }
 
     // Special other names we want to check for, but also allow for localization
-    internal class Effectnames
+    internal class EffectNames
     {
         internal static readonly string Overloaded = "Overloaded";
     }
