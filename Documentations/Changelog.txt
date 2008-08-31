@@ -3,7 +3,7 @@ KParser Change Log
 1.0.10.1
 - Fix crash bug in player info dialog.
 
-
+ 
 1.0.10
 + Added ability to save a copy of the database stripped of all chat information (excluding arena/HELM messages) for privacy when sharing database files.
 + Implemented initial report function, allowing user to save current plugin text window to a text file.
