@@ -170,9 +170,9 @@ namespace WaywardGamers.KParser
         internal static readonly Regex AutoTarget  = new Regex(string.Format("^Auto-targeting {0}\\.$", target));
         internal static readonly Regex TooFarForXP = new Regex(string.Format("^You are too far from the battle to gain experience\\.$"));
         internal static readonly Regex LoseSight   = new Regex(string.Format("^You lose sight of {0}\\.$", target));
-        internal static readonly Regex FailActivate = new Regex(string.Format("^{0} fails to activate\\.$", item));
+        internal static readonly Regex FailActivate = new Regex(string.Format("^{0} fails? to activate\\.$", item));
         internal static readonly Regex CannotPerform = new Regex(string.Format("^{0} cannot perform that action\\.$", name));
-        internal static readonly Regex HideSpotted = new Regex(string.Format("^{0} spots {1}!$", target, name));
+        internal static readonly Regex FailHide    = new Regex(string.Format("^{0} (try|tries) to hide, but (is|are) spotted by {1}\\.$", name, target));
         #endregion
 
         #region Modifiers on existing lines

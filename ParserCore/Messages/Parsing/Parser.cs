@@ -2830,6 +2830,24 @@ namespace WaywardGamers.KParser.Parsing
 
                 if (combatMatch.Success == false)
                 {
+                    combatMatch = ParseExpressions.FailHide.Match(currentMessageText);
+                    if (combatMatch.Success == true)
+                    {
+                        msgCombatDetails.ActionType = ActionType.Ability;
+                        msgCombatDetails.InteractionType = InteractionType.Aid;
+                        msgCombatDetails.AidType = AidType.Enhance;
+                        msgCombatDetails.HarmType = HarmType.None;
+                        msgCombatDetails.SuccessLevel = SuccessType.Failed;
+                        msgCombatDetails.FailedActionType = FailedActionType.Discovered;
+                        msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                        //target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                        message.ParseSuccessful = true;
+                        return;
+                    }
+                }
+
+                if (combatMatch.Success == false)
+                {
                     combatMatch = ParseExpressions.FailsCharm.Match(currentMessageText);
                     if (combatMatch.Success == true)
                     {
