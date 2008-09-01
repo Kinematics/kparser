@@ -2,6 +2,8 @@ KParser Change Log
 
 1.0.11
 - Fix issue where a Puppetmaster Overloading would reclassify the player as a mob, effectively removing them from further parse display.
+- Fix parser to parse Hide events.
++ Add Thief plugin for tracking SATA/Hide damage.  Very expensive to process, so minimal set allowed during parsing.  Implemented at the request of Melphina.
 
 
 1.0.10.1
