@@ -567,7 +567,7 @@ namespace WaywardGamers.KParser.Plugin
                                 sataActions = sataActions.Skip(1);
 
                                 if ((nextAction.ActionsRow.ActionName == "Hide") &&
-                                    nextAction.FailedActionType == FailedActionType.Discovered)
+                                    (FailedActionType)nextAction.FailedActionType == FailedActionType.Discovered)
                                     continue;
 
                                 sataEvent.SATAActions.Add(GetSATAType(nextAction.ActionsRow.ActionName));
