@@ -10,11 +10,56 @@ using System.Diagnostics;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    class ThiefPlugin : BasePluginControlWithDropdown
+    public class ThiefPlugin : BasePluginControlWithDropdown
     {
+        #region SATA support classes and functions
+        internal enum SATATypes
+        {
+            None,
+            SneakAttack,
+            TrickAttack,
+            Hide
+        }
+
+        internal class SATAEvent
+        {
+            internal HashSet<SATATypes> SATAActions { get; set; }
+            internal bool UsedHide { get; set; }
+            internal bool SATASuccess { get; set; }
+
+            internal DateTime DamageTimestamp { get; set; }
+
+            internal ActionType DamageType { get; set; }
+            internal DamageModifier DamageModifier { get; set; }
+            internal int DamageAmount { get; set; }
+            internal string WeaponskillName { get; set; }
+        }
+
+        internal SATATypes GetSATAType(string actionName)
+        {
+            switch (actionName)
+            {
+                case "Sneak Attack":
+                    return SATATypes.SneakAttack;
+                case "Trick Attack":
+                    return SATATypes.TrickAttack;
+                case "Hide":
+                    return SATATypes.Hide;
+                default:
+                    return SATATypes.None;
+            }
+        }
+        #endregion
+
         #region Member variables
         bool checkBox1Changed = false;
         bool flagNoUpdate = false;
+
+        HashSet<SATATypes> SASet = new HashSet<SATATypes> { SATATypes.SneakAttack };
+        HashSet<SATATypes> TASet = new HashSet<SATATypes> { SATATypes.TrickAttack };
+        HashSet<SATATypes> SATASet = new HashSet<SATATypes> { SATATypes.SneakAttack, SATATypes.TrickAttack };
+
+        List<SATAEvent> SATAEvents = new List<SATAEvent>();
         #endregion
 
         #region IPlugin Overrides
@@ -57,6 +102,7 @@ namespace WaywardGamers.KParser.Plugin
             //checkBox2.Text = "Show Detail";
             //flagNoUpdate = true;
             //checkBox2.Checked = false;
+
         }
 
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
@@ -291,26 +337,10 @@ namespace WaywardGamers.KParser.Plugin
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                         select n,
-                                Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                        where ((ActionType)n.ActionType == ActionType.Ranged &&
-                                               ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
-                                        select n,
-                                Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                        where ((ActionType)n.ActionType == ActionType.Spell &&
-                                               ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
-                                                n.Preparing == false &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
-                                        select n,
                                 Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                           where ((ActionType)n.ActionType == ActionType.Ability &&
-                                               ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain ||
-                                                (HarmType)n.HarmType == HarmType.Unknown) &&
-                                                n.Preparing == false &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
+                                                 (AidType)n.AidType == AidType.Enhance &&
+                                                 n.Preparing == false)
                                           select n,
                                 WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                          where ((ActionType)n.ActionType == ActionType.Weaponskill &&
@@ -319,24 +349,6 @@ namespace WaywardGamers.KParser.Plugin
                                                 n.Preparing == false &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                          select n,
-                                SC = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                     where ((ActionType)n.ActionType == ActionType.Skillchain &&
-                                            ((HarmType)n.HarmType == HarmType.Damage ||
-                                             (HarmType)n.HarmType == HarmType.Drain) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
-                                     select n,
-                                Counter = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                          where (ActionType)n.ActionType == ActionType.Counterattack &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None)
-                                          select n,
-                                Retaliate = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                            where (ActionType)n.ActionType == ActionType.Retaliation &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None)
-                                            select n,
-                                Spikes = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                         where (ActionType)n.ActionType == ActionType.Spikes &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None)
-                                         select n
                             };
 
             ProcessAttackSet(attackSet);
@@ -383,82 +395,19 @@ namespace WaywardGamers.KParser.Plugin
                                                n.BattlesRow.MinBaseExperience() == xp) &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                         select n,
-                                Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                        where ((ActionType)n.ActionType == ActionType.Ranged &&
-                                               ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
-                                               n.IsTargetIDNull() == false &&
-                                               n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
-                                               n.IsBattleIDNull() == false &&
-                                               (xp == 0 ||
-                                               n.BattlesRow.MinBaseExperience() == xp) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
-                                        select n,
-                                Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                        where ((ActionType)n.ActionType == ActionType.Spell &&
-                                               ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
-                                               n.IsTargetIDNull() == false &&
-                                               n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
-                                               n.IsBattleIDNull() == false &&
-                                               (xp == 0 ||
-                                               n.BattlesRow.MinBaseExperience() == xp) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
-                                        select n,
                                 Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                           where ((ActionType)n.ActionType == ActionType.Ability &&
-                                                 ((HarmType)n.HarmType == HarmType.Damage ||
-                                                  (HarmType)n.HarmType == HarmType.Drain ||
-                                                  (HarmType)n.HarmType == HarmType.Unknown) &&
-                                                 n.IsTargetIDNull() == false &&
-                                                 n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
+                                                 (AidType)n.AidType == AidType.Enhance &&
                                                  n.IsBattleIDNull() == false &&
-                                                 (xp == 0 ||
+                                                (n.BattlesRow.DefaultBattle == true ||
+                                                 xp == 0 ||
                                                  n.BattlesRow.MinBaseExperience() == xp) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
+                                                n.Preparing == false)
                                           select n,
                                 WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                          where ((ActionType)n.ActionType == ActionType.Weaponskill &&
                                                 ((HarmType)n.HarmType == HarmType.Damage ||
                                                  (HarmType)n.HarmType == HarmType.Drain) &&
-                                                n.IsTargetIDNull() == false &&
-                                                n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
-                                                n.IsBattleIDNull() == false &&
-                                                (xp == 0 ||
-                                                n.BattlesRow.MinBaseExperience() == xp) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
-                                         select n,
-                                SC = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                     where ((ActionType)n.ActionType == ActionType.Skillchain &&
-                                            ((HarmType)n.HarmType == HarmType.Damage ||
-                                             (HarmType)n.HarmType == HarmType.Drain) &&
-                                            n.IsTargetIDNull() == false &&
-                                            n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
-                                            n.IsBattleIDNull() == false &&
-                                            (xp == 0 ||
-                                            n.BattlesRow.MinBaseExperience() == xp) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
-                                     select n,
-                                Counter = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                          where ((ActionType)n.ActionType == ActionType.Counterattack &&
-                                                 n.IsTargetIDNull() == false &&
-                                                 n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
-                                                 n.IsBattleIDNull() == false &&
-                                                 (xp == 0 ||
-                                                 n.BattlesRow.MinBaseExperience() == xp) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
-                                          select n,
-                                Retaliate = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                            where ((ActionType)n.ActionType == ActionType.Retaliation &&
-                                                   n.IsTargetIDNull() == false &&
-                                                   n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
-                                                   n.IsBattleIDNull() == false &&
-                                                   (xp == 0 ||
-                                                   n.BattlesRow.MinBaseExperience() == xp) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
-                                            select n,
-                                Spikes = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                         where ((ActionType)n.ActionType == ActionType.Spikes &&
                                                 n.IsTargetIDNull() == false &&
                                                 n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
                                                 n.IsBattleIDNull() == false &&
@@ -494,38 +443,19 @@ namespace WaywardGamers.KParser.Plugin
                                 Name = c.CombatantName,
                                 Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                         where ((n.IsBattleIDNull() == false) &&
-                                               (n.BattleID == battleID) &&
+                                               (n.BattleID == battleID ||
+                                                n.BattlesRow.DefaultBattle == true) &&
                                                ((ActionType)n.ActionType == ActionType.Melee) &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
-                                        select n,
-                                Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                        where ((n.IsBattleIDNull() == false) &&
-                                               (n.BattleID == battleID) &&
-                                               ((ActionType)n.ActionType == ActionType.Ranged) &&
-                                               ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
-                                        select n,
-                                Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                        where ((n.IsBattleIDNull() == false) &&
-                                               (n.BattleID == battleID) &&
-                                               ((ActionType)n.ActionType == ActionType.Spell) &&
-                                               ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
-                                                n.Preparing == false &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                         select n,
                                 Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                           where ((n.IsBattleIDNull() == false) &&
                                                (n.BattleID == battleID) &&
                                                ((ActionType)n.ActionType == ActionType.Ability) &&
-                                               ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain ||
-                                                (HarmType)n.HarmType == HarmType.Unknown) &&
-                                                n.Preparing == false &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
+                                                (AidType)n.AidType == AidType.Enhance &&
+                                                n.Preparing == false)
                                           select n,
                                 WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                          where ((n.IsBattleIDNull() == false) &&
@@ -536,30 +466,6 @@ namespace WaywardGamers.KParser.Plugin
                                                 n.Preparing == false &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
                                          select n,
-                                SC = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                     where ((n.IsBattleIDNull() == false) &&
-                                               (n.BattleID == battleID) &&
-                                               ((ActionType)n.ActionType == ActionType.Skillchain) &&
-                                               ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain))
-                                     select n,
-                                Counter = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                          where (n.IsBattleIDNull() == false) &&
-                                               (n.BattleID == battleID) &&
-                                               ((ActionType)n.ActionType == ActionType.Counterattack &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
-                                          select n,
-                                Retaliate = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                            where (n.IsBattleIDNull() == false) &&
-                                               (n.BattleID == battleID) &&
-                                               ((ActionType)n.ActionType == ActionType.Retaliation &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
-                                            select n,
-                                Spikes = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                         where (n.IsBattleIDNull() == false) &&
-                                               (n.BattleID == battleID) &&
-                                               ((ActionType)n.ActionType == ActionType.Spikes)
-                                         select n
                             };
 
             ProcessAttackSet(attackSet);
@@ -571,225 +477,227 @@ namespace WaywardGamers.KParser.Plugin
         /// <param name="attackSet"></param>
         private void ProcessAttackSet(EnumerableRowCollection<AttackGroup> attackSet)
         {
-
             ResetTextBox();
-
-            int countAttacks;
 
             foreach (var player in attackSet)
             {
-                countAttacks = player.Melee.Count() +
-                    player.Range.Count() +
-                    player.Spell.Count() +
-                    player.Ability.Count() +
-                    player.WSkill.Count();
+                var sataActions = player.Ability.Where(
+                        a => a.IsActionIDNull() == false &&
+                        (a.ActionsRow.ActionName == "Sneak Attack" ||
+                         a.ActionsRow.ActionName == "Trick Attack" ||
+                         a.ActionsRow.ActionName == "Hide"));
 
-                if (countAttacks > 0)
+                if (sataActions.Count() > 0)
                 {
                     AppendBoldText(player.Name + "\n", Color.Red);
 
-                    if ((player.Melee.Count() > 0) &&
-                        (player.Melee.Any(n => (DamageModifier)n.DamageModifier != DamageModifier.Critical)))
+                    SATAEvents.Clear();
+                    sataActions = sataActions.OrderBy(a => a.InteractionID);
+
+                    while (sataActions.Count() > 0)
                     {
-                        AppendBoldText("  Melee\n", Color.Blue);
-                        if (checkBox2.Checked == true)
-                            ShowDetailedDamage(player.Melee.Where(m => (DamageModifier)m.DamageModifier != DamageModifier.Critical));
+                        var firstAction = sataActions.First();
+                        sataActions = sataActions.Skip(1);
 
-                        var meleeFreq = player.Melee.Where(m => (DamageModifier)m.DamageModifier != DamageModifier.Critical)
-                            .GroupBy(m => m.Amount).OrderBy(m => m.Key);
+                        SATATypes firstActionType = GetSATAType(firstAction.ActionsRow.ActionName);
 
-                        ShowFrequency(meleeFreq);
-                    }
+                        SATAEvent sataEvent = new SATAEvent();
+                        sataEvent.SATAActions = new HashSet<SATATypes>();
+                        SATAEvents.Add(sataEvent);
 
-                    if ((player.Melee.Count() > 0) &&
-                        (player.Melee.Any(n => (DamageModifier)n.DamageModifier == DamageModifier.Critical)))
-                    {
-                        AppendBoldText("  Melee Crits\n", Color.Blue);
-                        if (checkBox2.Checked == true)
-                            ShowDetailedDamage(player.Melee.Where(m => (DamageModifier)m.DamageModifier == DamageModifier.Critical));
+                        sataEvent.SATAActions.Add(firstActionType);
 
-                        var critFreq = player.Melee.Where(m => (DamageModifier)m.DamageModifier == DamageModifier.Critical)
-                            .GroupBy(m => m.Amount).OrderBy(m => m.Key);
+                        var nextMelee = player.Melee.FirstOrDefault(m => m.Timestamp >= firstAction.Timestamp);
+                        var nextWS = player.WSkill.FirstOrDefault(w => w.Timestamp >= firstAction.Timestamp);
 
-                        ShowFrequency(critFreq);
-                    }
+                        KPDatabaseDataSet.InteractionsRow sataDamage;
 
-                    if ((player.Range.Count() > 0) &&
-                        (player.Range.Any(n => (DamageModifier)n.DamageModifier != DamageModifier.Critical)))
-                    {
-                        AppendBoldText("  Range\n", Color.Blue);
-                        if (checkBox2.Checked == true)
-                            ShowDetailedDamage(player.Range.Where(m => (DamageModifier)m.DamageModifier != DamageModifier.Critical));
-
-                        var rangeFreq = player.Range.Where(m => (DamageModifier)m.DamageModifier != DamageModifier.Critical)
-                            .GroupBy(m => m.Amount).OrderBy(m => m.Key);
-
-                        ShowFrequency(rangeFreq);
-                    }
-
-                    if ((player.Range.Count() > 0) &&
-                        (player.Range.Any(n => (DamageModifier)n.DamageModifier == DamageModifier.Critical)))
-                    {
-                        AppendBoldText("  Range Crits\n", Color.Blue);
-                        if (checkBox2.Checked == true)
-                            ShowDetailedDamage(player.Range.Where(m => (DamageModifier)m.DamageModifier == DamageModifier.Critical));
-
-                        var critFreq = player.Range.Where(m => (DamageModifier)m.DamageModifier == DamageModifier.Critical)
-                            .GroupBy(m => m.Amount).OrderBy(m => m.Key);
-
-                        ShowFrequency(critFreq);
-                    }
-
-                    if ((player.Spell.Count() > 0) &&
-                        (player.Spell.Any(n => (DamageModifier)n.DamageModifier != DamageModifier.MagicBurst)))
-                    {
-                        AppendBoldText("  Spells\n", Color.Blue);
-
-                        var spellGroups = player.Spell.GroupBy(s => s.ActionsRow.ActionName)
-                            .OrderBy(s => s.Key);
-
-                        foreach (var spell in spellGroups)
+                        if ((nextMelee != null) && (nextWS != null))
                         {
-                            AppendBoldText(string.Format("    {0}\n", spell.Key), Color.Black);
-
-                            if (checkBox2.Checked == true)
-                                ShowDetailedDamage(spell.Where(m => (DamageModifier)m.DamageModifier != DamageModifier.MagicBurst));
-
-                            var spellFreq = spell.Where(m => (DamageModifier)m.DamageModifier != DamageModifier.MagicBurst)
-                                .GroupBy(m => m.Amount).OrderBy(m => m.Key);
-
-                            ShowFrequency(spellFreq);
+                            if (nextMelee.InteractionID < nextWS.InteractionID)
+                            {
+                                sataDamage = nextMelee;
+                            }
+                            else
+                            {
+                                sataDamage = nextWS;
+                            }
                         }
-                    }
-
-                    if ((player.Spell.Count() > 0) &&
-                        (player.Spell.Any(n => (DamageModifier)n.DamageModifier == DamageModifier.MagicBurst)))
-                    {
-                        AppendBoldText("  Magic Bursts\n", Color.Blue);
-
-                        var spellGroups = player.Spell.GroupBy(s => s.ActionsRow.ActionName)
-                            .OrderBy(s => s.Key);
-
-                        foreach (var spell in spellGroups)
+                        else if (nextMelee != null)
                         {
-                            AppendBoldText(string.Format("    {0}\n", spell.Key), Color.Black);
-
-                            if (checkBox2.Checked == true)
-                                ShowDetailedDamage(spell.Where(m => (DamageModifier)m.DamageModifier == DamageModifier.MagicBurst));
-
-                            var spellFreq = spell.Where(m => (DamageModifier)m.DamageModifier == DamageModifier.MagicBurst)
-                                .GroupBy(m => m.Amount).OrderBy(m => m.Key);
-
-                            ShowFrequency(spellFreq);
+                            sataDamage = nextMelee;
                         }
-                    }
-
-                    if (player.Ability.Count() > 0)
-                    {
-                        AppendBoldText("  Ability\n", Color.Blue);
-
-                        var abilityGroups = player.Ability.GroupBy(s => s.ActionsRow.ActionName)
-                            .OrderBy(s => s.Key);
-
-                        foreach (var ability in abilityGroups)
+                        else if (nextWS != null)
                         {
-                            AppendBoldText(string.Format("    {0}\n", ability.Key), Color.Black);
-
-                            if (checkBox2.Checked == true)
-                                ShowDetailedDamage(ability);
-
-                            var abilFreq = ability.GroupBy(m => m.Amount).OrderBy(m => m.Key);
-
-                            ShowFrequency(abilFreq);
+                            sataDamage = nextWS;
                         }
-                    }
-
-                    if (player.WSkill.Count() > 0)
-                    {
-                        AppendBoldText("  Weaponskill\n", Color.Blue);
-
-                        var wsGroups = player.WSkill.GroupBy(s => s.ActionsRow.ActionName)
-                            .OrderBy(s => s.Key);
-
-                        foreach (var wskill in wsGroups)
+                        else
                         {
-                            AppendBoldText(string.Format("    {0}\n", wskill.Key), Color.Black);
-
-                            if (checkBox2.Checked == true)
-                                ShowDetailedDamage(wskill);
-
-                            var wsFreq = wskill.GroupBy(m => m.Amount).OrderBy(m => m.Key);
-
-                            ShowFrequency(wsFreq);
+                            continue;
                         }
+
+
+                        if (sataDamage.Timestamp >= firstAction.Timestamp.AddMinutes(1))
+                        {
+                            sataEvent.SATASuccess = false;
+                            continue;
+                        }
+
+
+                        sataEvent.DamageTimestamp = sataDamage.Timestamp;
+                        sataEvent.DamageType = (ActionType)sataDamage.ActionType;
+                        if ((ActionType)sataDamage.ActionType == ActionType.Melee)
+                        {
+                            sataEvent.DamageModifier = (DamageModifier)sataDamage.DamageModifier;
+                        }
+                        else if ((ActionType)sataDamage.ActionType == ActionType.Weaponskill)
+                        {
+                            sataEvent.WeaponskillName = sataDamage.ActionsRow.ActionName;
+                        }
+                        sataEvent.DamageAmount = sataDamage.Amount;
+
+
+                        while (sataActions.Count() > 0)
+                        {
+                            var nextAction = sataActions.First();
+
+                            if ((nextAction.Timestamp < sataDamage.Timestamp) ||
+                               (nextAction.InteractionID < sataDamage.InteractionID))
+                            {
+                                sataActions = sataActions.Skip(1);
+
+                                if ((nextAction.ActionsRow.ActionName == "Hide") &&
+                                    nextAction.FailedActionType == FailedActionType.Discovered)
+                                    continue;
+
+                                sataEvent.SATAActions.Add(GetSATAType(nextAction.ActionsRow.ActionName));
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        
+
+                        if (sataEvent.SATAActions.Contains(SATATypes.Hide))
+                            sataEvent.UsedHide = true;
+
+                        if ((DefenseType)sataDamage.DefenseType != DefenseType.None)
+                        {
+                            sataEvent.SATASuccess = false;
+                        }
+                        else if ((ActionType)sataDamage.ActionType == ActionType.Melee)
+                        {
+                            //if (sataEvent.DamageModifier != DamageModifier.Critical)
+                            //    sataEvent.SATASuccess = false;
+
+                            sataEvent.SATASuccess = true;
+                        }
+                        else if (sataEvent.SATAActions.Intersect(SATASet).Count() == 0)
+                        {
+                            sataEvent.SATASuccess = false;
+                        }
+                        else
+                        {
+                            sataEvent.SATASuccess = true;
+                        }
+
                     }
 
-                    AppendNormalText("\n");
+                    // Finished building event list
+                    
+                    // Now try to display data
+
+                    var SATAList = SATAEvents.Where(s => s.SATASuccess == true &&
+                        s.SATAActions.IsSupersetOf(SATASet));
+
+                    var SAList = SATAEvents.Where(s => s.SATASuccess == true &&
+                         s.SATAActions.IsSupersetOf(SASet)).Except(SATAList);
+
+                    var TAList = SATAEvents.Where(s => s.SATASuccess == true &&
+                         s.SATAActions.IsSupersetOf(TASet)).Except(SATAList);
+
+                    if (SATAList.Count() > 0)
+                    {
+                        AppendBoldText("  SATA\n", Color.Blue);
+
+                        foreach (var sEvent in SATAList)
+                        {
+                            string dataLine = string.Format("    {0,-15}{1,15}{2,10}{3,10}\n",
+                                sEvent.DamageType,
+                                sEvent.DamageType == ActionType.Weaponskill ? sEvent.WeaponskillName : sEvent.DamageModifier.ToString(),
+                                sEvent.UsedHide ? "+Hide" : "",
+                                sEvent.DamageAmount);
+
+                            AppendNormalText(dataLine);
+                        }
+
+                        int totalDmg = SATAList.Sum(s => s.DamageAmount);
+                        double avgDmg = (double)totalDmg / SATAList.Count();
+
+                        AppendNormalText(string.Format("\n    {0,6}{1,44}\n",
+                            "Total:",
+                            totalDmg));
+                        AppendNormalText(string.Format("    {0,8}{1,42:f2}\n\n",
+                            "Average:",
+                            avgDmg));
+                    }
+
+                    if (SAList.Count() > 0)
+                    {
+                        AppendBoldText("  SA\n", Color.Blue);
+                        foreach (var sEvent in SAList)
+                        {
+                            string dataLine = string.Format("    {0,-15}{1,15}{2,10}{3,10}\n",
+                                sEvent.DamageType,
+                                sEvent.DamageType == ActionType.Weaponskill ? sEvent.WeaponskillName : sEvent.DamageModifier.ToString(),
+                                sEvent.UsedHide ? "+Hide" : "",
+                                sEvent.DamageAmount);
+
+                            AppendNormalText(dataLine);
+                        }
+
+                        int totalDmg = SAList.Sum(s => s.DamageAmount);
+                        double avgDmg = (double)totalDmg / SAList.Count();
+
+                        AppendNormalText(string.Format("\n    {0,6}{1,44}\n",
+                            "Total:",
+                            totalDmg));
+                        AppendNormalText(string.Format("    {0,8}{1,42:f2}\n\n",
+                            "Average:",
+                            avgDmg));
+                    }
+
+                    if (TAList.Count() > 0)
+                    {
+                        AppendBoldText("  TA\n", Color.Blue);
+                        foreach (var sEvent in TAList)
+                        {
+                            string dataLine = string.Format("    {0,-15}{1,15}{2,10}{3,10}\n",
+                                sEvent.DamageType,
+                                sEvent.DamageType == ActionType.Weaponskill ? sEvent.WeaponskillName : sEvent.DamageModifier.ToString(),
+                                sEvent.UsedHide ? "+Hide" : "",
+                                sEvent.DamageAmount);
+
+                            AppendNormalText(dataLine);
+                        }
+
+                        int totalDmg = TAList.Sum(s => s.DamageAmount);
+                        double avgDmg = (double)totalDmg / TAList.Count();
+
+                        AppendNormalText(string.Format("\n    {0,6}{1,44}\n",
+                            "Total:",
+                            totalDmg));
+                        AppendNormalText(string.Format("    {0,8}{1,42:f2}\n\n",
+                            "Average:",
+                            avgDmg));
+                    }
                 }
-            }
-        }
 
-        /// <summary>
-        /// Show frequency data for the provided damage grouping
-        /// </summary>
-        /// <param name="freqGrouping"></param>
-        private void ShowFrequency(IOrderedEnumerable<IGrouping<int, KPDatabaseDataSet.InteractionsRow>> freqGrouping)
-        {
-            StringBuilder strBuilder = new StringBuilder();
-            int max = freqGrouping.Max(f => f.Count());
-            int total = freqGrouping.Sum(f => f.Count());
-            int sum = 0;
-            int half = total / 2;
-            var medianStart = freqGrouping.SkipWhile(f => (sum += f.Count()) <= half);
-            var median = medianStart.FirstOrDefault();
-
-            foreach (var freq in freqGrouping)
-            {
-                if (freq.Count() == max)
-                    strBuilder.Append("+");
-                else
-                    strBuilder.Append(" ");
-
-                if ((median != null) && (freq.Key == median.Key))
-                    strBuilder.Append("^");
-                else
-                    strBuilder.Append(" ");
-
-
-                strBuilder.AppendFormat("   {0,4}: {1,4}\n", freq.Key, freq.Count());
             }
 
-            AppendNormalText(strBuilder.ToString());
         }
 
-        /// <summary>
-        /// Show detailed damage listing for the provided group.
-        /// </summary>
-        /// <param name="rows"></param>
-        private void ShowDetailedDamage(IEnumerable<KPDatabaseDataSet.InteractionsRow> rows)
-        {
-            int count = 0;
-
-            StringBuilder strBuilder = new StringBuilder();
-
-            foreach (var row in rows)
-            {
-                if (count % 10 == 0)
-                    strBuilder.Append("   ");
-
-                strBuilder.AppendFormat(" {0,4}", row.Amount);
-
-                if (count % 10 == 9)
-                    strBuilder.Append("\n");
-
-                count++;
-            }
-
-            if (count % 10 != 0)
-                strBuilder.Append("\n");
-
-            AppendNormalText(strBuilder.ToString());
-        }
         #endregion
 
         #region Event Handlers
