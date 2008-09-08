@@ -451,6 +451,8 @@ namespace WaywardGamers.KParser.Plugin
 
                 richTextBox.SelectionColor = strMod.Color;
             }
+
+            richTextBox.Select(0, 0);
         }
 
         #endregion
