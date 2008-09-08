@@ -169,7 +169,7 @@ namespace WaywardGamers.KParser.Monitoring.Memory
             {
                 abortMonitorThread = false;
 
-                if (FindFFXIProcess() == false)
+                if (FindFFXIProcess(false) == false)
                     return;
 
                 ChatLogDetails oldDetails = null;
@@ -182,7 +182,7 @@ namespace WaywardGamers.KParser.Monitoring.Memory
                     // If polProcess is ever lost (player disconnects), block on trying to reacquire it.
                     if (pol == null)
                     {
-                        if (FindFFXIProcess() == false)
+                        if (FindFFXIProcess(false) == false)
                         {
                             // End here if the FindFFXIProcess returns false,
                             // as that means the monitor thread has been aborted.
@@ -496,7 +496,7 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         /// </summary>
         /// <returns>Returns true if process was found,
         /// false if monitoring was aborted before it was found.</returns>
-        private bool FindFFXIProcess()
+        private bool FindFFXIProcess(bool scanning)
         {
             KParser.Properties.Settings kpSettings = new WaywardGamers.KParser.Properties.Settings();
 
@@ -522,7 +522,8 @@ namespace WaywardGamers.KParser.Monitoring.Memory
                                     pol = new POL(processByID, module.BaseAddress);
                                     processByID.Exited += new EventHandler(polExited);
                                     // Turn this off if scanning ram:
-                                    LocateChatLog();
+                                    if (scanning == false)
+                                        LocateChatLog();
                                     return true;
                                 }
                             }
@@ -549,7 +550,8 @@ namespace WaywardGamers.KParser.Monitoring.Memory
                                         pol = new POL(process, module.BaseAddress);
                                         process.Exited += new EventHandler(polExited);
                                         // Turn this off if scanning ram:
-                                        LocateChatLog();
+                                        if (scanning == false)
+                                            LocateChatLog();
                                         return true;
                                     }
                                 }
@@ -670,54 +672,60 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         {
             // Note: Disable LocateChatLog in FindFFXIProcess() before running this function.
 
-            if (FindFFXIProcess() == false)
+            if (FindFFXIProcess(true) == false)
                 return;
 
             // Locate a known string in memory space.  From there, determine the start
             // of the array of chat log messages.
             //FindString();
             // Take scanAddress and increment it by the index in scanStruct.memScanCharacters
-            // Result: 0x03EC0FC8
             // Result: 0x043e86a0 + 0x1c8 = 0x043E8868
+            // Result: 0x0263e0d8 + 0x01dd0000 (base) = 0x0440E0D8
 
             // Locate a pointer to the start of the chat log messages. (0x03ec0fac)
             // From that, determine the start of the ChatLogInfoStruct.
-            //FindAddress(0x043E8868);
+            //FindAddress(0x0440E0D8);
             // Take scanAddress + j*4 at breakpoint
-            // Result: 0x03EC0EE0
             // Result: 0x043e8000 + 0x213*4 = 0x043e884c
+            // Result: 0x0440e000 + 0x02f*4 = 0x0440E0BC
+
             // The start of ChatLogInfoStruct is (4 bytes + 50 shorts + 50 shorts =
             // 204 bytes (0xCC) before the located pointer.
             // Result: 0x043e884c - 0xCC = 0x043E8780
+            // Result: 0x0440E0BC - 0xCC = 0x0440DFF0
 
 
             // Examine the ChatLogInfoStruct from the previous address
             // to make sure things match up.
-            //CheckStructure(0x043E8780);
+            //CheckStructure(0x0440DFF0);
 
             // Since we know where the structure lives, find the address
             // that points to that.
-            //FindAddress(0x043E8780);
+            //FindAddress(0x0440DFF0);
             // Take scanAddress + j*4 at breakpoint
             // Result: 0x03EC0EBC
             // Result: 0x043e8000 + 0x1d7*4 = 0x043E875C
+            // Result: 0x0440d000 + 0x3f3*4 = 0x0440DFCC
 
             // That pointer is the second in a structure that is pointed
             // to by an initial address point.  Locate the address of our
             // pointer - 4.
-            //FindAddress(0x043E8758);
+            //FindAddress(0x0440DFC8);
             // Take scanAddress + j*4 at breakpoint
             // Result: 0x0203DA48
             // Result: 0x02065000 + 0x25a*4 = 0x02065968
+            // Result: 0x02346000 + 0x356*4 = 0x02346D58
 
             // Base offset address is the above pointer relative to the
             // POL base address.  Remove that value.
             // Result: 0x0203DA48 - 0x01ad0000 == 0x0056DA48
             // Result: 0x02065968 - 0x01af0000 == 0x00575968
+            // Result: 0x02346D58 - 0x01dd0000 == 0x00576D58
 
             // Base address before patch for 2008-03-10: 0x0056A788
             // Base address after patch for 2008-03-10:  0x0056DA48
             // Base address after update on 2008-06-09:  0x00575968
+            // Base address after update on 2008-09-08:  0x00576D58
         }
 
         private void CheckStructure(uint checkAddress)
@@ -784,7 +792,7 @@ namespace WaywardGamers.KParser.Monitoring.Memory
 
         private void FindString()
         {
-            uint scanMemoryOffset = 0;
+            uint scanMemoryOffset = 0x0263e0d8;
             uint blockSize = 1024;
             uint blockOffset = blockSize - 32;
             MemScanStringStruct scanStruct = new MemScanStringStruct();
@@ -807,7 +815,7 @@ namespace WaywardGamers.KParser.Monitoring.Memory
                     int j = byteString.IndexOf("Unicorn Claymore");
 
                     if (j >= 0)
-                        Trace.WriteLine(string.Format("Index j = {0}\n", j));
+                        Trace.WriteLine(string.Format("Offset = {0}, Index j = {1}\n", scanMemoryOffset, j));
                 }
                 catch (Exception e)
                 {
