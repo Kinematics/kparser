@@ -29,7 +29,8 @@ namespace WaywardGamers.KParser.Plugin
 
             internal DateTime DamageTimestamp { get; set; }
 
-            internal ActionType DamageType { get; set; }
+            internal ActionType ActionType { get; set; }
+            internal string ActionName { get; set; }
             internal DamageModifier DamageModifier { get; set; }
             internal int DamageAmount { get; set; }
             internal string WeaponskillName { get; set; }
@@ -312,11 +313,11 @@ namespace WaywardGamers.KParser.Plugin
                 return;
 
             if (selectedMob == "All")
-                ProcessAllMobs(dataSet, playerList.ToArray());
+                SelectAllMobs(dataSet, playerList.ToArray());
             else if (checkBox1.Checked == true)
-                ProcessMobGroup(dataSet, playerList.ToArray(), selectedMob);
+                SelectMobGroup(dataSet, playerList.ToArray(), selectedMob);
             else
-                ProcessBattle(dataSet, playerList.ToArray(), selectedMob);
+                SelectBattle(dataSet, playerList.ToArray(), selectedMob);
         }
 
         /// <summary>
@@ -324,7 +325,7 @@ namespace WaywardGamers.KParser.Plugin
         /// </summary>
         /// <param name="dataSet"></param>
         /// <param name="selectedPlayers"></param>
-        private void ProcessAllMobs(KPDatabaseDataSet dataSet, string[] selectedPlayers)
+        private void SelectAllMobs(KPDatabaseDataSet dataSet, string[] selectedPlayers)
         {
             var attackSet = from c in dataSet.Combatants
                             where (selectedPlayers.Contains(c.CombatantName))
@@ -360,7 +361,7 @@ namespace WaywardGamers.KParser.Plugin
         /// <param name="dataSet"></param>
         /// <param name="selectedPlayers"></param>
         /// <param name="selectedMob"></param>
-        private void ProcessMobGroup(KPDatabaseDataSet dataSet, string[] selectedPlayers, string selectedMob)
+        private void SelectMobGroup(KPDatabaseDataSet dataSet, string[] selectedPlayers, string selectedMob)
         {
             Regex mobAndXP = new Regex(@"((?<mobName>.*(?<! \())) \(((?<xp>\d+)\))|(?<mobName>.*)");
             Match mobAndXPMatch = mobAndXP.Match(selectedMob);
@@ -426,7 +427,7 @@ namespace WaywardGamers.KParser.Plugin
         /// <param name="dataSet"></param>
         /// <param name="selectedPlayers"></param>
         /// <param name="selectedMob"></param>
-        private void ProcessBattle(KPDatabaseDataSet dataSet, string[] selectedPlayers, string selectedMob)
+        private void SelectBattle(KPDatabaseDataSet dataSet, string[] selectedPlayers, string selectedMob)
         {
             Regex mobBattle = new Regex(@"\s*(?<battleID>\d+):\s+(?<mobName>.*)");
             Match mobBattleMatch = mobBattle.Match(selectedMob);
@@ -494,6 +495,16 @@ namespace WaywardGamers.KParser.Plugin
                     SATAEvents.Clear();
                     sataActions = sataActions.OrderBy(a => a.InteractionID);
 
+                    double avgNonCrit = player.Melee.Where(m => ((DefenseType)m.DefenseType == DefenseType.None) &&
+                        ((DamageModifier)m.DamageModifier == DamageModifier.None))
+                        .Average(m => m.Amount);
+                    double avgCrit = player.Melee.Where(m => ((DefenseType)m.DefenseType == DefenseType.None) &&
+                        ((DamageModifier)m.DamageModifier == DamageModifier.Critical))
+                        .Average(m => m.Amount);
+
+                    double critThreshold = avgCrit * 2;
+                    double nonCritThreshold = avgNonCrit * 3;
+
                     while (sataActions.Count() > 0)
                     {
                         var firstAction = sataActions.First();
@@ -507,240 +518,284 @@ namespace WaywardGamers.KParser.Plugin
 
                         sataEvent.SATAActions.Add(firstActionType);
 
-                        var nextMelee = player.Melee.FirstOrDefault(m => m.Timestamp >= firstAction.Timestamp);
-                        var nextWS = player.WSkill.FirstOrDefault(w => w.Timestamp >= firstAction.Timestamp);
+                        var nextMelee = player.Melee.FirstOrDefault(m => m.Timestamp >= firstAction.Timestamp &&
+                            m.Timestamp <= firstAction.Timestamp.AddMinutes(1));
+                        var nextWS = player.WSkill.FirstOrDefault(w => w.Timestamp >= firstAction.Timestamp &&
+                            w.Timestamp <= firstAction.Timestamp.AddMinutes(1));
 
-                        KPDatabaseDataSet.InteractionsRow sataDamage;
+                        KPDatabaseDataSet.InteractionsRow sataDamage = null;
 
-                        if ((nextMelee != null) && (nextWS != null))
+
+                        // First check if there are valid attacks following the JA use.
+                        // If not, continue the loop.  If there are no valid attacks of
+                        // one of the types (melee or weaponskill), use the other by default.
+                        if ((nextMelee == null) && (nextWS == null))
                         {
-                            if (nextMelee.InteractionID < nextWS.InteractionID)
-                            {
-                                sataDamage = nextMelee;
-                            }
-                            else
-                            {
-                                sataDamage = nextWS;
-                            }
+                            sataEvent.SATASuccess = false;
+                            sataEvent.ActionType = ActionType.Unknown;
+                            sataEvent.ActionName = "Failed";
+                            continue;
                         }
-                        else if (nextMelee != null)
-                        {
-                            sataDamage = nextMelee;
-                        }
-                        else if (nextWS != null)
+                        else if (nextMelee == null)
                         {
                             sataDamage = nextWS;
-                        }
-                        else
-                        {
-                            continue;
+                            sataEvent.SATASuccess = true;
                         }
 
-
-                        if (sataDamage.Timestamp >= firstAction.Timestamp.AddMinutes(1))
+                        if (sataDamage != null)
                         {
-                            sataEvent.SATASuccess = false;
-                            continue;
-                        }
-
-
-                        sataEvent.DamageTimestamp = sataDamage.Timestamp;
-                        sataEvent.DamageType = (ActionType)sataDamage.ActionType;
-                        if ((ActionType)sataDamage.ActionType == ActionType.Melee)
-                        {
-                            sataEvent.DamageModifier = (DamageModifier)sataDamage.DamageModifier;
-                        }
-                        else if ((ActionType)sataDamage.ActionType == ActionType.Weaponskill)
-                        {
-                            sataEvent.WeaponskillName = sataDamage.ActionsRow.ActionName;
-                        }
-                        sataEvent.DamageAmount = sataDamage.Amount;
-
-
-                        while (sataActions.Count() > 0)
-                        {
-                            var nextAction = sataActions.First();
-
-                            if ((nextAction.Timestamp < sataDamage.Timestamp) ||
-                               (nextAction.InteractionID < sataDamage.InteractionID))
+                            if (sataDamage.Timestamp >= firstAction.Timestamp.AddMinutes(1))
                             {
-                                sataActions = sataActions.Skip(1);
+                                sataEvent.SATASuccess = false;
+                                continue;
+                            }
+                        }
 
-                                if ((nextAction.ActionsRow.ActionName == "Hide") &&
-                                    (FailedActionType)nextAction.FailedActionType == FailedActionType.Discovered)
-                                    continue;
-
-                                sataEvent.SATAActions.Add(GetSATAType(nextAction.ActionsRow.ActionName));
+                        // If no attack has been selected, check for abnormally high values
+                        // in the next melee attack (crit or non-crit).  If present, indicates
+                        // a successeful JA hit.
+                        if (sataDamage == null)
+                        {
+                            if ((DamageModifier)nextMelee.DamageModifier == DamageModifier.Critical)
+                            {
+                                if (nextMelee.Amount > critThreshold)
+                                {
+                                    sataDamage = nextMelee;
+                                    sataEvent.SATASuccess = true;
+                                }
                             }
                             else
                             {
-                                break;
+                                if (nextMelee.Amount > nonCritThreshold)
+                                {
+                                    sataDamage = nextMelee;
+                                    sataEvent.SATASuccess = true;
+                                }
                             }
                         }
-                        
 
-                        if (sataEvent.SATAActions.Contains(SATATypes.Hide))
-                            sataEvent.UsedHide = true;
+                        // If no entry yet selected, recheck next melee attack by forcing it
+                        // to check for > firstAction.Timestamp to avoid entries where logged
+                        // attacks were out of order (JA use showed up before previous attack
+                        // round).
+                        if (sataDamage == null)
+                        {
+                            nextMelee = player.Melee.FirstOrDefault(m => m.Timestamp > firstAction.Timestamp);
+                            if (nextMelee != null)
+                            {
+                                if ((DamageModifier)nextMelee.DamageModifier == DamageModifier.Critical)
+                                {
+                                    if (nextMelee.Amount > critThreshold)
+                                    {
+                                        sataDamage = nextMelee;
+                                        sataEvent.SATASuccess = true;
+                                    }
+                                }
+                                else
+                                {
+                                    if (nextMelee.Amount > nonCritThreshold)
+                                    {
+                                        sataDamage = nextMelee;
+                                        sataEvent.SATASuccess = true;
+                                    }
+                                }
+                            }
+                        }
 
-                        if ((DefenseType)sataDamage.DefenseType != DefenseType.None)
+                        // Haven't found a melee hit to match up with this yet, so next
+                        // check for weaponskills in the period between JA use and melee.
+                        if (sataDamage == null)
+                        {
+                            if (nextWS != null)
+                            {
+                                if (nextMelee != null)
+                                {
+                                    if (nextWS.Timestamp <= nextMelee.Timestamp)
+                                    {
+                                        sataDamage = nextWS;
+                                        sataEvent.SATASuccess = true;
+                                    }
+                                }
+                                else
+                                {
+                                    sataDamage = nextWS;
+                                    sataEvent.SATASuccess = true;
+                                }
+                            }
+                        }
+
+                        // No exception crits or normal hits, and no weaponskills.  Must
+                        // be a miss, if there's a melee hit within the time limit.
+                        if (sataDamage == null)
+                        {
+                            if (nextMelee != null)
+                            {
+                                sataDamage = nextMelee;
+                                sataEvent.SATASuccess = false;
+                            }
+                        }
+
+                        if (sataDamage == null)
                         {
                             sataEvent.SATASuccess = false;
-                        }
-                        else if ((ActionType)sataDamage.ActionType == ActionType.Melee)
-                        {
-                            //if (sataEvent.DamageModifier != DamageModifier.Critical)
-                            //    sataEvent.SATASuccess = false;
-
-                            sataEvent.SATASuccess = true;
-                        }
-                        else if (sataEvent.SATAActions.Intersect(SATASet).Count() == 0)
-                        {
-                            sataEvent.SATASuccess = false;
+                            sataEvent.ActionType = ActionType.Unknown;
+                            sataEvent.ActionName = "Failed";
                         }
                         else
                         {
-                            sataEvent.SATASuccess = true;
-                        }
 
+                            sataEvent.DamageTimestamp = sataDamage.Timestamp;
+                            sataEvent.ActionType = (ActionType)sataDamage.ActionType;
+                            if ((ActionType)sataDamage.ActionType == ActionType.Melee)
+                            {
+                                sataEvent.DamageModifier = (DamageModifier)sataDamage.DamageModifier;
+                            }
+                            else if ((ActionType)sataDamage.ActionType == ActionType.Weaponskill)
+                            {
+                                sataEvent.WeaponskillName = sataDamage.ActionsRow.ActionName;
+                            }
+                            sataEvent.DamageAmount = sataDamage.Amount;
+
+
+                            while (sataActions.Count() > 0)
+                            {
+                                var nextAction = sataActions.First();
+
+                                if ((nextAction.Timestamp <= sataDamage.Timestamp) ||
+                                   (nextAction.InteractionID < sataDamage.InteractionID))
+                                {
+                                    sataActions = sataActions.Skip(1);
+
+                                    if ((nextAction.ActionsRow.ActionName == "Hide") &&
+                                        (FailedActionType)nextAction.FailedActionType == FailedActionType.Discovered)
+                                        continue;
+
+                                    sataEvent.SATAActions.Add(GetSATAType(nextAction.ActionsRow.ActionName));
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+
+                            if (sataEvent.SATAActions.Contains(SATATypes.Hide))
+                                sataEvent.UsedHide = true;
+
+                            if ((DefenseType)sataDamage.DefenseType != DefenseType.None)
+                            {
+                                sataEvent.SATASuccess = false;
+                            }
+                            else if (sataEvent.SATAActions.Intersect(SATASet).Count() == 0)
+                            {
+                                sataEvent.SATASuccess = false;
+                            }
+
+                            sataEvent.ActionName = sataEvent.ActionType.ToString();
+                        }
                     }
 
                     // Finished building event list
-                    
+
                     // Now try to display data
 
-                    var SATAList = SATAEvents.Where(s => s.SATASuccess == true &&
+                    var SATAList = SATAEvents.Where(s => //s.SATASuccess == true &&
                         s.SATAActions.IsSupersetOf(SATASet));
 
-                    var SAList = SATAEvents.Where(s => s.SATASuccess == true &&
+                    var SAList = SATAEvents.Where(s => //s.SATASuccess == true &&
                          s.SATAActions.IsSupersetOf(SASet)).Except(SATAList);
 
-                    var TAList = SATAEvents.Where(s => s.SATASuccess == true &&
+                    var TAList = SATAEvents.Where(s => //s.SATASuccess == true &&
                          s.SATAActions.IsSupersetOf(TASet)).Except(SATAList);
 
-                    if (SATAList.Count() > 0)
-                    {
-                        AppendBoldText("  SATA\n", Color.Blue);
-
-                        foreach (var sEvent in SATAList)
-                        {
-                            string dataLine = string.Format("    {0,-15}{1,15}{2,10}{3,10}\n",
-                                sEvent.DamageType,
-                                sEvent.DamageType == ActionType.Weaponskill ? sEvent.WeaponskillName : sEvent.DamageModifier.ToString(),
-                                sEvent.UsedHide ? "+Hide" : "",
-                                sEvent.DamageAmount);
-
-                            AppendNormalText(dataLine);
-                        }
-
-                        var meleeDmgList = SATAList.Where(s => s.DamageType == ActionType.Melee);
-                        var wsDmgList = SATAList.Where(s => s.DamageType == ActionType.Weaponskill);
-
-                        int totalMeleeDmg = meleeDmgList.Sum(s => s.DamageAmount);
-                        int totalWSDmg = wsDmgList.Sum(s => s.DamageAmount);
-
-                        int totalDmg = totalMeleeDmg + totalWSDmg;
-
-                        double avgMeleeDmg = meleeDmgList.Count() > 0 ? 
-                            (double)totalMeleeDmg / meleeDmgList.Count() : 0;
-                        double avgWSDmg = wsDmgList.Count() > 0 ? 
-                            (double)totalWSDmg / wsDmgList.Count() : 0;
-
-                        AppendNormalText(string.Format("\n    {0,6}{1,44}\n",
-                            "Total:",
-                            totalDmg));
-                        AppendNormalText(string.Format("    {0,30}{1,20}\n", "Count", "Average"));
-                        AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n",
-                            "Melee:",
-                            meleeDmgList.Count(),
-                            avgMeleeDmg));
-                        AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n\n",
-                            "Weaponskill:",
-                             wsDmgList.Count(),
-                            avgWSDmg));
-                    }
-
-                    if (SAList.Count() > 0)
-                    {
-                        AppendBoldText("  SA\n", Color.Blue);
-                        foreach (var sEvent in SAList)
-                        {
-                            string dataLine = string.Format("    {0,-15}{1,15}{2,10}{3,10}\n",
-                                sEvent.DamageType,
-                                sEvent.DamageType == ActionType.Weaponskill ? sEvent.WeaponskillName : sEvent.DamageModifier.ToString(),
-                                sEvent.UsedHide ? "+Hide" : "",
-                                sEvent.DamageAmount);
-
-                            AppendNormalText(dataLine);
-                        }
-
-                        var meleeDmgList = SAList.Where(s => s.DamageType == ActionType.Melee);
-                        var wsDmgList = SAList.Where(s => s.DamageType == ActionType.Weaponskill);
-
-                        int totalMeleeDmg = meleeDmgList.Sum(s => s.DamageAmount);
-                        int totalWSDmg = wsDmgList.Sum(s => s.DamageAmount);
-
-                        int totalDmg = totalMeleeDmg + totalWSDmg;
-
-                        double avgMeleeDmg = meleeDmgList.Count() > 0 ?
-                            (double)totalMeleeDmg / meleeDmgList.Count() : 0;
-                        double avgWSDmg = wsDmgList.Count() > 0 ?
-                            (double)totalWSDmg / wsDmgList.Count() : 0;
-
-                        AppendNormalText(string.Format("\n    {0,6}{1,44}\n",
-                            "Total:",
-                            totalDmg));
-                        AppendNormalText(string.Format("    {0,30}{1,20}\n", "Count", "Average"));
-                        AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n",
-                            "Melee:",
-                            meleeDmgList.Count(),
-                            avgMeleeDmg));
-                        AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n\n",
-                            "Weaponskill:",
-                             wsDmgList.Count(),
-                            avgWSDmg));
-                    }
-
-                    if (TAList.Count() > 0)
-                    {
-                        AppendBoldText("  TA\n", Color.Blue);
-                        foreach (var sEvent in TAList)
-                        {
-                            string dataLine = string.Format("    {0,-15}{1,15}{2,10}{3,10}\n",
-                                sEvent.DamageType,
-                                sEvent.DamageType == ActionType.Weaponskill ? sEvent.WeaponskillName : sEvent.DamageModifier.ToString(),
-                                sEvent.UsedHide ? "+Hide" : "",
-                                sEvent.DamageAmount);
-
-                            AppendNormalText(dataLine);
-                        }
-
-                        var meleeDmgList = TAList.Where(s => s.DamageType == ActionType.Melee);
-                        var wsDmgList = TAList.Where(s => s.DamageType == ActionType.Weaponskill);
-
-                        int totalMeleeDmg = meleeDmgList.Sum(s => s.DamageAmount);
-                        int totalWSDmg = wsDmgList.Sum(s => s.DamageAmount);
-
-                        int totalDmg = totalMeleeDmg + totalWSDmg;
-
-                        double avgMeleeDmg = meleeDmgList.Count() > 0 ?
-                            (double)totalMeleeDmg / meleeDmgList.Count() : 0;
-                        double avgWSDmg = wsDmgList.Count() > 0 ?
-                            (double)totalWSDmg / wsDmgList.Count() : 0;
-
-                        AppendNormalText(string.Format("\n    {0,6}{1,44}\n",
-                            "Total:",
-                            totalDmg));
-                        AppendNormalText(string.Format("    {0,30}{1,20}\n", "Count", "Average"));
-                        AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n",
-                            "Melee:",
-                            meleeDmgList.Count(),
-                            avgMeleeDmg));
-                        AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n\n",
-                            "Weaponskill:",
-                             wsDmgList.Count(),
-                            avgWSDmg));
-                    }
+                    PrintOutput("SATA", SATAList);
+                    PrintOutput("SA", SAList);
+                    PrintOutput("TA", TAList);
                 }
+            }
+        }
+
+        private void PrintOutput(string title, IEnumerable<SATAEvent> SATAList)
+        {
+
+            string dataLine;
+
+            if (SATAList.Count() > 0)
+            {
+                AppendBoldText("  " + title + "\n", Color.Blue);
+
+                foreach (var sEvent in SATAList)
+                {
+                    if (sEvent.ActionType == ActionType.Unknown)
+                    {
+                        dataLine = string.Format("    {0,-15}\n",
+                            sEvent.ActionName);
+                    }
+                    else
+                    {
+                        dataLine = string.Format("    {0,-15}{1,15}{2,10}{3,10}\n",
+                            sEvent.ActionName,
+                            sEvent.ActionType == ActionType.Weaponskill ? sEvent.WeaponskillName
+                            : (sEvent.SATASuccess == true ? sEvent.DamageModifier.ToString() : "Miss"),
+                            sEvent.UsedHide ? "+Hide" : "",
+                            sEvent.DamageAmount);
+                    }
+
+                    AppendNormalText(dataLine);
+                }
+
+                // All
+                var meleeDmgList = SATAList.Where(s => s.ActionType == ActionType.Melee);
+                var wsDmgList = SATAList.Where(s => s.ActionType == ActionType.Weaponskill);
+
+                int totalMeleeDmg = meleeDmgList.Sum(s => s.DamageAmount);
+                int totalWSDmg = wsDmgList.Sum(s => s.DamageAmount);
+
+                int totalDmg = totalMeleeDmg + totalWSDmg;
+
+                double avgMeleeDmg = meleeDmgList.Count() > 0 ?
+                    (double)totalMeleeDmg / meleeDmgList.Count() : 0;
+                double avgWSDmg = wsDmgList.Count() > 0 ?
+                    (double)totalWSDmg / wsDmgList.Count() : 0;
+
+                // Only successful
+                int successCount = SATAList.Where(s => s.SATASuccess == true).Count();
+
+                var smeleeDmgList = SATAList.Where(s => s.ActionType == ActionType.Melee &&
+                    s.SATASuccess == true);
+
+                int totalSMeleeDmg = smeleeDmgList.Sum(s => s.DamageAmount);
+
+                int totalSDmg = totalSMeleeDmg + totalWSDmg;
+
+                double avgSMeleeDmg = smeleeDmgList.Count() > 0 ?
+                    (double)totalSMeleeDmg / smeleeDmgList.Count() : 0;
+
+
+                AppendNormalText(string.Format("\n    {0,-20}{1,10}{2,20}\n",
+                    "Total:",
+                    SATAList.Count(),
+                    totalDmg));
+                AppendNormalText(string.Format("    {0,-20}{1,30}\n",
+                    "Successful Total:",
+                    totalSDmg));
+                AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:p2}\n\n",
+                    "Success Count:",
+                     successCount,
+                     (double)successCount / SATAList.Count()));
+
+                AppendNormalText(string.Format("    {0,30}{1,20}\n", "Count", "Average"));
+                AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n",
+                    "Melee:",
+                    meleeDmgList.Count(),
+                    avgMeleeDmg));
+                AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n",
+                    "Successful Melee:",
+                    smeleeDmgList.Count(),
+                    avgSMeleeDmg));
+                AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n\n\n",
+                    "Weaponskill:",
+                     wsDmgList.Count(),
+                    avgWSDmg));
             }
         }
 
