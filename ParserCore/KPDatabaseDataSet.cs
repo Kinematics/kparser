@@ -8,6 +8,33 @@ namespace WaywardGamers.KParser
     public partial class KPDatabaseDataSet
     {
         /// <summary>
+        /// Class to allow Distinct comparisons between interaction elements based on timestamps.
+        /// </summary>
+        public class InteractionTimestampComparer : IEqualityComparer<KPDatabaseDataSet.InteractionsRow>
+        {
+            public InteractionTimestampComparer()
+            {
+            }
+
+            public bool Equals(KPDatabaseDataSet.InteractionsRow x, KPDatabaseDataSet.InteractionsRow y)
+            {
+                if (x.Timestamp == y.Timestamp)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            public int GetHashCode(KPDatabaseDataSet.InteractionsRow obj)
+            {
+                return obj.Timestamp.GetHashCode();
+            }
+        }
+
+        /// <summary>
         /// Extensions for the Battles table.
         /// </summary>
         public partial class BattlesDataTable
