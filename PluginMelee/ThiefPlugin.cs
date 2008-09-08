@@ -5,15 +5,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Data;
 using System.Drawing;
+using System.Windows.Forms;
 using WaywardGamers.KParser;
 using System.Diagnostics;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class ThiefPlugin : BasePluginControlWithDropdown
+    public class ThiefPlugin : NewBasePluginControl
     {
         #region SATA support classes and functions
-        internal enum SATATypes
+        private enum SATATypes
         {
             None,
             SneakAttack,
@@ -21,7 +22,7 @@ namespace WaywardGamers.KParser.Plugin
             Hide
         }
 
-        internal class SATAEvent
+        private class SATAEvent
         {
             internal HashSet<SATATypes> SATAActions { get; set; }
             internal bool UsedHide { get; set; }
@@ -36,7 +37,7 @@ namespace WaywardGamers.KParser.Plugin
             internal string WeaponskillName { get; set; }
         }
 
-        internal SATATypes GetSATAType(string actionName)
+        private SATATypes GetSATAType(string actionName)
         {
             switch (actionName)
             {
@@ -53,7 +54,8 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Member variables
-        bool checkBox1Changed = false;
+        bool groupMobs = false;
+        bool groupMobsChanged = false;
         bool flagNoUpdate = false;
 
         HashSet<SATATypes> SASet = new HashSet<SATATypes> { SATATypes.SneakAttack };
@@ -61,6 +63,51 @@ namespace WaywardGamers.KParser.Plugin
         HashSet<SATATypes> SATASet = new HashSet<SATATypes> { SATATypes.SneakAttack, SATATypes.TrickAttack };
 
         List<SATAEvent> SATAEvents = new List<SATAEvent>();
+        #endregion
+
+        #region Constructor
+        ToolStripLabel playersLabel = new ToolStripLabel();
+        ToolStripComboBox playersCombo = new ToolStripComboBox();
+
+        ToolStripLabel mobsLabel = new ToolStripLabel();
+        ToolStripComboBox mobsCombo = new ToolStripComboBox();
+
+        ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
+
+        public ThiefPlugin()
+        {
+            playersLabel.Text = "Players:";
+            toolStrip.Items.Add(playersLabel);
+
+            playersCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            playersCombo.Items.Add("All");
+            playersCombo.MaxDropDownItems = 10;
+            playersCombo.SelectedIndex = 0;
+            playersCombo.SelectedIndexChanged += new EventHandler(this.playersCombo_SelectedIndexChanged);
+            toolStrip.Items.Add(playersCombo);
+
+
+            mobsLabel.Text = "Mobs:";
+            toolStrip.Items.Add(mobsLabel);
+
+            mobsCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            mobsCombo.Items.Add("All");
+            mobsCombo.MaxDropDownItems = 10;
+            mobsCombo.SelectedIndex = 0;
+            mobsCombo.SelectedIndexChanged += new EventHandler(this.mobsCombo_SelectedIndexChanged);
+            toolStrip.Items.Add(mobsCombo);
+
+
+            optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            optionsMenu.Text = "Options";
+            ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
+            groupMobsOption.Text = "Group Mobs";
+            groupMobsOption.CheckOnClick = true;
+            groupMobsOption.Checked = false;
+            groupMobsOption.Click += new EventHandler(groupMobs_Click);
+            optionsMenu.DropDownItems.Add(groupMobsOption);
+            toolStrip.Items.Add(optionsMenu);
+        }
         #endregion
 
         #region IPlugin Overrides
@@ -71,39 +118,17 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void Reset()
         {
-            richTextBox.Clear();
-            richTextBox.WordWrap = false;
+            ResetTextBox();
 
-            label1.Text = "Players";
-            comboBox1.Left = label1.Right + 10;
-            comboBox1.MaxDropDownItems = 9;
-            comboBox1.Items.Clear();
-            comboBox1.Items.Add("All");
+            playersCombo.Items.Clear();
+            playersCombo.Items.Add("All");
             flagNoUpdate = true;
-            comboBox1.SelectedIndex = 0;
+            playersCombo.SelectedIndex = 0;
 
-            label2.Left = comboBox1.Right + 20;
-            label2.Text = "Enemies";
-            comboBox2.Left = label2.Right + 10;
-            comboBox2.Width = 150;
-            comboBox2.MaxDropDownItems = 10;
-            comboBox2.Items.Clear();
-            comboBox2.Items.Add("All");
+            mobsCombo.Items.Clear();
+            mobsCombo.Items.Add("All");
             flagNoUpdate = true;
-            comboBox2.SelectedIndex = 0;
-
-            checkBox1.Left = comboBox2.Right + 20;
-            checkBox1.Text = "Group Enemies";
-            flagNoUpdate = true;
-            checkBox1.Checked = false;
-
-            checkBox2.Enabled = false;
-            checkBox2.Visible = false;
-            //checkBox2.Left = checkBox1.Right + 10;
-            //checkBox2.Text = "Show Detail";
-            //flagNoUpdate = true;
-            //checkBox2.Checked = false;
-
+            mobsCombo.SelectedIndex = 0;
         }
 
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
@@ -111,14 +136,14 @@ namespace WaywardGamers.KParser.Plugin
             ResetTextBox();
 
             UpdatePlayerList(dataSet);
-            UpdateMobList(dataSet);
+            UpdateMobList(dataSet, false);
 
             // Don't generate an update on the first combo box change
             flagNoUpdate = true;
-            InitComboBox1Selection();
+            SelectPlayerIndex(0);
 
             // Setting the second combo box will cause the display to load.
-            InitComboBox2Selection();
+            SelectMobIndex(0);
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
@@ -126,8 +151,8 @@ namespace WaywardGamers.KParser.Plugin
             bool changesFound = false;
             string currentlySelectedPlayer = "All";
 
-            if (GetComboBox1Index() > 0)
-                currentlySelectedPlayer = GetComboBox1Value();
+            if (SelectedPlayerIndex() > 0)
+                currentlySelectedPlayer = SelectedPlayer();
 
             if ((e.DatasetChanges.Combatants != null) &&
                 (e.DatasetChanges.Combatants.Count > 0))
@@ -136,27 +161,24 @@ namespace WaywardGamers.KParser.Plugin
                 changesFound = true;
 
                 flagNoUpdate = true;
-                InitComboBox1Selection();
+                SelectPlayerIndex(0);
             }
 
             // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
             if ((e.DatasetChanges.Battles != null) &&
                 (e.DatasetChanges.Battles.Count > 0))
             {
-                if (checkBox1.Checked == true)
-                    checkBox1.Checked = false;
-
-                UpdateMobList(e.Dataset);
+                UpdateMobList(e.Dataset, true);
                 changesFound = true;
 
                 flagNoUpdate = true;
-                InitComboBox2SelectionLast();
+                SelectMobIndex(-1);
             }
 
-            if (currentlySelectedPlayer != GetComboBox1Value())
+            if (currentlySelectedPlayer != SelectedPlayer())
             {
                 flagNoUpdate = true;
-                InitComboBox1Selection(currentlySelectedPlayer);
+                SelectPlayer(currentlySelectedPlayer);
             }
 
             if (changesFound == true)
@@ -175,7 +197,7 @@ namespace WaywardGamers.KParser.Plugin
         #region Private functions
         private void UpdatePlayerList(KPDatabaseDataSet dataSet)
         {
-            ResetComboBox1();
+            ResetPlayers();
 
             var playersFighting = from b in dataSet.Combatants
                                   where ((b.CombatantType == (byte)EntityType.Player ||
@@ -194,16 +216,16 @@ namespace WaywardGamers.KParser.Plugin
             foreach (var player in playersFighting)
                 playerStrings.Add(player.Name);
 
-            AddArrayToComboBox1(playerStrings.ToArray());
+            AddPlayers(playerStrings.ToArray());
         }
 
-        private void UpdateMobList(KPDatabaseDataSet dataSet)
+        private void UpdateMobList(KPDatabaseDataSet dataSet, bool overrideGrouping)
         {
-            ResetComboBox2();
+            ResetMobs();
 
             // Group enemies check
 
-            if (checkBox1.Checked == true)
+            if ((groupMobs == true) && (overrideGrouping == false))
             {
                 // Enemy group listing
 
@@ -236,7 +258,7 @@ namespace WaywardGamers.KParser.Plugin
                     }
                 }
 
-                AddArrayToComboBox2(mobXPStrings.ToArray());
+                AddMobs(mobXPStrings.ToArray());
             }
             else
             {
@@ -262,7 +284,7 @@ namespace WaywardGamers.KParser.Plugin
                             mob.Name));
                 }
 
-                AddArrayToComboBox2(mobXPStrings.ToArray());
+                AddMobs(mobXPStrings.ToArray());
             }
         }
         #endregion
@@ -275,32 +297,32 @@ namespace WaywardGamers.KParser.Plugin
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
             // If we get here during initialization, skip.
-            if (comboBox1.Items.Count == 0)
+            if (playersCombo.Items.Count == 0)
                 return;
 
-            if (comboBox2.Items.Count == 0)
+            if (mobsCombo.Items.Count == 0)
                 return;
 
-            if (checkBox1Changed == true)
+            if (groupMobsChanged == true)
             {
-                checkBox1Changed = false;
-                UpdateMobList(dataSet);
+                groupMobsChanged = false;
+                UpdateMobList(dataSet, false);
                 flagNoUpdate = true;
-                InitComboBox2Selection();
+                SelectMobIndex(0);
                 flagNoUpdate = false;
             }
 
 
-            string selectedPlayer = GetComboBox1Value();
-            string selectedMob = GetComboBox2Value();
+            string selectedPlayer = SelectedPlayer();
+            string selectedMob = SelectedMob();
 
             List<string> playerList = new List<string>();
 
             if (selectedPlayer == "All")
             {
-                foreach (var player in comboBox1.Items)
+                foreach (var player in GetPlayers())
                 {
-                    if (player.ToString() != "All")
+                    if (player != "All")
                         playerList.Add(player.ToString());
                 }
             }
@@ -314,7 +336,7 @@ namespace WaywardGamers.KParser.Plugin
 
             if (selectedMob == "All")
                 SelectAllMobs(dataSet, playerList.ToArray());
-            else if (checkBox1.Checked == true)
+            else if (groupMobs == true)
                 SelectMobGroup(dataSet, playerList.ToArray(), selectedMob);
             else
                 SelectBattle(dataSet, playerList.ToArray(), selectedMob);
@@ -490,7 +512,7 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (sataActions.Count() > 0)
                 {
-                    AppendBoldText(player.Name + "\n", Color.Red);
+                    AppendText(player.Name + "\n", Color.Red, true, false);
 
                     SATAEvents.Clear();
                     sataActions = sataActions.OrderBy(a => a.InteractionID);
@@ -721,7 +743,7 @@ namespace WaywardGamers.KParser.Plugin
 
             if (SATAList.Count() > 0)
             {
-                AppendBoldText("  " + title + "\n", Color.Blue);
+                AppendText("  " + title + "\n", Color.Blue, true, false);
 
                 foreach (var sEvent in SATAList)
                 {
@@ -740,7 +762,7 @@ namespace WaywardGamers.KParser.Plugin
                             sEvent.DamageAmount);
                     }
 
-                    AppendNormalText(dataLine);
+                    AppendText(dataLine);
                 }
 
                 // All
@@ -771,28 +793,28 @@ namespace WaywardGamers.KParser.Plugin
                     (double)totalSMeleeDmg / smeleeDmgList.Count() : 0;
 
 
-                AppendNormalText(string.Format("\n    {0,-20}{1,10}{2,20}\n",
+                AppendText(string.Format("\n    {0,-20}{1,10}{2,20}\n",
                     "Total:",
                     SATAList.Count(),
                     totalDmg));
-                AppendNormalText(string.Format("    {0,-20}{1,30}\n",
+                AppendText(string.Format("    {0,-20}{1,30}\n",
                     "Successful Total:",
                     totalSDmg));
-                AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:p2}\n\n",
+                AppendText(string.Format("    {0,-20}{1,10}{2,20:p2}\n\n",
                     "Success Count:",
                      successCount,
                      (double)successCount / SATAList.Count()));
 
-                AppendNormalText(string.Format("    {0,30}{1,20}\n", "Count", "Average"));
-                AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n",
+                AppendText(string.Format("    {0,30}{1,20}\n", "Count", "Average"));
+                AppendText(string.Format("    {0,-20}{1,10}{2,20:f2}\n",
                     "Melee:",
                     meleeDmgList.Count(),
                     avgMeleeDmg));
-                AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n",
+                AppendText(string.Format("    {0,-20}{1,10}{2,20:f2}\n",
                     "Successful Melee:",
                     smeleeDmgList.Count(),
                     avgSMeleeDmg));
-                AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n\n\n",
+                AppendText(string.Format("    {0,-20}{1,10}{2,20:f2}\n\n\n",
                     "Weaponskill:",
                      wsDmgList.Count(),
                     avgWSDmg));
@@ -802,7 +824,7 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Event Handlers
-        protected override void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        protected void playersCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (flagNoUpdate == false)
                 HandleDataset(DatabaseManager.Instance.Database);
@@ -810,7 +832,7 @@ namespace WaywardGamers.KParser.Plugin
             flagNoUpdate = false;
         }
 
-        protected override void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        protected void mobsCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (flagNoUpdate == false)
                 HandleDataset(DatabaseManager.Instance.Database);
@@ -818,25 +840,233 @@ namespace WaywardGamers.KParser.Plugin
             flagNoUpdate = false;
         }
 
-        protected override void checkBox1_CheckedChanged(object sender, EventArgs e)
+        void groupMobs_Click(object sender, EventArgs e)
         {
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
             if (flagNoUpdate == false)
             {
-                checkBox1Changed = true;
+                groupMobsChanged = true;
+                groupMobs = sentBy.Checked;
                 HandleDataset(DatabaseManager.Instance.Database);
             }
 
             flagNoUpdate = false;
         }
-
-        protected override void checkBox2_CheckedChanged(object sender, EventArgs e)
-        {
-            if (flagNoUpdate == false)
-                HandleDataset(DatabaseManager.Instance.Database);
-
-            flagNoUpdate = false;
-        }
         #endregion
 
+        #region UI Updating methods for thread safety
+
+        ///////////////////////////////////////////////////////////////////
+        // Players                                                       //
+
+        void ResetPlayers()
+        {
+            if (playersCombo.ComboBox.InvokeRequired)
+            {
+                Action thisFunc = ResetPlayers;
+                playersCombo.ComboBox.Invoke(thisFunc);
+                return;
+            }
+
+            playersCombo.Items.Clear();
+        }
+
+        void AddPlayers(string[] players)
+        {
+            if (playersCombo.ComboBox.InvokeRequired)
+            {
+                Action<string[]> thisFunc = AddPlayers;
+                playersCombo.ComboBox.Invoke(thisFunc, new object[] { players });
+                return;
+            }
+
+            if (players == null)
+                return;
+
+            if (players.Length == 0)
+                return;
+
+            playersCombo.Items.AddRange(players);
+        }
+
+        string[] GetPlayers()
+        {
+            if (playersCombo.ComboBox.InvokeRequired)
+            {
+                Func<string[]> thisFunc = GetPlayers;
+                return (string[])playersCombo.ComboBox.Invoke(thisFunc);
+            }
+
+            string[] playerList = new string[playersCombo.Items.Count];
+            for (int i = 0; i < playersCombo.Items.Count; i++)
+            {
+                playerList[i] = playersCombo.Items[i].ToString();
+            }
+
+            return playerList;
+        }
+
+        void SelectPlayerIndex(int index)
+        {
+            if (playersCombo.ComboBox.InvokeRequired)
+            {
+                Action<int> thisFunc = SelectPlayerIndex;
+                playersCombo.ComboBox.Invoke(thisFunc, new object[] { index });
+                return;
+            }
+
+            if (index < 0)
+                index = playersCombo.Items.Count - 1;
+
+            if (index >= 0)
+                playersCombo.SelectedIndex = index;
+        }
+
+        void SelectPlayer(string name)
+        {
+            if (playersCombo.ComboBox.InvokeRequired)
+            {
+                Action<string> thisFunc = SelectPlayer;
+                playersCombo.ComboBox.Invoke(thisFunc, new object[] { name });
+                return;
+            }
+
+            if (playersCombo.Items.Count > 0)
+                playersCombo.SelectedItem = name;
+        }
+
+        int SelectedPlayerIndex()
+        {
+            if (playersCombo.ComboBox.InvokeRequired)
+            {
+                Func<int> thisFunc = SelectedPlayerIndex;
+                return (int)playersCombo.ComboBox.Invoke(thisFunc);
+            }
+
+            return playersCombo.SelectedIndex;
+        }
+
+        string SelectedPlayer()
+        {
+            if (playersCombo.ComboBox.InvokeRequired)
+            {
+                Func<string> thisFunc = SelectedPlayer;
+                return (string)playersCombo.ComboBox.Invoke(thisFunc);
+            }
+
+            if (playersCombo.SelectedIndex >= 0)
+                return playersCombo.SelectedItem.ToString();
+            else
+                return string.Empty;
+        }
+
+        ///////////////////////////////////////////////////////////////////
+        // Mobs                                                          //
+
+        void ResetMobs()
+        {
+            if (mobsCombo.ComboBox.InvokeRequired)
+            {
+                Action thisFunc = ResetMobs;
+                mobsCombo.ComboBox.Invoke(thisFunc);
+                return;
+            }
+
+            mobsCombo.Items.Clear();
+        }
+
+        void AddMobs(string[] mobs)
+        {
+            if (mobsCombo.ComboBox.InvokeRequired)
+            {
+                Action<string[]> thisFunc = AddMobs;
+                mobsCombo.ComboBox.Invoke(thisFunc, new object[] { mobs });
+                return;
+            }
+
+            if (mobs == null)
+                return;
+
+            if (mobs.Length == 0)
+                return;
+
+            mobsCombo.Items.AddRange(mobs);
+        }
+
+        string[] GetMobs()
+        {
+            if (mobsCombo.ComboBox.InvokeRequired)
+            {
+                Func<string[]> thisFunc = GetMobs;
+                return (string[])mobsCombo.ComboBox.Invoke(thisFunc);
+            }
+
+            string[] mobList = new string[mobsCombo.Items.Count];
+            for (int i = 0; i < mobsCombo.Items.Count; i++)
+            {
+                mobList[i] = mobsCombo.Items[i].ToString();
+            }
+
+            return mobList;
+        }
+
+        void SelectMobIndex(int index)
+        {
+            if (mobsCombo.ComboBox.InvokeRequired)
+            {
+                Action<int> thisFunc = SelectMobIndex;
+                mobsCombo.ComboBox.Invoke(thisFunc, new object[] { index });
+                return;
+            }
+
+            if (index < 0)
+                index = mobsCombo.Items.Count - 1;
+
+            if (index >= 0)
+                mobsCombo.SelectedIndex = index;
+        }
+
+        void SelectMob(string name)
+        {
+            if (mobsCombo.ComboBox.InvokeRequired)
+            {
+                Action<string> thisFunc = SelectMob;
+                mobsCombo.ComboBox.Invoke(thisFunc, new object[] { name });
+                return;
+            }
+
+            if (mobsCombo.Items.Count > 0)
+                mobsCombo.SelectedItem = name;
+        }
+
+        int SelectedMobIndex()
+        {
+            if (mobsCombo.ComboBox.InvokeRequired)
+            {
+                Func<int> thisFunc = SelectedMobIndex;
+                return (int)mobsCombo.ComboBox.Invoke(thisFunc);
+            }
+
+            return mobsCombo.SelectedIndex;
+        }
+
+        string SelectedMob()
+        {
+            if (mobsCombo.ComboBox.InvokeRequired)
+            {
+                Func<string> thisFunc = SelectedMob;
+                return (string)mobsCombo.ComboBox.Invoke(thisFunc);
+            }
+
+            if (mobsCombo.SelectedIndex >= 0)
+                return mobsCombo.SelectedItem.ToString();
+            else
+                return string.Empty;
+        }
+
+        #endregion
     }
 }
