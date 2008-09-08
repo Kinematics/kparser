@@ -632,15 +632,31 @@ namespace WaywardGamers.KParser.Plugin
                             AppendNormalText(dataLine);
                         }
 
-                        int totalDmg = SATAList.Sum(s => s.DamageAmount);
-                        double avgDmg = (double)totalDmg / SATAList.Count();
+                        var meleeDmgList = SATAList.Where(s => s.DamageType == ActionType.Melee);
+                        var wsDmgList = SATAList.Where(s => s.DamageType == ActionType.Weaponskill);
+
+                        int totalMeleeDmg = meleeDmgList.Sum(s => s.DamageAmount);
+                        int totalWSDmg = wsDmgList.Sum(s => s.DamageAmount);
+
+                        int totalDmg = totalMeleeDmg + totalWSDmg;
+
+                        double avgMeleeDmg = meleeDmgList.Count() > 0 ? 
+                            (double)totalMeleeDmg / meleeDmgList.Count() : 0;
+                        double avgWSDmg = wsDmgList.Count() > 0 ? 
+                            (double)totalWSDmg / wsDmgList.Count() : 0;
 
                         AppendNormalText(string.Format("\n    {0,6}{1,44}\n",
                             "Total:",
                             totalDmg));
-                        AppendNormalText(string.Format("    {0,8}{1,42:f2}\n\n",
-                            "Average:",
-                            avgDmg));
+                        AppendNormalText(string.Format("    {0,30}{1,20}\n", "Count", "Average"));
+                        AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n",
+                            "Melee:",
+                            meleeDmgList.Count(),
+                            avgMeleeDmg));
+                        AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n\n",
+                            "Weaponskill:",
+                             wsDmgList.Count(),
+                            avgWSDmg));
                     }
 
                     if (SAList.Count() > 0)
@@ -657,15 +673,31 @@ namespace WaywardGamers.KParser.Plugin
                             AppendNormalText(dataLine);
                         }
 
-                        int totalDmg = SAList.Sum(s => s.DamageAmount);
-                        double avgDmg = (double)totalDmg / SAList.Count();
+                        var meleeDmgList = SAList.Where(s => s.DamageType == ActionType.Melee);
+                        var wsDmgList = SAList.Where(s => s.DamageType == ActionType.Weaponskill);
+
+                        int totalMeleeDmg = meleeDmgList.Sum(s => s.DamageAmount);
+                        int totalWSDmg = wsDmgList.Sum(s => s.DamageAmount);
+
+                        int totalDmg = totalMeleeDmg + totalWSDmg;
+
+                        double avgMeleeDmg = meleeDmgList.Count() > 0 ?
+                            (double)totalMeleeDmg / meleeDmgList.Count() : 0;
+                        double avgWSDmg = wsDmgList.Count() > 0 ?
+                            (double)totalWSDmg / wsDmgList.Count() : 0;
 
                         AppendNormalText(string.Format("\n    {0,6}{1,44}\n",
                             "Total:",
                             totalDmg));
-                        AppendNormalText(string.Format("    {0,8}{1,42:f2}\n\n",
-                            "Average:",
-                            avgDmg));
+                        AppendNormalText(string.Format("    {0,30}{1,20}\n", "Count", "Average"));
+                        AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n",
+                            "Melee:",
+                            meleeDmgList.Count(),
+                            avgMeleeDmg));
+                        AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n\n",
+                            "Weaponskill:",
+                             wsDmgList.Count(),
+                            avgWSDmg));
                     }
 
                     if (TAList.Count() > 0)
@@ -682,20 +714,34 @@ namespace WaywardGamers.KParser.Plugin
                             AppendNormalText(dataLine);
                         }
 
-                        int totalDmg = TAList.Sum(s => s.DamageAmount);
-                        double avgDmg = (double)totalDmg / TAList.Count();
+                        var meleeDmgList = TAList.Where(s => s.DamageType == ActionType.Melee);
+                        var wsDmgList = TAList.Where(s => s.DamageType == ActionType.Weaponskill);
+
+                        int totalMeleeDmg = meleeDmgList.Sum(s => s.DamageAmount);
+                        int totalWSDmg = wsDmgList.Sum(s => s.DamageAmount);
+
+                        int totalDmg = totalMeleeDmg + totalWSDmg;
+
+                        double avgMeleeDmg = meleeDmgList.Count() > 0 ?
+                            (double)totalMeleeDmg / meleeDmgList.Count() : 0;
+                        double avgWSDmg = wsDmgList.Count() > 0 ?
+                            (double)totalWSDmg / wsDmgList.Count() : 0;
 
                         AppendNormalText(string.Format("\n    {0,6}{1,44}\n",
                             "Total:",
                             totalDmg));
-                        AppendNormalText(string.Format("    {0,8}{1,42:f2}\n\n",
-                            "Average:",
-                            avgDmg));
+                        AppendNormalText(string.Format("    {0,30}{1,20}\n", "Count", "Average"));
+                        AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n",
+                            "Melee:",
+                            meleeDmgList.Count(),
+                            avgMeleeDmg));
+                        AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n\n",
+                            "Weaponskill:",
+                             wsDmgList.Count(),
+                            avgWSDmg));
                     }
                 }
-
             }
-
         }
 
         #endregion
