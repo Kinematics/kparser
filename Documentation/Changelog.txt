@@ -1,5 +1,13 @@
 KParser Change Log
 
+1.1
+* Rewrite of base class for plugins to somewhat simplify coding (though more work needed for customization of controls).
+* Adjust database player info field to 1024 characters long.
+* Adjust database to add table for storing non-combat item data (HELM/crafting/etc).
+* Allow setting default save directory.
+
+
+
 1.0.12
 * Revamp of Thief plugin to fix various issues and better handling of locating SATA hits, plus expanded summary.
 - Fix issue in Buffs plugin to deal with duplicate buff entries relating to self-buffs.  Rewrote so that all self-buffs were marked as Self, and not targetting <playername>.
