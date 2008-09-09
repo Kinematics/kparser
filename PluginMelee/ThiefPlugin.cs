@@ -140,10 +140,10 @@ namespace WaywardGamers.KParser.Plugin
 
             // Don't generate an update on the first combo box change
             flagNoUpdate = true;
-            SelectPlayerIndex(0);
+            playersCombo.CBSelectIndex(0);
 
             // Setting the second combo box will cause the display to load.
-            SelectMobIndex(0);
+            mobsCombo.CBSelectIndex(0);
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
@@ -151,8 +151,8 @@ namespace WaywardGamers.KParser.Plugin
             bool changesFound = false;
             string currentlySelectedPlayer = "All";
 
-            if (SelectedPlayerIndex() > 0)
-                currentlySelectedPlayer = SelectedPlayer();
+            if (playersCombo.CBSelectedIndex() > 0)
+                currentlySelectedPlayer = playersCombo.CBSelectedItem();
 
             if ((e.DatasetChanges.Combatants != null) &&
                 (e.DatasetChanges.Combatants.Count > 0))
@@ -161,7 +161,7 @@ namespace WaywardGamers.KParser.Plugin
                 changesFound = true;
 
                 flagNoUpdate = true;
-                SelectPlayerIndex(0);
+                playersCombo.CBSelectIndex(0);
             }
 
             // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
@@ -172,13 +172,13 @@ namespace WaywardGamers.KParser.Plugin
                 changesFound = true;
 
                 flagNoUpdate = true;
-                SelectMobIndex(-1);
+                mobsCombo.CBSelectIndex(-1);
             }
 
-            if (currentlySelectedPlayer != SelectedPlayer())
+            if (currentlySelectedPlayer != playersCombo.CBSelectedItem())
             {
                 flagNoUpdate = true;
-                SelectPlayer(currentlySelectedPlayer);
+                playersCombo.CBSelectString(currentlySelectedPlayer);
             }
 
             if (changesFound == true)
@@ -197,7 +197,7 @@ namespace WaywardGamers.KParser.Plugin
         #region Private functions
         private void UpdatePlayerList(KPDatabaseDataSet dataSet)
         {
-            ResetPlayers();
+            playersCombo.CBReset();
 
             var playersFighting = from b in dataSet.Combatants
                                   where ((b.CombatantType == (byte)EntityType.Player ||
@@ -216,12 +216,12 @@ namespace WaywardGamers.KParser.Plugin
             foreach (var player in playersFighting)
                 playerStrings.Add(player.Name);
 
-            AddPlayers(playerStrings.ToArray());
+            playersCombo.CBAddStrings(playerStrings.ToArray());
         }
 
         private void UpdateMobList(KPDatabaseDataSet dataSet, bool overrideGrouping)
         {
-            ResetMobs();
+            mobsCombo.CBReset();
 
             // Group enemies check
 
@@ -258,7 +258,7 @@ namespace WaywardGamers.KParser.Plugin
                     }
                 }
 
-                AddMobs(mobXPStrings.ToArray());
+                mobsCombo.CBAddStrings(mobXPStrings.ToArray());
             }
             else
             {
@@ -284,7 +284,7 @@ namespace WaywardGamers.KParser.Plugin
                             mob.Name));
                 }
 
-                AddMobs(mobXPStrings.ToArray());
+                mobsCombo.CBAddStrings(mobXPStrings.ToArray());
             }
         }
         #endregion
@@ -308,19 +308,19 @@ namespace WaywardGamers.KParser.Plugin
                 groupMobsChanged = false;
                 UpdateMobList(dataSet, false);
                 flagNoUpdate = true;
-                SelectMobIndex(0);
+                mobsCombo.CBSelectIndex(0);
                 flagNoUpdate = false;
             }
 
 
-            string selectedPlayer = SelectedPlayer();
-            string selectedMob = SelectedMob();
+            string selectedPlayer = playersCombo.CBSelectedItem();
+            string selectedMob = mobsCombo.CBSelectedItem();
 
             List<string> playerList = new List<string>();
 
             if (selectedPlayer == "All")
             {
-                foreach (var player in GetPlayers())
+                foreach (var player in playersCombo.CBGetStrings())
                 {
                     if (player != "All")
                         playerList.Add(player.ToString());
@@ -852,218 +852,6 @@ namespace WaywardGamers.KParser.Plugin
 
             flagNoUpdate = false;
         }
-        #endregion
-
-        #region UI Updating methods for thread safety
-
-        ///////////////////////////////////////////////////////////////////
-        // Players                                                       //
-
-        void ResetPlayers()
-        {
-            if (playersCombo.ComboBox.InvokeRequired)
-            {
-                Action thisFunc = ResetPlayers;
-                playersCombo.ComboBox.Invoke(thisFunc);
-                return;
-            }
-
-            playersCombo.Items.Clear();
-        }
-
-        void AddPlayers(string[] players)
-        {
-            if (playersCombo.ComboBox.InvokeRequired)
-            {
-                Action<string[]> thisFunc = AddPlayers;
-                playersCombo.ComboBox.Invoke(thisFunc, new object[] { players });
-                return;
-            }
-
-            if (players == null)
-                return;
-
-            if (players.Length == 0)
-                return;
-
-            playersCombo.Items.AddRange(players);
-        }
-
-        string[] GetPlayers()
-        {
-            if (playersCombo.ComboBox.InvokeRequired)
-            {
-                Func<string[]> thisFunc = GetPlayers;
-                return (string[])playersCombo.ComboBox.Invoke(thisFunc);
-            }
-
-            string[] playerList = new string[playersCombo.Items.Count];
-            for (int i = 0; i < playersCombo.Items.Count; i++)
-            {
-                playerList[i] = playersCombo.Items[i].ToString();
-            }
-
-            return playerList;
-        }
-
-        void SelectPlayerIndex(int index)
-        {
-            if (playersCombo.ComboBox.InvokeRequired)
-            {
-                Action<int> thisFunc = SelectPlayerIndex;
-                playersCombo.ComboBox.Invoke(thisFunc, new object[] { index });
-                return;
-            }
-
-            if (index < 0)
-                index = playersCombo.Items.Count - 1;
-
-            if (index >= 0)
-                playersCombo.SelectedIndex = index;
-        }
-
-        void SelectPlayer(string name)
-        {
-            if (playersCombo.ComboBox.InvokeRequired)
-            {
-                Action<string> thisFunc = SelectPlayer;
-                playersCombo.ComboBox.Invoke(thisFunc, new object[] { name });
-                return;
-            }
-
-            if (playersCombo.Items.Count > 0)
-                playersCombo.SelectedItem = name;
-        }
-
-        int SelectedPlayerIndex()
-        {
-            if (playersCombo.ComboBox.InvokeRequired)
-            {
-                Func<int> thisFunc = SelectedPlayerIndex;
-                return (int)playersCombo.ComboBox.Invoke(thisFunc);
-            }
-
-            return playersCombo.SelectedIndex;
-        }
-
-        string SelectedPlayer()
-        {
-            if (playersCombo.ComboBox.InvokeRequired)
-            {
-                Func<string> thisFunc = SelectedPlayer;
-                return (string)playersCombo.ComboBox.Invoke(thisFunc);
-            }
-
-            if (playersCombo.SelectedIndex >= 0)
-                return playersCombo.SelectedItem.ToString();
-            else
-                return string.Empty;
-        }
-
-        ///////////////////////////////////////////////////////////////////
-        // Mobs                                                          //
-
-        void ResetMobs()
-        {
-            if (mobsCombo.ComboBox.InvokeRequired)
-            {
-                Action thisFunc = ResetMobs;
-                mobsCombo.ComboBox.Invoke(thisFunc);
-                return;
-            }
-
-            mobsCombo.Items.Clear();
-        }
-
-        void AddMobs(string[] mobs)
-        {
-            if (mobsCombo.ComboBox.InvokeRequired)
-            {
-                Action<string[]> thisFunc = AddMobs;
-                mobsCombo.ComboBox.Invoke(thisFunc, new object[] { mobs });
-                return;
-            }
-
-            if (mobs == null)
-                return;
-
-            if (mobs.Length == 0)
-                return;
-
-            mobsCombo.Items.AddRange(mobs);
-        }
-
-        string[] GetMobs()
-        {
-            if (mobsCombo.ComboBox.InvokeRequired)
-            {
-                Func<string[]> thisFunc = GetMobs;
-                return (string[])mobsCombo.ComboBox.Invoke(thisFunc);
-            }
-
-            string[] mobList = new string[mobsCombo.Items.Count];
-            for (int i = 0; i < mobsCombo.Items.Count; i++)
-            {
-                mobList[i] = mobsCombo.Items[i].ToString();
-            }
-
-            return mobList;
-        }
-
-        void SelectMobIndex(int index)
-        {
-            if (mobsCombo.ComboBox.InvokeRequired)
-            {
-                Action<int> thisFunc = SelectMobIndex;
-                mobsCombo.ComboBox.Invoke(thisFunc, new object[] { index });
-                return;
-            }
-
-            if (index < 0)
-                index = mobsCombo.Items.Count - 1;
-
-            if (index >= 0)
-                mobsCombo.SelectedIndex = index;
-        }
-
-        void SelectMob(string name)
-        {
-            if (mobsCombo.ComboBox.InvokeRequired)
-            {
-                Action<string> thisFunc = SelectMob;
-                mobsCombo.ComboBox.Invoke(thisFunc, new object[] { name });
-                return;
-            }
-
-            if (mobsCombo.Items.Count > 0)
-                mobsCombo.SelectedItem = name;
-        }
-
-        int SelectedMobIndex()
-        {
-            if (mobsCombo.ComboBox.InvokeRequired)
-            {
-                Func<int> thisFunc = SelectedMobIndex;
-                return (int)mobsCombo.ComboBox.Invoke(thisFunc);
-            }
-
-            return mobsCombo.SelectedIndex;
-        }
-
-        string SelectedMob()
-        {
-            if (mobsCombo.ComboBox.InvokeRequired)
-            {
-                Func<string> thisFunc = SelectedMob;
-                return (string)mobsCombo.ComboBox.Invoke(thisFunc);
-            }
-
-            if (mobsCombo.SelectedIndex >= 0)
-                return mobsCombo.SelectedItem.ToString();
-            else
-                return string.Empty;
-        }
-
         #endregion
     }
 }
