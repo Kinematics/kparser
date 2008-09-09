@@ -2,12 +2,54 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
+using System.Windows.Forms;
 using System.Text;
+using WaywardGamers.KParser;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class ChatPlugin : BasePluginControlWithDropdown
+    public class ChatPlugin : NewBasePluginControl
     {
+        #region Constructor
+        ToolStripComboBox chatTypeCombo = new ToolStripComboBox();
+        ToolStripComboBox speakerCombo = new ToolStripComboBox();
+        bool flagNoUpdate = false;
+
+        public ChatPlugin()
+        {
+            richTextBox.WordWrap = true;
+
+            ToolStripLabel catLabel = new ToolStripLabel();
+            catLabel.Text = "Chat Type:";
+            toolStrip.Items.Add(catLabel);
+
+            chatTypeCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            chatTypeCombo.MaxDropDownItems = 10;
+            chatTypeCombo.Items.Add("All");
+            for (var chat = ChatMessageType.Say; chat <= ChatMessageType.Arena; chat++)
+            {
+                chatTypeCombo.Items.Add(chat.ToString());
+            }
+
+            chatTypeCombo.SelectedIndex = 0;
+            chatTypeCombo.SelectedIndexChanged += new EventHandler(this.chatTypeCombo_SelectedIndexChanged);
+            toolStrip.Items.Add(chatTypeCombo);
+
+
+            ToolStripLabel speakerLabel = new ToolStripLabel();
+            speakerLabel.Text = "Speaker:";
+            toolStrip.Items.Add(speakerLabel);
+
+            speakerCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            speakerCombo.MaxDropDownItems = 10;
+            speakerCombo.Items.Add("All");
+            speakerCombo.SelectedIndex = 0;
+            speakerCombo.SelectedIndexChanged += new EventHandler(this.speakerCombo_SelectedIndexChanged);
+            toolStrip.Items.Add(speakerCombo);
+        }
+        #endregion
+
+        #region IPlugin members
         public override string TabName
         {
             get { return "Chat"; }
@@ -15,56 +57,32 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void Reset()
         {
-            richTextBox.Clear();
+            ResetTextBox();
 
-            label1.Text = "Chat Type";
-            comboBox1.Left = label1.Right + 10;
-            comboBox1.MaxDropDownItems = 9;
-            comboBox1.Items.Clear();
-            comboBox1.Items.Add("All");
-            for (var chat = ChatMessageType.Say; chat <= ChatMessageType.Arena; chat++)
-            {
-                comboBox1.Items.Add(chat.ToString());
-            }
-            comboBox1.SelectedIndex = 0;
-
-            label2.Left = comboBox1.Right + 20;
-            label2.Text = "Speaker";
-            comboBox2.Left = label2.Right + 10;
-            comboBox2.Items.Clear();
-            comboBox2.Items.Add("All");
-            comboBox2.SelectedIndex = 0;
-
-            checkBox1.Enabled = false;
-            checkBox1.Visible = false;
-            checkBox2.Enabled = false;
-            checkBox2.Visible = false;
+            speakerCombo.CBReset();
+            speakerCombo.CBAddStrings(new string[1] { "All" });
+            speakerCombo.CBSelectIndex(0);
         }
 
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
-            ResetComboBox2();
-            AddStringToComboBox2("All");
             ResetTextBox();
+            UpdateSpeakerList(dataSet);
+            flagNoUpdate = true;
+            speakerCombo.CBSelectString("All");
 
-            var speakerList = dataSet.ChatSpeakers.OrderBy(s => s.SpeakerName);
-
-            foreach (var speaker in speakerList)
-            {
-                AddStringToComboBox2(speaker.SpeakerName);
-            }
-
-            InitComboBox2Selection();
+            ProcessData(dataSet);
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
         {
             if (e.DatasetChanges.ChatSpeakers.Count != 0)
             {
-                foreach (var speaker in e.DatasetChanges.ChatSpeakers)
-                {
-                    AddStringToComboBox2(speaker.SpeakerName);
-                }
+                string currentSelection = speakerCombo.CBSelectedItem();
+                flagNoUpdate = true;
+                UpdateSpeakerList(e.DatasetChanges);
+                flagNoUpdate = true;
+                speakerCombo.CBSelectString(currentSelection);
 
                 datasetToUse = e.DatasetChanges;
                 return true;
@@ -83,86 +101,141 @@ namespace WaywardGamers.KParser.Plugin
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
             // Update chat messages list based on filtering
-            ChatMessageType chatFilter = (ChatMessageType)comboBox1.SelectedIndex;
-            string player = comboBox2.SelectedItem.ToString();
+            ChatMessageType chatFilter = (ChatMessageType)chatTypeCombo.CBSelectedIndex();
+            string player = speakerCombo.CBSelectedItem();
 
             var filteredChat = dataSet.ChatMessages.Where(m =>
                 chatFilter == ChatMessageType.Unknown || chatFilter == (ChatMessageType)m.ChatType);
 
-            var filteredPlayerChat = filteredChat.Where(m =>
-                player == "All" || player == m.ChatSpeakersRow.SpeakerName);
-
-            foreach (var row in filteredPlayerChat)
+            if (player != "All")
             {
-                AddMessageLine(row.Message, (ChatMessageType)row.ChatType, row.Timestamp);
+                filteredChat = filteredChat.Where(m =>
+                    player == m.ChatSpeakersRow.SpeakerName);
             }
-        }
 
+
+            List<StringMods> strModList = new List<StringMods>();
+            StringBuilder sb = new StringBuilder();
+            int start = 0;
+            Color chatColor;
+
+            foreach (var row in filteredChat)
+            {
+                start = sb.Length;
+                sb.AppendFormat("[{0}] ", row.Timestamp.ToLongTimeString());
+
+                strModList.Add(new StringMods
+                {
+                    Start = start,
+                    Length = sb.Length - start,
+                    Color = Color.Purple
+                });
+
+                switch ((ChatMessageType)row.ChatType)
+                {
+                    case ChatMessageType.Say:
+                        chatColor = Color.Gray;
+                        break;
+                    case ChatMessageType.Shout:
+                        chatColor = Color.Orange;
+                        break;
+                    case ChatMessageType.Tell:
+                        chatColor = Color.Magenta;
+                        break;
+                    case ChatMessageType.Party:
+                        chatColor = Color.Blue;
+                        break;
+                    case ChatMessageType.Linkshell:
+                        chatColor = Color.Green;
+                        break;
+                    case ChatMessageType.Emote:
+                        chatColor = Color.Indigo;
+                        break;
+                    case ChatMessageType.NPC:
+                        chatColor = Color.Black;
+                        break;
+                    default:
+                        chatColor = Color.Black;
+                        break;
+                }
+
+                start = sb.Length;
+                sb.AppendFormat("{0}\n", row.Message);
+
+                strModList.Add(new StringMods
+                {
+                    Start = start,
+                    Length = sb.Length - start,
+                    Color = chatColor
+                });
+
+            }
+
+            PushStrings(sb, strModList);
+
+        }
+        #endregion
+
+        #region Private functions
         /// <summary>
-        /// Adds a message line to the current rich text display.
+        /// Update the drop-down combo box with the currently known list of speaker
+        /// names.
         /// </summary>
-        /// <param name="message">Message text to add.</param>
-        /// <param name="chatMessageType">The type of message, so we can color-code it.</param>
-        /// <param name="timestamp">The timestamp for the message.</param>
-        private void AddMessageLine(string message, ChatMessageType chatMessageType, DateTime timestamp)
+        /// <param name="dataSet">Dataset with possibly new speakers to add to the list.</param>
+        private void UpdateSpeakerList(KPDatabaseDataSet dataSet)
         {
-            int startPos;
-            int endPos;
+            string[] currentSpeakerList = speakerCombo.CBGetStrings();
+            string[] newSpeakerList = dataSet.ChatSpeakers.OrderBy(s => s.SpeakerName).Select(s => s.SpeakerName).ToArray();
 
-            string timestampMsg = string.Format("[{0}]", timestamp.ToLongTimeString());
+            List<string> newSpeakers = new List<string>();
 
-            startPos = richTextBox.Text.Length;
-            endPos = startPos + timestampMsg.Length;
-
-            richTextBox.AppendText(string.Format("{0} ", timestampMsg));
-            richTextBox.Select(startPos, endPos);
-            richTextBox.SelectionColor = Color.Purple;
-
-            startPos = richTextBox.Text.Length;
-            endPos = startPos + message.Length;
-
-            richTextBox.AppendText(string.Format("{0}\n", message));
-            richTextBox.Select(startPos, endPos);
-
-            switch (chatMessageType)
+            foreach (var speaker in newSpeakerList)
             {
-                case ChatMessageType.Say:
-                    richTextBox.SelectionColor = Color.Gray;
-                    break;
-                case ChatMessageType.Shout:
-                    richTextBox.SelectionColor = Color.Orange;
-                    break;
-                case ChatMessageType.Tell:
-                    richTextBox.SelectionColor = Color.Magenta;
-                    break;
-                case ChatMessageType.Party:
-                    richTextBox.SelectionColor = Color.Blue;
-                    break;
-                case ChatMessageType.Linkshell:
-                    richTextBox.SelectionColor = Color.Green;
-                    break;
-                case ChatMessageType.Emote:
-                    richTextBox.SelectionColor = Color.Indigo;
-                    break;
-                case ChatMessageType.NPC:
-                    richTextBox.SelectionColor = Color.Black;
-                    break;
-                default:
-                    richTextBox.SelectionColor = Color.Black;
-                    break;
+                if (currentSpeakerList.Contains(speaker) == false)
+                    newSpeakers.Add(speaker);
+            }
+
+            if (newSpeakers.Count > 0)
+            {
+                string[] completeSpeakerList = currentSpeakerList
+                    .Concat(newSpeakerList).Distinct().ToArray();
+                Array.Sort(completeSpeakerList);
+
+                newSpeakers.Clear();
+                newSpeakers.AddRange(completeSpeakerList);
+                newSpeakers.RemoveAll(s => s == "All");
+                newSpeakers.Insert(0, "All");
+
+                completeSpeakerList = newSpeakers.ToArray();
+
+                speakerCombo.CBReset();
+                speakerCombo.CBAddStrings(completeSpeakerList);
             }
         }
+        #endregion
 
-        protected override void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        #region Event handlers
+        protected void chatTypeCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            richTextBox.Clear();
-            HandleDataset(DatabaseManager.Instance.Database);
+            if (flagNoUpdate == false)
+            {
+                ResetTextBox();
+                HandleDataset(DatabaseManager.Instance.Database);
+            }
+
+            flagNoUpdate = false;
         }
 
-        protected override void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        protected void speakerCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            richTextBox.Clear();
-            HandleDataset(DatabaseManager.Instance.Database);
+            if (flagNoUpdate == false)
+            {
+                ResetTextBox();
+                HandleDataset(DatabaseManager.Instance.Database);
+            }
+
+            flagNoUpdate = false;
         }
+        #endregion
     }
 }
