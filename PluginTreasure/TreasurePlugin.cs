@@ -5,11 +5,58 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class TreasurePlugin : BasePluginControlWithRadio
+    public class TreasurePlugin : NewBasePluginControl
     {
+        internal enum LootType
+        {
+            Summary,
+            DropRates,
+            Stealing,
+            HELM
+        }
+
+        #region Constructor
+        ToolStripLabel lootLabel = new ToolStripLabel();
+        ToolStripDropDownButton lootTypeMenu = new ToolStripDropDownButton();
+        LootType currentLootType = LootType.Summary;
+
+        public TreasurePlugin()
+        {
+            lootTypeMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            lootTypeMenu.Text = "Loot Type";
+
+            ToolStripMenuItem summaryOption = new ToolStripMenuItem();
+            ToolStripMenuItem dropRatesOption = new ToolStripMenuItem();
+            ToolStripMenuItem stealingOption = new ToolStripMenuItem();
+            ToolStripMenuItem helmOption = new ToolStripMenuItem();
+            summaryOption.Text = "Summary";
+            dropRatesOption.Text = "Drop Rates";
+            stealingOption.Text = "Stealing";
+            helmOption.Text = "HELM/Chocobo";
+
+            summaryOption.Click += new EventHandler(summaryOption_Click);
+            dropRatesOption.Click += new EventHandler(dropRatesOption_Click);
+            stealingOption.Click += new EventHandler(stealingOption_Click);
+            helmOption.Click += new EventHandler(helmOption_Click);
+
+            lootTypeMenu.DropDownItems.Add(summaryOption);
+            lootTypeMenu.DropDownItems.Add(dropRatesOption);
+            lootTypeMenu.DropDownItems.Add(stealingOption);
+            lootTypeMenu.DropDownItems.Add(helmOption);
+
+            toolStrip.Items.Add(lootTypeMenu);
+
+
+            lootLabel.Text = "Summary";
+            toolStrip.Items.Add(lootLabel);
+
+        }
+        #endregion
+
         #region IPlugin overrides
         public override string TabName
         {
@@ -18,16 +65,7 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void Reset()
         {
-            richTextBox.Clear();
-            radioButton1.Text = "Summary";
-            radioButton2.Left = radioButton1.Right + 30;
-            radioButton2.Text = "Drop Rates";
-            radioButton3.Left = radioButton2.Right + 30;
-            radioButton3.Text = "Stealing";
-            radioButton4.Left = radioButton3.Right + 30;
-            radioButton4.Text = "HELM";
-
-            radioButton1.Checked = true;
+            ResetTextBox();
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
@@ -41,7 +79,7 @@ namespace WaywardGamers.KParser.Plugin
                 return true;
             }
 
-            if (radioButton4.Checked == true)
+            if (currentLootType == LootType.Summary)
             {
                 if (e.DatasetChanges.ChatMessages.Any())
                 {
@@ -56,40 +94,36 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Event Handlers
-        protected override void radioButton1_CheckedChanged(object sender, EventArgs e)
+        protected void summaryOption_Click(object sender, EventArgs e)
         {
-            if (radioButton1.Checked == true)
-            {
-                richTextBox.Clear();
-                HandleDataset(DatabaseManager.Instance.Database);
-            }
+            currentLootType = LootType.Summary;
+            lootLabel.Text = "Summary";
+
+            HandleDataset(DatabaseManager.Instance.Database);
         }
 
-        protected override void radioButton2_CheckedChanged(object sender, EventArgs e)
+        protected void dropRatesOption_Click(object sender, EventArgs e)
         {
-            if (radioButton2.Checked == true)
-            {
-                richTextBox.Clear();
-                HandleDataset(DatabaseManager.Instance.Database);
-            }
+            currentLootType = LootType.DropRates;
+            lootLabel.Text = "Drop Rates";
+
+            HandleDataset(DatabaseManager.Instance.Database);
         }
 
-        protected override void radioButton3_CheckedChanged(object sender, EventArgs e)
+        protected void stealingOption_Click(object sender, EventArgs e)
         {
-            if (radioButton3.Checked == true)
-            {
-                richTextBox.Clear();
-                HandleDataset(DatabaseManager.Instance.Database);
-            }
+            currentLootType = LootType.Stealing;
+            lootLabel.Text = "Stealing";
+
+            HandleDataset(DatabaseManager.Instance.Database);
         }
 
-        protected override void radioButton4_CheckedChanged(object sender, EventArgs e)
+        protected void helmOption_Click(object sender, EventArgs e)
         {
-            if (radioButton4.Checked == true)
-            {
-                richTextBox.Clear();
-                HandleDataset(DatabaseManager.Instance.Database);
-            }
+            currentLootType = LootType.HELM;
+            lootLabel.Text = "HELM/Chocobo";
+
+            HandleDataset(DatabaseManager.Instance.Database);
         }
         #endregion
 
@@ -97,22 +131,30 @@ namespace WaywardGamers.KParser.Plugin
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
             // For now, rebuild the entire page each time.
-            richTextBox.Clear();
+            ResetTextBox();
 
-            if (radioButton1.Checked == true)
-                ProcessSummary(dataSet);
-            else if (radioButton2.Checked == true)
-                ProcessDropRates(dataSet);
-            else if (radioButton3.Checked == true)
-                ProcessStealing(dataSet);
-            else if (radioButton4.Checked == true)
-                ProcessHELM(dataSet);
+            switch (currentLootType)
+            {
+                case LootType.DropRates:
+                    ProcessDropRates(dataSet);
+                    break;
+                case LootType.HELM:
+                    ProcessHELM(dataSet);
+                    break;
+                case LootType.Stealing:
+                    ProcessStealing(dataSet);
+                    break;
+                case LootType.Summary:
+                default:
+                    ProcessSummary(dataSet);
+                    break;
+            }
         }
 
         private void ProcessSummary(KPDatabaseDataSet dataSet)
         {
             // All items
-            AppendBoldText("Item Drops\n", Color.Red);
+            AppendText("Item Drops\n", Color.Red, true, false);
             string dropListFormat = "{0,9} {1}\n";
 
             int totalGil = 0;
@@ -127,7 +169,7 @@ namespace WaywardGamers.KParser.Plugin
 
             if (totalGil > 0)
             {
-                AppendNormalText(string.Format(dropListFormat, totalGil, "Gil"));
+                AppendText(string.Format(dropListFormat, totalGil, "Gil"));
             }
 
             foreach (var item in dataSet.Items)
@@ -135,7 +177,7 @@ namespace WaywardGamers.KParser.Plugin
                 if ((item.GetLootRows().Count() > 0) &&
                     (item.ItemName != "Gil"))
                 {
-                    AppendNormalText(string.Format(dropListFormat,
+                    AppendText(string.Format(dropListFormat,
                         item.GetLootRows().Count(), item.ItemName));
                 }
             }
@@ -157,23 +199,23 @@ namespace WaywardGamers.KParser.Plugin
 
             if (lootByPlayer.Count() > 0)
             {
-                AppendBoldText("\n\nDistribution\n", Color.Red);
+                AppendText("\n\nDistribution\n", Color.Red, true, false);
 
                 foreach (var loot in lootByPlayer)
                 {
-                    AppendBoldText(string.Format("\n    {0}\n", loot.Name), Color.Black);
+                    AppendText(string.Format("\n    {0}\n", loot.Name), Color.Black, true, false);
 
                     if (totalGil > 0)
                     {
                         if (gilPlayerName == loot.Name)
-                            AppendNormalText(string.Format(dropListFormat, totalGil, "Gil"));
+                            AppendText(string.Format(dropListFormat, totalGil, "Gil"));
                     }
 
                     foreach (var lootItem in loot.LootItems)
                     {
                         if (lootItem.Key != "Gil")
                         {
-                            AppendNormalText(string.Format(dropListFormat,
+                            AppendText(string.Format(dropListFormat,
                                 lootItem.Count(), lootItem.Key));
                         }
                     }
@@ -184,9 +226,9 @@ namespace WaywardGamers.KParser.Plugin
         private void ProcessDropRates(KPDatabaseDataSet dataSet)
         {
             // Drop rate section
-            AppendBoldText("Drop Rates\n", Color.Red);
+            AppendText("Drop Rates\n", Color.Red, true, false);
             string dropItemFormat = "{0,9} {1,-28} [Drop Rate: {2,8:p2}]\n";
-            string dropGilFormat  = "{0,9} {1,-28} [Average:   {2,8:f2}]\n";
+            string dropGilFormat = "{0,9} {1,-28} [Average:   {2,8:f2}]\n";
 
             var lootByMob = from c in dataSet.Combatants
                             where (c.CombatantType == (byte)EntityType.Mob)
@@ -238,7 +280,7 @@ namespace WaywardGamers.KParser.Plugin
             foreach (var mob in lootByMob)
             {
                 int mobKillCount = mob.Battles.Count();
-                AppendBoldText(string.Format("\n{0} (Killed {1} times)\n", mob.Name, mobKillCount), Color.Black);
+                AppendText(string.Format("\n{0} (Killed {1} times)\n", mob.Name, mobKillCount), Color.Black, true, false);
 
                 totalGil = 0;
                 avgGil = 0;
@@ -247,7 +289,7 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     if (mob.Loot.Count() == 0)
                     {
-                        AppendNormalText("       No drops.\n");
+                        AppendText("       No drops.\n");
                     }
                     else
                     {
@@ -261,7 +303,7 @@ namespace WaywardGamers.KParser.Plugin
                             if (mobKillCount > 0)
                                 avgGil = (double)totalGil / mobKillCount;
 
-                            AppendNormalText(string.Format(dropGilFormat,
+                            AppendText(string.Format(dropGilFormat,
                                 totalGil, "Gil", avgGil));
                         }
 
@@ -275,7 +317,7 @@ namespace WaywardGamers.KParser.Plugin
                                 if (mobKillCount > 0)
                                     avgLoot = (double)loot.LootDrops.Count() / mobKillCount;
 
-                                AppendNormalText(string.Format(dropItemFormat,
+                                AppendText(string.Format(dropItemFormat,
                                     loot.LootDrops.Count(), loot.LootName, avgLoot));
                             }
                         }
@@ -284,12 +326,12 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             if (lootByChest.Count() > 0)
-                AppendBoldText("\n\nTreasure Chests\n", Color.Red);
+                AppendText("\n\nTreasure Chests\n", Color.Red, true, false);
 
             foreach (var chest in lootByChest)
             {
                 int chestsOpened = chest.Battles.Count();
-                AppendBoldText(string.Format("\n{0} (Opened {1} times)\n", chest.Name, chestsOpened), Color.Black);
+                AppendText(string.Format("\n{0} (Opened {1} times)\n", chest.Name, chestsOpened), Color.Black, true, false);
 
                 totalGil = 0;
                 avgGil = 0;
@@ -298,7 +340,7 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     if (chest.Loot.Count() == 0)
                     {
-                        AppendNormalText("       No drops.\n");
+                        AppendText("       No drops.\n");
                     }
                     else
                     {
@@ -312,7 +354,7 @@ namespace WaywardGamers.KParser.Plugin
                             if (chestsOpened > 0)
                                 avgGil = (double)totalGil / chestsOpened;
 
-                            AppendNormalText(string.Format(dropGilFormat,
+                            AppendText(string.Format(dropGilFormat,
                                 totalGil, "Gil", avgGil));
                         }
 
@@ -326,7 +368,7 @@ namespace WaywardGamers.KParser.Plugin
                                 if (chestsOpened > 0)
                                     avgLoot = (double)loot.LootDrops.Count() / chestsOpened;
 
-                                AppendNormalText(string.Format(dropItemFormat,
+                                AppendText(string.Format(dropItemFormat,
                                     loot.LootDrops.Count(), loot.LootName, avgLoot));
                             }
                         }
@@ -337,7 +379,7 @@ namespace WaywardGamers.KParser.Plugin
 
         private void ProcessStealing(KPDatabaseDataSet dataSet)
         {
-            AppendBoldText("Stealing\n\n", Color.Red);
+            AppendText("Stealing\n\n", Color.Red, true, false);
 
             var stealByPlayer = from c in dataSet.Combatants
                                 where (c.CombatantType == (byte)EntityType.Player)
@@ -379,20 +421,20 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var player in stealByPlayerActive)
             {
-                AppendBoldText(player.Name + ":\n", Color.Black);
+                AppendText(player.Name + ":\n", Color.Black, true, false);
                 foreach (var stoleFrom in player.StolenFrom)
                 {
-                    AppendBoldText(string.Format("  {0}:\n", stoleFrom.TargetName), Color.Black);
+                    AppendText(string.Format("  {0}:\n", stoleFrom.TargetName), Color.Black, true, false);
 
                     foreach (var stoleItem in stoleFrom.Stolen)
                     {
-                        AppendNormalText(string.Format("    Stole {0} {1} time{2}.\n",
+                        AppendText(string.Format("    Stole {0} {1} time{2}.\n",
                             stoleItem.ItemName, stoleItem.Items.Count(), stoleItem.Items.Count() > 1 ? "s" : ""));
                     }
 
                     foreach (var mugged in stoleFrom.Mugged)
                     {
-                        AppendNormalText(string.Format("    Mugged {0} gil.\n", mugged.Amount));
+                        AppendText(string.Format("    Mugged {0} gil.\n", mugged.Amount));
                     }
 
 
@@ -400,18 +442,18 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         string s = string.Format("    Failed to Steal {0} time{1}\n",
                             stoleFrom.FailedSteal.Count(), stoleFrom.FailedSteal.Count() > 1 ? "s" : "");
-                        AppendNormalText(s);
+                        AppendText(s);
                     }
 
                     if ((stoleFrom.FailedMug != null) && (stoleFrom.FailedMug.Count() > 0))
                     {
                         string s = string.Format("    Failed to Mug {0} time{1}\n",
                             stoleFrom.FailedMug.Count(), stoleFrom.FailedMug.Count() > 1 ? "s" : "");
-                        AppendNormalText(s);
+                        AppendText(s);
                     }
                 }
 
-                AppendNormalText("\n\n");
+                AppendText("\n\n");
             }
         }
 
@@ -425,8 +467,8 @@ namespace WaywardGamers.KParser.Plugin
         // Your sickle breaks!
 
         private static readonly Regex Harvest = new Regex(string.Format("You (successfully )?harvest {0}(, but your sickle breaks)?(.|!)$", item));
-        private static readonly Regex Log     = new Regex(string.Format("You (successfully )?log {0}(, but your hatchet breaks)?(.|!)$", item));
-        private static readonly Regex Mine    = new Regex(string.Format("You (successfully )?dig up {0}(, but your pickaxe breaks)?(.|!)$", item));
+        private static readonly Regex Log = new Regex(string.Format("You (successfully )?log {0}(, but your hatchet breaks)?(.|!)$", item));
+        private static readonly Regex Mine = new Regex(string.Format("You (successfully )?dig up {0}(, but your pickaxe breaks)?(.|!)$", item));
 
         private static readonly string harvestFail = "You are unable to harvest anything.";
         private static readonly string loggingFail = "You are unable to log anything.";
@@ -527,7 +569,7 @@ namespace WaywardGamers.KParser.Plugin
             // Harvesting results
             if (harvestedItems.Count() > 0 || harvestingBreaks > 0)
             {
-                AppendBoldText("Harvesting:\n", Color.Red);
+                AppendText("Harvesting:\n", Color.Red, true, false);
 
                 totalItems = harvestedItems.Sum(a => a.Count);
                 totalCount = totalItems + harvestingFailures;
@@ -535,32 +577,32 @@ namespace WaywardGamers.KParser.Plugin
                 foreach (var item in harvestedItems)
                 {
                     avgResult = (double)item.Count / totalCount;
-                    AppendNormalText(string.Format(lineFormat,
+                    AppendText(string.Format(lineFormat,
                         item.Item, item.Count, avgResult));
                 }
 
                 avgResult = (double)harvestingFailures / totalCount;
-                AppendNormalText(string.Format(lineFormat,
+                AppendText(string.Format(lineFormat,
                     "Nothing", harvestingFailures, avgResult));
 
                 if (harvestedItems.Count() > 0)
-                    AppendNormalText(string.Format("\n  {0,-34} {1,5}\n",
+                    AppendText(string.Format("\n  {0,-34} {1,5}\n",
                         "Total Items:", totalItems));
 
-                AppendNormalText(string.Format("  {0,-34} {1,5}\n",
+                AppendText(string.Format("  {0,-34} {1,5}\n",
                     "Total Tries:", totalCount));
 
                 avgResult = (double)harvestingBreaks / totalCount;
-                AppendNormalText(string.Format("\n  {0,-34} {1,5}  [{2,8:p2}]\n",
+                AppendText(string.Format("\n  {0,-34} {1,5}  [{2,8:p2}]\n",
                     "Breaks:", harvestingBreaks, avgResult));
 
-                AppendNormalText("\n");
+                AppendText("\n");
             }
 
             // Logging results
             if (loggedItems.Count() > 0 || loggingBreaks > 0)
             {
-                AppendBoldText("Logging:\n", Color.Red);
+                AppendText("Logging:\n", Color.Red, true, false);
 
                 totalItems = loggedItems.Sum(a => a.Count);
                 totalCount = totalItems + loggingFailures;
@@ -568,32 +610,32 @@ namespace WaywardGamers.KParser.Plugin
                 foreach (var item in loggedItems)
                 {
                     avgResult = (double)item.Count / totalCount;
-                    AppendNormalText(string.Format(lineFormat,
+                    AppendText(string.Format(lineFormat,
                         item.Item, item.Count, avgResult));
                 }
 
                 avgResult = (double)loggingFailures / totalCount;
-                AppendNormalText(string.Format(lineFormat,
+                AppendText(string.Format(lineFormat,
                     "Nothing", loggingFailures, avgResult));
 
                 if (loggedItems.Count() > 0)
-                    AppendNormalText(string.Format("\n  {0,-34} {1,5}\n",
+                    AppendText(string.Format("\n  {0,-34} {1,5}\n",
                         "Total Items:", totalItems));
 
-                AppendNormalText(string.Format("  {0,-34} {1,5}\n",
+                AppendText(string.Format("  {0,-34} {1,5}\n",
                     "Total Tries:", totalCount));
 
                 avgResult = (double)loggingBreaks / totalCount;
-                AppendNormalText(string.Format("\n  {0,-34} {1,5}  [{2,8:p2}]\n",
+                AppendText(string.Format("\n  {0,-34} {1,5}  [{2,8:p2}]\n",
                     "Breaks:", loggingBreaks, avgResult));
-                
-                AppendNormalText("\n");
+
+                AppendText("\n");
             }
 
             // Mining results
             if (minedItems.Count() > 0 || miningBreaks > 0)
             {
-                AppendBoldText("Mining/Excavation:\n", Color.Red);
+                AppendText("Mining/Excavation:\n", Color.Red, true, false);
 
                 totalItems = minedItems.Sum(a => a.Count);
                 totalCount = totalItems + miningFailures;
@@ -601,54 +643,54 @@ namespace WaywardGamers.KParser.Plugin
                 foreach (var item in minedItems)
                 {
                     avgResult = (double)item.Count / totalCount;
-                    AppendNormalText(string.Format(lineFormat,
+                    AppendText(string.Format(lineFormat,
                         item.Item, item.Count, avgResult));
                 }
 
                 avgResult = (double)miningFailures / totalCount;
-                AppendNormalText(string.Format(lineFormat,
+                AppendText(string.Format(lineFormat,
                    "Nothing", miningFailures, avgResult));
 
                 if (minedItems.Count() > 0)
-                    AppendNormalText(string.Format("\n  {0,-34} {1,5}\n",
+                    AppendText(string.Format("\n  {0,-34} {1,5}\n",
                         "Total Items:", totalItems));
 
-                AppendNormalText(string.Format("  {0,-34} {1,5}\n",
+                AppendText(string.Format("  {0,-34} {1,5}\n",
                     "Total Tries:", totalCount));
 
                 avgResult = (double)miningBreaks / totalCount;
-                AppendNormalText(string.Format("\n  {0,-34} {1,5}  [{2,8:p2}]\n",
+                AppendText(string.Format("\n  {0,-34} {1,5}  [{2,8:p2}]\n",
                     "Breaks:", miningBreaks, avgResult));
-                
-                AppendNormalText("\n");
+
+                AppendText("\n");
             }
 
             // Chocobo results
             if (chocoboItems.Count() > 0 || chocoboDiggingFailures > 0)
             {
-                AppendBoldText("Chocobo Digging:\n", Color.Red);
+                AppendText("Chocobo Digging:\n", Color.Red, true, false);
 
                 totalCount = chocoboItems.Sum(a => a.Count) + chocoboDiggingFailures;
 
                 foreach (var item in chocoboItems)
                 {
                     avgResult = (double)item.Count / totalCount;
-                    AppendNormalText(string.Format(lineFormat,
+                    AppendText(string.Format(lineFormat,
                         item.Item, item.Count, avgResult));
                 }
 
                 avgResult = (double)chocoboDiggingFailures / totalCount;
-                AppendNormalText(string.Format(lineFormat,
+                AppendText(string.Format(lineFormat,
                    "Nothing", chocoboDiggingFailures, avgResult));
 
                 if (chocoboItems.Count() > 0)
-                    AppendNormalText(string.Format("\n  {0,-34} {1,5}\n",
+                    AppendText(string.Format("\n  {0,-34} {1,5}\n",
                         "Total Items:", chocoboItems.Sum(li => li.Count)));
 
-                AppendNormalText(string.Format("  {0,-34} {1,5}\n",
+                AppendText(string.Format("  {0,-34} {1,5}\n",
                     "Total Tries:", totalCount));
 
-                AppendNormalText("\n");
+                AppendText("\n");
             }
 
         }
