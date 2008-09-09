@@ -91,6 +91,8 @@ namespace WaywardGamers.KParser.Plugin
             toolStrip.Items.Add(mobsLabel);
 
             mobsCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            mobsCombo.AutoSize = false;
+            mobsCombo.Width = 175;
             mobsCombo.Items.Add("All");
             mobsCombo.MaxDropDownItems = 10;
             mobsCombo.SelectedIndex = 0;
@@ -178,7 +180,7 @@ namespace WaywardGamers.KParser.Plugin
             if (currentlySelectedPlayer != playersCombo.CBSelectedItem())
             {
                 flagNoUpdate = true;
-                playersCombo.CBSelectString(currentlySelectedPlayer);
+                playersCombo.CBSelectItem(currentlySelectedPlayer);
             }
 
             if (changesFound == true)
