@@ -23,10 +23,10 @@ namespace WaywardGamers.KParser.Plugin
         {
             InitializeComponent();
 
-            normFont = new Font(FontFamily.GenericMonospace, 10.00f, FontStyle.Regular);
-            boldFont = new Font(FontFamily.GenericMonospace, 10.00f, FontStyle.Bold);
-            underFont = new Font(FontFamily.GenericMonospace, 10.00f, FontStyle.Underline);
-            buFont = new Font(FontFamily.GenericMonospace, 10.00f, FontStyle.Bold | FontStyle.Underline);
+            normFont = new Font(FontFamily.GenericMonospace, 9.00f, FontStyle.Regular);
+            boldFont = new Font(FontFamily.GenericMonospace, 9.00f, FontStyle.Bold);
+            underFont = new Font(FontFamily.GenericMonospace, 9.00f, FontStyle.Underline);
+            buFont = new Font(FontFamily.GenericMonospace, 9.00f, FontStyle.Bold | FontStyle.Underline);
         }
         #endregion
 
