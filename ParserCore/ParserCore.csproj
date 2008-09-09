@@ -119,6 +119,7 @@
       <DependentUpon>NewBasePluginControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Interface\PluginInterface.cs" />
+    <Compile Include="Interface\PluginUtilities.cs" />
     <Compile Include="Interface\RTFStringMods.cs" />
     <Compile Include="KPDatabaseDataSet.cs">
       <DependentUpon>KPDatabaseDataSet.xsd</DependentUpon>
