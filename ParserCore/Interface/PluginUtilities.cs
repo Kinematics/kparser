@@ -117,9 +117,6 @@ namespace WaywardGamers.KParser.Plugin
                 return string.Empty;
         }
         #endregion
-
-        #region Rich Text Box manipulation
-        #endregion
     }
 }
 
