@@ -93,12 +93,6 @@
     <Compile Include="Interface\BasePluginControl.Designer.cs">
       <DependentUpon>BasePluginControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interface\BasePluginControlWithRadio.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Interface\BasePluginControlWithRadio.Designer.cs">
-      <DependentUpon>BasePluginControlWithRadio.cs</DependentUpon>
-    </Compile>
     <Compile Include="Interface\BasePluginControlWithDropdown.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -206,10 +200,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Interface\BasePluginControl.resx">
       <DependentUpon>BasePluginControl.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Interface\BasePluginControlWithRadio.resx">
-      <DependentUpon>BasePluginControlWithRadio.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Interface\BasePluginControlWithDropdown.resx">
