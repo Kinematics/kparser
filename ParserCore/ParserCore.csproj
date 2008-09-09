@@ -105,12 +105,6 @@
     <Compile Include="Interface\BasePluginControlWithDropdown.Designer.cs">
       <DependentUpon>BasePluginControlWithDropdown.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interface\BasePluginControlListView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Interface\BasePluginControlListView.Designer.cs">
-      <DependentUpon>BasePluginControlListView.cs</DependentUpon>
-    </Compile>
     <Compile Include="Interface\IReader.cs" />
     <Compile Include="Interface\NewBasePluginControl.cs">
       <SubType>UserControl</SubType>
@@ -220,10 +214,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Interface\BasePluginControlWithDropdown.resx">
       <DependentUpon>BasePluginControlWithDropdown.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Interface\BasePluginControlListView.resx">
-      <DependentUpon>BasePluginControlListView.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
