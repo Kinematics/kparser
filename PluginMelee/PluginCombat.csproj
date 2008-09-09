@@ -64,7 +64,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeFile1.cs">
-      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="DefenseFrequency.cs">
       <SubType>UserControl</SubType>

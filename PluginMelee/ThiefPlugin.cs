@@ -520,11 +520,8 @@ namespace WaywardGamers.KParser.Plugin
                     double avgNonCrit = player.Melee.Where(m => ((DefenseType)m.DefenseType == DefenseType.None) &&
                         ((DamageModifier)m.DamageModifier == DamageModifier.None))
                         .Average(m => m.Amount);
-                    double avgCrit = player.Melee.Where(m => ((DefenseType)m.DefenseType == DefenseType.None) &&
-                        ((DamageModifier)m.DamageModifier == DamageModifier.Critical))
-                        .Average(m => m.Amount);
 
-                    double critThreshold = avgCrit * 2;
+                    double critThreshold = avgNonCrit * 5;
                     double nonCritThreshold = avgNonCrit * 3;
 
                     while (sataActions.Count() > 0)
