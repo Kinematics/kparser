@@ -5,13 +5,34 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Data;
 using System.Drawing;
+using System.Windows.Forms;
 using WaywardGamers.KParser;
-using System.Diagnostics;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class RecoveryPlugin : BasePluginControlWithDropdown
+    public class RecoveryPlugin : NewBasePluginControl
     {
+        #region Constructor
+        bool flagNoUpdate;
+        ToolStripComboBox categoryCombo = new ToolStripComboBox();
+
+        public RecoveryPlugin()
+        {
+            ToolStripLabel catLabel = new ToolStripLabel();
+            catLabel.Text = "Category:";
+            toolStrip.Items.Add(catLabel);
+
+            categoryCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            categoryCombo.Items.Add("All");
+            categoryCombo.Items.Add("Recovery");
+            categoryCombo.Items.Add("Curing");
+            categoryCombo.Items.Add("Average Curing");
+            categoryCombo.SelectedIndex = 0;
+            categoryCombo.SelectedIndexChanged += new EventHandler(this.categoryCombo_SelectedIndexChanged);
+            toolStrip.Items.Add(categoryCombo);
+        }
+        #endregion
+
         #region IPlugin Overrides
         public override string TabName
         {
@@ -20,27 +41,7 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void Reset()
         {
-            richTextBox.Clear();
-            richTextBox.WordWrap = false;
-
-            label1.Text = "Category";
-            comboBox1.Left = label1.Right + 10;
-            comboBox1.Items.Clear();
-            comboBox1.Items.Add("All");
-            comboBox1.Items.Add("Recovery");
-            comboBox1.Items.Add("Curing");
-            comboBox1.Items.Add("Average Curing");
-            comboBox1.SelectedIndex = 0;
-
-            label2.Visible = false;
-            label2.Enabled = false;
-            comboBox2.Visible = false;
-            comboBox2.Enabled = false;
-
-            checkBox1.Enabled = false;
-            checkBox1.Visible = false;
-            checkBox2.Enabled = false;
-            checkBox2.Visible = false;
+            ResetTextBox();
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
@@ -60,8 +61,8 @@ namespace WaywardGamers.KParser.Plugin
         Dictionary<string, int> playerDamage = new Dictionary<string, int>();
 
         string dmgRecoveryHeader = "Player           Dmg Taken   HP Drained   HP Cured   #Regen   #Regen 2   #Regen 3\n";
-        string cureHeader        = "Player           Cured (Sp)  Cured (Ab)  C.1s  C.2s  C.3s  C.4s  C.5s  Curagas  Rg.1s  Rg.2s  Rg.3s\n";
-        string avgCureHeader     = "Player           Avg Cure 1   Avg Cure 2   Avg Cure 3   Avg Cure 4   Avg Cure 5   Avg Curaga   Avg Ability\n";
+        string cureHeader = "Player           Cured (Sp)  Cured (Ab)  C.1s  C.2s  C.3s  C.4s  C.5s  Curagas  Rg.1s  Rg.2s  Rg.3s\n";
+        string avgCureHeader = "Player           Avg Cure 1   Avg Cure 2   Avg Cure 3   Avg Cure 4   Avg Cure 5   Avg Curaga   Avg Ability\n";
         #endregion
 
         #region Processing sections
@@ -69,7 +70,7 @@ namespace WaywardGamers.KParser.Plugin
         {
             richTextBox.Clear();
 
-            switch (comboBox1.SelectedIndex)
+            switch (categoryCombo.CBSelectedIndex())
             {
                 case 0:
                     // All
@@ -172,8 +173,8 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         if (placeHeader == false)
                         {
-                            AppendBoldText("Damage Recovery\n", Color.Blue);
-                            AppendBoldUnderText(dmgRecoveryHeader, Color.Black);
+                            AppendText("Damage Recovery\n", Color.Blue, true, false);
+                            AppendText(dmgRecoveryHeader, Color.Black, true, true);
 
                             placeHeader = true;
                         }
@@ -202,11 +203,11 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (placeHeader == true)
                 {
-                    AppendNormalText(sb.ToString());
+                    AppendText(sb.ToString());
                     string totalString = string.Format(
                         "{0,-17}{1,9}{2,13}{3,11}{4,9}{5,11}{6,11}\n\n\n", "Total",
                         ttlDmgTaken, ttlDrainAmt, ttlHealAmt, ttlNumR1, ttlNumR2, ttlNumR3);
-                    AppendBoldText(totalString, Color.Black);
+                    AppendText(totalString, Color.Black, true, false);
                 }
 
             }
@@ -346,8 +347,8 @@ namespace WaywardGamers.KParser.Plugin
                         {
                             if (placeHeader == false)
                             {
-                                AppendBoldText("Curing (Whm spells or equivalent)\n", Color.Blue);
-                                AppendBoldUnderText(cureHeader, Color.Black);
+                                AppendText("Curing (Whm spells or equivalent)\n", Color.Blue, true, false);
+                                AppendText(cureHeader, Color.Black, true, true);
 
                                 placeHeader = true;
                             }
@@ -377,7 +378,7 @@ namespace WaywardGamers.KParser.Plugin
                     if (placeHeader == true)
                     {
                         sb.Append("\n\n");
-                        AppendNormalText(sb.ToString());
+                        AppendText(sb.ToString());
                     }
                 }
 
@@ -418,8 +419,8 @@ namespace WaywardGamers.KParser.Plugin
                         {
                             if (placeHeader == false)
                             {
-                                AppendBoldText("Average Curing (Whm spells or equivalent)\n", Color.Blue);
-                                AppendBoldUnderText(avgCureHeader, Color.Black);
+                                AppendText("Average Curing (Whm spells or equivalent)\n", Color.Blue, true, false);
+                                AppendText(avgCureHeader, Color.Black, true, true);
 
                                 placeHeader = true;
                             }
@@ -442,7 +443,7 @@ namespace WaywardGamers.KParser.Plugin
                     if (placeHeader == true)
                     {
                         sb.Append("\n\n");
-                        AppendNormalText(sb.ToString());
+                        AppendText(sb.ToString());
                     }
                 }
             }
@@ -450,24 +451,12 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Event Handlers
-        protected override void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        protected void categoryCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            HandleDataset(DatabaseManager.Instance.Database);
-        }
+            if (flagNoUpdate == false)
+                HandleDataset(DatabaseManager.Instance.Database);
 
-        protected override void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            HandleDataset(DatabaseManager.Instance.Database);
-        }
-
-        protected override void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            HandleDataset(DatabaseManager.Instance.Database);
-        }
-
-        protected override void checkBox2_CheckedChanged(object sender, EventArgs e)
-        {
-            HandleDataset(DatabaseManager.Instance.Database);
+            flagNoUpdate = false;
         }
         #endregion
 

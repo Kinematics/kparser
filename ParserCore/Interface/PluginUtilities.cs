@@ -2,11 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 
 namespace WaywardGamers.KParser.Plugin
 {
+    /// <summary>
+    /// Specialist class for filtering mobs.
+    /// </summary>
+    public class MobFilter
+    {
+        public string MobName { get; set; }
+        public int MobXP { get; set; }
+    }
+
     /// <summary>
     /// Class to define thread-safe extension methods for plugin UI elements.
     /// </summary>
@@ -76,11 +86,11 @@ namespace WaywardGamers.KParser.Plugin
                 combo.SelectedIndex = index;
         }
 
-        public static void CBSelectString(this ToolStripComboBox combo, string name)
+        public static void CBSelectItem(this ToolStripComboBox combo, string name)
         {
             if (combo.ComboBox.InvokeRequired)
             {
-                Action<ToolStripComboBox, string> thisFunc = CBSelectString;
+                Action<ToolStripComboBox, string> thisFunc = CBSelectItem;
                 combo.ComboBox.Invoke(thisFunc, new object[] { name });
                 return;
             }
@@ -115,6 +125,42 @@ namespace WaywardGamers.KParser.Plugin
                 return combo.SelectedItem.ToString();
             else
                 return string.Empty;
+        }
+        #endregion
+
+        #region Specialist functions for dealing with Mob lists
+        public static MobFilter CBGetMobFilter(this ToolStripComboBox combo)
+        {
+            if (combo.ComboBox.InvokeRequired)
+            {
+                Func<ToolStripComboBox, MobFilter> thisFunc = CBGetMobFilter;
+                return (MobFilter)combo.ComboBox.Invoke(thisFunc);
+            }
+
+            MobFilter filter = new MobFilter { MobName = "All", MobXP = 0 };
+
+            if (combo.SelectedIndex >= 0)
+            {
+                string filterName = combo.SelectedItem.ToString();
+
+                if (filterName != "All")
+                {
+                    Regex mobAndXP = new Regex(@"((?<mobName>.*(?<! \())) \(((?<xp>\d+)\))|(?<mobName>.*)");
+                    Match mobAndXPMatch = mobAndXP.Match(filterName);
+
+                    if (mobAndXPMatch.Success == true)
+                    {
+                        filter.MobName = mobAndXPMatch.Groups["mobName"].Value;
+
+                        if ((mobAndXPMatch.Groups["xp"] != null) && (mobAndXPMatch.Groups["xp"].Value != string.Empty))
+                        {
+                            filter.MobXP = int.Parse(mobAndXPMatch.Groups["xp"].Value);
+                        }
+                    }
+                }
+            }
+
+            return filter;
         }
         #endregion
     }

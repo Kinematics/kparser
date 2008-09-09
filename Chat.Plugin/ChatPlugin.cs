@@ -69,7 +69,7 @@ namespace WaywardGamers.KParser.Plugin
             ResetTextBox();
             UpdateSpeakerList(dataSet);
             flagNoUpdate = true;
-            speakerCombo.CBSelectString("All");
+            speakerCombo.CBSelectItem("All");
 
             ProcessData(dataSet);
         }
@@ -82,7 +82,7 @@ namespace WaywardGamers.KParser.Plugin
                 flagNoUpdate = true;
                 UpdateSpeakerList(e.DatasetChanges);
                 flagNoUpdate = true;
-                speakerCombo.CBSelectString(currentSelection);
+                speakerCombo.CBSelectItem(currentSelection);
 
                 datasetToUse = e.DatasetChanges;
                 return true;
