@@ -61,9 +61,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExperienceListViewPlugin.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="PlayerInfoPlugin.cs">
       <SubType>UserControl</SubType>
     </Compile>
