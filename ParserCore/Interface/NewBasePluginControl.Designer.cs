@@ -16,6 +16,18 @@
             if (disposing && (components != null))
             {
                 components.Dispose();
+
+                if (normFont != null)
+                    normFont.Dispose();
+
+                if (boldFont != null)
+                    boldFont.Dispose();
+
+                if (underFont != null)
+                    underFont.Dispose();
+
+                if (buFont != null)
+                    buFont.Dispose();
             }
             base.Dispose(disposing);
         }
@@ -67,7 +79,7 @@
 
         #endregion
 
-        private System.Windows.Forms.RichTextBox richTextBox;
         protected System.Windows.Forms.ToolStrip toolStrip;
+        protected System.Windows.Forms.RichTextBox richTextBox;
     }
 }
