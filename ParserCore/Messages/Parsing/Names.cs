@@ -11,7 +11,7 @@ namespace WaywardGamers.KParser
     /// </summary>
     public static class Weaponskills
     {
-        public static readonly List<string> NamesList = new List<string>(145)
+        public static readonly List<string> NamesList = new List<string>(168)
         {
             // Archery
             "Flaming Arrow", "Piercing Arrow", "Dulling Arrow", "Sidewinder", "Blast Arrow",
