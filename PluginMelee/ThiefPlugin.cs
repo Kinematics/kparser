@@ -521,9 +521,12 @@ namespace WaywardGamers.KParser.Plugin
                     SATAEvents.Clear();
                     sataActions = sataActions.OrderBy(a => a.InteractionID);
 
-                    double avgNonCrit = player.Melee.Where(m => ((DefenseType)m.DefenseType == DefenseType.None) &&
-                        ((DamageModifier)m.DamageModifier == DamageModifier.None))
-                        .Average(m => m.Amount);
+                    var avgNonCritSet = player.Melee.Where(m => ((DefenseType)m.DefenseType == DefenseType.None) &&
+                        ((DamageModifier)m.DamageModifier == DamageModifier.None));
+
+                    double avgNonCrit = 0;
+                    if (avgNonCritSet.Count() > 0)
+                        avgNonCrit = avgNonCritSet.Average(m => m.Amount);
 
                     double critThreshold = avgNonCrit * 5;
                     double nonCritThreshold = avgNonCrit * 3;
