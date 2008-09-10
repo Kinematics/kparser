@@ -1,6 +1,7 @@
 KParser Change Log
 
 1.0.13
++ Add new weaponskill names.
 - Bug fixes for Chat and OffenseDetails plugin.
 - Adjust crit threshold calculation for Thief plugin.
 + Add solo weaponskill data to Thief plugin.
