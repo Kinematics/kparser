@@ -775,6 +775,9 @@ namespace WaywardGamers.KParser.Plugin
         /// <param name="freqGrouping"></param>
         private void ShowFrequency(IOrderedEnumerable<IGrouping<int, KPDatabaseDataSet.InteractionsRow>> freqGrouping)
         {
+            if (freqGrouping.Count() == 0)
+                return;
+
             StringBuilder strBuilder = new StringBuilder();
             int max = freqGrouping.Max(f => f.Count());
             int total = freqGrouping.Sum(f => f.Count());
