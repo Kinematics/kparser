@@ -11,51 +11,58 @@ namespace WaywardGamers.KParser
     /// </summary>
     public static class Weaponskills
     {
-        public static readonly List<string> NamesList = new List<string>(145)
+        public static readonly List<string> NamesList = new List<string>(168)
         {
             // Archery
             "Flaming Arrow", "Piercing Arrow", "Dulling Arrow", "Sidewinder", "Blast Arrow",
-            "Arching Arrow", "Empyreal Arrow", "Namas Arrow",
+            "Arching Arrow", "Empyreal Arrow", "Namas Arrow", "Trueflight",
             // Axes
             "Raging Axe", "Smash Axe", "Gale Axe", "Avalanche Axe", "Spinning Axe", "Rampage",
-            "Calamity", "Mistral Axe", "Decimation", "Onslaught",
+            "Calamity", "Mistral Axe", "Decimation", "Onslaught", "Primal Rend",
             // Clubs
             "Shining Strike", "Seraph Strike", "Brainshaker", "Starlight", "Moonlight", 
             "Skullbreaker", "True Strike", "Judgment", "Hexa Strike", "Black Halo", "Randgrith",
+            "Mystic Boon",
             // Daggers
             "Wasp Sting", "Gust Slash", "Shadowstitch", "Viper Bite", "Cyclone", "Dancing Edge",
-            "Shark Bite", "Evisceration", "Mercy Stroke",
+            "Shark Bite", "Evisceration", "Mercy Stroke", "Mandalic Stab", "Mordant Rime",
+            "Pyrrhic Kleos",
             // Great Axes
             "Shield Break", "Iron Tempest", "Sturmwind", "Armor Break", "Keen Edge",
             "Weapon Break", "Raging Rush", "Full Break", "Steel Cyclone", "Metatron Torment",
+            "King's Justice",
             // Great Katana
             "Tachi: Enpi", "Tachi: Hobaku", "Tachi: Goten", "Tachi: Kagero", "Tachi: Jinpu",
             "Tachi: Koki", "Tachi: Yukikaze", "Tachi: Gekko", "Tachi: Kasha", "Tachi: Kaiten",
+            "Tachi: Rana",
             // Great Swords
             "Hard Slash", "Power Slash", "Frost Bite", "Freeze Bite", "Shockwave", "Crescent Moon",
             "Sickle Moon", "Spinning Slash", "Ground Strike", "Scourge",
             // Hand-to-Hand
             "Combo", "Shoulder Tackle", "One Inch Punch", "Backhand Blow", "Raging Fists",
             "Spinning Attack", "Howling Fist", "Dragon Kick", "Asuran Fists", "Final Heaven",
+            "Ascetic's Fury", "Stringing Pummel",
             // Katana
             "Blade: Rin", "Blade: Retsu", "Blade: Teki", "Blade: To", "Blade: Chi", "Blade: Ei",
-            "Blade: Jin", "Blade: Ten", "Blade: Ku", "Blade: Metsu",
+            "Blade: Jin", "Blade: Ten", "Blade: Ku", "Blade: Metsu", "Blade: Kamu",
             // Marksmanship
             "Hot Shot", "Split Shot", "Sniper Shot", "Slug Shot", "Blast Shot", "Heavy Shot",
-            "Detonator", "Coronach",
+            "Detonator", "Coronach", "Leaden Salute",
             // Polearms
             "Double Thrust", "Thunder Thrust", "Raiden Thrust", "Leg Sweep", "Penta Thrust",
             "Vorpal Thrust", "Skewer", "Wheeling Thrust", "Impulse Drive", "Geirskogul",
+            "Drakesbane",
             // Scythes
             "Slice", "Dark Harvest", "Shadow of Death", "Nightmare Scythe", "Spinning Scythe",
-            "Vorpal Scythe", "Guillotine", "Cross Reaper", "Spiral Hell", "Catastrophe",
+            "Vorpal Scythe", "Guillotine", "Cross Reaper", "Spiral Hell", "Catastrophe", "Insurgency",
             // Staves
             "Heavy Swing", "Rock Crusher", "Shellcrusher", "Earth Crusher", "Star Burst", "Sun Burst",
-            "Full Swing", "Spirit Taker", "Retribution", "Gate of Tartarus",
+            "Full Swing", "Spirit Taker", "Retribution", "Gate of Tartarus", "Vidohunir",
+            "Garland of Bliss", "Omniscience",
             // Swords
             "Fast Blade", "Flat Blade", "Burning Blade", "Red Lotus Blade", "Circle Blade",
             "Shining Blade", "Seraph Blade", "Spirits Within", "Vorpal Blade", "Swift Blade",
-            "Savage Blade", "Knights of Round",
+            "Savage Blade", "Knights of Round", "Death Blossom", "Atonement", "Expiacion",
             // Automaton
             "Slapstick", "Arcuballista", "String Clipper", "Chimera Ripper", "Knockout", "Daze",
             "Cannibal Blade", "Armor Piercer", "Bone Crusher", "Magic Mortar"
