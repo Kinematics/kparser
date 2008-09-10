@@ -59,22 +59,32 @@ namespace WaywardGamers.KParser.Plugin
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
         {
-            if (e.DatasetChanges.ChatSpeakers.Count != 0)
+            if (e.DatasetChanges != null)
             {
-                foreach (var speaker in e.DatasetChanges.ChatSpeakers)
+                if (e.DatasetChanges.ChatSpeakers != null)
                 {
-                    AddStringToComboBox2(speaker.SpeakerName);
+                    if (e.DatasetChanges.ChatSpeakers.Count != 0)
+                    {
+                        foreach (var speaker in e.DatasetChanges.ChatSpeakers)
+                        {
+                            AddStringToComboBox2(speaker.SpeakerName);
+                        }
+
+                        datasetToUse = e.DatasetChanges;
+                        return true;
+                    }
                 }
 
-                datasetToUse = e.DatasetChanges;
-                return true;
+                if (e.DatasetChanges.ChatMessages != null)
+                {
+                    if (e.DatasetChanges.ChatMessages.Count != 0)
+                    {
+                        datasetToUse = e.DatasetChanges;
+                        return true;
+                    }
+                }
             }
 
-            if (e.DatasetChanges.ChatMessages.Count != 0)
-            {
-                datasetToUse = e.DatasetChanges;
-                return true;
-            }
 
             datasetToUse = null;
             return false;
