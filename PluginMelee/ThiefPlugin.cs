@@ -490,6 +490,8 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (sataActions.Count() > 0)
                 {
+                    List<KPDatabaseDataSet.InteractionsRow> sataWeaponskills = new List<KPDatabaseDataSet.InteractionsRow>();
+
                     AppendBoldText(player.Name + "\n", Color.Red);
 
                     SATAEvents.Clear();
@@ -650,6 +652,7 @@ namespace WaywardGamers.KParser.Plugin
                             else if ((ActionType)sataDamage.ActionType == ActionType.Weaponskill)
                             {
                                 sataEvent.WeaponskillName = sataDamage.ActionsRow.ActionName;
+                                sataWeaponskills.Add(sataDamage);
                             }
                             sataEvent.DamageAmount = sataDamage.Amount;
 
@@ -704,9 +707,20 @@ namespace WaywardGamers.KParser.Plugin
                     var TAList = SATAEvents.Where(s => //s.SATASuccess == true &&
                          s.SATAActions.IsSupersetOf(TASet)).Except(SATAList);
 
-                    PrintOutput("SATA", SATAList);
-                    PrintOutput("SA", SAList);
-                    PrintOutput("TA", TAList);
+                    PrintOutput("Sneak Attack + Trick Attack", SATAList);
+                    PrintOutput("Sneak Attack", SAList);
+                    PrintOutput("Trick Attack", TAList);
+
+                    var soloWeaponskills = from w in player.WSkill.Except(sataWeaponskills)
+                                           select new SATAEvent
+                                           {
+                                               ActionName = "Weaponskill",
+                                               DamageAmount = w.Amount,
+                                               ActionType = ActionType.Weaponskill,
+                                               WeaponskillName = w.ActionsRow.ActionName
+                                           };
+
+                    PrintOutput("Solo Weaponskills", soloWeaponskills);
                 }
             }
         }
