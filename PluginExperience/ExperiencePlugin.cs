@@ -7,8 +7,27 @@ using System.Drawing;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class ExperiencePlugin : BasePluginControl
+    public class ExperiencePlugin : NewBasePluginControl
     {
+        #region Constructor
+        public ExperiencePlugin()
+        {
+            toolStrip.Enabled = false;
+            toolStrip.Visible = false;
+
+            richTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left |
+                System.Windows.Forms.AnchorStyles.Right |
+                System.Windows.Forms.AnchorStyles.Bottom;
+            richTextBox.Top -= toolStrip.Height;
+            richTextBox.Height += toolStrip.Height;
+            richTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top |
+                System.Windows.Forms.AnchorStyles.Left |
+                System.Windows.Forms.AnchorStyles.Right |
+                System.Windows.Forms.AnchorStyles.Bottom;
+        }
+        #endregion
+
+        #region IPlugin Overrides
         public override string TabName
         {
             get { return "Experience"; }
@@ -40,7 +59,9 @@ namespace WaywardGamers.KParser.Plugin
             ProcessExperience(dataSet);
             ProcessMobs(dataSet);
         }
+        #endregion
 
+        #region Processing functions
         private void ProcessExperience(KPDatabaseDataSet dataSet)
         {
             StringBuilder sb1 = new StringBuilder();
@@ -149,11 +170,11 @@ namespace WaywardGamers.KParser.Plugin
 
 
                 // Dump all the constructed text above into the window.
-                AppendBoldText("Experience Rates\n", Color.Black);
-                AppendNormalText(sb1.ToString());
+                AppendText("Experience Rates\n", Color.Black, true, false);
+                AppendText(sb1.ToString());
 
-                AppendBoldText("Experience Chains\n", Color.Black);
-                AppendNormalText(sb2.ToString());
+                AppendText("Experience Chains\n", Color.Black, true, false);
+                AppendText(sb2.ToString());
             }
         }
 
@@ -200,8 +221,8 @@ namespace WaywardGamers.KParser.Plugin
                         {
                             if (headerDisplayed == false)
                             {
-                                AppendBoldText("Mob Listing\n", Color.Blue);
-                                AppendBoldUnderText(mobSetHeader, Color.Black);
+                                AppendText("Mob Listing\n", Color.Blue, true, false);
+                                AppendText(mobSetHeader, Color.Black, true, true);
 
                                 headerDisplayed = true;
                             }
@@ -237,12 +258,12 @@ namespace WaywardGamers.KParser.Plugin
                             if (avgMobFightTime > 60)
                             {
                                 fightLengthString = string.Format("{0}:{1:d2}.{2:d2}",
-                                    tsAvgFight.Minutes, tsAvgFight.Seconds, tsAvgFight.Milliseconds/10);
+                                    tsAvgFight.Minutes, tsAvgFight.Seconds, tsAvgFight.Milliseconds / 10);
                             }
                             else
                             {
                                 fightLengthString = string.Format("{0}.{1:d2}",
-                                    tsAvgFight.Seconds, tsAvgFight.Milliseconds/10);
+                                    tsAvgFight.Seconds, tsAvgFight.Milliseconds / 10);
                             }
 
                             sb.Append(fightLengthString.PadLeft(17));
@@ -256,8 +277,9 @@ namespace WaywardGamers.KParser.Plugin
             if (headerDisplayed == true)
             {
                 sb.Append("\n\n");
-                AppendNormalText(sb.ToString());
+                AppendText(sb.ToString());
             }
         }
+        #endregion
     }
 }
