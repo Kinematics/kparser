@@ -1,7 +1,8 @@
 KParser Change Log
 
 1.1
-* Rewrite of base class for plugins to somewhat simplify coding (though more work needed for customization of controls).
+* Rewrite of base class for plugins to somewhat simplify coding (though more work needed for customization of controls) and lend uniformity to code.
+- Fix so that Exclude 0 XP Mobs option in Offense plugin works properly.
 * Allow setting default save directory.
 
 ---------------------------------------
