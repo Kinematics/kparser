@@ -54,7 +54,7 @@ namespace WaywardGamers.KParser.Plugin
             ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
             groupMobsOption.Text = "Group Mobs";
             groupMobsOption.CheckOnClick = true;
-            groupMobsOption.Checked = true;
+            groupMobsOption.Checked = false;
             groupMobsOption.Click += new EventHandler(groupMobs_Click);
             optionsMenu.DropDownItems.Add(groupMobsOption);
 
