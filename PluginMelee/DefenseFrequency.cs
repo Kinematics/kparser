@@ -14,7 +14,7 @@ namespace WaywardGamers.KParser.Plugin
     {
         #region Constructor
         bool flagNoUpdate;
-        bool groupMobs = true;
+        bool groupMobs = false;
         bool showDetails = false;
         ToolStripComboBox playersCombo = new ToolStripComboBox();
         ToolStripComboBox mobsCombo = new ToolStripComboBox();
