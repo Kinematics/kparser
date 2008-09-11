@@ -87,12 +87,6 @@
     </Compile>
     <Compile Include="ErrorHandling\ErrorLog.cs" />
     <Compile Include="ErrorHandling\KAppException.cs" />
-    <Compile Include="Interface\BasePluginControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Interface\BasePluginControl.Designer.cs">
-      <DependentUpon>BasePluginControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="Interface\BasePluginControlWithDropdown.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -198,10 +192,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Interface\BasePluginControl.resx">
-      <DependentUpon>BasePluginControl.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Interface\BasePluginControlWithDropdown.resx">
       <DependentUpon>BasePluginControlWithDropdown.cs</DependentUpon>
       <SubType>Designer</SubType>
