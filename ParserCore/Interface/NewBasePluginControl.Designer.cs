@@ -1,6 +1,6 @@
 ﻿namespace WaywardGamers.KParser.Plugin
 {
-    partial class NewBasePluginControl
+    partial class BasePluginControl
     {
         /// <summary> 
         /// Required designer variable.

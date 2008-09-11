@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class OffenseFrequencyDataPlugin : NewBasePluginControl
+    public class OffenseFrequencyDataPlugin : BasePluginControl
     {
         #region Constructor
         bool flagNoUpdate;

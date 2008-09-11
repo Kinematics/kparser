@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class OffensePlugin : NewBasePluginControl
+    public class OffensePlugin : BasePluginControl
     {
         #region Accumulator classes
         class MainAccumulator

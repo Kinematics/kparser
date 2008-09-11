@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class ThiefPlugin : NewBasePluginControl
+    public class ThiefPlugin : BasePluginControl
     {
         #region SATA support classes and functions
         private enum SATATypes
