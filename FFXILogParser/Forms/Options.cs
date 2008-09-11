@@ -135,7 +135,7 @@ namespace WaywardGamers.KParser
 
         private void getLogDirectory_Click(object sender, EventArgs e)
         {
-            folderBrowserDialog.SelectedPath = coreSettings.FFXILogDirectory;
+            folderBrowserDialog.SelectedPath = logDirectory.Text;
 
             if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
             {
@@ -145,7 +145,7 @@ namespace WaywardGamers.KParser
 
         private void getSaveDirectory_Click(object sender, EventArgs e)
         {
-            folderBrowserDialog.SelectedPath = windowSettings.DefaultParseSaveDirectory;
+            folderBrowserDialog.SelectedPath = defaultSaveDirectory.Text;
 
             if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
             {
@@ -183,6 +183,7 @@ namespace WaywardGamers.KParser
         {
             // Reset the app settings and refill the window data.
             coreSettings.Reset();
+            windowSettings.Reset();
             LoadSettingsValues();
         }
 
@@ -271,6 +272,10 @@ namespace WaywardGamers.KParser
             debugMode.Checked = coreSettings.DebugMode;
 
             defaultSaveDirectory.Text = windowSettings.DefaultParseSaveDirectory;
+            if (defaultSaveDirectory.Text == string.Empty)
+            {
+                defaultSaveDirectory.Text = Application.CommonAppDataPath;
+            }
         }
 
         private void SetEnabledFields()
