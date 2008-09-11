@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class FightsPlugin : NewBasePluginControl
+    public class FightsPlugin : BasePluginControl
     {
         #region Constructor
         public FightsPlugin()

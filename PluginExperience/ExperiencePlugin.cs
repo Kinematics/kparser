@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class ExperiencePlugin : NewBasePluginControl
+    public class ExperiencePlugin : BasePluginControl
     {
         #region Constructor
         public ExperiencePlugin()

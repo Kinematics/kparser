@@ -10,7 +10,7 @@ using WaywardGamers.KParser;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class EnfeeblePlugin : NewBasePluginControl
+    public class EnfeeblePlugin : BasePluginControl
     {
         #region Constructor
         string debuffHeader = "Debuff              Used on                 # Times   # Successful   # No Effect   % Successful\n";

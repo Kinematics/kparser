@@ -8,7 +8,7 @@ using WaywardGamers.KParser;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class ChatPlugin : NewBasePluginControl
+    public class ChatPlugin : BasePluginControl
     {
         #region Constructor
         ToolStripComboBox chatTypeCombo = new ToolStripComboBox();

@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public partial class NewBasePluginControl : UserControl, IPlugin
+    public partial class BasePluginControl : UserControl, IPlugin
     {
         #region Font Variables
         protected Font normFont;
@@ -19,7 +19,7 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Constructor
-        public NewBasePluginControl()
+        public BasePluginControl()
         {
             InitializeComponent();
 

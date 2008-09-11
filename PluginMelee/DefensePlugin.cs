@@ -10,7 +10,7 @@ using WaywardGamers.KParser;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class DefensePlugin : NewBasePluginControl
+    public class DefensePlugin : BasePluginControl
     {
         #region Constructor
 

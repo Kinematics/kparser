@@ -6,7 +6,7 @@ using System.Drawing;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class UnparsedPlugin : NewBasePluginControl
+    public class UnparsedPlugin : BasePluginControl
     {
         #region Constructor
         public UnparsedPlugin()

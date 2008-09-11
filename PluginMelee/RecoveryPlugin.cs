@@ -10,7 +10,7 @@ using WaywardGamers.KParser;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class RecoveryPlugin : NewBasePluginControl
+    public class RecoveryPlugin : BasePluginControl
     {
         #region Constructor
         bool flagNoUpdate;

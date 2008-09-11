@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class TreasurePlugin : NewBasePluginControl
+    public class TreasurePlugin : BasePluginControl
     {
         internal enum LootType
         {
