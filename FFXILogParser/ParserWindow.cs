@@ -558,7 +558,7 @@ namespace WaywardGamers.KParser
         private void menuOptions_Click(object sender, EventArgs e)
         {
             Options optionsForm = new Options(Monitor.IsRunning);
-            if (optionsForm.ShowDialog() == DialogResult.OK)
+            if (optionsForm.ShowDialog(this) == DialogResult.OK)
             {
                 windowSettings.Reload();
 
