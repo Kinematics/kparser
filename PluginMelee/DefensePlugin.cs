@@ -783,7 +783,9 @@ namespace WaywardGamers.KParser.Plugin
 
             if (flagNoUpdate == false)
             {
+                flagNoUpdate = true;
                 UpdateMobList();
+
                 HandleDataset(DatabaseManager.Instance.Database);
             }
 
