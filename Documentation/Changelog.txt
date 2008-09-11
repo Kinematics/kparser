@@ -1,5 +1,9 @@
 KParser Change Log
 
+1.0.13.1
+- Fix issue of error on empty list in Thief plugin.
+
+
 1.0.13
 + Add new weaponskill names.
 - Bug fixes for Chat and OffenseDetails plugin.
