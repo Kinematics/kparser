@@ -88,11 +88,11 @@
     <Compile Include="ErrorHandling\ErrorLog.cs" />
     <Compile Include="ErrorHandling\KAppException.cs" />
     <Compile Include="Interface\IReader.cs" />
-    <Compile Include="Interface\NewBasePluginControl.cs">
+    <Compile Include="Interface\BasePluginControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Interface\NewBasePluginControl.Designer.cs">
-      <DependentUpon>NewBasePluginControl.cs</DependentUpon>
+    <Compile Include="Interface\BasePluginControl.Designer.cs">
+      <DependentUpon>BasePluginControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Interface\PluginInterface.cs" />
     <Compile Include="Interface\PluginUtilities.cs" />
@@ -213,8 +213,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Interface\NewBasePluginControl.resx">
-      <DependentUpon>NewBasePluginControl.cs</DependentUpon>
+    <EmbeddedResource Include="Interface\BasePluginControl.resx">
+      <DependentUpon>BasePluginControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="KPDatabase.sdf">
