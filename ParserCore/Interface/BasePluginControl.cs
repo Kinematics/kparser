@@ -219,7 +219,99 @@ namespace WaywardGamers.KParser.Plugin
 
             richTextBox.Select(0, 0);
         }
+        #endregion
 
+        #region General helper functions
+        protected string[] GetMobListing(KPDatabaseDataSet dataSet, bool groupMobs, bool exclude0XPMobs)
+        {
+            List<string> mobStrings = new List<string>();
+
+            // Group enemies check
+
+            if (groupMobs == true)
+            {
+                // Enemy group listing
+
+                var mobsKilled = from b in dataSet.Battles
+                                 where ((b.DefaultBattle == false) &&
+                                        (b.IsEnemyIDNull() == false) &&
+                                        (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
+                                 orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
+                                 group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
+                                 select new
+                                 {
+                                     Name = bn.Key,
+                                     XP = from xb in bn
+                                          group xb by xb.MinBaseExperience() into xbn
+                                          orderby xbn.Key
+                                          select new { BaseXP = xbn.Key }
+                                 };
+
+                mobStrings.Add("All");
+
+                foreach (var mob in mobsKilled)
+                {
+                    if (mob.XP.Count() > 1)
+                    {
+                        if (exclude0XPMobs == true)
+                        {
+                            if (mob.XP.Any(x => x.BaseXP > 0) == true)
+                                mobStrings.Add(mob.Name);
+                        }
+                        else
+                        {
+                            mobStrings.Add(mob.Name);
+                        }
+                    }
+
+                    foreach (var xp in mob.XP)
+                    {
+                        if (exclude0XPMobs == true)
+                        {
+                            if (xp.BaseXP > 0)
+                                mobStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
+                        }
+                        else
+                        {
+                            mobStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Enemy battle listing
+
+                var mobsKilled = from b in dataSet.Battles
+                                 where ((b.DefaultBattle == false) &&
+                                        (b.IsEnemyIDNull() == false) &&
+                                        ((EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.Mob))
+                                 orderby b.BattleID
+                                 select new
+                                 {
+                                     Name = b.CombatantsRowByEnemyCombatantRelation.CombatantName,
+                                     Battle = b.BattleID,
+                                     XP = b.BaseExperience()
+                                 };
+
+                mobStrings.Add("All");
+
+                foreach (var mob in mobsKilled)
+                {
+                    if (exclude0XPMobs == true)
+                    {
+                        if (mob.XP > 0)
+                            mobStrings.Add(string.Format("{0,3}: {1}", mob.Battle, mob.Name));
+                    }
+                    else
+                    {
+                        mobStrings.Add(string.Format("{0,3}: {1}", mob.Battle, mob.Name));
+                    }
+                }
+            }
+
+            return mobStrings.ToArray();
+        }
         #endregion
     }
 }

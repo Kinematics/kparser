@@ -178,69 +178,10 @@ namespace WaywardGamers.KParser.Plugin
         {
             mobsCombo.CBReset();
 
-            // Group enemies check
-
-            if ((groupMobs == true) && (overrideGrouping == false))
-            {
-                // Enemy group listing
-
-                var mobsKilled = from b in dataSet.Battles
-                                 where ((b.DefaultBattle == false) &&
-                                        (b.IsEnemyIDNull() == false) &&
-                                        (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
-                                 orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
-                                 group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
-                                 select new
-                                 {
-                                     Name = bn.Key,
-                                     XP = from xb in bn
-                                          group xb by xb.MinBaseExperience() into xbn
-                                          orderby xbn.Key
-                                          select new { BaseXP = xbn.Key }
-                                 };
-
-                List<string> mobXPStrings = new List<string>();
-                mobXPStrings.Add("All");
-
-                foreach (var mob in mobsKilled)
-                {
-                    mobXPStrings.Add(mob.Name);
-
-                    foreach (var xp in mob.XP)
-                    {
-                        if (xp.BaseXP > 0)
-                            mobXPStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
-                    }
-                }
-
-                mobsCombo.CBAddStrings(mobXPStrings.ToArray());
-            }
+            if (overrideGrouping == false)
+                mobsCombo.CBAddStrings(GetMobListing(dataSet, groupMobs, false));
             else
-            {
-                // Enemy battle listing
-
-                var mobsKilled = from b in dataSet.Battles
-                                 where ((b.DefaultBattle == false) &&
-                                        (b.IsEnemyIDNull() == false) &&
-                                        ((EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.Mob))
-                                 orderby b.BattleID
-                                 select new
-                                 {
-                                     Name = b.CombatantsRowByEnemyCombatantRelation.CombatantName,
-                                     Battle = b.BattleID
-                                 };
-
-                List<string> mobXPStrings = new List<string>();
-                mobXPStrings.Add("All");
-
-                foreach (var mob in mobsKilled)
-                {
-                    mobXPStrings.Add(string.Format("{0,3}: {1}", mob.Battle,
-                            mob.Name));
-                }
-
-                mobsCombo.CBAddStrings(mobXPStrings.ToArray());
-            }
+                mobsCombo.CBAddStrings(GetMobListing(dataSet, false, false));
         }
         #endregion
 
