@@ -80,5 +80,17 @@ namespace WaywardGamers.KParser.Properties {
                 this["fullPluginList"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DefaultParseSaveDirectory {
+            get {
+                return ((string)(this["DefaultParseSaveDirectory"]));
+            }
+            set {
+                this["DefaultParseSaveDirectory"] = value;
+            }
+        }
     }
 }

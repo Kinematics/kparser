@@ -45,14 +45,17 @@ namespace WaywardGamers.KParser
             this.debugMode = new System.Windows.Forms.CheckBox();
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.otherGroup = new System.Windows.Forms.GroupBox();
+            this.defaultSaveDirectory = new System.Windows.Forms.TextBox();
+            this.getSaveDirectory = new System.Windows.Forms.Button();
+            this.saveDirectoryLabel = new System.Windows.Forms.Label();
             this.dataSourceGroup.SuspendLayout();
             this.otherGroup.SuspendLayout();
             this.SuspendLayout();
             // 
             // dataSourceGroup
             // 
-            this.dataSourceGroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.dataSourceGroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.dataSourceGroup.Controls.Add(this.specifyPID);
             this.dataSourceGroup.Controls.Add(this.editMemoryAddress);
             this.dataSourceGroup.Controls.Add(this.readExistingLogs);
@@ -174,7 +177,7 @@ namespace WaywardGamers.KParser
             // 
             this.ok.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.ok.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.ok.Location = new System.Drawing.Point(161, 290);
+            this.ok.Location = new System.Drawing.Point(161, 332);
             this.ok.Name = "ok";
             this.ok.Size = new System.Drawing.Size(75, 23);
             this.ok.TabIndex = 1;
@@ -186,7 +189,7 @@ namespace WaywardGamers.KParser
             // 
             this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancel.Location = new System.Drawing.Point(242, 290);
+            this.cancel.Location = new System.Drawing.Point(242, 332);
             this.cancel.Name = "cancel";
             this.cancel.Size = new System.Drawing.Size(75, 23);
             this.cancel.TabIndex = 2;
@@ -197,7 +200,7 @@ namespace WaywardGamers.KParser
             // reset
             // 
             this.reset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.reset.Location = new System.Drawing.Point(18, 290);
+            this.reset.Location = new System.Drawing.Point(18, 332);
             this.reset.Name = "reset";
             this.reset.Size = new System.Drawing.Size(75, 23);
             this.reset.TabIndex = 4;
@@ -208,7 +211,7 @@ namespace WaywardGamers.KParser
             // debugMode
             // 
             this.debugMode.AutoSize = true;
-            this.debugMode.Location = new System.Drawing.Point(15, 19);
+            this.debugMode.Location = new System.Drawing.Point(9, 71);
             this.debugMode.Name = "debugMode";
             this.debugMode.Size = new System.Drawing.Size(87, 17);
             this.debugMode.TabIndex = 5;
@@ -217,14 +220,46 @@ namespace WaywardGamers.KParser
             // 
             // otherGroup
             // 
-            this.otherGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.otherGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.otherGroup.Controls.Add(this.defaultSaveDirectory);
+            this.otherGroup.Controls.Add(this.saveDirectoryLabel);
+            this.otherGroup.Controls.Add(this.getSaveDirectory);
             this.otherGroup.Controls.Add(this.debugMode);
             this.otherGroup.Location = new System.Drawing.Point(12, 224);
             this.otherGroup.Name = "otherGroup";
-            this.otherGroup.Size = new System.Drawing.Size(305, 52);
+            this.otherGroup.Size = new System.Drawing.Size(305, 94);
             this.otherGroup.TabIndex = 6;
             this.otherGroup.TabStop = false;
             this.otherGroup.Text = "Other";
+            // 
+            // defaultSaveDirectory
+            // 
+            this.defaultSaveDirectory.Location = new System.Drawing.Point(15, 35);
+            this.defaultSaveDirectory.Name = "defaultSaveDirectory";
+            this.defaultSaveDirectory.ReadOnly = true;
+            this.defaultSaveDirectory.Size = new System.Drawing.Size(249, 20);
+            this.defaultSaveDirectory.TabIndex = 6;
+            // 
+            // getSaveDirectory
+            // 
+            this.getSaveDirectory.Location = new System.Drawing.Point(270, 33);
+            this.getSaveDirectory.Name = "getSaveDirectory";
+            this.getSaveDirectory.Size = new System.Drawing.Size(25, 23);
+            this.getSaveDirectory.TabIndex = 7;
+            this.getSaveDirectory.Text = "...";
+            this.getSaveDirectory.UseVisualStyleBackColor = true;
+            this.getSaveDirectory.Click += new System.EventHandler(this.getSaveDirectory_Click);
+            // 
+            // saveDirectoryLabel
+            // 
+            this.saveDirectoryLabel.AutoSize = true;
+            this.saveDirectoryLabel.Location = new System.Drawing.Point(6, 19);
+            this.saveDirectoryLabel.Name = "saveDirectoryLabel";
+            this.saveDirectoryLabel.Size = new System.Drawing.Size(114, 13);
+            this.saveDirectoryLabel.TabIndex = 8;
+            this.saveDirectoryLabel.Text = "Default Save Directory";
             // 
             // Options
             // 
@@ -232,7 +267,7 @@ namespace WaywardGamers.KParser
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancel;
-            this.ClientSize = new System.Drawing.Size(329, 325);
+            this.ClientSize = new System.Drawing.Size(329, 367);
             this.Controls.Add(this.otherGroup);
             this.Controls.Add(this.reset);
             this.Controls.Add(this.cancel);
@@ -275,5 +310,8 @@ namespace WaywardGamers.KParser
         private System.Windows.Forms.GroupBox otherGroup;
         private System.Windows.Forms.CheckBox editMemoryAddress;
         private System.Windows.Forms.CheckBox specifyPID;
+        private System.Windows.Forms.Label saveDirectoryLabel;
+        private System.Windows.Forms.Button getSaveDirectory;
+        private System.Windows.Forms.TextBox defaultSaveDirectory;
     }
 }
