@@ -863,10 +863,11 @@ namespace WaywardGamers.KParser.Plugin
             if (sentBy == null)
                 return;
 
+            groupMobsChanged = true;
+            groupMobs = sentBy.Checked;
+
             if (flagNoUpdate == false)
             {
-                groupMobsChanged = true;
-                groupMobs = sentBy.Checked;
                 HandleDataset(DatabaseManager.Instance.Database);
             }
 
