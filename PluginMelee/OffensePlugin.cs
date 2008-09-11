@@ -293,12 +293,27 @@ namespace WaywardGamers.KParser.Plugin
 
                 foreach (var mob in mobsKilled)
                 {
-                    mobXPStrings.Add(mob.Name);
+                    if (exclude0XPMobs == true)
+                    {
+                        if (mob.XP.Any(x => x.BaseXP > 0) == true)
+                            mobXPStrings.Add(mob.Name);
+                    }
+                    else
+                    {
+                        mobXPStrings.Add(mob.Name);
+                    }
 
                     foreach (var xp in mob.XP)
                     {
-                        if (xp.BaseXP > 0)
+                        if (exclude0XPMobs == true)
+                        {
+                            if (xp.BaseXP > 0)
+                                mobXPStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
+                        }
+                        else
+                        {
                             mobXPStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
+                        }
                     }
                 }
 
@@ -316,16 +331,25 @@ namespace WaywardGamers.KParser.Plugin
                                  select new
                                  {
                                      Name = b.CombatantsRowByEnemyCombatantRelation.CombatantName,
-                                     Battle = b.BattleID
+                                     Battle = b.BattleID,
+                                     XP = b.BaseExperience()
                                  };
 
                 List<string> mobXPStrings = new List<string>();
                 mobXPStrings.Add("All");
 
+
                 foreach (var mob in mobsKilled)
                 {
-                    mobXPStrings.Add(string.Format("{0,3}: {1}", mob.Battle,
-                            mob.Name));
+                    if (exclude0XPMobs == true)
+                    {
+                        if (mob.XP > 0)
+                            mobXPStrings.Add(string.Format("{0,3}: {1}", mob.Battle, mob.Name));
+                    }
+                    else
+                    {
+                        mobXPStrings.Add(string.Format("{0,3}: {1}", mob.Battle, mob.Name));
+                    }
                 }
 
                 mobsCombo.CBAddStrings(mobXPStrings.ToArray());
