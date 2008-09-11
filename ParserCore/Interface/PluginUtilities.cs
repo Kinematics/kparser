@@ -94,7 +94,8 @@ namespace WaywardGamers.KParser.Plugin
         /// UI-thread-safe means of selecting an index in a ToolStripComboBox.
         /// </summary>
         /// <param name="combo"></param>
-        /// <param name="index"></param>
+        /// <param name="index">The new index value to select.  A value of -1 selects
+        /// the last entry in the list.</param>
         public static void CBSelectIndex(this ToolStripComboBox combo, int index)
         {
             if (combo.ComboBox.InvokeRequired)
