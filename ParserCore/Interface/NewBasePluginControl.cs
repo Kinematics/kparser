@@ -186,14 +186,16 @@ namespace WaywardGamers.KParser.Plugin
 
         protected void PushStrings(StringBuilder sb, List<StringMods> strModList)
         {
+            int start = richTextBox.Text.Length;
+
             richTextBox.AppendText(sb.ToString());
-            richTextBox.Select(0, sb.Length);
+            richTextBox.Select(start, sb.Length);
             richTextBox.SelectionFont = normFont;
             richTextBox.SelectionColor = Color.Black;
 
             foreach (var strMod in strModList)
             {
-                richTextBox.Select(strMod.Start, strMod.Length);
+                richTextBox.Select(strMod.Start + start, strMod.Length);
 
                 if ((strMod.Bold == true) && (strMod.Underline == true))
                 {
