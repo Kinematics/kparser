@@ -4,6 +4,17 @@ KParser Change Log
 * Rewrite of base class for plugins to somewhat simplify coding (though more work needed for customization of controls).
 * Allow setting default save directory.
 
+---------------------------------------
+
+1.0.13.1
+- Fix issue of error on empty list in Thief plugin.
+
+
+1.0.13
++ Add new weaponskill names.
+- Bug fixes for Chat and OffenseDetails plugin.
+- Adjust crit threshold calculation for Thief plugin.
++ Add solo weaponskill data to Thief plugin.
 
 
 1.0.12
