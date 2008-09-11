@@ -16,8 +16,10 @@ namespace WaywardGamers.KParser.Plugin
         string debuffHeader = "Debuff              Used on                 # Times   # Successful   # No Effect   % Successful\n";
 
         bool flagNoUpdate = false;
+        bool groupMobs = true;
         ToolStripComboBox categoryCombo = new ToolStripComboBox();
         ToolStripComboBox mobsCombo = new ToolStripComboBox();
+        ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
 
         public EnfeeblePlugin()
         {
@@ -46,6 +48,15 @@ namespace WaywardGamers.KParser.Plugin
             mobsCombo.SelectedIndexChanged += new EventHandler(this.mobsCombo_SelectedIndexChanged);
             toolStrip.Items.Add(mobsCombo);
 
+            optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            optionsMenu.Text = "Options";
+            ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
+            groupMobsOption.Text = "Group Mobs";
+            groupMobsOption.CheckOnClick = true;
+            groupMobsOption.Checked = true;
+            groupMobsOption.Click += new EventHandler(groupMobs_Click);
+            optionsMenu.DropDownItems.Add(groupMobsOption);
+            toolStrip.Items.Add(optionsMenu);
         }
         #endregion
 
@@ -104,43 +115,79 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Private functions
+        private void UpdateMobList()
+        {
+            UpdateMobList(DatabaseManager.Instance.Database);
+            mobsCombo.CBSelectIndex(0);
+        }
+
         private void UpdateMobList(KPDatabaseDataSet dataSet)
         {
             mobsCombo.CBReset();
 
-            // Enemy group listing
+            // Group enemies check
 
-            var mobsKilled = from b in dataSet.Battles
-                             where ((b.DefaultBattle == false) &&
-                                    (b.IsEnemyIDNull() == false) &&
-                                    (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
-                             orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
-                             group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
-                             select new
-                             {
-                                 Name = bn.Key,
-                                 XP = from xb in bn
-                                      group xb by xb.MinBaseExperience() into xbn
-                                      orderby xbn.Key
-                                      select new { BaseXP = xbn.Key }
-                             };
-
-            List<string> mobXPStrings = new List<string>();
-            mobXPStrings.Add("All");
-
-            foreach (var mob in mobsKilled)
+            if (groupMobs == true)
             {
-                mobXPStrings.Add(mob.Name);
+                // Enemy group listing
 
-                foreach (var xp in mob.XP)
+                var mobsKilled = from b in dataSet.Battles
+                                 where ((b.DefaultBattle == false) &&
+                                        (b.IsEnemyIDNull() == false) &&
+                                        (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
+                                 orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
+                                 group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
+                                 select new
+                                 {
+                                     Name = bn.Key,
+                                     XP = from xb in bn
+                                          group xb by xb.MinBaseExperience() into xbn
+                                          orderby xbn.Key
+                                          select new { BaseXP = xbn.Key }
+                                 };
+
+                List<string> mobXPStrings = new List<string>();
+                mobXPStrings.Add("All");
+
+                foreach (var mob in mobsKilled)
                 {
-                    if (xp.BaseXP > 0)
-                        mobXPStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
+                    mobXPStrings.Add(mob.Name);
+
+                    foreach (var xp in mob.XP)
+                    {
+                        if (xp.BaseXP > 0)
+                            mobXPStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
+                    }
                 }
+
+                mobsCombo.CBAddStrings(mobXPStrings.ToArray());
             }
+            else
+            {
+                // Enemy battle listing
 
-            mobsCombo.CBAddStrings(mobXPStrings.ToArray());
+                var mobsKilled = from b in dataSet.Battles
+                                 where ((b.DefaultBattle == false) &&
+                                        (b.IsEnemyIDNull() == false) &&
+                                        ((EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.Mob))
+                                 orderby b.BattleID
+                                 select new
+                                 {
+                                     Name = b.CombatantsRowByEnemyCombatantRelation.CombatantName,
+                                     Battle = b.BattleID
+                                 };
 
+                List<string> mobXPStrings = new List<string>();
+                mobXPStrings.Add("All");
+
+                foreach (var mob in mobsKilled)
+                {
+                    mobXPStrings.Add(string.Format("{0,3}: {1}", mob.Battle,
+                            mob.Name));
+                }
+
+                mobsCombo.CBAddStrings(mobXPStrings.ToArray());
+            }
         }
         #endregion
 
@@ -180,19 +227,7 @@ namespace WaywardGamers.KParser.Plugin
                                               DebuffName = ba.Key,
                                               DebuffTargets = from bt in ba
                                                               where (bt.IsTargetIDNull() == false &&
-                                                                  // all mobs if mobFilter == All
-                                                                     ((mobFilter.MobName == "All") ||
-                                                                  // else make sure mob name matches and
-                                                                      (bt.CombatantsRowByTargetCombatantRelation.CombatantName == mobFilter.MobName &&
-                                                                  // either no xp requirement
-                                                                       (mobFilter.MobXP == 0 ||
-                                                                  // or there's a battle entry and it has the specified XP amount
-                                                                        (bt.IsBattleIDNull() == false &&
-                                                                         bt.BattlesRow.MinBaseExperience() == mobFilter.MobXP)
-                                                                       )
-                                                                      )
-                                                                     )
-                                                                    )
+                                                                     mobFilter.CheckFilterMobTarget(bt))
                                                               group bt by bt.CombatantsRowByTargetCombatantRelation.CombatantName into btn
                                                               orderby btn.Key
                                                               select new DebuffTargets
@@ -209,12 +244,7 @@ namespace WaywardGamers.KParser.Plugin
                 // Process debuffs used by mobs
 
                 debuffSet = from c in dataSet.Combatants
-                            where (c.CombatantType == (byte)EntityType.Mob &&
-                                // all mobs if mobFilter == All
-                                   (mobFilter.MobName == "All" ||
-                                // else make sure mob name matches and
-                                    c.CombatantName == mobFilter.MobName)
-                                  )
+                            where c.CombatantType == (byte)EntityType.Mob
                             orderby c.CombatantType, c.CombatantName
                             select new DebuffGroup
                             {
@@ -225,12 +255,7 @@ namespace WaywardGamers.KParser.Plugin
                                                  b.HarmType == (byte)HarmType.Unknown) &&
                                                  b.Preparing == false &&
                                                  b.IsActionIDNull() == false) &&
-                                              // either no xp requirement
-                                                (mobFilter.MobXP == 0 ||
-                                              // or there's a battle entry and it has the specified XP amount
-                                                 (b.IsBattleIDNull() == false &&
-                                                  b.BattlesRow.MinBaseExperience() == mobFilter.MobXP)
-                                                )
+                                                 mobFilter.CheckFilterMobActor(b)
                                           group b by b.ActionsRow.ActionName into ba
                                           orderby ba.Key
                                           select new Debuffs
@@ -377,6 +402,25 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (flagNoUpdate == false)
                 HandleDataset(DatabaseManager.Instance.Database);
+
+            flagNoUpdate = false;
+        }
+
+        protected void groupMobs_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            groupMobs = sentBy.Checked;
+
+            if (flagNoUpdate == false)
+            {
+                flagNoUpdate = true;
+                UpdateMobList();
+
+                HandleDataset(DatabaseManager.Instance.Database);
+            }
 
             flagNoUpdate = false;
         }
