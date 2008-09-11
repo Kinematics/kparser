@@ -143,6 +143,16 @@ namespace WaywardGamers.KParser
             }
         }
 
+        private void getSaveDirectory_Click(object sender, EventArgs e)
+        {
+            folderBrowserDialog.SelectedPath = windowSettings.DefaultParseSaveDirectory;
+
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                defaultSaveDirectory.Text = folderBrowserDialog.SelectedPath;
+            }
+        }
+
         private void editMemoryAddress_CheckedChanged(object sender, EventArgs e)
         {
             memoryOffsetAddress.ReadOnly = !(editMemoryAddress.Checked);
@@ -226,6 +236,8 @@ namespace WaywardGamers.KParser
                     coreSettings.ParseExistingLogs = this.ParseExistingLogs;
 
                     coreSettings.DebugMode = this.debugMode.Checked;
+
+                    windowSettings.DefaultParseSaveDirectory = defaultSaveDirectory.Text;
                 }
             }
         }
@@ -239,6 +251,7 @@ namespace WaywardGamers.KParser
                 if (this.DialogResult == DialogResult.OK)
                 {
                     coreSettings.Save();
+                    windowSettings.Save();
                 }
             }
         }
@@ -256,6 +269,8 @@ namespace WaywardGamers.KParser
             specifyPID.Checked = coreSettings.SpecifyPID;
 
             debugMode.Checked = coreSettings.DebugMode;
+
+            defaultSaveDirectory.Text = windowSettings.DefaultParseSaveDirectory;
         }
 
         private void SetEnabledFields()
