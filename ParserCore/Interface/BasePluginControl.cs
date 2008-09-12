@@ -225,6 +225,7 @@ namespace WaywardGamers.KParser.Plugin
         protected string[] GetMobListing(KPDatabaseDataSet dataSet, bool groupMobs, bool exclude0XPMobs)
         {
             List<string> mobStrings = new List<string>();
+            mobStrings.Add("All");
 
             // Group enemies check
 
@@ -246,8 +247,6 @@ namespace WaywardGamers.KParser.Plugin
                                           orderby xbn.Key
                                           select new { BaseXP = xbn.Key }
                                  };
-
-                mobStrings.Add("All");
 
                 foreach (var mob in mobsKilled)
                 {
@@ -293,8 +292,6 @@ namespace WaywardGamers.KParser.Plugin
                                      Battle = b.BattleID,
                                      XP = b.BaseExperience()
                                  };
-
-                mobStrings.Add("All");
 
                 foreach (var mob in mobsKilled)
                 {
