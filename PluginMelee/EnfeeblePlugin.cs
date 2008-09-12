@@ -17,6 +17,7 @@ namespace WaywardGamers.KParser.Plugin
 
         bool flagNoUpdate = false;
         bool groupMobs = true;
+        bool exclude0XPMobs = false;
         ToolStripComboBox categoryCombo = new ToolStripComboBox();
         ToolStripComboBox mobsCombo = new ToolStripComboBox();
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
@@ -50,12 +51,21 @@ namespace WaywardGamers.KParser.Plugin
 
             optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
             optionsMenu.Text = "Options";
+
             ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
             groupMobsOption.Text = "Group Mobs";
             groupMobsOption.CheckOnClick = true;
             groupMobsOption.Checked = true;
             groupMobsOption.Click += new EventHandler(groupMobs_Click);
             optionsMenu.DropDownItems.Add(groupMobsOption);
+
+            ToolStripMenuItem exclude0XPOption = new ToolStripMenuItem();
+            exclude0XPOption.Text = "Exclude 0 XP Mobs";
+            exclude0XPOption.CheckOnClick = true;
+            exclude0XPOption.Checked = false;
+            exclude0XPOption.Click += new EventHandler(exclude0XPMobs_Click);
+            optionsMenu.DropDownItems.Add(exclude0XPOption);
+
             toolStrip.Items.Add(optionsMenu);
         }
         #endregion
@@ -124,7 +134,7 @@ namespace WaywardGamers.KParser.Plugin
         private void UpdateMobList(KPDatabaseDataSet dataSet)
         {
             mobsCombo.CBReset();
-            mobsCombo.CBAddStrings(GetMobListing(dataSet, groupMobs, false));
+            mobsCombo.CBAddStrings(GetMobListing(dataSet, groupMobs, exclude0XPMobs));
         }
         #endregion
 
@@ -361,6 +371,26 @@ namespace WaywardGamers.KParser.Plugin
 
             flagNoUpdate = false;
         }
+
+        protected void exclude0XPMobs_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            exclude0XPMobs = sentBy.Checked;
+
+            if (flagNoUpdate == false)
+            {
+                flagNoUpdate = true;
+                UpdateMobList();
+
+                HandleDataset(DatabaseManager.Instance.Database);
+            }
+
+            flagNoUpdate = false;
+        }
+
         #endregion
     }
 }

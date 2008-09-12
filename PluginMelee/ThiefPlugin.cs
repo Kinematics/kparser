@@ -55,7 +55,7 @@ namespace WaywardGamers.KParser.Plugin
 
         #region Member variables
         bool groupMobs = false;
-        bool groupMobsChanged = false;
+        bool exclude0XPMobs = false;
         bool flagNoUpdate = false;
 
         HashSet<SATATypes> SASet = new HashSet<SATATypes> { SATATypes.SneakAttack };
@@ -102,12 +102,21 @@ namespace WaywardGamers.KParser.Plugin
 
             optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
             optionsMenu.Text = "Options";
+
             ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
             groupMobsOption.Text = "Group Mobs";
             groupMobsOption.CheckOnClick = true;
             groupMobsOption.Checked = false;
             groupMobsOption.Click += new EventHandler(groupMobs_Click);
             optionsMenu.DropDownItems.Add(groupMobsOption);
+
+            ToolStripMenuItem exclude0XPOption = new ToolStripMenuItem();
+            exclude0XPOption.Text = "Exclude 0 XP Mobs";
+            exclude0XPOption.CheckOnClick = true;
+            exclude0XPOption.Checked = false;
+            exclude0XPOption.Click += new EventHandler(exclude0XPMobs_Click);
+            optionsMenu.DropDownItems.Add(exclude0XPOption);
+
             toolStrip.Items.Add(optionsMenu);
         }
         #endregion
@@ -221,14 +230,20 @@ namespace WaywardGamers.KParser.Plugin
             playersCombo.CBAddStrings(playerStrings.ToArray());
         }
 
+        private void UpdateMobList()
+        {
+            UpdateMobList(DatabaseManager.Instance.Database, false);
+            mobsCombo.CBSelectIndex(0);
+        }
+
         private void UpdateMobList(KPDatabaseDataSet dataSet, bool overrideGrouping)
         {
             mobsCombo.CBReset();
 
             if (overrideGrouping == false)
-                mobsCombo.CBAddStrings(GetMobListing(dataSet, groupMobs, false));
+                mobsCombo.CBAddStrings(GetMobListing(dataSet, groupMobs, exclude0XPMobs));
             else
-                mobsCombo.CBAddStrings(GetMobListing(dataSet, false, false));
+                mobsCombo.CBAddStrings(GetMobListing(dataSet, false, exclude0XPMobs));
         }
         #endregion
 
@@ -245,16 +260,6 @@ namespace WaywardGamers.KParser.Plugin
 
             if (mobsCombo.Items.Count == 0)
                 return;
-
-            if (groupMobsChanged == true)
-            {
-                groupMobsChanged = false;
-                UpdateMobList(dataSet, false);
-                flagNoUpdate = true;
-                mobsCombo.CBSelectIndex(0);
-                flagNoUpdate = false;
-            }
-
 
             string selectedPlayer = playersCombo.CBSelectedItem();
             string selectedMob = mobsCombo.CBSelectedItem();
@@ -804,16 +809,38 @@ namespace WaywardGamers.KParser.Plugin
             if (sentBy == null)
                 return;
 
-            groupMobsChanged = true;
             groupMobs = sentBy.Checked;
 
             if (flagNoUpdate == false)
             {
+                flagNoUpdate = true;
+                UpdateMobList();
+
                 HandleDataset(DatabaseManager.Instance.Database);
             }
 
             flagNoUpdate = false;
         }
+
+        protected void exclude0XPMobs_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            exclude0XPMobs = sentBy.Checked;
+
+            if (flagNoUpdate == false)
+            {
+                flagNoUpdate = true;
+                UpdateMobList();
+
+                HandleDataset(DatabaseManager.Instance.Database);
+            }
+
+            flagNoUpdate = false;
+        }
+
         #endregion
     }
 }
