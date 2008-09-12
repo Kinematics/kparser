@@ -49,12 +49,16 @@ namespace WaywardGamers.KParser.Plugin
 
         public void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
-            throw new NotImplementedException();
+            KPDatabaseDataSet dataSet;
+            if (FilterOnDatabaseChanging(e, out dataSet))
+                HandleDataset(dataSet);
         }
 
         public void WatchDatabaseChanged(object sender, DatabaseWatchEventArgs e)
         {
-            throw new NotImplementedException();
+            KPDatabaseDataSet dataSet;
+            if (FilterOnDatabaseChanged(e, out dataSet))
+                HandleDataset(dataSet);
         }
 
         public virtual void DatabaseOpened(KPDatabaseDataSet dataSet)
