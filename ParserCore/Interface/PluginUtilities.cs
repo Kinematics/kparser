@@ -55,7 +55,7 @@ namespace WaywardGamers.KParser.Plugin
             if (combo.ComboBox.InvokeRequired)
             {
                 Action<ToolStripComboBox, string[]> thisFunc = CBAddStrings;
-                combo.ComboBox.Invoke(thisFunc, new object[] { strings });
+                combo.ComboBox.Invoke(thisFunc, new object[] { combo, strings });
                 return;
             }
 
@@ -78,7 +78,7 @@ namespace WaywardGamers.KParser.Plugin
             if (combo.ComboBox.InvokeRequired)
             {
                 Func<ToolStripComboBox, string[]> thisFunc = CBGetStrings;
-                return (string[])combo.ComboBox.Invoke(thisFunc);
+                return (string[])combo.ComboBox.Invoke(thisFunc, new object[] { combo });
             }
 
             string[] stringList = new string[combo.Items.Count];
@@ -101,7 +101,7 @@ namespace WaywardGamers.KParser.Plugin
             if (combo.ComboBox.InvokeRequired)
             {
                 Action<ToolStripComboBox, int> thisFunc = CBSelectIndex;
-                combo.ComboBox.Invoke(thisFunc, new object[] { index });
+                combo.ComboBox.Invoke(thisFunc, new object[] { combo, index });
                 return;
             }
 
@@ -122,7 +122,7 @@ namespace WaywardGamers.KParser.Plugin
             if (combo.ComboBox.InvokeRequired)
             {
                 Action<ToolStripComboBox, string> thisFunc = CBSelectItem;
-                combo.ComboBox.Invoke(thisFunc, new object[] { name });
+                combo.ComboBox.Invoke(thisFunc, new object[] { combo, name });
                 return;
             }
 
@@ -143,7 +143,7 @@ namespace WaywardGamers.KParser.Plugin
             if (combo.ComboBox.InvokeRequired)
             {
                 Func<ToolStripComboBox, int> thisFunc = CBSelectedIndex;
-                return (int)combo.ComboBox.Invoke(thisFunc);
+                return (int)combo.ComboBox.Invoke(thisFunc, new object[] { combo });
             }
 
             return combo.SelectedIndex;
@@ -159,7 +159,7 @@ namespace WaywardGamers.KParser.Plugin
             if (combo.ComboBox.InvokeRequired)
             {
                 Func<ToolStripComboBox, string> thisFunc = CBSelectedItem;
-                return (string)combo.ComboBox.Invoke(thisFunc);
+                return (string)combo.ComboBox.Invoke(thisFunc, new object[] { combo });
             }
 
             if (combo.SelectedIndex >= 0)
@@ -181,7 +181,7 @@ namespace WaywardGamers.KParser.Plugin
             if (combo.ComboBox.InvokeRequired)
             {
                 Func<ToolStripComboBox, MobFilter> thisFunc = CBGetMobFilter;
-                return (MobFilter)combo.ComboBox.Invoke(thisFunc);
+                return (MobFilter)combo.ComboBox.Invoke(thisFunc, new object[] { combo });
             }
 
             MobFilter filter = new MobFilter { AllMobs = true, GroupMobs = false, FightNumber = 0, MobName = "", MobXP = -1 };
