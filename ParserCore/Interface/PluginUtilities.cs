@@ -38,7 +38,7 @@ namespace WaywardGamers.KParser.Plugin
             if (combo.ComboBox.InvokeRequired)
             {
                 Action<ToolStripComboBox> thisFunc = CBReset;
-                combo.ComboBox.Invoke(thisFunc);
+                combo.ComboBox.Invoke(thisFunc, new object[] { combo });
                 return;
             }
 
