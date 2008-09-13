@@ -819,10 +819,26 @@ namespace WaywardGamers.KParser
 
                     if (activeMobBattleList.TryGetValue(message.EventDetails.CombatDetails.ActorName, out battle) == false)
                     {
-                        battle = localDB.Battles.AddBattlesRow(actor, message.Timestamp,
-                            MagicNumbers.MinSQLDateTime, false, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
+                        // First check the last finished battle.  It's possible a message at the end of the fight
+                        // came out-of-order.  If the last finished battle ended within 1 second of the current
+                        // message (and it's for the same mob), add it to that battle.
+                        if (lastFinishedBattle != null)
+                        {
+                            if ((lastFinishedBattle.CombatantsRowByEnemyCombatantRelation.CombatantName ==
+                                message.EventDetails.CombatDetails.ActorName) &&
+                                (lastFinishedBattle.EndTime.AddSeconds(2) >= message.Timestamp))
+                            {
+                                battle = lastFinishedBattle;
+                            }
+                        }
 
-                        activeMobBattleList[message.EventDetails.CombatDetails.ActorName] = battle;
+                        if (battle == null)
+                        {
+                            battle = localDB.Battles.AddBattlesRow(actor, message.Timestamp,
+                                MagicNumbers.MinSQLDateTime, false, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
+
+                            activeMobBattleList[message.EventDetails.CombatDetails.ActorName] = battle;
+                        }
                     }
                 }
                 else
@@ -842,10 +858,26 @@ namespace WaywardGamers.KParser
                     // considered the start of a new battle.
                     if (activeMobBattleList.TryGetValue(message.EventDetails.CombatDetails.ActorName, out battle) == false)
                     {
-                        battle = localDB.Battles.AddBattlesRow(actor, message.Timestamp,
-                            MagicNumbers.MinSQLDateTime, false, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
+                        // First check the last finished battle.  It's possible a message at the end of the fight
+                        // came out-of-order.  If the last finished battle ended within 1 second of the current
+                        // message (and it's for the same mob), add it to that battle.
+                        if (lastFinishedBattle != null)
+                        {
+                            if ((lastFinishedBattle.CombatantsRowByEnemyCombatantRelation.CombatantName ==
+                                message.EventDetails.CombatDetails.ActorName) &&
+                                (lastFinishedBattle.EndTime.AddSeconds(2) >= message.Timestamp))
+                            {
+                                battle = lastFinishedBattle;
+                            }
+                        }
 
-                        activeMobBattleList[message.EventDetails.CombatDetails.ActorName] = battle;
+                        if (battle == null)
+                        {
+                            battle = localDB.Battles.AddBattlesRow(actor, message.Timestamp,
+                                MagicNumbers.MinSQLDateTime, false, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
+
+                            activeMobBattleList[message.EventDetails.CombatDetails.ActorName] = battle;
+                        }
                     }
                 }
                 else if (actor == null)
@@ -856,7 +888,7 @@ namespace WaywardGamers.KParser
                 }
             }
 
-            if (battle != null)
+            if ((battle != null) && (battle != lastFinishedBattle))
             {
                 // Update the most recent activity record for this fight.
                 lock (activeBattleList)
@@ -1108,13 +1140,30 @@ namespace WaywardGamers.KParser
                         // Otherwise get the actor's battle
                         if (activeMobBattleList.TryGetValue(actor.CombatantName, out battle) == false)
                         {
-                            // If they're not in the active battle list, create a new one.
-                            battle = localDB.Battles.AddBattlesRow(actor, message.Timestamp,
-                                MagicNumbers.MinSQLDateTime, false, null, 0, 0, 0,
-                                (byte)MobDifficulty.Unknown, false);
+                            // First check the last finished battle.  It's possible a message at the end of the fight
+                            // came out-of-order.  If the last finished battle ended within 1 second of the current
+                            // message (and it's for the same mob), add it to that battle.
+                            if (lastFinishedBattle != null)
+                            {
+                                if ((lastFinishedBattle.CombatantsRowByEnemyCombatantRelation.CombatantName ==
+                                    message.EventDetails.CombatDetails.ActorName) &&
+                                    (lastFinishedBattle.EndTime.AddSeconds(2) >= message.Timestamp))
+                                {
+                                    battle = lastFinishedBattle;
+                                }
+                            }
 
-                            activeMobBattleList.Add(actor.CombatantName, battle);
-                            activeBattleList.Add(battle, message.Timestamp);
+
+                            // If they're not in the active battle list, create a new one.
+                            if (battle == null)
+                            {
+                                battle = localDB.Battles.AddBattlesRow(actor, message.Timestamp,
+                                    MagicNumbers.MinSQLDateTime, false, null, 0, 0, 0,
+                                    (byte)MobDifficulty.Unknown, false);
+
+                                activeMobBattleList.Add(actor.CombatantName, battle);
+                                activeBattleList.Add(battle, message.Timestamp);
+                            }
                         }
                     }
                 }
