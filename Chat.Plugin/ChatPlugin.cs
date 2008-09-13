@@ -76,16 +76,19 @@ namespace WaywardGamers.KParser.Plugin
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
         {
-            if (e.DatasetChanges.ChatSpeakers.Count != 0)
+            if (e.DatasetChanges.ChatSpeakers != null)
             {
-                string currentSelection = speakerCombo.CBSelectedItem();
-                flagNoUpdate = true;
-                UpdateSpeakerList(e.DatasetChanges);
-                flagNoUpdate = true;
-                speakerCombo.CBSelectItem(currentSelection);
+                if (e.DatasetChanges.ChatSpeakers.Count != 0)
+                {
+                    string currentSelection = speakerCombo.CBSelectedItem();
+                    flagNoUpdate = true;
+                    UpdateSpeakerList(e.DatasetChanges);
+                    flagNoUpdate = true;
+                    speakerCombo.CBSelectItem(currentSelection);
 
-                datasetToUse = e.DatasetChanges;
-                return true;
+                    datasetToUse = e.DatasetChanges;
+                    return true;
+                }
             }
 
             if (e.DatasetChanges.ChatMessages.Count != 0)
@@ -184,6 +187,12 @@ namespace WaywardGamers.KParser.Plugin
         /// <param name="dataSet">Dataset with possibly new speakers to add to the list.</param>
         private void UpdateSpeakerList(KPDatabaseDataSet dataSet)
         {
+            if (dataSet.ChatSpeakers == null)
+                return;
+
+            if (dataSet.ChatSpeakers.Count == 0)
+                return;
+
             string[] currentSpeakerList = speakerCombo.CBGetStrings();
             string[] newSpeakerList = dataSet.ChatSpeakers.OrderBy(s => s.SpeakerName).Select(s => s.SpeakerName).ToArray();
 
