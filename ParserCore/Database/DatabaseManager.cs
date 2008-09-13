@@ -886,6 +886,13 @@ namespace WaywardGamers.KParser
                     // Place in most recent battle.
                     battle = MostRecentActiveBattle();
                 }
+                else if ((message.EventDetails.CombatDetails.ActorEntityType == EntityType.Player) &&
+                    (message.EventDetails.CombatDetails.Targets.Any(t => t.EntityType == EntityType.Player)))
+                {
+                    // Buffs/Cures/etc where actor and target are both players should be
+                    // put in the most recent active battle.
+                    battle = MostRecentActiveBattle();
+                }
             }
 
             if ((battle != null) && (battle != lastFinishedBattle))
