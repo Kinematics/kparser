@@ -634,13 +634,10 @@ namespace WaywardGamers.KParser.Plugin
             int numShadsN;
             double effNorm;
             double effNin;
-
+            bool headerDisplayed = false;
 
             if (utsuByPlayer.Count() > 0)
             {
-                AppendText("Utsusemi\n\n", Color.Red, true, false);
-                AppendText(utsuHeader, Color.Black, true, true);
-
                 StringBuilder sb = new StringBuilder();
 
                 foreach (var player in utsuByPlayer)
@@ -680,6 +677,14 @@ namespace WaywardGamers.KParser.Plugin
 
                     if ((numShads + shadsUsed + ichiCast + niCast) > 0)
                     {
+                        if (headerDisplayed == false)
+                        {
+                            AppendText("Utsusemi\n\n", Color.Red, true, false);
+                            AppendText(utsuHeader, Color.Black, true, true);
+
+                            headerDisplayed = true;
+                        }
+
                         sb.Append(player.Player.PadRight(16));
                         sb.Append(" ");
 
