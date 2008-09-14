@@ -8,6 +8,25 @@ namespace WaywardGamers.KParser.Plugin
 {
     public class UnparsedPlugin : BasePluginControl
     {
+        #region Constructor
+        public UnparsedPlugin()
+        {
+            toolStrip.Enabled = false;
+            toolStrip.Visible = false;
+
+            richTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left |
+                System.Windows.Forms.AnchorStyles.Right |
+                System.Windows.Forms.AnchorStyles.Bottom;
+            richTextBox.Top -= toolStrip.Height;
+            richTextBox.Height += toolStrip.Height;
+            richTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top |
+                System.Windows.Forms.AnchorStyles.Left |
+                System.Windows.Forms.AnchorStyles.Right |
+                System.Windows.Forms.AnchorStyles.Bottom;
+        }
+        #endregion
+
+        #region IPlugin Overrides
         public override string TabName
         {
             get { return "Unparsed Data"; }
@@ -34,33 +53,34 @@ namespace WaywardGamers.KParser.Plugin
 
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
+            StringBuilder sb = new StringBuilder();
+            List<StringMods> strModList = new List<StringMods>();
+            int start;
+
             if (dataSet.Tables.Contains("RecordLog"))
             {
                 foreach (var row in dataSet.RecordLog)
                 {
                     if (row.ParseSuccessful == false)
                     {
-                        int startPos;
-                        int endPos;
 
-                        string timestampMsg = string.Format("[{0}]", row.Timestamp.ToLongTimeString());
+                        start = sb.Length;
+                        sb.AppendFormat("[{0}] ", row.Timestamp.ToLongTimeString());
 
-                        startPos = richTextBox.Text.Length;
-                        endPos = startPos + timestampMsg.Length;
+                        strModList.Add(new StringMods
+                        {
+                            Start = start,
+                            Length = sb.Length - start,
+                            Color = Color.Purple
+                        });
 
-                        richTextBox.AppendText(string.Format("{0} ", timestampMsg));
-                        richTextBox.Select(startPos, endPos);
-                        richTextBox.SelectionColor = Color.Purple;
-
-                        startPos = richTextBox.Text.Length;
-                        endPos = startPos + row.MessageText.Length;
-
-                        richTextBox.AppendText(string.Format("{0}\n", row.MessageText));
-                        richTextBox.Select(startPos, endPos);
-                        richTextBox.SelectionColor = Color.Black;
+                        sb.AppendFormat("{0}\n", row.MessageText);
                     }
                 }
+
+                PushStrings(sb, strModList);
             }
         }
+        #endregion
     }
 }

@@ -5,13 +5,86 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Data;
 using System.Drawing;
+using System.Windows.Forms;
 using WaywardGamers.KParser;
-using System.Diagnostics;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class DefensePlugin : BasePluginControlWithDropdown
+    public class DefensePlugin : BasePluginControl
     {
+        #region Constructor
+
+        #region Member Variables
+        Dictionary<string, int> playerDamage = new Dictionary<string, int>();
+
+        string incAttacksHeader = "Player           Melee   Range   Abil/Ws   Spells   Unknown   Total   Attack# %   Avoided   Avoid %\n";
+        string incDamageHeader = "Player           M.Dmg   Avg M.Dmg   R.Dmg  Avg R.Dmg   S.Dmg  Avg S.Dmg   A/WS.Dmg  Avg A/WS.Dmg   Damage %\n";
+        string standardDefHeader = "Player           M.Evade  M.Evade %   R.Evade  R.Evade %   Shadow  Shadow %   Parry  Parry %\n";
+        string otherDefHeader = "Player           Intimidate  Intimidate %   Anticipate  Anticipate %   Counter  Counter %   Retaliate  Retaliate %\n";
+
+        string utsuHeader = "Player           Shadows Used   Ichi Cast  Ichi Fin  Ni Cast  Ni Fin   Count  Count(N)  Efficiency  Effic.(N)\n";
+
+        bool flagNoUpdate;
+        bool groupMobs = true;
+        bool exclude0XPMobs = false;
+        ToolStripComboBox categoryCombo = new ToolStripComboBox();
+        ToolStripComboBox mobsCombo = new ToolStripComboBox();
+        ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
+        #endregion
+
+        public DefensePlugin()
+        {
+            ToolStripLabel catLabel = new ToolStripLabel();
+            catLabel.Text = "Category:";
+            toolStrip.Items.Add(catLabel);
+
+            categoryCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            categoryCombo.Items.Add("All");
+            categoryCombo.Items.Add("Attacks");
+            categoryCombo.Items.Add("Damage");
+            categoryCombo.Items.Add("Evasion");
+            categoryCombo.Items.Add("Other Defense");
+            categoryCombo.Items.Add("Utsusemi");
+            categoryCombo.SelectedIndex = 0;
+            categoryCombo.SelectedIndexChanged += new EventHandler(this.categoryCombo_SelectedIndexChanged);
+            toolStrip.Items.Add(categoryCombo);
+
+
+            ToolStripLabel mobsLabel = new ToolStripLabel();
+            mobsLabel.Text = "Mobs:";
+            toolStrip.Items.Add(mobsLabel);
+
+            mobsCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            mobsCombo.AutoSize = false;
+            mobsCombo.Width = 175;
+            mobsCombo.Items.Add("All");
+            mobsCombo.MaxDropDownItems = 10;
+            mobsCombo.SelectedIndex = 0;
+            mobsCombo.SelectedIndexChanged += new EventHandler(this.mobsCombo_SelectedIndexChanged);
+            toolStrip.Items.Add(mobsCombo);
+
+
+            optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            optionsMenu.Text = "Options";
+
+            ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
+            groupMobsOption.Text = "Group Mobs";
+            groupMobsOption.CheckOnClick = true;
+            groupMobsOption.Checked = true;
+            groupMobsOption.Click += new EventHandler(groupMobs_Click);
+            optionsMenu.DropDownItems.Add(groupMobsOption);
+
+            ToolStripMenuItem exclude0XPOption = new ToolStripMenuItem();
+            exclude0XPOption.Text = "Exclude 0 XP Mobs";
+            exclude0XPOption.CheckOnClick = true;
+            exclude0XPOption.Checked = false;
+            exclude0XPOption.Click += new EventHandler(exclude0XPMobs_Click);
+            optionsMenu.DropDownItems.Add(exclude0XPOption);
+
+            toolStrip.Items.Add(optionsMenu);
+        }
+        #endregion
+
         #region IPlugin Overrides
         public override string TabName
         {
@@ -20,87 +93,14 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void Reset()
         {
-            richTextBox.Clear();
-            richTextBox.WordWrap = false;
-
-            label1.Text = "Category";
-            comboBox1.Left = label1.Right + 10;
-            comboBox1.Items.Clear();
-            comboBox1.Items.Add("All");
-            comboBox1.Items.Add("Attacks");
-            comboBox1.Items.Add("Damage");
-            comboBox1.Items.Add("Evasion");
-            comboBox1.Items.Add("Other Defense");
-            comboBox1.Items.Add("Utsusemi");
-            comboBox1.SelectedIndex = 0;
-
-            label2.Left = comboBox1.Right + 20;
-            label2.Text = "Mob Group";
-            comboBox2.Left = label2.Right + 10;
-            comboBox2.Width = 150;
-            comboBox2.Items.Clear();
-            comboBox2.Items.Add("All");
-            comboBox2.SelectedIndex = 0;
-
-            checkBox1.Enabled = false;
-            checkBox1.Visible = false;
-            checkBox2.Enabled = false;
-            checkBox2.Visible = false;
+            ResetTextBox();
         }
 
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
         {
-            ResetComboBox2();
-            AddStringToComboBox2("All");
-            ResetTextBox();
+            UpdateMobList(dataSet, false);
 
-            if (dataSet.Battles.Count > 1)
-            {
-                var mobsKilled = from b in dataSet.Battles
-                                 where ((b.DefaultBattle == false) &&
-                                        (b.IsEnemyIDNull() == false) &&
-                                        (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
-                                 orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
-                                 group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
-                                 select new
-                                 {
-                                     Name = bn.Key,
-                                     XP = from xb in bn
-                                          group xb by xb.MinBaseExperience() into xbn
-                                          orderby xbn.Key
-                                          select new { BaseXP = xbn.Key }
-                                 };
-
-                if (mobsKilled.Count() > 0)
-                {
-                    // Add to the Reset list
-
-                    string mobWithXP;
-
-                    foreach (var mob in mobsKilled)
-                    {
-                        AddStringToComboBox2(mob.Name);
-
-                        if (mob.XP.Count() > 1)
-                        {
-                            foreach (var xp in mob.XP)
-                            {
-                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP);
-
-                                AddStringToComboBox2(mobWithXP);
-
-                                // Check for existing entry with higher min base xp
-                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP + 1);
-
-                                if (comboBox2.Items.Contains(mobWithXP))
-                                    RemoveFromComboBox2(mobWithXP);
-                            }
-                        }
-                    }
-                }
-            }
-
-            InitComboBox2Selection();
+            mobsCombo.CBSelectIndex(0);
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
@@ -108,48 +108,11 @@ namespace WaywardGamers.KParser.Plugin
             // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
             if (e.DatasetChanges.Battles.Count > 0)
             {
-                var mobsFought = from b in e.DatasetChanges.Battles
-                                 where ((b.DefaultBattle == false) &&
-                                        (b.IsEnemyIDNull() == false) &&
-                                        (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
-                                 group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
-                                 select new
-                                 {
-                                     Name = bn.Key,
-                                     XP = from xb in bn
-                                          group xb by xb.MinBaseExperience() into xbn
-                                          orderby xbn.Key
-                                          select new { BaseXP = xbn.Key }
-                                 };
+                string selectedItem = mobsCombo.CBSelectedItem();
+                UpdateMobList(e.Dataset, true);
 
-
-                if (mobsFought.Count() > 0)
-                {
-                    string mobWithXP;
-
-                    foreach (var mob in mobsFought)
-                    {
-                        if (comboBox2.Items.Contains(mob.Name) == false)
-                            AddStringToComboBox2(mob.Name);
-
-                        foreach (var xp in mob.XP)
-                        {
-                            if (xp.BaseXP > 0)
-                            {
-                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP);
-
-                                if (comboBox2.Items.Contains(mobWithXP) == false)
-                                    AddStringToComboBox2(mobWithXP);
-
-                                // Check for existing entry with higher min base xp
-                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP + 1);
-
-                                if (comboBox2.Items.Contains(mobWithXP))
-                                    RemoveFromComboBox2(mobWithXP);
-                            }
-                        }
-                    }
-                }
+                flagNoUpdate = true;
+                mobsCombo.CBSelectItem(selectedItem);
             }
 
             if (e.DatasetChanges.Interactions.Count != 0)
@@ -163,246 +126,87 @@ namespace WaywardGamers.KParser.Plugin
         }
         #endregion
 
-        #region Member Variables
-        Dictionary<string, int> playerDamage = new Dictionary<string, int>();
 
-        string incAttacksHeader = "Player           Melee   Range   Abil/Ws   Spells   Unknown   Total   Attack# %   Avoided   Avoid %\n";
-        string incDamageHeader  = "Player           M.Dmg   Avg M.Dmg   R.Dmg  Avg R.Dmg   S.Dmg  Avg S.Dmg   A/WS.Dmg  Avg A/WS.Dmg   Damage %\n";
-        string standardDefHeader= "Player           M.Evade  M.Evade %   R.Evade  R.Evade %   Shadow  Shadow %   Parry  Parry %\n";
-        string otherDefHeader   = "Player           Intimidate  Intimidate %   Anticipate  Anticipate %   Counter  Counter %   Retaliate  Retaliate %\n";
+        #region Private Methods
+        private void UpdateMobList()
+        {
+            UpdateMobList(DatabaseManager.Instance.Database, false);
+            mobsCombo.CBSelectIndex(0);
+        }
 
-        string utsuHeader       = "Player           Shadows Used   Ichi Cast  Ichi Fin  Ni Cast  Ni Fin   Count  Count(N)  Efficiency  Effic.(N)\n";
+        private void UpdateMobList(KPDatabaseDataSet dataSet, bool overrideGrouping)
+        {
+            mobsCombo.CBReset();
+            mobsCombo.CBAddStrings(GetMobListing(dataSet, groupMobs, exclude0XPMobs));
+        }
         #endregion
 
         #region Processing sections
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
-            richTextBox.Clear();
+            ResetTextBox();
 
             IEnumerable<DefenseGroup> incAttacks;
-            //IEnumerable<MobGroup> mobSet = null;
+            MobFilter mobFilter = mobsCombo.CBGetMobFilter();
 
-            #region Filtering
-            string mobFilter;
-
-            if (comboBox2.SelectedIndex >= 0)
-                mobFilter = comboBox2.SelectedItem.ToString();
-            else
-                mobFilter = "All";
-
-            string mobName = "All";
-            int xp = 0;
-
-            if (mobFilter != "All")
-            {
-                Regex mobAndXP = new Regex(@"((?<mobName>.*(?<! \())) \(((?<xp>\d+)\))|(?<mobName>.*)");
-                Match mobAndXPMatch = mobAndXP.Match(mobFilter);
-
-                if (mobAndXPMatch.Success == true)
-                {
-                    mobName = mobAndXPMatch.Groups["mobName"].Value;
-
-                    if ((mobAndXPMatch.Groups["xp"] != null) && (mobAndXPMatch.Groups["xp"].Value != string.Empty))
-                    {
-                        xp = int.Parse(mobAndXPMatch.Groups["xp"].Value);
-                    }
-                }
-            }
-            #endregion
-
-            #region LINQ queries
-            if (mobFilter == "All")
-            {
-                // Attacks by all mobs
-
-                incAttacks = from c in dataSet.Combatants
-                             where ((c.CombatantType == (byte)EntityType.Player) ||
-                                   (c.CombatantType == (byte)EntityType.Pet) ||
-                                   (c.CombatantType == (byte)EntityType.Fellow))
-                             orderby c.CombatantType, c.CombatantName
-                             select new DefenseGroup
-                             {
-                                 Name = c.CombatantName,
-                                 AllAttacks = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                              where ((da.HarmType == (byte)HarmType.Damage) ||
-                                                     (da.HarmType == (byte)HarmType.Drain))
-                                              select da,
-                                 Melee = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                         where (((da.HarmType == (byte)HarmType.Damage) ||
+            #region LINQ query
+            incAttacks = from c in dataSet.Combatants
+                         where ((c.CombatantType == (byte)EntityType.Player) ||
+                               (c.CombatantType == (byte)EntityType.Pet) ||
+                               (c.CombatantType == (byte)EntityType.Fellow))
+                         orderby c.CombatantType, c.CombatantName
+                         select new DefenseGroup
+                         {
+                             Name = c.CombatantName,
+                             AllAttacks = from da in c.GetInteractionsRowsByTargetCombatantRelation()
+                                          where ((da.HarmType == (byte)HarmType.Damage) ||
                                                  (da.HarmType == (byte)HarmType.Drain)) &&
-                                                ((da.ActionType == (byte)ActionType.Melee) ||
-                                                 (da.ActionType == (byte)ActionType.Counterattack)))
-                                         select da,
-                                 Range = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                         where (((da.HarmType == (byte)HarmType.Damage) ||
-                                                 (da.HarmType == (byte)HarmType.Drain)) &&
-                                                (da.ActionType == (byte)ActionType.Ranged))
-                                         select da,
-                                 Abil = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                        where (((da.HarmType == (byte)HarmType.Damage) ||
-                                                (da.HarmType == (byte)HarmType.Drain)) &&
-                                               ((da.ActionType == (byte)ActionType.Ability) ||
-                                                (da.ActionType == (byte)ActionType.Weaponskill)))
-                                        select da,
-                                 Spell = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                         where (((da.HarmType == (byte)HarmType.Damage) ||
-                                                 (da.HarmType == (byte)HarmType.Drain)) &&
-                                                (da.ActionType == (byte)ActionType.Spell))
-                                         select da,
-                                 Unknown = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                           where (((da.HarmType == (byte)HarmType.Damage) ||
-                                                   (da.HarmType == (byte)HarmType.Drain)) &&
-                                                  (da.ActionType == (byte)ActionType.Unknown))
-                                           select da,
-                                 Retaliations = from da in c.GetInteractionsRowsByActorCombatantRelation()
-                                                where da.ActionType == (byte)ActionType.Retaliation
-                                                select da,
-                             };
-            }
-            else
-            {
-                if (xp > 0)
-                {
-                    // Attacks by a particular mob type of a given base xp
-
-                    incAttacks = from c in dataSet.Combatants
-                                 where ((c.CombatantType == (byte)EntityType.Player) ||
-                                       (c.CombatantType == (byte)EntityType.Pet) ||
-                                       (c.CombatantType == (byte)EntityType.Fellow))
-                                 orderby c.CombatantType, c.CombatantName
-                                 select new DefenseGroup
-                                 {
-                                     Name = c.CombatantName,
-                                     AllAttacks = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                                  where ((da.HarmType == (byte)HarmType.Damage) ||
-                                                         (da.HarmType == (byte)HarmType.Drain)) &&
-                                                        (da.IsActorIDNull() == false &&
-                                                         da.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
-                                                         da.IsBattleIDNull() == false &&
-                                                         da.BattlesRow.MinBaseExperience() == xp)
-                                                  select da,
-                                     Melee = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                             where (((da.HarmType == (byte)HarmType.Damage) ||
-                                                     (da.HarmType == (byte)HarmType.Drain)) &&
-                                                    ((da.ActionType == (byte)ActionType.Melee) ||
-                                                     (da.ActionType == (byte)ActionType.Counterattack))) &&
-                                                   (da.IsActorIDNull() == false &&
-                                                    da.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
-                                                    da.IsBattleIDNull() == false &&
-                                                    da.BattlesRow.MinBaseExperience() == xp)
-                                             select da,
-                                     Range = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                             where (((da.HarmType == (byte)HarmType.Damage) ||
-                                                     (da.HarmType == (byte)HarmType.Drain)) &&
-                                                    (da.ActionType == (byte)ActionType.Ranged)) &&
-                                                   (da.IsActorIDNull() == false &&
-                                                    da.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
-                                                    da.IsBattleIDNull() == false &&
-                                                    da.BattlesRow.MinBaseExperience() == xp)
-                                             select da,
-                                     Abil = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                            where (((da.HarmType == (byte)HarmType.Damage) ||
-                                                    (da.HarmType == (byte)HarmType.Drain)) &&
-                                                   ((da.ActionType == (byte)ActionType.Ability) ||
-                                                    (da.ActionType == (byte)ActionType.Weaponskill))) &&
-                                                   (da.IsActorIDNull() == false &&
-                                                    da.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
-                                                    da.IsBattleIDNull() == false &&
-                                                    da.BattlesRow.MinBaseExperience() == xp)
+                                                 mobFilter.CheckFilterMobActor(da) == true
+                                          select da,
+                             Melee = from da in c.GetInteractionsRowsByTargetCombatantRelation()
+                                     where (((da.HarmType == (byte)HarmType.Damage) ||
+                                             (da.HarmType == (byte)HarmType.Drain)) &&
+                                            ((da.ActionType == (byte)ActionType.Melee) ||
+                                             (da.ActionType == (byte)ActionType.Counterattack))) &&
+                                            mobFilter.CheckFilterMobActor(da) == true
+                                     select da,
+                             Range = from da in c.GetInteractionsRowsByTargetCombatantRelation()
+                                     where (((da.HarmType == (byte)HarmType.Damage) ||
+                                             (da.HarmType == (byte)HarmType.Drain)) &&
+                                            (da.ActionType == (byte)ActionType.Ranged)) &&
+                                            mobFilter.CheckFilterMobActor(da) == true
+                                     select da,
+                             Abil = from da in c.GetInteractionsRowsByTargetCombatantRelation()
+                                    where (((da.HarmType == (byte)HarmType.Damage) ||
+                                            (da.HarmType == (byte)HarmType.Drain)) &&
+                                           ((da.ActionType == (byte)ActionType.Ability) ||
+                                            (da.ActionType == (byte)ActionType.Weaponskill))) &&
+                                           mobFilter.CheckFilterMobActor(da) == true
+                                    select da,
+                             Spell = from da in c.GetInteractionsRowsByTargetCombatantRelation()
+                                     where (((da.HarmType == (byte)HarmType.Damage) ||
+                                             (da.HarmType == (byte)HarmType.Drain)) &&
+                                            (da.ActionType == (byte)ActionType.Spell)) &&
+                                            mobFilter.CheckFilterMobActor(da) == true
+                                     select da,
+                             Unknown = from da in c.GetInteractionsRowsByTargetCombatantRelation()
+                                       where (((da.HarmType == (byte)HarmType.Damage) ||
+                                               (da.HarmType == (byte)HarmType.Drain)) &&
+                                              (da.ActionType == (byte)ActionType.Unknown)) &&
+                                              mobFilter.CheckFilterMobActor(da) == true
+                                       select da,
+                             Retaliations = from da in c.GetInteractionsRowsByActorCombatantRelation()
+                                            where da.ActionType == (byte)ActionType.Retaliation &&
+                                                   mobFilter.CheckFilterMobActor(da) == true
                                             select da,
-                                     Spell = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                             where (((da.HarmType == (byte)HarmType.Damage) ||
-                                                     (da.HarmType == (byte)HarmType.Drain)) &&
-                                                    (da.ActionType == (byte)ActionType.Spell)) &&
-                                                   (da.IsActorIDNull() == false &&
-                                                    da.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
-                                                    da.IsBattleIDNull() == false &&
-                                                    da.BattlesRow.MinBaseExperience() == xp)
-                                             select da,
-                                     Unknown = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                               where (((da.HarmType == (byte)HarmType.Damage) ||
-                                                       (da.HarmType == (byte)HarmType.Drain)) &&
-                                                      (da.ActionType == (byte)ActionType.Unknown)) &&
-                                                     (da.IsActorIDNull() == false &&
-                                                      da.CombatantsRowByActorCombatantRelation.CombatantName == mobName &&
-                                                      da.IsBattleIDNull() == false &&
-                                                      da.BattlesRow.MinBaseExperience() == xp)
-                                               select da,
-                                     Retaliations = from da in c.GetInteractionsRowsByActorCombatantRelation()
-                                                    where da.ActionType == (byte)ActionType.Retaliation
-                                                    select da,
-                                 };
-                }
-                else
-                {
-                    // Attacks by a particular mob type
-
-
-                    incAttacks = from c in dataSet.Combatants
-                                 where ((c.CombatantType == (byte)EntityType.Player) ||
-                                       (c.CombatantType == (byte)EntityType.Pet) ||
-                                       (c.CombatantType == (byte)EntityType.Fellow))
-                                 orderby c.CombatantType, c.CombatantName
-                                 select new DefenseGroup
-                                 {
-                                     Name = c.CombatantName,
-                                     AllAttacks = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                                  where ((da.HarmType == (byte)HarmType.Damage) ||
-                                                         (da.HarmType == (byte)HarmType.Drain)) &&
-                                                         (da.IsActorIDNull() == false &&
-                                                          da.CombatantsRowByActorCombatantRelation.CombatantName == mobName)
-                                                  select da,
-                                     Melee = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                             where (((da.HarmType == (byte)HarmType.Damage) ||
-                                                     (da.HarmType == (byte)HarmType.Drain)) &&
-                                                    ((da.ActionType == (byte)ActionType.Melee) ||
-                                                     (da.ActionType == (byte)ActionType.Counterattack))) &&
-                                                   (da.IsActorIDNull() == false &&
-                                                    da.CombatantsRowByActorCombatantRelation.CombatantName == mobName)
-                                             select da,
-                                     Range = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                             where (((da.HarmType == (byte)HarmType.Damage) ||
-                                                     (da.HarmType == (byte)HarmType.Drain)) &&
-                                                    (da.ActionType == (byte)ActionType.Ranged)) &&
-                                                   (da.IsActorIDNull() == false &&
-                                                    da.CombatantsRowByActorCombatantRelation.CombatantName == mobName)
-                                             select da,
-                                     Abil = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                            where (((da.HarmType == (byte)HarmType.Damage) ||
-                                                    (da.HarmType == (byte)HarmType.Drain)) &&
-                                                   ((da.ActionType == (byte)ActionType.Ability) ||
-                                                    (da.ActionType == (byte)ActionType.Weaponskill))) &&
-                                                   (da.IsActorIDNull() == false &&
-                                                    da.CombatantsRowByActorCombatantRelation.CombatantName == mobName)
-                                            select da,
-                                     Spell = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                             where (((da.HarmType == (byte)HarmType.Damage) ||
-                                                     (da.HarmType == (byte)HarmType.Drain)) &&
-                                                    (da.ActionType == (byte)ActionType.Spell)) &&
-                                                   (da.IsActorIDNull() == false &&
-                                                    da.CombatantsRowByActorCombatantRelation.CombatantName == mobName)
-                                             select da,
-                                     Unknown = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                               where (((da.HarmType == (byte)HarmType.Damage) ||
-                                                       (da.HarmType == (byte)HarmType.Drain)) &&
-                                                      (da.ActionType == (byte)ActionType.Unknown)) &&
-                                                     (da.IsActorIDNull() == false &&
-                                                      da.CombatantsRowByActorCombatantRelation.CombatantName == mobName)
-                                               select da,
-                                     Retaliations = from da in c.GetInteractionsRowsByActorCombatantRelation()
-                                                    where da.ActionType == (byte)ActionType.Retaliation
-                                                    select da,
-                                 };
-
-                }
-            }
+                         };
             #endregion
 
             if ((incAttacks != null) && (incAttacks.Count() > 0))
             {
-                AppendBoldText("Defense\n\n", Color.Red);
+                AppendText("Defense\n\n", Color.Red, true, false);
 
-                switch (comboBox1.SelectedIndex)
+                switch (categoryCombo.CBSelectedIndex())
                 {
                     case 0:
                         // All
@@ -410,7 +214,7 @@ namespace WaywardGamers.KParser.Plugin
                         ProcessDefenseDamage(incAttacks);
                         ProcessDefenseStandard(incAttacks);
                         ProcessDefenseOther(incAttacks);
-                        ProcessUtsusemi(dataSet);
+                        ProcessUtsusemi(dataSet, mobFilter);
                         break;
                     case 1:
                         // Attacks
@@ -430,11 +234,11 @@ namespace WaywardGamers.KParser.Plugin
                         break;
                     case 5:
                         // Utsusemi
-                        ProcessUtsusemi(dataSet);
+                        ProcessUtsusemi(dataSet, mobFilter);
                         break;
                 }
 
-                AppendNormalText("\n");
+                AppendText("\n");
             }
         }
 
@@ -443,8 +247,8 @@ namespace WaywardGamers.KParser.Plugin
             if (incAttacks.Count() == 0)
                 return;
 
-            AppendBoldText("Attacks Against:\n", Color.Blue);
-            AppendBoldUnderText(incAttacksHeader, Color.Black);
+            AppendText("Attacks Against:\n", Color.Blue, true, false);
+            AppendText(incAttacksHeader, Color.Black, true, true);
 
             StringBuilder sb = new StringBuilder();
 
@@ -498,7 +302,7 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             sb.Append("\n\n");
-            AppendNormalText(sb.ToString());
+            AppendText(sb.ToString());
         }
 
         private void ProcessDefenseDamage(IEnumerable<DefenseGroup> incAttacks)
@@ -517,8 +321,8 @@ namespace WaywardGamers.KParser.Plugin
 
             if (totalDmg > 0)
             {
-                AppendBoldText("Damage To:\n", Color.Blue);
-                AppendBoldUnderText(incDamageHeader, Color.Black);
+                AppendText("Damage To:\n", Color.Blue, true, false);
+                AppendText(incDamageHeader, Color.Black, true, true);
 
                 StringBuilder sb = new StringBuilder();
 
@@ -582,7 +386,7 @@ namespace WaywardGamers.KParser.Plugin
                 }
 
                 sb.Append("\n\n");
-                AppendNormalText(sb.ToString());
+                AppendText(sb.ToString());
             }
         }
 
@@ -604,7 +408,7 @@ namespace WaywardGamers.KParser.Plugin
                     double rEvadePerc = 0;
                     double blinkPerc = 0;
                     double parryPerc = 0;
-      
+
                     var blinkableAttacks = player.Melee.Concat(
                                            player.Range.Concat(
                                            player.Spell.Concat(
@@ -654,8 +458,8 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         if (headerPrinted == false)
                         {
-                            AppendBoldText("Standard Defenses\n", Color.Blue);
-                            AppendBoldUnderText(standardDefHeader, Color.Black);
+                            AppendText("Standard Defenses\n", Color.Blue, true, false);
+                            AppendText(standardDefHeader, Color.Black, true, true);
 
                             headerPrinted = true;
                         }
@@ -670,7 +474,7 @@ namespace WaywardGamers.KParser.Plugin
             if (headerPrinted == true)
             {
                 sb.Append("\n\n");
-                AppendNormalText(sb.ToString());
+                AppendText(sb.ToString());
             }
         }
 
@@ -750,8 +554,8 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         if (headerPrinted == false)
                         {
-                            AppendBoldText("Other Defenses\n", Color.Blue);
-                            AppendBoldUnderText(otherDefHeader, Color.Black);
+                            AppendText("Other Defenses\n", Color.Blue, true, false);
+                            AppendText(otherDefHeader, Color.Black, true, true);
                             headerPrinted = true;
                         }
 
@@ -774,11 +578,11 @@ namespace WaywardGamers.KParser.Plugin
             if (headerPrinted == true)
             {
                 sb.Append("\n\n");
-                AppendNormalText(sb.ToString());
+                AppendText(sb.ToString());
             }
         }
 
-        private void ProcessUtsusemi(KPDatabaseDataSet dataSet)
+        private void ProcessUtsusemi(KPDatabaseDataSet dataSet, MobFilter mobFilter)
         {
             var utsu1 = dataSet.Actions.FirstOrDefault(a => a.ActionName == "Utsusemi: Ichi");
             var utsu2 = dataSet.Actions.FirstOrDefault(a => a.ActionName == "Utsusemi: Ni");
@@ -807,13 +611,16 @@ namespace WaywardGamers.KParser.Plugin
                                    Player = c.CombatantName,
                                    ShadowsUsed = from uc in c.GetInteractionsRowsByTargetCombatantRelation()
                                                  where ((uc.DefenseType == (byte)DefenseType.Shadow) &&
-                                                        (uc.ShadowsUsed > 0))
+                                                        (uc.ShadowsUsed > 0)) &&
+                                                        mobFilter.CheckFilterMobBattle(uc)
                                                  select uc,
                                    UtsuIchi = from i in utsu1Rows
-                                              where (i.CombatantsRowByActorCombatantRelation == c)
+                                              where (i.CombatantsRowByActorCombatantRelation == c) &&
+                                                     mobFilter.CheckFilterMobBattle(i)
                                               select i,
                                    UtsuNi = from i in utsu2Rows
-                                            where (i.CombatantsRowByActorCombatantRelation == c)
+                                            where (i.CombatantsRowByActorCombatantRelation == c) &&
+                                                   mobFilter.CheckFilterMobBattle(i)
                                             select i,
                                };
 
@@ -827,13 +634,10 @@ namespace WaywardGamers.KParser.Plugin
             int numShadsN;
             double effNorm;
             double effNin;
-
+            bool headerDisplayed = false;
 
             if (utsuByPlayer.Count() > 0)
             {
-                AppendBoldText("Utsusemi\n\n", Color.Red);
-                AppendBoldUnderText(utsuHeader, Color.Black);
-
                 StringBuilder sb = new StringBuilder();
 
                 foreach (var player in utsuByPlayer)
@@ -873,6 +677,14 @@ namespace WaywardGamers.KParser.Plugin
 
                     if ((numShads + shadsUsed + ichiCast + niCast) > 0)
                     {
+                        if (headerDisplayed == false)
+                        {
+                            AppendText("Utsusemi\n\n", Color.Red, true, false);
+                            AppendText(utsuHeader, Color.Black, true, true);
+
+                            headerDisplayed = true;
+                        }
+
                         sb.Append(player.Player.PadRight(16));
                         sb.Append(" ");
 
@@ -891,31 +703,66 @@ namespace WaywardGamers.KParser.Plugin
                 }
 
                 sb.Append("\n");
-                AppendNormalText(sb.ToString());
+                AppendText(sb.ToString());
             }
         }
         #endregion
 
         #region Event Handlers
-        protected override void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        protected void categoryCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            HandleDataset(DatabaseManager.Instance.Database);
+            if (flagNoUpdate == false)
+                HandleDataset(DatabaseManager.Instance.Database);
+
+            flagNoUpdate = false;
         }
 
-        protected override void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        protected void mobsCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            HandleDataset(DatabaseManager.Instance.Database);
+            if (flagNoUpdate == false)
+                HandleDataset(DatabaseManager.Instance.Database);
+
+            flagNoUpdate = false;
         }
 
-        protected override void checkBox1_CheckedChanged(object sender, EventArgs e)
+        protected void groupMobs_Click(object sender, EventArgs e)
         {
-            HandleDataset(DatabaseManager.Instance.Database);
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            groupMobs = sentBy.Checked;
+
+            if (flagNoUpdate == false)
+            {
+                flagNoUpdate = true;
+                UpdateMobList();
+
+                HandleDataset(DatabaseManager.Instance.Database);
+            }
+
+            flagNoUpdate = false;
         }
 
-        protected override void checkBox2_CheckedChanged(object sender, EventArgs e)
+        protected void exclude0XPMobs_Click(object sender, EventArgs e)
         {
-            HandleDataset(DatabaseManager.Instance.Database);
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            exclude0XPMobs = sentBy.Checked;
+
+            if (flagNoUpdate == false)
+            {
+                flagNoUpdate = true;
+                UpdateMobList();
+
+                HandleDataset(DatabaseManager.Instance.Database);
+            }
+
+            flagNoUpdate = false;
         }
+
         #endregion
 
     }

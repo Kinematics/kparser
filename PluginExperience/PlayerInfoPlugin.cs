@@ -9,6 +9,25 @@ namespace WaywardGamers.KParser.Plugin
 {
     public class PlayerInfoPlugin : BasePluginControl
     {
+        #region Constructor
+        public PlayerInfoPlugin()
+        {
+            toolStrip.Enabled = false;
+            toolStrip.Visible = false;
+
+            richTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left |
+                System.Windows.Forms.AnchorStyles.Right |
+                System.Windows.Forms.AnchorStyles.Bottom;
+            richTextBox.Top -= toolStrip.Height;
+            richTextBox.Height += toolStrip.Height;
+            richTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top |
+                System.Windows.Forms.AnchorStyles.Left |
+                System.Windows.Forms.AnchorStyles.Right |
+                System.Windows.Forms.AnchorStyles.Bottom;
+        }
+        #endregion
+
+        #region IPlugin Overrides
         public override string TabName
         {
             get { return "Player Info"; }
@@ -63,12 +82,13 @@ namespace WaywardGamers.KParser.Plugin
             {
                 if (player.Description != "")
                 {
-                    AppendBoldText(player.Name, Color.Red);
-                    AppendNormalText(string.Format("\n    {0}\n\n", player.Description));
+                    AppendText(player.Name, Color.Red, true, false);
+                    AppendText(string.Format("\n    {0}\n\n", player.Description));
                 }
             }
 
-            AppendNormalText("\n");
+            AppendText("\n");
         }
+        #endregion
     }
 }

@@ -17,11 +17,14 @@
             {
                 components.Dispose();
 
+                if (normFont != null)
+                    normFont.Dispose();
+
                 if (boldFont != null)
                     boldFont.Dispose();
 
-                if (normFont != null)
-                    normFont.Dispose();
+                if (underFont != null)
+                    underFont.Dispose();
 
                 if (buFont != null)
                     buFont.Dispose();
@@ -38,6 +41,7 @@
         private void InitializeComponent()
         {
             this.richTextBox = new System.Windows.Forms.RichTextBox();
+            this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.SuspendLayout();
             // 
             // richTextBox
@@ -45,28 +49,37 @@
             this.richTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.richTextBox.BackColor = System.Drawing.SystemColors.Window;
-            this.richTextBox.Location = new System.Drawing.Point(3, 3);
+            this.richTextBox.Location = new System.Drawing.Point(3, 28);
             this.richTextBox.Name = "richTextBox";
-            this.richTextBox.ReadOnly = true;
-            this.richTextBox.Size = new System.Drawing.Size(534, 306);
+            this.richTextBox.Size = new System.Drawing.Size(600, 320);
             this.richTextBox.TabIndex = 0;
             this.richTextBox.Text = "";
+            this.richTextBox.WordWrap = false;
             // 
-            // BasePluginControlWithRTF
+            // toolStrip
+            // 
+            this.toolStrip.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip.Name = "toolStrip";
+            this.toolStrip.Size = new System.Drawing.Size(606, 25);
+            this.toolStrip.TabIndex = 1;
+            this.toolStrip.Text = "toolStrip1";
+            // 
+            // NewBasePluginControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.richTextBox);
-            this.Name = "BasePluginControlWithRTF";
-            this.Size = new System.Drawing.Size(540, 312);
+            this.Name = "NewBasePluginControl";
+            this.Size = new System.Drawing.Size(606, 351);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
+        protected System.Windows.Forms.ToolStrip toolStrip;
         protected System.Windows.Forms.RichTextBox richTextBox;
-
     }
 }
