@@ -60,8 +60,6 @@ namespace WaywardGamers.KParser
             InitializeComponent();
 
             applicationDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-            defaultSaveDirectory = Application.CommonAppDataPath;
         }
         #endregion
 
@@ -93,6 +91,16 @@ namespace WaywardGamers.KParser
 
             if (windowSettings.fullPluginList == null)
                 windowSettings.fullPluginList = new StringCollection();
+
+            // Set default save directory
+            defaultSaveDirectory = windowSettings.DefaultParseSaveDirectory;
+            if (defaultSaveDirectory == string.Empty)
+            {
+                defaultSaveDirectory = Application.CommonAppDataPath;
+                windowSettings.DefaultParseSaveDirectory = defaultSaveDirectory;
+                windowSettings.Save();
+            }
+
 
             // Load plugins on startup and add them to the Windows menu
             FindAndLoadPlugins();
@@ -550,8 +558,15 @@ namespace WaywardGamers.KParser
         private void menuOptions_Click(object sender, EventArgs e)
         {
             Options optionsForm = new Options(Monitor.IsRunning);
-            if (optionsForm.ShowDialog() == DialogResult.OK)
+            if (optionsForm.ShowDialog(this) == DialogResult.OK)
+            {
+                windowSettings.Reload();
+
                 windowsMenu_Popup(windowsMenu, null);
+
+                // Reload possibly changed save directory.
+                defaultSaveDirectory = windowSettings.DefaultParseSaveDirectory;
+            }
         }
 
         private void menuAbout_Click(object sender, EventArgs e)

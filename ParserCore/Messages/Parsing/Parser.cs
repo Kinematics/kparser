@@ -1822,11 +1822,15 @@ namespace WaywardGamers.KParser.Parsing
                 combatMatch = ParseExpressions.Blink.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
-                    combatDetails.ActionType = ActionType.Unknown;
+                    // default value is already Unknown.  Don't overwrite pre-set values.
+                    //combatDetails.ActionType = ActionType.Unknown;
                     target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     target.DefenseType = DefenseType.Shadow;
                     target.HarmType = combatDetails.HarmType;
                     target.ShadowsUsed = byte.Parse(combatMatch.Groups[ParseFields.Number].Value);
+                    // Multiple shadows wiped means it must have been an ability attack.
+                    if (target.ShadowsUsed > 1)
+                        combatDetails.ActionType = ActionType.Ability;
                 }
             }
 

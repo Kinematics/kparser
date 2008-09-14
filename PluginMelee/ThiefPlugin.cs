@@ -5,15 +5,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Data;
 using System.Drawing;
+using System.Windows.Forms;
 using WaywardGamers.KParser;
 using System.Diagnostics;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class ThiefPlugin : BasePluginControlWithDropdown
+    public class ThiefPlugin : BasePluginControl
     {
         #region SATA support classes and functions
-        internal enum SATATypes
+        private enum SATATypes
         {
             None,
             SneakAttack,
@@ -21,7 +22,7 @@ namespace WaywardGamers.KParser.Plugin
             Hide
         }
 
-        internal class SATAEvent
+        private class SATAEvent
         {
             internal HashSet<SATATypes> SATAActions { get; set; }
             internal bool UsedHide { get; set; }
@@ -36,7 +37,7 @@ namespace WaywardGamers.KParser.Plugin
             internal string WeaponskillName { get; set; }
         }
 
-        internal SATATypes GetSATAType(string actionName)
+        private SATATypes GetSATAType(string actionName)
         {
             switch (actionName)
             {
@@ -53,7 +54,8 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Member variables
-        bool checkBox1Changed = false;
+        bool groupMobs = false;
+        bool exclude0XPMobs = false;
         bool flagNoUpdate = false;
 
         HashSet<SATATypes> SASet = new HashSet<SATATypes> { SATATypes.SneakAttack };
@@ -61,6 +63,62 @@ namespace WaywardGamers.KParser.Plugin
         HashSet<SATATypes> SATASet = new HashSet<SATATypes> { SATATypes.SneakAttack, SATATypes.TrickAttack };
 
         List<SATAEvent> SATAEvents = new List<SATAEvent>();
+        #endregion
+
+        #region Constructor
+        ToolStripLabel playersLabel = new ToolStripLabel();
+        ToolStripComboBox playersCombo = new ToolStripComboBox();
+
+        ToolStripLabel mobsLabel = new ToolStripLabel();
+        ToolStripComboBox mobsCombo = new ToolStripComboBox();
+
+        ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
+
+        public ThiefPlugin()
+        {
+            playersLabel.Text = "Players:";
+            toolStrip.Items.Add(playersLabel);
+
+            playersCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            playersCombo.Items.Add("All");
+            playersCombo.MaxDropDownItems = 10;
+            playersCombo.SelectedIndex = 0;
+            playersCombo.SelectedIndexChanged += new EventHandler(this.playersCombo_SelectedIndexChanged);
+            toolStrip.Items.Add(playersCombo);
+
+
+            mobsLabel.Text = "Mobs:";
+            toolStrip.Items.Add(mobsLabel);
+
+            mobsCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            mobsCombo.AutoSize = false;
+            mobsCombo.Width = 175;
+            mobsCombo.Items.Add("All");
+            mobsCombo.MaxDropDownItems = 10;
+            mobsCombo.SelectedIndex = 0;
+            mobsCombo.SelectedIndexChanged += new EventHandler(this.mobsCombo_SelectedIndexChanged);
+            toolStrip.Items.Add(mobsCombo);
+
+
+            optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            optionsMenu.Text = "Options";
+
+            ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
+            groupMobsOption.Text = "Group Mobs";
+            groupMobsOption.CheckOnClick = true;
+            groupMobsOption.Checked = false;
+            groupMobsOption.Click += new EventHandler(groupMobs_Click);
+            optionsMenu.DropDownItems.Add(groupMobsOption);
+
+            ToolStripMenuItem exclude0XPOption = new ToolStripMenuItem();
+            exclude0XPOption.Text = "Exclude 0 XP Mobs";
+            exclude0XPOption.CheckOnClick = true;
+            exclude0XPOption.Checked = false;
+            exclude0XPOption.Click += new EventHandler(exclude0XPMobs_Click);
+            optionsMenu.DropDownItems.Add(exclude0XPOption);
+
+            toolStrip.Items.Add(optionsMenu);
+        }
         #endregion
 
         #region IPlugin Overrides
@@ -71,39 +129,17 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void Reset()
         {
-            richTextBox.Clear();
-            richTextBox.WordWrap = false;
+            ResetTextBox();
 
-            label1.Text = "Players";
-            comboBox1.Left = label1.Right + 10;
-            comboBox1.MaxDropDownItems = 9;
-            comboBox1.Items.Clear();
-            comboBox1.Items.Add("All");
+            playersCombo.Items.Clear();
+            playersCombo.Items.Add("All");
             flagNoUpdate = true;
-            comboBox1.SelectedIndex = 0;
+            playersCombo.SelectedIndex = 0;
 
-            label2.Left = comboBox1.Right + 20;
-            label2.Text = "Enemies";
-            comboBox2.Left = label2.Right + 10;
-            comboBox2.Width = 150;
-            comboBox2.MaxDropDownItems = 10;
-            comboBox2.Items.Clear();
-            comboBox2.Items.Add("All");
+            mobsCombo.Items.Clear();
+            mobsCombo.Items.Add("All");
             flagNoUpdate = true;
-            comboBox2.SelectedIndex = 0;
-
-            checkBox1.Left = comboBox2.Right + 20;
-            checkBox1.Text = "Group Enemies";
-            flagNoUpdate = true;
-            checkBox1.Checked = false;
-
-            checkBox2.Enabled = false;
-            checkBox2.Visible = false;
-            //checkBox2.Left = checkBox1.Right + 10;
-            //checkBox2.Text = "Show Detail";
-            //flagNoUpdate = true;
-            //checkBox2.Checked = false;
-
+            mobsCombo.SelectedIndex = 0;
         }
 
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
@@ -111,14 +147,14 @@ namespace WaywardGamers.KParser.Plugin
             ResetTextBox();
 
             UpdatePlayerList(dataSet);
-            UpdateMobList(dataSet);
+            UpdateMobList(dataSet, false);
 
             // Don't generate an update on the first combo box change
             flagNoUpdate = true;
-            InitComboBox1Selection();
+            playersCombo.CBSelectIndex(0);
 
             // Setting the second combo box will cause the display to load.
-            InitComboBox2Selection();
+            mobsCombo.CBSelectIndex(0);
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
@@ -126,8 +162,8 @@ namespace WaywardGamers.KParser.Plugin
             bool changesFound = false;
             string currentlySelectedPlayer = "All";
 
-            if (GetComboBox1Index() > 0)
-                currentlySelectedPlayer = GetComboBox1Value();
+            if (playersCombo.CBSelectedIndex() > 0)
+                currentlySelectedPlayer = playersCombo.CBSelectedItem();
 
             if ((e.DatasetChanges.Combatants != null) &&
                 (e.DatasetChanges.Combatants.Count > 0))
@@ -136,27 +172,24 @@ namespace WaywardGamers.KParser.Plugin
                 changesFound = true;
 
                 flagNoUpdate = true;
-                InitComboBox1Selection();
+                playersCombo.CBSelectIndex(0);
             }
 
             // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
             if ((e.DatasetChanges.Battles != null) &&
                 (e.DatasetChanges.Battles.Count > 0))
             {
-                if (checkBox1.Checked == true)
-                    checkBox1.Checked = false;
-
-                UpdateMobList(e.Dataset);
+                UpdateMobList(e.Dataset, true);
                 changesFound = true;
 
                 flagNoUpdate = true;
-                InitComboBox2SelectionLast();
+                mobsCombo.CBSelectIndex(-1);
             }
 
-            if (currentlySelectedPlayer != GetComboBox1Value())
+            if (currentlySelectedPlayer != playersCombo.CBSelectedItem())
             {
                 flagNoUpdate = true;
-                InitComboBox1Selection(currentlySelectedPlayer);
+                playersCombo.CBSelectItem(currentlySelectedPlayer);
             }
 
             if (changesFound == true)
@@ -175,7 +208,7 @@ namespace WaywardGamers.KParser.Plugin
         #region Private functions
         private void UpdatePlayerList(KPDatabaseDataSet dataSet)
         {
-            ResetComboBox1();
+            playersCombo.CBReset();
 
             var playersFighting = from b in dataSet.Combatants
                                   where ((b.CombatantType == (byte)EntityType.Player ||
@@ -194,76 +227,23 @@ namespace WaywardGamers.KParser.Plugin
             foreach (var player in playersFighting)
                 playerStrings.Add(player.Name);
 
-            AddArrayToComboBox1(playerStrings.ToArray());
+            playersCombo.CBAddStrings(playerStrings.ToArray());
         }
 
-        private void UpdateMobList(KPDatabaseDataSet dataSet)
+        private void UpdateMobList()
         {
-            ResetComboBox2();
+            UpdateMobList(DatabaseManager.Instance.Database, false);
+            mobsCombo.CBSelectIndex(0);
+        }
 
-            // Group enemies check
+        private void UpdateMobList(KPDatabaseDataSet dataSet, bool overrideGrouping)
+        {
+            mobsCombo.CBReset();
 
-            if (checkBox1.Checked == true)
-            {
-                // Enemy group listing
-
-                var mobsKilled = from b in dataSet.Battles
-                                 where ((b.DefaultBattle == false) &&
-                                        (b.IsEnemyIDNull() == false) &&
-                                        (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
-                                 orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
-                                 group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
-                                 select new
-                                 {
-                                     Name = bn.Key,
-                                     XP = from xb in bn
-                                          group xb by xb.MinBaseExperience() into xbn
-                                          orderby xbn.Key
-                                          select new { BaseXP = xbn.Key }
-                                 };
-
-                List<string> mobXPStrings = new List<string>();
-                mobXPStrings.Add("All");
-
-                foreach (var mob in mobsKilled)
-                {
-                    mobXPStrings.Add(mob.Name);
-
-                    foreach (var xp in mob.XP)
-                    {
-                        if (xp.BaseXP > 0)
-                            mobXPStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
-                    }
-                }
-
-                AddArrayToComboBox2(mobXPStrings.ToArray());
-            }
+            if (overrideGrouping == false)
+                mobsCombo.CBAddStrings(GetMobListing(dataSet, groupMobs, exclude0XPMobs));
             else
-            {
-                // Enemy battle listing
-
-                var mobsKilled = from b in dataSet.Battles
-                                 where ((b.DefaultBattle == false) &&
-                                        (b.IsEnemyIDNull() == false) &&
-                                        ((EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.Mob))
-                                 orderby b.BattleID
-                                 select new
-                                 {
-                                     Name = b.CombatantsRowByEnemyCombatantRelation.CombatantName,
-                                     Battle = b.BattleID
-                                 };
-
-                List<string> mobXPStrings = new List<string>();
-                mobXPStrings.Add("All");
-
-                foreach (var mob in mobsKilled)
-                {
-                    mobXPStrings.Add(string.Format("{0,3}: {1}", mob.Battle,
-                            mob.Name));
-                }
-
-                AddArrayToComboBox2(mobXPStrings.ToArray());
-            }
+                mobsCombo.CBAddStrings(GetMobListing(dataSet, false, exclude0XPMobs));
         }
         #endregion
 
@@ -275,32 +255,22 @@ namespace WaywardGamers.KParser.Plugin
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
             // If we get here during initialization, skip.
-            if (comboBox1.Items.Count == 0)
+            if (playersCombo.Items.Count == 0)
                 return;
 
-            if (comboBox2.Items.Count == 0)
+            if (mobsCombo.Items.Count == 0)
                 return;
 
-            if (checkBox1Changed == true)
-            {
-                checkBox1Changed = false;
-                UpdateMobList(dataSet);
-                flagNoUpdate = true;
-                InitComboBox2Selection();
-                flagNoUpdate = false;
-            }
-
-
-            string selectedPlayer = GetComboBox1Value();
-            string selectedMob = GetComboBox2Value();
+            string selectedPlayer = playersCombo.CBSelectedItem();
+            string selectedMob = mobsCombo.CBSelectedItem();
 
             List<string> playerList = new List<string>();
 
             if (selectedPlayer == "All")
             {
-                foreach (var player in comboBox1.Items)
+                foreach (var player in playersCombo.CBGetStrings())
                 {
-                    if (player.ToString() != "All")
+                    if (player != "All")
                         playerList.Add(player.ToString());
                 }
             }
@@ -314,7 +284,7 @@ namespace WaywardGamers.KParser.Plugin
 
             if (selectedMob == "All")
                 SelectAllMobs(dataSet, playerList.ToArray());
-            else if (checkBox1.Checked == true)
+            else if (groupMobs == true)
                 SelectMobGroup(dataSet, playerList.ToArray(), selectedMob);
             else
                 SelectBattle(dataSet, playerList.ToArray(), selectedMob);
@@ -490,7 +460,9 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (sataActions.Count() > 0)
                 {
-                    AppendBoldText(player.Name + "\n", Color.Red);
+                    List<KPDatabaseDataSet.InteractionsRow> sataWeaponskills = new List<KPDatabaseDataSet.InteractionsRow>();
+
+                    AppendText(player.Name + "\n", Color.Red, true, false);
 
                     SATAEvents.Clear();
                     sataActions = sataActions.OrderBy(a => a.InteractionID);
@@ -653,6 +625,7 @@ namespace WaywardGamers.KParser.Plugin
                             else if ((ActionType)sataDamage.ActionType == ActionType.Weaponskill)
                             {
                                 sataEvent.WeaponskillName = sataDamage.ActionsRow.ActionName;
+                                sataWeaponskills.Add(sataDamage);
                             }
                             sataEvent.DamageAmount = sataDamage.Amount;
 
@@ -707,9 +680,21 @@ namespace WaywardGamers.KParser.Plugin
                     var TAList = SATAEvents.Where(s => //s.SATASuccess == true &&
                          s.SATAActions.IsSupersetOf(TASet)).Except(SATAList);
 
-                    PrintOutput("SATA", SATAList);
-                    PrintOutput("SA", SAList);
-                    PrintOutput("TA", TAList);
+                    PrintOutput("Sneak Attack + Trick Attack", SATAList);
+                    PrintOutput("Sneak Attack", SAList);
+                    PrintOutput("Trick Attack", TAList);
+
+                    var soloWeaponskills = from w in player.WSkill.Except(sataWeaponskills)
+                                           select new SATAEvent
+                                           {
+                                               ActionName = "Weaponskill",
+                                               DamageAmount = w.Amount,
+                                               ActionType = ActionType.Weaponskill,
+                                               WeaponskillName = w.ActionsRow.ActionName
+                                           };
+
+                    PrintOutput("Solo Weaponskills", soloWeaponskills);
+
                 }
             }
         }
@@ -721,7 +706,7 @@ namespace WaywardGamers.KParser.Plugin
 
             if (SATAList.Count() > 0)
             {
-                AppendBoldText("  " + title + "\n", Color.Blue);
+                AppendText("  " + title + "\n", Color.Blue, true, false);
 
                 foreach (var sEvent in SATAList)
                 {
@@ -740,7 +725,7 @@ namespace WaywardGamers.KParser.Plugin
                             sEvent.DamageAmount);
                     }
 
-                    AppendNormalText(dataLine);
+                    AppendText(dataLine);
                 }
 
                 // All
@@ -771,28 +756,28 @@ namespace WaywardGamers.KParser.Plugin
                     (double)totalSMeleeDmg / smeleeDmgList.Count() : 0;
 
 
-                AppendNormalText(string.Format("\n    {0,-20}{1,10}{2,20}\n",
+                AppendText(string.Format("\n    {0,-20}{1,10}{2,20}\n",
                     "Total:",
                     SATAList.Count(),
                     totalDmg));
-                AppendNormalText(string.Format("    {0,-20}{1,30}\n",
+                AppendText(string.Format("    {0,-20}{1,30}\n",
                     "Successful Total:",
                     totalSDmg));
-                AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:p2}\n\n",
+                AppendText(string.Format("    {0,-20}{1,10}{2,20:p2}\n\n",
                     "Success Count:",
                      successCount,
                      (double)successCount / SATAList.Count()));
 
-                AppendNormalText(string.Format("    {0,30}{1,20}\n", "Count", "Average"));
-                AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n",
+                AppendText(string.Format("    {0,30}{1,20}\n", "Count", "Average"));
+                AppendText(string.Format("    {0,-20}{1,10}{2,20:f2}\n",
                     "Melee:",
                     meleeDmgList.Count(),
                     avgMeleeDmg));
-                AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n",
+                AppendText(string.Format("    {0,-20}{1,10}{2,20:f2}\n",
                     "Successful Melee:",
                     smeleeDmgList.Count(),
                     avgSMeleeDmg));
-                AppendNormalText(string.Format("    {0,-20}{1,10}{2,20:f2}\n\n\n",
+                AppendText(string.Format("    {0,-20}{1,10}{2,20:f2}\n\n\n",
                     "Weaponskill:",
                      wsDmgList.Count(),
                     avgWSDmg));
@@ -802,7 +787,7 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Event Handlers
-        protected override void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        protected void playersCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (flagNoUpdate == false)
                 HandleDataset(DatabaseManager.Instance.Database);
@@ -810,7 +795,7 @@ namespace WaywardGamers.KParser.Plugin
             flagNoUpdate = false;
         }
 
-        protected override void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        protected void mobsCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (flagNoUpdate == false)
                 HandleDataset(DatabaseManager.Instance.Database);
@@ -818,25 +803,44 @@ namespace WaywardGamers.KParser.Plugin
             flagNoUpdate = false;
         }
 
-        protected override void checkBox1_CheckedChanged(object sender, EventArgs e)
+        void groupMobs_Click(object sender, EventArgs e)
         {
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            groupMobs = sentBy.Checked;
+
             if (flagNoUpdate == false)
             {
-                checkBox1Changed = true;
+                flagNoUpdate = true;
+                UpdateMobList();
+
                 HandleDataset(DatabaseManager.Instance.Database);
             }
 
             flagNoUpdate = false;
         }
 
-        protected override void checkBox2_CheckedChanged(object sender, EventArgs e)
+        protected void exclude0XPMobs_Click(object sender, EventArgs e)
         {
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            exclude0XPMobs = sentBy.Checked;
+
             if (flagNoUpdate == false)
+            {
+                flagNoUpdate = true;
+                UpdateMobList();
+
                 HandleDataset(DatabaseManager.Instance.Database);
+            }
 
             flagNoUpdate = false;
         }
-        #endregion
 
+        #endregion
     }
 }

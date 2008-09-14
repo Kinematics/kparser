@@ -5,13 +5,33 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Data;
 using System.Drawing;
+using System.Windows.Forms;
 using WaywardGamers.KParser;
 using System.Diagnostics;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class EnhancePlugin : BasePluginControlWithDropdown
+    public class EnhancePlugin : BasePluginControl
     {
+        #region Constructor
+        bool processBuffsUsed;
+        ToolStripLabel catLabel = new ToolStripLabel();
+        ToolStripComboBox categoryCombo = new ToolStripComboBox();
+
+        public EnhancePlugin()
+        {
+            catLabel.Text = "Category:";
+            toolStrip.Items.Add(catLabel);
+
+            categoryCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            categoryCombo.Items.Add("Buffs Used");
+            categoryCombo.Items.Add("Buffs Received");
+            categoryCombo.SelectedIndex = 0;
+            categoryCombo.SelectedIndexChanged += new EventHandler(this.categoryCombo_SelectedIndexChanged);
+            toolStrip.Items.Add(categoryCombo);
+        }
+        #endregion
+
         #region IPlugin Overrides
         public override string TabName
         {
@@ -20,25 +40,8 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void Reset()
         {
-            richTextBox.Clear();
-            richTextBox.WordWrap = false;
-
-            label1.Text = "Category";
-            comboBox1.Left = label1.Right + 10;
-            comboBox1.Items.Clear();
-            comboBox1.Items.Add("Buffs Used");
-            comboBox1.Items.Add("Buffs Received");
-            comboBox1.SelectedIndex = 0;
-
-            label2.Enabled = false;
-            label2.Visible = false;
-            comboBox2.Enabled = false;
-            comboBox2.Visible = false;
-
-            checkBox1.Enabled = false;
-            checkBox1.Visible = false;
-            checkBox2.Enabled = false;
-            checkBox2.Visible = false;
+            ResetTextBox();
+            processBuffsUsed = true;
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
@@ -66,15 +69,15 @@ namespace WaywardGamers.KParser.Plugin
 
         #region Member Variables
         string buffUsedHeader = "Buff                Used on             # Times   Min Interval   Max Interval   Avg Interval\n";
-        string buffRecHeader  = "Buff                Used by             # Times   Min Interval   Max Interval   Avg Interval\n";
+        string buffRecHeader = "Buff                Used by             # Times   Min Interval   Max Interval   Avg Interval\n";
         #endregion
 
         #region Processing sections
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
-            richTextBox.Clear();
+            ResetTextBox();
 
-            if (comboBox1.SelectedIndex == 0)
+            if (processBuffsUsed == true)
                 ProcessBuffsUsed(dataSet);
             else
                 ProcessBuffsReceived(dataSet);
@@ -138,8 +141,8 @@ namespace WaywardGamers.KParser.Plugin
                 if ((player.Buffs == null) || (player.Buffs.Count() == 0))
                     continue;
 
-                AppendBoldText(string.Format("{0}\n", player.Name), Color.Blue);
-                AppendBoldUnderText(buffUsedHeader, Color.Black);
+                AppendText(string.Format("{0}\n", player.Name), Color.Blue, true, false);
+                AppendText(buffUsedHeader, Color.Black, true, true);
 
                 foreach (var buff in player.Buffs)
                 {
@@ -147,13 +150,13 @@ namespace WaywardGamers.KParser.Plugin
 
                     if (buff.SelfTargeted.Count() > 0)
                     {
-                        AppendNormalText(buffName.PadRight(20));
-                        AppendNormalText("Self".PadRight(20));
+                        AppendText(buffName.PadRight(20));
+                        AppendText("Self".PadRight(20));
 
                         var allDistinctBuffs = buff.SelfTargeted.Distinct(new KPDatabaseDataSet.InteractionTimestampComparer());
                         used = allDistinctBuffs.Count();
 
-                        AppendNormalText(used.ToString().PadLeft(7));
+                        AppendText(used.ToString().PadLeft(7));
 
                         if (used > 1)
                         {
@@ -173,22 +176,22 @@ namespace WaywardGamers.KParser.Plugin
                             minInterval = intervalList.Min();
                             maxInterval = intervalList.Max();
 
-                            AppendNormalText(string.Format("{0,15}{1,15}{2,15}",
+                            AppendText(string.Format("{0,15}{1,15}{2,15}",
                                 TimespanString(minInterval), TimespanString(maxInterval), TimespanString(avgInterval)));
                         }
 
-                        AppendNormalText("\n");
+                        AppendText("\n");
                     }
                     else
                     {
                         foreach (var target in buff.BuffTargets)
                         {
-                            AppendNormalText(buffName.PadRight(20));
+                            AppendText(buffName.PadRight(20));
                             buffName = "";
 
                             used = target.Buffs.Count();
-                            AppendNormalText(target.TargetName.PadRight(20));
-                            AppendNormalText(used.ToString().PadLeft(7));
+                            AppendText(target.TargetName.PadRight(20));
+                            AppendText(used.ToString().PadLeft(7));
 
                             if (used > 1)
                             {
@@ -208,16 +211,16 @@ namespace WaywardGamers.KParser.Plugin
                                 minInterval = intervalList.Min();
                                 maxInterval = intervalList.Max();
 
-                                AppendNormalText(string.Format("{0,15}{1,15}{2,15}",
+                                AppendText(string.Format("{0,15}{1,15}{2,15}",
                                     TimespanString(minInterval), TimespanString(maxInterval), TimespanString(avgInterval)));
                             }
 
-                            AppendNormalText("\n");
+                            AppendText("\n");
                         }
                     }
                 }
 
-                AppendNormalText("\n");
+                AppendText("\n");
             }
         }
 
@@ -287,8 +290,8 @@ namespace WaywardGamers.KParser.Plugin
                 if ((player.Buffs == null) || (player.Buffs.Count() == 0))
                     continue;
 
-                AppendBoldText(string.Format("{0}\n", player.Name), Color.Blue);
-                AppendBoldUnderText(buffRecHeader, Color.Black);
+                AppendText(string.Format("{0}\n", player.Name), Color.Blue, true, false);
+                AppendText(buffRecHeader, Color.Black, true, true);
 
                 if (player.Buffs.Count() > 0)
                 {
@@ -298,12 +301,12 @@ namespace WaywardGamers.KParser.Plugin
 
                         foreach (var target in buff.BuffCasters)
                         {
-                            AppendNormalText(buffName.PadRight(20));
+                            AppendText(buffName.PadRight(20));
                             buffName = "";
 
                             used = target.Buffs.Count();
-                            AppendNormalText(target.CasterName.PadRight(20));
-                            AppendNormalText(used.ToString().PadLeft(7));
+                            AppendText(target.CasterName.PadRight(20));
+                            AppendText(used.ToString().PadLeft(7));
 
                             if (used > 1)
                             {
@@ -323,12 +326,12 @@ namespace WaywardGamers.KParser.Plugin
                                 minInterval = intervalList.Min();
                                 maxInterval = intervalList.Max();
 
-                                AppendNormalText(string.Format("{0,15}{1,15}{2,15}",
+                                AppendText(string.Format("{0,15}{1,15}{2,15}",
                                     TimespanString(minInterval), TimespanString(maxInterval), TimespanString(avgInterval)));
                             }
 
 
-                            AppendNormalText("\n");
+                            AppendText("\n");
                         }
                     }
                 }
@@ -338,14 +341,14 @@ namespace WaywardGamers.KParser.Plugin
                     foreach (var buff in player.SelfBuffs)
                     {
                         buffName = buff.BuffName;
-                        
-                        AppendNormalText(buffName.PadRight(20));
-                        AppendNormalText("Self".PadRight(20));
+
+                        AppendText(buffName.PadRight(20));
+                        AppendText("Self".PadRight(20));
 
                         var allDistinctBuffs = buff.Buffs.Distinct(new KPDatabaseDataSet.InteractionTimestampComparer());
                         used = allDistinctBuffs.Count();
 
-                        AppendNormalText(used.ToString().PadLeft(7));
+                        AppendText(used.ToString().PadLeft(7));
 
                         if (used > 1)
                         {
@@ -365,16 +368,16 @@ namespace WaywardGamers.KParser.Plugin
                             minInterval = intervalList.Min();
                             maxInterval = intervalList.Max();
 
-                            AppendNormalText(string.Format("{0,15}{1,15}{2,15}",
+                            AppendText(string.Format("{0,15}{1,15}{2,15}",
                                 TimespanString(minInterval), TimespanString(maxInterval), TimespanString(avgInterval)));
                         }
 
-                        AppendNormalText("\n");
+                        AppendText("\n");
                     }
                 }
 
 
-                AppendNormalText("\n");
+                AppendText("\n");
             }
 
         }
@@ -394,9 +397,14 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Event Handlers
-        protected override void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void categoryCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            HandleDataset(DatabaseManager.Instance.Database);
+            ToolStripComboBox sentBy = sender as ToolStripComboBox;
+            if (sentBy != null)
+            {
+                processBuffsUsed = (sentBy.SelectedIndex == 0);
+                HandleDataset(DatabaseManager.Instance.Database);
+            }
         }
         #endregion
     }

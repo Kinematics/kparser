@@ -135,11 +135,21 @@ namespace WaywardGamers.KParser
 
         private void getLogDirectory_Click(object sender, EventArgs e)
         {
-            folderBrowserDialog.SelectedPath = coreSettings.FFXILogDirectory;
+            folderBrowserDialog.SelectedPath = logDirectory.Text;
 
             if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
             {
                 logDirectory.Text = folderBrowserDialog.SelectedPath;
+            }
+        }
+
+        private void getSaveDirectory_Click(object sender, EventArgs e)
+        {
+            folderBrowserDialog.SelectedPath = defaultSaveDirectory.Text;
+
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                defaultSaveDirectory.Text = folderBrowserDialog.SelectedPath;
             }
         }
 
@@ -173,6 +183,7 @@ namespace WaywardGamers.KParser
         {
             // Reset the app settings and refill the window data.
             coreSettings.Reset();
+            windowSettings.Reset();
             LoadSettingsValues();
         }
 
@@ -226,6 +237,8 @@ namespace WaywardGamers.KParser
                     coreSettings.ParseExistingLogs = this.ParseExistingLogs;
 
                     coreSettings.DebugMode = this.debugMode.Checked;
+
+                    windowSettings.DefaultParseSaveDirectory = defaultSaveDirectory.Text;
                 }
             }
         }
@@ -239,6 +252,7 @@ namespace WaywardGamers.KParser
                 if (this.DialogResult == DialogResult.OK)
                 {
                     coreSettings.Save();
+                    windowSettings.Save();
                 }
             }
         }
@@ -256,6 +270,12 @@ namespace WaywardGamers.KParser
             specifyPID.Checked = coreSettings.SpecifyPID;
 
             debugMode.Checked = coreSettings.DebugMode;
+
+            defaultSaveDirectory.Text = windowSettings.DefaultParseSaveDirectory;
+            if (defaultSaveDirectory.Text == string.Empty)
+            {
+                defaultSaveDirectory.Text = Application.CommonAppDataPath;
+            }
         }
 
         private void SetEnabledFields()

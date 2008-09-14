@@ -87,32 +87,15 @@
     </Compile>
     <Compile Include="ErrorHandling\ErrorLog.cs" />
     <Compile Include="ErrorHandling\KAppException.cs" />
+    <Compile Include="Interface\IReader.cs" />
     <Compile Include="Interface\BasePluginControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Interface\BasePluginControl.Designer.cs">
       <DependentUpon>BasePluginControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interface\BasePluginControlWithRadio.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Interface\BasePluginControlWithRadio.Designer.cs">
-      <DependentUpon>BasePluginControlWithRadio.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Interface\BasePluginControlWithDropdown.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Interface\BasePluginControlWithDropdown.Designer.cs">
-      <DependentUpon>BasePluginControlWithDropdown.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Interface\BasePluginControlListView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Interface\BasePluginControlListView.Designer.cs">
-      <DependentUpon>BasePluginControlListView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Interface\IReader.cs" />
     <Compile Include="Interface\PluginInterface.cs" />
+    <Compile Include="Interface\PluginUtilities.cs" />
     <Compile Include="Interface\RTFStringMods.cs" />
     <Compile Include="KPDatabaseDataSet.cs">
       <DependentUpon>KPDatabaseDataSet.xsd</DependentUpon>
@@ -203,24 +186,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Interface\BasePluginControl.resx">
-      <DependentUpon>BasePluginControl.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Interface\BasePluginControlWithRadio.resx">
-      <DependentUpon>BasePluginControlWithRadio.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Interface\BasePluginControlWithDropdown.resx">
-      <DependentUpon>BasePluginControlWithDropdown.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Interface\BasePluginControlListView.resx">
-      <DependentUpon>BasePluginControlListView.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
       <Visible>False</Visible>
       <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
@@ -248,6 +213,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Interface\BasePluginControl.resx">
+      <DependentUpon>BasePluginControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="KPDatabase.sdf">
     </EmbeddedResource>
   </ItemGroup>

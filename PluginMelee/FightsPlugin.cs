@@ -9,6 +9,25 @@ namespace WaywardGamers.KParser.Plugin
 {
     public class FightsPlugin : BasePluginControl
     {
+        #region Constructor
+        public FightsPlugin()
+        {
+            toolStrip.Enabled = false;
+            toolStrip.Visible = false;
+
+            richTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left |
+                System.Windows.Forms.AnchorStyles.Right |
+                System.Windows.Forms.AnchorStyles.Bottom;
+            richTextBox.Top -= toolStrip.Height;
+            richTextBox.Height += toolStrip.Height;
+            richTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top |
+                System.Windows.Forms.AnchorStyles.Left |
+                System.Windows.Forms.AnchorStyles.Right |
+                System.Windows.Forms.AnchorStyles.Bottom;
+        }
+        #endregion
+
+        #region IPlugin Overrides
         public override string TabName
         {
             get { return "Fights"; }
@@ -16,7 +35,7 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void Reset()
         {
-            richTextBox.Clear();
+            ResetTextBox();
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
@@ -36,7 +55,7 @@ namespace WaywardGamers.KParser.Plugin
 
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
-            richTextBox.Clear();
+            ResetTextBox();
 
             var fights = from b in dataSet.Battles
                          where b.DefaultBattle == false &&
@@ -50,7 +69,7 @@ namespace WaywardGamers.KParser.Plugin
 
             string fightHeader = "Fight #   Enemy                   Killed?   Killed By           Start Time   End Time   Fight Length   Exp\n";
 
-            AppendBoldText(fightHeader, Color.Black);
+            AppendText(fightHeader, Color.Black, true, false);
 
             int fightNum = 0;
 
@@ -77,12 +96,13 @@ namespace WaywardGamers.KParser.Plugin
                         fightLength.Hours, fightLength.Minutes, fightLength.Seconds, fightLength.Days);
                 }
 
-                AppendNormalText(string.Format("{0,-10}{1,-24}{2,-10}{3,-20}{4,10}{5,11}{6,15}{7,6}\n",
+                AppendText(string.Format("{0,-10}{1,-24}{2,-10}{3,-20}{4,10}{5,11}{6,15}{7,6}\n",
                     fightNum, fight.CombatantsRowByEnemyCombatantRelation.CombatantName,
                     fight.Killed, killer, fight.StartTime.ToShortTimeString(),
                     fight.EndTime.ToShortTimeString(), fightLengthString, fight.ExperiencePoints));
 
             }
         }
+        #endregion
     }
 }

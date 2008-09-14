@@ -5,13 +5,71 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Data;
 using System.Drawing;
+using System.Windows.Forms;
 using WaywardGamers.KParser;
-using System.Diagnostics;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class EnfeeblePlugin : BasePluginControlWithDropdown
+    public class EnfeeblePlugin : BasePluginControl
     {
+        #region Constructor
+        string debuffHeader = "Debuff              Used on                 # Times   # Successful   # No Effect   % Successful\n";
+
+        bool flagNoUpdate = false;
+        bool groupMobs = true;
+        bool exclude0XPMobs = false;
+        ToolStripComboBox categoryCombo = new ToolStripComboBox();
+        ToolStripComboBox mobsCombo = new ToolStripComboBox();
+        ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
+
+        public EnfeeblePlugin()
+        {
+            ToolStripLabel catLabel = new ToolStripLabel();
+            catLabel.Text = "Category:";
+            toolStrip.Items.Add(catLabel);
+
+            categoryCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            categoryCombo.Items.Add("Debuff Mobs");
+            categoryCombo.Items.Add("Debuff Players");
+            categoryCombo.SelectedIndex = 0;
+            categoryCombo.SelectedIndexChanged += new EventHandler(this.categoryCombo_SelectedIndexChanged);
+            toolStrip.Items.Add(categoryCombo);
+
+
+            ToolStripLabel mobLabel = new ToolStripLabel();
+            mobLabel.Text = "Mobs:";
+            toolStrip.Items.Add(mobLabel);
+
+            mobsCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            mobsCombo.MaxDropDownItems = 10;
+            mobsCombo.AutoSize = false;
+            mobsCombo.Width = 175;
+            mobsCombo.Items.Add("All");
+            mobsCombo.SelectedIndex = 0;
+            mobsCombo.SelectedIndexChanged += new EventHandler(this.mobsCombo_SelectedIndexChanged);
+            toolStrip.Items.Add(mobsCombo);
+
+            optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            optionsMenu.Text = "Options";
+
+            ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
+            groupMobsOption.Text = "Group Mobs";
+            groupMobsOption.CheckOnClick = true;
+            groupMobsOption.Checked = true;
+            groupMobsOption.Click += new EventHandler(groupMobs_Click);
+            optionsMenu.DropDownItems.Add(groupMobsOption);
+
+            ToolStripMenuItem exclude0XPOption = new ToolStripMenuItem();
+            exclude0XPOption.Text = "Exclude 0 XP Mobs";
+            exclude0XPOption.CheckOnClick = true;
+            exclude0XPOption.Checked = false;
+            exclude0XPOption.Click += new EventHandler(exclude0XPMobs_Click);
+            optionsMenu.DropDownItems.Add(exclude0XPOption);
+
+            toolStrip.Items.Add(optionsMenu);
+        }
+        #endregion
+
         #region IPlugin Overrides
         public override string TabName
         {
@@ -20,30 +78,7 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void Reset()
         {
-            richTextBox.Clear();
-            richTextBox.WordWrap = false;
-
-            label1.Text = "Category";
-            comboBox1.Left = label1.Right + 10;
-            comboBox1.Items.Clear();
-            comboBox1.Items.Add("Debuff Mobs");
-            comboBox1.Items.Add("Debuff Players");
-            flagNoUpdate = true;
-            comboBox1.SelectedIndex = 0;
-
-            label2.Left = comboBox1.Right + 20;
-            label2.Text = "Mob Group";
-            comboBox2.Left = label2.Right + 10;
-            comboBox2.Width = 150;
-            comboBox2.Items.Clear();
-            comboBox2.Items.Add("All");
-            flagNoUpdate = true;
-            comboBox2.SelectedIndex = 0;
-
-            checkBox1.Enabled = false;
-            checkBox1.Visible = false;
-            checkBox2.Enabled = false;
-            checkBox2.Visible = false;
+            ResetTextBox();
         }
 
         public override void DatabaseOpened(KPDatabaseDataSet dataSet)
@@ -53,7 +88,7 @@ namespace WaywardGamers.KParser.Plugin
             UpdateMobList(dataSet);
 
             flagNoUpdate = true;
-            InitComboBox2Selection();
+            mobsCombo.CBSelectIndex(0);
 
             ProcessData(dataSet);
         }
@@ -63,48 +98,12 @@ namespace WaywardGamers.KParser.Plugin
             // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
             if (e.DatasetChanges.Battles.Count > 0)
             {
-                var mobsFought = from b in e.DatasetChanges.Battles
-                                 where ((b.DefaultBattle == false) &&
-                                        (b.IsEnemyIDNull() == false) &&
-                                        (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
-                                 group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
-                                 select new
-                                 {
-                                     Name = bn.Key,
-                                     XP = from xb in bn
-                                          group xb by xb.MinBaseExperience() into xbn
-                                          orderby xbn.Key
-                                          select new { BaseXP = xbn.Key }
-                                 };
+                string mobSelected = mobsCombo.CBSelectedItem();
+                flagNoUpdate = true;
+                UpdateMobList(e.Dataset);
 
-
-                if (mobsFought.Count() > 0)
-                {
-                    string mobWithXP;
-
-                    foreach (var mob in mobsFought)
-                    {
-                        if (comboBox2.Items.Contains(mob.Name) == false)
-                            AddStringToComboBox2(mob.Name);
-
-                        foreach (var xp in mob.XP)
-                        {
-                            if (xp.BaseXP > 0)
-                            {
-                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP);
-
-                                if (comboBox2.Items.Contains(mobWithXP) == false)
-                                    AddStringToComboBox2(mobWithXP);
-
-                                // Check for existing entry with higher min base xp
-                                mobWithXP = string.Format("{0} ({1})", mob.Name, xp.BaseXP + 1);
-
-                                if (comboBox2.Items.Contains(mobWithXP))
-                                    RemoveFromComboBox2(mobWithXP);
-                            }
-                        }
-                    }
-                }
+                flagNoUpdate = true;
+                mobsCombo.CBSelectItem(mobSelected);
             }
 
             if (e.DatasetChanges.Interactions.Count != 0)
@@ -126,71 +125,29 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Private functions
+        private void UpdateMobList()
+        {
+            UpdateMobList(DatabaseManager.Instance.Database);
+            mobsCombo.CBSelectIndex(0);
+        }
+
         private void UpdateMobList(KPDatabaseDataSet dataSet)
         {
-            ResetComboBox2();
-
-            // Enemy group listing
-
-            var mobsKilled = from b in dataSet.Battles
-                             where ((b.DefaultBattle == false) &&
-                                    (b.IsEnemyIDNull() == false) &&
-                                    (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
-                             orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
-                             group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
-                             select new
-                             {
-                                 Name = bn.Key,
-                                 XP = from xb in bn
-                                      group xb by xb.MinBaseExperience() into xbn
-                                      orderby xbn.Key
-                                      select new { BaseXP = xbn.Key }
-                             };
-
-            List<string> mobXPStrings = new List<string>();
-            mobXPStrings.Add("All");
-
-            foreach (var mob in mobsKilled)
-            {
-                mobXPStrings.Add(mob.Name);
-
-                foreach (var xp in mob.XP)
-                {
-                    if (xp.BaseXP > 0)
-                        mobXPStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
-                }
-            }
-
-            AddArrayToComboBox2(mobXPStrings.ToArray());
-
+            mobsCombo.CBReset();
+            mobsCombo.CBAddStrings(GetMobListing(dataSet, groupMobs, exclude0XPMobs));
         }
-        #endregion
-
-
-        #region Member Variables
-        bool flagNoUpdate = false;
-
-        string debuffMobHeader = "Debuff              Used on                 # Times   # Successful   # No Effect   % Successful\n";
-        string debuffPlayerHeader = "Debuff              Used on                 # Times   # Successful   # No Effect   % Successful\n";
         #endregion
 
         #region Processing sections
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
-            richTextBox.Clear();
-
-            #region Filtering
-            string mobFilter;
-            string mobName;
-            int mobXP;
-
-            GetMobFilter(comboBox2, out mobFilter, out mobName, out mobXP);
-            #endregion
+            ResetTextBox();
+            MobFilter mobFilter = mobsCombo.CBGetMobFilter();
 
             #region LINQ group construction
 
             IEnumerable<DebuffGroup> debuffSet = null;
-            bool processPlayerDebuffs = (comboBox1.SelectedIndex == 0);
+            bool processPlayerDebuffs = (categoryCombo.CBSelectedIndex() == 0);
 
             if (processPlayerDebuffs == true)
             {
@@ -217,19 +174,7 @@ namespace WaywardGamers.KParser.Plugin
                                               DebuffName = ba.Key,
                                               DebuffTargets = from bt in ba
                                                               where (bt.IsTargetIDNull() == false &&
-                                                                      // all mobs if mobFilter == All
-                                                                     ((mobFilter == "All") ||
-                                                                      // else make sure mob name matches and
-                                                                      (bt.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
-                                                                        // either no xp requirement
-                                                                       (mobXP == 0 ||
-                                                                        // or there's a battle entry and it has the specified XP amount
-                                                                        (bt.IsBattleIDNull() == false &&
-                                                                         bt.BattlesRow.MinBaseExperience() == mobXP)
-                                                                       )
-                                                                      )
-                                                                     )
-                                                                    )
+                                                                     mobFilter.CheckFilterMobTarget(bt))
                                                               group bt by bt.CombatantsRowByTargetCombatantRelation.CombatantName into btn
                                                               orderby btn.Key
                                                               select new DebuffTargets
@@ -246,12 +191,7 @@ namespace WaywardGamers.KParser.Plugin
                 // Process debuffs used by mobs
 
                 debuffSet = from c in dataSet.Combatants
-                            where (c.CombatantType == (byte)EntityType.Mob &&
-                                    // all mobs if mobFilter == All
-                                   (mobFilter == "All" ||
-                                    // else make sure mob name matches and
-                                    c.CombatantName == mobName)
-                                  )
+                            where c.CombatantType == (byte)EntityType.Mob
                             orderby c.CombatantType, c.CombatantName
                             select new DebuffGroup
                             {
@@ -262,12 +202,7 @@ namespace WaywardGamers.KParser.Plugin
                                                  b.HarmType == (byte)HarmType.Unknown) &&
                                                  b.Preparing == false &&
                                                  b.IsActionIDNull() == false) &&
-                                                 // either no xp requirement
-                                                (mobXP == 0 ||
-                                                 // or there's a battle entry and it has the specified XP amount
-                                                 (b.IsBattleIDNull() == false &&
-                                                  b.BattlesRow.MinBaseExperience() == mobXP)
-                                                )
+                                                 mobFilter.CheckFilterMobActor(b)
                                           group b by b.ActionsRow.ActionName into ba
                                           orderby ba.Key
                                           select new Debuffs
@@ -311,8 +246,8 @@ namespace WaywardGamers.KParser.Plugin
                 if (player.Debuffs.Sum(d => d.DebuffTargets.Count()) == 0)
                     continue;
 
-                AppendBoldText(string.Format("{0}\n", player.DebufferName), Color.Blue);
-                AppendBoldUnderText(debuffMobHeader, Color.Black);
+                AppendText(string.Format("{0}\n", player.DebufferName), Color.Blue, true, false);
+                AppendText(debuffHeader, Color.Black, true, true);
 
                 foreach (var debuff in player.Debuffs)
                 {
@@ -324,10 +259,10 @@ namespace WaywardGamers.KParser.Plugin
 
                         if (used > 0)
                         {
-                            AppendNormalText(debuffName.PadRight(20));
+                            AppendText(debuffName.PadRight(20));
                             debuffName = "";
 
-                            AppendNormalText(target.TargetName.PadRight(24));
+                            AppendText(target.TargetName.PadRight(24));
 
                             successful = target.DebuffData.Count(d =>
                                 (d.DefenseType == (byte)DefenseType.None) &&
@@ -337,13 +272,13 @@ namespace WaywardGamers.KParser.Plugin
 
                             percSuccess = (double)successful / used;
 
-                            AppendNormalText(string.Format("{0,7:d}{1,15:d}{2,14:d}{3,15:p2}\n",
+                            AppendText(string.Format("{0,7:d}{1,15:d}{2,14:d}{3,15:p2}\n",
                                 used, successful, noEffect, percSuccess));
                         }
                     }
                 }
 
-                AppendNormalText("\n");
+                AppendText("\n");
             }
         }
 
@@ -363,8 +298,8 @@ namespace WaywardGamers.KParser.Plugin
                 if (mob.Debuffs.Sum(d => d.DebuffTargets.Count()) == 0)
                     continue;
 
-                AppendBoldText(string.Format("{0}\n", mob.DebufferName), Color.Blue);
-                AppendBoldUnderText(debuffPlayerHeader, Color.Black);
+                AppendText(string.Format("{0}\n", mob.DebufferName), Color.Blue, true, false);
+                AppendText(debuffHeader, Color.Black, true, true);
 
                 foreach (var debuff in mob.Debuffs)
                 {
@@ -376,11 +311,11 @@ namespace WaywardGamers.KParser.Plugin
 
                         if (used > 0)
                         {
-                            AppendNormalText(debuffName.PadRight(20));
+                            AppendText(debuffName.PadRight(20));
                             debuffName = "";
 
 
-                            AppendNormalText(target.TargetName.PadRight(24));
+                            AppendText(target.TargetName.PadRight(24));
 
                             successful = target.DebuffData.Count(d =>
                                 (d.DefenseType == (byte)DefenseType.None) &&
@@ -390,19 +325,19 @@ namespace WaywardGamers.KParser.Plugin
 
                             percSuccess = (double)successful / used;
 
-                            AppendNormalText(string.Format("{0,7:d}{1,15:d}{2,14:d}{3,15:p2}\n",
+                            AppendText(string.Format("{0,7:d}{1,15:d}{2,14:d}{3,15:p2}\n",
                                 used, successful, noEffect, percSuccess));
                         }
                     }
                 }
 
-                AppendNormalText("\n");
+                AppendText("\n");
             }
         }
         #endregion
 
         #region Event Handlers
-        protected override void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        protected void categoryCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (flagNoUpdate == false)
                 HandleDataset(DatabaseManager.Instance.Database);
@@ -410,13 +345,52 @@ namespace WaywardGamers.KParser.Plugin
             flagNoUpdate = false;
         }
 
-        protected override void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        protected void mobsCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (flagNoUpdate == false)
                 HandleDataset(DatabaseManager.Instance.Database);
 
             flagNoUpdate = false;
         }
+
+        protected void groupMobs_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            groupMobs = sentBy.Checked;
+
+            if (flagNoUpdate == false)
+            {
+                flagNoUpdate = true;
+                UpdateMobList();
+
+                HandleDataset(DatabaseManager.Instance.Database);
+            }
+
+            flagNoUpdate = false;
+        }
+
+        protected void exclude0XPMobs_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            exclude0XPMobs = sentBy.Checked;
+
+            if (flagNoUpdate == false)
+            {
+                flagNoUpdate = true;
+                UpdateMobList();
+
+                HandleDataset(DatabaseManager.Instance.Database);
+            }
+
+            flagNoUpdate = false;
+        }
+
         #endregion
     }
 }

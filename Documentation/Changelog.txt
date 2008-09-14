@@ -1,5 +1,30 @@
 KParser Change Log
 
+1.1
++ Allow setting default save directory.
+ -- NOTE: The default directory in the Common Application Path now ends in 1.1.  Earlier version of KParser would have had a default path ending in 1.0.  Your existing parses should be in that sister directory.  You may move them to your preferred directory if you wish.
+- Fix bug where buffs were not being credited to appropriate battles, preventing proper filtering.
+ -- NOTE: To get this corrected in older parses, you'll need to run them through the Upgrade/Reparse mechanism.
+- Fix so that Exclude 0 XP Mobs option in Offense tab works properly.  Extended this filter to all tabs.
++ Added mob filtering to Recovery tab.
+* Adjust battle acredidation in the case of actions that occur immediately after a mob's death that may simply be out-of-order messaging.
+* Rewrite of base class for plugins to somewhat simplify coding (though more work needed for customization of controls) and lend uniformity to code.
+- Various display bugs fixed.
+
+
+---------------------------------------
+
+1.0.13.1
+- Fix issue of error on empty list in Thief plugin.
+
+
+1.0.13
++ Add new weaponskill names.
+- Bug fixes for Chat and OffenseDetails plugin.
+- Adjust crit threshold calculation for Thief plugin.
++ Add solo weaponskill data to Thief plugin.
+
+
 1.0.12
 * Revamp of Thief plugin to fix various issues and better handling of locating SATA hits, plus expanded summary.
 - Fix issue in Buffs plugin to deal with duplicate buff entries relating to self-buffs.  Rewrote so that all self-buffs were marked as Self, and not targetting <playername>.
