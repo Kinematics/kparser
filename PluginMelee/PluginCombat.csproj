@@ -72,6 +72,9 @@
     <Compile Include="EnhancePlugin.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="ExtraAttacksPlugin.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="FightsPlugin.cs">
       <SubType>UserControl</SubType>
     </Compile>
