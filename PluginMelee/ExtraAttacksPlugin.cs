@@ -14,8 +14,8 @@ namespace WaywardGamers.KParser.Plugin
     {
         #region Constructor
         string header1 = "Player               Total # Attacks   Total # Rounds   Min Attacks/Round   Total Extra Attacks\n";
-        string header2 = "Player               Avg # Extra Attacks   % Rounds w/Extra Attacks   Avg # Attacks/Round\n";
-        string header3 = "Player               # Rounds w/Extra Attacks   # +1 Rounds   # +2 Rounds   # >+2 Rounds\n";
+        string header2 = "Player               # Rounds w/Extra Attacks   % Rounds w/Extra Attacks   Avg # Attacks/Round\n";
+        string header3 = "Player               # +1 Rounds   # +2 Rounds   # >+2 Rounds   Avg # Extra Attacks\n";
 
         bool flagNoUpdate;
         bool showDetails = false;
@@ -305,7 +305,8 @@ namespace WaywardGamers.KParser.Plugin
                     attackCalc.PlusNRounds = roundsWithExtraAttacks.Count(
                         m => (m.Count() - attackCalc.AttacksPerRound) > 2);
 
-                    attackCalc.ExtraAttacks = attackCalc.Plus1Rounds + attackCalc.Plus2Rounds + attackCalc.PlusNRounds;
+                    attackCalc.ExtraAttacks = roundsWithExtraAttacks.Sum(
+                        m => m.Count() - attackCalc.AttacksPerRound);
 
                     attackCalc.FracRoundsWithExtraAttacks = (double)attackCalc.RoundsWithExtraAttacks / attackCalc.Rounds;
 
@@ -385,9 +386,9 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var attacker in attackCalcs)
             {
-                sb.AppendFormat("{0,-20}{1,20:f2}{2,27:p2}{3,22:f2}\n",
+                sb.AppendFormat("{0,-20}{1,25}{2,27:p2}{3,22:f2}\n",
                     attacker.Name,
-                    attacker.AvgExtraAttacks,
+                    attacker.RoundsWithExtraAttacks,
                     attacker.FracRoundsWithExtraAttacks,
                     attacker.AvgAttacksPerRound);
             }
@@ -405,12 +406,12 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var attacker in attackCalcs)
             {
-                sb.AppendFormat("{0,-20}{1,25}{2,14}{3,14}{4,15}\n",
+                sb.AppendFormat("{0,-20}{1,12}{2,14}{3,15}{4,22:f2}\n",
                     attacker.Name,
-                    attacker.RoundsWithExtraAttacks,
                     attacker.Plus1Rounds,
                     attacker.Plus2Rounds,
-                    attacker.PlusNRounds);
+                    attacker.PlusNRounds,
+                    attacker.AvgExtraAttacks);
             }
             sb.Append("\n");
 
