@@ -94,7 +94,7 @@
     <Compile Include="Interface\BasePluginControl.Designer.cs">
       <DependentUpon>BasePluginControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interface\PluginInterface.cs" />
+    <Compile Include="Interface\IPlugin.cs" />
     <Compile Include="Interface\PluginUtilities.cs" />
     <Compile Include="Interface\RTFStringMods.cs" />
     <Compile Include="KPDatabaseDataSet.cs">
