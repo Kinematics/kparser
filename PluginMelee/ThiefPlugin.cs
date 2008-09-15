@@ -262,7 +262,7 @@ namespace WaywardGamers.KParser.Plugin
                 return;
 
             string selectedPlayer = playersCombo.CBSelectedItem();
-            string selectedMob = mobsCombo.CBSelectedItem();
+            MobFilter mobFilter = mobsCombo.CBGetMobFilter();
 
             List<string> playerList = new List<string>();
 
@@ -282,73 +282,7 @@ namespace WaywardGamers.KParser.Plugin
             if (playerList.Count == 0)
                 return;
 
-            if (selectedMob == "All")
-                SelectAllMobs(dataSet, playerList.ToArray());
-            else if (groupMobs == true)
-                SelectMobGroup(dataSet, playerList.ToArray(), selectedMob);
-            else
-                SelectBattle(dataSet, playerList.ToArray(), selectedMob);
-        }
-
-        /// <summary>
-        /// Process all mobs
-        /// </summary>
-        /// <param name="dataSet"></param>
-        /// <param name="selectedPlayers"></param>
-        private void SelectAllMobs(KPDatabaseDataSet dataSet, string[] selectedPlayers)
-        {
-            var attackSet = from c in dataSet.Combatants
-                            where (selectedPlayers.Contains(c.CombatantName))
-                            select new AttackGroup
-                            {
-                                Name = c.CombatantName,
-                                Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                        where ((ActionType)n.ActionType == ActionType.Melee &&
-                                               ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
-                                        select n,
-                                Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                          where ((ActionType)n.ActionType == ActionType.Ability &&
-                                                 (AidType)n.AidType == AidType.Enhance &&
-                                                 n.Preparing == false)
-                                          select n,
-                                WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                         where ((ActionType)n.ActionType == ActionType.Weaponskill &&
-                                               ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
-                                                n.Preparing == false &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
-                                         select n,
-                            };
-
-            ProcessAttackSet(attackSet);
-        }
-
-        /// <summary>
-        /// Process a mob type, or mob level type
-        /// </summary>
-        /// <param name="dataSet"></param>
-        /// <param name="selectedPlayers"></param>
-        /// <param name="selectedMob"></param>
-        private void SelectMobGroup(KPDatabaseDataSet dataSet, string[] selectedPlayers, string selectedMob)
-        {
-            Regex mobAndXP = new Regex(@"((?<mobName>.*(?<! \())) \(((?<xp>\d+)\))|(?<mobName>.*)");
-            Match mobAndXPMatch = mobAndXP.Match(selectedMob);
-
-            if (mobAndXPMatch.Success == false)
-                return;
-
-            string mobName;
-            int xp = 0;
-
-            mobName = mobAndXPMatch.Groups["mobName"].Value;
-
-            if ((mobAndXPMatch.Groups["xp"] != null) && (mobAndXPMatch.Groups["xp"].Value != string.Empty))
-            {
-                xp = int.Parse(mobAndXPMatch.Groups["xp"].Value);
-            }
-
+            string[] selectedPlayers = playerList.ToArray();
 
             var attackSet = from c in dataSet.Combatants
                             where (selectedPlayers.Contains(c.CombatantName))
@@ -359,87 +293,28 @@ namespace WaywardGamers.KParser.Plugin
                                         where ((ActionType)n.ActionType == ActionType.Melee &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
-                                               n.IsTargetIDNull() == false &&
-                                               n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
-                                               n.IsBattleIDNull() == false &&
-                                               (xp == 0 ||
-                                               n.BattlesRow.MinBaseExperience() == xp) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
+                                               ((DefenseType)n.DefenseType == DefenseType.None)) &&
+                                               mobFilter.CheckFilterMobBattle(n) == true
                                         select n,
                                 Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                           where ((ActionType)n.ActionType == ActionType.Ability &&
                                                  (AidType)n.AidType == AidType.Enhance &&
-                                                 n.IsBattleIDNull() == false &&
-                                                (n.BattlesRow.DefaultBattle == true ||
-                                                 xp == 0 ||
-                                                 n.BattlesRow.MinBaseExperience() == xp) &&
-                                                n.Preparing == false)
+                                                 n.Preparing == false) &&
+                                               (mobFilter.CheckFilterMobBattle(n) == true ||
+                                               n.IsBattleIDNull() == true)
                                           select n,
                                 WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                          where ((ActionType)n.ActionType == ActionType.Weaponskill &&
-                                                ((HarmType)n.HarmType == HarmType.Damage ||
-                                                 (HarmType)n.HarmType == HarmType.Drain) &&
-                                                n.IsTargetIDNull() == false &&
-                                                n.CombatantsRowByTargetCombatantRelation.CombatantName == mobName &&
-                                                n.IsBattleIDNull() == false &&
-                                                (xp == 0 ||
-                                                n.BattlesRow.MinBaseExperience() == xp) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
-                                         select n,
-                            };
-
-            ProcessAttackSet(attackSet);
-        }
-
-        /// <summary>
-        /// Process a single battle
-        /// </summary>
-        /// <param name="dataSet"></param>
-        /// <param name="selectedPlayers"></param>
-        /// <param name="selectedMob"></param>
-        private void SelectBattle(KPDatabaseDataSet dataSet, string[] selectedPlayers, string selectedMob)
-        {
-            Regex mobBattle = new Regex(@"\s*(?<battleID>\d+):\s+(?<mobName>.*)");
-            Match mobBattleMatch = mobBattle.Match(selectedMob);
-
-            if (mobBattleMatch.Success == false)
-                return;
-
-            int battleID = int.Parse(mobBattleMatch.Groups["battleID"].Value);
-
-            var attackSet = from c in dataSet.Combatants
-                            where (selectedPlayers.Contains(c.CombatantName))
-                            select new AttackGroup
-                            {
-                                Name = c.CombatantName,
-                                Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                        where ((n.IsBattleIDNull() == false) &&
-                                               (n.BattleID == battleID ||
-                                                n.BattlesRow.DefaultBattle == true) &&
-                                               ((ActionType)n.ActionType == ActionType.Melee) &&
-                                               ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
-                                        select n,
-                                Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                          where ((n.IsBattleIDNull() == false) &&
-                                               (n.BattleID == battleID) &&
-                                               ((ActionType)n.ActionType == ActionType.Ability) &&
-                                                (AidType)n.AidType == AidType.Enhance &&
-                                                n.Preparing == false)
-                                          select n,
-                                WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                         where ((n.IsBattleIDNull() == false) &&
-                                               (n.BattleID == battleID) &&
-                                               ((ActionType)n.ActionType == ActionType.Weaponskill) &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
                                                 n.Preparing == false &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
+                                               ((DefenseType)n.DefenseType == DefenseType.None)) &&
+                                               mobFilter.CheckFilterMobBattle(n) == true
                                          select n,
                             };
 
             ProcessAttackSet(attackSet);
+
         }
 
         /// <summary>
