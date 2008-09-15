@@ -192,6 +192,8 @@ namespace WaywardGamers.KParser.Plugin
             {
                 richTextBox.SelectionFont = normFont;
             }
+
+            richTextBox.Select(0, 0);
         }
 
         protected void PushStrings(StringBuilder sb, List<StringMods> strModList)
