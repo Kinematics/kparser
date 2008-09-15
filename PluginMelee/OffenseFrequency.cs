@@ -23,9 +23,9 @@ namespace WaywardGamers.KParser.Plugin
 
         public OffenseFrequencyDataPlugin()
         {
-            ToolStripLabel catLabel = new ToolStripLabel();
-            catLabel.Text = "Players:";
-            toolStrip.Items.Add(catLabel);
+            ToolStripLabel playerLabel = new ToolStripLabel();
+            playerLabel.Text = "Players:";
+            toolStrip.Items.Add(playerLabel);
 
             playersCombo.DropDownStyle = ComboBoxStyle.DropDownList;
             playersCombo.Items.Add("All");
