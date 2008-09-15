@@ -65,7 +65,8 @@
             // 
             // combatantListBox
             // 
-            this.combatantListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.combatantListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.combatantListBox.FormattingEnabled = true;
             this.combatantListBox.Location = new System.Drawing.Point(12, 25);
@@ -130,6 +131,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancel;
             this.ClientSize = new System.Drawing.Size(379, 230);
+            this.ControlBox = false;
             this.Controls.Add(this.combatantDescription);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -143,7 +145,7 @@
             this.MinimizeBox = false;
             this.Name = "PlayerInfo";
             this.ShowInTaskbar = false;
-            this.Text = "PlayerInfo";
+            this.Text = "Player Information";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PlayerInfo_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
