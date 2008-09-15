@@ -758,7 +758,7 @@ namespace WaywardGamers.KParser.Plugin
         #region Processing sections
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
-            richTextBox.Clear();
+            ResetTextBox();
             string actionSourceFilter = categoryCombo.CBSelectedItem();
 
             List<StringMods> strModList = new List<StringMods>();
