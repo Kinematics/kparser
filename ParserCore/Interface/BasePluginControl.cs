@@ -197,28 +197,31 @@ namespace WaywardGamers.KParser.Plugin
             richTextBox.SelectionFont = normFont;
             richTextBox.SelectionColor = Color.Black;
 
-            foreach (var strMod in strModList)
+            if (strModList != null)
             {
-                richTextBox.Select(strMod.Start + start, strMod.Length);
+                foreach (var strMod in strModList)
+                {
+                    richTextBox.Select(strMod.Start + start, strMod.Length);
 
-                if ((strMod.Bold == true) && (strMod.Underline == true))
-                {
-                    richTextBox.SelectionFont = buFont;
-                }
-                else if (strMod.Bold == true)
-                {
-                    richTextBox.SelectionFont = boldFont;
-                }
-                else if (strMod.Underline == true)
-                {
-                    richTextBox.SelectionFont = underFont;
-                }
-                else
-                {
-                    richTextBox.SelectionFont = normFont;
-                }
+                    if ((strMod.Bold == true) && (strMod.Underline == true))
+                    {
+                        richTextBox.SelectionFont = buFont;
+                    }
+                    else if (strMod.Bold == true)
+                    {
+                        richTextBox.SelectionFont = boldFont;
+                    }
+                    else if (strMod.Underline == true)
+                    {
+                        richTextBox.SelectionFont = underFont;
+                    }
+                    else
+                    {
+                        richTextBox.SelectionFont = normFont;
+                    }
 
-                richTextBox.SelectionColor = strMod.Color;
+                    richTextBox.SelectionColor = strMod.Color;
+                }
             }
 
             richTextBox.Select(0, 0);
