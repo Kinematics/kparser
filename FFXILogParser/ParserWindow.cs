@@ -1093,6 +1093,23 @@ namespace WaywardGamers.KParser
 
             DatabaseManager.Instance.DatabaseChanging -= MonitorDatabaseChanging;
             DatabaseManager.Instance.DatabaseChanged -= MonitorDatabaseChanged;
+
+            try
+            {
+                lock (activePluginList)
+                {
+                    foreach (IPlugin plugin in activePluginList)
+                    {
+                        plugin.ParseComplete(DatabaseManager.Instance.Database);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Log(e);
+                MessageBox.Show(e.Message, "Error while attempting to stop parse.",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void Shutdown()
