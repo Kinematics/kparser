@@ -370,6 +370,8 @@ namespace WaywardGamers.KParser.Plugin
                         var nextWS = player.WSkill.FirstOrDefault(w => w.Timestamp >= firstAction.Timestamp &&
                             w.Timestamp <= firstAction.Timestamp.AddMinutes(1));
 
+                        var tmpMelee = nextMelee;
+
                         KPDatabaseDataSet.InteractionsRow sataDamage = null;
 
 
@@ -389,14 +391,6 @@ namespace WaywardGamers.KParser.Plugin
                             sataEvent.SATASuccess = true;
                         }
 
-                        if (sataDamage != null)
-                        {
-                            if (sataDamage.Timestamp >= firstAction.Timestamp.AddMinutes(1))
-                            {
-                                sataEvent.SATASuccess = false;
-                                continue;
-                            }
-                        }
 
                         // If no attack has been selected, check for abnormally high values
                         // in the next melee attack (crit or non-crit).  If present, indicates
@@ -427,27 +421,62 @@ namespace WaywardGamers.KParser.Plugin
                         // round).
                         if (sataDamage == null)
                         {
-                            nextMelee = player.Melee.FirstOrDefault(m => m.Timestamp > firstAction.Timestamp);
-                            if (nextMelee != null)
+                            tmpMelee = player.Melee.FirstOrDefault(m => m.Timestamp > firstAction.Timestamp);
+                            if (tmpMelee != null)
                             {
-                                if ((DamageModifier)nextMelee.DamageModifier == DamageModifier.Critical)
+                                if ((DamageModifier)tmpMelee.DamageModifier == DamageModifier.Critical)
                                 {
-                                    if (nextMelee.Amount > critThreshold)
+                                    if (tmpMelee.Amount > critThreshold)
                                     {
+                                        nextMelee = tmpMelee;
                                         sataDamage = nextMelee;
                                         sataEvent.SATASuccess = true;
                                     }
                                 }
                                 else
                                 {
-                                    if (nextMelee.Amount > nonCritThreshold)
+                                    if (tmpMelee.Amount > nonCritThreshold)
                                     {
+                                        nextMelee = tmpMelee;
                                         sataDamage = nextMelee;
                                         sataEvent.SATASuccess = true;
                                     }
                                 }
                             }
                         }
+
+                        // Similar to the last check, but check for melee attacks occuring
+                        // immediately before the SATA message due to out-of-order/lag
+                        // issues.
+                        if (sataDamage == null)
+                        {
+                            // Find melee hits up to 2 seconds prior to the SATA message.
+                            tmpMelee = player.Melee.FirstOrDefault(
+                                m => m.Timestamp >= firstAction.Timestamp.AddSeconds(-2));
+
+                            if (tmpMelee != null)
+                            {
+                                if ((DamageModifier)tmpMelee.DamageModifier == DamageModifier.Critical)
+                                {
+                                    if (tmpMelee.Amount > critThreshold)
+                                    {
+                                        nextMelee = tmpMelee;
+                                        sataDamage = nextMelee;
+                                        sataEvent.SATASuccess = true;
+                                    }
+                                }
+                                else
+                                {
+                                    if (tmpMelee.Amount > nonCritThreshold)
+                                    {
+                                        nextMelee = tmpMelee;
+                                        sataDamage = nextMelee;
+                                        sataEvent.SATASuccess = true;
+                                    }
+                                }
+                            }
+                        }
+
 
                         // Haven't found a melee hit to match up with this yet, so next
                         // check for weaponskills in the period between JA use and melee.
