@@ -27,6 +27,21 @@ namespace WaywardGamers.KParser.Plugin
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Retaliate { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Spikes { get; set; }
 
+        internal int TotalActions
+        {
+            get
+            {
+                return Melee.Count() +
+                    Range.Count() +
+                    Spell.Count() +
+                    Ability.Count() +
+                    WSkill.Count() +
+                    Counter.Count() +
+                    Retaliate.Count() +
+                    Spikes.Count();
+            }
+        }
+
         internal int MeleeDmg
         {
             get
@@ -92,6 +107,22 @@ namespace WaywardGamers.KParser.Plugin
             get
             {
                 return SC.Sum(d => d.Amount);
+            }
+        }
+
+        internal int CounterDmg
+        {
+            get
+            {
+                return Counter.Sum(d => d.Amount);
+            }
+        }
+
+        internal int RetaliateDmg
+        {
+            get
+            {
+                return Retaliate.Sum(d => d.Amount);
             }
         }
 
