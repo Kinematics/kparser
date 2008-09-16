@@ -291,29 +291,9 @@ namespace WaywardGamers.KParser.Plugin
             StringBuilder sb = new StringBuilder();
             List<StringMods> strModList = new List<StringMods>();
             string headerTitle;
-            string totalsLine;
 
-            double meleeDPM;
-            double rangeDPM;
-            double magicDPM;
-            double abilDPM;
-            double wsDPM;
-            double otherDPM;
-            double totalDPM;
-
-            double meleeDPMTotal;
-            double rangeDPMTotal;
-            double magicDPMTotal;
-            double abilDPMTotal;
-            double wsDPMTotal;
-            double otherDPMTotal;
-            double totalDPMTotal;
-
-            DateTime playerStart;
-            DateTime firstStart;
             DateTime startTimeFilter;
             DateTime endTimeFilter;
-            IEnumerable<KPDatabaseDataSet.InteractionsRow> attacks;
 
             ///////////////////////////////////////////////////////////////////
 
@@ -349,135 +329,24 @@ namespace WaywardGamers.KParser.Plugin
                         fightLength.Hours, fightLength.Minutes, fightLength.Seconds)
                     : "--:--:--");
 
+            sb.Append("\n\n");
 
             ///////////////////////////////////////////////////////////////////
+            // Cumulative Damage Per Minute
 
-            headerTitle = "\n\nCumulative Damage Per Minute\n";
-            strModList.Add(new StringMods
-            {
-                Start = sb.Length,
-                Length = headerTitle.Length,
-                Bold = true,
-                Color = Color.Blue
-            });
-            sb.Append(headerTitle);
+            startTimeFilter = battle.StartTime;
 
-            strModList.Add(new StringMods
-            {
-                Start = sb.Length,
-                Length = header2.Length,
-                Bold = true,
-                Underline = true,
-                Color = Color.Black
-            });
-            sb.Append(header2);
+            if (battle.EndTime > battle.StartTime)
+                endTimeFilter = battle.EndTime;
+            else
+                endTimeFilter = DateTime.Now;
 
-            meleeDPMTotal = 0;
-            rangeDPMTotal = 0;
-            magicDPMTotal = 0;
-            abilDPMTotal = 0;
-            wsDPMTotal = 0;
-            otherDPMTotal = 0;
-            totalDPMTotal = 0;
-            firstStart = DateTime.MinValue;
+            CreateOuput("Cumulative Damage Per Minute\n",
+                attackSet, battle, startTimeFilter, endTimeFilter, ref sb, ref strModList);
 
-            foreach (var attacker in attackSet)
-            {
-                if (attacker.TotalActions > 0)
-                {
-                    meleeDPM = attacker.MeleeDmg / fightMinutes;
-                    rangeDPM = attacker.RangeDmg / fightMinutes;
-                    magicDPM = attacker.SpellDmg / fightMinutes;
-                    abilDPM = attacker.AbilityDmg / fightMinutes;
-                    wsDPM = attacker.WSkillDmg / fightMinutes;
-                    otherDPM = (attacker.SpikesDmg + attacker.CounterDmg + attacker.RetaliateDmg) / fightMinutes;
-
-                    totalDPM = meleeDPM + rangeDPM + magicDPM + abilDPM + wsDPM + otherDPM;
-
-                    playerStart = DateTime.MaxValue;
-                    if (attacker.Melee.Count() > 0)
-                        playerStart = attacker.Melee.First().Timestamp;
-                    if (attacker.Range.Count() > 0)
-                        if (attacker.Range.First().Timestamp < playerStart)
-                            playerStart = attacker.Range.First().Timestamp;
-                    if (attacker.Spell.Count() > 0)
-                        if (attacker.Spell.First().Timestamp < playerStart)
-                            playerStart = attacker.Spell.First().Timestamp;
-                    if (attacker.Ability.Count() > 0)
-                        if (attacker.Ability.First().Timestamp < playerStart)
-                            playerStart = attacker.Ability.First().Timestamp;
-                    if (attacker.WSkill.Count() > 0)
-                        if (attacker.WSkill.First().Timestamp < playerStart)
-                            playerStart = attacker.WSkill.First().Timestamp;
-
-                    if ((firstStart == DateTime.MinValue) || (playerStart < firstStart))
-                        firstStart = playerStart;
-
-                    meleeDPMTotal += meleeDPM;
-                    rangeDPMTotal += rangeDPM;
-                    magicDPMTotal += magicDPM;
-                    abilDPMTotal += abilDPM;
-                    wsDPMTotal += wsDPM;
-                    otherDPMTotal += otherDPM;
-                    totalDPMTotal += totalDPM;
-
-                    sb.AppendFormat("{0,-20}{1,11}{2,12:f2}{3,12:f2}{4,12:f2}{5,11:f2}{6,9:f2}{7,12:f2}{8,12:f2}\n",
-                        attacker.Name,
-                        playerStart.ToShortTimeString(),
-                        meleeDPM,
-                        rangeDPM,
-                        magicDPM,
-                        abilDPM,
-                        wsDPM,
-                        otherDPM,
-                        totalDPM);
-                }
-            }
-
-            if (firstStart != DateTime.MinValue)
-            {
-                totalsLine = string.Format("{0,-20}{1,11}{2,12:f2}{3,12:f2}{4,12:f2}{5,11:f2}{6,9:f2}{7,12:f2}{8,12:f2}\n",
-                    "Totals",
-                    firstStart.ToShortTimeString(),
-                    meleeDPMTotal,
-                    rangeDPMTotal,
-                    magicDPMTotal,
-                    abilDPMTotal,
-                    wsDPMTotal,
-                    otherDPMTotal,
-                    totalDPMTotal);
-
-                strModList.Add(new StringMods
-                {
-                    Start = sb.Length,
-                    Length = totalsLine.Length,
-                    Bold = true,
-                    Color = Color.Black
-                });
-                sb.Append(totalsLine);
-            }
 
             ///////////////////////////////////////////////////////////////////
-
-            headerTitle = "\n\nDamage in the last minute\n";
-            strModList.Add(new StringMods
-            {
-                Start = sb.Length,
-                Length = headerTitle.Length,
-                Bold = true,
-                Color = Color.Blue
-            });
-            sb.Append(headerTitle);
-
-            strModList.Add(new StringMods
-            {
-                Start = sb.Length,
-                Length = header2.Length,
-                Bold = true,
-                Underline = true,
-                Color = Color.Black
-            });
-            sb.Append(header2);
+            // Damage in the last minute
 
             if (battle.EndTime > battle.StartTime)
                 endTimeFilter = battle.EndTime;
@@ -489,143 +358,14 @@ namespace WaywardGamers.KParser.Plugin
             if (startTimeFilter < battle.StartTime)
                 startTimeFilter = battle.StartTime;
 
-            meleeDPMTotal = 0;
-            rangeDPMTotal = 0;
-            magicDPMTotal = 0;
-            abilDPMTotal = 0;
-            wsDPMTotal = 0;
-            otherDPMTotal = 0;
-            totalDPMTotal = 0;
-            firstStart = DateTime.MinValue;
-
-            foreach (var attacker in attackSet)
-            {
-                if (attacker.TotalActions > 0)
-                {
-                    playerStart = DateTime.MaxValue;
-
-                    attacks = attacker.Melee
-                        .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                    meleeDPM = attacks != null ? attacks.Sum(d => d.Amount) : 0;
-                    if (attacks.Count() > 0)
-                        if (attacks.First().Timestamp < playerStart)
-                            playerStart = attacks.First().Timestamp;
-                    attacks = attacker.MeleeEffect
-                        .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                    meleeDPM += attacks != null ? attacks.Sum(d => d.SecondAmount) : 0;
-
-                    attacks = attacker.Range
-                        .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                    rangeDPM = attacks != null ? attacks.Sum(d => d.Amount) : 0;
-                    if (attacks.Count() > 0)
-                        if (attacks.First().Timestamp < playerStart)
-                            playerStart = attacks.First().Timestamp;
-                    attacks = attacker.RangeEffect
-                        .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                    rangeDPM += attacks != null ? attacks.Sum(d => d.SecondAmount) : 0;
-
-                    attacks = attacker.Spell
-                        .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                    magicDPM = attacks != null ? attacks.Sum(d => d.Amount) : 0;
-                    if (attacks.Count() > 0)
-                        if (attacks.First().Timestamp < playerStart)
-                            playerStart = attacks.First().Timestamp;
-
-                    attacks = attacker.Ability
-                        .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                    abilDPM = attacks != null ? attacks.Sum(d => d.Amount) : 0;
-                    if (attacks.Count() > 0)
-                        if (attacks.First().Timestamp < playerStart)
-                            playerStart = attacks.First().Timestamp;
-
-                    attacks = attacker.WSkill
-                        .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                    wsDPM = attacks != null ? attacks.Sum(d => d.Amount) : 0;
-                    if (attacks.Count() > 0)
-                        if (attacks.First().Timestamp < playerStart)
-                            playerStart = attacks.First().Timestamp;
-
-                    attacks = attacker.Spikes
-                        .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter)
-                        .Concat(attacker.Counter.Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter))
-                        .Concat(attacker.Retaliate.Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter));
-                    otherDPM = attacks != null ? attacks.Sum(d => d.Amount) : 0;
-                    if (attacks.Count() > 0)
-                        if (attacks.First().Timestamp < playerStart)
-                            playerStart = attacks.First().Timestamp;
-
-
-                    totalDPM = meleeDPM + rangeDPM + magicDPM + abilDPM + wsDPM + otherDPM;
-
-                    if ((firstStart == DateTime.MinValue) || (playerStart < firstStart))
-                        firstStart = playerStart;
-
-                    meleeDPMTotal += meleeDPM;
-                    rangeDPMTotal += rangeDPM;
-                    magicDPMTotal += magicDPM;
-                    abilDPMTotal += abilDPM;
-                    wsDPMTotal += wsDPM;
-                    otherDPMTotal += otherDPM;
-                    totalDPMTotal += totalDPM;
-
-                    sb.AppendFormat("{0,-20}{1,11}{2,12:f2}{3,12:f2}{4,12:f2}{5,11:f2}{6,9:f2}{7,12:f2}{8,12:f2}\n",
-                        attacker.Name,
-                        playerStart.ToShortTimeString(),
-                        meleeDPM,
-                        rangeDPM,
-                        magicDPM,
-                        abilDPM,
-                        wsDPM,
-                        otherDPM,
-                        totalDPM);
-                }
-            }
-
-            if (firstStart != DateTime.MinValue)
-            {
-                totalsLine = string.Format("{0,-20}{1,11}{2,12:f2}{3,12:f2}{4,12:f2}{5,11:f2}{6,9:f2}{7,12:f2}{8,12:f2}\n",
-                    "Totals",
-                    firstStart.ToShortTimeString(),
-                    meleeDPMTotal,
-                    rangeDPMTotal,
-                    magicDPMTotal,
-                    abilDPMTotal,
-                    wsDPMTotal,
-                    otherDPMTotal,
-                    totalDPMTotal);
-
-                strModList.Add(new StringMods
-                {
-                    Start = sb.Length,
-                    Length = totalsLine.Length,
-                    Bold = true,
-                    Color = Color.Black
-                });
-                sb.Append(totalsLine);
-            }
+            CreateOuput("Damage in the last minute\n",
+                attackSet, battle, startTimeFilter, endTimeFilter, ref sb, ref strModList);
 
 
             ///////////////////////////////////////////////////////////////////
+            // Damage in the previous minute
 
-            headerTitle = "\n\nDamage in the previous minute\n";
-            strModList.Add(new StringMods
-            {
-                Start = sb.Length,
-                Length = headerTitle.Length,
-                Bold = true,
-                Color = Color.Blue
-            });
-            sb.Append(headerTitle);
-
-            strModList.Add(new StringMods
-            {
-                Start = sb.Length,
-                Length = header2.Length,
-                Bold = true,
-                Underline = true,
-                Color = Color.Black
-            });
-            sb.Append(header2);
+            startTimeFilter = battle.StartTime;
 
             if (battle.EndTime > battle.StartTime)
                 endTimeFilter = battle.EndTime.AddMinutes(-1);
@@ -640,157 +380,12 @@ namespace WaywardGamers.KParser.Plugin
             if (startTimeFilter < battle.StartTime)
                 startTimeFilter = battle.StartTime;
 
-            if (endTimeFilter > startTimeFilter)
-            {
-                meleeDPMTotal = 0;
-                rangeDPMTotal = 0;
-                magicDPMTotal = 0;
-                abilDPMTotal = 0;
-                wsDPMTotal = 0;
-                otherDPMTotal = 0;
-                totalDPMTotal = 0;
-                firstStart = DateTime.MinValue;
-
-                foreach (var attacker in attackSet)
-                {
-                    if (attacker.TotalActions > 0)
-                    {
-                        playerStart = DateTime.MaxValue;
-
-                        attacks = attacker.Melee
-                            .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                        meleeDPM = attacks != null ? attacks.Sum(d => d.Amount) : 0;
-                        if (attacks.Count() > 0)
-                            if (attacks.First().Timestamp < playerStart)
-                                playerStart = attacks.First().Timestamp;
-                        attacks = attacker.MeleeEffect
-                            .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                        meleeDPM += attacks != null ? attacks.Sum(d => d.SecondAmount) : 0;
-
-                        attacks = attacker.Range
-                            .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                        rangeDPM = attacks != null ? attacks.Sum(d => d.Amount) : 0;
-                        if (attacks.Count() > 0)
-                            if (attacks.First().Timestamp < playerStart)
-                                playerStart = attacks.First().Timestamp;
-                        attacks = attacker.RangeEffect
-                            .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                        rangeDPM += attacks != null ? attacks.Sum(d => d.SecondAmount) : 0;
-
-                        attacks = attacker.Spell
-                            .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                        magicDPM = attacks != null ? attacks.Sum(d => d.Amount) : 0;
-                        if (attacks.Count() > 0)
-                            if (attacks.First().Timestamp < playerStart)
-                                playerStart = attacks.First().Timestamp;
-
-                        attacks = attacker.Ability
-                            .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                        abilDPM = attacks != null ? attacks.Sum(d => d.Amount) : 0;
-                        if (attacks.Count() > 0)
-                            if (attacks.First().Timestamp < playerStart)
-                                playerStart = attacks.First().Timestamp;
-
-                        attacks = attacker.WSkill
-                            .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                        wsDPM = attacks != null ? attacks.Sum(d => d.Amount) : 0;
-                        if (attacks.Count() > 0)
-                            if (attacks.First().Timestamp < playerStart)
-                                playerStart = attacks.First().Timestamp;
-
-                        attacks = attacker.Spikes
-                            .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter)
-                            .Concat(attacker.Counter.Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter))
-                            .Concat(attacker.Retaliate.Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter));
-                        otherDPM = attacks != null ? attacks.Sum(d => d.Amount) : 0;
-                        if (attacks.Count() > 0)
-                            if (attacks.First().Timestamp < playerStart)
-                                playerStart = attacks.First().Timestamp;
-
-
-                        totalDPM = meleeDPM + rangeDPM + magicDPM + abilDPM + wsDPM + otherDPM;
-
-                        if ((firstStart == DateTime.MinValue) || (playerStart < firstStart))
-                            firstStart = playerStart;
-
-                        meleeDPMTotal += meleeDPM;
-                        rangeDPMTotal += rangeDPM;
-                        magicDPMTotal += magicDPM;
-                        abilDPMTotal += abilDPM;
-                        wsDPMTotal += wsDPM;
-                        otherDPMTotal += otherDPM;
-                        totalDPMTotal += totalDPM;
-
-                        sb.AppendFormat("{0,-20}{1,11}{2,12:f2}{3,12:f2}{4,12:f2}{5,11:f2}{6,9:f2}{7,12:f2}{8,12:f2}\n",
-                            attacker.Name,
-                            playerStart.ToShortTimeString(),
-                            meleeDPM,
-                            rangeDPM,
-                            magicDPM,
-                            abilDPM,
-                            wsDPM,
-                            otherDPM,
-                            totalDPM);
-                    }
-                }
-
-                if (firstStart != DateTime.MinValue)
-                {
-                    totalsLine = string.Format("{0,-20}{1,11}{2,12:f2}{3,12:f2}{4,12:f2}{5,11:f2}{6,9:f2}{7,12:f2}{8,12:f2}\n",
-                        "Totals",
-                        firstStart.ToShortTimeString(),
-                        meleeDPMTotal,
-                        rangeDPMTotal,
-                        magicDPMTotal,
-                        abilDPMTotal,
-                        wsDPMTotal,
-                        otherDPMTotal,
-                        totalDPMTotal);
-
-                    strModList.Add(new StringMods
-                    {
-                        Start = sb.Length,
-                        Length = totalsLine.Length,
-                        Bold = true,
-                        Color = Color.Black
-                    });
-                    sb.Append(totalsLine);
-                }
-            }
+            CreateOuput("Damage in the previous minute\n",
+                attackSet, battle, startTimeFilter, endTimeFilter, ref sb, ref strModList);
 
 
             ///////////////////////////////////////////////////////////////////
             // Damage in the first minute
-            //startTimeFilter = battle.StartTime;
-
-            //endTimeFilter = startTimeFilter.AddMinutes(1);
-
-            //if ((battle.EndTime > battle.StartTime) && (endTimeFilter > battle.EndTime))
-            //    endTimeFilter = battle.EndTime;
-
-            //CreateOuput("\n\nDamage in the first minute\n",
-            //    attackSet, battle, startTimeFilter, endTimeFilter, ref sb, ref strModList);
-
-
-            headerTitle = "\n\nDamage in the first minute\n";
-            strModList.Add(new StringMods
-            {
-                Start = sb.Length,
-                Length = headerTitle.Length,
-                Bold = true,
-                Color = Color.Blue
-            });
-            sb.Append(headerTitle);
-
-            strModList.Add(new StringMods
-            {
-                Start = sb.Length,
-                Length = header2.Length,
-                Bold = true,
-                Underline = true,
-                Color = Color.Black
-            });
-            sb.Append(header2);
 
             startTimeFilter = battle.StartTime;
 
@@ -799,120 +394,8 @@ namespace WaywardGamers.KParser.Plugin
             if ((battle.EndTime > battle.StartTime) && (endTimeFilter > battle.EndTime))
                 endTimeFilter = battle.EndTime;
 
-            meleeDPMTotal = 0;
-            rangeDPMTotal = 0;
-            magicDPMTotal = 0;
-            abilDPMTotal = 0;
-            wsDPMTotal = 0;
-            otherDPMTotal = 0;
-            totalDPMTotal = 0;
-            firstStart = DateTime.MinValue;
-
-            foreach (var attacker in attackSet)
-            {
-                if (attacker.TotalActions > 0)
-                {
-                    playerStart = DateTime.MaxValue;
-
-                    attacks = attacker.Melee
-                        .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                    meleeDPM = attacks != null ? attacks.Sum(d => d.Amount) : 0;
-                    if (attacks.Count() > 0)
-                        if (attacks.First().Timestamp < playerStart)
-                            playerStart = attacks.First().Timestamp;
-                    attacks = attacker.MeleeEffect
-                        .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                    meleeDPM += attacks != null ? attacks.Sum(d => d.SecondAmount) : 0;
-
-                    attacks = attacker.Range
-                        .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                    rangeDPM = attacks != null ? attacks.Sum(d => d.Amount) : 0;
-                    if (attacks.Count() > 0)
-                        if (attacks.First().Timestamp < playerStart)
-                            playerStart = attacks.First().Timestamp;
-                    attacks = attacker.RangeEffect
-                        .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                    rangeDPM += attacks != null ? attacks.Sum(d => d.SecondAmount) : 0;
-
-                    attacks = attacker.Spell
-                        .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                    magicDPM = attacks != null ? attacks.Sum(d => d.Amount) : 0;
-                    if (attacks.Count() > 0)
-                        if (attacks.First().Timestamp < playerStart)
-                            playerStart = attacks.First().Timestamp;
-
-                    attacks = attacker.Ability
-                        .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                    abilDPM = attacks != null ? attacks.Sum(d => d.Amount) : 0;
-                    if (attacks.Count() > 0)
-                        if (attacks.First().Timestamp < playerStart)
-                            playerStart = attacks.First().Timestamp;
-
-                    attacks = attacker.WSkill
-                        .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
-                    wsDPM = attacks != null ? attacks.Sum(d => d.Amount) : 0;
-                    if (attacks.Count() > 0)
-                        if (attacks.First().Timestamp < playerStart)
-                            playerStart = attacks.First().Timestamp;
-
-                    attacks = attacker.Spikes
-                        .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter)
-                        .Concat(attacker.Counter.Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter))
-                        .Concat(attacker.Retaliate.Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter));
-                    otherDPM = attacks != null ? attacks.Sum(d => d.Amount) : 0;
-                    if (attacks.Count() > 0)
-                        if (attacks.First().Timestamp < playerStart)
-                            playerStart = attacks.First().Timestamp;
-
-
-                    totalDPM = meleeDPM + rangeDPM + magicDPM + abilDPM + wsDPM + otherDPM;
-
-                    if ((firstStart == DateTime.MinValue) || (playerStart < firstStart))
-                        firstStart = playerStart;
-
-                    meleeDPMTotal += meleeDPM;
-                    rangeDPMTotal += rangeDPM;
-                    magicDPMTotal += magicDPM;
-                    abilDPMTotal += abilDPM;
-                    wsDPMTotal += wsDPM;
-                    otherDPMTotal += otherDPM;
-                    totalDPMTotal += totalDPM;
-
-                    sb.AppendFormat("{0,-20}{1,11}{2,12:f2}{3,12:f2}{4,12:f2}{5,11:f2}{6,9:f2}{7,12:f2}{8,12:f2}\n",
-                        attacker.Name,
-                        playerStart.ToShortTimeString(),
-                        meleeDPM,
-                        rangeDPM,
-                        magicDPM,
-                        abilDPM,
-                        wsDPM,
-                        otherDPM,
-                        totalDPM);
-                }
-            }
-
-            if (firstStart != DateTime.MinValue)
-            {
-                totalsLine = string.Format("{0,-20}{1,11}{2,12:f2}{3,12:f2}{4,12:f2}{5,11:f2}{6,9:f2}{7,12:f2}{8,12:f2}\n",
-                    "Totals",
-                    firstStart.ToShortTimeString(),
-                    meleeDPMTotal,
-                    rangeDPMTotal,
-                    magicDPMTotal,
-                    abilDPMTotal,
-                    wsDPMTotal,
-                    otherDPMTotal,
-                    totalDPMTotal);
-
-                strModList.Add(new StringMods
-                {
-                    Start = sb.Length,
-                    Length = totalsLine.Length,
-                    Bold = true,
-                    Color = Color.Black
-                });
-                sb.Append(totalsLine);
-            }
+            CreateOuput("Damage in the first minute\n",
+                attackSet, battle, startTimeFilter, endTimeFilter, ref sb, ref strModList);
 
 
             ////////////////////////////////////////////////////////////////////
@@ -947,6 +430,8 @@ namespace WaywardGamers.KParser.Plugin
             DateTime playerStart;
             DateTime firstStart;
             IEnumerable<KPDatabaseDataSet.InteractionsRow> attacks;
+
+            double fightMinutes = (endTimeFilter - startTimeFilter).TotalMinutes;
 
             strModList.Add(new StringMods
             {
@@ -991,6 +476,7 @@ namespace WaywardGamers.KParser.Plugin
                     attacks = attacker.MeleeEffect
                         .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
                     meleeDPM += attacks != null ? attacks.Sum(d => d.SecondAmount) : 0;
+                    meleeDPM /= fightMinutes;
 
                     attacks = attacker.Range
                         .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
@@ -1001,6 +487,7 @@ namespace WaywardGamers.KParser.Plugin
                     attacks = attacker.RangeEffect
                         .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
                     rangeDPM += attacks != null ? attacks.Sum(d => d.SecondAmount) : 0;
+                    rangeDPM /= fightMinutes;
 
                     attacks = attacker.Spell
                         .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
@@ -1008,6 +495,7 @@ namespace WaywardGamers.KParser.Plugin
                     if (attacks.Count() > 0)
                         if (attacks.First().Timestamp < playerStart)
                             playerStart = attacks.First().Timestamp;
+                    magicDPM /= fightMinutes;
 
                     attacks = attacker.Ability
                         .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
@@ -1015,6 +503,7 @@ namespace WaywardGamers.KParser.Plugin
                     if (attacks.Count() > 0)
                         if (attacks.First().Timestamp < playerStart)
                             playerStart = attacks.First().Timestamp;
+                    abilDPM /= fightMinutes;
 
                     attacks = attacker.WSkill
                         .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter);
@@ -1022,6 +511,7 @@ namespace WaywardGamers.KParser.Plugin
                     if (attacks.Count() > 0)
                         if (attacks.First().Timestamp < playerStart)
                             playerStart = attacks.First().Timestamp;
+                    wsDPM /= fightMinutes;
 
                     attacks = attacker.Spikes
                         .Where(d => d.Timestamp >= startTimeFilter && d.Timestamp <= endTimeFilter)
@@ -1031,31 +521,35 @@ namespace WaywardGamers.KParser.Plugin
                     if (attacks.Count() > 0)
                         if (attacks.First().Timestamp < playerStart)
                             playerStart = attacks.First().Timestamp;
+                    otherDPM /= fightMinutes;
 
 
                     totalDPM = meleeDPM + rangeDPM + magicDPM + abilDPM + wsDPM + otherDPM;
 
-                    if (playerStart < firstStart)
-                        firstStart = playerStart;
+                    if (totalDPM > 0)
+                    {
+                        if (playerStart < firstStart)
+                            firstStart = playerStart;
 
-                    meleeDPMTotal += meleeDPM;
-                    rangeDPMTotal += rangeDPM;
-                    magicDPMTotal += magicDPM;
-                    abilDPMTotal += abilDPM;
-                    wsDPMTotal += wsDPM;
-                    otherDPMTotal += otherDPM;
-                    totalDPMTotal += totalDPM;
+                        meleeDPMTotal += meleeDPM;
+                        rangeDPMTotal += rangeDPM;
+                        magicDPMTotal += magicDPM;
+                        abilDPMTotal += abilDPM;
+                        wsDPMTotal += wsDPM;
+                        otherDPMTotal += otherDPM;
+                        totalDPMTotal += totalDPM;
 
-                    sb.AppendFormat("{0,-20}{1,11}{2,12:f2}{3,12:f2}{4,12:f2}{5,11:f2}{6,9:f2}{7,12:f2}{8,12:f2}\n",
-                        attacker.Name,
-                        playerStart.ToShortTimeString(),
-                        meleeDPM,
-                        rangeDPM,
-                        magicDPM,
-                        abilDPM,
-                        wsDPM,
-                        otherDPM,
-                        totalDPM);
+                        sb.AppendFormat("{0,-20}{1,11}{2,12:f2}{3,12:f2}{4,12:f2}{5,11:f2}{6,9:f2}{7,12:f2}{8,12:f2}\n",
+                            attacker.Name,
+                            playerStart.ToShortTimeString(),
+                            meleeDPM,
+                            rangeDPM,
+                            magicDPM,
+                            abilDPM,
+                            wsDPM,
+                            otherDPM,
+                            totalDPM);
+                    }
                 }
             }
 
@@ -1081,6 +575,8 @@ namespace WaywardGamers.KParser.Plugin
                 });
                 sb.Append(totalsLine);
             }
+
+            sb.Append("\n\n");
         }
         #endregion
 
