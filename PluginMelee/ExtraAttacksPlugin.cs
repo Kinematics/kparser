@@ -13,10 +13,10 @@ namespace WaywardGamers.KParser.Plugin
     public class ExtraAttacksPlugin : BasePluginControl
     {
         #region Constructor
-        string header1 = "Player               Total # Attacks   Total # Rounds   Min Attacks/Round   Total Extra Attacks\n";
-        string header2 = "Player               # Rounds w/Extra Attacks   % Rounds w/Extra Attacks   Avg # Attacks/Round\n";
-        string header3 = "Player               # +1 Rounds   # +2 Rounds   # >+2 Rounds   Avg # Extra Attacks\n";
-        string header4 = "Player               # -1 Rounds   # Countered Attacks\n";
+        string header1 = "Player               # Melee Attacks    Total # Rounds    Min Attacks/Round     Total Extra Attacks\n";
+        string header2 = "Player               # Rounds w/Extra Attacks       % Rounds w/Extra Attacks    Avg # Attacks/Round\n";
+        string header3 = "Player               # +1 Rounds           # +2 Rounds          # >+2 Rounds    Avg # Extra Attacks\n";
+        string header4 = "Player               # -1 Rounds   # Countered Attacks   Kills w/Min Attacks   Kills w/<Min Attacks\n";
 
         bool flagNoUpdate;
         bool showDetails = false;
@@ -163,6 +163,8 @@ namespace WaywardGamers.KParser.Plugin
             internal int PlusNRounds { get; set; }
             internal int Minus1Rounds { get; set; }
             internal int Counters { get; set; }
+            internal int AttackRoundCountKills { get; set; }
+            internal int AttackRoundUnderCountKills { get; set; }
         }
 
         private class TimestampList
@@ -244,9 +246,7 @@ namespace WaywardGamers.KParser.Plugin
                               select new
                               {
                                   Name = c.CombatantName,
-                                  Melee = from ma in c.GetInteractionsRowsByActorCombatantRelation()
-                                          where (ActionType)ma.ActionType == ActionType.Melee
-                                          select ma.Timestamp,
+                                  Combatant = c,
                                   Counters = from ma in c.GetInteractionsRowsByTargetCombatantRelation()
                                           where (ActionType)ma.ActionType == ActionType.Counterattack
                                           select ma,
@@ -325,6 +325,39 @@ namespace WaywardGamers.KParser.Plugin
                 }
 
                 attackCalc.AvgAttacksPerRound = (double)attackCalc.Attacks / attackCalc.Rounds;
+
+
+                var madeKill = dataSet.Battles.Where(b => b.IsKillerIDNull() == false &&
+                    b.KillerID == attacker.Combatant.CombatantID);
+
+                attackCalc.AttackRoundCountKills = 0;
+                attackCalc.AttackRoundUnderCountKills = 0;
+
+                foreach (var kill in madeKill)
+                {
+                    var killerActions = kill.GetInteractionsRows()
+                        .Where(a => a.IsActorIDNull() == false && a.ActorID == attacker.Combatant.CombatantID);
+
+                    var meleeActions = killerActions.Where(a => (ActionType)a.ActionType == ActionType.Melee);
+
+                    if (meleeActions.Count() > 0)
+                    {
+                        var lastAction = meleeActions.Last();
+
+                        DateTime meleeKillEvent = ClosestTimestamp(attacker.Name,
+                            lastAction.Timestamp, ref timestampLists);
+
+                        int attacksOnMeleeKill = attacker.MeleeRounds.First(m => m.Key == meleeKillEvent).Count();
+
+                        if (attacksOnMeleeKill == attackCalc.AttacksPerRound)
+                            attackCalc.AttackRoundCountKills++;
+                        if (attacksOnMeleeKill < attackCalc.AttacksPerRound)
+                            attackCalc.AttackRoundUnderCountKills++;
+                        
+                    }
+                }
+
+                
                 attackCalcs.Add(attackCalc);
             }
 
@@ -375,7 +408,7 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var attacker in attackCalcs)
             {
-                sb.AppendFormat("{0,-20}{1,16}{2,17}{3,20}{4,22}\n",
+                sb.AppendFormat("{0,-20}{1,16}{2,18}{3,21}{4,24}\n",
                     attacker.Name,
                     attacker.Attacks,
                     attacker.Rounds,
@@ -396,7 +429,7 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var attacker in attackCalcs)
             {
-                sb.AppendFormat("{0,-20}{1,25}{2,27:p2}{3,22:f2}\n",
+                sb.AppendFormat("{0,-20}{1,25}{2,31:p2}{3,23:f2}\n",
                     attacker.Name,
                     attacker.RoundsWithExtraAttacks,
                     attacker.FracRoundsWithExtraAttacks,
@@ -416,7 +449,7 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var attacker in attackCalcs)
             {
-                sb.AppendFormat("{0,-20}{1,12}{2,14}{3,15}{4,22:f2}\n",
+                sb.AppendFormat("{0,-20}{1,12}{2,22}{3,22}{4,23:f2}\n",
                     attacker.Name,
                     attacker.Plus1Rounds,
                     attacker.Plus2Rounds,
@@ -437,10 +470,12 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var attacker in attackCalcs)
             {
-                sb.AppendFormat("{0,-20}{1,12}{2,22}\n",
+                sb.AppendFormat("{0,-20}{1,12}{2,22}{3,22}{4,23}\n",
                     attacker.Name,
                     attacker.Minus1Rounds,
-                    attacker.Counters);
+                    attacker.Counters,
+                    attacker.AttackRoundCountKills,
+                    attacker.AttackRoundUnderCountKills);
             }
             sb.Append("\n");
 
