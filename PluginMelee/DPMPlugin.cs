@@ -92,9 +92,17 @@ namespace WaywardGamers.KParser.Plugin
             {
                 if (e.DatasetChanges.Battles.Count > 0)
                 {
+                    int mobIndex = mobsCombo.CBSelectedIndex();
+                    var currentMob = mobsCombo.CBGetMobFilter();
+                    var mobBattle = e.Dataset.Battles.FindByBattleID(currentMob.FightNumber);
+
                     UpdateMobList(e.Dataset);
                     flagNoUpdate = true;
-                    mobsCombo.CBSelectIndex(-1);
+
+                    if (mobBattle.Killed == true)
+                        mobsCombo.CBSelectIndex(mobIndex);
+                    else
+                        mobsCombo.CBSelectIndex(-1);
                 }
             }
 
@@ -270,8 +278,7 @@ namespace WaywardGamers.KParser.Plugin
                                          select n
                             };
 
-            KPDatabaseDataSet.BattlesRow battleRow = dataSet.Battles
-                .FirstOrDefault(b => b.BattleID == mobFilter.FightNumber);
+            KPDatabaseDataSet.BattlesRow battleRow = dataSet.Battles.FindByBattleID(mobFilter.FightNumber);
 
             if (battleRow == null)
             {
