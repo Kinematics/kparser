@@ -49,8 +49,10 @@
             this.richTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.richTextBox.BackColor = System.Drawing.SystemColors.Window;
             this.richTextBox.Location = new System.Drawing.Point(3, 28);
             this.richTextBox.Name = "richTextBox";
+            this.richTextBox.ReadOnly = true;
             this.richTextBox.Size = new System.Drawing.Size(600, 320);
             this.richTextBox.TabIndex = 0;
             this.richTextBox.Text = "";
@@ -64,13 +66,13 @@
             this.toolStrip.TabIndex = 1;
             this.toolStrip.Text = "toolStrip1";
             // 
-            // NewBasePluginControl
+            // BasePluginControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.richTextBox);
-            this.Name = "NewBasePluginControl";
+            this.Name = "BasePluginControl";
             this.Size = new System.Drawing.Size(606, 351);
             this.ResumeLayout(false);
             this.PerformLayout();
