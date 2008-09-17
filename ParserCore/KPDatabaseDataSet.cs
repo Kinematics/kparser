@@ -131,8 +131,11 @@ namespace WaywardGamers.KParser
                 {
                     return (EndTime - StartTime);
                 }
-
-                throw new InvalidOperationException("Cannot get the fight length.  No End Time specified.");
+                else
+                {
+                    return TimeSpan.Zero;
+                }
+                //throw new InvalidOperationException("Cannot get the fight length.  No End Time specified.");
             }
         }
 
