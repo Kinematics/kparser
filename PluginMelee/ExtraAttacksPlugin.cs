@@ -338,22 +338,25 @@ namespace WaywardGamers.KParser.Plugin
                     var killerActions = kill.GetInteractionsRows()
                         .Where(a => a.IsActorIDNull() == false && a.ActorID == attacker.Combatant.CombatantID);
 
-                    var meleeActions = killerActions.Where(a => (ActionType)a.ActionType == ActionType.Melee);
+                    var damageActions = killerActions.Where(n => (HarmType)n.HarmType == HarmType.Damage ||
+                                            (HarmType)n.HarmType == HarmType.Drain);
 
-                    if (meleeActions.Count() > 0)
+                    if (damageActions.Count() > 0)
                     {
-                        var lastAction = meleeActions.Last();
+                        var lastAction = damageActions.Last();
 
-                        DateTime meleeKillEvent = ClosestTimestamp(attacker.Name,
-                            lastAction.Timestamp, ref timestampLists);
+                        if ((ActionType)lastAction.ActionType == ActionType.Melee)
+                        {
+                            DateTime meleeKillEvent = ClosestTimestamp(attacker.Name,
+                                lastAction.Timestamp, ref timestampLists);
 
-                        int attacksOnMeleeKill = attacker.MeleeRounds.First(m => m.Key == meleeKillEvent).Count();
+                            int attacksOnMeleeKill = attacker.MeleeRounds.First(m => m.Key == meleeKillEvent).Count();
 
-                        if (attacksOnMeleeKill == attackCalc.AttacksPerRound)
-                            attackCalc.AttackRoundCountKills++;
-                        if (attacksOnMeleeKill < attackCalc.AttacksPerRound)
-                            attackCalc.AttackRoundUnderCountKills++;
-                        
+                            if (attacksOnMeleeKill == attackCalc.AttacksPerRound)
+                                attackCalc.AttackRoundCountKills++;
+                            if (attacksOnMeleeKill < attackCalc.AttacksPerRound)
+                                attackCalc.AttackRoundUnderCountKills++;
+                        }
                     }
                 }
 
