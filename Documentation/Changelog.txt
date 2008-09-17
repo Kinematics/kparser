@@ -1,5 +1,13 @@
 KParser Change Log
 
+
+1.1.1
+- Fix issues with mob filtering in the Thief plugin.
+- Improved SATA damage lookup mechanism in Thief plugin.
++ Add new plugin for analyzing Extra Attacks (Double/Triple/Kick Attacks and multi-attack weapons).  Experimental.  Recommend only using it for post-parse analysis (a large parse can take 20 seconds to process); do not leave it open while parsing.  Best results from parses with minimal lag.
++ Add new plugin for Damage per Minute calculations.  Experimental.  Note that this shows damage -rates-, not necessarily actual damage done.
+
+
 1.1
 + Allow setting default save directory.
  -- NOTE: The default directory in the Common Application Path now ends in 1.1.  Earlier version of KParser would have had a default path ending in 1.0.  Your existing parses should be in that sister directory.  You may move them to your preferred directory if you wish.
