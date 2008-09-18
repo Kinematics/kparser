@@ -236,14 +236,11 @@ namespace WaywardGamers.KParser
             // lock database for entire process period
             lock (localDB)
             {
-                using (new ProfileRegion("Add messages to database"))
+                foreach (var message in messageList)
                 {
-                    foreach (var message in messageList)
-                    {
-                        AddMessageToDatabase(message);
-                        if (message.Timestamp > mostRecentTimestamp)
-                            mostRecentTimestamp = message.Timestamp;
-                    }
+                    AddMessageToDatabase(message);
+                    if (message.Timestamp > mostRecentTimestamp)
+                        mostRecentTimestamp = message.Timestamp;
                 }
 
                 UpdateActiveBattleList(false);
