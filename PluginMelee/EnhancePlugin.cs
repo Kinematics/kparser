@@ -125,16 +125,18 @@ namespace WaywardGamers.KParser.Plugin
 
 
 
+            //StringBuilder sb = new StringBuilder();
+            //List<StringMods> strModList = new List<StringMods>();
+
             int used;
-            List<TimeSpan> intervalList = new List<TimeSpan>();
             TimeSpan minInterval;
             TimeSpan maxInterval;
             TimeSpan avgInterval;
-            //double percActive;
+            TimeSpan thisInterval;
+            DateTime thistime;
+            DateTime lasttime;
 
             string buffName;
-
-            //StringBuilder sb = new StringBuilder();
 
             foreach (var player in buffs)
             {
@@ -163,18 +165,22 @@ namespace WaywardGamers.KParser.Plugin
                             avgInterval = TimeSpan.FromSeconds(
                                 (allDistinctBuffs.Last().Timestamp - allDistinctBuffs.First().Timestamp).TotalSeconds / (used - 1));
 
-                            intervalList.Clear();
 
-                            for (int i = 1; i < used; i++)
+                            thistime = allDistinctBuffs.First().Timestamp;
+                            lasttime = allDistinctBuffs.First().Timestamp;
+                            minInterval = TimeSpan.Zero;
+                            maxInterval = TimeSpan.Zero;
+
+                            foreach (var distinctBuff in allDistinctBuffs.Where((a, index) => index > 0))
                             {
-                                var curr = allDistinctBuffs.ElementAt(i);
-                                var last = allDistinctBuffs.ElementAt(i - 1);
-
-                                intervalList.Add(curr.Timestamp - last.Timestamp);
+                                lasttime = thistime;
+                                thistime = distinctBuff.Timestamp;
+                                thisInterval = thistime - lasttime;
+                                if (thisInterval > maxInterval)
+                                    maxInterval = thisInterval;
+                                if ((thisInterval < minInterval) || (minInterval == TimeSpan.Zero))
+                                    minInterval = thisInterval;
                             }
-
-                            minInterval = intervalList.Min();
-                            maxInterval = intervalList.Max();
 
                             AppendText(string.Format("{0,15}{1,15}{2,15}",
                                 TimespanString(minInterval), TimespanString(maxInterval), TimespanString(avgInterval)));
@@ -198,18 +204,21 @@ namespace WaywardGamers.KParser.Plugin
                                 avgInterval = TimeSpan.FromSeconds(
                                     (target.Buffs.Last().Timestamp - target.Buffs.First().Timestamp).TotalSeconds / (used - 1));
 
-                                intervalList.Clear();
+                                thistime = target.Buffs.First().Timestamp;
+                                lasttime = target.Buffs.First().Timestamp;
+                                minInterval = TimeSpan.Zero;
+                                maxInterval = TimeSpan.Zero;
 
-                                for (int i = 1; i < used; i++)
+                                foreach (var distinctBuff in target.Buffs.Where((a, index) => index > 0))
                                 {
-                                    var curr = target.Buffs.ElementAt(i);
-                                    var last = target.Buffs.ElementAt(i - 1);
-
-                                    intervalList.Add(curr.Timestamp - last.Timestamp);
+                                    lasttime = thistime;
+                                    thistime = distinctBuff.Timestamp;
+                                    thisInterval = thistime - lasttime;
+                                    if (thisInterval > maxInterval)
+                                        maxInterval = thisInterval;
+                                    if ((thisInterval < minInterval) || (minInterval == TimeSpan.Zero))
+                                        minInterval = thisInterval;
                                 }
-
-                                minInterval = intervalList.Min();
-                                maxInterval = intervalList.Max();
 
                                 AppendText(string.Format("{0,15}{1,15}{2,15}",
                                     TimespanString(minInterval), TimespanString(maxInterval), TimespanString(avgInterval)));
@@ -273,17 +282,19 @@ namespace WaywardGamers.KParser.Plugin
                         };
 
 
+            //StringBuilder sb = new StringBuilder();
+            //List<StringMods> strModList = new List<StringMods>();
 
             int used;
-            List<TimeSpan> intervalList = new List<TimeSpan>();
             TimeSpan minInterval;
             TimeSpan maxInterval;
             TimeSpan avgInterval;
             //double percActive;
+            TimeSpan thisInterval;
+            DateTime thistime;
+            DateTime lasttime;
 
             string buffName;
-
-            //StringBuilder sb = new StringBuilder();
 
             foreach (var player in buffs)
             {
@@ -313,18 +324,21 @@ namespace WaywardGamers.KParser.Plugin
                                 avgInterval = TimeSpan.FromSeconds(
                                     (target.Buffs.Last().Timestamp - target.Buffs.First().Timestamp).TotalSeconds / (used - 1));
 
-                                intervalList.Clear();
+                                thistime = target.Buffs.First().Timestamp;
+                                lasttime = target.Buffs.First().Timestamp;
+                                minInterval = TimeSpan.Zero;
+                                maxInterval = TimeSpan.Zero;
 
-                                for (int i = 1; i < used; i++)
+                                foreach (var distinctBuff in target.Buffs.Where((a, index) => index > 0))
                                 {
-                                    var curr = target.Buffs.ElementAt(i);
-                                    var last = target.Buffs.ElementAt(i - 1);
-
-                                    intervalList.Add(curr.Timestamp - last.Timestamp);
+                                    lasttime = thistime;
+                                    thistime = distinctBuff.Timestamp;
+                                    thisInterval = thistime - lasttime;
+                                    if (thisInterval > maxInterval)
+                                        maxInterval = thisInterval;
+                                    if ((thisInterval < minInterval) || (minInterval == TimeSpan.Zero))
+                                        minInterval = thisInterval;
                                 }
-
-                                minInterval = intervalList.Min();
-                                maxInterval = intervalList.Max();
 
                                 AppendText(string.Format("{0,15}{1,15}{2,15}",
                                     TimespanString(minInterval), TimespanString(maxInterval), TimespanString(avgInterval)));
@@ -355,18 +369,21 @@ namespace WaywardGamers.KParser.Plugin
                             avgInterval = TimeSpan.FromSeconds(
                                 (allDistinctBuffs.Last().Timestamp - allDistinctBuffs.First().Timestamp).TotalSeconds / (used - 1));
 
-                            intervalList.Clear();
+                            thistime = allDistinctBuffs.First().Timestamp;
+                            lasttime = allDistinctBuffs.First().Timestamp;
+                            minInterval = TimeSpan.Zero;
+                            maxInterval = TimeSpan.Zero;
 
-                            for (int i = 1; i < used; i++)
+                            foreach (var distinctBuff in allDistinctBuffs.Where((a, index) => index > 0))
                             {
-                                var curr = allDistinctBuffs.ElementAt(i);
-                                var last = allDistinctBuffs.ElementAt(i - 1);
-
-                                intervalList.Add(curr.Timestamp - last.Timestamp);
+                                lasttime = thistime;
+                                thistime = distinctBuff.Timestamp;
+                                thisInterval = thistime - lasttime;
+                                if (thisInterval > maxInterval)
+                                    maxInterval = thisInterval;
+                                if ((thisInterval < minInterval) || (minInterval == TimeSpan.Zero))
+                                    minInterval = thisInterval;
                             }
-
-                            minInterval = intervalList.Min();
-                            maxInterval = intervalList.Max();
 
                             AppendText(string.Format("{0,15}{1,15}{2,15}",
                                 TimespanString(minInterval), TimespanString(maxInterval), TimespanString(avgInterval)));
