@@ -1088,27 +1088,30 @@ namespace WaywardGamers.KParser
         {
             Cursor.Current = Cursors.Default;
 
-            Monitor.Stop();
-            toolStripStatusLabel.Text = "Status: Stopped.";
-
-            DatabaseManager.Instance.DatabaseChanging -= MonitorDatabaseChanging;
-            DatabaseManager.Instance.DatabaseChanged -= MonitorDatabaseChanged;
-
-            try
+            if (Monitor.IsRunning == true)
             {
-                lock (activePluginList)
+                Monitor.Stop();
+                toolStripStatusLabel.Text = "Status: Stopped.";
+
+                DatabaseManager.Instance.DatabaseChanging -= MonitorDatabaseChanging;
+                DatabaseManager.Instance.DatabaseChanged -= MonitorDatabaseChanged;
+
+                try
                 {
-                    foreach (IPlugin plugin in activePluginList)
+                    lock (activePluginList)
                     {
-                        plugin.ParseComplete(DatabaseManager.Instance.Database);
+                        foreach (IPlugin plugin in activePluginList)
+                        {
+                            plugin.ParseComplete(DatabaseManager.Instance.Database);
+                        }
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Log(e);
-                MessageBox.Show(e.Message, "Error while attempting to stop parse.",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                catch (Exception e)
+                {
+                    Logger.Instance.Log(e);
+                    MessageBox.Show(e.Message, "Error while attempting to stop parse.",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
