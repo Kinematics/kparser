@@ -249,20 +249,51 @@ namespace WaywardGamers.KParser.Monitoring
             if (File.Exists(fileName) == false)
                 throw new ArgumentException(string.Format("File: {0}\ndoes not exist.", fileName));
 
-            string fileText;
+            string fileText = string.Empty;
+            bool finishedReading = false;
+            uint totalWaitTime = 0;
+
+            while ((finishedReading == false) && (totalWaitTime < 5000))
+            {
+                try
+                {
+                    using (FileStream fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.None))
+                    {
+                        using (StreamReader sr = new StreamReader(fileStream, Encoding.ASCII))
+                        {
+                            // Ignore 0x64 (100) byte header
+                            sr.BaseStream.Seek(0x64, SeekOrigin.Begin);
+
+                            // There is no header in saved parses, so just read the entire file.
+                            fileText = sr.ReadToEnd();
+
+                            finishedReading = true;
+                        }
+                    }
+                }
+                catch (IOException iox)
+                {
+                    // Catch exceptions of unable to open file because another process (FFXI)
+                    // is using it. Wait briefly before trying again.  
+                    Thread.Sleep(500);
+                    totalWaitTime += 500;
+                }
+            }
+
 
             // Create an instance of StreamReader to read from a file.
             // The using statement also closes the StreamReader.
-            using (StreamReader sr = new StreamReader(fileName, Encoding.ASCII))
-            {
-                // Ignore 0x64 (100) byte header
-                sr.BaseStream.Seek(0x64, SeekOrigin.Begin);
+            //using (StreamReader sr = new StreamReader(fileName, Encoding.ASCII))
+            //{
+            //    // Ignore 0x64 (100) byte header
+            //    sr.BaseStream.Seek(0x64, SeekOrigin.Begin);
 
-                // There is no header in saved parses, so just read the entire file.
-                fileText = sr.ReadToEnd();
-            }
+            //    // There is no header in saved parses, so just read the entire file.
+            //    fileText = sr.ReadToEnd();
+            //}
 
-            ProcessRawLogText(fileText, File.GetLastWriteTime(fileName));
+            if (finishedReading == true)
+                ProcessRawLogText(fileText, File.GetLastWriteTime(fileName));
         }
 
         /// <summary>
