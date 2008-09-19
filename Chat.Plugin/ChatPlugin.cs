@@ -59,8 +59,10 @@ namespace WaywardGamers.KParser.Plugin
         {
             ResetTextBox();
 
+            flagNoUpdate = true;
             speakerCombo.CBReset();
             speakerCombo.CBAddStrings(new string[1] { "All" });
+
             speakerCombo.CBSelectIndex(0);
         }
 
