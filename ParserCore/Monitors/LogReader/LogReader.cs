@@ -54,6 +54,7 @@ namespace WaywardGamers.KParser.Monitoring
         Timer networkWatchTimer;
 
         DateTime networkWatchTimestamp;
+        string lastChangedFile = string.Empty;
         #endregion
 
         #region Interface Control Methods and Properties
@@ -208,8 +209,14 @@ namespace WaywardGamers.KParser.Monitoring
         {
             try
             {
-                if (eArg.ChangeType == WatcherChangeTypes.Changed)
-                    ReadFFXILog(eArg.FullPath);
+                if ((eArg.ChangeType == WatcherChangeTypes.Changed) ||
+                    (eArg.ChangeType == WatcherChangeTypes.Created))
+                {
+                    if (lastChangedFile != eArg.FullPath)
+                        ReadFFXILog(eArg.FullPath);
+
+                    lastChangedFile = eArg.FullPath;
+                }
             }
             catch (Exception e)
             {
