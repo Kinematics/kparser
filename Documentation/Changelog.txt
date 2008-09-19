@@ -1,6 +1,14 @@
 KParser Change Log
 
 
+1.1.2
+- Make sure text windows are read-only.
+- Fix issue with updates running twice when a parse is opened.
+- Significant speed improvement fixes for the Buffs plugin.
+- Significant speed improvement fixes for the Extra Attacks plugin.
+* Major rewrite of the Extra Attacks plugin.
+
+
 1.1.1
 - Fix issues with mob filtering in the Thief plugin.
 - Improved SATA damage lookup mechanism in Thief plugin.
