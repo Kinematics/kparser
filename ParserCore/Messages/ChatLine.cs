@@ -36,6 +36,10 @@ namespace WaywardGamers.KParser
                 else
                     return timestamp;
             }
+            set
+            {
+                timestamp = value;
+            }
         }
     }
 }

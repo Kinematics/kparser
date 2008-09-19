@@ -100,6 +100,19 @@ namespace WaywardGamers.KParser
             if (tsCheck.Success == true)
             {
                 TextOutput = tsCheck.Groups[ParseFields.Remainder].Value;
+
+                // If we're parsing from logs, use the Timestamp field to refine
+                // the message timestamps.
+                if (Monitor.ParseMode == DataSource.Log)
+                {
+                    DateTime baseDate = originalChatLine.Timestamp.Date;
+                    TimeSpan pluginTime;
+                    if (TimeSpan.TryParse(tsCheck.Groups["time"].Value, out pluginTime))
+                    {
+                        baseDate += pluginTime;
+                        originalChatLine.Timestamp = baseDate;
+                    }
+                }
             }
 
 
@@ -127,51 +140,6 @@ namespace WaywardGamers.KParser
                     }
                 }
             }
-
-            /*
-            // Item drops
-            breakString = string.Format("{0}{1}", (char)0x1F, (char)0x79);
-            breakPoint = TextOutput.IndexOf(breakString);
-
-            if (breakPoint == 0)
-                TextOutput = TextOutput.Substring(2);
-
-            // Item distribution
-            breakString = string.Format("{0}{1}", (char)0x1F, (char)0x7F);
-            breakPoint = TextOutput.IndexOf(breakString);
-
-            if (breakPoint == 0)
-                TextOutput = TextOutput.Substring(2);
-
-            // Time limit warnings
-            breakString = string.Format("{0}{1}", (char)0x1F, (char)0x3F);
-            breakPoint = TextOutput.IndexOf(breakString);
-
-            if (breakPoint == 0)
-                TextOutput = TextOutput.Substring(2);
-
-            // Limbus time limit warnings
-            breakString = string.Format("{0}{1}", (char)0x1F, (char)0x8D);
-            breakPoint = TextOutput.IndexOf(breakString);
-
-            if (breakPoint == 0)
-                TextOutput = TextOutput.Substring(2);
-
-            // Assault time limit warnings
-            breakString = string.Format("{0}{1}", (char)0x1F, (char)0x92);
-            breakPoint = TextOutput.IndexOf(breakString);
-
-            if (breakPoint == 0)
-                TextOutput = TextOutput.Substring(2);
-
-            // System error messages (eg: "There are no party members.")
-            breakString = string.Format("{0}{1}", (char)0x1F, (char)0x7B);
-            breakPoint = TextOutput.IndexOf(breakString);
-
-            if (breakPoint == 0)
-                TextOutput = TextOutput.Substring(2);
-            */
-
 
             // Drop the extraneous characters at the end of non-chat messages.
             breakString = string.Format("{0}{1}", (char)0x7F, (char)0x31);
