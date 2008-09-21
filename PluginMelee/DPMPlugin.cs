@@ -42,7 +42,7 @@ namespace WaywardGamers.KParser.Plugin
             mobsCombo.DropDownStyle = ComboBoxStyle.DropDownList;
             mobsCombo.AutoSize = false;
             mobsCombo.Width = 175;
-            mobsCombo.Items.Add("All");
+            mobsCombo.Items.Add("None");
             mobsCombo.MaxDropDownItems = 10;
             mobsCombo.SelectedIndex = 0;
             mobsCombo.SelectedIndexChanged += new EventHandler(this.mobsCombo_SelectedIndexChanged);
@@ -151,7 +151,14 @@ namespace WaywardGamers.KParser.Plugin
         private void UpdateMobList(KPDatabaseDataSet dataSet)
         {
             mobsCombo.CBReset();
-            mobsCombo.CBAddStrings(GetMobListing(dataSet, false, false));
+            string[] tmpList = GetMobListing(dataSet, false, false);
+
+            if (tmpList[0] == "All")
+            {
+                tmpList[0] = "None";
+            }
+            
+            mobsCombo.CBAddStrings(tmpList);
         }
         #endregion
 
