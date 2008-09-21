@@ -278,7 +278,7 @@ namespace WaywardGamers.KParser.Monitoring
                         }
                     }
                 }
-                catch (IOException iox)
+                catch (IOException)
                 {
                     // Catch exceptions of unable to open file because another process (FFXI)
                     // is using it. Wait briefly before trying again.  
