@@ -3,7 +3,8 @@ KParser Change Log
 1.1.3
 - Fix issue in parsing from log files where the same log file may be parsed multiple times.
 + If parsing from log files and the Windower Timestamp plugin is in use, KParser will now use that time to mark messages that get parsed for better database accuracy.
-- Default first entry of mob list in DPM plugin is now "None".
+* Default first entry of mob list in DPM plugin is now "None".
+* Consolidate smaller non-combat plugin DLLs into a single DLL.
 
 
 1.1.2
