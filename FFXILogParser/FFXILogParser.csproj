@@ -253,30 +253,24 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Chat.Plugin\PluginChat.csproj">
-      <Project>{C1F3DCAF-0E1E-4617-9FE9-952CA3ACC9BB}</Project>
-      <Name>PluginChat</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ParserCore\ParserCore.csproj">
       <Project>{626318E4-447D-4BD7-BC3A-294A8E37B07F}</Project>
       <Name>ParserCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PluginExperience\PluginExperience.csproj">
-      <Project>{497E79CF-92E1-4D78-9C5D-DE62B292945C}</Project>
-      <Name>PluginExperience</Name>
     </ProjectReference>
     <ProjectReference Include="..\PluginMelee\PluginCombat.csproj">
       <Project>{5516F8E4-8960-4674-AD6F-BB66D29315A0}</Project>
       <Name>PluginCombat</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PluginTreasure\PluginTreasure.csproj">
-      <Project>{5DB99DB9-CBE2-410D-94C3-53918075FCB6}</Project>
-      <Name>PluginTreasure</Name>
+    <ProjectReference Include="..\PluginNonCombat\PluginNonCombat.csproj">
+      <Project>{29B154A9-81AE-4220-A4A8-27F1779409B1}</Project>
+      <Name>PluginNonCombat</Name>
     </ProjectReference>
     <ProjectReference Include="..\PluginUnparsed\PluginDebugging.csproj">
       <Project>{3EEB8410-FE5C-49D2-BFB9-5F4A8B5AD995}</Project>
       <Name>PluginDebugging</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
