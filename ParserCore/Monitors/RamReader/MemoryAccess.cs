@@ -196,6 +196,10 @@ namespace WaywardGamers.KParser.Monitoring.Memory
                         //the memory containing the actual text, etc.
                         currentDetails = ReadChatLogDetails(chatLogLocation);
 
+                        // If read failed, it will return null.
+                        if (currentDetails == null)
+                            continue;
+
                         // If every single field is the same as it was the last time we checked,
                         // assume that the chat log hasn't changed and continue on.
                         if (currentDetails.Equals(oldDetails))
@@ -423,14 +427,14 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         /// the memory containing the actual text, etc.
         /// </summary>
         /// <param name="chatLogLocation"></param>
-        /// <returns></returns>
+        /// <returns>Returns a completed ChatLogDetails object if successful.
+        /// If unsuccessful, returns null.</returns>
         private ChatLogDetails ReadChatLogDetails(ChatLogLocationInfo chatLogLocation)
         {
             IntPtr lineOffsetsBuffer = IntPtr.Zero;
 
             try
             {
-                ChatLogDetails details = new ChatLogDetails();
 
                 // Layout of total structure we're reading:
                 // 50 offsets to new log records (short): 100 bytes
@@ -441,10 +445,17 @@ namespace WaywardGamers.KParser.Monitoring.Memory
                 // Get the pointer to the overall structure.
                 lineOffsetsBuffer = PInvoke.ReadProcessMemory(pol.Process.Handle, chatLogLocation.ChatLogOffset, bytesToRead);
 
-                // Copy the structure from memory buffer to managed class.
-                details.Info = (ChatLogInfoStruct)Marshal.PtrToStructure(lineOffsetsBuffer, typeof(ChatLogInfoStruct));
+                if (lineOffsetsBuffer != IntPtr.Zero)
+                {
+                    ChatLogDetails details = new ChatLogDetails();
 
-                return details;
+                    // Copy the structure from memory buffer to managed class.
+                    details.Info = (ChatLogInfoStruct)Marshal.PtrToStructure(lineOffsetsBuffer, typeof(ChatLogInfoStruct));
+
+                    return details;
+                }
+
+                return null;
             }
             finally
             {
