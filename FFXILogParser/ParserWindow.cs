@@ -506,7 +506,8 @@ namespace WaywardGamers.KParser
             sfd.InitialDirectory = defaultSaveDirectory;
             sfd.DefaultExt = "sdf";
             sfd.Title = "Select file to save parse data to...";
-            sfd.Filter = "Plain text (*.txt)|*.txt||";
+            //sfd.Filter = "Plain text (Current tab) (*.txt)|*.txt|Plain text (All tabs) (*.txt)|*.txt|Excel Spreadsheet (Current tab) (*.xls)|*.xls||";
+            sfd.Filter = "Plain text (Current tab) (*.txt)|*.txt|Plain text (All tabs) (*.txt)|*.txt||";
             sfd.FilterIndex = 1;
 
             if (sfd.ShowDialog() == DialogResult.OK)
@@ -514,13 +515,13 @@ namespace WaywardGamers.KParser
                 try
                 {
                     Cursor.Current = Cursors.WaitCursor;
+                    IPlugin tabPlugin;
 
                     switch (sfd.FilterIndex)
                     {
                         case 1:
                             // Save as raw text
-                            IPlugin tabPlugin =
-                                pluginTabs.SelectedTab.Controls.OfType<IPlugin>().FirstOrDefault();
+                            tabPlugin = pluginTabs.SelectedTab.Controls.OfType<IPlugin>().FirstOrDefault();
 
                             if (tabPlugin != null)
                             {
@@ -529,6 +530,44 @@ namespace WaywardGamers.KParser
                                 using (StreamWriter sw = new StreamWriter(sfd.FileName))
                                 {
                                     sw.Write(textContents);
+                                }
+                            }
+                            break;
+                        case 2:
+                            // Save raw text of all tabs into one text file.
+                            using (StreamWriter sw = new StreamWriter(sfd.FileName))
+                            {
+                                foreach (IPlugin tab in pluginTabs.TabPages.OfType<IPlugin>())
+                                {
+                                    sw.WriteLine(tab.TabName);
+                                    sw.WriteLine();
+
+                                    string textContents = tab.TextContents;
+                                    sw.Write(textContents);
+
+                                    sw.WriteLine();
+                                    sw.WriteLine();
+                                }
+                            }
+                            break;
+                        case 3:
+                            // Save generated output from the tab into an excel spreadsheet.
+                            tabPlugin = pluginTabs.SelectedTab.Controls.OfType<IPlugin>().FirstOrDefault();
+                            
+                            if (tabPlugin != null)
+                            {
+                                if (tabPlugin.GeneratedDataTableForExcel != null)
+                                {
+                                    using (TextWriter tx = new StreamWriter(sfd.FileName))
+                                    {
+                                        System.Web.HttpResponse response = new System.Web.HttpResponse(tx);
+                                        ExcelExport.Convert(tabPlugin.GeneratedDataTableForExcel, response);
+                                    }
+                                }
+                                else
+                                {
+                                    MessageBox.Show(string.Format("The {0} tab is not set up to export data to Excel at this time.",
+                                        tabPlugin.TabName), "Cannot export", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                                 }
                             }
                             break;
