@@ -1,5 +1,9 @@
 KParser Change Log
 
+1.1.4
++ New plugin: Items.  Shows details of items used, and when.
+
+
 1.1.3
 - Fix issue in parsing from log files where the same log file may be parsed multiple times.
 + If parsing from log files and the Windower Timestamp plugin is in use, KParser will now use that time to mark messages that get parsed for better database accuracy.
