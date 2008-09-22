@@ -33,6 +33,14 @@ namespace WaywardGamers.KParser.Plugin
             get { return "Experience"; }
         }
 
+        public override DataTable GeneratedDataTableForExcel
+        {
+            get
+            {
+                return null;
+            }
+        }
+
         public override void Reset()
         {
             ResetTextBox();
