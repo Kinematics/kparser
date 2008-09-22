@@ -178,27 +178,13 @@ namespace WaywardGamers.KParser.Plugin
                 return timestampList[~index - 1];
         }
 
-        private Dictionary<string, List<DateTime>> GetInitialDictionary()
+        private Dictionary<string, List<DateTime>> GetInitialDictionary(List<string> playersList)
         {
             Dictionary<string, List<DateTime>> timestampLists = new Dictionary<string, List<DateTime>>();
 
-            string playerFilter = playersCombo.CBSelectedItem();
-
-            if (playerFilter == "All")
+            foreach (string player in playersList)
             {
-                string[] players = playersCombo.CBGetStrings();
-
-                foreach (string player in players)
-                {
-                    if (player != "All")
-                    {
-                        timestampLists.Add(player, new List<DateTime>());
-                    }
-                }
-            }
-            else
-            {
-                timestampLists.Add(playerFilter, new List<DateTime>());
+                timestampLists.Add(player, new List<DateTime>());
             }
 
             return timestampLists;
@@ -276,16 +262,36 @@ namespace WaywardGamers.KParser.Plugin
         {
             ResetTextBox();
             string playerFilter = playersCombo.CBSelectedItem();
-            Dictionary<string, List<DateTime>> timestampLists = GetInitialDictionary();
+            List<string> playersList = new List<string>();
 
+            if (playerFilter == "All")
+            {
+                string[] players = playersCombo.CBGetStrings();
+
+                foreach (string player in players)
+                {
+                    if (player != "All")
+                    {
+                        playersList.Add(player);
+                    }
+                }
+            }
+            else
+            {
+                playersList.Add(playerFilter);
+            }
+
+            Dictionary<string, List<DateTime>> timestampLists = GetInitialDictionary(playersList);
+
+            if (timestampLists.Count == 0)
+                return;
 
             // Setup work for calculating attack round timing
             var simpleAttackList = from c in dataSet.Combatants
                                    where ((c.CombatantType == (byte)EntityType.Player) ||
                                          (c.CombatantType == (byte)EntityType.Pet) ||
                                          (c.CombatantType == (byte)EntityType.Fellow)) &&
-                                         ((playerFilter == "All") ||
-                                          (playerFilter == c.CombatantName))
+                                         (playersList.Contains(c.CombatantName))
                                    orderby c.CombatantType, c.CombatantName
                                    let actions = c.GetInteractionsRowsByActorCombatantRelation()
                                    select new
@@ -312,10 +318,9 @@ namespace WaywardGamers.KParser.Plugin
             #region LINQ query
             var attacksMade = from c in dataSet.Combatants
                               where ((c.CombatantType == (byte)EntityType.Player) ||
-                                    (c.CombatantType == (byte)EntityType.Pet) ||
-                                    (c.CombatantType == (byte)EntityType.Fellow)) &&
-                                    ((playerFilter == "All") ||
-                                     (playerFilter == c.CombatantName))
+                                     (c.CombatantType == (byte)EntityType.Pet) ||
+                                     (c.CombatantType == (byte)EntityType.Fellow)) &&
+                                    (playersList.Contains(c.CombatantName))
                               orderby c.CombatantType, c.CombatantName
                               let actions = c.GetInteractionsRowsByActorCombatantRelation()
                               select new
