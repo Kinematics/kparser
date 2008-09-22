@@ -67,6 +67,7 @@
     <Reference Include="System.Data.SqlServerCe, Version=3.5.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -143,6 +144,7 @@
     <Compile Include="ReferenceValues\Magic.cs" />
     <Compile Include="Messages\Parsing\Names.cs" />
     <Compile Include="Messages\Parsing\ParseExpressions.cs" />
+    <Compile Include="Utility\ExcelExport.cs" />
     <Compile Include="Utility\RegionProfiler.cs" />
   </ItemGroup>
   <ItemGroup>

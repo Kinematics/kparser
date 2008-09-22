@@ -47,6 +47,11 @@ namespace WaywardGamers.KParser.Plugin
             get { return this.richTextBox.Text; }
         }
 
+        public virtual DataTable GeneratedDataTableForExcel
+        {
+            get { return null; }
+        }
+
         public void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
             KPDatabaseDataSet dataSet;
