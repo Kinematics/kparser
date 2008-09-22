@@ -2,6 +2,9 @@ KParser Change Log
 
 1.1.4
 + New plugin: Items.  Shows details of items used, and when.
+- Fix possible null reference when reading RAM.
+- Fix possible invalid key reference when using a Dictionary in the Extra Attacks plugin.
++ Add framework for exporting data to Excel.
 
 
 1.1.3
