@@ -36,7 +36,7 @@ namespace WaywardGamers.KParser
             "Tachi: Koki", "Tachi: Yukikaze", "Tachi: Gekko", "Tachi: Kasha", "Tachi: Kaiten",
             "Tachi: Rana",
             // Great Swords
-            "Hard Slash", "Power Slash", "Frost Bite", "Freeze Bite", "Shockwave", "Crescent Moon",
+            "Hard Slash", "Power Slash", "Frostbite", "Freezebite", "Shockwave", "Crescent Moon",
             "Sickle Moon", "Spinning Slash", "Ground Strike", "Scourge",
             // Hand-to-Hand
             "Combo", "Shoulder Tackle", "One Inch Punch", "Backhand Blow", "Raging Fists",
