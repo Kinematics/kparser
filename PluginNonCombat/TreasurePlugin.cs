@@ -238,7 +238,11 @@ namespace WaywardGamers.KParser.Plugin
                                 Name = c.CombatantName,
                                 Battles = from b in c.GetBattlesRowsByEnemyCombatantRelation()
                                           where b.Killed == true
-                                          select b,
+                                          select new
+                                          {
+                                              Battle = b,
+                                              DropsPerBattle = b.GetLootRows()
+                                          },
                                 Loot = from l in dataSet.Loot
                                        where ((l.IsBattleIDNull() == false) &&
                                               (l.BattlesRow.CombatantsRowByEnemyCombatantRelation == c))
@@ -321,6 +325,29 @@ namespace WaywardGamers.KParser.Plugin
                                     loot.LootDrops.Count(), loot.LootName, avgLoot));
                             }
                         }
+                    }
+                }
+
+                int[] dropCount = new int[11];
+                int maxDropCount = 0;
+                int totalDropCount = 0;
+
+                for (int i = 0; i < 11; i++)
+                {
+                    dropCount[i] = mob.Battles.Count(b => b.DropsPerBattle.Count() == i);
+                    totalDropCount += dropCount[i];
+                    if (dropCount[i] > 0)
+                        maxDropCount = i;
+                }
+
+                AppendText("\n");
+
+                if (totalDropCount > 0)
+                {
+                    for (int i = 0; i <= maxDropCount; i++)
+                    {
+                        AppendText(string.Format("       Dropped {0,2} items {1,5} times ({2,8:p2})\n",
+                            i, dropCount[i], (double)dropCount[i] / totalDropCount));
                     }
                 }
             }
