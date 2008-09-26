@@ -1,5 +1,12 @@
 KParser Change Log
 
+1.1.5
+- Fix misspelled "Frostbite" and "Freezebite" so that they show up as Weaponskills properly.
++ Add percentage of number of drops per mob to loot distribution reporting.
++ Add option to show loot groupings.
+* Adjust Thief SATA threshold.
+
+
 1.1.4
 + New plugin: Items.  Shows details of items used, and when.
 - Fix possible null reference when reading RAM.
@@ -29,7 +36,7 @@ KParser Change Log
 + Add new plugin for Damage per Minute calculations.  Experimental.  Note that this shows damage -rates-, not necessarily actual damage done.
 
 
-1.1
+1.1.0
 + Allow setting default save directory.
  -- NOTE: The default directory in the Common Application Path now ends in 1.1.  Earlier version of KParser would have had a default path ending in 1.0.  Your existing parses should be in that sister directory.  You may move them to your preferred directory if you wish.
 - Fix bug where buffs were not being credited to appropriate battles, preventing proper filtering.
