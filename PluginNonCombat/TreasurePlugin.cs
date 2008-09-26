@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Drawing;
 using System.Windows.Forms;
+using WaywardGamers.KParser.Interface;
 
 namespace WaywardGamers.KParser.Plugin
 {
@@ -20,9 +21,10 @@ namespace WaywardGamers.KParser.Plugin
         }
 
         #region Constructor
-        ToolStripLabel lootLabel = new ToolStripLabel();
         ToolStripDropDownButton lootTypeMenu = new ToolStripDropDownButton();
         LootType currentLootType = LootType.Summary;
+        bool showGroupDetails = false;
+        ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
 
         public TreasurePlugin()
         {
@@ -42,6 +44,7 @@ namespace WaywardGamers.KParser.Plugin
             dropRatesOption.Click += new EventHandler(dropRatesOption_Click);
             stealingOption.Click += new EventHandler(stealingOption_Click);
             helmOption.Click += new EventHandler(helmOption_Click);
+            summaryOption.Checked = true;
 
             lootTypeMenu.DropDownItems.Add(summaryOption);
             lootTypeMenu.DropDownItems.Add(dropRatesOption);
@@ -50,10 +53,19 @@ namespace WaywardGamers.KParser.Plugin
 
             toolStrip.Items.Add(lootTypeMenu);
 
+            optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            optionsMenu.Text = "Options";
 
-            lootLabel.Text = "Summary";
-            toolStrip.Items.Add(lootLabel);
+            ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
+            groupMobsOption.Text = "Group Details";
+            groupMobsOption.CheckOnClick = true;
+            groupMobsOption.Checked = false;
+            groupMobsOption.Click += new EventHandler(groupDetails_Click);
+            optionsMenu.DropDownItems.Add(groupMobsOption);
 
+            optionsMenu.Enabled = false;
+
+            toolStrip.Items.Add(optionsMenu);
         }
         #endregion
 
@@ -97,31 +109,90 @@ namespace WaywardGamers.KParser.Plugin
         protected void summaryOption_Click(object sender, EventArgs e)
         {
             currentLootType = LootType.Summary;
-            lootLabel.Text = "Summary";
+            optionsMenu.Enabled = false;
 
             HandleDataset(DatabaseManager.Instance.Database);
+
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            foreach (ToolStripMenuItem menuItem in lootTypeMenu.DropDownItems)
+            {
+                if (menuItem == sentBy)
+                    menuItem.Checked = true;
+                else
+                    menuItem.Checked = false;
+            }
         }
 
         protected void dropRatesOption_Click(object sender, EventArgs e)
         {
             currentLootType = LootType.DropRates;
-            lootLabel.Text = "Drop Rates";
+            optionsMenu.Enabled = true;
 
             HandleDataset(DatabaseManager.Instance.Database);
+
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            foreach (ToolStripMenuItem menuItem in lootTypeMenu.DropDownItems)
+            {
+                if (menuItem == sentBy)
+                    menuItem.Checked = true;
+                else
+                    menuItem.Checked = false;
+            }
         }
 
         protected void stealingOption_Click(object sender, EventArgs e)
         {
             currentLootType = LootType.Stealing;
-            lootLabel.Text = "Stealing";
+            optionsMenu.Enabled = false;
 
             HandleDataset(DatabaseManager.Instance.Database);
+
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            foreach (ToolStripMenuItem menuItem in lootTypeMenu.DropDownItems)
+            {
+                if (menuItem == sentBy)
+                    menuItem.Checked = true;
+                else
+                    menuItem.Checked = false;
+            }
         }
 
         protected void helmOption_Click(object sender, EventArgs e)
         {
             currentLootType = LootType.HELM;
-            lootLabel.Text = "HELM/Chocobo";
+            optionsMenu.Enabled = false;
+
+            HandleDataset(DatabaseManager.Instance.Database);
+
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            foreach (ToolStripMenuItem menuItem in lootTypeMenu.DropDownItems)
+            {
+                if (menuItem == sentBy)
+                    menuItem.Checked = true;
+                else
+                    menuItem.Checked = false;
+            }
+        }
+
+        protected void groupDetails_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            showGroupDetails = sentBy.Checked;
 
             HandleDataset(DatabaseManager.Instance.Database);
         }
@@ -328,27 +399,87 @@ namespace WaywardGamers.KParser.Plugin
                     }
                 }
 
-                int[] dropCount = new int[11];
-                int maxDropCount = 0;
-                int totalDropCount = 0;
-
-                for (int i = 0; i < 11; i++)
+                if (showGroupDetails == true)
                 {
-                    dropCount[i] = mob.Battles.Count(b => b.DropsPerBattle.Count() == i);
-                    totalDropCount += dropCount[i];
-                    if (dropCount[i] > 0)
-                        maxDropCount = i;
-                }
+                    #region Count drops per kill
+                    int[] dropCount = new int[11];
+                    int maxDropCount = 0;
+                    int totalDropCount = 0;
 
-                AppendText("\n");
-
-                if (totalDropCount > 0)
-                {
-                    for (int i = 0; i <= maxDropCount; i++)
+                    for (int i = 0; i < 11; i++)
                     {
-                        AppendText(string.Format("       Dropped {0,2} items {1,5} times ({2,8:p2})\n",
-                            i, dropCount[i], (double)dropCount[i] / totalDropCount));
+                        dropCount[i] = mob.Battles.Count(b => b.DropsPerBattle.Count() == i);
+                        totalDropCount += dropCount[i];
+                        if (dropCount[i] > 0)
+                            maxDropCount = i;
                     }
+
+                    AppendText("\n");
+
+                    if (totalDropCount > 0)
+                    {
+                        for (int i = 0; i <= maxDropCount; i++)
+                        {
+                            AppendText(string.Format("       Dropped {0,2} items {1,5} times ({2,8:p2})\n",
+                                i, dropCount[i], (double)dropCount[i] / totalDropCount));
+                        }
+                    }
+                    #endregion
+
+
+                    #region Group drops per kill
+                    Dictionary<string, int> strDict = new Dictionary<string, int>();
+
+                    foreach (var battle in mob.Battles)
+                    {
+                        List<string> strList = new List<string>();
+
+                        foreach (var loot in battle.DropsPerBattle)
+                        {
+                            if (loot.ItemsRow.ItemName != "Gil")
+                                strList.Add(loot.ItemsRow.ItemName);
+                        }
+
+                        string strAgg = string.Empty;
+
+                        if (strList.Count > 0)
+                        {
+                            strList.Sort();
+                            strAgg = strList.Aggregate((itemColl, nextItem) => itemColl + ", " + nextItem);
+                        }
+
+                        if (strDict.Any(a => a.Key == strAgg) == true)
+                        {
+                            strDict[strAgg]++;
+                        }
+                        else
+                        {
+                            strDict.Add(strAgg, 1);
+                        }
+                    }
+
+                    AppendText("\n");
+
+                    var sortedStrDict = strDict.OrderByDescending(a => a.Value);
+                    int denominator = strDict.Sum(a => a.Value);
+
+                    foreach (var listSet in sortedStrDict)
+                    {
+                        if (listSet.Key == string.Empty)
+                        {
+                            AppendText(string.Format("    No drops\n       Count: {0,3}  [{1,8:p2}]\n",
+                                listSet.Value,
+                                (double)listSet.Value / denominator));
+                        }
+                        else
+                        {
+                            AppendText(string.Format("    Drop set: {0}\n       Count: {1,3}  [{2,8:p2}]\n",
+                                listSet.Key,
+                                listSet.Value,
+                                (double)listSet.Value / denominator));
+                        }
+                    }
+                    #endregion
                 }
             }
 
