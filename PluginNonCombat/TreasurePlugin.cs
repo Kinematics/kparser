@@ -298,7 +298,7 @@ namespace WaywardGamers.KParser.Plugin
         {
             // Drop rate section
             AppendText("Drop Rates\n", Color.Red, true, false);
-            string dropItemFormat = "{0,9} {1,-28} [Drop Rate: {2,8:p2}]\n";
+            string dropItemFormat = "{0,9} {1,-28} [Drop Rate (#): {2,8:p2}]  [Drop Rate (any): {3,8:p2}]  [Max #: {4}]\n";
             string dropGilFormat = "{0,9} {1,-28} [Average:   {2,8:f2}]\n";
 
             var lootByMob = from c in dataSet.Combatants
@@ -351,6 +351,9 @@ namespace WaywardGamers.KParser.Plugin
             int totalGil;
             double avgGil;
             double avgLoot;
+            int anyDropped;
+            double avgTimesDropped;
+            int maxDrops;
 
             foreach (var mob in lootByMob)
             {
@@ -392,8 +395,22 @@ namespace WaywardGamers.KParser.Plugin
                                 if (mobKillCount > 0)
                                     avgLoot = (double)loot.LootDrops.Count() / mobKillCount;
 
+                                maxDrops = mob.Battles.Max(a =>
+                                    a.DropsPerBattle.Count(b =>
+                                        b.ItemsRow.ItemName == loot.LootName));
+
+                                anyDropped = mob.Battles.Count(a =>
+                                    a.DropsPerBattle.Any(b =>
+                                         b.ItemsRow.ItemName == loot.LootName));
+
+                                avgTimesDropped = (double)anyDropped / mobKillCount;
+
                                 AppendText(string.Format(dropItemFormat,
-                                    loot.LootDrops.Count(), loot.LootName, avgLoot));
+                                    loot.LootDrops.Count(),
+                                    loot.LootName,
+                                    avgLoot,
+                                    avgTimesDropped,
+                                    maxDrops));
                             }
                         }
                     }
@@ -425,7 +442,6 @@ namespace WaywardGamers.KParser.Plugin
                         }
                     }
                     #endregion
-
 
                     #region Group drops per kill
                     Dictionary<string, int> strDict = new Dictionary<string, int>();
@@ -467,13 +483,13 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         if (listSet.Key == string.Empty)
                         {
-                            AppendText(string.Format("    No drops\n       Count: {0,3}  [{1,8:p2}]\n",
+                            AppendText(string.Format("    Drop set: Nothing\n       Count: {0,3}  [{1,8:p2}]\n\n",
                                 listSet.Value,
                                 (double)listSet.Value / denominator));
                         }
                         else
                         {
-                            AppendText(string.Format("    Drop set: {0}\n       Count: {1,3}  [{2,8:p2}]\n",
+                            AppendText(string.Format("    Drop set: {0}\n       Count: {1,3}  [{2,8:p2}]\n\n",
                                 listSet.Key,
                                 listSet.Value,
                                 (double)listSet.Value / denominator));
@@ -527,7 +543,9 @@ namespace WaywardGamers.KParser.Plugin
                                     avgLoot = (double)loot.LootDrops.Count() / chestsOpened;
 
                                 AppendText(string.Format(dropItemFormat,
-                                    loot.LootDrops.Count(), loot.LootName, avgLoot));
+                                    loot.LootDrops.Count(),
+                                    loot.LootName,
+                                    avgLoot));
                             }
                         }
                     }
