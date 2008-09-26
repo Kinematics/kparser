@@ -349,8 +349,8 @@ namespace WaywardGamers.KParser.Plugin
                     if (avgNonCritSet.Count() > 0)
                         avgNonCrit = avgNonCritSet.Average(m => m.Amount);
 
-                    double critThreshold = avgNonCrit * 5;
-                    double nonCritThreshold = avgNonCrit * 3;
+                    double critThreshold = avgNonCrit * 4;
+                    double nonCritThreshold = avgNonCrit * 2.75;
 
                     while (sataActions.Count() > 0)
                     {
