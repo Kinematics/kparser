@@ -823,7 +823,7 @@ namespace WaywardGamers.KParser
                         {
                             if ((lastFinishedBattle.CombatantsRowByEnemyCombatantRelation.CombatantName ==
                                 message.EventDetails.CombatDetails.ActorName) &&
-                                (lastFinishedBattle.EndTime.AddSeconds(2) >= message.Timestamp))
+                                (lastFinishedBattle.EndTime.AddSeconds(2) > message.Timestamp))
                             {
                                 battle = lastFinishedBattle;
                             }
@@ -862,7 +862,7 @@ namespace WaywardGamers.KParser
                         {
                             if ((lastFinishedBattle.CombatantsRowByEnemyCombatantRelation.CombatantName ==
                                 message.EventDetails.CombatDetails.ActorName) &&
-                                (lastFinishedBattle.EndTime.AddSeconds(2) >= message.Timestamp))
+                                (lastFinishedBattle.EndTime.AddSeconds(2) > message.Timestamp))
                             {
                                 battle = lastFinishedBattle;
                             }
@@ -1151,7 +1151,7 @@ namespace WaywardGamers.KParser
                             {
                                 if ((lastFinishedBattle.CombatantsRowByEnemyCombatantRelation.CombatantName ==
                                     message.EventDetails.CombatDetails.ActorName) &&
-                                    (lastFinishedBattle.EndTime.AddSeconds(2) >= message.Timestamp))
+                                    (lastFinishedBattle.EndTime.AddSeconds(2) > message.Timestamp))
                                 {
                                     battle = lastFinishedBattle;
                                 }
