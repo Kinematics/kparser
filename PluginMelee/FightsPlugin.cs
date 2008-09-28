@@ -56,6 +56,8 @@ namespace WaywardGamers.KParser.Plugin
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
             ResetTextBox();
+            List<StringMods> strModList = new List<StringMods>();
+            StringBuilder sb = new StringBuilder();
 
             var fights = from b in dataSet.Battles
                          where b.DefaultBattle == false &&
@@ -69,7 +71,15 @@ namespace WaywardGamers.KParser.Plugin
 
             string fightHeader = "Fight #   Enemy                   Killed?   Killed By           Start Time   End Time   Fight Length   Exp\n";
 
-            AppendText(fightHeader, Color.Black, true, false);
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = fightHeader.Length,
+                Bold = true,
+                Color = Color.Black
+            });
+            sb.Append(fightHeader);
+
 
             int fightNum = 0;
 
@@ -96,12 +106,15 @@ namespace WaywardGamers.KParser.Plugin
                         fightLength.Hours, fightLength.Minutes, fightLength.Seconds, fightLength.Days);
                 }
 
-                AppendText(string.Format("{0,-10}{1,-24}{2,-10}{3,-20}{4,10}{5,11}{6,15}{7,6}\n",
+                
+                sb.AppendFormat("{0,-10}{1,-24}{2,-10}{3,-20}{4,10}{5,11}{6,15}{7,6}\n",
                     fightNum, fight.CombatantsRowByEnemyCombatantRelation.CombatantName,
                     fight.Killed, killer, fight.StartTime.ToShortTimeString(),
-                    fight.EndTime.ToShortTimeString(), fightLengthString, fight.ExperiencePoints));
+                    fight.EndTime.ToShortTimeString(), fightLengthString, fight.ExperiencePoints);
 
             }
+
+            PushStrings(sb, strModList);
         }
         #endregion
     }
