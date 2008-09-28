@@ -23,8 +23,10 @@ namespace WaywardGamers.KParser.Plugin
         #region Constructor
         ToolStripDropDownButton lootTypeMenu = new ToolStripDropDownButton();
         LootType currentLootType = LootType.Summary;
-        bool showGroupDetails = false;
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
+        bool showGroupDetails = false;
+        bool excludeCrystalsAndSeals = false;
+        bool excludedPlayerInfo = true;
 
         public TreasurePlugin()
         {
@@ -57,11 +59,25 @@ namespace WaywardGamers.KParser.Plugin
             optionsMenu.Text = "Options";
 
             ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
-            groupMobsOption.Text = "Group Details";
+            groupMobsOption.Text = "Show Group Details";
             groupMobsOption.CheckOnClick = true;
             groupMobsOption.Checked = false;
             groupMobsOption.Click += new EventHandler(groupDetails_Click);
             optionsMenu.DropDownItems.Add(groupMobsOption);
+
+            ToolStripMenuItem excludeCrystalsOption = new ToolStripMenuItem();
+            excludeCrystalsOption.Text = "Exclude Crystals and Seals";
+            excludeCrystalsOption.CheckOnClick = true;
+            excludeCrystalsOption.Checked = false;
+            excludeCrystalsOption.Click += new EventHandler(excludeCrystalsOption_Click);
+            optionsMenu.DropDownItems.Add(excludeCrystalsOption);
+
+            ToolStripMenuItem excludedPlayerInfoOption = new ToolStripMenuItem();
+            excludedPlayerInfoOption.Text = "Don't Count 'exclude'd Player Kills";
+            excludedPlayerInfoOption.CheckOnClick = true;
+            excludedPlayerInfoOption.Checked = true;
+            excludedPlayerInfoOption.Click += new EventHandler(excludedPlayerInfoOption_Click);
+            optionsMenu.DropDownItems.Add(excludedPlayerInfoOption);
 
             optionsMenu.Enabled = false;
 
@@ -196,6 +212,28 @@ namespace WaywardGamers.KParser.Plugin
 
             HandleDataset(DatabaseManager.Instance.Database);
         }
+
+        protected void excludeCrystalsOption_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            excludeCrystalsAndSeals = sentBy.Checked;
+
+            HandleDataset(DatabaseManager.Instance.Database);
+        }
+
+        protected void excludedPlayerInfoOption_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            excludedPlayerInfo = sentBy.Checked;
+
+            HandleDataset(DatabaseManager.Instance.Database);
+        }
         #endregion
 
         #region Process display output
@@ -296,11 +334,41 @@ namespace WaywardGamers.KParser.Plugin
 
         private void ProcessDropRates(KPDatabaseDataSet dataSet)
         {
+            List<StringMods> strModList = new List<StringMods>();
+            StringBuilder sb = new StringBuilder();
+
             // Drop rate section
-            AppendText("Drop Rates\n", Color.Red, true, false);
-            string dropItemFormat = "{0,9} {1,-28} [Drop Rate (#): {2,8:p2}]  [Drop Rate (any): {3,8:p2}]  [Max #: {4}]\n";
+            string tmpString = "Drop Rates\n";
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = tmpString.Length,
+                Bold = true,
+                Color = Color.Red
+            });
+            sb.Append(tmpString);
+
+            string dropItemFormat = "{0,9} {1,-28} [Max #: {2}]  [Items/Kill: {3,6:f3}]  [Drop Rate: {4,8:p2}]  [% of Drops: {5,8:p2}]\n";
             string dropGilFormat = "{0,9} {1,-28} [Average:   {2,8:f2}]\n";
 
+            
+            string excludeString;
+
+            if (excludeCrystalsAndSeals == true)
+            {
+                excludeString = "Gil|beastmen's seal|Kindred's seal|fire crystal|earth crystal|" +
+                    "water crystal|wind crystal|ice crystal|thunder crystal|light crystal|dark crystal";
+            }
+            else
+            {
+                excludeString = "Gil";
+            }
+
+            Regex excludeItemsRegex = new Regex(excludeString);
+            Regex excludePlayersRegex = new Regex("exclude");
+
+
+            #region LINQ
             var lootByMob = from c in dataSet.Combatants
                             where (c.CombatantType == (byte)EntityType.Mob)
                             orderby c.CombatantName
@@ -308,22 +376,32 @@ namespace WaywardGamers.KParser.Plugin
                             {
                                 Name = c.CombatantName,
                                 Battles = from b in c.GetBattlesRowsByEnemyCombatantRelation()
-                                          where b.Killed == true
+                                          where b.Killed == true &&
+                                            (excludedPlayerInfo == false ||
+                                             b.IsKillerIDNull() == true ||
+                                             excludePlayersRegex.Match(b.CombatantsRowByBattleKillerRelation.PlayerInfo).Success == false)
                                           select new
                                           {
                                               Battle = b,
                                               DropsPerBattle = b.GetLootRows()
+                                                .Where(a => excludeItemsRegex.Match(a.ItemsRow.ItemName).Success == false)
                                           },
                                 Loot = from l in dataSet.Loot
                                        where ((l.IsBattleIDNull() == false) &&
-                                              (l.BattlesRow.CombatantsRowByEnemyCombatantRelation == c))
+                                              (l.BattlesRow.CombatantsRowByEnemyCombatantRelation == c) &&
+                                              (excludeItemsRegex.Match(l.ItemsRow.ItemName).Success == false))
                                        group l by l.ItemsRow.ItemName into li
                                        orderby li.Key
                                        select new
                                        {
                                            LootName = li.Key,
                                            LootDrops = li
-                                       }
+                                       },
+                                Gil = from l in dataSet.Loot
+                                      where ((l.IsBattleIDNull() == false) &&
+                                             (l.BattlesRow.CombatantsRowByEnemyCombatantRelation == c) &&
+                                             (l.ItemsRow.ItemName == "Gil"))
+                                      select l
                             };
 
             var lootByChest = from c in dataSet.Combatants
@@ -334,84 +412,110 @@ namespace WaywardGamers.KParser.Plugin
                                   Name = c.CombatantName,
                                   Battles = from b in c.GetBattlesRowsByEnemyCombatantRelation()
                                             where b.Killed == true
-                                            select b,
+                                            select new
+                                            {
+                                                Battle = b,
+                                                DropsPerBattle = b.GetLootRows()
+                                                  .Where(a => excludeItemsRegex.Match(a.ItemsRow.ItemName).Success == false)
+                                            },
                                   Loot = from l in dataSet.Loot
                                          where ((l.IsBattleIDNull() == false) &&
-                                                (l.BattlesRow.CombatantsRowByEnemyCombatantRelation == c))
+                                                (l.BattlesRow.CombatantsRowByEnemyCombatantRelation == c) &&
+                                                (excludeItemsRegex.Match(l.ItemsRow.ItemName).Success == false))
                                          group l by l.ItemsRow.ItemName into li
                                          orderby li.Key
                                          select new
                                          {
                                              LootName = li.Key,
                                              LootDrops = li
-                                         }
+                                         },
+                                  Gil = from l in dataSet.Loot
+                                        where ((l.IsBattleIDNull() == false) &&
+                                               (l.BattlesRow.CombatantsRowByEnemyCombatantRelation == c) &&
+                                               (l.ItemsRow.ItemName == "Gil"))
+                                        select l
                               };
-
+            #endregion
 
             int totalGil;
             double avgGil;
             double avgLoot;
             int anyDropped;
-            double avgTimesDropped;
+            double dropRate;
+            int lootDropCount;
+            int totalDrops;
+            double percentDrop;
             int maxDrops;
+
 
             foreach (var mob in lootByMob)
             {
                 int mobKillCount = mob.Battles.Count();
-                AppendText(string.Format("\n{0} (Killed {1} times)\n", mob.Name, mobKillCount), Color.Black, true, false);
+
+                tmpString = string.Format("\n{0} (Killed {1} times)\n", mob.Name, mobKillCount);
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = tmpString.Length,
+                    Bold = true,
+                    Color = Color.Black
+                });
+                sb.Append(tmpString);
 
                 totalGil = 0;
                 avgGil = 0;
 
                 if (mob.Loot != null)
                 {
+                    if (mob.Gil.Count() > 0)
+                    {
+                        // Gil among loot dropped
+                        totalGil = mob.Gil.Sum(l => l.GilDropped);
+
+                        if (mobKillCount > 0)
+                            avgGil = (double)totalGil / mobKillCount;
+
+                        sb.AppendFormat(dropGilFormat,
+                            totalGil, "Gil", avgGil);
+                    }
+
                     if (mob.Loot.Count() == 0)
                     {
-                        AppendText("       No drops.\n");
+                        sb.Append("       No drops.\n");
                     }
                     else
                     {
-                        var gilLoot = mob.Loot.FirstOrDefault(l => l.LootName == "Gil");
-
-                        if (gilLoot != null)
-                        {
-                            // Gil among loot dropped
-                            totalGil = gilLoot.LootDrops.Sum(l => l.GilDropped);
-
-                            if (mobKillCount > 0)
-                                avgGil = (double)totalGil / mobKillCount;
-
-                            AppendText(string.Format(dropGilFormat,
-                                totalGil, "Gil", avgGil));
-                        }
+                        totalDrops = mob.Loot.Sum(a => a.LootDrops.Count());
 
                         // Non-gil loot
                         foreach (var loot in mob.Loot)
                         {
                             avgLoot = 0;
 
-                            if (loot.LootName != "Gil")
-                            {
-                                if (mobKillCount > 0)
-                                    avgLoot = (double)loot.LootDrops.Count() / mobKillCount;
+                            lootDropCount = loot.LootDrops.Count();
 
-                                maxDrops = mob.Battles.Max(a =>
-                                    a.DropsPerBattle.Count(b =>
-                                        b.ItemsRow.ItemName == loot.LootName));
+                            if (mobKillCount > 0)
+                                avgLoot = (double)lootDropCount / mobKillCount;
 
-                                anyDropped = mob.Battles.Count(a =>
-                                    a.DropsPerBattle.Any(b =>
-                                         b.ItemsRow.ItemName == loot.LootName));
+                            maxDrops = mob.Battles.Max(a =>
+                                a.DropsPerBattle.Count(b =>
+                                    b.ItemsRow.ItemName == loot.LootName));
 
-                                avgTimesDropped = (double)anyDropped / mobKillCount;
+                            anyDropped = mob.Battles.Count(a =>
+                                a.DropsPerBattle.Any(b =>
+                                     b.ItemsRow.ItemName == loot.LootName));
 
-                                AppendText(string.Format(dropItemFormat,
-                                    loot.LootDrops.Count(),
-                                    loot.LootName,
-                                    avgLoot,
-                                    avgTimesDropped,
-                                    maxDrops));
-                            }
+                            dropRate = (double)anyDropped / mobKillCount;
+
+                            percentDrop = totalDrops > 0 ? (double)lootDropCount / totalDrops : 0;
+
+                            sb.AppendFormat(dropItemFormat,
+                                loot.LootDrops.Count(),
+                                loot.LootName,
+                                maxDrops,
+                                avgLoot,
+                                dropRate,
+                                percentDrop);
                         }
                     }
                 }
@@ -431,14 +535,14 @@ namespace WaywardGamers.KParser.Plugin
                             maxDropCount = i;
                     }
 
-                    AppendText("\n");
+                    sb.Append("\n");
 
                     if (totalDropCount > 0)
                     {
                         for (int i = 0; i <= maxDropCount; i++)
                         {
-                            AppendText(string.Format("       Dropped {0,2} items {1,5} times ({2,8:p2})\n",
-                                i, dropCount[i], (double)dropCount[i] / totalDropCount));
+                            sb.AppendFormat("       Dropped {0,2} items {1,5} times ({2,8:p2})\n",
+                                i, dropCount[i], (double)dropCount[i] / totalDropCount);
                         }
                     }
                     #endregion
@@ -452,7 +556,7 @@ namespace WaywardGamers.KParser.Plugin
 
                         foreach (var loot in battle.DropsPerBattle)
                         {
-                            if (loot.ItemsRow.ItemName != "Gil")
+                            if (excludeItemsRegex.Match(loot.ItemsRow.ItemName).Success == false)
                                 strList.Add(loot.ItemsRow.ItemName);
                         }
 
@@ -474,25 +578,38 @@ namespace WaywardGamers.KParser.Plugin
                         }
                     }
 
-                    AppendText("\n");
-
-                    var sortedStrDict = strDict.OrderByDescending(a => a.Value);
-                    int denominator = strDict.Sum(a => a.Value);
-
-                    foreach (var listSet in sortedStrDict)
+                    if (strDict.Count > 0)
                     {
-                        if (listSet.Key == string.Empty)
+                        tmpString = "\n    Number of times each group of items dropped.\n\n";
+                        strModList.Add(new StringMods
                         {
-                            AppendText(string.Format("    Drop set: Nothing\n       Count: {0,3}  [{1,8:p2}]\n\n",
-                                listSet.Value,
-                                (double)listSet.Value / denominator));
-                        }
-                        else
+                            Start = sb.Length,
+                            Length = tmpString.Length,
+                            Bold = true,
+                            Color = Color.Black
+                        });
+                        sb.Append(tmpString);
+
+                        var sortedStrDict = strDict.OrderByDescending(a => a.Value);
+                        int denominator = strDict.Sum(a => a.Value);
+
+                        string setString;
+
+                        foreach (var listSet in sortedStrDict)
                         {
-                            AppendText(string.Format("    Drop set: {0}\n       Count: {1,3}  [{2,8:p2}]\n\n",
-                                listSet.Key,
+                            if (listSet.Key == string.Empty)
+                            {
+                                setString = "Nothing";
+                            }
+                            else
+                            {
+                                setString = listSet.Key;
+                            }
+
+                            sb.AppendFormat("{0,9} [{1,8:p2}] -- {2}\n",
                                 listSet.Value,
-                                (double)listSet.Value / denominator));
+                                (double)listSet.Value / denominator,
+                                setString);
                         }
                     }
                     #endregion
@@ -500,57 +617,92 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             if (lootByChest.Count() > 0)
-                AppendText("\n\nTreasure Chests\n", Color.Red, true, false);
+            {
+                tmpString = "\n\nTreasure Chests\n";
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = tmpString.Length,
+                    Bold = true,
+                    Color = Color.Red
+                });
+                sb.Append(tmpString);
+            }
 
             foreach (var chest in lootByChest)
             {
                 int chestsOpened = chest.Battles.Count();
-                AppendText(string.Format("\n{0} (Opened {1} times)\n", chest.Name, chestsOpened), Color.Black, true, false);
+                
+                tmpString = string.Format("\n{0} (Opened {1} times)\n", chest.Name, chestsOpened);
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = tmpString.Length,
+                    Bold = true,
+                    Color = Color.Black
+                });
+                sb.Append(tmpString);
 
                 totalGil = 0;
                 avgGil = 0;
 
                 if (chest.Loot != null)
                 {
+                    if (chest.Gil.Count() > 0)
+                    {
+                        // Gil among loot dropped
+                        totalGil = chest.Gil.Sum(l => l.GilDropped);
+
+                        if (chestsOpened > 0)
+                            avgGil = (double)totalGil / chestsOpened;
+
+                        sb.AppendFormat(dropGilFormat,
+                            totalGil, "Gil", avgGil);
+                    }
+
                     if (chest.Loot.Count() == 0)
                     {
-                        AppendText("       No drops.\n");
+                        sb.Append("       No drops.\n");
                     }
                     else
                     {
-                        var gilLoot = chest.Loot.FirstOrDefault(l => l.LootName == "Gil");
-
-                        if (gilLoot != null)
-                        {
-                            // Gil among loot dropped
-                            totalGil = gilLoot.LootDrops.Sum(l => l.GilDropped);
-
-                            if (chestsOpened > 0)
-                                avgGil = (double)totalGil / chestsOpened;
-
-                            AppendText(string.Format(dropGilFormat,
-                                totalGil, "Gil", avgGil));
-                        }
+                        totalDrops = chest.Loot.Sum(a => a.LootDrops.Count());
 
                         // Non-gil loot
                         foreach (var loot in chest.Loot)
                         {
                             avgLoot = 0;
 
-                            if (loot.LootName != "Gil")
-                            {
-                                if (chestsOpened > 0)
-                                    avgLoot = (double)loot.LootDrops.Count() / chestsOpened;
+                            lootDropCount = loot.LootDrops.Count();
 
-                                AppendText(string.Format(dropItemFormat,
-                                    loot.LootDrops.Count(),
-                                    loot.LootName,
-                                    avgLoot));
-                            }
+                            if (chestsOpened > 0)
+                                avgLoot = (double)lootDropCount / chestsOpened;
+
+                            maxDrops = chest.Battles.Max(a =>
+                                a.DropsPerBattle.Count(b =>
+                                    b.ItemsRow.ItemName == loot.LootName));
+
+                            anyDropped = chest.Battles.Count(a =>
+                                a.DropsPerBattle.Any(b =>
+                                     b.ItemsRow.ItemName == loot.LootName));
+
+                            dropRate = (double)anyDropped / chestsOpened;
+
+                            percentDrop = totalDrops > 0 ? (double)lootDropCount / totalDrops : 0;
+
+                            sb.AppendFormat(dropItemFormat,
+                                loot.LootDrops.Count(),
+                                loot.LootName,
+                                maxDrops,
+                                avgLoot,
+                                dropRate,
+                                percentDrop);
                         }
                     }
                 }
             }
+
+            PushStrings(sb, strModList);
         }
 
         private void ProcessStealing(KPDatabaseDataSet dataSet)
