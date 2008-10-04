@@ -15,6 +15,7 @@ namespace WaywardGamers.KParser.Plugin
         #region Constructor
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
         bool excludedPlayerInfo = true;
+        Regex excludePlayersRegex = new Regex("exclude");
 
         public ExperiencePlugin()
         {
@@ -90,17 +91,10 @@ namespace WaywardGamers.KParser.Plugin
         #region Processing functions
         private void ProcessExperience(KPDatabaseDataSet dataSet)
         {
-            Regex excludePlayersRegex = new Regex("exclude");
-
             StringBuilder sb1 = new StringBuilder();
             StringBuilder sb2 = new StringBuilder();
 
-            var completedFights = dataSet.Battles.Where(b =>
-                b.Killed == true &&
-                b.EndTime > b.StartTime);
-
-
-            var completedFights2 = from b in dataSet.Battles
+            var completedFights = from b in dataSet.Battles
                                    where b.Killed == true &&
                                    (excludedPlayerInfo == false ||
                                     b.IsKillerIDNull() == true ||
@@ -131,7 +125,7 @@ namespace WaywardGamers.KParser.Plugin
 
                 int chainNum;
 
-                foreach (var fight in completedFights2)
+                foreach (var fight in completedFights)
                 {
                     totalFightsLength += fight.FightLength();
 
@@ -228,6 +222,10 @@ namespace WaywardGamers.KParser.Plugin
                              //          orderby bx.Key
                              //          select bx,
                              Battles = from b in c.GetBattlesRowsByEnemyCombatantRelation()
+                                       where b.Killed == true &&
+                                            (excludedPlayerInfo == false ||
+                                             b.IsKillerIDNull() == true ||
+                                             excludePlayersRegex.Match(b.CombatantsRowByBattleKillerRelation.PlayerInfo).Success == false)
                                        group b by b.MinBaseExperience() into bx
                                        orderby bx.Key
                                        select bx
