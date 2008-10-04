@@ -142,7 +142,7 @@ namespace WaywardGamers.KParser.Plugin
             mobsCombo.SelectedIndex = 0;
         }
 
-        public override void DatabaseOpened(KPDatabaseDataSet dataSet)
+        public override void NotifyOfUpdate(KPDatabaseDataSet dataSet)
         {
             ResetTextBox();
 

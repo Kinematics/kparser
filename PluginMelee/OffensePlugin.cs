@@ -211,7 +211,7 @@ namespace WaywardGamers.KParser.Plugin
             ResetAccumulation();
         }
 
-        public override void DatabaseOpened(KPDatabaseDataSet dataSet)
+        public override void NotifyOfUpdate(KPDatabaseDataSet dataSet)
         {
             ResetTextBox();
 

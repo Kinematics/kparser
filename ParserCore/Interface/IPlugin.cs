@@ -19,8 +19,7 @@ namespace WaywardGamers.KParser.Plugin
         void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e);
         void WatchDatabaseChanged(object sender, DatabaseWatchEventArgs e);
 
-        void DatabaseOpened(KPDatabaseDataSet dataSet);
-        void ParseComplete(KPDatabaseDataSet dataSet);
+        void NotifyOfUpdate(KPDatabaseDataSet dataSet);
         void Reset();
 
         bool IsDebug { get; }
