@@ -66,7 +66,7 @@ namespace WaywardGamers.KParser.Plugin
             speakerCombo.CBSelectIndex(0);
         }
 
-        public override void DatabaseOpened(KPDatabaseDataSet dataSet)
+        public override void NotifyOfUpdate(KPDatabaseDataSet dataSet)
         {
             ResetTextBox();
             UpdateSpeakerList(dataSet);

@@ -96,7 +96,7 @@ namespace WaywardGamers.KParser.Plugin
             ResetTextBox();
         }
 
-        public override void DatabaseOpened(KPDatabaseDataSet dataSet)
+        public override void NotifyOfUpdate(KPDatabaseDataSet dataSet)
         {
             UpdateMobList(dataSet, false);
 

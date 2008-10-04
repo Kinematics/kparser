@@ -719,16 +719,7 @@ namespace WaywardGamers.KParser
             {
                 Cursor.Current = Cursors.WaitCursor;
 
-                lock (activePluginList)
-                {
-                    foreach (IPlugin plugin in activePluginList)
-                    {
-                        using (new ProfileRegion("Opening " + plugin.TabName))
-                        {
-                            plugin.DatabaseOpened(DatabaseManager.Instance.Database);
-                        }
-                    }
-                }
+                NotifyPlugins(true);
 
                 toolStripStatusLabel.Text = string.Format("Current open parse: {0}.",
                     (new FileInfo(fileName)).Name);
@@ -966,7 +957,7 @@ namespace WaywardGamers.KParser
                             {
                                 Cursor.Current = Cursors.WaitCursor;
 
-                                plugin.DatabaseOpened(DatabaseManager.Instance.Database);
+                                plugin.NotifyOfUpdate(DatabaseManager.Instance.Database);
                             }
                             finally
                             {
@@ -1098,15 +1089,8 @@ namespace WaywardGamers.KParser
 
                 if (reopeningFile == true)
                 {
-                    lock (activePluginList)
-                    {
-                        foreach (IPlugin plugin in activePluginList)
-                        {
-                            plugin.DatabaseOpened(DatabaseManager.Instance.Database);
-                        }
-                    }
+                    NotifyPlugins(false);
                 }
-
 
                 if ((outputFileName == null) || (outputFileName == string.Empty))
                     toolStripStatusLabel.Text = "Parsing to default file.";
@@ -1135,22 +1119,43 @@ namespace WaywardGamers.KParser
                 DatabaseManager.Instance.DatabaseChanging -= MonitorDatabaseChanging;
                 DatabaseManager.Instance.DatabaseChanged -= MonitorDatabaseChanged;
 
-                try
+                NotifyPlugins(false);
+            }
+        }
+
+        private void NotifyPlugins(bool profile)
+        {
+            try
+            {
+                if (profile == true)
                 {
                     lock (activePluginList)
                     {
                         foreach (IPlugin plugin in activePluginList)
                         {
-                            plugin.ParseComplete(DatabaseManager.Instance.Database);
+                            using (new ProfileRegion("Opening " + plugin.TabName))
+                            {
+                                plugin.NotifyOfUpdate(DatabaseManager.Instance.Database);
+                            }
                         }
                     }
                 }
-                catch (Exception e)
+                else
                 {
-                    Logger.Instance.Log(e);
-                    MessageBox.Show(e.Message, "Error while attempting to stop parse.",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    lock (activePluginList)
+                    {
+                        foreach (IPlugin plugin in activePluginList)
+                        {
+                            plugin.NotifyOfUpdate(DatabaseManager.Instance.Database);
+                        }
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Log(e);
+                MessageBox.Show(e.Message, "Error while attempting to stop parse.",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

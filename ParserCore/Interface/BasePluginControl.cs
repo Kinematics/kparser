@@ -66,13 +66,7 @@ namespace WaywardGamers.KParser.Plugin
                 HandleDataset(dataSet);
         }
 
-        public virtual void DatabaseOpened(KPDatabaseDataSet dataSet)
-        {
-            ResetTextBox();
-            HandleDataset(dataSet);
-        }
-
-        public virtual void ParseComplete(KPDatabaseDataSet dataSet)
+        public virtual void NotifyOfUpdate(KPDatabaseDataSet dataSet)
         {
             ResetTextBox();
             HandleDataset(dataSet);

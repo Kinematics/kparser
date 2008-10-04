@@ -77,7 +77,7 @@ namespace WaywardGamers.KParser.Plugin
             showDetails = false;
         }
 
-        public override void DatabaseOpened(KPDatabaseDataSet dataSet)
+        public override void NotifyOfUpdate(KPDatabaseDataSet dataSet)
         {
             UpdatePlayerList(dataSet);
             showDetailOption.Checked = false;

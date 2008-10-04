@@ -3,27 +3,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Drawing;
+using System.Windows.Forms;
+using WaywardGamers.KParser.Interface;
 
 namespace WaywardGamers.KParser.Plugin
 {
     public class ExperiencePlugin : BasePluginControl
     {
         #region Constructor
+        ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
+        bool excludedPlayerInfo = true;
+
         public ExperiencePlugin()
         {
-            toolStrip.Enabled = false;
-            toolStrip.Visible = false;
+            optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            optionsMenu.Text = "Options";
 
-            richTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left |
-                System.Windows.Forms.AnchorStyles.Right |
-                System.Windows.Forms.AnchorStyles.Bottom;
-            richTextBox.Top -= toolStrip.Height;
-            richTextBox.Height += toolStrip.Height;
-            richTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top |
-                System.Windows.Forms.AnchorStyles.Left |
-                System.Windows.Forms.AnchorStyles.Right |
-                System.Windows.Forms.AnchorStyles.Bottom;
+            ToolStripMenuItem excludedPlayerInfoOption = new ToolStripMenuItem();
+            excludedPlayerInfoOption.Text = "Don't Count 'exclude'd Player Kills";
+            excludedPlayerInfoOption.CheckOnClick = true;
+            excludedPlayerInfoOption.Checked = true;
+            excludedPlayerInfoOption.Click += new EventHandler(excludedPlayerInfoOption_Click);
+            optionsMenu.DropDownItems.Add(excludedPlayerInfoOption);
+
+            toolStrip.Items.Add(optionsMenu);
+
+
+
+            //toolStrip.Enabled = false;
+            //toolStrip.Visible = false;
+
+            //richTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left |
+            //    System.Windows.Forms.AnchorStyles.Right |
+            //    System.Windows.Forms.AnchorStyles.Bottom;
+            //richTextBox.Top -= toolStrip.Height;
+            //richTextBox.Height += toolStrip.Height;
+            //richTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top |
+            //    System.Windows.Forms.AnchorStyles.Left |
+            //    System.Windows.Forms.AnchorStyles.Right |
+            //    System.Windows.Forms.AnchorStyles.Bottom;
         }
         #endregion
 
@@ -31,14 +51,6 @@ namespace WaywardGamers.KParser.Plugin
         public override string TabName
         {
             get { return "Experience"; }
-        }
-
-        public override DataTable GeneratedDataTableForExcel
-        {
-            get
-            {
-                return null;
-            }
         }
 
         public override void Reset()
@@ -51,6 +63,12 @@ namespace WaywardGamers.KParser.Plugin
             if (e.DatasetChanges != null)
             {
                 if (e.DatasetChanges.Battles.Any(b => (b.Killed == true) || (b.EndTime != MagicNumbers.MinSQLDateTime)))
+                {
+                    datasetToUse = e.Dataset;
+                    return true;
+                }
+
+                if (e.DatasetChanges.Combatants.Count > 0)
                 {
                     datasetToUse = e.Dataset;
                     return true;
@@ -72,12 +90,23 @@ namespace WaywardGamers.KParser.Plugin
         #region Processing functions
         private void ProcessExperience(KPDatabaseDataSet dataSet)
         {
+            Regex excludePlayersRegex = new Regex("exclude");
+
             StringBuilder sb1 = new StringBuilder();
             StringBuilder sb2 = new StringBuilder();
 
             var completedFights = dataSet.Battles.Where(b =>
                 b.Killed == true &&
                 b.EndTime > b.StartTime);
+
+
+            var completedFights2 = from b in dataSet.Battles
+                                   where b.Killed == true &&
+                                   (excludedPlayerInfo == false ||
+                                    b.IsKillerIDNull() == true ||
+                                    excludePlayersRegex.Match(b.CombatantsRowByBattleKillerRelation.PlayerInfo).Success == false)
+                                   select b;
+
             int totalFights = completedFights.Count();
 
             if (totalFights > 0)
@@ -102,7 +131,7 @@ namespace WaywardGamers.KParser.Plugin
 
                 int chainNum;
 
-                foreach (var fight in completedFights)
+                foreach (var fight in completedFights2)
                 {
                     totalFightsLength += fight.FightLength();
 
@@ -289,5 +318,19 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
         #endregion
+
+        #region Event Handlers
+        protected void excludedPlayerInfoOption_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            excludedPlayerInfo = sentBy.Checked;
+
+            HandleDataset(DatabaseManager.Instance.Database);
+        }
+        #endregion
+
     }
 }
