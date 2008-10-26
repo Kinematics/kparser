@@ -1,5 +1,14 @@
 KParser Change Log
 
+1.1.6
+* Adjusted output layout of Loot page.
++ Added option to filter mobs killed by certain players when counting killed mobs in Loot tab.
++ Added option to filter mobs killed by certain players when counting killed mobs in Experience tab.
+- Fix retaliation mob filter check in Defense tab.
+- Fix reporting of intimidation defense events in Defense tab.
+- Disable Group Mobs option in Defense Details tab while a parse is active (the option is ignored while a parse is active anyway).
+
+
 1.1.5
 - Fix misspelled "Frostbite" and "Freezebite" so that they show up as Weaponskills properly.
 + Add percentage of number of drops per mob to loot distribution reporting.
