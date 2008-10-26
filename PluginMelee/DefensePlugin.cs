@@ -151,53 +151,54 @@ namespace WaywardGamers.KParser.Plugin
 
             #region LINQ query
             incAttacks = from c in dataSet.Combatants
-                         where ((c.CombatantType == (byte)EntityType.Player) ||
-                               (c.CombatantType == (byte)EntityType.Pet) ||
-                               (c.CombatantType == (byte)EntityType.Fellow))
+                         where (((EntityType)c.CombatantType == EntityType.Player) ||
+                               ((EntityType)c.CombatantType == EntityType.Pet) ||
+                               ((EntityType)c.CombatantType == EntityType.Fellow))
                          orderby c.CombatantType, c.CombatantName
+                         let targetInteractions = c.GetInteractionsRowsByTargetCombatantRelation()
                          select new DefenseGroup
                          {
                              Name = c.CombatantName,
-                             AllAttacks = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                          where ((da.HarmType == (byte)HarmType.Damage) ||
-                                                 (da.HarmType == (byte)HarmType.Drain)) &&
+                             AllAttacks = from da in targetInteractions
+                                          where (((HarmType)da.HarmType == HarmType.Damage) ||
+                                                 ((HarmType)da.HarmType == HarmType.Drain)) &&
                                                  mobFilter.CheckFilterMobActor(da) == true
                                           select da,
-                             Melee = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                     where (((da.HarmType == (byte)HarmType.Damage) ||
-                                             (da.HarmType == (byte)HarmType.Drain)) &&
-                                            ((da.ActionType == (byte)ActionType.Melee) ||
-                                             (da.ActionType == (byte)ActionType.Counterattack))) &&
+                             Melee = from da in targetInteractions
+                                     where ((((HarmType)da.HarmType == HarmType.Damage) ||
+                                             ((HarmType)da.HarmType == HarmType.Drain)) &&
+                                            (((ActionType)da.ActionType == ActionType.Melee) ||
+                                             ((ActionType)da.ActionType == ActionType.Counterattack))) &&
                                             mobFilter.CheckFilterMobActor(da) == true
                                      select da,
-                             Range = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                     where (((da.HarmType == (byte)HarmType.Damage) ||
-                                             (da.HarmType == (byte)HarmType.Drain)) &&
-                                            (da.ActionType == (byte)ActionType.Ranged)) &&
+                             Range = from da in targetInteractions
+                                     where ((((HarmType)da.HarmType == HarmType.Damage) ||
+                                             ((HarmType)da.HarmType == HarmType.Drain)) &&
+                                            ((ActionType)da.ActionType == ActionType.Ranged)) &&
                                             mobFilter.CheckFilterMobActor(da) == true
                                      select da,
-                             Abil = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                    where (((da.HarmType == (byte)HarmType.Damage) ||
-                                            (da.HarmType == (byte)HarmType.Drain)) &&
-                                           ((da.ActionType == (byte)ActionType.Ability) ||
-                                            (da.ActionType == (byte)ActionType.Weaponskill))) &&
+                             Abil = from da in targetInteractions
+                                    where ((((HarmType)da.HarmType == HarmType.Damage) ||
+                                            ((HarmType)da.HarmType == HarmType.Drain)) &&
+                                           (((ActionType)da.ActionType == ActionType.Ability) ||
+                                            ((ActionType)da.ActionType == ActionType.Weaponskill))) &&
                                            mobFilter.CheckFilterMobActor(da) == true
                                     select da,
-                             Spell = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                     where (((da.HarmType == (byte)HarmType.Damage) ||
-                                             (da.HarmType == (byte)HarmType.Drain)) &&
-                                            (da.ActionType == (byte)ActionType.Spell)) &&
+                             Spell = from da in targetInteractions
+                                     where ((((HarmType)da.HarmType == HarmType.Damage) ||
+                                             ((HarmType)da.HarmType == HarmType.Drain)) &&
+                                            ((ActionType)da.ActionType == ActionType.Spell)) &&
                                             mobFilter.CheckFilterMobActor(da) == true
                                      select da,
-                             Unknown = from da in c.GetInteractionsRowsByTargetCombatantRelation()
-                                       where (((da.HarmType == (byte)HarmType.Damage) ||
-                                               (da.HarmType == (byte)HarmType.Drain)) &&
-                                              (da.ActionType == (byte)ActionType.Unknown)) &&
+                             Unknown = from da in targetInteractions
+                                       where ((((HarmType)da.HarmType == HarmType.Damage) ||
+                                               ((HarmType)da.HarmType == HarmType.Drain)) &&
+                                              ((ActionType)da.ActionType == ActionType.Unknown)) &&
                                               mobFilter.CheckFilterMobActor(da) == true
                                        select da,
                              Retaliations = from da in c.GetInteractionsRowsByActorCombatantRelation()
-                                            where da.ActionType == (byte)ActionType.Retaliation &&
-                                                   mobFilter.CheckFilterMobActor(da) == true
+                                            where (ActionType)da.ActionType == ActionType.Retaliation &&
+                                                   mobFilter.CheckFilterMobTarget(da) == true
                                             select da,
                          };
             #endregion
