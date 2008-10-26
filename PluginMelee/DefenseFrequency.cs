@@ -20,6 +20,7 @@ namespace WaywardGamers.KParser.Plugin
         ToolStripComboBox playersCombo = new ToolStripComboBox();
         ToolStripComboBox mobsCombo = new ToolStripComboBox();
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
+        ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
 
         public DefenseFrequencyDataPlugin()
         {
@@ -51,8 +52,8 @@ namespace WaywardGamers.KParser.Plugin
 
             optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
             optionsMenu.Text = "Options";
+            optionsMenu.DropDownOpening += new EventHandler(optionsMenu_DropDownOpening);
 
-            ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
             groupMobsOption.Text = "Group Mobs";
             groupMobsOption.CheckOnClick = true;
             groupMobsOption.Checked = false;
@@ -673,6 +674,11 @@ namespace WaywardGamers.KParser.Plugin
                 HandleDataset(DatabaseManager.Instance.Database);
 
             flagNoUpdate = false;
+        }
+
+        void optionsMenu_DropDownOpening(object sender, EventArgs e)
+        {
+            groupMobsOption.Enabled = !Monitor.IsRunning;
         }
         #endregion
     }
