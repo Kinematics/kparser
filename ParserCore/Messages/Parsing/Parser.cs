@@ -2657,6 +2657,7 @@ namespace WaywardGamers.KParser.Parsing
                     // Apply to just melee for now.
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.ActionType = ActionType.Melee;
+                    msgCombatDetails.HarmType = HarmType.Damage;
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     target.HarmType = msgCombatDetails.HarmType;
                     target.AidType = msgCombatDetails.AidType;
