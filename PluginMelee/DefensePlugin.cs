@@ -166,7 +166,8 @@ namespace WaywardGamers.KParser.Plugin
                                           select da,
                              Melee = from da in targetInteractions
                                      where ((((HarmType)da.HarmType == HarmType.Damage) ||
-                                             ((HarmType)da.HarmType == HarmType.Drain)) &&
+                                             ((HarmType)da.HarmType == HarmType.Drain) ||
+                                             ((HarmType)da.HarmType == HarmType.Unknown)) &&
                                             (((ActionType)da.ActionType == ActionType.Melee) ||
                                              ((ActionType)da.ActionType == ActionType.Counterattack))) &&
                                             mobFilter.CheckFilterMobActor(da) == true
