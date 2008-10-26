@@ -1266,6 +1266,20 @@ namespace WaywardGamers.KParser.Parsing
             {
                 combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+
+                //switch (combatDetails.ActorEntityType)
+                //{
+                //    case EntityType.Player:
+                //        combatDetails.ActorType = ActorType.Party;
+                //        break;
+                //    case EntityType.Pet:
+                //        combatDetails.ActorType = ActorType.Pet;
+                //        break;
+                //    case EntityType.Unknown:
+                //        combatDetails.ActorType = ActorType.Other;
+                //        break;
+                //}
+
                 ClassifyEntity.VerifyEntities(ref message, ref target, true);
                 message.ParseSuccessful = true;
                 return;
