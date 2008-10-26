@@ -15,7 +15,6 @@ namespace WaywardGamers.KParser.Plugin
         #region Constructor
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
         bool excludedPlayerInfo = true;
-        Regex excludePlayersRegex = new Regex("exclude");
 
         public ExperiencePlugin()
         {
@@ -98,7 +97,7 @@ namespace WaywardGamers.KParser.Plugin
                                    where b.Killed == true &&
                                    (excludedPlayerInfo == false ||
                                     b.IsKillerIDNull() == true ||
-                                    excludePlayersRegex.Match(b.CombatantsRowByBattleKillerRelation.PlayerInfo).Success == false)
+                                    RegexUtility.ExcludedPlayer.Match(b.CombatantsRowByBattleKillerRelation.PlayerInfo).Success == false)
                                    select b;
 
             int totalFights = completedFights.Count();
@@ -225,7 +224,7 @@ namespace WaywardGamers.KParser.Plugin
                                        where b.Killed == true &&
                                             (excludedPlayerInfo == false ||
                                              b.IsKillerIDNull() == true ||
-                                             excludePlayersRegex.Match(b.CombatantsRowByBattleKillerRelation.PlayerInfo).Success == false)
+                                             RegexUtility.ExcludedPlayer.Match(b.CombatantsRowByBattleKillerRelation.PlayerInfo).Success == false)
                                        group b by b.MinBaseExperience() into bx
                                        orderby bx.Key
                                        select bx

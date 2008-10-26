@@ -365,8 +365,6 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             Regex excludeItemsRegex = new Regex(excludeString);
-            Regex excludePlayersRegex = new Regex("exclude");
-
 
             #region LINQ
             var lootByMob = from c in dataSet.Combatants
@@ -379,7 +377,7 @@ namespace WaywardGamers.KParser.Plugin
                                           where b.Killed == true &&
                                             (excludedPlayerInfo == false ||
                                              b.IsKillerIDNull() == true ||
-                                             excludePlayersRegex.Match(b.CombatantsRowByBattleKillerRelation.PlayerInfo).Success == false)
+                                             RegexUtility.ExcludedPlayer.Match(b.CombatantsRowByBattleKillerRelation.PlayerInfo).Success == false)
                                           select new
                                           {
                                               Battle = b,
