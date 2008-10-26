@@ -252,4 +252,8 @@ namespace WaywardGamers.KParser
         internal static readonly string Overloaded = "Overloaded";
     }
 
+    public class RegexUtility
+    {
+        public static readonly Regex ExcludedPlayer = new Regex("exclude", RegexOptions.IgnoreCase);
+    }
 }
