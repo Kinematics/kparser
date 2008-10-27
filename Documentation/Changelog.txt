@@ -1,5 +1,9 @@
 KParser Change Log
 
+1.1.6.1
+* Patch fix for HELM logging filter results.
+
+
 1.1.6
 * Adjusted output layout of Loot page.
 + Added option to filter mobs killed by certain players when counting killed mobs in Loot tab.
