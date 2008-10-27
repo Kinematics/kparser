@@ -793,7 +793,7 @@ namespace WaywardGamers.KParser.Plugin
         // Your sickle breaks!
 
         private static readonly Regex Harvest = new Regex(string.Format("You (successfully )?harvest {0}(, but your sickle breaks)?(.|!)$", item));
-        private static readonly Regex Log = new Regex(string.Format("You (successfully )?log {0}(, but your hatchet breaks)?(.|!)$", item));
+        private static readonly Regex Log = new Regex(string.Format("You (successfully )?cut off {0}(, but your hatchet breaks)?(.|!)$", item));
         private static readonly Regex Mine = new Regex(string.Format("You (successfully )?dig up {0}(, but your pickaxe breaks)?(.|!)$", item));
 
         private static readonly string harvestFail = "You are unable to harvest anything.";
