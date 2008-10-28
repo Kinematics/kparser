@@ -98,6 +98,9 @@
     <Compile Include="Interface\IPlugin.cs" />
     <Compile Include="Interface\PluginUtilities.cs" />
     <Compile Include="Interface\RTFStringMods.cs" />
+    <Compile Include="Interface\TimeToolstrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="KPDatabaseDataSet.cs">
       <DependentUpon>KPDatabaseDataSet.xsd</DependentUpon>
       <SubType>Component</SubType>
