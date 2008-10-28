@@ -110,7 +110,7 @@
         #endregion
 
         protected System.Windows.Forms.ToolStrip toolStrip;
-        private System.Windows.Forms.ToolStripContainer toolStripContainer;
         protected System.Windows.Forms.RichTextBox richTextBox;
+        protected System.Windows.Forms.ToolStripContainer toolStripContainer;
     }
 }
