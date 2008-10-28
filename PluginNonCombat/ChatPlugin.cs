@@ -46,6 +46,10 @@ namespace WaywardGamers.KParser.Plugin
             speakerCombo.SelectedIndex = 0;
             speakerCombo.SelectedIndexChanged += new EventHandler(this.speakerCombo_SelectedIndexChanged);
             toolStrip.Items.Add(speakerCombo);
+
+
+            ToolStrip testTS = new TimeToolstrip();
+            toolStripContainer.TopToolStripPanel.Join(testTS, toolStrip.Width+5, 0);
         }
         #endregion
 
