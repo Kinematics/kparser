@@ -46,7 +46,7 @@ namespace WaywardGamers.KParser.Plugin
             this.Text = "timeToolstrip";
             this.GripStyle = ToolStripGripStyle.Hidden;
 
-
+            #region General labels
             filterLabel = new ToolStripLabel();
             filterLabel.Text = "Filter Type";
 
@@ -58,7 +58,10 @@ namespace WaywardGamers.KParser.Plugin
 
             endLabel = new ToolStripLabel();
             endLabel.Text = "End Time:";
+            #endregion
 
+
+            #region Filter options menu
             filterTypeMenu = new ToolStripDropDownButton();
             filterTypeMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
             filterTypeMenu.Text = "Time Filter Type";
@@ -85,8 +88,9 @@ namespace WaywardGamers.KParser.Plugin
             filterTypeMenu.DropDownItems.Add(gameDayOption);
 
             this.Items.Add(filterTypeMenu);
+            #endregion
 
-
+            #region By game day components
             gameDayCombo = new ToolStripComboBox();
             gameDayCombo.DropDownStyle = ComboBoxStyle.DropDownList;
             gameDayCombo.MaxDropDownItems = 8;
@@ -97,6 +101,7 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             gameDayCombo.SelectedIndex = 0;
+            #endregion
 
             this.ResumeLayout(false);
             this.PerformLayout();
