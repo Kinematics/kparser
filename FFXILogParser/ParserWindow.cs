@@ -376,7 +376,7 @@ namespace WaywardGamers.KParser
                 OpenFileDialog ofd = new OpenFileDialog();
                 ofd.InitialDirectory = defaultSaveDirectory;
                 ofd.Multiselect = false;
-                ofd.Filter = "DVS/Direct Parse Files (*.dvsd)|*.dvsd|Direct Parse Files (*.dpd)|*.dpd|Database Files (*.sdf)|*.sdf|All Files (*.*)|*.*";
+                ofd.Filter = "Direct Parse Files (*.dpd)|*.dpd|DVS/Direct Parse Files (*.dvsd)|*.dvsd|Database Files (*.sdf)|*.sdf|All Files (*.*)|*.*";
                 ofd.FilterIndex = 0;
                 ofd.Title = "Select file to import...";
 
