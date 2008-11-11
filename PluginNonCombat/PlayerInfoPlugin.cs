@@ -14,16 +14,6 @@ namespace WaywardGamers.KParser.Plugin
         {
             toolStrip.Enabled = false;
             toolStrip.Visible = false;
-
-            richTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left |
-                System.Windows.Forms.AnchorStyles.Right |
-                System.Windows.Forms.AnchorStyles.Bottom;
-            richTextBox.Top -= toolStrip.Height;
-            richTextBox.Height += toolStrip.Height;
-            richTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top |
-                System.Windows.Forms.AnchorStyles.Left |
-                System.Windows.Forms.AnchorStyles.Right |
-                System.Windows.Forms.AnchorStyles.Bottom;
         }
         #endregion
 
