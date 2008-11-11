@@ -253,11 +253,15 @@ namespace WaywardGamers.KParser.Monitoring
             uint breakCharVal;
             char breakChar;
 
+            // For DVSD files:
             // logLine.RawHeader == "bf,00,00,60808080,00000288,000002f1,0034,00,01,00,00,(1E011E01)"
+            // logLine.Text == "The Goblin Tinkerer seems like a decent challenge."
+            // For DPD files:
+            // logLine.RawHeader == "bf,00,00,60808080,00000288,000002f1,0034,00,01,00,00,"
             // logLine.Text == "The Goblin Tinkerer seems like a decent challenge."
             // Need to combine those two lines back into the original
 
-            Regex rawHeaderRegex = new Regex(@"^(?<codes>((\w|\d)+,){11})\((?<breakCodes>(\w|\d)+)\)$");
+            Regex rawHeaderRegex = new Regex(@"^(?<codes>((\w|\d)+,){11})(\((?<breakCodes>(\w|\d)+)\))?$");
             Match rawHeaderMatch;
 
             try
@@ -285,20 +289,33 @@ namespace WaywardGamers.KParser.Monitoring
                                 originalChatLine = rawHeaderMatch.Groups["codes"].Value;
                                 breakCodes = rawHeaderMatch.Groups["breakCodes"].Value;
 
-                                while (breakCodes.Length > 0)
+                                if (breakCodes.Length > 0)
                                 {
-                                    breakCodesChars = breakCodes.Substring(0, 2);
-
-                                    if (uint.TryParse(breakCodesChars, NumberStyles.AllowHexSpecifier, null, out breakCharVal))
+                                    while (breakCodes.Length > 0)
                                     {
-                                        breakChar = (char)breakCharVal;
-                                        originalChatLine += breakChar;
-                                    }
+                                        breakCodesChars = breakCodes.Substring(0, 2);
 
-                                    if (breakCodes.Length > 2)
-                                        breakCodes = breakCodes.Substring(2);
-                                    else
-                                        breakCodes = string.Empty;
+                                        if (uint.TryParse(breakCodesChars, NumberStyles.AllowHexSpecifier, null, out breakCharVal))
+                                        {
+                                            breakChar = (char)breakCharVal;
+                                            originalChatLine += breakChar;
+                                        }
+
+                                        if (breakCodes.Length > 2)
+                                            breakCodes = breakCodes.Substring(2);
+                                        else
+                                            breakCodes = string.Empty;
+                                    }
+                                }
+                                else
+                                {
+                                    // Force insert basic break characters if they weren't saved in the
+                                    // imported database, so that they get parsed properly by our tokenizer.
+
+                                    originalChatLine += (char)0x1e;
+                                    originalChatLine += (char)0x01;
+                                    originalChatLine += (char)0x1e;
+                                    originalChatLine += (char)0x01;
                                 }
 
                                 originalChatLine += logLine.Text;
