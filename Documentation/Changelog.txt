@@ -1,5 +1,10 @@
 KParser Change Log
 
+1.1.6.2
+* Update import code for importing DirectParse files to account for changes in the database structure.
+* Add new DirectParse file extension to file selection box.
+
+
 1.1.6.1
 * Patch fix for HELM logging filter results.
 
