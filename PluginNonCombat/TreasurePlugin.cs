@@ -17,7 +17,8 @@ namespace WaywardGamers.KParser.Plugin
             Summary,
             DropRates,
             Stealing,
-            HELM
+            HELM,
+            Salvage
         }
 
         #region Constructor
@@ -37,21 +38,25 @@ namespace WaywardGamers.KParser.Plugin
             ToolStripMenuItem dropRatesOption = new ToolStripMenuItem();
             ToolStripMenuItem stealingOption = new ToolStripMenuItem();
             ToolStripMenuItem helmOption = new ToolStripMenuItem();
+            ToolStripMenuItem salvageOption = new ToolStripMenuItem();
             summaryOption.Text = "Summary";
             dropRatesOption.Text = "Drop Rates";
             stealingOption.Text = "Stealing";
             helmOption.Text = "HELM/Chocobo";
+            salvageOption.Text = "Salvage";
 
             summaryOption.Click += new EventHandler(summaryOption_Click);
             dropRatesOption.Click += new EventHandler(dropRatesOption_Click);
             stealingOption.Click += new EventHandler(stealingOption_Click);
             helmOption.Click += new EventHandler(helmOption_Click);
+            salvageOption.Click += new EventHandler(salvageOption_Click);
             summaryOption.Checked = true;
 
             lootTypeMenu.DropDownItems.Add(summaryOption);
             lootTypeMenu.DropDownItems.Add(dropRatesOption);
             lootTypeMenu.DropDownItems.Add(stealingOption);
             lootTypeMenu.DropDownItems.Add(helmOption);
+            lootTypeMenu.DropDownItems.Add(salvageOption);
 
             toolStrip.Items.Add(lootTypeMenu);
 
@@ -202,6 +207,26 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
+        protected void salvageOption_Click(object sender, EventArgs e)
+        {
+            currentLootType = LootType.Salvage;
+            optionsMenu.Enabled = false;
+
+            HandleDataset(DatabaseManager.Instance.Database);
+
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            foreach (ToolStripMenuItem menuItem in lootTypeMenu.DropDownItems)
+            {
+                if (menuItem == sentBy)
+                    menuItem.Checked = true;
+                else
+                    menuItem.Checked = false;
+            }
+        }
+
         protected void groupDetails_Click(object sender, EventArgs e)
         {
             ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
@@ -252,6 +277,9 @@ namespace WaywardGamers.KParser.Plugin
                     break;
                 case LootType.Stealing:
                     ProcessStealing(dataSet);
+                    break;
+                case LootType.Salvage:
+                    ProcessSalvage(dataSet);
                     break;
                 case LootType.Summary:
                 default:
@@ -328,6 +356,36 @@ namespace WaywardGamers.KParser.Plugin
                                 lootItem.Count(), lootItem.Key));
                         }
                     }
+                }
+            }
+        }
+
+        private void ProcessSalvage(KPDatabaseDataSet dataSet)
+        {
+            AppendText("Cell Drops\n", Color.Red, true, false);
+
+            var cells = from c in dataSet.Items
+                        where c.ItemName.Contains("cell")
+                        orderby c.ItemName
+                        select new
+                        {
+                            Name = c.ItemName,
+                            Count = c.GetLootRows().Count(),
+                            Drops = from l in c.GetLootRows()
+                                    where l.CombatantsRow != null
+                                    group l by l.CombatantsRow.CombatantName into li
+                                    orderby li.Key
+                                    select li
+                        };
+
+            foreach (var item in cells)
+            {
+                Match m = Regex.Match(item.Name, @"([a-z]+) cell");
+                AppendText(string.Format("\n{0,13}({1:00}): ", m.Groups[1].Value, item.Count), Color.Black, true, false);
+
+                foreach (var drop in item.Drops)
+                {
+                    AppendText(drop.Key + " ");
                 }
             }
         }
