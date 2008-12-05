@@ -45,7 +45,7 @@ namespace WaywardGamers.KParser.Forms
                 foreach (var proc in polProcesses)
                 {
                     processList.Items.Add(
-                        string.Format("{0} --- PID: {1}", proc.ProcessName, proc.Id));
+                        string.Format("{0} --- PID: {1}", proc.MainWindowTitle, proc.Id));
                 }
 
                 processList.SelectedIndex = 0;
