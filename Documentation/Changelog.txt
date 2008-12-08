@@ -1,8 +1,11 @@
 KParser Change Log
 
 1.1.7
-* Patch: Addition of Salvage Cell listing option in Loot tab.  Credit: Valyana of Ramuh
++ Patch: Addition of Salvage Cell listing option in Loot tab.  Credit: Valyana of Ramuh
 * Patch: Show window title when selecting multiple POL processes.  Credit: Valyana of Ramuh
+* Redid display of update progress while reparsing or importing files.
+- Fix risk of process reentry deadlocks in plugins.
+* New base address for RAM reading (12/8/2008 patch): 0x0057A2C8
 
 
 1.1.6.2
