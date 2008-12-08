@@ -1,5 +1,10 @@
 KParser Change Log
 
+1.1.7
+* Patch: Addition of Salvage Cell listing option in Loot tab.  Credit: Valyana of Ramuh
+* Patch: Show window title when selecting multiple POL processes.  Credit: Valyana of Ramuh
+
+
 1.1.6.2
 * Update import code for importing DirectParse files to account for changes in the database structure.
 * Add new DirectParse file extension to file selection box.
