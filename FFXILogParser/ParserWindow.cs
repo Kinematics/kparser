@@ -449,8 +449,12 @@ namespace WaywardGamers.KParser
 
         #endregion
 
-
         #region Reparse/Import functions
+        /// <summary>
+        /// Initiate reparsing an existing KParse database file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void databaseReparse_Click(object sender, EventArgs e)
         {
             if (Monitor.IsRunning == true)
@@ -534,6 +538,11 @@ namespace WaywardGamers.KParser
             }
         }
 
+        /// <summary>
+        /// Initiate importing a DirectParse/DVSParse database file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void importToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (Monitor.IsRunning == true)
@@ -791,7 +800,6 @@ namespace WaywardGamers.KParser
         }
         #endregion
 
-
         #region Menu Support Functions
         /// <summary>
         /// Gets the filename to save the parse output to.  By default it uses
@@ -896,7 +904,7 @@ namespace WaywardGamers.KParser
 
         #endregion
 
-        #region Plugin/Window Management
+        #region Plugin Tab/Window Management
         /// <summary>
         /// Search all DLLs in the application directory for classes derived from the
         /// abstract plugin class.  If one exists, create an instance of that class
@@ -1226,6 +1234,11 @@ namespace WaywardGamers.KParser
             }
         }
 
+        /// <summary>
+        /// Notify all plugins to update their data.  This is called when opening,
+        /// reopening or ending a parse.
+        /// </summary>
+        /// <param name="profile">Indicate whether to do profile timing per plugin.</param>
         private void NotifyPlugins(bool profile)
         {
             try
@@ -1279,16 +1292,6 @@ namespace WaywardGamers.KParser
             }
         }
 
-        private void AddMonitorChanging()
-        {
-            DatabaseManager.Instance.DatabaseChanging += MonitorDatabaseChanging;
-        }
-
-        public void RemoveMonitorChanging()
-        {
-            DatabaseManager.Instance.DatabaseChanging -= MonitorDatabaseChanging;
-        }
-
         private void MonitorDatabaseChanged(object sender, DatabaseWatchEventArgs e)
         {
             lock (activePluginList)
@@ -1298,6 +1301,16 @@ namespace WaywardGamers.KParser
                     plugin.WatchDatabaseChanged(sender, e);
                 }
             }
+        }
+
+        private void AddMonitorChanging()
+        {
+            DatabaseManager.Instance.DatabaseChanging += MonitorDatabaseChanging;
+        }
+
+        public void RemoveMonitorChanging()
+        {
+            DatabaseManager.Instance.DatabaseChanging -= MonitorDatabaseChanging;
         }
         #endregion
 
