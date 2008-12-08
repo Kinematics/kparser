@@ -110,17 +110,39 @@ namespace WaywardGamers.KParser.Plugin
                 return;
             }
 
-            try
+            // Lock in case a UI update sends a message to start reprocessing
+            // at the same time as the code is processing a message from the
+            // database being updated, or vice versa.
+            //
+            // RISK: If ProcessData directly or indirectly re-calls HandleDataset,
+            // it will cause a deadlock.
+            lock (this)
             {
-                richTextBox.SuspendLayout();
-                ProcessData(dataSet);
-                richTextBox.Select(richTextBox.Text.Length, richTextBox.Text.Length);
-                richTextBox.ResumeLayout();
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Log(e);
-                MessageBox.Show("Error while processing plugin: \n" + e.Message);
+                try
+                {
+                    // Retain current cursor position and/or selection
+                    int currentSelectionStart = richTextBox.SelectionStart;
+                    int currentSelectionLength = richTextBox.SelectionLength;
+
+                    richTextBox.SuspendLayout();
+                    ProcessData(dataSet);
+
+                    // After processing, re-select the same section as before, or
+                    // set it to the start of the display.
+                    if (currentSelectionStart <= richTextBox.Text.Length)
+                        richTextBox.Select(currentSelectionStart, currentSelectionLength);
+                    else
+                        richTextBox.Select(0, 0);
+
+                    //richTextBox.Select(richTextBox.Text.Length, richTextBox.Text.Length);
+
+                    richTextBox.ResumeLayout();
+                }
+                catch (Exception e)
+                {
+                    Logger.Instance.Log(e);
+                    MessageBox.Show("Error while processing plugin: \n" + e.Message);
+                }
             }
         }
 

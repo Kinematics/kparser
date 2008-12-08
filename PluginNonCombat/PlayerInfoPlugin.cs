@@ -40,7 +40,7 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void NotifyOfUpdate(KPDatabaseDataSet dataSet)
         {
-            ProcessData(dataSet);
+            HandleDataset(dataSet);
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
