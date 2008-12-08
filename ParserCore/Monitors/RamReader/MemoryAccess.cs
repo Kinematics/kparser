@@ -681,7 +681,7 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         #region Functions for examining RAM to determine new base address
         internal void ScanRAM()
         {
-            // Note: Disable LocateChatLog in FindFFXIProcess() before running this function.
+            // Note: Automatically disables LocateChatLog in FindFFXIProcess().
 
             if (FindFFXIProcess(true) == false)
                 return;
@@ -691,52 +691,51 @@ namespace WaywardGamers.KParser.Monitoring.Memory
             //FindString();
             // Take scanAddress and increment it by the index in scanStruct.memScanCharacters
             // Result: 0x043e86a0 + 0x1c8 = 0x043E8868
-            // Result: 0x0263e0d8 + 0x01dd0000 (base) = 0x0440E0D8
+            // Result: 0x029CF920 + 0x01dd0000 (base) = 0x479F920
 
             // Locate a pointer to the start of the chat log messages. (0x03ec0fac)
             // From that, determine the start of the ChatLogInfoStruct.
-            //FindAddress(0x0440E0D8);
+            //FindAddress(0x479F920);
             // Take scanAddress + j*4 at breakpoint
             // Result: 0x043e8000 + 0x213*4 = 0x043e884c
-            // Result: 0x0440e000 + 0x02f*4 = 0x0440E0BC
+            // Result: 0x0479f000 + 0x241*4 = 0x0479F904
 
             // The start of ChatLogInfoStruct is (4 bytes + 50 shorts + 50 shorts =
             // 204 bytes (0xCC) before the located pointer.
             // Result: 0x043e884c - 0xCC = 0x043E8780
-            // Result: 0x0440E0BC - 0xCC = 0x0440DFF0
+            // Result: 0x0479F904 - 0xCC = 0x0479F838
 
 
             // Examine the ChatLogInfoStruct from the previous address
             // to make sure things match up.
-            //CheckStructure(0x0440DFF0);
+            //CheckStructure(0x0479F838);
 
             // Since we know where the structure lives, find the address
             // that points to that.
-            //FindAddress(0x0440DFF0);
+            //FindAddress(0x0479F838);
             // Take scanAddress + j*4 at breakpoint
-            // Result: 0x03EC0EBC
             // Result: 0x043e8000 + 0x1d7*4 = 0x043E875C
-            // Result: 0x0440d000 + 0x3f3*4 = 0x0440DFCC
+            // Result: 0x0479F000 + 0x205*4 = 0x0479F814
 
             // That pointer is the second in a structure that is pointed
             // to by an initial address point.  Locate the address of our
             // pointer - 4.
-            //FindAddress(0x0440DFC8);
+            //FindAddress(0x0479F810);
             // Take scanAddress + j*4 at breakpoint
-            // Result: 0x0203DA48
             // Result: 0x02065000 + 0x25a*4 = 0x02065968
-            // Result: 0x02346000 + 0x356*4 = 0x02346D58
+            // Result: 0x0234a000 + 0x0b2*4 = 0x0234A2C8
 
             // Base offset address is the above pointer relative to the
             // POL base address.  Remove that value.
-            // Result: 0x0203DA48 - 0x01ad0000 == 0x0056DA48
             // Result: 0x02065968 - 0x01af0000 == 0x00575968
             // Result: 0x02346D58 - 0x01dd0000 == 0x00576D58
+            // Result: 0x0234A2C8 - 0x01dd0000 == 0x0057A2C8
 
             // Base address before patch for 2008-03-10: 0x0056A788
             // Base address after patch for 2008-03-10:  0x0056DA48
             // Base address after update on 2008-06-09:  0x00575968
             // Base address after update on 2008-09-08:  0x00576D58
+            // Base address after update on 2008-12-08:  0x0057A2C8
         }
 
         private void CheckStructure(uint checkAddress)
@@ -803,12 +802,14 @@ namespace WaywardGamers.KParser.Monitoring.Memory
 
         private void FindString()
         {
-            uint scanMemoryOffset = 0x0263e0d8;
+            uint scanMemoryOffset = 0x029CF920;
+            //uint scanMemoryOffset = 0x029CF000;
             uint blockSize = 1024;
             uint blockOffset = blockSize - 32;
             MemScanStringStruct scanStruct = new MemScanStringStruct();
 
             string byteString;
+            string prevByteString;
 
             for (int i = 0; i < 64000; i++)
             {
@@ -827,6 +828,8 @@ namespace WaywardGamers.KParser.Monitoring.Memory
 
                     if (j >= 0)
                         Trace.WriteLine(string.Format("Offset = {0}, Index j = {1}\n", scanMemoryOffset, j));
+
+                    prevByteString = byteString;
                 }
                 catch (Exception e)
                 {
