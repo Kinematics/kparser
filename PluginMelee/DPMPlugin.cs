@@ -73,7 +73,7 @@ namespace WaywardGamers.KParser.Plugin
             flagNoUpdate = true;
             playersCombo.CBSelectIndex(0);
 
-            ProcessData(dataSet);
+            HandleDataset(dataSet);
         }
 
         protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
