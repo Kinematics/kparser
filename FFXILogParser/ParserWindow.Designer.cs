@@ -33,7 +33,6 @@ namespace WaywardGamers.KParser
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ParserWindow));
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.pluginTabs = new System.Windows.Forms.TabControl();
             this.tabContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.closeTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -82,13 +81,6 @@ namespace WaywardGamers.KParser
             this.toolStripStatusLabel.Name = "toolStripStatusLabel";
             this.toolStripStatusLabel.Size = new System.Drawing.Size(38, 17);
             this.toolStripStatusLabel.Text = "Status";
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.toolStripStatusLabel1.BackColor = System.Drawing.SystemColors.Control;
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(66, 17);
-            this.toolStripStatusLabel1.Text = "Status Label";
             // 
             // pluginTabs
             // 
@@ -306,14 +298,14 @@ namespace WaywardGamers.KParser
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.menuAbout_Click);
             // 
             // windowsToolStripSeparator
             // 
             this.windowsToolStripSeparator.Name = "windowsToolStripSeparator";
-            this.windowsToolStripSeparator.Size = new System.Drawing.Size(149, 6);
+            this.windowsToolStripSeparator.Size = new System.Drawing.Size(130, 6);
             // 
             // ParserWindow
             // 
@@ -343,7 +335,6 @@ namespace WaywardGamers.KParser
         #endregion
 
         private System.Windows.Forms.StatusStrip statusStrip;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.TabControl pluginTabs;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
         private System.Windows.Forms.ContextMenuStrip tabContextMenuStrip;

@@ -265,189 +265,6 @@ namespace WaywardGamers.KParser
             }
         }
 
-        private void databaseReparse_Click(object sender, EventArgs e)
-        {
-            if (Monitor.IsRunning == true)
-            {
-                MessageBox.Show("Cannot reparse while another parse is running.", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            string inFilename = string.Empty;
-            string outFilename = string.Empty;
-
-            if (DatabaseManager.Instance.Database != null)
-            {
-                DialogResult reparse = MessageBox.Show("Do you want to reparse the current data?", "Reparse current data?",
-                    MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
-
-                if (reparse == DialogResult.Cancel)
-                    return;
-
-                if (reparse == DialogResult.Yes)
-                {
-                    inFilename = DatabaseManager.Instance.DatabaseFilename;
-                }
-            }
-
-            if (inFilename == string.Empty)
-            {
-                OpenFileDialog ofd = new OpenFileDialog();
-                ofd.InitialDirectory = defaultSaveDirectory;
-                ofd.Multiselect = false;
-                ofd.DefaultExt = "sdf";
-                ofd.Title = "Select file to reparse...";
-
-                if (ofd.ShowDialog() == DialogResult.Cancel)
-                {
-                    return;
-                }
-                else
-                {
-                    inFilename = ofd.FileName;
-                }
-            }
-
-            if (GetParseFileName(out outFilename) == true)
-            {
-                if (outFilename == inFilename)
-                {
-                    MessageBox.Show("Cannot save to the same file you want to reparse.", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                Cursor.Current = Cursors.WaitCursor;
-                ReparseMode = ReparseMode.Reparse;
-
-                try
-                {
-                    Monitoring.DatabaseReader.Instance.ReparseProgressChanged += MonitorReparse;
-
-                    try
-                    {
-                        toolStripStatusLabel.Text = "Reparsing...";
-
-                        using (new ProfileRegion("Reparse"))
-                        {
-                            Monitor.Reparse(inFilename, outFilename);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        StopParsing();
-                        toolStripStatusLabel.Text = "Error.  Parsing stopped.";
-                        Logger.Instance.Log(ex);
-                        MessageBox.Show(ex.Message, "Error while attempting to reparse.",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                        return;
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    Logger.Instance.Log(ex);
-                }
-            }
-        }
-
-        private void importToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Monitor.IsRunning == true)
-            {
-                MessageBox.Show("Cannot import while another parse is running.", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            ImportType importTypeForm = new ImportType();
-            if (importTypeForm.ShowDialog(this) == DialogResult.Cancel)
-                return;
-
-            ImportSource importSource = importTypeForm.ImportSource;
-
-            string inFilename = string.Empty;
-            string outFilename = string.Empty;
-
-            if (inFilename == string.Empty)
-            {
-                OpenFileDialog ofd = new OpenFileDialog();
-                ofd.InitialDirectory = defaultSaveDirectory;
-                ofd.Multiselect = false;
-                ofd.Filter = "Direct Parse Files (*.dpd)|*.dpd|DVS/Direct Parse Files (*.dvsd)|*.dvsd|Database Files (*.sdf)|*.sdf|All Files (*.*)|*.*";
-                ofd.FilterIndex = 0;
-                ofd.Title = "Select file to import...";
-
-                if (ofd.ShowDialog() == DialogResult.Cancel)
-                {
-                    return;
-                }
-                else
-                {
-                    inFilename = ofd.FileName;
-                }
-            }
-
-            outFilename = Path.Combine(defaultSaveDirectory, Path.GetFileNameWithoutExtension(inFilename));
-            outFilename = Path.ChangeExtension(outFilename, "sdf");
-
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.InitialDirectory = defaultSaveDirectory;
-            sfd.Filter = "Database Files (*.sdf)|*.sdf|All Files (*.*)|*.*";
-            sfd.FilterIndex = 0;
-            sfd.DefaultExt = "sdf";
-            sfd.FileName = outFilename;
-            sfd.Title = "Select database file to save parse to...";
-
-            if (sfd.ShowDialog() == DialogResult.OK)
-            {
-                outFilename = sfd.FileName;
-
-                if (outFilename == inFilename)
-                {
-                    MessageBox.Show("Cannot save to the same file you want to import.", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                Cursor.Current = Cursors.WaitCursor;
-                ReparseMode = ReparseMode.Import;
-
-                try
-                {
-                    Monitoring.DatabaseReader.Instance.ReparseProgressChanged += MonitorReparse;
-
-                    try
-                    {
-
-                        toolStripStatusLabel.Text = "Importing...";
-
-                        using (new ProfileRegion("Import"))
-                        {
-                            Monitor.Import(inFilename, outFilename, importSource);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        StopParsing();
-                        toolStripStatusLabel.Text = "Error.  Parsing stopped.";
-                        Logger.Instance.Log(ex);
-                        MessageBox.Show(ex.Message, "Error while attempting to import.",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                        return;
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    Logger.Instance.Log(ex);
-                }
-            }
-        }
-
         private void menuSaveDataAs_Click(object sender, EventArgs e)
         {
             SaveFileDialog sfd = new SaveFileDialog();
@@ -632,6 +449,349 @@ namespace WaywardGamers.KParser
 
         #endregion
 
+
+        #region Reparse/Import functions
+        private void databaseReparse_Click(object sender, EventArgs e)
+        {
+            if (Monitor.IsRunning == true)
+            {
+                MessageBox.Show("Cannot reparse while another parse is running.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            string inFilename = string.Empty;
+            string outFilename = string.Empty;
+
+            if (DatabaseManager.Instance.Database != null)
+            {
+                DialogResult reparse = MessageBox.Show("Do you want to reparse the current data?", "Reparse current data?",
+                    MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+
+                if (reparse == DialogResult.Cancel)
+                    return;
+
+                if (reparse == DialogResult.Yes)
+                {
+                    inFilename = DatabaseManager.Instance.DatabaseFilename;
+                }
+            }
+
+            if (inFilename == string.Empty)
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.InitialDirectory = defaultSaveDirectory;
+                ofd.Multiselect = false;
+                ofd.DefaultExt = "sdf";
+                ofd.Title = "Select file to reparse...";
+
+                if (ofd.ShowDialog() == DialogResult.Cancel)
+                {
+                    return;
+                }
+                else
+                {
+                    inFilename = ofd.FileName;
+                }
+            }
+
+            if (GetParseFileName(out outFilename) == true)
+            {
+                if (outFilename == inFilename)
+                {
+                    MessageBox.Show("Cannot save to the same file you want to reparse.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                Cursor.Current = Cursors.WaitCursor;
+                ReparseMode = ReparseMode.Reparse;
+
+                try
+                {
+                    AttachReparseStatus("Reparse: ", "Parsing");
+
+                    try
+                    {
+                        Monitor.Reparse(inFilename, outFilename);
+                    }
+                    catch (Exception ex)
+                    {
+                        StopParsing();
+                        DetachReparseStatus("Error trying to reparse.");
+                        Logger.Instance.Log(ex);
+                        MessageBox.Show(ex.Message, "Error while attempting to reparse.",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        return;
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.Instance.Log(ex);
+                }
+            }
+        }
+
+        private void importToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Monitor.IsRunning == true)
+            {
+                MessageBox.Show("Cannot import while another parse is running.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            ImportType importTypeForm = new ImportType();
+            if (importTypeForm.ShowDialog(this) == DialogResult.Cancel)
+                return;
+
+            ImportSource importSource = importTypeForm.ImportSource;
+
+            string inFilename = string.Empty;
+            string outFilename = string.Empty;
+
+            if (inFilename == string.Empty)
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.InitialDirectory = defaultSaveDirectory;
+                ofd.Multiselect = false;
+                ofd.Filter = "Direct Parse Files (*.dpd)|*.dpd|DVS/Direct Parse Files (*.dvsd)|*.dvsd|Database Files (*.sdf)|*.sdf|All Files (*.*)|*.*";
+                ofd.FilterIndex = 0;
+                ofd.Title = "Select file to import...";
+
+                if (ofd.ShowDialog() == DialogResult.Cancel)
+                {
+                    return;
+                }
+                else
+                {
+                    inFilename = ofd.FileName;
+                }
+            }
+
+            outFilename = Path.Combine(defaultSaveDirectory, Path.GetFileNameWithoutExtension(inFilename));
+            outFilename = Path.ChangeExtension(outFilename, "sdf");
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.InitialDirectory = defaultSaveDirectory;
+            sfd.Filter = "Database Files (*.sdf)|*.sdf|All Files (*.*)|*.*";
+            sfd.FilterIndex = 0;
+            sfd.DefaultExt = "sdf";
+            sfd.FileName = outFilename;
+            sfd.Title = "Select database file to save parse to...";
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                outFilename = sfd.FileName;
+
+                if (outFilename == inFilename)
+                {
+                    MessageBox.Show("Cannot save to the same file you want to import.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                Cursor.Current = Cursors.WaitCursor;
+                ReparseMode = ReparseMode.Import;
+
+                try
+                {
+                    try
+                    {
+                        AttachReparseStatus("Import: ", "Parsing");
+
+                        Monitor.Import(inFilename, outFilename, importSource);
+                    }
+                    catch (Exception ex)
+                    {
+                        StopParsing();
+                        DetachReparseStatus("Error trying to import.");
+                        Logger.Instance.Log(ex);
+                        MessageBox.Show(ex.Message, "Error while attempting to import.",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Instance.Log(ex);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function that gets attached as an event listener for reparsing/importing
+        /// database info.
+        /// </summary>
+        /// <param name="sender">Who sent the update.</param>
+        /// <param name="e">DatabaseReparseEventArgs</param>
+        private void MonitorReparse(object sender, DatabaseReparseEventArgs e)
+        {
+            if (this.InvokeRequired)
+            {
+                Action<object, DatabaseReparseEventArgs> thisFunc = MonitorReparse;
+                Invoke(thisFunc, new object[] { sender, e });
+                return;
+            }
+
+            if (e.Complete == true)
+            {
+                string completedText;
+
+                if (ReparseMode == ReparseMode.Reparse)
+                    completedText = "Reparse complete.";
+                else
+                    completedText = "Import complete.";
+
+                DetachReparseStatus(completedText);
+
+                OpenFile(DatabaseManager.Instance.DatabaseFilename);
+            }
+            else
+            {
+                Monitoring.DatabaseReader dr = sender as Monitoring.DatabaseReader;
+
+                // If reader sent message, we're in parsing mode
+                if (dr != null)
+                {
+                    if (Monitoring.DatabaseReader.Instance.IsRunning == true)
+                    {
+                        UpdateProgressMonitor("Parsing -", e.RowsRead, e.TotalRows);
+                    }
+                    else
+                    {
+                        // ie: reparse was cancelled or errored out
+                        // stop monitoring
+                        Cursor.Current = Cursors.Default;
+
+                        DetachReparseStatus("Aborted.");
+
+                        // reload original database file
+                        OpenFile(DatabaseReadingManager.Instance.DatabaseFilename);
+                    }
+
+                    return;
+                }
+
+                DatabaseManager dm = sender as DatabaseManager;
+
+                // If db manager sent message, we're in saving mode
+                if (dm != null)
+                {
+                    UpdateProgressMonitor("Saving -", e.RowsRead, e.TotalRows);
+
+                    return;
+                }
+
+                UpdateProgressMonitor("Unknown -", e.RowsRead, e.TotalRows);
+            }
+        }
+
+        /// <summary>
+        /// Update the label and progress meter during a reparse/import operation.
+        /// </summary>
+        /// <param name="currentState">The string to update the extra label to, indicating the current state.</param>
+        /// <param name="progress">The current progress value.</param>
+        /// <param name="maxProgress">The maximum progress value.</param>
+        private void UpdateProgressMonitor(string currentState, int progress, int maxProgress)
+        {
+            if (this.InvokeRequired)
+            {
+                Action<string, int, int> thisFunc = UpdateProgressMonitor;
+                Invoke(thisFunc, new object[] { currentState, progress, maxProgress });
+                return;
+            }
+
+            if (maxProgress < 1)
+                throw new ArgumentOutOfRangeException("maxProgress", maxProgress,
+                    "Maximum progress must be a positive value.");
+
+            if (progress > maxProgress)
+                throw new ArgumentOutOfRangeException("progress", progress,
+                    string.Format("Progress value {0} is greater than maximum allowed ({1}).", progress, maxProgress));
+
+
+            ToolStripItem[] itemSearch;
+
+            itemSearch = statusStrip.Items.Find("Reparse State", false);
+
+            if (itemSearch.Length == 1)
+            {
+                ToolStripStatusLabel reparseState = itemSearch[0] as ToolStripStatusLabel;
+                if (reparseState != null)
+                {
+                    reparseState.Text = currentState;
+                }
+            }
+
+            itemSearch = statusStrip.Items.Find("Reparse Progress", false);
+
+            if (itemSearch.Length == 1)
+            {
+                ToolStripProgressBar reparseProgress = itemSearch[0] as ToolStripProgressBar;
+                if (reparseProgress != null)
+                {
+                    reparseProgress.Maximum = maxProgress;
+                    reparseProgress.Value = progress;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Add an extra label plus a progress meter to the status bar to track
+        /// progress during a reparse.  Attach event listeners to appropriate classes.
+        /// </summary>
+        /// <param name="statusLabel">The string to set the default statusbar text to.</param>
+        /// <param name="initialState">The string to set the extra statusbar text to.</param>
+        private void AttachReparseStatus(string statusLabel, string initialState)
+        {
+            Monitoring.DatabaseReader.Instance.ReparseProgressChanged += MonitorReparse;
+            DatabaseManager.Instance.ReparseProgressChanged += MonitorReparse;
+
+            toolStripStatusLabel.Text = statusLabel;
+
+            ToolStripStatusLabel reparseState = new ToolStripStatusLabel(initialState);
+            ToolStripProgressBar reparseProgress = new ToolStripProgressBar();
+            reparseProgress.Minimum = 0;
+
+            reparseState.Name = "Reparse State";
+            reparseProgress.Name = "Reparse Progress";
+
+            statusStrip.Items.Add(reparseState);
+            statusStrip.Items.Add(reparseProgress);
+        }
+
+        /// <summary>
+        /// Remove the extra label and progress meter from the status bar after
+        /// a reparse is complete or aborted.  Remove event listeners from appropriate classes.
+        /// </summary>
+        /// <param name="statusLabel">The string to set the default statusbar text to after completion.</param>
+        private void DetachReparseStatus(string statusLabel)
+        {
+            Monitoring.DatabaseReader.Instance.ReparseProgressChanged -= MonitorReparse;
+            DatabaseManager.Instance.ReparseProgressChanged -= MonitorReparse;
+
+            ToolStripItem[] itemSearch;
+
+            itemSearch = statusStrip.Items.Find("Reparse Progress", false);
+
+            if (itemSearch.Length == 1)
+                statusStrip.Items.Remove(itemSearch[0]);
+
+            itemSearch = statusStrip.Items.Find("Reparse State", false);
+
+            if (itemSearch.Length == 1)
+                statusStrip.Items.Remove(itemSearch[0]);
+
+            toolStripStatusLabel.Text = statusLabel;
+
+        }
+        #endregion
+
+
         #region Menu Support Functions
         /// <summary>
         /// Gets the filename to save the parse output to.  By default it uses
@@ -731,63 +891,6 @@ namespace WaywardGamers.KParser
             finally
             {
                 Cursor.Current = Cursors.Default;
-            }
-        }
-
-        private void MonitorReparse(object sender, Monitoring.DatabaseReparseEventArgs e)
-        {
-            if (this.InvokeRequired)
-            {
-                Action<object, Monitoring.DatabaseReparseEventArgs> thisFunc = MonitorReparse;
-                Invoke(thisFunc, new object[] { sender, e });
-                return;
-            }
-
-            if (e.Complete == true)
-            {
-                Monitoring.DatabaseReader.Instance.ReparseProgressChanged -= MonitorReparse;
-
-                if (ReparseMode == ReparseMode.Reparse)
-                    toolStripStatusLabel.Text = "Status: Reparse complete.";
-                else
-                    toolStripStatusLabel.Text = "Status: Import complete.";
-
-
-                OpenFile(DatabaseManager.Instance.DatabaseFilename);
-            }
-            else
-            {
-                if (Monitoring.DatabaseReader.Instance.IsRunning == true)
-                {
-                    if (e.RowsRead == e.TotalRows)
-                    {
-                        if (ReparseMode == ReparseMode.Reparse)
-                            toolStripStatusLabel.Text = string.Format("Status: Reparsing {0}/{1} -- Saving...",
-                                e.RowsRead, e.TotalRows);
-                        else
-                            toolStripStatusLabel.Text = string.Format("Status: Importing {0}/{1} -- Saving...",
-                                e.RowsRead, e.TotalRows);
-                    }
-                    else
-                    {
-                        if (ReparseMode == ReparseMode.Reparse)
-                            toolStripStatusLabel.Text = string.Format("Status: Reparsing {0}/{1}",
-                                e.RowsRead, e.TotalRows);
-                        else
-                            toolStripStatusLabel.Text = string.Format("Status: Importing {0}/{1}",
-                                e.RowsRead, e.TotalRows);
-                    }
-                }
-                else
-                {
-                    // ie: reparse was cancelled or errored out
-                    // stop monitoring
-                    Cursor.Current = Cursors.Default;
-                    Monitoring.DatabaseReader.Instance.ReparseProgressChanged -= MonitorReparse;
-
-                    // reload original database file
-                    OpenFile(DatabaseReadingManager.Instance.DatabaseFilename);
-                }
             }
         }
 

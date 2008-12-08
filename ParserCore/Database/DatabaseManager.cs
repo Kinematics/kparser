@@ -10,33 +10,6 @@ using WaywardGamers.KParser.KPDatabaseDataSetTableAdapters;
 
 namespace WaywardGamers.KParser
 {
-    #region Event classes
-    public delegate void DatabaseWatchEventHandler(object sender, DatabaseWatchEventArgs dbArgs);
-
-    public class DatabaseWatchEventArgs : EventArgs
-    {
-        /// <summary>
-        /// Gets and sets the database that is accessible for this event.
-        /// </summary>
-        public KPDatabaseDataSet Dataset { get; private set; }
-
-        /// <summary>
-        /// Gets and sets just the changes that are being applied to the database.
-        /// </summary>
-        public KPDatabaseDataSet DatasetChanges { get; private set; }
-
-        /// <summary>
-        /// Constructor is internal; only created by the DatabaseManager.
-        /// </summary>
-        /// <param name="managedDataset">The dataset provided by the database manager.</param>
-        internal DatabaseWatchEventArgs(KPDatabaseDataSet managedDataset, KPDatabaseDataSet changedDataset)
-        {
-            Dataset = managedDataset;
-            DatasetChanges = changedDataset;
-        }
-    }
-    #endregion
-
     public sealed class DatabaseManager : IDisposable
     {
         #region Singleton Construction
@@ -112,6 +85,8 @@ namespace WaywardGamers.KParser
 
         public event DatabaseWatchEventHandler DatabaseChanging;
         public event DatabaseWatchEventHandler DatabaseChanged;
+
+        public event DatabaseReparseEventHandler ReparseProgressChanged;
 
         private bool disposed = false;
 
@@ -231,7 +206,8 @@ namespace WaywardGamers.KParser
             if ((messageList == null) || (messageList.Count == 0))
                 return;
 
-            int count = messageList.Count;
+            int totalMessageCount = messageList.Count;
+            int messageNumber = 0;
 
             // lock database for entire process period
             lock (localDB)
@@ -241,6 +217,8 @@ namespace WaywardGamers.KParser
                     AddMessageToDatabase(message);
                     if (message.Timestamp > mostRecentTimestamp)
                         mostRecentTimestamp = message.Timestamp;
+
+                    OnMessageProcessed(new DatabaseReparseEventArgs(++messageNumber, totalMessageCount, false));
                 }
 
                 UpdateActiveBattleList(false);
@@ -283,6 +261,15 @@ namespace WaywardGamers.KParser
 
             if (parseEnded == true)
                 DoneParsing();
+        }
+
+        private void OnMessageProcessed(DatabaseReparseEventArgs e)
+        {
+            if (ReparseProgressChanged != null)
+            {
+                // Invokes the delegates. 
+                ReparseProgressChanged(this, e);
+            }
         }
 
         public void PurgeChatInfo()

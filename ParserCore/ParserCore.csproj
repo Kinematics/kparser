@@ -144,6 +144,7 @@
     <Compile Include="ReferenceValues\Magic.cs" />
     <Compile Include="Messages\Parsing\Names.cs" />
     <Compile Include="Messages\Parsing\ParseExpressions.cs" />
+    <Compile Include="Utility\EventHandlingDelegates.cs" />
     <Compile Include="Utility\ExcelExport.cs" />
     <Compile Include="Utility\RegionProfiler.cs" />
   </ItemGroup>
