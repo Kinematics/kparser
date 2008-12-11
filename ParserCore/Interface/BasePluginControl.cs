@@ -19,6 +19,8 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Constructor
+        private object privateLock = new object();
+
         public BasePluginControl()
         {
             InitializeComponent();
@@ -116,7 +118,7 @@ namespace WaywardGamers.KParser.Plugin
             //
             // RISK: If ProcessData directly or indirectly re-calls HandleDataset,
             // it will cause a deadlock.
-            lock (this)
+            lock (privateLock)
             {
                 try
                 {
