@@ -145,6 +145,12 @@ namespace WaywardGamers.KParser
         /// </summary>
         public static DataSource ParseMode { get; private set; }
 
+        internal static DataSource TestParseMode
+        {
+            get { return ParseMode; }
+            set { if (IsRunning == false) ParseMode = value; }
+        }
+
         public static void ScanRAM()
         {
             currentReader = RamReader.Instance;
