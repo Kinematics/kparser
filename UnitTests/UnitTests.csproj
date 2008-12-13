@@ -53,6 +53,7 @@
     <Compile Include="Core\TestChatLine.cs" />
     <Compile Include="Core\TestMessage.cs" />
     <Compile Include="Core\TestMessageLine.cs" />
+    <Compile Include="Core\TestParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
