@@ -161,7 +161,7 @@ namespace WaywardGamers.KParser
     /// </summary>
     public static class NPCFellows
     {
-        public static readonly List<string> NamesList = new List<string>(64)
+        public static readonly List<string> NamesList = new List<string>(72)
         {
             "Feliz", "Amerita", "Chanandit", "Armittie", "Balu-Falu", "Cupapa", "Fhig Lahrv",
             "Durib", "Ferdinand", "Beatrice", "Deulmaeux", "Cadepure", "Burg-Ladarg",
@@ -173,7 +173,9 @@ namespace WaywardGamers.KParser
             "Savul-Kivul", "Ripokeke", "Sufhi Uchnouma", "Wagwei", "Theobald", "Sharlene",
             "Migaifongut", "Radille", "Vinja-Kanja", "Yawawa", "Tsuim Nhomango", "Zayag",
             "Zenji", "Sieghilde", "Romidiant", "Vimechue", "Yarga-Umiga", "Yufafa",
-            "Yoli Kohlpaka", "Zoldof"
+            "Yoli Kohlpaka", "Zoldof",
+            // Names with spaces are shortened to first name only when in combat:
+            "Fhig", "Khuma", "Pimy", "Raka", "Sahyu", "Sufhi", "Tsuim", "Yoli"
         };
 
         /// <summary>
