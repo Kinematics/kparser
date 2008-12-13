@@ -81,30 +81,14 @@ namespace WaywardGamers.KParser
                 }
             }
         }
-        #endregion
 
-        #region Modify message structure based on category
-        internal void SetMessageCategory(MessageCategoryType _messageCategory)
+        internal bool IsParseSuccessful
         {
-            switch (_messageCategory)
-            {
-                case MessageCategoryType.Chat:
-                    ChatDetails = new ChatDetails();
-                    break;
-                case MessageCategoryType.System:
-                    SystemDetails = new SystemDetails();
-                    break;
-                case MessageCategoryType.Event:
-                    EventDetails = new EventDetails();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException("_messageCategory", _messageCategory,
-                        "Unknown message category.");
-            }
-
-            messageCategory = _messageCategory;
+            get { return parseSuccessful; }
         }
+
         #endregion
+
 
         #region Details Properties -- only created when MessageCateogory is set.
         internal ChatDetails ChatDetails { get; private set; }
@@ -114,19 +98,8 @@ namespace WaywardGamers.KParser
         internal EventDetails EventDetails { get; private set; }
         #endregion
 
+
         #region Text Grouping
-        internal void AddMessageLine(MessageLine msgLine)
-        {
-            if (msgLine == null)
-                return;
-
-            //if (parseSuccessful == true)
-            //    return;
-
-            msgLineCollection.Add(msgLine);
-            activeMessageStrings.Add(msgLine.TextOutput);
-        }
-
         internal string CurrentMessageText
         {
             get
@@ -186,21 +159,53 @@ namespace WaywardGamers.KParser
         }
         #endregion
 
-        #region Parsing Updates
-        internal bool ParseSuccessful
+
+        #region Methods to modify Message
+        internal void AddMessageLine(MessageLine msgLine)
         {
-            get { return parseSuccessful; }
-            set
+            if (msgLine == null)
+                return;
+
+            //if (parseSuccessful == true)
+            //    return;
+
+            msgLineCollection.Add(msgLine);
+            activeMessageStrings.Add(msgLine.TextOutput);
+        }
+
+        internal void SetMessageCategory(MessageCategoryType _messageCategory)
+        {
+            switch (_messageCategory)
             {
-                parseSuccessful = value;
-                if (parseSuccessful == true)
-                {
-                    completedMessageStrings.Add(CurrentMessageText);
-                    activeMessageStrings.Clear();
-                }
+                case MessageCategoryType.Chat:
+                    ChatDetails = new ChatDetails();
+                    break;
+                case MessageCategoryType.System:
+                    SystemDetails = new SystemDetails();
+                    break;
+                case MessageCategoryType.Event:
+                    EventDetails = new EventDetails();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("_messageCategory", _messageCategory,
+                        "Unknown message category.");
+            }
+
+            messageCategory = _messageCategory;
+        }
+
+        internal void SetParseSuccess(bool _parseSuccess)
+        {
+            parseSuccessful = _parseSuccess;
+            if (parseSuccessful == true)
+            {
+                completedMessageStrings.Add(CurrentMessageText);
+                activeMessageStrings.Clear();
             }
         }
+
         #endregion
+
 
         #region Overrides
         public override string ToString()
@@ -218,7 +223,7 @@ namespace WaywardGamers.KParser
             sb.AppendFormat("Message Code: {0:x}\n", MessageCode);
 
             sb.AppendFormat("Message Category: {0}\n", MessageCategory);
-            sb.AppendFormat("Parse Successful: {0}\n", ParseSuccessful);
+            sb.AppendFormat("Parse Successful: {0}\n", IsParseSuccessful);
 
             if (SystemDetails != null)
                 sb.Append(SystemDetails.ToString());
