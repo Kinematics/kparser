@@ -212,7 +212,6 @@ namespace WaywardGamers.KParser
                 activeMessageStrings.Clear();
             }
         }
-
         #endregion
 
 
