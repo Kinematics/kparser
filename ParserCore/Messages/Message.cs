@@ -19,13 +19,13 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Base MessageLine Properties
-        internal uint MessageID { get; set; }
+        internal uint MessageID { get; private set; }
 
-        internal uint MessageCode { get; set; }
+        internal uint MessageCode { get; private set; }
 
-        internal uint ExtraCode1 { get; set; }
+        internal uint ExtraCode1 { get; private set; }
 
-        internal uint ExtraCode2 { get; set; }
+        internal uint ExtraCode2 { get; private set; }
         #endregion
 
         #region Readonly Properties
@@ -164,10 +164,19 @@ namespace WaywardGamers.KParser
         internal void AddMessageLine(MessageLine msgLine)
         {
             if (msgLine == null)
-                return;
+                throw new ArgumentNullException("msgLine");
 
-            //if (parseSuccessful == true)
-            //    return;
+            // The first message line that gets added to the message needs
+            // to set the various externally visible properties.
+            if (msgLineCollection.Count == 0)
+            {
+                SetMessageCategory(msgLine.MessageCategory);
+
+                MessageID = msgLine.EventSequence;
+                MessageCode = msgLine.MessageCode;
+                ExtraCode1 = msgLine.ExtraCode1;
+                ExtraCode2 = msgLine.ExtraCode2;
+            }
 
             msgLineCollection.Add(msgLine);
             activeMessageStrings.Add(msgLine.TextOutput);
