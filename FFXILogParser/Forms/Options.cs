@@ -238,7 +238,7 @@ namespace WaywardGamers.KParser
 
                     coreSettings.DebugMode = this.debugMode.Checked;
 
-                    windowSettings.DefaultParseSaveDirectory = defaultSaveDirectory.Text;
+                    coreSettings.DefaultParseSaveDirectory = defaultSaveDirectory.Text;
                 }
             }
         }
@@ -271,10 +271,25 @@ namespace WaywardGamers.KParser
 
             debugMode.Checked = coreSettings.DebugMode;
 
-            defaultSaveDirectory.Text = windowSettings.DefaultParseSaveDirectory;
-            if (defaultSaveDirectory.Text == string.Empty)
+            // Check for already-specified default save directory that was set
+            // in the old location.  If it exists and the new location hasn't
+            // been set, use the windowSettings location, otherwise the
+            // coreSettings location.  If neither have been set, use the
+            // CommonApp location.
+            if (coreSettings.DefaultParseSaveDirectory == string.Empty)
             {
-                defaultSaveDirectory.Text = Application.CommonAppDataPath;
+                if (windowSettings.DefaultParseSaveDirectory == string.Empty)
+                {
+                    defaultSaveDirectory.Text = Application.CommonAppDataPath;
+                }
+                else
+                {
+                    defaultSaveDirectory.Text = windowSettings.DefaultParseSaveDirectory;
+                }
+            }
+            else
+            {
+                defaultSaveDirectory.Text = coreSettings.DefaultParseSaveDirectory;
             }
         }
 
