@@ -138,12 +138,6 @@ namespace WaywardGamers.KParser.Parsing
 
         private static void InitialParse(Message message, MessageLine messageLine)
         {
-            message.MessageID = messageLine.EventSequence;
-            message.MessageCode = messageLine.MessageCode;
-            message.ExtraCode1 = messageLine.ExtraCode1;
-            message.ExtraCode2 = messageLine.ExtraCode2;
-            message.SetMessageCategory(messageLine.MessageCategory);
-
             message.AddMessageLine(messageLine);
 
             switch (message.MessageCategory)
