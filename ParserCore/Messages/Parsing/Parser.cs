@@ -142,7 +142,7 @@ namespace WaywardGamers.KParser.Parsing
             message.MessageCode = messageLine.MessageCode;
             message.ExtraCode1 = messageLine.ExtraCode1;
             message.ExtraCode2 = messageLine.ExtraCode2;
-            message.MessageCategory = messageLine.MessageCategory;
+            message.SetMessageCategory(messageLine.MessageCategory);
 
             message.AddMessageLine(messageLine);
 
@@ -210,7 +210,7 @@ namespace WaywardGamers.KParser.Parsing
                     message.SystemDetails.SystemMessageType = SystemMessageType.SearchComment;
                     break;
                 case 0xcd: // Linkshell message
-                    message.MessageCategory = MessageCategoryType.Chat;
+                    message.SetMessageCategory(MessageCategoryType.Chat);
                     message.ChatDetails.ChatMessageType = ChatMessageType.Linkshell;
                     message.ChatDetails.ChatSpeakerName = "-Linkshell-";
                     message.ChatDetails.ChatSpeakerType = SpeakerType.Unknown;
@@ -232,7 +232,7 @@ namespace WaywardGamers.KParser.Parsing
                 case 0x92: // Arena time remaining
                 case 0x94: // Arena intro/announcement
                     // Mark these as chat messages
-                    message.MessageCategory = MessageCategoryType.Chat;
+                    message.SetMessageCategory(MessageCategoryType.Chat);
                     message.ChatDetails.ChatMessageType = ChatMessageType.Arena;
                     message.ChatDetails.ChatSpeakerName = "-Arena-";
                     message.ChatDetails.ChatSpeakerType = SpeakerType.NPC;
@@ -505,7 +505,7 @@ namespace WaywardGamers.KParser.Parsing
         private static void ParseCode8d(Message message)
         {
             // Can be a failed message, or Arena messages in Limbus.
-            message.MessageCategory = MessageCategoryType.Chat;
+            message.SetMessageCategory(MessageCategoryType.Chat);
             message.ChatDetails.ChatMessageType = ChatMessageType.Arena;
             message.ChatDetails.ChatSpeakerName = "-Arena-";
             message.ChatDetails.ChatSpeakerType = SpeakerType.NPC;
