@@ -26,32 +26,17 @@ namespace WaywardGamers.KParser
         internal uint ExtraCode1 { get; set; }
 
         internal uint ExtraCode2 { get; set; }
+        #endregion
+
+        #region Readonly Properties
+        internal Collection<MessageLine> MessageLineCollection
+        {
+            get { return msgLineCollection; }
+        }
 
         internal MessageCategoryType MessageCategory
         {
             get { return messageCategory; }
-            set
-            {
-                switch (value)
-                {
-                    case MessageCategoryType.Chat:
-                        ChatDetails = new ChatDetails();
-                        break;
-                    case MessageCategoryType.System:
-                        SystemDetails = new SystemDetails();
-                        break;
-                    case MessageCategoryType.Event:
-                        EventDetails = new EventDetails();
-                        break;
-                }
-
-                messageCategory = value;
-            }
-        }
-
-        internal Collection<MessageLine> MessageLineCollection
-        {
-            get { return msgLineCollection; }
         }
 
         internal DateTime Timestamp
@@ -95,6 +80,29 @@ namespace WaywardGamers.KParser
                     return 0;
                 }
             }
+        }
+        #endregion
+
+        #region Modify message structure based on category
+        internal void SetMessageCategory(MessageCategoryType _messageCategory)
+        {
+            switch (_messageCategory)
+            {
+                case MessageCategoryType.Chat:
+                    ChatDetails = new ChatDetails();
+                    break;
+                case MessageCategoryType.System:
+                    SystemDetails = new SystemDetails();
+                    break;
+                case MessageCategoryType.Event:
+                    EventDetails = new EventDetails();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("_messageCategory", _messageCategory,
+                        "Unknown message category.");
+            }
+
+            messageCategory = _messageCategory;
         }
         #endregion
 
