@@ -37,7 +37,6 @@ namespace WaywardGamers.KParser
     #region General message types
     public enum MessageCategoryType : byte
 	{
-        Unknown,
 		System,
 		Chat,
 		Event
