@@ -69,7 +69,7 @@ namespace WaywardGamers.KParser
         {
             get
             {
-                MessageLine lastMsgLine = MessageLineCollection.First();
+                MessageLine lastMsgLine = MessageLineCollection.FirstOrDefault();
                 if (lastMsgLine != null)
                 {
                     return lastMsgLine.MessageCode;
@@ -85,7 +85,7 @@ namespace WaywardGamers.KParser
         {
             get
             {
-                MessageLine lastMsgLine = MessageLineCollection.Last();
+                MessageLine lastMsgLine = MessageLineCollection.LastOrDefault();
                 if (lastMsgLine != null)
                 {
                     return lastMsgLine.MessageCode;
