@@ -23,8 +23,14 @@ namespace WaywardGamers.KParser
         /// </summary>
         private DatabaseManager()
 		{
-            defaultCopyDatabaseFilename = Path.Combine(System.Windows.Forms.Application.CommonAppDataPath,
-                Properties.Settings.Default.DefaultUnnamedDBFileName);
+            Properties.Settings prefs = new WaywardGamers.KParser.Properties.Settings();
+            prefs.Reload();
+
+            string defaultPath = prefs.DefaultParseSaveDirectory;
+            if (defaultPath == string.Empty)
+                defaultPath = System.Windows.Forms.Application.CommonAppDataPath;
+
+            defaultCopyDatabaseFilename = Path.Combine(defaultPath, prefs.DefaultUnnamedDBFileName);
 
             Version assemVersion = Assembly.GetExecutingAssembly().GetName().Version;
             assemblyVersionString = string.Format("{0}.{1}", assemVersion.Major, assemVersion.Minor);
