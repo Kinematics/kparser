@@ -512,7 +512,7 @@ namespace WaywardGamers.KParser
         private void AddMessageToDatabase(Message message)
         {
             // Don't try to insert data from unsuccessful parses.
-            if (message.ParseSuccessful == false)
+            if (message.IsParseSuccessful == false)
             {
                 return;
             }
