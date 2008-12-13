@@ -22,10 +22,6 @@ namespace WaywardGamers.KParser.Parsing
         /// <param name="messageLine"></param>
         internal static Message Parse(MessageLine messageLine)
         {
-            int i = 0;
-            if (messageLine.EventSequence == 0x0df9)
-                i++;
-
             Message message = GetAttachedMessage(messageLine);
 
             if (message == null)
