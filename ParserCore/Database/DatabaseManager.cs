@@ -196,10 +196,18 @@ namespace WaywardGamers.KParser
             get { return (localDB != null); }
         }
 
+        /// <summary>
+        /// Try for up to 2 seconds to acquire access to the dataset.
+        /// </summary>
+        /// <returns>Returns the dataset if it acquires the mutex.  Otherwise
+        /// returns null.</returns>
         public KPDatabaseDataSet GetDatabaseForReading()
         {
-            databaseAccessMutex.WaitOne();
-            return localDB;
+            // Wait for up to 2 seconds to try to acquire the mutex.
+            if (databaseAccessMutex.WaitOne() == true)
+                return localDB;
+            else
+                return null;
         }
 
         public void DoneReadingDatabase()
