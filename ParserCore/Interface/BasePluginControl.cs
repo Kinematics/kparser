@@ -108,7 +108,9 @@ namespace WaywardGamers.KParser.Plugin
             {
                 DatasetInvoker reReadDatabase = new DatasetInvoker(HandleDataset);
                 object[] passDataset = new object[1] { dataSet };
-                Invoke(reReadDatabase, passDataset);
+
+                BeginInvoke(reReadDatabase, passDataset);
+                //Invoke(reReadDatabase, passDataset);
                 return;
             }
 
