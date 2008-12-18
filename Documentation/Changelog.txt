@@ -1,5 +1,15 @@
 KParser Change Log
 
+
+1.1.8
++ Implement testing framework.
++ Begin implementing unit tests.
+- Fix bad chat text for moogle job change.
+* Change which settings file the default save directory is stored in.
+- Fix bug of the default parse always using the CommonApps directory instead of the specified default directory.
+- Misc bug fixes uncovered by the testing framework.
+
+
 1.1.7
 + Patch: Addition of Salvage Cell listing option in Loot tab.  Credit: Valyana of Ramuh
 * Patch: Show window title when selecting multiple POL processes.  Credit: Valyana of Ramuh

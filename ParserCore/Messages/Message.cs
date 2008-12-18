@@ -19,39 +19,24 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Base MessageLine Properties
-        internal uint MessageID { get; set; }
+        internal uint MessageID { get; private set; }
 
-        internal uint MessageCode { get; set; }
+        internal uint MessageCode { get; private set; }
 
-        internal uint ExtraCode1 { get; set; }
+        internal uint ExtraCode1 { get; private set; }
 
-        internal uint ExtraCode2 { get; set; }
+        internal uint ExtraCode2 { get; private set; }
+        #endregion
+
+        #region Readonly Properties
+        internal Collection<MessageLine> MessageLineCollection
+        {
+            get { return msgLineCollection; }
+        }
 
         internal MessageCategoryType MessageCategory
         {
             get { return messageCategory; }
-            set
-            {
-                switch (value)
-                {
-                    case MessageCategoryType.Chat:
-                        ChatDetails = new ChatDetails();
-                        break;
-                    case MessageCategoryType.System:
-                        SystemDetails = new SystemDetails();
-                        break;
-                    case MessageCategoryType.Event:
-                        EventDetails = new EventDetails();
-                        break;
-                }
-
-                messageCategory = value;
-            }
-        }
-
-        internal Collection<MessageLine> MessageLineCollection
-        {
-            get { return msgLineCollection; }
         }
 
         internal DateTime Timestamp
@@ -69,7 +54,7 @@ namespace WaywardGamers.KParser
         {
             get
             {
-                MessageLine lastMsgLine = MessageLineCollection.First();
+                MessageLine lastMsgLine = MessageLineCollection.FirstOrDefault();
                 if (lastMsgLine != null)
                 {
                     return lastMsgLine.MessageCode;
@@ -85,7 +70,7 @@ namespace WaywardGamers.KParser
         {
             get
             {
-                MessageLine lastMsgLine = MessageLineCollection.Last();
+                MessageLine lastMsgLine = MessageLineCollection.LastOrDefault();
                 if (lastMsgLine != null)
                 {
                     return lastMsgLine.MessageCode;
@@ -96,7 +81,14 @@ namespace WaywardGamers.KParser
                 }
             }
         }
+
+        internal bool IsParseSuccessful
+        {
+            get { return parseSuccessful; }
+        }
+
         #endregion
+
 
         #region Details Properties -- only created when MessageCateogory is set.
         internal ChatDetails ChatDetails { get; private set; }
@@ -106,19 +98,8 @@ namespace WaywardGamers.KParser
         internal EventDetails EventDetails { get; private set; }
         #endregion
 
+
         #region Text Grouping
-        internal void AddMessageLine(MessageLine msgLine)
-        {
-            if (msgLine == null)
-                return;
-
-            //if (parseSuccessful == true)
-            //    return;
-
-            msgLineCollection.Add(msgLine);
-            activeMessageStrings.Add(msgLine.TextOutput);
-        }
-
         internal string CurrentMessageText
         {
             get
@@ -178,21 +159,61 @@ namespace WaywardGamers.KParser
         }
         #endregion
 
-        #region Parsing Updates
-        internal bool ParseSuccessful
+
+        #region Methods to modify Message
+        internal void AddMessageLine(MessageLine msgLine)
         {
-            get { return parseSuccessful; }
-            set
+            if (msgLine == null)
+                throw new ArgumentNullException("msgLine");
+
+            // The first message line that gets added to the message needs
+            // to set the various externally visible properties.
+            if (msgLineCollection.Count == 0)
             {
-                parseSuccessful = value;
-                if (parseSuccessful == true)
-                {
-                    completedMessageStrings.Add(CurrentMessageText);
-                    activeMessageStrings.Clear();
-                }
+                SetMessageCategory(msgLine.MessageCategory);
+
+                MessageID = msgLine.EventSequence;
+                MessageCode = msgLine.MessageCode;
+                ExtraCode1 = msgLine.ExtraCode1;
+                ExtraCode2 = msgLine.ExtraCode2;
+            }
+
+            msgLineCollection.Add(msgLine);
+            activeMessageStrings.Add(msgLine.TextOutput);
+        }
+
+        internal void SetMessageCategory(MessageCategoryType _messageCategory)
+        {
+            switch (_messageCategory)
+            {
+                case MessageCategoryType.Chat:
+                    ChatDetails = new ChatDetails();
+                    break;
+                case MessageCategoryType.System:
+                    SystemDetails = new SystemDetails();
+                    break;
+                case MessageCategoryType.Event:
+                    EventDetails = new EventDetails();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("_messageCategory", _messageCategory,
+                        "Unknown message category.");
+            }
+
+            messageCategory = _messageCategory;
+        }
+
+        internal void SetParseSuccess(bool _parseSuccess)
+        {
+            parseSuccessful = _parseSuccess;
+            if (parseSuccessful == true)
+            {
+                completedMessageStrings.Add(CurrentMessageText);
+                activeMessageStrings.Clear();
             }
         }
         #endregion
+
 
         #region Overrides
         public override string ToString()
@@ -210,7 +231,7 @@ namespace WaywardGamers.KParser
             sb.AppendFormat("Message Code: {0:x}\n", MessageCode);
 
             sb.AppendFormat("Message Category: {0}\n", MessageCategory);
-            sb.AppendFormat("Parse Successful: {0}\n", ParseSuccessful);
+            sb.AppendFormat("Parse Successful: {0}\n", IsParseSuccessful);
 
             if (SystemDetails != null)
                 sb.Append(SystemDetails.ToString());

@@ -22,10 +22,6 @@ namespace WaywardGamers.KParser.Parsing
         /// <param name="messageLine"></param>
         internal static Message Parse(MessageLine messageLine)
         {
-            int i = 0;
-            if (messageLine.EventSequence == 0x0df9)
-                i++;
-
             Message message = GetAttachedMessage(messageLine);
 
             if (message == null)
@@ -39,7 +35,7 @@ namespace WaywardGamers.KParser.Parsing
                 ContinueParse(message, messageLine);
             }
 
-            if (message.ParseSuccessful == true)
+            if (message.IsParseSuccessful == true)
             {
                 if ((message.MessageCategory == MessageCategoryType.Event) &&
                     (message.EventDetails.EventMessageType == EventMessageType.Interaction) &&
@@ -138,12 +134,6 @@ namespace WaywardGamers.KParser.Parsing
 
         private static void InitialParse(Message message, MessageLine messageLine)
         {
-            message.MessageID = messageLine.EventSequence;
-            message.MessageCode = messageLine.MessageCode;
-            message.ExtraCode1 = messageLine.ExtraCode1;
-            message.ExtraCode2 = messageLine.ExtraCode2;
-            message.MessageCategory = messageLine.MessageCategory;
-
             message.AddMessageLine(messageLine);
 
             switch (message.MessageCategory)
@@ -210,11 +200,11 @@ namespace WaywardGamers.KParser.Parsing
                     message.SystemDetails.SystemMessageType = SystemMessageType.SearchComment;
                     break;
                 case 0xcd: // Linkshell message
-                    message.MessageCategory = MessageCategoryType.Chat;
+                    message.SetMessageCategory(MessageCategoryType.Chat);
                     message.ChatDetails.ChatMessageType = ChatMessageType.Linkshell;
                     message.ChatDetails.ChatSpeakerName = "-Linkshell-";
                     message.ChatDetails.ChatSpeakerType = SpeakerType.Unknown;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     break;
                 case 0xce:
                     message.SystemDetails.SystemMessageType = SystemMessageType.Echo;
@@ -232,11 +222,11 @@ namespace WaywardGamers.KParser.Parsing
                 case 0x92: // Arena time remaining
                 case 0x94: // Arena intro/announcement
                     // Mark these as chat messages
-                    message.MessageCategory = MessageCategoryType.Chat;
+                    message.SetMessageCategory(MessageCategoryType.Chat);
                     message.ChatDetails.ChatMessageType = ChatMessageType.Arena;
                     message.ChatDetails.ChatSpeakerName = "-Arena-";
                     message.ChatDetails.ChatSpeakerType = SpeakerType.NPC;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     break;
                 default:
                     message.SystemDetails.SystemMessageType = SystemMessageType.Unknown;
@@ -244,7 +234,7 @@ namespace WaywardGamers.KParser.Parsing
             }
 
             if (message.SystemDetails.SystemMessageType != SystemMessageType.Unknown)
-                message.ParseSuccessful = true;
+                message.SetParseSuccess(true);
         }
 
         /// <summary>
@@ -360,7 +350,7 @@ namespace WaywardGamers.KParser.Parsing
             {
                 message.ChatDetails.ChatSpeakerName = chatName.Groups[ParseFields.Name].Value;
                 message.ChatDetails.FullChatText = message.CompleteMessageText;
-                message.ParseSuccessful = true;
+                message.SetParseSuccess(true);
             }
         }
 
@@ -451,7 +441,7 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.ItemName = stealMatch.Groups[ParseFields.Item].Value;
                 msgCombatDetails.HarmType = HarmType.None;
                 msgCombatDetails.AidType = AidType.None;
-                message.ParseSuccessful = true;
+                message.SetParseSuccess(true);
                 return true;
             }
 
@@ -466,7 +456,7 @@ namespace WaywardGamers.KParser.Parsing
                 target.FailedActionType = FailedActionType.NoEffect;
                 msgCombatDetails.HarmType = HarmType.None;
                 msgCombatDetails.AidType = AidType.None;
-                message.ParseSuccessful = true;
+                message.SetParseSuccess(true);
                 return true;
             }
 
@@ -480,7 +470,7 @@ namespace WaywardGamers.KParser.Parsing
                 target.Amount = int.Parse(stealMatch.Groups[ParseFields.Money].Value);
                 msgCombatDetails.HarmType = HarmType.None;
                 msgCombatDetails.AidType = AidType.None;
-                message.ParseSuccessful = true;
+                message.SetParseSuccess(true);
                 return true;
             }
 
@@ -495,7 +485,7 @@ namespace WaywardGamers.KParser.Parsing
                 target.FailedActionType = FailedActionType.NoEffect;
                 msgCombatDetails.HarmType = HarmType.None;
                 msgCombatDetails.AidType = AidType.None;
-                message.ParseSuccessful = true;
+                message.SetParseSuccess(true);
                 return true;
             }
 
@@ -505,11 +495,11 @@ namespace WaywardGamers.KParser.Parsing
         private static void ParseCode8d(Message message)
         {
             // Can be a failed message, or Arena messages in Limbus.
-            message.MessageCategory = MessageCategoryType.Chat;
+            message.SetMessageCategory(MessageCategoryType.Chat);
             message.ChatDetails.ChatMessageType = ChatMessageType.Arena;
             message.ChatDetails.ChatSpeakerName = "-Arena-";
             message.ChatDetails.ChatSpeakerType = SpeakerType.NPC;
-            message.ParseSuccessful = true;
+            message.SetParseSuccess(true);
         }
 
         #endregion
@@ -533,7 +523,7 @@ namespace WaywardGamers.KParser.Parsing
                             {
                                 message.EventDetails.EventMessageType = EventMessageType.Experience;
                                 message.EventDetails.ExperienceDetails.ExperienceChain = int.Parse(lootOrXP.Groups[ParseFields.Number].Value);
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             // Experience points (only if got chain)
@@ -543,7 +533,7 @@ namespace WaywardGamers.KParser.Parsing
                                 message.EventDetails.EventMessageType = EventMessageType.Experience;
                                 message.EventDetails.ExperienceDetails.ExperiencePoints = int.Parse(lootOrXP.Groups[ParseFields.Number].Value);
                                 message.EventDetails.ExperienceDetails.ExperienceRecipient = lootOrXP.Groups[ParseFields.Name].Value;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             // Loot found/dropped by mob
@@ -555,7 +545,7 @@ namespace WaywardGamers.KParser.Parsing
                                 message.EventDetails.LootDetails.ItemName = lootOrXP.Groups[ParseFields.Item].Value;
                                 message.EventDetails.LootDetails.TargetName = lootOrXP.Groups[ParseFields.Target].Value;
                                 message.EventDetails.LootDetails.TargetType = EntityType.Mob;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 break;
                             }
                             // Loot found in a chest/coffer
@@ -567,7 +557,7 @@ namespace WaywardGamers.KParser.Parsing
                                 message.EventDetails.LootDetails.ItemName = lootOrXP.Groups[ParseFields.Item].Value;
                                 message.EventDetails.LootDetails.TargetName = lootOrXP.Groups[ParseFields.Target].Value;
                                 message.EventDetails.LootDetails.TargetType = EntityType.TreasureChest;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 break;
                             }
                             // May also be the "not qualified" message (out of space, rare/ex)
@@ -577,7 +567,7 @@ namespace WaywardGamers.KParser.Parsing
                                 message.EventDetails.EventMessageType = EventMessageType.Loot;
                                 message.EventDetails.LootDetails.IsFoundMessage = false;
                                 message.EventDetails.LootDetails.ItemName = lootOrXP.Groups[ParseFields.Item].Value;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 break;
                             }
                             // Or the "Item is lost" message.
@@ -588,7 +578,7 @@ namespace WaywardGamers.KParser.Parsing
                                 message.EventDetails.LootDetails.IsFoundMessage = false;
                                 message.EventDetails.LootDetails.WasLost = true;
                                 message.EventDetails.LootDetails.ItemName = lootOrXP.Groups[ParseFields.Item].Value;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 break;
                             }
                             lootOrXP = ParseExpressions.LotItem.Match(message.CurrentMessageText);
@@ -596,7 +586,7 @@ namespace WaywardGamers.KParser.Parsing
                             {
                                 // Don't record lots at this time. Just mark the message as parsed.
                                 //message.EventDetails.EventMessageType = EventMessageType.Loot;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 break;
                             }
                             lootOrXP = ParseExpressions.DiceRoll.Match(message.CurrentMessageText);
@@ -604,7 +594,7 @@ namespace WaywardGamers.KParser.Parsing
                             {
                                 // Don't record rolls at this time. Just mark the message as parsed.
                                 message.EventDetails.EventMessageType = EventMessageType.Other;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 break;
                             }
                             break;
@@ -617,16 +607,16 @@ namespace WaywardGamers.KParser.Parsing
                                 message.EventDetails.LootDetails.IsFoundMessage = false;
                                 message.EventDetails.LootDetails.ItemName = lootOrXP.Groups[ParseFields.Item].Value;
                                 message.EventDetails.LootDetails.WhoObtained = lootOrXP.Groups[ParseFields.Name].Value;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 break;
                             }
                             message.EventDetails.EventMessageType = EventMessageType.Other;
-                            message.ParseSuccessful = true;
+                            message.SetParseSuccess(true);
                             break;
                         case 3:
                             // Equipment changes, recast times, /search results
                             message.EventDetails.EventMessageType = EventMessageType.Other;
-                            message.ParseSuccessful = true;
+                            message.SetParseSuccess(true);
                             break;
                         default:
                             // Other
@@ -643,7 +633,7 @@ namespace WaywardGamers.KParser.Parsing
                         message.EventDetails.LootDetails.IsFoundMessage = false;
                         message.EventDetails.LootDetails.Gil = int.Parse(lootOrXP.Groups[ParseFields.Money].Value);
                         message.EventDetails.LootDetails.WhoObtained = lootOrXP.Groups[ParseFields.Name].Value;
-                        message.ParseSuccessful = true;
+                        message.SetParseSuccess(true);
                         break;
                     }
                     lootOrXP = ParseExpressions.GetLoot.Match(message.CurrentMessageText);
@@ -653,7 +643,7 @@ namespace WaywardGamers.KParser.Parsing
                         message.EventDetails.LootDetails.IsFoundMessage = false;
                         message.EventDetails.LootDetails.ItemName = lootOrXP.Groups[ParseFields.Item].Value;
                         message.EventDetails.LootDetails.WhoObtained = lootOrXP.Groups[ParseFields.Name].Value;
-                        message.ParseSuccessful = true;
+                        message.SetParseSuccess(true);
                         break;
                     }
                     break;
@@ -664,7 +654,7 @@ namespace WaywardGamers.KParser.Parsing
                     {
                         message.EventDetails.EventMessageType = EventMessageType.Experience;
                         message.EventDetails.ExperienceDetails.ExperienceChain = int.Parse(lootOrXP.Groups[ParseFields.Number].Value);
-                        message.ParseSuccessful = true;
+                        message.SetParseSuccess(true);
                         return;
                     }
                     lootOrXP = ParseExpressions.Experience.Match(message.CurrentMessageText);
@@ -673,7 +663,7 @@ namespace WaywardGamers.KParser.Parsing
                         message.EventDetails.EventMessageType = EventMessageType.Experience;
                         message.EventDetails.ExperienceDetails.ExperiencePoints = int.Parse(lootOrXP.Groups[ParseFields.Number].Value);
                         message.EventDetails.ExperienceDetails.ExperienceRecipient = lootOrXP.Groups[ParseFields.Name].Value;
-                        message.ParseSuccessful = true;
+                        message.SetParseSuccess(true);
                         return;
                     }
                     break;
@@ -687,7 +677,7 @@ namespace WaywardGamers.KParser.Parsing
                         message.EventDetails.LootDetails.ItemName = lootOrXP.Groups[ParseFields.Item].Value;
                         message.EventDetails.LootDetails.TargetName = lootOrXP.Groups[ParseFields.Target].Value;
                         message.EventDetails.LootDetails.TargetType = EntityType.TreasureChest;
-                        message.ParseSuccessful = true;
+                        message.SetParseSuccess(true);
                         break;
                     }
                     break;
@@ -819,7 +809,7 @@ namespace WaywardGamers.KParser.Parsing
                         msgCombatDetails.ActionType = ActionType.Spell;
                         msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                         msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                        message.ParseSuccessful = true;
+                        message.SetParseSuccess(true);
                         return;
                     }
                     // eg: Player uses warcry
@@ -831,7 +821,7 @@ namespace WaywardGamers.KParser.Parsing
                             msgCombatDetails.ActionType = ActionType.Ability;
                             msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                             msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                            message.ParseSuccessful = true;
+                            message.SetParseSuccess(true);
 
                             if ((msgCombatDetails.ActionName == "Steal") || (msgCombatDetails.ActionName == "Mug"))
                                 message.EventDetails.EventMessageType = EventMessageType.Steal;
@@ -850,7 +840,7 @@ namespace WaywardGamers.KParser.Parsing
                                 target.Amount = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
                                 target.AidType = msgCombatDetails.AidType;
                                 target.RecoveryType = RecoveryType.RecoverHP;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             combatMatch = ParseExpressions.RecoversMP.Match(currentMessageText);
@@ -860,7 +850,7 @@ namespace WaywardGamers.KParser.Parsing
                                 target.Amount = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
                                 target.AidType = msgCombatDetails.AidType;
                                 target.RecoveryType = RecoveryType.RecoverMP;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             combatMatch = ParseExpressions.Drain.Match(currentMessageText);
@@ -881,7 +871,7 @@ namespace WaywardGamers.KParser.Parsing
                                         target.RecoveryType = RecoveryType.RecoverTP;
                                         break;
                                 }
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             // Check for additional effect: drain effects (eg: drain samba)
@@ -895,7 +885,7 @@ namespace WaywardGamers.KParser.Parsing
                                     target.SecondaryRecoveryType = RecoveryType.RecoverHP;
                                     target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
                                 }
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             // Check for additional effect: aspir effects (eg: aspir samba)
@@ -909,7 +899,7 @@ namespace WaywardGamers.KParser.Parsing
                                     target.SecondaryRecoveryType = RecoveryType.RecoverMP;
                                     target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
                                 }
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
 
@@ -925,7 +915,7 @@ namespace WaywardGamers.KParser.Parsing
                                     // Enter negative value for healing the mob with the attack
                                     target.SecondaryAmount = (0 - int.Parse(combatMatch.Groups[ParseFields.Damage].Value));
                                 }
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             break;
@@ -937,7 +927,7 @@ namespace WaywardGamers.KParser.Parsing
                                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                                 msgCombatDetails.CorsairRoll = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             combatMatch = ParseExpressions.TotalCorRoll.Match(currentMessageText);
@@ -945,7 +935,7 @@ namespace WaywardGamers.KParser.Parsing
                             {
                                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                                 msgCombatDetails.CorsairRoll = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             combatMatch = ParseExpressions.UseCover.Match(currentMessageText);
@@ -956,7 +946,7 @@ namespace WaywardGamers.KParser.Parsing
                                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                                 target.AidType = msgCombatDetails.AidType;
                                 target.EffectName = "Cover";
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             // target gains a buff
@@ -968,7 +958,7 @@ namespace WaywardGamers.KParser.Parsing
                                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Effect].Value;
                                 target.AidType = msgCombatDetails.AidType;
                                 target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             // eg: Target's attacks are enhanced.
@@ -980,7 +970,7 @@ namespace WaywardGamers.KParser.Parsing
                                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Effect].Value;
                                 target.AidType = msgCombatDetails.AidType;
                                 target.EffectName = "EnhanceAttack";
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             // eg: Target's attacks are enhanced.
@@ -991,7 +981,7 @@ namespace WaywardGamers.KParser.Parsing
                                 target.EffectName = combatMatch.Groups[ParseFields.Ability].Value;
                                 target.AidType = msgCombatDetails.AidType;
                                 target.Amount = msgCombatDetails.CorsairRoll;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             combatMatch = ParseExpressions.GainResistance.Match(currentMessageText);
@@ -1000,7 +990,7 @@ namespace WaywardGamers.KParser.Parsing
                                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                                 target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
                                 target.AidType = msgCombatDetails.AidType;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             combatMatch = ParseExpressions.RemoveStatus.Match(currentMessageText);
@@ -1011,7 +1001,7 @@ namespace WaywardGamers.KParser.Parsing
                                 target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
                                 target.SecondaryAction = combatMatch.Groups[ParseFields.Effect].Value;
                                 target.AidType = AidType.RemoveStatus;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             combatMatch = ParseExpressions.Dispelled.Match(currentMessageText);
@@ -1022,7 +1012,7 @@ namespace WaywardGamers.KParser.Parsing
                                 target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
                                 target.SecondaryAction = combatMatch.Groups[ParseFields.Effect].Value;
                                 target.AidType = AidType.RemoveStatus;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             combatMatch = ParseExpressions.StealEnmity.Match(currentMessageText);
@@ -1030,7 +1020,7 @@ namespace WaywardGamers.KParser.Parsing
                             {
                                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                                 target.AidType = AidType.RemoveEnmity;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             combatMatch = ParseExpressions.Hide.Match(currentMessageText);
@@ -1040,7 +1030,7 @@ namespace WaywardGamers.KParser.Parsing
                                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                                 msgCombatDetails.ActionName = "Hide";
                                 msgCombatDetails.ActionType = ActionType.Ability;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             // Self-target buffs have various strings which we won't check for.
@@ -1053,7 +1043,7 @@ namespace WaywardGamers.KParser.Parsing
                                 {
                                     target = msgCombatDetails.AddTarget(msgCombatDetails.ActorName);
                                     target.AidType = msgCombatDetails.AidType;
-                                    message.ParseSuccessful = true;
+                                    message.SetParseSuccess(true);
                                 }
                                 return;
                             }
@@ -1065,7 +1055,7 @@ namespace WaywardGamers.KParser.Parsing
                             {
                                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                                 msgCombatDetails.ItemName = combatMatch.Groups[ParseFields.Item].Value;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             // Uses reraise earring; receives the effect of reraise
@@ -1076,7 +1066,7 @@ namespace WaywardGamers.KParser.Parsing
                                 target.HarmType = msgCombatDetails.HarmType;
                                 target.AidType = msgCombatDetails.AidType;
                                 target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             // Uses echo drops; is no longer silenced
@@ -1087,7 +1077,7 @@ namespace WaywardGamers.KParser.Parsing
                                 target.HarmType = HarmType.None;
                                 target.AidType = msgCombatDetails.AidType;
                                 target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             // Uses demoralizer
@@ -1097,7 +1087,7 @@ namespace WaywardGamers.KParser.Parsing
                                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                                 target.HarmType = HarmType.None;
                                 target.AidType = msgCombatDetails.AidType;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             // Uses poison potion; is poisoned
@@ -1108,7 +1098,7 @@ namespace WaywardGamers.KParser.Parsing
                                 target.HarmType = HarmType.Enfeeble;
                                 target.AidType = msgCombatDetails.AidType;
                                 target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             break;
@@ -1146,7 +1136,7 @@ namespace WaywardGamers.KParser.Parsing
                                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                                 target.FailedActionType = FailedActionType.NoEffect;
                                 target.AidType = msgCombatDetails.AidType;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             break;
@@ -1157,7 +1147,7 @@ namespace WaywardGamers.KParser.Parsing
                                 msgCombatDetails.ItemName = combatMatch.Groups[ParseFields.Item].Value;
                                 target.FailedActionType = FailedActionType.FailedToActivate;
                                 target.AidType = msgCombatDetails.AidType;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             break;
@@ -1219,7 +1209,7 @@ namespace WaywardGamers.KParser.Parsing
                                     msgCombatDetails.AidType = AidType.Unknown;
                                     target.AidType = AidType.Unknown;
                                 }
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             combatMatch = ParseExpressions.PrepSpell.Match(currentMessageText);
@@ -1229,7 +1219,7 @@ namespace WaywardGamers.KParser.Parsing
                                 msgCombatDetails.ActionType = ActionType.Spell;
                                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             combatMatch = ParseExpressions.PrepAbility.Match(currentMessageText);
@@ -1242,7 +1232,7 @@ namespace WaywardGamers.KParser.Parsing
                                     msgCombatDetails.ActionType = ActionType.Weaponskill;
                                 else
                                     msgCombatDetails.ActionType = ActionType.Ability;
-                                message.ParseSuccessful = true;
+                                message.SetParseSuccess(true);
                                 return;
                             }
                             break;
@@ -1281,7 +1271,7 @@ namespace WaywardGamers.KParser.Parsing
                 //}
 
                 ClassifyEntity.VerifyEntities(ref message, ref target, true);
-                message.ParseSuccessful = true;
+                message.SetParseSuccess(true);
                 return;
             }
 
@@ -1291,7 +1281,7 @@ namespace WaywardGamers.KParser.Parsing
                 combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                 ClassifyEntity.VerifyEntities(ref message, ref target, true);
-                message.ParseSuccessful = true;
+                message.SetParseSuccess(true);
                 return;
             }
 
@@ -1299,7 +1289,7 @@ namespace WaywardGamers.KParser.Parsing
             if (combatMatch.Success == true)
             {
                 target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                message.ParseSuccessful = true;
+                message.SetParseSuccess(true);
                 return;
             }
         }
@@ -1362,7 +1352,7 @@ namespace WaywardGamers.KParser.Parsing
                     msgCombatDetails.AidType = AidType.Unknown;
                     target.AidType = AidType.Unknown;
                 }
-                message.ParseSuccessful = true;
+                message.SetParseSuccess(true);
                 return;
             }
 
@@ -1373,7 +1363,7 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                 msgCombatDetails.ActionType = ActionType.Spell;
-                message.ParseSuccessful = true;
+                message.SetParseSuccess(true);
                 return;
             }
 
@@ -1423,7 +1413,7 @@ namespace WaywardGamers.KParser.Parsing
                         msgCombatDetails.ActionType = ActionType.Weaponskill;
                 }
                     
-                message.ParseSuccessful = true;
+                message.SetParseSuccess(true);
                 return;
             }
         }
@@ -1609,7 +1599,7 @@ namespace WaywardGamers.KParser.Parsing
                     ClassifyEntity.VerifyEntities(ref message, ref target, false);
                 }
 
-                message.ParseSuccessful = true;
+                message.SetParseSuccess(true);
                 return;
             }
 
@@ -1704,7 +1694,7 @@ namespace WaywardGamers.KParser.Parsing
             // Handle entity settings on additional targets
             if (combatMatch.Success == true)
             {
-                message.ParseSuccessful = true;
+                message.SetParseSuccess(true);
 
                 if (target != null)
                 {
@@ -1976,7 +1966,7 @@ namespace WaywardGamers.KParser.Parsing
                     ClassifyEntity.VerifyEntities(ref message, ref target, false);
                 }
 
-                message.ParseSuccessful = true;
+                message.SetParseSuccess(true);
             }
         }
 
@@ -2009,7 +1999,7 @@ namespace WaywardGamers.KParser.Parsing
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     target.HarmType = msgCombatDetails.HarmType;
                     target.AidType = msgCombatDetails.AidType;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.PrepSpell.Match(currentMessageText);
@@ -2019,7 +2009,7 @@ namespace WaywardGamers.KParser.Parsing
                     msgCombatDetails.ActionType = ActionType.Spell;
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.PrepAbility.Match(currentMessageText);
@@ -2032,7 +2022,7 @@ namespace WaywardGamers.KParser.Parsing
                         msgCombatDetails.ActionType = ActionType.Weaponskill;
                     else
                         msgCombatDetails.ActionType = ActionType.Ability;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2043,7 +2033,7 @@ namespace WaywardGamers.KParser.Parsing
                     msgCombatDetails.ActionType = ActionType.Spell;
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.UseAbilityOn.Match(currentMessageText);
@@ -2053,7 +2043,7 @@ namespace WaywardGamers.KParser.Parsing
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
@@ -2062,7 +2052,7 @@ namespace WaywardGamers.KParser.Parsing
                     msgCombatDetails.ActionType = ActionType.Ability;
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
 
                     if ((msgCombatDetails.ActionName == "Steal") || (msgCombatDetails.ActionName == "Mug"))
                         message.EventDetails.EventMessageType = EventMessageType.Steal;
@@ -2088,7 +2078,7 @@ namespace WaywardGamers.KParser.Parsing
                     target.DefenseType = DefenseType.Evade;
                     target.HarmType = msgCombatDetails.HarmType;
                     target.AidType = msgCombatDetails.AidType;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2100,7 +2090,7 @@ namespace WaywardGamers.KParser.Parsing
                     target.EffectName = combatMatch.Groups[ParseFields.Effect].Value;
                     target.HarmType = msgCombatDetails.HarmType;
                     target.AidType = msgCombatDetails.AidType;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2111,7 +2101,7 @@ namespace WaywardGamers.KParser.Parsing
                     target.EffectName = "ReduceTP";
                     target.HarmType = msgCombatDetails.HarmType;
                     target.AidType = msgCombatDetails.AidType;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2133,7 +2123,7 @@ namespace WaywardGamers.KParser.Parsing
                     }
                     target.HarmType = msgCombatDetails.HarmType;
                     target.AidType = msgCombatDetails.AidType;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2146,7 +2136,7 @@ namespace WaywardGamers.KParser.Parsing
                     target.SecondaryAction = combatMatch.Groups[ParseFields.Ability].Value;
                     target.HarmType = HarmType.Dispel;
                     target.AidType = msgCombatDetails.AidType;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2154,7 +2144,7 @@ namespace WaywardGamers.KParser.Parsing
                 if (combatMatch.Success == true)
                 {
                     msgCombatDetails.HarmType = HarmType.Dispel;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2166,7 +2156,7 @@ namespace WaywardGamers.KParser.Parsing
                     target.SecondaryAction = combatMatch.Groups[ParseFields.Ability].Value;
                     target.HarmType = HarmType.Dispel;
                     target.AidType = msgCombatDetails.AidType;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2176,7 +2166,7 @@ namespace WaywardGamers.KParser.Parsing
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     target.HarmType = msgCombatDetails.HarmType;
                     target.AidType = msgCombatDetails.AidType;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2188,7 +2178,7 @@ namespace WaywardGamers.KParser.Parsing
                     target.DefenseType = DefenseType.Resist;
                     target.HarmType = msgCombatDetails.HarmType;
                     target.AidType = msgCombatDetails.AidType;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2199,7 +2189,7 @@ namespace WaywardGamers.KParser.Parsing
                     target.DefenseType = DefenseType.Resist;
                     target.HarmType = msgCombatDetails.HarmType;
                     target.AidType = msgCombatDetails.AidType;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2219,7 +2209,7 @@ namespace WaywardGamers.KParser.Parsing
                         target.EntityType = EntityType.Pet;
                         msgCombatDetails.ActorEntityType = EntityType.Player;
                     }
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2232,7 +2222,7 @@ namespace WaywardGamers.KParser.Parsing
                     target.DefenseType = DefenseType.Resist;
                     target.HarmType = msgCombatDetails.HarmType;
                     target.AidType = msgCombatDetails.AidType;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2267,7 +2257,7 @@ namespace WaywardGamers.KParser.Parsing
                         target.AidType = AidType.None;
                     }
                     msgCombatDetails.SuccessLevel = SuccessType.Failed;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2291,7 +2281,7 @@ namespace WaywardGamers.KParser.Parsing
 
                         target.HarmType = HarmType.None;
                     }
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2308,7 +2298,7 @@ namespace WaywardGamers.KParser.Parsing
                     target.HarmType = HarmType.Damage;
                     target.DefenseType = DefenseType.Resist;
                     msgCombatDetails.SuccessLevel = SuccessType.Failed;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
             }
@@ -2347,7 +2337,7 @@ namespace WaywardGamers.KParser.Parsing
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     target.HarmType = msgCombatDetails.HarmType;
                     target.AidType = msgCombatDetails.AidType;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.PrepSpell.Match(currentMessageText);
@@ -2357,7 +2347,7 @@ namespace WaywardGamers.KParser.Parsing
                     msgCombatDetails.ActionType = ActionType.Spell;
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.PrepAbility.Match(currentMessageText);
@@ -2370,7 +2360,7 @@ namespace WaywardGamers.KParser.Parsing
                         msgCombatDetails.ActionType = ActionType.Weaponskill;
                     else
                         msgCombatDetails.ActionType = ActionType.Ability;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2384,7 +2374,7 @@ namespace WaywardGamers.KParser.Parsing
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                     if (msgCombatDetails.ActionName.StartsWith("Absorb-"))
                         msgCombatDetails.HarmType = HarmType.Enfeeble;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
@@ -2393,7 +2383,7 @@ namespace WaywardGamers.KParser.Parsing
                     msgCombatDetails.ActionType = ActionType.Ability;
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
 
                     if ((msgCombatDetails.ActionName == "Steal") || (msgCombatDetails.ActionName == "Mug"))
                         message.EventDetails.EventMessageType = EventMessageType.Steal;
@@ -2409,7 +2399,7 @@ namespace WaywardGamers.KParser.Parsing
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     target.HarmType = msgCombatDetails.HarmType;
                     target.AidType = msgCombatDetails.AidType;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2420,7 +2410,7 @@ namespace WaywardGamers.KParser.Parsing
                     target.EffectName = combatMatch.Groups[ParseFields.DrainStat].Value;
                     target.HarmType = HarmType.Enfeeble;
                     target.AidType = AidType.None;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2451,7 +2441,7 @@ namespace WaywardGamers.KParser.Parsing
 
                     msgCombatDetails.SuccessLevel = SuccessType.Successful;
 
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
             }
@@ -2494,7 +2484,7 @@ namespace WaywardGamers.KParser.Parsing
                         msgCombatDetails.HarmType = HarmType.None;
                         msgCombatDetails.FailedActionType = FailedActionType.None;
                     }
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2505,14 +2495,14 @@ namespace WaywardGamers.KParser.Parsing
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     msgCombatDetails.FailedActionType = FailedActionType.Autotarget;
                     target.FailedActionType = FailedActionType.Autotarget;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.CannotAttack.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
                     msgCombatDetails.FailedActionType = FailedActionType.CannotAttack;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.CannotSee.Match(currentMessageText);
@@ -2521,7 +2511,7 @@ namespace WaywardGamers.KParser.Parsing
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     msgCombatDetails.FailedActionType = FailedActionType.CannotSee;
                     target.FailedActionType = FailedActionType.CannotSee;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.CannotSee2.Match(currentMessageText);
@@ -2530,7 +2520,7 @@ namespace WaywardGamers.KParser.Parsing
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     msgCombatDetails.FailedActionType = FailedActionType.CannotSee;
                     target.FailedActionType = FailedActionType.CannotSee;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.LoseSight.Match(currentMessageText);
@@ -2539,28 +2529,28 @@ namespace WaywardGamers.KParser.Parsing
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     msgCombatDetails.FailedActionType = FailedActionType.CannotSee;
                     target.FailedActionType = FailedActionType.CannotSee;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.UnableToCast.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
                     msgCombatDetails.FailedActionType = FailedActionType.UnableToCast;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.UnableToUse.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
                     msgCombatDetails.FailedActionType = FailedActionType.UnableToUse;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.UnableToUse2.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
                     msgCombatDetails.FailedActionType = FailedActionType.UnableToUse;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.UnableToUse3.Match(currentMessageText);
@@ -2568,28 +2558,28 @@ namespace WaywardGamers.KParser.Parsing
                 {
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.FailedActionType = FailedActionType.UnableToUse;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.NotEnoughMP.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
                     msgCombatDetails.FailedActionType = FailedActionType.NotEnoughMP;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.NotEnoughTP.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
                     msgCombatDetails.FailedActionType = FailedActionType.NotEnoughTP;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.NotEnoughTP2.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
                     msgCombatDetails.FailedActionType = FailedActionType.NotEnoughTP;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.NotEnoughTP3.Match(currentMessageText);
@@ -2597,7 +2587,7 @@ namespace WaywardGamers.KParser.Parsing
                 {
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.FailedActionType = FailedActionType.NotEnoughTP;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.CannotPerform.Match(currentMessageText);
@@ -2605,14 +2595,14 @@ namespace WaywardGamers.KParser.Parsing
                 {
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.FailedActionType = FailedActionType.CannotAct;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.TooFarForXP.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
                     msgCombatDetails.FailedActionType = FailedActionType.TooFarAway;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.TooFarAway.Match(currentMessageText);
@@ -2621,7 +2611,7 @@ namespace WaywardGamers.KParser.Parsing
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     msgCombatDetails.FailedActionType = FailedActionType.TooFarAway;
                     target.FailedActionType = FailedActionType.TooFarAway;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.OutOfRange.Match(currentMessageText);
@@ -2630,7 +2620,7 @@ namespace WaywardGamers.KParser.Parsing
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     msgCombatDetails.FailedActionType = FailedActionType.OutOfRange;
                     target.FailedActionType = FailedActionType.OutOfRange;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.Interrupted.Match(currentMessageText);
@@ -2638,7 +2628,7 @@ namespace WaywardGamers.KParser.Parsing
                 {
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.FailedActionType = FailedActionType.Interrupted;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.Paralyzed.Match(currentMessageText);
@@ -2646,7 +2636,7 @@ namespace WaywardGamers.KParser.Parsing
                 {
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.FailedActionType = FailedActionType.Paralyzed;
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
                 combatMatch = ParseExpressions.Intimidated.Match(currentMessageText);
@@ -2666,7 +2656,7 @@ namespace WaywardGamers.KParser.Parsing
                     msgCombatDetails.SuccessLevel = SuccessType.Unsuccessful;
                     // Check for mobs vs pets intimidating each other
                     ClassifyEntity.VerifyEntities(ref message, ref target, false);
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2685,7 +2675,7 @@ namespace WaywardGamers.KParser.Parsing
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                    message.ParseSuccessful = true;
+                    message.SetParseSuccess(true);
                     return;
                 }
 
@@ -2698,7 +2688,7 @@ namespace WaywardGamers.KParser.Parsing
                         msgCombatDetails.ActionType = ActionType.Spell;
                         msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                         msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                        message.ParseSuccessful = true;
+                        message.SetParseSuccess(true);
                         return;
                     }
                 }
@@ -2715,7 +2705,7 @@ namespace WaywardGamers.KParser.Parsing
                             msgCombatDetails.ActionType = ActionType.Weaponskill;
                         else
                             msgCombatDetails.ActionType = ActionType.Ability;
-                        message.ParseSuccessful = true;
+                        message.SetParseSuccess(true);
                         return;
                     }
                 }
@@ -2729,7 +2719,7 @@ namespace WaywardGamers.KParser.Parsing
                         msgCombatDetails.ActionType = ActionType.Spell;
                         msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                         msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                        message.ParseSuccessful = true;
+                        message.SetParseSuccess(true);
                         return;
                     }
                 }
@@ -2742,7 +2732,7 @@ namespace WaywardGamers.KParser.Parsing
                         msgCombatDetails.ActionType = ActionType.Ability;
                         msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                         msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                        message.ParseSuccessful = true;
+                        message.SetParseSuccess(true);
 
                         if ((msgCombatDetails.ActionName == "Steal") || (msgCombatDetails.ActionName == "Mug"))
                             message.EventDetails.EventMessageType = EventMessageType.Steal;
@@ -2760,7 +2750,7 @@ namespace WaywardGamers.KParser.Parsing
                         target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                         target.DefenseType = DefenseType.Resist;
                         target.HarmType = msgCombatDetails.HarmType;
-                        message.ParseSuccessful = true;
+                        message.SetParseSuccess(true);
                         return;
                     }
                 }
@@ -2775,7 +2765,7 @@ namespace WaywardGamers.KParser.Parsing
                         msgCombatDetails.SuccessLevel = SuccessType.Failed;
                         msgCombatDetails.FailedActionType = FailedActionType.NoEffect;
                         target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                        message.ParseSuccessful = true;
+                        message.SetParseSuccess(true);
                         return;
                     }
                 }
@@ -2808,7 +2798,7 @@ namespace WaywardGamers.KParser.Parsing
                         target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                         target.DefenseType = DefenseType.Evasion;
                         target.HarmType = msgCombatDetails.HarmType;
-                        message.ParseSuccessful = true;
+                        message.SetParseSuccess(true);
                         return;
                     }
                 }
@@ -2825,7 +2815,7 @@ namespace WaywardGamers.KParser.Parsing
                             msgCombatDetails.ActionType = ActionType.Ability;
 
                         msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                        message.ParseSuccessful = true;
+                        message.SetParseSuccess(true);
                         return;
                     }
                 }
@@ -2842,7 +2832,7 @@ namespace WaywardGamers.KParser.Parsing
                         msgCombatDetails.Targets.Add(target);
                         target.DefenseType = DefenseType.Evasion;
                         target.HarmType = msgCombatDetails.HarmType;
-                        message.ParseSuccessful = true;
+                        message.SetParseSuccess(true);
                         return;
                     }
                 }
@@ -2860,7 +2850,7 @@ namespace WaywardGamers.KParser.Parsing
                         msgCombatDetails.FailedActionType = FailedActionType.Discovered;
                         msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                         //target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                        message.ParseSuccessful = true;
+                        message.SetParseSuccess(true);
                         return;
                     }
                 }
@@ -2876,7 +2866,7 @@ namespace WaywardGamers.KParser.Parsing
                         target.DefenseType = DefenseType.Resist;
                         target.HarmType = msgCombatDetails.HarmType;
                         target.AidType = msgCombatDetails.AidType;
-                        message.ParseSuccessful = true;
+                        message.SetParseSuccess(true);
                         return;
                     }
                 }

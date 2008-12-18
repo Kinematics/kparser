@@ -7,8 +7,8 @@ namespace WaywardGamers.KParser
 {
     public class ChatLine
     {
-        private string chatText;
-        private DateTime timestamp;
+        private string chatText = string.Empty;
+        private DateTime timestamp = MagicNumbers.MinSQLDateTime;
 
         public ChatLine(string chatText)
         {
@@ -31,14 +31,14 @@ namespace WaywardGamers.KParser
         {
             get
             {
-                if (timestamp == null)
-                    return MagicNumbers.MinSQLDateTime;
-                else
-                    return timestamp;
+                return timestamp;
             }
             set
             {
-                timestamp = value;
+                if (value < MagicNumbers.MinSQLDateTime)
+                    timestamp = MagicNumbers.MinSQLDateTime;
+                else
+                    timestamp = value;
             }
         }
     }
