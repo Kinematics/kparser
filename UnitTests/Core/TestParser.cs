@@ -10,9 +10,13 @@ namespace WaywardGamers.KParser
     // There is only one non-private function visible on the Parser class: Parse(MessageLine msgLine).
     // This test class must exersise all possible code paths through that single input point to
     // verify validity.
+    // Note: This set of tests is for messages in the English client of FFXI.  The message lines will need
+    // to be rewritten/alt-tested for other cultures (eg: French or German).
     [TestFixture]
+    [Culture("en")]
     public class TestParser
     {
+        #region Chat
         [Test]
         public void TestSystemChatLine()
         {
@@ -23,9 +27,201 @@ namespace WaywardGamers.KParser
             Message msg = Parser.Parse(msgLine);
 
             Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Chat));
+            Assert.That(msg.ChatDetails, Is.Not.Null);
+            Assert.That(msg.ChatDetails.ChatSpeakerType, Is.EqualTo(SpeakerType.NPC));
         }
+        #endregion
 
         #region Mob Names
+        [Test]
+        public void TestMobNames01()
+        {
+            string chatText = "1c,cf,97,80a04040,000026b9,00002cbe,003e,00,01,02,00,The Mandragora hits Motenten for 170 points of damage.1";
+            ChatLine chatLine = new ChatLine(chatText);
+            MessageLine msgLine = new MessageLine(chatLine);
+
+            Message msg = Parser.Parse(msgLine);
+
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Mandragora"));
+        }
+
+        [Test]
+        public void TestMobNames02()
+        {
+            string chatText = "1c,cf,97,80a04040,000026b9,00002cbe,003e,00,01,02,00,The Greater Colibri hits Motenten for 170 points of damage.1";
+            ChatLine chatLine = new ChatLine(chatText);
+            MessageLine msgLine = new MessageLine(chatLine);
+
+            Message msg = Parser.Parse(msgLine);
+
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Greater Colibri"));
+        }
+
+        [Test]
+        public void TestMobNames03()
+        {
+            string chatText = "1c,cf,97,80a04040,000026b9,00002cbe,003e,00,01,02,00,Lamia No.9 hits Motenten for 170 points of damage.1";
+            ChatLine chatLine = new ChatLine(chatText);
+            MessageLine msgLine = new MessageLine(chatLine);
+
+            Message msg = Parser.Parse(msgLine);
+
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Lamia No.9"));
+        }
+
+        [Test]
+        public void TestMobNames04()
+        {
+            string chatText = "1c,cf,97,80a04040,000026b9,00002cbe,003e,00,01,02,00,Moo Ouzi the Swiftblade hits Motenten for 170 points of damage.1";
+            ChatLine chatLine = new ChatLine(chatText);
+            MessageLine msgLine = new MessageLine(chatLine);
+
+            Message msg = Parser.Parse(msgLine);
+
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Moo Ouzi the Swiftblade"));
+        }
+
+        [Test]
+        public void TestMobNames05()
+        {
+            string chatText = "1c,cf,97,80a04040,000026b9,00002cbe,003e,00,01,02,00,Ga'Dho Softstep hits Motenten for 170 points of damage.1";
+            ChatLine chatLine = new ChatLine(chatText);
+            MessageLine msgLine = new MessageLine(chatLine);
+
+            Message msg = Parser.Parse(msgLine);
+
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Ga'Dho Softstep"));
+        }
+
+        [Test]
+        public void TestMobNames06()
+        {
+            string chatText = "1c,cf,97,80a04040,000026b9,00002cbe,003e,00,01,02,00,Maymun 53 hits Motenten for 170 points of damage.1";
+            ChatLine chatLine = new ChatLine(chatText);
+            MessageLine msgLine = new MessageLine(chatLine);
+
+            Message msg = Parser.Parse(msgLine);
+
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Maymun 53"));
+        }
+
+        [Test]
+        public void TestMobNames07()
+        {
+            string chatText = "1c,cf,97,80a04040,000026b9,00002cbe,003e,00,01,02,00,Fantoccini hits Motenten for 170 points of damage.1";
+            ChatLine chatLine = new ChatLine(chatText);
+            MessageLine msgLine = new MessageLine(chatLine);
+
+            Message msg = Parser.Parse(msgLine);
+
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Fantoccini"));
+        }
+
+        [Test]
+        public void TestMobNames08()
+        {
+            string chatText = "1c,cf,97,80a04040,000026b9,00002cbe,003e,00,01,02,00,Tzee Xicu's Elemental hits Motenten for 170 points of damage.1";
+            ChatLine chatLine = new ChatLine(chatText);
+            MessageLine msgLine = new MessageLine(chatLine);
+
+            Message msg = Parser.Parse(msgLine);
+
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Tzee Xicu's Elemental"));
+        }
+
+        [Test]
+        public void TestMobNames09()
+        {
+            string chatText = "1c,cf,97,80a04040,000026b9,00002cbe,003e,00,01,02,00,The Mamool Ja's Wyvern hits Motenten for 170 points of damage.1";
+            ChatLine chatLine = new ChatLine(chatText);
+            MessageLine msgLine = new MessageLine(chatLine);
+
+            Message msg = Parser.Parse(msgLine);
+
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Mamool Ja's Wyvern"));
+        }
+
+        [Test]
+        public void TestMobNames10()
+        {
+            string chatText = "1c,cf,97,80a04040,000026b9,00002cbe,003e,00,01,02,00,The Lamia's Elemental hits Motenten for 170 points of damage.1";
+            ChatLine chatLine = new ChatLine(chatText);
+            MessageLine msgLine = new MessageLine(chatLine);
+
+            Message msg = Parser.Parse(msgLine);
+
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Lamia's Elemental"));
+        }
         #endregion
 
         #region Combat parsing - Melee hits
