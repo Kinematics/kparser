@@ -53,7 +53,7 @@ namespace WaywardGamers.KParser
                 throw new InvalidOperationException(string.Format(
                     "{0} is already running", currentReader.GetType().Name));
 
-            if (DatabaseManager.Instance.Database == null)
+            if (DatabaseManager.Instance.IsDatabaseOpen == false)
             {
                 throw new InvalidOperationException(
                     "You must have a database already open in order to continue parsing.");
@@ -144,6 +144,12 @@ namespace WaywardGamers.KParser
         /// Gets the current parse mode, as far as the monitor is aware.
         /// </summary>
         public static DataSource ParseMode { get; private set; }
+
+        internal static DataSource TestParseMode
+        {
+            get { return ParseMode; }
+            set { if (IsRunning == false) ParseMode = value; }
+        }
 
         public static void ScanRAM()
         {

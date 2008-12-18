@@ -79,6 +79,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Database\AccessToTheDatabase.cs" />
     <Compile Include="Database\DatabaseReadingManager.cs" />
     <Compile Include="Database\ImportDirectParseManager.cs" />
     <Compile Include="DPDatabaseImportV1.Designer.cs">

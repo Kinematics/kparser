@@ -125,6 +125,31 @@ namespace WaywardGamers.KParser
 
             if (textOutputCharArray.Length > 2)
             {
+                int flagPos = Array.FindIndex(textOutputCharArray, a => a == 0x1f);
+
+                if (flagPos >= 0)
+                {
+                    char nextChar = textOutputCharArray[flagPos + 1];
+
+                    if ((nextChar == 0x79) || // Item drops
+                        (nextChar == 0x7F) || // Item distribution
+                        (nextChar == 0x3F) || // Time limit warning
+                        (nextChar == 0x8D) || // Limbus time limit, Moogle job change
+                        (nextChar == 0x2019)) // Assault time limit, byte=0x92
+                    {
+                        clippedTextOutputCharArray = new char[textOutputCharArray.Length - 2];
+
+                        if (flagPos > 0)
+                            Array.Copy(textOutputCharArray, 0, clippedTextOutputCharArray, 0, flagPos);
+
+                        Array.Copy(textOutputCharArray, flagPos + 2, clippedTextOutputCharArray,
+                            flagPos, clippedTextOutputCharArray.Length - flagPos);
+
+                        TextOutput = new string(clippedTextOutputCharArray);
+                    }
+                }
+
+                /*
                 if (textOutputCharArray[0] == 0x1F)
                 {
                     if ((textOutputCharArray[1] == 0x79) || // Item drops
@@ -139,6 +164,7 @@ namespace WaywardGamers.KParser
                         TextOutput = new string(clippedTextOutputCharArray);
                     }
                 }
+                 * */
             }
 
             // Drop the extraneous characters at the end of non-chat messages.
