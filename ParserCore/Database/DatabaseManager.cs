@@ -4,9 +4,11 @@ using System.Linq;
 using System.Data;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Text;
 using System.Diagnostics;
 using WaywardGamers.KParser.KPDatabaseDataSetTableAdapters;
+using WaywardGamers.KParser.Database;
 
 namespace WaywardGamers.KParser
 {
@@ -101,6 +103,7 @@ namespace WaywardGamers.KParser
         private Dictionary<KPDatabaseDataSet.BattlesRow, DateTime> activeBattleList;
         private Dictionary<string, KPDatabaseDataSet.BattlesRow> activeMobBattleList;
 
+        private Mutex databaseAccessMutex = new Mutex();
         #endregion
 
         #region Public Methods/Properties
@@ -184,14 +187,24 @@ namespace WaywardGamers.KParser
         {
             get
             {
-                if (localDB == null)
-                    return null;
-
-                lock (localDB)
-                {
-                    return localDB;
-                }
+                return localDB;
             }
+        }
+
+        public bool IsDatabaseOpen
+        {
+            get { return (localDB != null); }
+        }
+
+        public KPDatabaseDataSet GetDatabaseForReading()
+        {
+            databaseAccessMutex.WaitOne();
+            return localDB;
+        }
+
+        public void DoneReadingDatabase()
+        {
+            databaseAccessMutex.ReleaseMutex();
         }
 
         public int DatabaseVersion
@@ -215,9 +228,11 @@ namespace WaywardGamers.KParser
             int totalMessageCount = messageList.Count;
             int messageNumber = 0;
 
-            // lock database for entire process period
-            lock (localDB)
+            // lock database while we're modifying it
+            try
             {
+                databaseAccessMutex.WaitOne();
+
                 foreach (var message in messageList)
                 {
                     AddMessageToDatabase(message);
@@ -226,43 +241,47 @@ namespace WaywardGamers.KParser
 
                     OnMessageProcessed(new DatabaseReparseEventArgs(++messageNumber, totalMessageCount, false));
                 }
+            }
+            finally
+            {
+                databaseAccessMutex.ReleaseMutex();
+            }
 
-                UpdateActiveBattleList(false);
+            UpdateActiveBattleList(false);
 
-                // Only process updates every 5 seconds, unless parse is ending.
-                if (parseEnded == false)
-                {
-                    DateTime currentTime = DateTime.Now;
-                    if (lastUpdateTime + updateDelayWindow > currentTime)
-                        return;
+            // Only process updates every 5 seconds, unless parse is ending.
+            if (parseEnded == false)
+            {
+                DateTime currentTime = DateTime.Now;
+                if (lastUpdateTime + updateDelayWindow > currentTime)
+                    return;
 
-                    lastUpdateTime = currentTime;
-                }
+                lastUpdateTime = currentTime;
+            }
 
-                KPDatabaseDataSet datasetChanges = null;
+            KPDatabaseDataSet datasetChanges = null;
 
-                try
-                {
-                    datasetChanges = (KPDatabaseDataSet)localDB.GetChanges();
+            try
+            {
+                datasetChanges = (KPDatabaseDataSet)localDB.GetChanges();
 
-                    // Notify watchers so that they can view the database with
-                    // Row changed/inserted/deleted flags still visible
-                    OnDatabaseChanging(new DatabaseWatchEventArgs(localDB, datasetChanges));
+                // Notify watchers so that they can view the database with
+                // Row changed/inserted/deleted flags still visible
+                OnDatabaseChanging(new DatabaseWatchEventArgs(localDB, datasetChanges));
 
-                    UpdateDatabase();
+                UpdateDatabase();
 
-                    // Notify watchers when database has been fully updated.
-                    OnDatabaseChanged(new DatabaseWatchEventArgs(localDB, null));
-                }
-                catch (Exception e)
-                {
-                    Logger.Instance.Log(e);
-                }
-                finally
-                {
-                    if (datasetChanges != null)
-                        datasetChanges.Dispose();
-                }
+                // Notify watchers when database has been fully updated.
+                OnDatabaseChanged(new DatabaseWatchEventArgs(localDB, null));
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Log(e);
+            }
+            finally
+            {
+                if (datasetChanges != null)
+                    datasetChanges.Dispose();
             }
 
             if (parseEnded == true)
@@ -280,8 +299,10 @@ namespace WaywardGamers.KParser
 
         public void PurgeChatInfo()
         {
-            lock (localDB)
+            try
             {
+                databaseAccessMutex.WaitOne();
+
                 // First delete all non-Arena rows in the message table.
                 foreach (KPDatabaseDataSet.ChatMessagesRow row in localDB.ChatMessages)
                 {
@@ -310,6 +331,10 @@ namespace WaywardGamers.KParser
 
                 UpdateDatabase();
             }
+            finally
+            {
+                databaseAccessMutex.ReleaseMutex();
+            }
         }
         #endregion
 
@@ -318,30 +343,31 @@ namespace WaywardGamers.KParser
         {
             KPDatabaseDataSet datasetChanges = null;
 
-            lock (localDB)
+            try
             {
-                try
-                {
-                    datasetChanges = (KPDatabaseDataSet)localDB.GetChanges();
+                databaseAccessMutex.WaitOne();
 
-                    // Notify watchers so that they can view the database with
-                    // Row changed/inserted/deleted flags still visible
-                    OnDatabaseChanging(new DatabaseWatchEventArgs(localDB, datasetChanges));
+                datasetChanges = (KPDatabaseDataSet)localDB.GetChanges();
 
-                    UpdateDatabase();
+                // Notify watchers so that they can view the database with
+                // Row changed/inserted/deleted flags still visible
+                OnDatabaseChanging(new DatabaseWatchEventArgs(localDB, datasetChanges));
 
-                    // Notify watchers when database has been fully updated.
-                    OnDatabaseChanged(new DatabaseWatchEventArgs(localDB, null));
-                }
-                catch (Exception e)
-                {
-                    Logger.Instance.Log(e);
-                }
-                finally
-                {
-                    if (datasetChanges != null)
-                        datasetChanges.Dispose();
-                }
+                UpdateDatabase();
+
+                // Notify watchers when database has been fully updated.
+                OnDatabaseChanged(new DatabaseWatchEventArgs(localDB, null));
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Log(e);
+            }
+            finally
+            {
+                databaseAccessMutex.ReleaseMutex();
+
+                if (datasetChanges != null)
+                    datasetChanges.Dispose();
             }
         }
 
@@ -352,14 +378,17 @@ namespace WaywardGamers.KParser
 
             try
             {
-                lock (localDB)
-                {
-                    localTAManager.UpdateAll(localDB);
-                }
+                databaseAccessMutex.WaitOne();
+
+                localTAManager.UpdateAll(localDB);
             }
             catch (Exception e)
             {
                 Logger.Instance.Log(e);
+            }
+            finally
+            {
+                databaseAccessMutex.ReleaseMutex();
             }
         }
 
@@ -497,11 +526,18 @@ namespace WaywardGamers.KParser
         internal void AddMessageToRecordLog(MessageLine messageLine)
         {
             // Set ParseSuccessful to False at this point since we don't know the parse outcome.
-            lock (localDB)
+            try
             {
+                databaseAccessMutex.WaitOne();
+
                 if (messageLine != null)
                     localDB.RecordLog.AddRecordLogRow(messageLine.Timestamp, messageLine.OriginalText, false);
             }
+            finally
+            {
+                databaseAccessMutex.ReleaseMutex();
+            }
+
         }
 
         /// <summary>

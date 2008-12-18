@@ -136,7 +136,7 @@ namespace WaywardGamers.KParser
         private void fileMenu_Popup(object sender, EventArgs e)
         {
             bool monitorRunning = Monitor.IsRunning;
-            bool databaseOpen = DatabaseManager.Instance.Database != null;
+            bool databaseOpen = DatabaseManager.Instance.IsDatabaseOpen;
 
             // Can't start a parse if one is running.
             beginDefaultParseMenuItem.Enabled = !monitorRunning;
@@ -433,7 +433,7 @@ namespace WaywardGamers.KParser
 
         private void playerInformationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            bool databaseOpen = DatabaseManager.Instance.Database != null;
+            bool databaseOpen = DatabaseManager.Instance.IsDatabaseOpen;
 
             if (databaseOpen == false)
             {
@@ -467,7 +467,7 @@ namespace WaywardGamers.KParser
             string inFilename = string.Empty;
             string outFilename = string.Empty;
 
-            if (DatabaseManager.Instance.Database != null)
+            if (DatabaseManager.Instance.IsDatabaseOpen)
             {
                 DialogResult reparse = MessageBox.Show("Do you want to reparse the current data?", "Reparse current data?",
                     MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
@@ -1062,7 +1062,7 @@ namespace WaywardGamers.KParser
                                 windowSettings.activePluginList.Add(plugin.TabName);
                         }
 
-                        if (DatabaseManager.Instance.Database != null)
+                        if (DatabaseManager.Instance.IsDatabaseOpen)
                         {
                             try
                             {
@@ -1326,6 +1326,53 @@ namespace WaywardGamers.KParser
             //Application.UserAppDataPath;
 
             //Monitor.ScanRAM();
+
+
+            //using (new ProfileRegion("database copy x100"))
+            //{
+            //    KPDatabaseDataSet db = DatabaseManager.Instance.Database;
+            //    KPDatabaseDataSet dbCopy;
+
+            //    if (db != null)
+            //    {
+            //        for (int i = 0; i < 100; i++)
+            //        {
+            //            dbCopy = (KPDatabaseDataSet)db.Copy();
+            //        }
+            //    }
+            //}
+
+            int arraySize = 5000000;
+            byte[] baseArray = new byte[arraySize];
+            byte[] copyToArray = new byte[arraySize];
+
+            // fill starting array
+            for (int i = 0; i < arraySize; i++)
+            {
+                baseArray[i] = (byte)(i % 256);
+            }
+
+            using (new ProfileRegion("array copy x100"))
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    for (int j = 0; j < arraySize; j++)
+                    {
+                        copyToArray[i] = baseArray[i];
+                    }
+                }
+            }
+
+
+            using (new ProfileRegion("blockcopy x100"))
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    Buffer.BlockCopy(baseArray, 0, copyToArray, 0, arraySize);
+                }
+            }
+
+
         }
         #endregion
 
