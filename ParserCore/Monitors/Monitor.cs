@@ -53,7 +53,7 @@ namespace WaywardGamers.KParser
                 throw new InvalidOperationException(string.Format(
                     "{0} is already running", currentReader.GetType().Name));
 
-            if (DatabaseManager.Instance.Database == null)
+            if (DatabaseManager.Instance.IsDatabaseOpen == false)
             {
                 throw new InvalidOperationException(
                     "You must have a database already open in order to continue parsing.");

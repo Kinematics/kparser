@@ -119,7 +119,7 @@ namespace WaywardGamers.KParser
         {
             get
             {
-                if (DatabaseManager.Instance.Database != null)
+                if (DatabaseManager.Instance.IsDatabaseOpen)
                 {
                     if (DatabaseManager.Instance.Database.Version.Count > 0)
                     {
