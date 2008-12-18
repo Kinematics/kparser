@@ -164,7 +164,7 @@ namespace WaywardGamers.KParser
         internal void AddMessageLine(MessageLine msgLine)
         {
             if (msgLine == null)
-                throw new ArgumentNullException("msgLine");
+                return;
 
             // The first message line that gets added to the message needs
             // to set the various externally visible properties.
