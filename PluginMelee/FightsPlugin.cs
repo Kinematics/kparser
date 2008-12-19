@@ -38,19 +38,15 @@ namespace WaywardGamers.KParser.Plugin
             ResetTextBox();
         }
 
-        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
+        public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
             if (e.DatasetChanges != null)
             {
                 if (e.DatasetChanges.Battles.Any(b => (b.Killed == true) || (b.EndTime != MagicNumbers.MinSQLDateTime)))
                 {
-                    datasetToUse = e.Dataset;
-                    return true;
+                    HandleDataset(null);
                 }
             }
-
-            datasetToUse = null;
-            return false;
         }
 
         protected override void ProcessData(KPDatabaseDataSet dataSet)

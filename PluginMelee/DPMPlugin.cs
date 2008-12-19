@@ -62,10 +62,10 @@ namespace WaywardGamers.KParser.Plugin
             ResetTextBox();
         }
 
-        public override void NotifyOfUpdate(KPDatabaseDataSet dataSet)
+        public override void NotifyOfUpdate()
         {
-            UpdatePlayerList(dataSet);
-            UpdateMobList(dataSet);
+            UpdatePlayerList();
+            UpdateMobList();
 
             flagNoUpdate = true;
             mobsCombo.CBSelectIndex(0);
@@ -73,15 +73,15 @@ namespace WaywardGamers.KParser.Plugin
             flagNoUpdate = true;
             playersCombo.CBSelectIndex(0);
 
-            HandleDataset(dataSet);
+            HandleDataset(null);
         }
 
-        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
+        public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
             if ((e.DatasetChanges.Combatants != null) &&
                 (e.DatasetChanges.Combatants.Count > 0))
             {
-                UpdatePlayerList(e.Dataset);
+                UpdatePlayerList();
 
                 flagNoUpdate = true;
                 playersCombo.CBSelectIndex(0);
@@ -96,7 +96,7 @@ namespace WaywardGamers.KParser.Plugin
                     var currentMob = mobsCombo.CBGetMobFilter();
                     var mobBattle = e.Dataset.Battles.FindByBattleID(currentMob.FightNumber);
 
-                    UpdateMobList(e.Dataset);
+                    UpdateMobList();
                     flagNoUpdate = true;
 
                     if (mobBattle.Killed == true)
@@ -108,50 +108,22 @@ namespace WaywardGamers.KParser.Plugin
 
             if (e.DatasetChanges.Interactions.Count != 0)
             {
-                datasetToUse = e.Dataset;
-                return true;
+                HandleDataset(null);
             }
-
-            datasetToUse = null;
-            return false;
         }
         #endregion
 
         #region Private Methods
-        private void UpdatePlayerList(KPDatabaseDataSet dataSet)
+        private void UpdatePlayerList()
         {
             playersCombo.CBReset();
-
-            var playersFighting = from b in dataSet.Combatants
-                                  where ((b.CombatantType == (byte)EntityType.Player ||
-                                         b.CombatantType == (byte)EntityType.Pet ||
-                                         b.CombatantType == (byte)EntityType.Fellow) &&
-                                         b.GetInteractionsRowsByActorCombatantRelation().Any() == true)
-                                  orderby b.CombatantName
-                                  select new
-                                  {
-                                      Name = b.CombatantName
-                                  };
-
-            List<string> playerStrings = new List<string>();
-            playerStrings.Add("All");
-
-            foreach (var player in playersFighting)
-                playerStrings.Add(player.Name);
-
-            playersCombo.CBAddStrings(playerStrings.ToArray());
+            playersCombo.CBAddStrings(GetPlayerListing());
         }
 
         private void UpdateMobList()
         {
-            UpdateMobList(DatabaseManager.Instance.Database);
-            mobsCombo.CBSelectIndex(0);
-        }
-
-        private void UpdateMobList(KPDatabaseDataSet dataSet)
-        {
             mobsCombo.CBReset();
-            string[] tmpList = GetMobListing(dataSet, false, false);
+            string[] tmpList = GetMobListing(false, false);
 
             if (tmpList[0] == "All")
             {
@@ -159,6 +131,8 @@ namespace WaywardGamers.KParser.Plugin
             }
             
             mobsCombo.CBAddStrings(tmpList);
+
+            mobsCombo.CBSelectIndex(0);
         }
         #endregion
 
@@ -598,7 +572,7 @@ namespace WaywardGamers.KParser.Plugin
         protected void playersCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (flagNoUpdate == false)
-                HandleDataset(DatabaseManager.Instance.Database);
+                HandleDataset(null);
 
             flagNoUpdate = false;
         }
@@ -606,7 +580,7 @@ namespace WaywardGamers.KParser.Plugin
         protected void mobsCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (flagNoUpdate == false)
-                HandleDataset(DatabaseManager.Instance.Database);
+                HandleDataset(null);
 
             flagNoUpdate = false;
         }

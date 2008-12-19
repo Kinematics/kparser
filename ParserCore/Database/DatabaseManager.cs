@@ -183,7 +183,7 @@ namespace WaywardGamers.KParser
             }
         }
 
-        public KPDatabaseDataSet Database
+        private KPDatabaseDataSet Database
         {
             get
             {

@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using WaywardGamers.KParser.Database;
 
 namespace WaywardGamers.KParser.Plugin
 {
@@ -54,24 +55,20 @@ namespace WaywardGamers.KParser.Plugin
             get { return null; }
         }
 
-        public void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
+        public virtual void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
-            KPDatabaseDataSet dataSet;
-            if (FilterOnDatabaseChanging(e, out dataSet))
-                HandleDataset(dataSet);
+            //HandleDataset(e.DatasetChanges);
         }
 
-        public void WatchDatabaseChanged(object sender, DatabaseWatchEventArgs e)
+        public virtual void WatchDatabaseChanged(object sender, DatabaseWatchEventArgs e)
         {
-            KPDatabaseDataSet dataSet;
-            if (FilterOnDatabaseChanged(e, out dataSet))
-                HandleDataset(dataSet);
+            //HandleDataset(null);
         }
 
-        public virtual void NotifyOfUpdate(KPDatabaseDataSet dataSet)
+        public virtual void NotifyOfUpdate()
         {
             ResetTextBox();
-            HandleDataset(dataSet);
+            HandleDataset(null);
         }
 
         public virtual void Reset()
@@ -87,29 +84,14 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Accessory IPlugin Functions
-        protected virtual bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
+        protected void HandleDataset(KPDatabaseDataSet databaseChanges)
         {
-            datasetToUse = null;
-            return false;
-        }
-
-        protected virtual bool FilterOnDatabaseChanged(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
-        {
-            datasetToUse = null;
-            return false;
-        }
-
-        protected void HandleDataset(KPDatabaseDataSet dataSet)
-        {
-            if (dataSet == null)
-                return;
-
             if (InvokeRequired)
             {
-                DatasetInvoker reReadDatabase = new DatasetInvoker(HandleDataset);
-                object[] passDataset = new object[1] { dataSet };
+                Action<KPDatabaseDataSet> handleDataset = new Action<KPDatabaseDataSet>(HandleDataset);
+                object[] dbChanges = new object[1] { databaseChanges };
 
-                BeginInvoke(reReadDatabase, passDataset);
+                BeginInvoke(handleDataset, dbChanges);
                 //Invoke(reReadDatabase, passDataset);
                 return;
             }
@@ -129,7 +111,14 @@ namespace WaywardGamers.KParser.Plugin
                     int currentSelectionLength = richTextBox.SelectionLength;
 
                     richTextBox.SuspendLayout();
-                    ProcessData(dataSet);
+
+                    using (AccessToTheDatabase dbAccess = new AccessToTheDatabase())
+                    {
+                        if (databaseChanges == null)
+                            ProcessData(dbAccess.Database);
+                        else
+                            ProcessData(databaseChanges);
+                    }
 
                     // After processing, re-select the same section as before, or
                     // set it to the start of the display.
@@ -262,87 +251,150 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region General helper functions
-        protected string[] GetMobListing(KPDatabaseDataSet dataSet, bool groupMobs, bool exclude0XPMobs)
+        /// <summary>
+        /// Gets a list of all speakers in the chat table.
+        /// </summary>
+        /// <returns></returns>
+        protected string[] GetSpeakerListing()
+        {
+            List<string> speakerStrings = new List<string>();
+            speakerStrings.Add("All");
+
+            using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
+            {
+                var speakers = from s in dbAccess.Database.ChatSpeakers
+                               orderby s.SpeakerName
+                               select new
+                               {
+                                   Name = s.SpeakerName
+                               };
+
+                foreach (var speaker in speakers)
+                    speakerStrings.Add(speaker.Name);
+            }
+
+            return speakerStrings.ToArray();
+        }
+
+        /// <summary>
+        /// Gets a string array of all players & pets among the combatants.
+        /// </summary>
+        /// <returns>A string array.</returns>
+        protected string[] GetPlayerListing()
+        {
+            List<string> playerStrings = new List<string>();
+            playerStrings.Add("All");
+
+            using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
+            {
+                var playersFighting = from b in dbAccess.Database.Combatants
+                                      where ((b.CombatantType == (byte)EntityType.Player ||
+                                             b.CombatantType == (byte)EntityType.Pet ||
+                                             b.CombatantType == (byte)EntityType.Fellow) &&
+                                             b.GetInteractionsRowsByActorCombatantRelation().Any() == true)
+                                      orderby b.CombatantName
+                                      select new
+                                      {
+                                          Name = b.CombatantName
+                                      };
+
+                foreach (var player in playersFighting)
+                    playerStrings.Add(player.Name);
+            }
+
+            return playerStrings.ToArray();
+        }
+
+        /// <summary>
+        /// Gets a string array of mob names with formatting for either fight number or XP gained.
+        /// </summary>
+        /// <param name="groupMobs">Whether mobs should be grouped by name/XP.</param>
+        /// <param name="exclude0XPMobs">Whether to include mobs that gave no XP.</param>
+        /// <returns>A string array.</returns>
+        protected string[] GetMobListing(bool groupMobs, bool exclude0XPMobs)
         {
             List<string> mobStrings = new List<string>();
             mobStrings.Add("All");
 
             // Group enemies check
 
-            if (groupMobs == true)
+            using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
             {
-                // Enemy group listing
-
-                var mobsKilled = from b in dataSet.Battles
-                                 where ((b.DefaultBattle == false) &&
-                                        (b.IsEnemyIDNull() == false) &&
-                                        (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
-                                 orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
-                                 group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
-                                 select new
-                                 {
-                                     Name = bn.Key,
-                                     XP = from xb in bn
-                                          group xb by xb.MinBaseExperience() into xbn
-                                          orderby xbn.Key
-                                          select new { BaseXP = xbn.Key }
-                                 };
-
-                foreach (var mob in mobsKilled)
+                if (groupMobs == true)
                 {
-                    if (mob.XP.Count() > 1)
-                    {
-                        if (exclude0XPMobs == true)
-                        {
-                            if (mob.XP.Any(x => x.BaseXP > 0) == true)
-                                mobStrings.Add(mob.Name);
-                        }
-                        else
-                        {
-                            mobStrings.Add(mob.Name);
-                        }
-                    }
+                    // Enemy group listing
 
-                    foreach (var xp in mob.XP)
+                    var mobsKilled = from b in dbAccess.Database.Battles
+                                     where ((b.DefaultBattle == false) &&
+                                            (b.IsEnemyIDNull() == false) &&
+                                            (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
+                                     orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
+                                     group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
+                                     select new
+                                     {
+                                         Name = bn.Key,
+                                         XP = from xb in bn
+                                              group xb by xb.MinBaseExperience() into xbn
+                                              orderby xbn.Key
+                                              select new { BaseXP = xbn.Key }
+                                     };
+
+                    foreach (var mob in mobsKilled)
                     {
-                        if (exclude0XPMobs == true)
+                        if (mob.XP.Count() > 1)
                         {
-                            if (xp.BaseXP > 0)
-                                mobStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
+                            if (exclude0XPMobs == true)
+                            {
+                                if (mob.XP.Any(x => x.BaseXP > 0) == true)
+                                    mobStrings.Add(mob.Name);
+                            }
+                            else
+                            {
+                                mobStrings.Add(mob.Name);
+                            }
                         }
-                        else
+
+                        foreach (var xp in mob.XP)
                         {
-                            mobStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
+                            if (exclude0XPMobs == true)
+                            {
+                                if (xp.BaseXP > 0)
+                                    mobStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
+                            }
+                            else
+                            {
+                                mobStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
+                            }
                         }
                     }
                 }
-            }
-            else
-            {
-                // Enemy battle listing
-
-                var mobsKilled = from b in dataSet.Battles
-                                 where ((b.DefaultBattle == false) &&
-                                        (b.IsEnemyIDNull() == false) &&
-                                        ((EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.Mob))
-                                 orderby b.BattleID
-                                 select new
-                                 {
-                                     Name = b.CombatantsRowByEnemyCombatantRelation.CombatantName,
-                                     Battle = b.BattleID,
-                                     XP = b.BaseExperience()
-                                 };
-
-                foreach (var mob in mobsKilled)
+                else
                 {
-                    if (exclude0XPMobs == true)
+                    // Enemy battle listing
+
+                    var mobsKilled = from b in dbAccess.Database.Battles
+                                     where ((b.DefaultBattle == false) &&
+                                            (b.IsEnemyIDNull() == false) &&
+                                            ((EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.Mob))
+                                     orderby b.BattleID
+                                     select new
+                                     {
+                                         Name = b.CombatantsRowByEnemyCombatantRelation.CombatantName,
+                                         Battle = b.BattleID,
+                                         XP = b.BaseExperience()
+                                     };
+
+                    foreach (var mob in mobsKilled)
                     {
-                        if (mob.XP > 0)
+                        if (exclude0XPMobs == true)
+                        {
+                            if (mob.XP > 0)
+                                mobStrings.Add(string.Format("{0,3}: {1}", mob.Battle, mob.Name));
+                        }
+                        else
+                        {
                             mobStrings.Add(string.Format("{0,3}: {1}", mob.Battle, mob.Name));
-                    }
-                    else
-                    {
-                        mobStrings.Add(string.Format("{0,3}: {1}", mob.Battle, mob.Name));
+                        }
                     }
                 }
             }

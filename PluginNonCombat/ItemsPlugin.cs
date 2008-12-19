@@ -62,16 +62,16 @@ namespace WaywardGamers.KParser.Plugin
             ResetTextBox();
         }
 
-        public override void NotifyOfUpdate(KPDatabaseDataSet dataSet)
+        public override void NotifyOfUpdate()
         {
             ResetTextBox();
 
-            UpdatePlayerList(dataSet);
+            UpdatePlayerList();
 
             playersCombo.CBSelectIndex(0);
         }
 
-        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
+        public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
             bool changesFound = false;
             string currentlySelectedPlayer = "All";
@@ -82,7 +82,7 @@ namespace WaywardGamers.KParser.Plugin
             if ((e.DatasetChanges.Combatants != null) &&
                 (e.DatasetChanges.Combatants.Count > 0))
             {
-                UpdatePlayerList(e.Dataset);
+                UpdatePlayerList();
                 changesFound = true;
 
                 flagNoUpdate = true;
@@ -98,41 +98,17 @@ namespace WaywardGamers.KParser.Plugin
 
             if (changesFound == true)
             {
-                datasetToUse = e.Dataset;
-                return true;
-            }
-            else
-            {
-                datasetToUse = null;
-                return false;
+                HandleDataset(null);
             }
         }
 
         #endregion
 
         #region Private functions
-        private void UpdatePlayerList(KPDatabaseDataSet dataSet)
+        private void UpdatePlayerList()
         {
             playersCombo.CBReset();
-
-            var playersFighting = from b in dataSet.Combatants
-                                  where ((b.CombatantType == (byte)EntityType.Player ||
-                                         b.CombatantType == (byte)EntityType.Pet ||
-                                         b.CombatantType == (byte)EntityType.Fellow) &&
-                                         b.GetInteractionsRowsByActorCombatantRelation().Any() == true)
-                                  orderby b.CombatantName
-                                  select new
-                                  {
-                                      Name = b.CombatantName
-                                  };
-
-            List<string> playerStrings = new List<string>();
-            playerStrings.Add("All");
-
-            foreach (var player in playersFighting)
-                playerStrings.Add(player.Name);
-
-            playersCombo.CBAddStrings(playerStrings.ToArray());
+            playersCombo.CBAddStrings(GetPlayerListing());
         }
         #endregion
 
@@ -249,7 +225,7 @@ namespace WaywardGamers.KParser.Plugin
         protected void playersCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (flagNoUpdate == false)
-                HandleDataset(DatabaseManager.Instance.Database);
+                HandleDataset(null);
 
             flagNoUpdate = false;
         }
@@ -263,7 +239,7 @@ namespace WaywardGamers.KParser.Plugin
             showDetails = sentBy.Checked;
 
             if (flagNoUpdate == false)
-                HandleDataset(DatabaseManager.Instance.Database);
+                HandleDataset(null);
 
             flagNoUpdate = false;
         }
