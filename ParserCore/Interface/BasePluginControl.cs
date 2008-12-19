@@ -99,9 +99,6 @@ namespace WaywardGamers.KParser.Plugin
             // Lock in case a UI update sends a message to start reprocessing
             // at the same time as the code is processing a message from the
             // database being updated, or vice versa.
-            //
-            // RISK: If ProcessData directly or indirectly re-calls HandleDataset,
-            // it will cause a deadlock.
             lock (privateLock)
             {
                 try
