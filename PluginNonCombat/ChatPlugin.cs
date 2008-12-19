@@ -66,17 +66,17 @@ namespace WaywardGamers.KParser.Plugin
             speakerCombo.CBSelectIndex(0);
         }
 
-        public override void NotifyOfUpdate(KPDatabaseDataSet dataSet)
+        public override void NotifyOfUpdate()
         {
             ResetTextBox();
-            UpdateSpeakerList(dataSet);
+            UpdateSpeakerList();
             flagNoUpdate = true;
             speakerCombo.CBSelectItem("All");
 
-            HandleDataset(dataSet);
+            HandleDataset(null);
         }
 
-        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
+        public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
             if (e.DatasetChanges.ChatSpeakers != null)
             {
@@ -84,23 +84,20 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     string currentSelection = speakerCombo.CBSelectedItem();
                     flagNoUpdate = true;
-                    UpdateSpeakerList(e.DatasetChanges);
+                    UpdateSpeakerList();
                     flagNoUpdate = true;
                     speakerCombo.CBSelectItem(currentSelection);
 
-                    datasetToUse = e.DatasetChanges;
-                    return true;
+                    HandleDataset(e.DatasetChanges);
+                    return;
                 }
             }
 
             if (e.DatasetChanges.ChatMessages.Count != 0)
             {
-                datasetToUse = e.DatasetChanges;
-                return true;
+                HandleDataset(e.DatasetChanges);
+                return;
             }
-
-            datasetToUse = null;
-            return false;
         }
 
         protected override void ProcessData(KPDatabaseDataSet dataSet)
@@ -187,41 +184,16 @@ namespace WaywardGamers.KParser.Plugin
         /// names.
         /// </summary>
         /// <param name="dataSet">Dataset with possibly new speakers to add to the list.</param>
-        private void UpdateSpeakerList(KPDatabaseDataSet dataSet)
+        private void UpdateSpeakerList()
         {
-            if (dataSet.ChatSpeakers == null)
-                return;
-
-            if (dataSet.ChatSpeakers.Count == 0)
-                return;
-
             string[] currentSpeakerList = speakerCombo.CBGetStrings();
-            string[] newSpeakerList = dataSet.ChatSpeakers.OrderBy(s => s.SpeakerName).Select(s => s.SpeakerName).ToArray();
+            string[] newSpeakerList = GetSpeakerListing();
 
-            List<string> newSpeakers = new List<string>();
+            if (Array.Equals(currentSpeakerList, newSpeakerList) == true)
+                return;
 
-            foreach (var speaker in newSpeakerList)
-            {
-                if (currentSpeakerList.Contains(speaker) == false)
-                    newSpeakers.Add(speaker);
-            }
-
-            if (newSpeakers.Count > 0)
-            {
-                string[] completeSpeakerList = currentSpeakerList
-                    .Concat(newSpeakerList).Distinct().ToArray();
-                Array.Sort(completeSpeakerList);
-
-                newSpeakers.Clear();
-                newSpeakers.AddRange(completeSpeakerList);
-                newSpeakers.RemoveAll(s => s == "All");
-                newSpeakers.Insert(0, "All");
-
-                completeSpeakerList = newSpeakers.ToArray();
-
-                speakerCombo.CBReset();
-                speakerCombo.CBAddStrings(completeSpeakerList);
-            }
+            speakerCombo.CBReset();
+            speakerCombo.CBAddStrings(newSpeakerList);
         }
         #endregion
 
@@ -231,7 +203,7 @@ namespace WaywardGamers.KParser.Plugin
             if (flagNoUpdate == false)
             {
                 ResetTextBox();
-                HandleDataset(DatabaseManager.Instance.Database);
+                HandleDataset(null);
             }
 
             flagNoUpdate = false;
@@ -242,7 +214,7 @@ namespace WaywardGamers.KParser.Plugin
             if (flagNoUpdate == false)
             {
                 ResetTextBox();
-                HandleDataset(DatabaseManager.Instance.Database);
+                HandleDataset(null);
             }
 
             flagNoUpdate = false;

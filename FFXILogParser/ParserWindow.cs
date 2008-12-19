@@ -1068,7 +1068,7 @@ namespace WaywardGamers.KParser
                             {
                                 Cursor.Current = Cursors.WaitCursor;
 
-                                plugin.NotifyOfUpdate(DatabaseManager.Instance.Database);
+                                plugin.NotifyOfUpdate();
                             }
                             finally
                             {
@@ -1251,7 +1251,7 @@ namespace WaywardGamers.KParser
                         {
                             using (new ProfileRegion("Opening " + plugin.TabName))
                             {
-                                plugin.NotifyOfUpdate(DatabaseManager.Instance.Database);
+                                plugin.NotifyOfUpdate();
                             }
                         }
                     }
@@ -1262,7 +1262,7 @@ namespace WaywardGamers.KParser
                     {
                         foreach (IPlugin plugin in activePluginList)
                         {
-                            plugin.NotifyOfUpdate(DatabaseManager.Instance.Database);
+                            plugin.NotifyOfUpdate();
                         }
                     }
                 }

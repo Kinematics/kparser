@@ -38,25 +38,21 @@ namespace WaywardGamers.KParser.Plugin
             ResetTextBox();
         }
 
-        public override void NotifyOfUpdate(KPDatabaseDataSet dataSet)
+        public override void NotifyOfUpdate()
         {
-            HandleDataset(dataSet);
+            HandleDataset(null);
         }
 
-        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
+        public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
             if (e.DatasetChanges != null)
             {
                 if ((e.DatasetChanges.Combatants != null) &&
                     (e.DatasetChanges.Combatants.Count > 0))
                 {
-                    datasetToUse = e.Dataset;
-                    return true;
+                    HandleDataset(null);
                 }
             }
-
-            datasetToUse = null;
-            return false;
         }
 
         protected override void ProcessData(KPDatabaseDataSet dataSet)

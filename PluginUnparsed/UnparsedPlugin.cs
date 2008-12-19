@@ -45,10 +45,9 @@ namespace WaywardGamers.KParser.Plugin
             richTextBox.Clear();
         }
 
-        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
+        public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
-            datasetToUse = e.DatasetChanges;
-            return true;
+            HandleDataset(e.DatasetChanges);
         }
 
         protected override void ProcessData(KPDatabaseDataSet dataSet)
