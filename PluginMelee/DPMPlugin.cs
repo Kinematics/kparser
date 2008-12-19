@@ -83,8 +83,11 @@ namespace WaywardGamers.KParser.Plugin
             {
                 UpdatePlayerList();
 
-                flagNoUpdate = true;
-                playersCombo.CBSelectIndex(0);
+                if (playersCombo.CBSelectedIndex() < 0)
+                {
+                    flagNoUpdate = true;
+                    playersCombo.CBSelectIndex(0);
+                }
             }
 
             // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
@@ -92,17 +95,20 @@ namespace WaywardGamers.KParser.Plugin
             {
                 if (e.DatasetChanges.Battles.Count > 0)
                 {
-                    int mobIndex = mobsCombo.CBSelectedIndex();
-                    var currentMob = mobsCombo.CBGetMobFilter();
-                    var mobBattle = e.Dataset.Battles.FindByBattleID(currentMob.FightNumber);
+                    int selectedIndex = mobsCombo.CBSelectedIndex();
 
-                    UpdateMobList();
-                    flagNoUpdate = true;
+                    var mobBattleNumber = e.DatasetChanges.Battles.Last().BattleID;
 
-                    if (mobBattle.Killed == true)
-                        mobsCombo.CBSelectIndex(mobIndex);
-                    else
-                        mobsCombo.CBSelectIndex(-1);
+                    if (mobBattleNumber > (mobsCombo.Items.Count + 1))
+                    {
+                        UpdateMobList();
+                    }
+
+                    if (selectedIndex < 1)
+                    {
+                        flagNoUpdate = true;
+                        mobsCombo.CBSelectIndex(mobBattleNumber);
+                    }
                 }
             }
 
@@ -131,8 +137,6 @@ namespace WaywardGamers.KParser.Plugin
             }
             
             mobsCombo.CBAddStrings(tmpList);
-
-            mobsCombo.CBSelectIndex(0);
         }
         #endregion
 
