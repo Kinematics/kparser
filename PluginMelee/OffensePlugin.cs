@@ -220,6 +220,7 @@ namespace WaywardGamers.KParser.Plugin
 
             flagNoUpdate = true;
             mobsCombo.CBSelectIndex(0);
+            flagNoUpdate = false;
 
             ResetAccumulation();
             UpdateAccumulation();
@@ -247,8 +248,7 @@ namespace WaywardGamers.KParser.Plugin
             if (e.DatasetChanges.Interactions.Count != 0)
             {
                 UpdateAccumulation(e.DatasetChanges);
-
-                HandleDataset(e.DatasetChanges);
+                HandleDataset(null);
             }
         }
         #endregion
@@ -258,7 +258,6 @@ namespace WaywardGamers.KParser.Plugin
         {
             mobsCombo.CBReset();
             mobsCombo.CBAddStrings(GetMobListing(groupMobs, exclude0XPMobs));
-            mobsCombo.CBSelectIndex(0);
         }
 
         private void ResetAccumulation()
@@ -1352,8 +1351,9 @@ namespace WaywardGamers.KParser.Plugin
 
             if (flagNoUpdate == false)
             {
-                flagNoUpdate = true;
                 UpdateMobList();
+                flagNoUpdate = true;
+                mobsCombo.CBSelectIndex(0);
 
                 ResetAccumulation();
                 UpdateAccumulation();
@@ -1373,8 +1373,9 @@ namespace WaywardGamers.KParser.Plugin
 
             if (flagNoUpdate == false)
             {
-                flagNoUpdate = true;
                 UpdateMobList();
+                flagNoUpdate = true;
+                mobsCombo.CBSelectIndex(0);
 
                 ResetAccumulation();
                 UpdateAccumulation();
