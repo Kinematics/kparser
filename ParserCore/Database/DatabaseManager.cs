@@ -277,12 +277,12 @@ namespace WaywardGamers.KParser
 
                     // Notify watchers so that they can view the database with
                     // Row changed/inserted/deleted flags still visible
-                    OnDatabaseChanging(new DatabaseWatchEventArgs(localDB, datasetChanges));
+                    OnDatabaseChanging(new DatabaseWatchEventArgs(datasetChanges));
 
                     UpdateDatabase();
 
                     // Notify watchers when database has been fully updated.
-                    OnDatabaseChanged(new DatabaseWatchEventArgs(localDB, null));
+                    OnDatabaseChanged(new DatabaseWatchEventArgs(null));
                 }
             }
             catch (Exception e)
@@ -362,12 +362,12 @@ namespace WaywardGamers.KParser
 
                 // Notify watchers so that they can view the database with
                 // Row changed/inserted/deleted flags still visible
-                OnDatabaseChanging(new DatabaseWatchEventArgs(localDB, datasetChanges));
+                OnDatabaseChanging(new DatabaseWatchEventArgs(datasetChanges));
 
                 UpdateDatabase();
 
                 // Notify watchers when database has been fully updated.
-                OnDatabaseChanged(new DatabaseWatchEventArgs(localDB, null));
+                OnDatabaseChanged(new DatabaseWatchEventArgs(null));
             }
             catch (Exception e)
             {
