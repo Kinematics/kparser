@@ -271,16 +271,19 @@ namespace WaywardGamers.KParser
 
             try
             {
-                datasetChanges = (KPDatabaseDataSet)localDB.GetChanges();
+                if (localDB.HasChanges())
+                {
+                    datasetChanges = (KPDatabaseDataSet)localDB.GetChanges();
 
-                // Notify watchers so that they can view the database with
-                // Row changed/inserted/deleted flags still visible
-                OnDatabaseChanging(new DatabaseWatchEventArgs(localDB, datasetChanges));
+                    // Notify watchers so that they can view the database with
+                    // Row changed/inserted/deleted flags still visible
+                    OnDatabaseChanging(new DatabaseWatchEventArgs(localDB, datasetChanges));
 
-                UpdateDatabase();
+                    UpdateDatabase();
 
-                // Notify watchers when database has been fully updated.
-                OnDatabaseChanged(new DatabaseWatchEventArgs(localDB, null));
+                    // Notify watchers when database has been fully updated.
+                    OnDatabaseChanged(new DatabaseWatchEventArgs(localDB, null));
+                }
             }
             catch (Exception e)
             {
