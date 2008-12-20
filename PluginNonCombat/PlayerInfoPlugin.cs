@@ -78,8 +78,13 @@ namespace WaywardGamers.KParser.Plugin
             {
                 if (player.Description != "")
                 {
-                    AppendText(player.Name, Color.Red, true, false);
+                    AppendText(player.Name, Color.Blue, true, false);
                     AppendText(string.Format("\n    {0}\n\n", player.Description));
+                }
+                else
+                {
+                    AppendText(player.Name, Color.Blue, true, false);
+                    AppendText("\n    -No Information-\n\n", Color.Red, true, false);
                 }
             }
 
