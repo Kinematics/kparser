@@ -93,12 +93,12 @@ namespace WaywardGamers.KParser
                 windowSettings.fullPluginList = new StringCollection();
 
             // Set default save directory
-            defaultSaveDirectory = windowSettings.DefaultParseSaveDirectory;
+            defaultSaveDirectory = appSettings.DefaultParseSaveDirectory;
             if (defaultSaveDirectory == string.Empty)
             {
                 defaultSaveDirectory = Application.CommonAppDataPath;
-                windowSettings.DefaultParseSaveDirectory = defaultSaveDirectory;
-                windowSettings.Save();
+                appSettings.DefaultParseSaveDirectory = defaultSaveDirectory;
+                appSettings.Save();
             }
 
 
@@ -421,7 +421,7 @@ namespace WaywardGamers.KParser
                 windowsMenu_Popup(windowsMenu, null);
 
                 // Reload possibly changed save directory.
-                defaultSaveDirectory = windowSettings.DefaultParseSaveDirectory;
+                defaultSaveDirectory = appSettings.DefaultParseSaveDirectory;
             }
         }
 
@@ -1068,7 +1068,7 @@ namespace WaywardGamers.KParser
                             {
                                 Cursor.Current = Cursors.WaitCursor;
 
-                                plugin.NotifyOfUpdate(DatabaseManager.Instance.Database);
+                                plugin.NotifyOfUpdate();
                             }
                             finally
                             {
@@ -1251,7 +1251,7 @@ namespace WaywardGamers.KParser
                         {
                             using (new ProfileRegion("Opening " + plugin.TabName))
                             {
-                                plugin.NotifyOfUpdate(DatabaseManager.Instance.Database);
+                                plugin.NotifyOfUpdate();
                             }
                         }
                     }
@@ -1262,7 +1262,7 @@ namespace WaywardGamers.KParser
                     {
                         foreach (IPlugin plugin in activePluginList)
                         {
-                            plugin.NotifyOfUpdate(DatabaseManager.Instance.Database);
+                            plugin.NotifyOfUpdate();
                         }
                     }
                 }

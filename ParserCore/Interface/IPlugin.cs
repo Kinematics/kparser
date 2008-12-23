@@ -19,7 +19,7 @@ namespace WaywardGamers.KParser.Plugin
         void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e);
         void WatchDatabaseChanged(object sender, DatabaseWatchEventArgs e);
 
-        void NotifyOfUpdate(KPDatabaseDataSet dataSet);
+        void NotifyOfUpdate();
         void Reset();
 
         bool IsDebug { get; }

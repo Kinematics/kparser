@@ -44,7 +44,7 @@ namespace WaywardGamers.KParser.Plugin
             processBuffsUsed = true;
         }
 
-        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
+        public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
             if (e.DatasetChanges.Interactions != null)
             {
@@ -56,14 +56,10 @@ namespace WaywardGamers.KParser.Plugin
 
                     if (enhancements.Count() > 0)
                     {
-                        datasetToUse = e.Dataset;
-                        return true;
+                        HandleDataset(null);
                     }
                 }
             }
-
-            datasetToUse = null;
-            return false;
         }
         #endregion
 
@@ -461,7 +457,7 @@ namespace WaywardGamers.KParser.Plugin
             if (sentBy != null)
             {
                 processBuffsUsed = (sentBy.SelectedIndex == 0);
-                HandleDataset(DatabaseManager.Instance.Database);
+                HandleDataset(null);
             }
         }
         #endregion
