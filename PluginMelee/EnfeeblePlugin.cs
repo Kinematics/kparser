@@ -81,26 +81,26 @@ namespace WaywardGamers.KParser.Plugin
             ResetTextBox();
         }
 
-        public override void NotifyOfUpdate(KPDatabaseDataSet dataSet)
+        public override void NotifyOfUpdate()
         {
             ResetTextBox();
 
-            UpdateMobList(dataSet);
+            UpdateMobList();
 
             flagNoUpdate = true;
             mobsCombo.CBSelectIndex(0);
 
-            HandleDataset(dataSet);
+            HandleDataset(null);
         }
 
-        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
+        public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
             // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
             if (e.DatasetChanges.Battles.Count > 0)
             {
                 string mobSelected = mobsCombo.CBSelectedItem();
                 flagNoUpdate = true;
-                UpdateMobList(e.Dataset);
+                UpdateMobList();
 
                 flagNoUpdate = true;
                 mobsCombo.CBSelectItem(mobSelected);
@@ -114,27 +114,18 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (enfeebles.Count() > 0)
                 {
-                    datasetToUse = e.Dataset;
-                    return true;
+                    HandleDataset(null);
                 }
             }
-
-            datasetToUse = null;
-            return false;
         }
         #endregion
 
         #region Private functions
         private void UpdateMobList()
         {
-            UpdateMobList(DatabaseManager.Instance.Database);
-            mobsCombo.CBSelectIndex(0);
-        }
-
-        private void UpdateMobList(KPDatabaseDataSet dataSet)
-        {
             mobsCombo.CBReset();
-            mobsCombo.CBAddStrings(GetMobListing(dataSet, groupMobs, exclude0XPMobs));
+            mobsCombo.CBAddStrings(GetMobListing(groupMobs, exclude0XPMobs));
+            mobsCombo.CBSelectIndex(0);
         }
         #endregion
 
@@ -340,7 +331,7 @@ namespace WaywardGamers.KParser.Plugin
         protected void categoryCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (flagNoUpdate == false)
-                HandleDataset(DatabaseManager.Instance.Database);
+                HandleDataset(null);
 
             flagNoUpdate = false;
         }
@@ -348,7 +339,7 @@ namespace WaywardGamers.KParser.Plugin
         protected void mobsCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (flagNoUpdate == false)
-                HandleDataset(DatabaseManager.Instance.Database);
+                HandleDataset(null);
 
             flagNoUpdate = false;
         }
@@ -366,7 +357,7 @@ namespace WaywardGamers.KParser.Plugin
                 flagNoUpdate = true;
                 UpdateMobList();
 
-                HandleDataset(DatabaseManager.Instance.Database);
+                HandleDataset(null);
             }
 
             flagNoUpdate = false;
@@ -385,7 +376,7 @@ namespace WaywardGamers.KParser.Plugin
                 flagNoUpdate = true;
                 UpdateMobList();
 
-                HandleDataset(DatabaseManager.Instance.Database);
+                HandleDataset(null);
             }
 
             flagNoUpdate = false;

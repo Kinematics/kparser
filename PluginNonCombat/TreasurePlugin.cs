@@ -101,28 +101,30 @@ namespace WaywardGamers.KParser.Plugin
             ResetTextBox();
         }
 
-        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
+        public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
             // Only update when something in the loot table changes, or if
             // the battle tables change (ie: mob was killed)
             if ((e.DatasetChanges.Loot.Count != 0) ||
                 (e.DatasetChanges.Battles.Any(b => b.Killed == true)))
             {
-                datasetToUse = e.Dataset;
-                return true;
+                HandleDataset(null);
+                return;
             }
 
-            if (currentLootType == LootType.Summary)
+            if (currentLootType == LootType.HELM)
             {
-                if (e.DatasetChanges.ChatMessages.Any())
+                if (e.DatasetChanges.ChatMessages.Count > 0)
                 {
-                    datasetToUse = e.Dataset;
-                    return true;
+                    HandleDataset(null);
+                    return;
                 }
             }
+        }
 
-            datasetToUse = null;
-            return false;
+        public override void WatchDatabaseChanged(object sender, DatabaseWatchEventArgs e)
+        {
+            //base.WatchDatabaseChanged(sender, e);
         }
         #endregion
 
@@ -132,7 +134,7 @@ namespace WaywardGamers.KParser.Plugin
             currentLootType = LootType.Summary;
             optionsMenu.Enabled = false;
 
-            HandleDataset(DatabaseManager.Instance.Database);
+            HandleDataset(null);
 
             ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
             if (sentBy == null)
@@ -152,7 +154,7 @@ namespace WaywardGamers.KParser.Plugin
             currentLootType = LootType.DropRates;
             optionsMenu.Enabled = true;
 
-            HandleDataset(DatabaseManager.Instance.Database);
+            HandleDataset(null);
 
             ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
             if (sentBy == null)
@@ -172,7 +174,7 @@ namespace WaywardGamers.KParser.Plugin
             currentLootType = LootType.Stealing;
             optionsMenu.Enabled = false;
 
-            HandleDataset(DatabaseManager.Instance.Database);
+            HandleDataset(null);
 
             ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
             if (sentBy == null)
@@ -192,7 +194,7 @@ namespace WaywardGamers.KParser.Plugin
             currentLootType = LootType.HELM;
             optionsMenu.Enabled = false;
 
-            HandleDataset(DatabaseManager.Instance.Database);
+            HandleDataset(null);
 
             ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
             if (sentBy == null)
@@ -212,7 +214,7 @@ namespace WaywardGamers.KParser.Plugin
             currentLootType = LootType.Salvage;
             optionsMenu.Enabled = false;
 
-            HandleDataset(DatabaseManager.Instance.Database);
+            HandleDataset(null);
 
             ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
             if (sentBy == null)
@@ -235,7 +237,7 @@ namespace WaywardGamers.KParser.Plugin
 
             showGroupDetails = sentBy.Checked;
 
-            HandleDataset(DatabaseManager.Instance.Database);
+            HandleDataset(null);
         }
 
         protected void excludeCrystalsOption_Click(object sender, EventArgs e)
@@ -246,7 +248,7 @@ namespace WaywardGamers.KParser.Plugin
 
             excludeCrystalsAndSeals = sentBy.Checked;
 
-            HandleDataset(DatabaseManager.Instance.Database);
+            HandleDataset(null);
         }
 
         protected void excludedPlayerInfoOption_Click(object sender, EventArgs e)
@@ -257,7 +259,7 @@ namespace WaywardGamers.KParser.Plugin
 
             excludedPlayerInfo = sentBy.Checked;
 
-            HandleDataset(DatabaseManager.Instance.Database);
+            HandleDataset(null);
         }
         #endregion
 

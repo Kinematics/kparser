@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Data;
 using System.Drawing;
 using WaywardGamers.KParser;
-using System.Windows.Forms;
+using WaywardGamers.KParser.Database;
 
 namespace WaywardGamers.KParser.Plugin
 {
@@ -211,22 +212,23 @@ namespace WaywardGamers.KParser.Plugin
             ResetAccumulation();
         }
 
-        public override void NotifyOfUpdate(KPDatabaseDataSet dataSet)
+        public override void NotifyOfUpdate()
         {
             ResetTextBox();
 
-            UpdateMobList(dataSet);
+            UpdateMobList();
 
             flagNoUpdate = true;
             mobsCombo.CBSelectIndex(0);
+            flagNoUpdate = false;
 
             ResetAccumulation();
-            UpdateAccumulation(dataSet);
+            UpdateAccumulation();
 
-            HandleDataset(dataSet);
+            HandleDataset(null);
         }
 
-        protected override bool FilterOnDatabaseChanging(DatabaseWatchEventArgs e, out KPDatabaseDataSet datasetToUse)
+        public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
             // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
             if (e.DatasetChanges.Battles != null)
@@ -237,7 +239,7 @@ namespace WaywardGamers.KParser.Plugin
                     if (currentSelection == string.Empty)
                         currentSelection = "All";
 
-                    UpdateMobList(e.Dataset);
+                    UpdateMobList();
                     flagNoUpdate = true;
                     mobsCombo.CBSelectItem(currentSelection);
                 }
@@ -246,27 +248,16 @@ namespace WaywardGamers.KParser.Plugin
             if (e.DatasetChanges.Interactions.Count != 0)
             {
                 UpdateAccumulation(e.DatasetChanges);
-
-                datasetToUse = e.DatasetChanges;
-                return true;
+                HandleDataset(null);
             }
-
-            datasetToUse = null;
-            return false;
         }
         #endregion
 
         #region Private functions
         private void UpdateMobList()
         {
-            UpdateMobList(DatabaseManager.Instance.Database);
-            mobsCombo.CBSelectIndex(0);
-        }
-
-        private void UpdateMobList(KPDatabaseDataSet dataSet)
-        {
             mobsCombo.CBReset();
-            mobsCombo.CBAddStrings(GetMobListing(dataSet, groupMobs, exclude0XPMobs));
+            mobsCombo.CBAddStrings(GetMobListing(groupMobs, exclude0XPMobs));
         }
 
         private void ResetAccumulation()
@@ -274,7 +265,27 @@ namespace WaywardGamers.KParser.Plugin
             dataAccum.Clear();
         }
 
-        private void UpdateAccumulation(KPDatabaseDataSet dataSet)
+        private void UpdateAccumulation()
+        {
+            UpdateAccumulation(null);
+        }
+
+        private void UpdateAccumulation(KPDatabaseDataSet datasetChanges)
+        {
+            if (datasetChanges == null)
+            {
+                using (AccessToTheDatabase db = new AccessToTheDatabase())
+                {
+                    UpdateAccumulationA(db.Database);
+                }
+            }
+            else
+            {
+                UpdateAccumulationA(datasetChanges);
+            }
+        }
+
+        private void UpdateAccumulationA(KPDatabaseDataSet dataSet)
         {
             MobFilter mobFilter = mobsCombo.CBGetMobFilter();
 
@@ -1313,7 +1324,7 @@ namespace WaywardGamers.KParser.Plugin
         protected void categoryCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (flagNoUpdate == false)
-                HandleDataset(DatabaseManager.Instance.Database);
+                HandleDataset(null);
 
             flagNoUpdate = false;
         }
@@ -1323,8 +1334,8 @@ namespace WaywardGamers.KParser.Plugin
             if (flagNoUpdate == false)
             {
                 ResetAccumulation();
-                UpdateAccumulation(DatabaseManager.Instance.Database);
-                HandleDataset(DatabaseManager.Instance.Database);
+                UpdateAccumulation();
+                HandleDataset(null);
             }
 
             flagNoUpdate = false;
@@ -1340,12 +1351,13 @@ namespace WaywardGamers.KParser.Plugin
 
             if (flagNoUpdate == false)
             {
-                flagNoUpdate = true;
                 UpdateMobList();
+                flagNoUpdate = true;
+                mobsCombo.CBSelectIndex(0);
 
                 ResetAccumulation();
-                UpdateAccumulation(DatabaseManager.Instance.Database);
-                HandleDataset(DatabaseManager.Instance.Database);
+                UpdateAccumulation();
+                HandleDataset(null);
             }
 
             flagNoUpdate = false;
@@ -1361,12 +1373,13 @@ namespace WaywardGamers.KParser.Plugin
 
             if (flagNoUpdate == false)
             {
-                flagNoUpdate = true;
                 UpdateMobList();
+                flagNoUpdate = true;
+                mobsCombo.CBSelectIndex(0);
 
                 ResetAccumulation();
-                UpdateAccumulation(DatabaseManager.Instance.Database);
-                HandleDataset(DatabaseManager.Instance.Database);
+                UpdateAccumulation();
+                HandleDataset(null);
             }
 
             flagNoUpdate = false;

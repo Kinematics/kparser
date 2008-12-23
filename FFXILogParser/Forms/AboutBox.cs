@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using WaywardGamers.KParser.Database;
 
 namespace WaywardGamers.KParser
 {
@@ -121,17 +122,21 @@ namespace WaywardGamers.KParser
             {
                 if (DatabaseManager.Instance.IsDatabaseOpen)
                 {
-                    if (DatabaseManager.Instance.Database.Version.Count > 0)
+                    string dbParseVer = string.Empty;
+                    string dbName = string.Empty;
+
+                    using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
                     {
-                        //string dbVer = DatabaseManager.Instance.Database.Version[0].DatabaseVersion.ToString();
-                        string dbParseVer = DatabaseManager.Instance.Database.Version[0].ParserVersion;
-                        string dbName = (new System.IO.FileInfo(DatabaseManager.Instance.DatabaseFilename)).Name;
-
-                        string desc = string.Format("\r\nCurrent database: {0}\r\n  Parsed using parser version {1}\r\n",
-                            dbName, dbParseVer);
-
-                        return desc;
+                        if (dbAccess.Database.Version.Count > 0)
+                        {
+                            dbParseVer = dbAccess.Database.Version[0].ParserVersion;
+                        }
                     }
+
+                    dbName = (new System.IO.FileInfo(DatabaseManager.Instance.DatabaseFilename)).Name;
+
+                    return string.Format("\r\nCurrent database: {0}\r\n  Parsed using parser version {1}\r\n",
+                            dbName, dbParseVer);
                 }
 
                 return string.Empty;

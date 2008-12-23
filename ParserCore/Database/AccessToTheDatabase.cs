@@ -12,6 +12,15 @@ namespace WaywardGamers.KParser.Database
         private KPDatabaseDataSet databaseRef;
 
         /// <summary>
+        /// Default constructor
+        /// </summary>
+        public AccessToTheDatabase()
+        {
+            regionName = null;
+            databaseRef = DatabaseManager.Instance.GetDatabaseForReading();
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ProfileRegion"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -60,7 +69,8 @@ namespace WaywardGamers.KParser.Database
             {
                 DatabaseManager.Instance.DoneReadingDatabase();
 
-                Debug.WriteLine(string.Concat("Exiting database access region (", regionName, ")."));
+                if (regionName != null)
+                    Debug.WriteLine(string.Concat("Exiting database access region (", regionName, ")."));
             }
         }
     }
