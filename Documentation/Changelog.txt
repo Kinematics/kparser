@@ -10,6 +10,7 @@ KParser Change Log
 - Misc bug fixes uncovered by the testing framework.
 * Show players in Player Info plugin even when no information has been entered for them.
 * Complete rewrite of thread flow for plugins.  This changes the API, so upgrading version to 1.2.*.  Should fix all thread deadlocking issues.
+* Complete rewrite of Defense tab for better and more accurate detail.
 
 
 1.1.7
