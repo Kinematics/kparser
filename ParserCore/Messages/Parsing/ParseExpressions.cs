@@ -244,6 +244,9 @@ namespace WaywardGamers.KParser
         internal static readonly string HealWaltz = "Healing Waltz";
 
         internal static readonly string RemoveStatus = "na";
+
+        internal static readonly string UtsuIchi = "Utsusemi: Ichi";
+        internal static readonly string UtsuNi = "Utsusemi: Ni";
     }
 
     // Special other names we want to check for, but also allow for localization

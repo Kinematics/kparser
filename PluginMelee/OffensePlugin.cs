@@ -13,117 +13,33 @@ namespace WaywardGamers.KParser.Plugin
 {
     public class OffensePlugin : BasePluginControl
     {
-        #region Accumulator classes
-        class MainAccumulator
-        {
-            internal MainAccumulator()
-            {
-                Abilities = new List<AbilAccum>();
-                Weaponskills = new List<WSAccum>();
-                Spells = new List<SpellAccum>();
-            }
+        #region Member Variables
+        List<MainAccumulator> dataAccum = new List<MainAccumulator>();
 
-            internal List<AbilAccum> Abilities { get; private set; }
-            internal List<WSAccum> Weaponskills { get; private set; }
-            internal List<SpellAccum> Spells { get; private set; }
+        int totalDamage;
+        List<string> playerList = new List<string>();
+        Dictionary<string, int> playerDamage = new Dictionary<string, int>();
+        IEnumerable<AttackGroup> attackSet = null;
 
-            internal string Name { get; set; }
-            internal EntityType CType { get; set; }
+        string summaryHeader = "Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg\n";
+        string meleeHeader = "Player            Melee Dmg   Melee %   Hit/Miss   M.Acc %  M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
+        string rangeHeader = "Player            Range Dmg   Range %   Hit/Miss   R.Acc %  R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
+        string spellHeader = "Player                  Spell Dmg   Spell %  #Spells  #Fail  S.Low/Hi     S.Avg  #MBurst  MB.Low/Hi   MB.Avg\n";
+        string abilHeader = "Player                  Abil. Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg\n";
+        string wskillHeader = "Player                 WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg\n";
+        string skillchainHeader = "Skillchain          SC Dmg  # SC  SC.Low/Hi  SC.Avg\n";
+        string otherMHeader = "Player            M.AE Dmg  # M.AE  M.AE Avg   R.AE Dmg  # R.AE  R.AE Avg   Spk.Dmg  # Spike  Spk.Avg\n";
+        string otherPHeader = "Player            CA.Dmg  CA.Hit/Miss  CA.Low/Hi  CA.Avg   Ret.Dmg  Ret.Hit/Miss  Ret.Low/Hi  Ret.Avg\n";
 
-            internal int TDmg { get; set; }
-            internal int TMDmg { get; set; }
-            internal int TRDmg { get; set; }
-            internal int TADmg { get; set; }
-            internal int TWDmg { get; set; }
-            internal int TSDmg { get; set; }
-            internal int TODmg { get; set; }
-            internal int TSCDmg { get; set; }
-            internal int MHits { get; set; }
-            internal int MMiss { get; set; }
-            internal int MNonCritDmg { get; set; }
-            internal int MLow { get; set; }
-            internal int MHi { get; set; }
-            internal int MCritHits { get; set; }
-            internal int MCritDmg { get; set; }
-            internal int MCritLow { get; set; }
-            internal int MCritHi { get; set; }
-            internal int RHits { get; set; }
-            internal int RMiss { get; set; }
-            internal int RNonCritDmg { get; set; }
-            internal int RLow { get; set; }
-            internal int RHi { get; set; }
-            internal int RCritHits { get; set; }
-            internal int RCritDmg { get; set; }
-            internal int RCritLow { get; set; }
-            internal int RCritHi { get; set; }
-            internal int SCNum { get; set; }
-            internal int SCLow { get; set; }
-            internal int SCHi { get; set; }
-            internal int MAEDmg { get; set; }
-            internal int MAENum { get; set; }
-            internal int RAEDmg { get; set; }
-            internal int RAENum { get; set; }
-            internal int SpkDmg { get; set; }
-            internal int SpkNum { get; set; }
-            internal int CADmg { get; set; }
-            internal int CAHits { get; set; }
-            internal int CAMiss { get; set; }
-            internal int CALow { get; set; }
-            internal int CAHi { get; set; }
-            internal int RTDmg { get; set; }
-            internal int RTHits { get; set; }
-            internal int RTMiss { get; set; }
-            internal int RTLow { get; set; }
-            internal int RTHi { get; set; }
-        }
-
-        class AbilAccum
-        {
-            internal string AName { get; set; }
-
-            internal int ADmg { get; set; }
-            internal int AHit { get; set; }
-            internal int AMiss { get; set; }
-            internal int ALow { get; set; }
-            internal int AHi { get; set; }
-        }
-
-        class WSAccum
-        {
-            internal string WName { get; set; }
-
-            internal int WDmg { get; set; }
-            internal int WHit { get; set; }
-            internal int WMiss { get; set; }
-            internal int WLow { get; set; }
-            internal int WHi { get; set; }
-        }
-
-        class SpellAccum
-        {
-
-            internal string SName { get; set; }
-
-            internal int SDmg { get; set; }
-            internal int SNum { get; set; }
-            internal int SNumMB { get; set; }
-            internal int SFail { get; set; }
-            internal int SLow { get; set; }
-            internal int SHi { get; set; }
-            internal int SMBDmg { get; set; }
-            internal int SMBLow { get; set; }
-            internal int SMBHi { get; set; }
-        }
-        #endregion
-
-        #region Constructor
         bool flagNoUpdate = false;
         bool groupMobs = true;
         bool exclude0XPMobs = false;
         ToolStripComboBox categoryCombo = new ToolStripComboBox();
         ToolStripComboBox mobsCombo = new ToolStripComboBox();
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
+        #endregion
 
+        #region Constructor
         public OffensePlugin()
         {
             ToolStripLabel catLabel = new ToolStripLabel();
@@ -181,25 +97,6 @@ namespace WaywardGamers.KParser.Plugin
         }
         #endregion
 
-        #region Member Variables
-        List<MainAccumulator> dataAccum = new List<MainAccumulator>();
-
-        int totalDamage;
-        List<string> playerList = new List<string>();
-        Dictionary<string, int> playerDamage = new Dictionary<string, int>();
-        IEnumerable<AttackGroup> attackSet = null;
-
-        string summaryHeader = "Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg\n";
-        string meleeHeader = "Player            Melee Dmg   Melee %   Hit/Miss   M.Acc %  M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
-        string rangeHeader = "Player            Range Dmg   Range %   Hit/Miss   R.Acc %  R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
-        string spellHeader = "Player                  Spell Dmg   Spell %  #Spells  #Fail  S.Low/Hi     S.Avg  #MBurst  MB.Low/Hi   MB.Avg\n";
-        string abilHeader = "Player                  Abil. Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg\n";
-        string wskillHeader = "Player                 WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg\n";
-        string skillchainHeader = "Skillchain          SC Dmg  # SC  SC.Low/Hi  SC.Avg\n";
-        string otherMHeader = "Player            M.AE Dmg  # M.AE  M.AE Avg   R.AE Dmg  # R.AE  R.AE Avg   Spk.Dmg  # Spike  Spk.Avg\n";
-        string otherPHeader = "Player            CA.Dmg  CA.Hit/Miss  CA.Low/Hi  CA.Avg   Ret.Dmg  Ret.Hit/Miss  Ret.Low/Hi  Ret.Avg\n";
-        #endregion
-
         #region IPlugin Overrides
         public override string TabName
         {
@@ -209,7 +106,7 @@ namespace WaywardGamers.KParser.Plugin
         public override void Reset()
         {
             ResetTextBox();
-            ResetAccumulation();
+            ResetAccumulation(false);
         }
 
         public override void NotifyOfUpdate()
@@ -222,8 +119,7 @@ namespace WaywardGamers.KParser.Plugin
             mobsCombo.CBSelectIndex(0);
             flagNoUpdate = false;
 
-            ResetAccumulation();
-            UpdateAccumulation();
+            ResetAccumulation(true);
 
             HandleDataset(null);
         }
@@ -260,14 +156,12 @@ namespace WaywardGamers.KParser.Plugin
             mobsCombo.CBAddStrings(GetMobListing(groupMobs, exclude0XPMobs));
         }
 
-        private void ResetAccumulation()
+        private void ResetAccumulation(bool withUpdate)
         {
             dataAccum.Clear();
-        }
 
-        private void UpdateAccumulation()
-        {
-            UpdateAccumulation(null);
+            if (withUpdate == true)
+                UpdateAccumulation(null);
         }
 
         private void UpdateAccumulation(KPDatabaseDataSet datasetChanges)
@@ -302,55 +196,55 @@ namespace WaywardGamers.KParser.Plugin
                             Name = c.CombatantName,
                             ComType = (EntityType)c.CombatantType,
                             Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                    where (n.ActionType == (byte)ActionType.Melee &&
-                                           (n.HarmType == (byte)HarmType.Damage ||
-                                            n.HarmType == (byte)HarmType.Drain)) &&
+                                    where ((ActionType)n.ActionType == ActionType.Melee &&
+                                           ((HarmType)n.HarmType == HarmType.Damage ||
+                                            (HarmType)n.HarmType == HarmType.Drain)) &&
                                            mobFilter.CheckFilterMobTarget(n)
                                     select n,
                             Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                    where (n.ActionType == (byte)ActionType.Ranged &&
-                                           (n.HarmType == (byte)HarmType.Damage ||
-                                            n.HarmType == (byte)HarmType.Drain)) &&
+                                    where ((ActionType)n.ActionType == ActionType.Ranged &&
+                                           ((HarmType)n.HarmType == HarmType.Damage ||
+                                            (HarmType)n.HarmType == HarmType.Drain)) &&
                                            mobFilter.CheckFilterMobTarget(n)
                                     select n,
                             Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                    where (n.ActionType == (byte)ActionType.Spell &&
-                                           (n.HarmType == (byte)HarmType.Damage ||
-                                            n.HarmType == (byte)HarmType.Drain) &&
+                                    where ((ActionType)n.ActionType == ActionType.Spell &&
+                                           ((HarmType)n.HarmType == HarmType.Damage ||
+                                            (HarmType)n.HarmType == HarmType.Drain) &&
                                             n.Preparing == false) &&
                                            mobFilter.CheckFilterMobTarget(n)
                                     select n,
                             Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                      where (n.ActionType == (byte)ActionType.Ability &&
-                                           (n.HarmType == (byte)HarmType.Damage ||
-                                            n.HarmType == (byte)HarmType.Drain ||
-                                            n.HarmType == (byte)HarmType.Unknown) &&
+                                      where ((ActionType)n.ActionType == ActionType.Ability &&
+                                           ((HarmType)n.HarmType == HarmType.Damage ||
+                                            (HarmType)n.HarmType == HarmType.Drain ||
+                                            (HarmType)n.HarmType == HarmType.Unknown) &&
                                             n.Preparing == false) &&
                                              mobFilter.CheckFilterMobTarget(n)
                                       select n,
                             WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                     where (n.ActionType == (byte)ActionType.Weaponskill &&
-                                           (n.HarmType == (byte)HarmType.Damage ||
-                                            n.HarmType == (byte)HarmType.Drain) &&
+                                     where ((ActionType)n.ActionType == ActionType.Weaponskill &&
+                                           ((HarmType)n.HarmType == HarmType.Damage ||
+                                            (HarmType)n.HarmType == HarmType.Drain) &&
                                             n.Preparing == false) &&
                                             mobFilter.CheckFilterMobTarget(n)
                                      select n,
                             SC = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                 where (n.ActionType == (byte)ActionType.Skillchain &&
-                                           (n.HarmType == (byte)HarmType.Damage ||
-                                            n.HarmType == (byte)HarmType.Drain)) &&
+                                 where ((ActionType)n.ActionType == ActionType.Skillchain &&
+                                           ((HarmType)n.HarmType == HarmType.Damage ||
+                                            (HarmType)n.HarmType == HarmType.Drain)) &&
                                         mobFilter.CheckFilterMobTarget(n)
                                  select n,
                             Counter = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                      where n.ActionType == (byte)ActionType.Counterattack &&
+                                      where (ActionType)n.ActionType == ActionType.Counterattack &&
                                              mobFilter.CheckFilterMobTarget(n)
                                       select n,
                             Retaliate = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                        where n.ActionType == (byte)ActionType.Retaliation &&
+                                        where (ActionType)n.ActionType == ActionType.Retaliation &&
                                                mobFilter.CheckFilterMobTarget(n)
                                         select n,
                             Spikes = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                     where n.ActionType == (byte)ActionType.Spikes &&
+                                     where (ActionType)n.ActionType == ActionType.Spikes &&
                                             mobFilter.CheckFilterMobTarget(n)
                                      select n
                         };
@@ -1333,8 +1227,7 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (flagNoUpdate == false)
             {
-                ResetAccumulation();
-                UpdateAccumulation();
+                ResetAccumulation(true);
                 HandleDataset(null);
             }
 
@@ -1355,8 +1248,7 @@ namespace WaywardGamers.KParser.Plugin
                 flagNoUpdate = true;
                 mobsCombo.CBSelectIndex(0);
 
-                ResetAccumulation();
-                UpdateAccumulation();
+                ResetAccumulation(true);
                 HandleDataset(null);
             }
 
@@ -1377,8 +1269,7 @@ namespace WaywardGamers.KParser.Plugin
                 flagNoUpdate = true;
                 mobsCombo.CBSelectIndex(0);
 
-                ResetAccumulation();
-                UpdateAccumulation();
+                ResetAccumulation(true);
                 HandleDataset(null);
             }
 
