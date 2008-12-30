@@ -32,8 +32,8 @@ namespace WaywardGamers.KParser.Plugin
         //--
         
         string summaryHeader = "Player             Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg\n";
-        string meleeHeader   = "Player             Melee Dmg   Melee %   Hit/Miss   M.Acc %  M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
-        string rangeHeader   = "Player             Range Dmg   Range %   Hit/Miss   R.Acc %  R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
+        string meleeHeader   = "Player             Melee Dmg   Melee %   Hit/Miss   M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
+        string rangeHeader   = "Player             Range Dmg   Range %   Hit/Miss   R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
         string spellHeader   = "Player                  Spell Dmg   Spell %  #Spells  #Fail  S.Low/Hi     S.Avg  #MBurst  MB.Low/Hi   MB.Avg\n";
         string abilHeader    = "Player                  Abil. Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg\n";
         string wskillHeader  = "Player                  WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg\n";
@@ -891,7 +891,7 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     if ((player.MHits + player.MMiss) > 0)
                     {
-                        sb.AppendFormat("{0,-18}{1,10}{2,10:p2}{3,11}{4,10:p2}{5,10}{6,9:f2}{7,7}{8,10}{9,8:f2}{10,10:p2}\n",
+                        sb.AppendFormat("{0,-18}{1,10}{2,10:p2}{3,11}{5,11}{6,9:f2}{7,7}{8,10}{9,8:f2}{10,10:p2}\n",
                           player.Name,
                           player.TMDmg,
                           (player.TDmg > 0) ? (double)player.TMDmg / player.TDmg : 0,
@@ -942,7 +942,7 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     if ((player.RHits + player.RMiss) > 0)
                     {
-                        sb.AppendFormat("{0,-18}{1,10}{2,10:p2}{3,11}{4,10:p2}{5,10}{6,9:f2}{7,7}{8,10}{9,8:f2}{10,10:p2}\n",
+                        sb.AppendFormat("{0,-18}{1,10}{2,10:p2}{3,11}{5,11}{6,9:f2}{7,7}{8,10}{9,8:f2}{10,10:p2}\n",
                           player.Name,
                           player.TRDmg,
                           (player.TDmg > 0) ? (double)player.TRDmg / player.TDmg : 0,
@@ -1226,7 +1226,7 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     if ((player.MAENum + player.RAENum + player.SpkNum) > 0)
                     {
-                        sb.AppendFormat("{0,-17}{1,9}{2,8}{3,10:f2}{4,11}{5,8}{6,10:f2}{7,10}{8,9}{9,9:f2}\n",
+                        sb.AppendFormat("{0,-18}{1,9}{2,8}{3,10:f2}{4,11}{5,8}{6,10:f2}{7,10}{8,9}{9,9:f2}\n",
                             player.Name,
                             player.MAEDmg,
                             player.MAENum,
@@ -1272,7 +1272,7 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     if ((player.CAHits + player.CAMiss + player.RTHits + player.RTMiss) > 0)
                     {
-                        sb.AppendFormat("{0,-17}{1,7}{2,13}{3,11}{4,8:f2}{5,10}{6,14}{7,12}{8,9:f2}\n",
+                        sb.AppendFormat("{0,-18}{1,7}{2,13}{3,11}{4,8:f2}{5,10}{6,14}{7,12}{8,9:f2}\n",
                             player.Name,
                             player.CADmg,
                             string.Concat(player.CAHits, "/", player.CAMiss),
