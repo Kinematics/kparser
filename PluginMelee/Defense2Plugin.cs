@@ -11,24 +11,26 @@ using WaywardGamers.KParser.Database;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class Defense2Plugin : BasePluginControl
+    public class DefensePlugin : BasePluginControl
     {
+        private class SpellNames
+        {
+            internal static readonly string UtsuIchi = "Utsusemi: Ichi";
+            internal static readonly string UtsuNi = "Utsusemi: Ni";
+        }
+
+
         #region Member Variables
         List<MainAccumulator> dataAccum = new List<MainAccumulator>();
 
         int totalDamage;
         List<string> playerList = new List<string>();
         Dictionary<string, int> playerDamage = new Dictionary<string, int>();
-        IEnumerable<DefenseGroup2> defenseSet = null;
 
         string incAttacksHeader = "Player           Melee   Range   Abil/Ws   Spells   Unknown   Total   Attack# %   Avoided   Avoid %\n";
-        string incDamageHeader = "Player           M.Dmg   Avg M.Dmg   R.Dmg  Avg R.Dmg   S.Dmg  Avg S.Dmg   A/WS.Dmg  Avg A/WS.Dmg   Damage %\n";
-        string standardDefHeader = "Player           M.Evade  M.Evade %   R.Evade  R.Evade %   Shadow  Shadow %   Parry  Parry %\n";
-        string otherDefHeader = "Player           Intimidate  Intimidate %   Anticipate  Anticipate %   Counter  Counter %   Retaliate  Retaliate %\n";
-
-        string utsuHeader = "Player           Shadows Used   Ichi Cast  Ichi Fin  Ni Cast  Ni Fin   Count  Count(N)  Efficiency  Effic.(N)\n";
 
         //--
+        
         string summaryHeader = "Player             Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg\n";
         string meleeHeader   = "Player             Melee Dmg   Melee %   Hit/Miss   M.Acc %  M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
         string rangeHeader   = "Player             Range Dmg   Range %   Hit/Miss   R.Acc %  R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
@@ -41,8 +43,8 @@ namespace WaywardGamers.KParser.Plugin
 
         string passiveDefHeader = "Player             Evasion  Evasion %   Parry  Parry %   Counter  Counter %   Intimidate  Intimidate %\n";
         string activeDefHeader  = "Player             Shadow  Shadow %   Anticipate  Anticipate %   Retaliations  Retaliation %\n";
-        string utsuCastingheader = "Player             :Ichi Cast  :Ichi Finished    :Ni Cast  :Ni Finished    Casting Time (est.)";
-        string shadowUseHeader   = "Player             Shadows Used    Shadows Cast  Shadows Cast(Nin)   Efficiency  Efficiency (Nin)";
+        string utsuCastingheader = "Player             :Ichi Cast  :Ichi Finished    :Ni Cast  :Ni Finished    Casting Time (est.)\n";
+        string shadowUseHeader   = "Player             Shadows Used    Shadows Cast  Shadows Cast(Nin)   Efficiency  Efficiency (Nin)\n";
 
 
         bool flagNoUpdate;
@@ -54,7 +56,7 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Constructor
-        public Defense2Plugin()
+        public DefensePlugin()
         {
             ToolStripLabel catLabel = new ToolStripLabel();
             catLabel.Text = "Category:";
@@ -108,7 +110,7 @@ namespace WaywardGamers.KParser.Plugin
         #region IPlugin Overrides
         public override string TabName
         {
-            get { return "Defense2"; }
+            get { return "Defense"; }
         }
 
         public override void Reset()
@@ -192,7 +194,9 @@ namespace WaywardGamers.KParser.Plugin
         {
             MobFilter mobFilter = mobsCombo.CBGetMobFilter();
 
-            #region LINQ query
+            #region LINQ queries
+
+            IEnumerable<DefenseGroup2> defenseSet = null;
 
             defenseSet = from c in dataSet.Combatants
                          where ((c.CombatantType == (byte)EntityType.Player) ||
@@ -247,6 +251,10 @@ namespace WaywardGamers.KParser.Plugin
                                        where (ActionType)n.ActionType == ActionType.Counterattack &&
                                               mobFilter.CheckFilterMobActor(n)
                                        select n,
+                             Countered = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                         where (ActionType)n.ActionType == ActionType.Counterattack &&
+                                                mobFilter.CheckFilterMobTarget(n)
+                                         select n,
                              Retaliate = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                          where (ActionType)n.ActionType == ActionType.Retaliation &&
                                                 mobFilter.CheckFilterMobActor(n)
@@ -263,7 +271,47 @@ namespace WaywardGamers.KParser.Plugin
                                        select n
                          };
 
-            #endregion
+
+            var utsuSet = from c in dataSet.Combatants
+                          where ((c.CombatantType == (byte)EntityType.Player) ||
+                                (c.CombatantType == (byte)EntityType.Pet) ||
+                                (c.CombatantType == (byte)EntityType.Fellow))
+                          orderby c.CombatantType, c.CombatantName
+                          select new
+                          {
+                              Name = c.CombatantName,
+                              ComType = (EntityType)c.CombatantType,
+                              UtsuIchiCast = from s in c.GetInteractionsRowsByActorCombatantRelation()
+                                             where ((ActionType)s.ActionType == ActionType.Spell &&
+                                                    s.Preparing == true &&
+                                                    s.IsActionIDNull() == false &&
+                                                    s.ActionsRow.ActionName == SpellNames.UtsuIchi &&
+                                                    mobFilter.CheckFilterMobBattle(s) == true)
+                                             select s,
+                              UtsuIchiFinish = from s in c.GetInteractionsRowsByActorCombatantRelation()
+                                             where ((ActionType)s.ActionType == ActionType.Spell &&
+                                                    s.Preparing == false &&
+                                                    s.IsActionIDNull() == false &&
+                                                    s.ActionsRow.ActionName == SpellNames.UtsuIchi &&
+                                                    mobFilter.CheckFilterMobBattle(s) == true)
+                                             select s,
+                              UtsuNiCast = from s in c.GetInteractionsRowsByActorCombatantRelation()
+                                             where ((ActionType)s.ActionType == ActionType.Spell &&
+                                                    s.Preparing == true &&
+                                                    s.IsActionIDNull() == false &&
+                                                    s.ActionsRow.ActionName == SpellNames.UtsuNi &&
+                                                    mobFilter.CheckFilterMobBattle(s) == true)
+                                             select s,
+                              UtsuNiFinish = from s in c.GetInteractionsRowsByActorCombatantRelation()
+                                             where ((ActionType)s.ActionType == ActionType.Spell &&
+                                                    s.Preparing == false &&
+                                                    s.IsActionIDNull() == false &&
+                                                    s.ActionsRow.ActionName == SpellNames.UtsuNi &&
+                                                    mobFilter.CheckFilterMobBattle(s) == true)
+                                             select s,
+
+                          };
+           #endregion
 
             if ((defenseSet == null) || (defenseSet.Count() == 0))
                 return;
@@ -335,7 +383,8 @@ namespace WaywardGamers.KParser.Plugin
                     playerAccum.DefShadow += player.Melee.Where(h => (DefenseType)h.DefenseType == DefenseType.Shadow).Count();
                     playerAccum.DefParry += player.Melee.Where(h => (DefenseType)h.DefenseType == DefenseType.Parry).Count();
                     playerAccum.DefIntimidate += player.Melee.Where(h => (DefenseType)h.DefenseType == DefenseType.Intimidate).Count();
-                    playerAccum.DefCounter += player.Melee.Where(h => (DefenseType)h.DefenseType == DefenseType.Counter).Count();
+                    //playerAccum.DefCounter += player.Melee.Where(h => (DefenseType)h.DefenseType == DefenseType.Counter).Count();
+                    playerAccum.DefCounter += player.Countered.Count();
 
                     playerAccum.UtsuUsed += player.Melee.Where(h => (DefenseType)h.DefenseType == DefenseType.Shadow).Sum(u => u.ShadowsUsed);
                 }
@@ -625,8 +674,6 @@ namespace WaywardGamers.KParser.Plugin
                     playerAccum.CAHits += succHits.Count();
                     playerAccum.CAMiss += player.Counter.Count(b => (DefenseType)b.DefenseType != DefenseType.None);
 
-                    playerAccum.DefCounter += playerAccum.CAHits + playerAccum.CAMiss;
-
                     int dmg = succHits.Sum(c => c.Amount);
                     playerAccum.CADmg += dmg;
                     playerAccum.TDmg += dmg;
@@ -674,11 +721,22 @@ namespace WaywardGamers.KParser.Plugin
 
                 playerAccum.UtsuUsed += player.Unknown.Where(h => (DefenseType)h.DefenseType == DefenseType.Shadow).Sum(u => u.ShadowsUsed);
                 #endregion
+
+                #region Utsusemi counting
+                var playerUtsu = utsuSet.SingleOrDefault(p => p.Name == player.Name && p.ComType == player.ComType);
+                if (playerUtsu != null)
+                {
+                    playerAccum.UtsuICast = playerUtsu.UtsuIchiCast.Count();
+                    playerAccum.UtsuIFin = playerUtsu.UtsuIchiFinish.Count();
+                    playerAccum.UtsuNCast = playerUtsu.UtsuNiCast.Count();
+                    playerAccum.UtsuNFin = playerUtsu.UtsuNiFinish.Count();
+                }
+                #endregion
             }
         }
         #endregion
 
-        #region New Processing Sections
+        #region Processing Sections
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
             ResetTextBox();
@@ -689,10 +747,10 @@ namespace WaywardGamers.KParser.Plugin
 
             switch (actionSourceFilter)
             {
-                // Unknown == "All"
                 case "All":
                     ProcessDamageTaken(ref sb, ref strModList);
                     ProcessDefenses(ref sb, ref strModList);
+                    ProcessUtsusemi(ref sb, ref strModList);
                     break;
                 case "Damage Taken":
                     ProcessDamageTaken(ref sb, ref strModList);
@@ -1387,157 +1445,103 @@ namespace WaywardGamers.KParser.Plugin
             });
             sb.Append(tmpText);
 
-
-            tmpText = "Utsusemi Casting\n";
-            strModList.Add(new StringMods
+            if (dataAccum.Any(p => p.UtsuICast > 0 || p.UtsuNCast > 0 || p.UtsuUsed > 0))
             {
-                Start = sb.Length,
-                Length = tmpText.Length,
-                Bold = true,
-                Color = Color.Blue
-            });
-            sb.Append(tmpText);
-
-            strModList.Add(new StringMods
-            {
-                Start = sb.Length,
-                Length = utsuCastingheader.Length,
-                Bold = true,
-                Underline = true,
-                Color = Color.Black
-            });
-            sb.Append(utsuCastingheader);
-
-
-
-            tmpText = "Shadow Use\n";
-            strModList.Add(new StringMods
-            {
-                Start = sb.Length,
-                Length = tmpText.Length,
-                Bold = true,
-                Color = Color.Blue
-            });
-            sb.Append(tmpText);
-
-            strModList.Add(new StringMods
-            {
-                Start = sb.Length,
-                Length = shadowUseHeader.Length,
-                Bold = true,
-                Underline = true,
-                Color = Color.Black
-            });
-            sb.Append(shadowUseHeader);
-
-        }
-        #endregion
-
-        #endregion
-
-        #region Processing sections
-        protected void ProcessDataOriginalMode(KPDatabaseDataSet dataSet)
-        {
-            ResetTextBox();
-
-            IEnumerable<DefenseGroup> incAttacks;
-            MobFilter mobFilter = mobsCombo.CBGetMobFilter();
-
-            #region LINQ query
-            incAttacks = from c in dataSet.Combatants
-                         where (((EntityType)c.CombatantType == EntityType.Player) ||
-                               ((EntityType)c.CombatantType == EntityType.Pet) ||
-                               ((EntityType)c.CombatantType == EntityType.Fellow))
-                         orderby c.CombatantType, c.CombatantName
-                         let targetInteractions = c.GetInteractionsRowsByTargetCombatantRelation()
-                         select new DefenseGroup
-                         {
-                             Name = c.CombatantName,
-                             AllAttacks = from da in targetInteractions
-                                          where (((HarmType)da.HarmType == HarmType.Damage) ||
-                                                 ((HarmType)da.HarmType == HarmType.Drain)) &&
-                                                 mobFilter.CheckFilterMobActor(da) == true
-                                          select da,
-                             Melee = from da in targetInteractions
-                                     where ((((HarmType)da.HarmType == HarmType.Damage) ||
-                                             ((HarmType)da.HarmType == HarmType.Drain) ||
-                                             ((HarmType)da.HarmType == HarmType.Unknown)) &&
-                                            (((ActionType)da.ActionType == ActionType.Melee) ||
-                                             ((ActionType)da.ActionType == ActionType.Counterattack))) &&
-                                            mobFilter.CheckFilterMobActor(da) == true
-                                     select da,
-                             Range = from da in targetInteractions
-                                     where ((((HarmType)da.HarmType == HarmType.Damage) ||
-                                             ((HarmType)da.HarmType == HarmType.Drain)) &&
-                                            ((ActionType)da.ActionType == ActionType.Ranged)) &&
-                                            mobFilter.CheckFilterMobActor(da) == true
-                                     select da,
-                             Abil = from da in targetInteractions
-                                    where ((((HarmType)da.HarmType == HarmType.Damage) ||
-                                            ((HarmType)da.HarmType == HarmType.Drain)) &&
-                                           (((ActionType)da.ActionType == ActionType.Ability) ||
-                                            ((ActionType)da.ActionType == ActionType.Weaponskill))) &&
-                                           mobFilter.CheckFilterMobActor(da) == true
-                                    select da,
-                             Spell = from da in targetInteractions
-                                     where ((((HarmType)da.HarmType == HarmType.Damage) ||
-                                             ((HarmType)da.HarmType == HarmType.Drain)) &&
-                                            ((ActionType)da.ActionType == ActionType.Spell)) &&
-                                            mobFilter.CheckFilterMobActor(da) == true
-                                     select da,
-                             Unknown = from da in targetInteractions
-                                       where ((((HarmType)da.HarmType == HarmType.Damage) ||
-                                               ((HarmType)da.HarmType == HarmType.Drain)) &&
-                                              ((ActionType)da.ActionType == ActionType.Unknown)) &&
-                                              mobFilter.CheckFilterMobActor(da) == true
-                                       select da,
-                             Retaliations = from da in c.GetInteractionsRowsByActorCombatantRelation()
-                                            where (ActionType)da.ActionType == ActionType.Retaliation &&
-                                                   mobFilter.CheckFilterMobTarget(da) == true
-                                            select da,
-                         };
-            #endregion
-
-            if ((incAttacks != null) && (incAttacks.Count() > 0))
-            {
-                AppendText("Defense\n\n", Color.Red, true, false);
-
-                switch (categoryCombo.CBSelectedIndex())
+                tmpText = "Utsusemi Casting\n";
+                strModList.Add(new StringMods
                 {
-                    case 0:
-                        // All
-                        ProcessDefenseAttacks(incAttacks);
-                        ProcessDefenseDamage(incAttacks);
-                        ProcessDefenseStandard(incAttacks);
-                        ProcessDefenseOther(incAttacks);
-                        ProcessUtsusemi(dataSet, mobFilter);
-                        break;
-                    case 1:
-                        // Attacks
-                        ProcessDefenseAttacks(incAttacks);
-                        break;
-                    case 2:
-                        // Damage
-                        ProcessDefenseDamage(incAttacks);
-                        break;
-                    case 3:
-                        // Evasion
-                        ProcessDefenseStandard(incAttacks);
-                        break;
-                    case 4:
-                        // Other
-                        ProcessDefenseOther(incAttacks);
-                        break;
-                    case 5:
-                        // Utsusemi
-                        ProcessUtsusemi(dataSet, mobFilter);
-                        break;
+                    Start = sb.Length,
+                    Length = tmpText.Length,
+                    Bold = true,
+                    Color = Color.Blue
+                });
+                sb.Append(tmpText);
+
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = utsuCastingheader.Length,
+                    Bold = true,
+                    Underline = true,
+                    Color = Color.Black
+                });
+                sb.Append(utsuCastingheader);
+
+                TimeSpan totalCastTime = TimeSpan.MinValue;
+                string totalCastTimeStr;
+
+                foreach (var player in dataAccum
+                    .Where(p => p.UtsuICast > 0 || p.UtsuNCast > 0)
+                    .OrderBy(p => p.Name))
+                {
+                    totalCastTime = TimeSpan.FromSeconds(player.UtsuICast * 4.5 + player.UtsuNCast * 2);
+
+                    if (totalCastTime.Hours > 0)
+                        totalCastTimeStr = string.Format("{0}:{1,2:d2}:{2,2:d2}",
+                            totalCastTime.Hours, totalCastTime.Minutes, totalCastTime.Seconds);
+                    else
+                        totalCastTimeStr = string.Format("{0}:{1,2:d2}",
+                            totalCastTime.Minutes, totalCastTime.Seconds);
+
+
+                    sb.AppendFormat("{0,-18}{1,11}{2,16}{3,12}{4,14}{5,22:f0}\n",
+                         player.Name,
+                         player.UtsuICast,
+                         player.UtsuIFin,
+                         player.UtsuNCast,
+                         player.UtsuNFin,
+                         totalCastTimeStr);
                 }
 
-                AppendText("\n");
+                sb.Append("\n\n");
+
+
+                tmpText = "Shadow Use\n";
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = tmpText.Length,
+                    Bold = true,
+                    Color = Color.Blue
+                });
+                sb.Append(tmpText);
+
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = shadowUseHeader.Length,
+                    Bold = true,
+                    Underline = true,
+                    Color = Color.Black
+                });
+                sb.Append(shadowUseHeader);
+
+                int utsuCast = 0;
+                int utsuCastNin = 0;
+
+                foreach (var player in dataAccum
+                    .Where(p => p.UtsuUsed > 0)
+                    .OrderBy(p => p.Name))
+                {
+                    utsuCast = player.UtsuIFin * 3 + player.UtsuNFin * 3;
+                    utsuCastNin = player.UtsuIFin * 3 + player.UtsuNFin * 4;
+
+                    sb.AppendFormat("{0,-18}{1,13}{2,16}{3,18}{4,14:p2}{5,17:p2}\n",
+                         player.Name,
+                         player.UtsuUsed,
+                         utsuCast,
+                         utsuCastNin,
+                         utsuCast > 0 ? (double)player.UtsuUsed / utsuCast : 0,
+                         utsuCastNin > 0 ? (double)player.UtsuUsed / utsuCastNin : 0);
+                }
+
             }
         }
+        #endregion
 
+        #endregion
+
+        #region Old processing sections
         private void ProcessDefenseAttacks(IEnumerable<DefenseGroup> incAttacks)
         {
             if (incAttacks.Count() == 0)
@@ -1599,408 +1603,6 @@ namespace WaywardGamers.KParser.Plugin
 
             sb.Append("\n\n");
             AppendText(sb.ToString());
-        }
-
-        private void ProcessDefenseDamage(IEnumerable<DefenseGroup> incAttacks)
-        {
-            //Player           M.Dmg   Avg M.Dmg   R.Dmg  Avg R.Dmg   S.Dmg  Avg S.Dmg   A/WS.Dmg  Avg A/WS.Dmg   Damage %
-
-            int totalDmg = 0;
-            playerDamage.Clear();
-            foreach (var player in incAttacks)
-            {
-                playerDamage[player.Name] = player.Melee.Concat(player.Range.Concat(player.Spell.Concat(player.Abil))).
-                    Sum(a => a.Amount);
-
-                totalDmg += playerDamage[player.Name];
-            }
-
-            if (totalDmg > 0)
-            {
-                AppendText("Damage To:\n", Color.Blue, true, false);
-                AppendText(incDamageHeader, Color.Black, true, true);
-
-                StringBuilder sb = new StringBuilder();
-
-                foreach (var player in incAttacks)
-                {
-                    if (playerDamage[player.Name] > 0)
-                    {
-                        sb.Append(player.Name.PadRight(16));
-                        sb.Append(" ");
-
-                        int mDmg = 0;
-                        double mAvg = 0;
-                        int rDmg = 0;
-                        double rAvg = 0;
-                        int sDmg = 0;
-                        double sAvg = 0;
-                        int aDmg = 0;
-                        double aAvg = 0;
-
-                        int numHits;
-
-                        if (player.Melee.Count() > 0)
-                        {
-                            mDmg = player.Melee.Sum(a => a.Amount);
-                            numHits = player.Melee.Count(a => a.DefenseType == (byte)DefenseType.None);
-                            if (numHits > 0)
-                                mAvg = (double)mDmg / numHits;
-                        }
-
-                        if (player.Range.Count() > 0)
-                        {
-                            rDmg = player.Range.Sum(a => a.Amount);
-                            numHits = player.Range.Count(a => a.DefenseType == (byte)DefenseType.None);
-                            if (numHits > 0)
-                                rAvg = (double)rDmg / numHits;
-                        }
-
-                        if (player.Spell.Count() > 0)
-                        {
-                            sDmg = player.Spell.Sum(a => a.Amount);
-                            numHits = player.Spell.Count(a => a.DefenseType == (byte)DefenseType.None);
-                            if (numHits > 0)
-                                sAvg = (double)sDmg / numHits;
-                        }
-
-                        if (player.Abil.Count() > 0)
-                        {
-                            aDmg = player.Abil.Sum(a => a.Amount);
-                            numHits = player.Abil.Count(a => a.DefenseType == (byte)DefenseType.None);
-                            if (numHits > 0)
-                                aAvg = (double)aDmg / numHits;
-                        }
-
-                        double dmgPerc = 0;
-                        if (totalDmg > 0)
-                            dmgPerc = (double)playerDamage[player.Name] / totalDmg;
-
-                        sb.AppendFormat("{0,5}{1,12:f2}{2,8}{3,11:f2}{4,8}{5,11:f2}{6,11}{7,14:f2}{8,11:p2}\n",
-                            mDmg, mAvg, rDmg, rAvg, sDmg, sAvg, aDmg, aAvg, dmgPerc);
-                    }
-                }
-
-                sb.Append("\n\n");
-                AppendText(sb.ToString());
-            }
-        }
-
-        private void ProcessDefenseStandard(IEnumerable<DefenseGroup> incAttacks)
-        {
-            bool headerPrinted = false;
-
-            StringBuilder sb = new StringBuilder();
-
-            foreach (var player in incAttacks)
-            {
-                if ((player.Melee.Count() + player.Range.Count()) > 0)
-                {
-                    int mEvaded = 0;
-                    int rEvaded = 0;
-                    int blinkedAttacks = 0;
-                    int parriedAttacks = 0;
-                    double mEvadePerc = 0;
-                    double rEvadePerc = 0;
-                    double blinkPerc = 0;
-                    double parryPerc = 0;
-
-                    var blinkableAttacks = player.Melee.Concat(
-                                           player.Range.Concat(
-                                           player.Spell.Concat(
-                                           player.Abil.Concat(
-                                           player.Unknown)))).Where(a =>
-                            a.DefenseType != (byte)DefenseType.Evasion &&
-                            a.DefenseType != (byte)DefenseType.Parry &&
-                            a.DefenseType != (byte)DefenseType.Intimidate);
-
-                    var parryableAttacks = player.Melee.Concat(
-                                           player.Unknown).Where(a =>
-                            a.DefenseType != (byte)DefenseType.Evasion);
-
-
-                    int mEvadableCount = player.Melee.Count() + player.Unknown.Count();
-                    int rEvadableCount = player.Range.Count();
-                    int parryableCount = parryableAttacks.Count();
-                    int blinkableCount = blinkableAttacks.Count();
-
-
-                    if (player.Melee.Count() > 0)
-                    {
-                        mEvaded = player.Melee.Count(h => h.DefenseType == (byte)DefenseType.Evasion);
-                        mEvadePerc = (double)mEvaded / mEvadableCount;
-                    }
-
-                    if (player.Range.Count() > 0)
-                    {
-                        rEvaded = player.Range.Count(h => h.DefenseType == (byte)DefenseType.Evasion);
-                        rEvadePerc = (double)rEvaded / rEvadableCount;
-                    }
-
-                    if (parryableCount > 0)
-                    {
-                        parriedAttacks = parryableAttacks.Count(a => a.DefenseType == (byte)DefenseType.Parry);
-                        parryPerc = (double)parriedAttacks / parryableCount;
-                    }
-
-                    if (blinkableCount > 0)
-                    {
-                        blinkedAttacks = blinkableAttacks.Count(a => a.DefenseType == (byte)DefenseType.Shadow);
-                        blinkPerc = (double)blinkedAttacks / blinkableCount;
-                    }
-
-
-                    if ((mEvaded + rEvaded + blinkedAttacks) > 0)
-                    {
-                        if (headerPrinted == false)
-                        {
-                            AppendText("Standard Defenses\n", Color.Blue, true, false);
-                            AppendText(standardDefHeader, Color.Black, true, true);
-
-                            headerPrinted = true;
-                        }
-
-                        sb.AppendFormat("{0,-17}{1,7}{2,11:p2}{3,10}{4,11:p2}{5,9}{6,10:p2}{7,8}{8,9:p2}\n",
-                            player.Name, mEvaded, mEvadePerc, rEvaded, rEvadePerc,
-                            blinkedAttacks, blinkPerc, parriedAttacks, parryPerc);
-                    }
-                }
-            }
-
-            if (headerPrinted == true)
-            {
-                sb.Append("\n\n");
-                AppendText(sb.ToString());
-            }
-        }
-
-        private void ProcessDefenseOther(IEnumerable<DefenseGroup> incAttacks)
-        {
-            bool headerPrinted = false;
-
-            StringBuilder sb = new StringBuilder();
-
-            foreach (var player in incAttacks)
-            {
-                var anticableAttacks = player.Melee.Concat(
-                                       player.Abil.Concat(
-                                       player.Unknown)).Where(a =>
-                    a.DefenseType != (byte)DefenseType.Evasion &&
-                    a.DefenseType != (byte)DefenseType.Parry &&
-                    a.DefenseType != (byte)DefenseType.Shadow &&
-                    a.DefenseType != (byte)DefenseType.Intimidate);
-
-                var counterableAttacks = player.Melee.Where(a =>
-                    a.DefenseType != (byte)DefenseType.Evasion &&
-                    a.DefenseType != (byte)DefenseType.Parry &&
-                    a.DefenseType != (byte)DefenseType.Shadow &&
-                    a.DefenseType != (byte)DefenseType.Intimidate).Concat(
-                                         player.Unknown.Where(a =>
-                                             a.DefenseType == (byte)DefenseType.Anticipate));
-
-                var retaliableAttacks = player.Melee.Where(a =>
-                    a.DefenseType == (byte)DefenseType.None);
-
-                var intimidateableAttacks = player.Melee.Concat(player.Unknown);
-
-                int anticibleCount = anticableAttacks.Count();
-                int counterableCount = counterableAttacks.Count();
-                int intimidatableCount = intimidateableAttacks.Count();
-                int retaliableCount = retaliableAttacks.Count();
-
-                int anticipatedAttacks = 0;
-                int counteredAttacks = 0;
-                int intimidatedAttacks = 0;
-                int retaliatedAttacks = 0;
-
-                double antiPerc = 0;
-                double counterPerc = 0;
-                double intimidatedPerc = 0;
-                double retaliatedPerc = 0;
-
-
-                if ((intimidatableCount + anticibleCount + counterableCount + retaliableCount) > 0)
-                {
-                    if (intimidatableCount > 0)
-                    {
-                        intimidatedAttacks = intimidateableAttacks.Count(a => a.DefenseType == (byte)DefenseType.Intimidate);
-                        intimidatedPerc = (double)intimidatedAttacks / intimidatableCount;
-                    }
-
-                    if (anticibleCount > 0)
-                    {
-                        anticipatedAttacks = anticableAttacks.Count(a => a.DefenseType == (byte)DefenseType.Anticipate);
-                        antiPerc = (double)anticipatedAttacks / anticibleCount;
-                    }
-
-                    if (counterableCount > 0)
-                    {
-                        counteredAttacks = counterableAttacks.Count(a => a.DefenseType == (byte)DefenseType.Counter);
-                        counterPerc = (double)counteredAttacks / counterableCount;
-                    }
-
-                    if (retaliableCount > 0)
-                    {
-                        retaliatedAttacks = player.Retaliations.Count();
-                        retaliatedPerc = (double)retaliatedAttacks / retaliableCount;
-                    }
-
-
-                    if ((intimidatedAttacks + anticipatedAttacks + counteredAttacks + retaliatedAttacks) > 0)
-                    {
-                        if (headerPrinted == false)
-                        {
-                            AppendText("Other Defenses\n", Color.Blue, true, false);
-                            AppendText(otherDefHeader, Color.Black, true, true);
-                            headerPrinted = true;
-                        }
-
-                        sb.Append(player.Name.PadRight(17));
-
-                        sb.Append(intimidatedAttacks.ToString().PadLeft(10));
-                        sb.Append(intimidatedPerc.ToString("P2").PadLeft(14));
-                        sb.Append(anticipatedAttacks.ToString().PadLeft(13));
-                        sb.Append(antiPerc.ToString("P2").PadLeft(14));
-                        sb.Append(counteredAttacks.ToString().PadLeft(10));
-                        sb.Append(counterPerc.ToString("P2").PadLeft(11));
-                        sb.Append(retaliatedAttacks.ToString().PadLeft(12));
-                        sb.Append(retaliatedPerc.ToString("P2").PadLeft(13));
-
-                        sb.Append("\n");
-                    }
-                }
-            }
-
-            if (headerPrinted == true)
-            {
-                sb.Append("\n\n");
-                AppendText(sb.ToString());
-            }
-        }
-
-        private void ProcessUtsusemi(KPDatabaseDataSet dataSet, MobFilter mobFilter)
-        {
-            var utsu1 = dataSet.Actions.FirstOrDefault(a => a.ActionName == "Utsusemi: Ichi");
-            var utsu2 = dataSet.Actions.FirstOrDefault(a => a.ActionName == "Utsusemi: Ni");
-
-            if ((utsu1 == null) && (utsu2 == null))
-                return;
-
-            KPDatabaseDataSet.InteractionsRow[] utsu1Rows;
-            KPDatabaseDataSet.InteractionsRow[] utsu2Rows;
-
-            if (utsu1 != null)
-                utsu1Rows = utsu1.GetInteractionsRows();
-            else
-                utsu1Rows = new KPDatabaseDataSet.InteractionsRow[0];
-
-            if (utsu2 != null)
-                utsu2Rows = utsu2.GetInteractionsRows();
-            else
-                utsu2Rows = new KPDatabaseDataSet.InteractionsRow[0];
-
-            var utsuByPlayer = from c in dataSet.Combatants
-                               where c.CombatantType == (byte)EntityType.Player
-                               orderby c.CombatantName
-                               select new
-                               {
-                                   Player = c.CombatantName,
-                                   ShadowsUsed = from uc in c.GetInteractionsRowsByTargetCombatantRelation()
-                                                 where ((uc.DefenseType == (byte)DefenseType.Shadow) &&
-                                                        (uc.ShadowsUsed > 0)) &&
-                                                        mobFilter.CheckFilterMobBattle(uc)
-                                                 select uc,
-                                   UtsuIchi = from i in utsu1Rows
-                                              where (i.CombatantsRowByActorCombatantRelation == c) &&
-                                                     mobFilter.CheckFilterMobBattle(i)
-                                              select i,
-                                   UtsuNi = from i in utsu2Rows
-                                            where (i.CombatantsRowByActorCombatantRelation == c) &&
-                                                   mobFilter.CheckFilterMobBattle(i)
-                                            select i,
-                               };
-
-
-            int shadsUsed;
-            int ichiCast;
-            int niCast;
-            int ichiFin;
-            int niFin;
-            int numShads;
-            int numShadsN;
-            double effNorm;
-            double effNin;
-            bool headerDisplayed = false;
-
-            if (utsuByPlayer.Count() > 0)
-            {
-                StringBuilder sb = new StringBuilder();
-
-                foreach (var player in utsuByPlayer)
-                {
-                    shadsUsed = 0;
-                    ichiCast = 0;
-                    niCast = 0;
-                    ichiFin = 0;
-                    niFin = 0;
-                    numShads = 0;
-                    numShadsN = 0;
-                    effNorm = 0;
-                    effNin = 0;
-
-                    shadsUsed = player.ShadowsUsed.Sum(u => u.ShadowsUsed);
-
-                    if (player.UtsuIchi != null)
-                    {
-                        ichiCast = player.UtsuIchi.Count(u => u.Preparing == true);
-                        ichiFin = player.UtsuIchi.Count(u => u.Preparing == false);
-                    }
-
-                    if (player.UtsuNi != null)
-                    {
-                        niCast = player.UtsuNi.Count(u => u.Preparing == true);
-                        niFin = player.UtsuNi.Count(u => u.Preparing == false);
-                    }
-
-                    numShads = ichiFin * 3 + niFin * 3;
-                    numShadsN = ichiFin * 3 + niFin * 4;
-
-                    if (numShads > 0)
-                    {
-                        effNorm = (double)shadsUsed / numShads;
-                        effNin = (double)shadsUsed / numShadsN;
-                    }
-
-                    if ((numShads + shadsUsed + ichiCast + niCast) > 0)
-                    {
-                        if (headerDisplayed == false)
-                        {
-                            AppendText("Utsusemi\n\n", Color.Red, true, false);
-                            AppendText(utsuHeader, Color.Black, true, true);
-
-                            headerDisplayed = true;
-                        }
-
-                        sb.Append(player.Player.PadRight(16));
-                        sb.Append(" ");
-
-                        sb.Append(shadsUsed.ToString().PadLeft(12));
-                        sb.Append(ichiCast.ToString().PadLeft(12));
-                        sb.Append(ichiFin.ToString().PadLeft(10));
-                        sb.Append(niCast.ToString().PadLeft(9));
-                        sb.Append(niFin.ToString().PadLeft(8));
-                        sb.Append(numShads.ToString().PadLeft(8));
-                        sb.Append(numShadsN.ToString().PadLeft(10));
-                        sb.Append(effNorm.ToString("P2").PadLeft(12));
-                        sb.Append(effNin.ToString("P2").PadLeft(11));
-
-                        sb.Append("\n");
-                    }
-                }
-
-                sb.Append("\n");
-                AppendText(sb.ToString());
-            }
         }
         #endregion
 

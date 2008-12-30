@@ -10,7 +10,7 @@ using WaywardGamers.KParser;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class DefensePlugin : BasePluginControl
+    class OldDefensePlugin : BasePluginControl
     {
         #region Constructor
 
@@ -32,7 +32,7 @@ namespace WaywardGamers.KParser.Plugin
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
         #endregion
 
-        public DefensePlugin()
+        public OldDefensePlugin()
         {
             ToolStripLabel catLabel = new ToolStripLabel();
             catLabel.Text = "Category:";
@@ -88,7 +88,7 @@ namespace WaywardGamers.KParser.Plugin
         #region IPlugin Overrides
         public override string TabName
         {
-            get { return "Defense"; }
+            get { return "OldDefense"; }
         }
 
         public override void Reset()
