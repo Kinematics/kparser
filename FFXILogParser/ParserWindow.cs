@@ -922,13 +922,22 @@ namespace WaywardGamers.KParser
 
             foreach (string file in files)
             {
-                a = Assembly.LoadFrom(file);
+                try
+                {
+                    a = Assembly.LoadFrom(file);
+                }
+                catch (BadImageFormatException)
+                {
+                    continue;
+                }
 
                 // Don't look in the core for plugins [change this to plugin base dll later]
                 if (a.ManifestModule.Name != "WaywardGamers.KParser.ParserCore.dll")
                 {
+                    Type[] exportedTypes = a.GetExportedTypes();
+
                     // Check the types in each one
-                    foreach (Type t in a.GetTypes())
+                    foreach (Type t in exportedTypes)
                     {
                         // If they're of type PluginBase, and aren't the abstract parent type,
                         // add them to our list of valid plugins.
