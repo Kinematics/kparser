@@ -1347,13 +1347,13 @@ namespace WaywardGamers.KParser.Plugin
                         player.Abilities.Sum(a => a.AHit) + player.DefAnticipate +
                         player.DefShadow + player.DefParry + player.DefEvasion;
 
-                    parrPool = player.MHits + player.RHits + player.DefCounter +
+                    parrPool = player.MHits + player.DefCounter +
                         player.Abilities.Sum(a => a.AHit) + player.DefAnticipate +
                         player.DefShadow + player.DefParry;
 
-                    countPool = player.MHits + player.RHits + player.DefCounter + player.DefAnticipate;
+                    countPool = player.MHits + player.DefCounter + player.DefAnticipate;
 
-                    intimPool = evaPool + player.Spells.Sum(s => s.SNum);
+                    intimPool = (evaPool - player.RHits) + player.Spells.Sum(s => s.SNum);
 
                     sb.AppendFormat("{0,-18}{1,8}{2,11:p2}{3,8}{4,9:p2}{5,10}{6,11:p2}{7,13}{8,14:p2}\n",
                          player.Name,
