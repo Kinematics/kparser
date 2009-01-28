@@ -51,11 +51,17 @@ namespace WaywardGamers.KParser
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyasTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyasHTMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyTabInfoAsBBCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyTabasRTFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.playerInformationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsTestFunctionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsReparseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.playerInformationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -123,6 +129,7 @@ namespace WaywardGamers.KParser
             // 
             this.mainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileMenu,
+            this.editToolStripMenuItem,
             this.toolsMenu,
             this.windowsMenu});
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
@@ -200,7 +207,7 @@ namespace WaywardGamers.KParser
             this.saveCurrentDataAsMenuItem.Name = "saveCurrentDataAsMenuItem";
             this.saveCurrentDataAsMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveCurrentDataAsMenuItem.Size = new System.Drawing.Size(265, 22);
-            this.saveCurrentDataAsMenuItem.Text = "&Save Current Data As...";
+            this.saveCurrentDataAsMenuItem.Text = "&Save Parse Data As...";
             this.saveCurrentDataAsMenuItem.Click += new System.EventHandler(this.menuSaveDataAs_Click);
             // 
             // saveReportMenuItem
@@ -235,13 +242,65 @@ namespace WaywardGamers.KParser
             this.exitMenuItem.Text = "E&xit";
             this.exitMenuItem.Click += new System.EventHandler(this.menuExit_Click);
             // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copyasTextToolStripMenuItem,
+            this.copyasHTMLToolStripMenuItem,
+            this.copyTabInfoAsBBCodeToolStripMenuItem,
+            this.copyTabasRTFToolStripMenuItem,
+            this.toolStripSeparator5,
+            this.playerInformationToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.editToolStripMenuItem.Text = "Edit";
+            // 
+            // copyasTextToolStripMenuItem
+            // 
+            this.copyasTextToolStripMenuItem.Name = "copyasTextToolStripMenuItem";
+            this.copyasTextToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.copyasTextToolStripMenuItem.Text = "Copy Tab Info as Text";
+            this.copyasTextToolStripMenuItem.Click += new System.EventHandler(this.copyTabInfoAsTextToolStripMenuItem_Click);
+            // 
+            // copyasHTMLToolStripMenuItem
+            // 
+            this.copyasHTMLToolStripMenuItem.Name = "copyasHTMLToolStripMenuItem";
+            this.copyasHTMLToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.copyasHTMLToolStripMenuItem.Text = "Copy Tab Info as HTML";
+            this.copyasHTMLToolStripMenuItem.Click += new System.EventHandler(this.copyTabInfoAsHTMLToolStripMenuItem_Click);
+            // 
+            // copyTabInfoAsBBCodeToolStripMenuItem
+            // 
+            this.copyTabInfoAsBBCodeToolStripMenuItem.Name = "copyTabInfoAsBBCodeToolStripMenuItem";
+            this.copyTabInfoAsBBCodeToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.copyTabInfoAsBBCodeToolStripMenuItem.Text = "Copy Tab Info as BBCode";
+            this.copyTabInfoAsBBCodeToolStripMenuItem.Click += new System.EventHandler(this.copyTabInfoAsBBCodeToolStripMenuItem_Click);
+            // 
+            // copyTabasRTFToolStripMenuItem
+            // 
+            this.copyTabasRTFToolStripMenuItem.Name = "copyTabasRTFToolStripMenuItem";
+            this.copyTabasRTFToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.copyTabasRTFToolStripMenuItem.Text = "Copy Tab Info as RTF";
+            this.copyTabasRTFToolStripMenuItem.Click += new System.EventHandler(this.copyTabInfoAsRTFToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(207, 6);
+            // 
+            // playerInformationToolStripMenuItem
+            // 
+            this.playerInformationToolStripMenuItem.Name = "playerInformationToolStripMenuItem";
+            this.playerInformationToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
+            this.playerInformationToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.playerInformationToolStripMenuItem.Text = "Player &Information";
+            // 
             // toolsMenu
             // 
             this.toolsMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolsTestFunctionMenuItem,
             this.toolsReparseMenuItem,
             this.toolStripSeparator3,
-            this.playerInformationToolStripMenuItem,
             this.optionsToolStripMenuItem});
             this.toolsMenu.Name = "toolsMenu";
             this.toolsMenu.Size = new System.Drawing.Size(44, 20);
@@ -268,14 +327,6 @@ namespace WaywardGamers.KParser
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(255, 6);
-            // 
-            // playerInformationToolStripMenuItem
-            // 
-            this.playerInformationToolStripMenuItem.Name = "playerInformationToolStripMenuItem";
-            this.playerInformationToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
-            this.playerInformationToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
-            this.playerInformationToolStripMenuItem.Text = "Player &Information";
-            this.playerInformationToolStripMenuItem.Click += new System.EventHandler(this.playerInformationToolStripMenuItem_Click);
             // 
             // optionsToolStripMenuItem
             // 
@@ -362,6 +413,12 @@ namespace WaywardGamers.KParser
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyasTextToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyasHTMLToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem playerInformationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+        private System.Windows.Forms.ToolStripMenuItem copyTabasRTFToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyTabInfoAsBBCodeToolStripMenuItem;
     }
 }

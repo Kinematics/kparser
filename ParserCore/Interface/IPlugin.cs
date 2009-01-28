@@ -14,6 +14,7 @@ namespace WaywardGamers.KParser.Plugin
         string TabName { get; }
         UserControl Control { get; }
         string TextContents { get; }
+        string TextContentsAsRTF { get; }
         DataTable GeneratedDataTableForExcel { get; }
 
         void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e);

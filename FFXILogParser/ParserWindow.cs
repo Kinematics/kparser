@@ -431,6 +431,75 @@ namespace WaywardGamers.KParser
             aboutForm.ShowDialog();
         }
 
+        private void copyTabInfoAsTextToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            IPlugin tabPlugin = pluginTabs.SelectedTab.Controls.OfType<IPlugin>().FirstOrDefault();
+
+            if (tabPlugin != null)
+            {
+                string tabContents = tabPlugin.TextContents;
+                if (tabContents != string.Empty)
+                    Clipboard.SetText(tabContents);
+            }
+        }
+
+        private void copyTabInfoAsHTMLToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            IPlugin tabPlugin = pluginTabs.SelectedTab.Controls.OfType<IPlugin>().FirstOrDefault();
+
+            Utility.RTFConverter rtfConverter = new WaywardGamers.KParser.Utility.RTFConverter();
+
+            try
+            {
+                if (tabPlugin != null)
+                {
+                    string tabContentsAsRTF = tabPlugin.TextContentsAsRTF;
+                    string tabContentsAsHTML = rtfConverter.ConvertRTFToHTML(tabContentsAsRTF);
+                    if (tabContentsAsHTML != string.Empty)
+                        Clipboard.SetText(tabContentsAsHTML);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Log(ex);
+            }
+        }
+
+        private void copyTabInfoAsBBCodeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            IPlugin tabPlugin = pluginTabs.SelectedTab.Controls.OfType<IPlugin>().FirstOrDefault();
+
+            Utility.RTFConverter rtfConverter = new WaywardGamers.KParser.Utility.RTFConverter();
+
+            try
+            {
+                if (tabPlugin != null)
+                {
+                    string tabContentsAsRTF = tabPlugin.TextContentsAsRTF;
+                    string tabContentsAsBBCode = rtfConverter.ConvertRTFToBBCode(tabContentsAsRTF);
+                    if (tabContentsAsBBCode != string.Empty)
+                        Clipboard.SetText(tabContentsAsBBCode);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Log(ex);
+            }
+        }
+
+        private void copyTabInfoAsRTFToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            IPlugin tabPlugin = pluginTabs.SelectedTab.Controls.OfType<IPlugin>().FirstOrDefault();
+
+            if (tabPlugin != null)
+            {
+                string tabContents = tabPlugin.TextContentsAsRTF;
+                //Clipboard.SetText(tabContents, TextDataFormat.Rtf);
+                if (tabContents != string.Empty)
+                    Clipboard.SetText(tabContents);
+            }
+        }
+
         private void playerInformationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             bool databaseOpen = DatabaseManager.Instance.IsDatabaseOpen;
@@ -1384,6 +1453,7 @@ namespace WaywardGamers.KParser
 
         }
         #endregion
+
 
     }
 }
