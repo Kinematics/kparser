@@ -50,6 +50,11 @@ namespace WaywardGamers.KParser.Plugin
             get { return this.richTextBox.Text; }
         }
 
+        public string TextContentsAsRTF
+        {
+            get { return this.richTextBox.Rtf; }
+        }
+
         public virtual DataTable GeneratedDataTableForExcel
         {
             get { return null; }
