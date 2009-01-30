@@ -212,6 +212,7 @@ namespace WaywardGamers.KParser.Plugin
         {
             var attackSet = from c in dataSet.Combatants
                             where (selectedPlayers.Contains(c.CombatantName))
+                            orderby c.CombatantType, c.CombatantName
                             select new AttackGroup
                             {
                                 Name = c.CombatantName,
