@@ -1,6 +1,13 @@
 KParser Change Log
 
 
+1.2.1
+- Fix bug of crash if there are DLLs in the program directory that don't belong to KParser.
+- Fix error in parry/counter/intimidation rate calculations.
++ Allow 'Copy' of current tab in various formats.
+- Add Curing Waltz IV to the Cure V category of cures.
+
+
 1.2.0
 + Implement testing framework.
 + Begin implementing unit tests.
@@ -12,6 +19,8 @@ KParser Change Log
 * Complete rewrite of thread flow for plugins.  This changes the API, so upgrading version to 1.2.*.  Should fix all thread deadlocking issues.
 * Complete rewrite of Defense tab for better and more accurate detail.
 
+
+---------------------------------------
 
 1.1.7
 + Patch: Addition of Salvage Cell listing option in Loot tab.  Credit: Valyana of Ramuh
