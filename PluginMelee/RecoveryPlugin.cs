@@ -299,7 +299,7 @@ namespace WaywardGamers.KParser.Plugin
                               {
                                   Player = c.CombatantName,
                                   Cure1s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
-                                           where ((cr.AidType == (byte)AidType.Recovery) &&
+                                           where (((AidType)cr.AidType == AidType.Recovery) &&
                                                   (cr.IsActionIDNull() == false) &&
                                                   ((cr.ActionsRow.ActionName == "Cure") ||
                                                    (cr.ActionsRow.ActionName == "Pollen") ||
@@ -307,7 +307,7 @@ namespace WaywardGamers.KParser.Plugin
                                                   mobFilter.CheckFilterMobBattle(cr)
                                            select cr.Amount,
                                   Cure2s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
-                                           where ((cr.AidType == (byte)AidType.Recovery) &&
+                                           where (((AidType)cr.AidType == AidType.Recovery) &&
                                                   (cr.IsActionIDNull() == false) &&
                                                   ((cr.ActionsRow.ActionName == "Cure II") ||
                                                    (cr.ActionsRow.ActionName == "Curing Waltz") ||
@@ -315,7 +315,7 @@ namespace WaywardGamers.KParser.Plugin
                                                   mobFilter.CheckFilterMobBattle(cr)
                                            select cr.Amount,
                                   Cure3s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
-                                           where ((cr.AidType == (byte)AidType.Recovery) &&
+                                           where (((AidType)cr.AidType == AidType.Recovery) &&
                                                   (cr.IsActionIDNull() == false) &&
                                                   ((cr.ActionsRow.ActionName == "Cure III") ||
                                                    (cr.ActionsRow.ActionName == "Curing Waltz II") ||
@@ -324,7 +324,7 @@ namespace WaywardGamers.KParser.Plugin
                                                   mobFilter.CheckFilterMobBattle(cr)
                                            select cr.Amount,
                                   Cure4s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
-                                           where ((cr.AidType == (byte)AidType.Recovery) &&
+                                           where (((AidType)cr.AidType == AidType.Recovery) &&
                                                   (cr.IsActionIDNull() == false) &&
                                                   ((cr.ActionsRow.ActionName == "Cure IV") ||
                                                    (cr.ActionsRow.ActionName == "Curing Waltz III") ||
@@ -332,13 +332,14 @@ namespace WaywardGamers.KParser.Plugin
                                                   mobFilter.CheckFilterMobBattle(cr)
                                            select cr.Amount,
                                   Cure5s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
-                                           where ((cr.AidType == (byte)AidType.Recovery) &&
+                                           where (((AidType)cr.AidType == AidType.Recovery) &&
                                                   (cr.IsActionIDNull() == false) &&
-                                                  (cr.ActionsRow.ActionName == "Cure V")) &&
+                                                  ((cr.ActionsRow.ActionName == "Cure V") ||
+                                                  (cr.ActionsRow.ActionName == "Curing Waltz IV"))) &&
                                                   mobFilter.CheckFilterMobBattle(cr)
                                            select cr.Amount,
                                   Curagas = from cr in c.GetInteractionsRowsByActorCombatantRelation()
-                                            where ((cr.AidType == (byte)AidType.Recovery) &&
+                                            where (((AidType)cr.AidType == AidType.Recovery) &&
                                                    (cr.IsActionIDNull() == false) &&
                                                    ((cr.ActionsRow.ActionName.StartsWith("Curaga")) ||
                                                     (cr.ActionsRow.ActionName == "Healing Breeze") ||
@@ -347,39 +348,39 @@ namespace WaywardGamers.KParser.Plugin
                                             group cr by cr.Timestamp into crt
                                             select crt,
                                   OtherCures = from cr in c.GetInteractionsRowsByActorCombatantRelation()
-                                               where ((cr.AidType == (byte)AidType.Recovery) &&
+                                               where (((AidType)cr.AidType == AidType.Recovery) &&
                                                       (cr.IsActionIDNull() == false) &&
                                                       (cr.ActionsRow.ActionName == "Chakra")) &&
                                                   mobFilter.CheckFilterMobBattle(cr)
                                                select cr.Amount,
                                   Reg1s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
-                                          where ((cr.AidType == (byte)AidType.Enhance) &&
+                                          where (((AidType)cr.AidType == AidType.Enhance) &&
                                                  (cr.IsActionIDNull() == false) &&
                                                  (cr.ActionsRow.ActionName == "Regen")) &&
                                                   mobFilter.CheckFilterMobBattle(cr)
                                           select cr,
                                   Reg2s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
-                                          where ((cr.AidType == (byte)AidType.Enhance) &&
+                                          where (((AidType)cr.AidType == AidType.Enhance) &&
                                                  (cr.IsActionIDNull() == false) &&
                                                  (cr.ActionsRow.ActionName == "Regen II")) &&
                                                   mobFilter.CheckFilterMobBattle(cr)
                                           select cr,
                                   Reg3s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
-                                          where ((cr.AidType == (byte)AidType.Enhance) &&
+                                          where (((AidType)cr.AidType == AidType.Enhance) &&
                                                  (cr.IsActionIDNull() == false) &&
                                                  (cr.ActionsRow.ActionName == "Regen III")) &&
                                                   mobFilter.CheckFilterMobBattle(cr)
                                           select cr,
                                   Spells = from cr in c.GetInteractionsRowsByActorCombatantRelation()
-                                           where ((cr.ActionType == (byte)ActionType.Spell) &&
-                                                  (cr.AidType == (byte)AidType.Recovery) &&
-                                                  (cr.RecoveryType == (byte)RecoveryType.RecoverHP)) &&
+                                           where (((ActionType)cr.ActionType == ActionType.Spell) &&
+                                                  ((AidType)cr.AidType == AidType.Recovery) &&
+                                                  ((RecoveryType)cr.RecoveryType == RecoveryType.RecoverHP)) &&
                                                   mobFilter.CheckFilterMobBattle(cr)
                                            select cr.Amount,
                                   Ability = from cr in c.GetInteractionsRowsByActorCombatantRelation()
-                                            where ((cr.ActionType == (byte)ActionType.Ability) &&
-                                                   (cr.AidType == (byte)AidType.Recovery) &&
-                                                   (cr.RecoveryType == (byte)RecoveryType.RecoverHP)) &&
+                                            where (((ActionType)cr.ActionType == ActionType.Ability) &&
+                                                   ((AidType)cr.AidType == AidType.Recovery) &&
+                                                   ((RecoveryType)cr.RecoveryType == RecoveryType.RecoverHP)) &&
                                                   mobFilter.CheckFilterMobBattle(cr)
                                             select cr.Amount
                               };
