@@ -248,6 +248,50 @@ namespace WaywardGamers.KParser
             Assert.That(msgLine.TextOutput, Is.EqualTo("Motenten : one"));
             Assert.That(msgLine.Timestamp, Is.EqualTo(pluginTimestamp));
         }
+
+        [Test]
+        public void TestTokenizeTimestampPluginRAM4()
+        {
+            DateTime timestamp = DateTime.Now;
+
+            DateTime pluginTimestamp = DateTime.Today;
+            pluginTimestamp = pluginTimestamp.AddHours(17);
+            pluginTimestamp = pluginTimestamp.AddMinutes(26);
+            pluginTimestamp = pluginTimestamp.AddSeconds(20);
+
+            string chatText = "05,00,00,8020c0a0,00000006,00000006,001d,00,01,01,00,ü[17:26:20] (Motenten) hmm";
+
+            ChatLine chatLine = new ChatLine(chatText, timestamp);
+
+            Monitor.TestParseMode = DataSource.Ram;
+
+            MessageLine msgLine = new MessageLine(chatLine);
+
+            Assert.That(msgLine.TextOutput, Is.EqualTo("(Motenten) hmm"));
+            Assert.That(msgLine.Timestamp, Is.EqualTo(timestamp));
+        }
+
+        [Test]
+        public void TestTokenizeTimestampPluginLOG4()
+        {
+            DateTime timestamp = DateTime.Now;
+
+            DateTime pluginTimestamp = DateTime.Today;
+            pluginTimestamp = pluginTimestamp.AddHours(17);
+            pluginTimestamp = pluginTimestamp.AddMinutes(26);
+            pluginTimestamp = pluginTimestamp.AddSeconds(20);
+
+            string chatText = "05,00,00,8020c0a0,00000006,00000006,001d,00,01,01,00,ü[17:26:20] (Motenten) hmm";
+
+            ChatLine chatLine = new ChatLine(chatText, timestamp);
+
+            Monitor.TestParseMode = DataSource.Log;
+
+            MessageLine msgLine = new MessageLine(chatLine);
+
+            Assert.That(msgLine.TextOutput, Is.EqualTo("(Motenten) hmm"));
+            Assert.That(msgLine.Timestamp, Is.EqualTo(pluginTimestamp));
+        }
         #endregion
 
         #region Text inclusions
@@ -346,17 +390,16 @@ namespace WaywardGamers.KParser
         }
 
         [Test]
-        [Ignore("Need sample message.")]
         public void TestCorrectAssaultTimeLimit()
         {
-            string chatText = "8d,00,00,60808010,00000023,00000023,0028,00,01,02,00,Moogle : Chaaange...job! Kupopopooo!1";
+            string chatText = "92,02,00,80808080,00006c88,00007d44,002b,00,01,00,00,?Time remaining: 5 minutes (Earth time).1";
 
             DateTime timestamp = DateTime.Now;
             ChatLine chatLine = new ChatLine(chatText, timestamp);
 
             MessageLine msgLine = new MessageLine(chatLine);
 
-            Assert.That(msgLine.TextOutput, Is.EqualTo("Moogle : Chaaange...job! Kupopopooo!"));
+            Assert.That(msgLine.TextOutput, Is.EqualTo("Time remaining: 5 minutes (Earth time)."));
         }
 
         [Test]

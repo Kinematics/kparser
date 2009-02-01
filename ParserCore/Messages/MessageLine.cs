@@ -78,28 +78,19 @@ namespace WaywardGamers.KParser
             // Extract the text codes from the front half of the message.
             string preMsg = msg.Substring(0, endCodesBreakPoint);
 
-            // Locate the beginning of the text string
-            int beginTextBreakPoint = msg.IndexOf(breakString, endCodesBreakPoint + breakString.Length);
+            // Pull out the back half of the input string
+            string postMsg = msg.Substring(endCodesBreakPoint);
 
-            if (beginTextBreakPoint < 0)
-                throw new FormatException("Message string does not contain the proper breakpoint values (position 2).\n"
-                    + msg);
-
-            // Extract the display text from the back half of the message.
-            TextOutput = msg.Substring(beginTextBreakPoint + breakString.Length);
-
-            // There may be a third instance of the break code.  Check for it.
-            beginTextBreakPoint = TextOutput.IndexOf(breakString);
-
-            if (beginTextBreakPoint == 0)
-                TextOutput = TextOutput.Substring(breakString.Length);
+            // Strip off break codes
+            while (postMsg.StartsWith(breakString))
+                postMsg.Substring(breakString.Length);
 
 
             // Extract timestamp plugin modification from onscreen text, if applicable
-            Match tsCheck = ParseExpressions.TimestampPlugin.Match(TextOutput);
+            Match tsCheck = ParseExpressions.TimestampPlugin.Match(postMsg);
             if (tsCheck.Success == true)
             {
-                TextOutput = tsCheck.Groups[ParseFields.Remainder].Value;
+                postMsg = tsCheck.Groups[ParseFields.Remainder].Value;
 
                 // If we're parsing from logs, use the Timestamp field to refine
                 // the message timestamps.
@@ -114,6 +105,13 @@ namespace WaywardGamers.KParser
                     }
                 }
             }
+
+            // Do another check for the 1E01 value in case of additional break points after the timestamp
+            while (postMsg.StartsWith(breakString))
+                postMsg.Substring(breakString.Length);
+
+            // Set the MessageLine property for the message text.
+            TextOutput = postMsg;
 
 
             int breakPoint;
