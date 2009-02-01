@@ -675,16 +675,38 @@ namespace WaywardGamers.KParser
         }
 
         [Test]
-        [Ignore]
         public void TestMobMissParty()
         {
-            string chatText = "94,02,00,80808080,00000010,00000010,0033,00,01,00,00,Obtained key item: Healer's attire claim slip.1";
+            string chatText = "21,85,95,80707070,00001880,00001c01,0026,00,01,02,00,The Hilltroll Warrior misses Midas.1";
             ChatLine chatLine = new ChatLine(chatText);
             MessageLine msgLine = new MessageLine(chatLine);
 
             Message msg = Parser.Parse(msgLine);
 
-            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Chat));
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.ActionType, Is.EqualTo(ActionType.Melee));
+            Assert.That(msg.EventDetails.CombatDetails.InteractionType, Is.EqualTo(InteractionType.Harm));
+            Assert.That(msg.EventDetails.CombatDetails.HarmType, Is.EqualTo(HarmType.Damage));
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Hilltroll Warrior"));
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(msg.EventDetails.CombatDetails.HasAdditionalEffect, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.IsPreparing, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.SuccessLevel, Is.EqualTo(SuccessType.Unsuccessful));
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Empty);
+            TargetDetails target = msg.EventDetails.CombatDetails.Targets.First();
+            Assert.That(target.EntityType, Is.EqualTo(EntityType.Player));
+            Assert.That(target.Name, Is.EqualTo("Midas"));
+            Assert.That(target.HarmType, Is.EqualTo(HarmType.Damage));
+            Assert.That(target.DefenseType, Is.EqualTo(DefenseType.Evasion));
+            Assert.That(target.Amount, Is.EqualTo(0));
+            Assert.That(target.DamageModifier, Is.EqualTo(DamageModifier.None));
+            Assert.That(target.ShadowsUsed, Is.EqualTo(0));
         }
 
         [Test]
@@ -744,7 +766,7 @@ namespace WaywardGamers.KParser
         [Test]
         public void TestPlayerRMissMob()
         {
-            string chatText = "1a,5c,95,80707070,00003e32,00004900,0021,00,01,02,00,Idelle's ranged attack misses.1";
+            string chatText = "15,86,95,80707070,00001021,0000125c,0023,00,01,02,00,Motenten's ranged attack misses.1";
             ChatLine chatLine = new ChatLine(chatText);
             MessageLine msgLine = new MessageLine(chatLine);
 
@@ -759,7 +781,7 @@ namespace WaywardGamers.KParser
             Assert.That(msg.EventDetails.CombatDetails.InteractionType, Is.EqualTo(InteractionType.Harm));
             Assert.That(msg.EventDetails.CombatDetails.HarmType, Is.EqualTo(HarmType.Damage));
             Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
-            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Idelle"));
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Motenten"));
             Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Player));
             Assert.That(msg.EventDetails.CombatDetails.HasAdditionalEffect, Is.False);
             Assert.That(msg.EventDetails.CombatDetails.IsPreparing, Is.False);
@@ -782,16 +804,29 @@ namespace WaywardGamers.KParser
         }
 
         [Test]
-        [Ignore]
         public void TestPartyRMissMob()
         {
-            string chatText = "94,02,00,80808080,00000010,00000010,0033,00,01,00,00,Obtained key item: Healer's attire claim slip.1";
+            string chatText = "1a,5c,95,80707070,00003e32,00004900,0021,00,01,02,00,Idelle's ranged attack misses.1";
             ChatLine chatLine = new ChatLine(chatText);
             MessageLine msgLine = new MessageLine(chatLine);
 
             Message msg = Parser.Parse(msgLine);
 
-            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Chat));
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.ActionType, Is.EqualTo(ActionType.Ranged));
+            Assert.That(msg.EventDetails.CombatDetails.InteractionType, Is.EqualTo(InteractionType.Harm));
+            Assert.That(msg.EventDetails.CombatDetails.HarmType, Is.EqualTo(HarmType.Damage));
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Idelle"));
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Player));
+            Assert.That(msg.EventDetails.CombatDetails.HasAdditionalEffect, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.IsPreparing, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.SuccessLevel, Is.EqualTo(SuccessType.Unsuccessful));
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Null);
         }
 
         [Test]
@@ -897,16 +932,38 @@ namespace WaywardGamers.KParser
         }
 
         [Test]
-        [Ignore]
         public void TestMobBlink()
         {
-            string chatText = "94,02,00,80808080,00000010,00000010,0033,00,01,00,00,Obtained key item: Healer's attire claim slip.1";
+            string chatText = "1a,ef,91,80707070,00001487,00001772,004b,00,01,02,00,1 of the Hilltroll Red Mage's shadows absorbs the damage and disappears.1";
             ChatLine chatLine = new ChatLine(chatText);
             MessageLine msgLine = new MessageLine(chatLine);
 
             Message msg = Parser.Parse(msgLine);
 
-            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Chat));
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.ActionType, Is.EqualTo(ActionType.Unknown));
+            Assert.That(msg.EventDetails.CombatDetails.InteractionType, Is.EqualTo(InteractionType.Harm));
+            Assert.That(msg.EventDetails.CombatDetails.HarmType, Is.EqualTo(HarmType.Damage));
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.Empty);
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Unknown));
+            Assert.That(msg.EventDetails.CombatDetails.HasAdditionalEffect, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.IsPreparing, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.SuccessLevel, Is.EqualTo(SuccessType.Unsuccessful));
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Empty);
+            TargetDetails target = msg.EventDetails.CombatDetails.Targets.First();
+            Assert.That(target.EntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(target.Name, Is.EqualTo("Hilltroll Red Mage"));
+            Assert.That(target.HarmType, Is.EqualTo(HarmType.Damage));
+            Assert.That(target.DefenseType, Is.EqualTo(DefenseType.Shadow));
+            Assert.That(target.Amount, Is.EqualTo(0));
+            Assert.That(target.DamageModifier, Is.EqualTo(DamageModifier.None));
+            Assert.That(target.ShadowsUsed, Is.EqualTo(1));
         }
 
         [Test]
@@ -958,10 +1015,150 @@ namespace WaywardGamers.KParser
         }
 
         [Test]
-        [Ignore]
         public void TestPlayerCounter()
         {
-            string chatText = "94,02,00,80808080,00000010,00000010,0033,00,01,00,00,Obtained key item: Healer's attire claim slip.1";
+            string chatText = "14,ac,9d,80c08080,00001652,00001987,006c,00,01,02,00,The Hilltroll Paladin's attack is countered by Motenten. The Hilltroll Paladin takes 56 points of damage.1";
+            ChatLine chatLine = new ChatLine(chatText);
+            MessageLine msgLine = new MessageLine(chatLine);
+
+            Message msg = Parser.Parse(msgLine);
+
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.ActionType, Is.EqualTo(ActionType.Counterattack));
+            Assert.That(msg.EventDetails.CombatDetails.InteractionType, Is.EqualTo(InteractionType.Harm));
+            Assert.That(msg.EventDetails.CombatDetails.HarmType, Is.EqualTo(HarmType.Damage));
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Motenten"));
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Player));
+            Assert.That(msg.EventDetails.CombatDetails.HasAdditionalEffect, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.IsPreparing, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.SuccessLevel, Is.EqualTo(SuccessType.Successful));
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Empty);
+            TargetDetails target = msg.EventDetails.CombatDetails.Targets.First();
+            Assert.That(target.EntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(target.Name, Is.EqualTo("Hilltroll Paladin"));
+            Assert.That(target.HarmType, Is.EqualTo(HarmType.Damage));
+            Assert.That(target.DefenseType, Is.EqualTo(DefenseType.None));
+            Assert.That(target.Amount, Is.EqualTo(56));
+            Assert.That(target.DamageModifier, Is.EqualTo(DamageModifier.None));
+            Assert.That(target.ShadowsUsed, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void TestPartyCounter()
+        {
+            string chatText = "19,00,00,80c08080,00002ea7,0000359e,006e,00,01,02,00,The Hilltroll Paladin's attack is countered by Devilpitti. The Hilltroll Paladin takes 27 points of damage.1";
+            ChatLine chatLine = new ChatLine(chatText);
+            MessageLine msgLine = new MessageLine(chatLine);
+
+            Message msg = Parser.Parse(msgLine);
+
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.ActionType, Is.EqualTo(ActionType.Counterattack));
+            Assert.That(msg.EventDetails.CombatDetails.InteractionType, Is.EqualTo(InteractionType.Harm));
+            Assert.That(msg.EventDetails.CombatDetails.HarmType, Is.EqualTo(HarmType.Damage));
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Devilpitti"));
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Player));
+            Assert.That(msg.EventDetails.CombatDetails.HasAdditionalEffect, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.IsPreparing, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.SuccessLevel, Is.EqualTo(SuccessType.Successful));
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Empty);
+            TargetDetails target = msg.EventDetails.CombatDetails.Targets.First();
+            Assert.That(target.EntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(target.Name, Is.EqualTo("Hilltroll Paladin"));
+            Assert.That(target.HarmType, Is.EqualTo(HarmType.Damage));
+            Assert.That(target.DefenseType, Is.EqualTo(DefenseType.None));
+            Assert.That(target.Amount, Is.EqualTo(27));
+            Assert.That(target.DamageModifier, Is.EqualTo(DamageModifier.None));
+            Assert.That(target.ShadowsUsed, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void TestMobCounterPlayer()
+        {
+            string chatText = "1c,ac,9d,80a04040,00001141,000013ac,005d,00,01,02,00,Motenten's attack is countered by the Hilltroll Monk. Motenten takes 148 points of damage.1";
+            ChatLine chatLine = new ChatLine(chatText);
+            MessageLine msgLine = new MessageLine(chatLine);
+
+            Message msg = Parser.Parse(msgLine);
+
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.ActionType, Is.EqualTo(ActionType.Counterattack));
+            Assert.That(msg.EventDetails.CombatDetails.InteractionType, Is.EqualTo(InteractionType.Harm));
+            Assert.That(msg.EventDetails.CombatDetails.HarmType, Is.EqualTo(HarmType.Damage));
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Hilltroll Monk"));
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(msg.EventDetails.CombatDetails.HasAdditionalEffect, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.IsPreparing, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.SuccessLevel, Is.EqualTo(SuccessType.Successful));
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Empty);
+            TargetDetails target = msg.EventDetails.CombatDetails.Targets.First();
+            Assert.That(target.EntityType, Is.EqualTo(EntityType.Player));
+            Assert.That(target.Name, Is.EqualTo("Motenten"));
+            Assert.That(target.HarmType, Is.EqualTo(HarmType.Damage));
+            Assert.That(target.DefenseType, Is.EqualTo(DefenseType.None));
+            Assert.That(target.Amount, Is.EqualTo(148));
+            Assert.That(target.DamageModifier, Is.EqualTo(DamageModifier.None));
+            Assert.That(target.ShadowsUsed, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void TestMobCounterParty()
+        {
+            string chatText = "20,00,00,80c08080,000010df,00001338,0068,00,01,02,00,Disintegration's attack is countered by the Hilltroll Monk. Disintegration takes 71 points of damage.1";
+            ChatLine chatLine = new ChatLine(chatText);
+            MessageLine msgLine = new MessageLine(chatLine);
+
+            Message msg = Parser.Parse(msgLine);
+
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.ActionType, Is.EqualTo(ActionType.Counterattack));
+            Assert.That(msg.EventDetails.CombatDetails.InteractionType, Is.EqualTo(InteractionType.Harm));
+            Assert.That(msg.EventDetails.CombatDetails.HarmType, Is.EqualTo(HarmType.Damage));
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Hilltroll Monk"));
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(msg.EventDetails.CombatDetails.HasAdditionalEffect, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.IsPreparing, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.SuccessLevel, Is.EqualTo(SuccessType.Successful));
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Empty);
+            TargetDetails target = msg.EventDetails.CombatDetails.Targets.First();
+            Assert.That(target.EntityType, Is.EqualTo(EntityType.Player));
+            Assert.That(target.Name, Is.EqualTo("Disintegration"));
+            Assert.That(target.HarmType, Is.EqualTo(HarmType.Damage));
+            Assert.That(target.DefenseType, Is.EqualTo(DefenseType.None));
+            Assert.That(target.Amount, Is.EqualTo(71));
+            Assert.That(target.DamageModifier, Is.EqualTo(DamageModifier.None));
+            Assert.That(target.ShadowsUsed, Is.EqualTo(0));
+        }
+
+        [Test]
+        [Ignore]
+        public void TestMobCounterAlly()
+        {
+            string chatText = "20,00,00,80c08080,000010df,00001338,0068,00,01,02,00,Disintegration's attack is countered by the Hilltroll Monk. Disintegration takes 71 points of damage.1";
             ChatLine chatLine = new ChatLine(chatText);
             MessageLine msgLine = new MessageLine(chatLine);
 
@@ -972,9 +1169,9 @@ namespace WaywardGamers.KParser
 
         [Test]
         [Ignore]
-        public void TestMobCounter()
+        public void TestMobCounterOther()
         {
-            string chatText = "94,02,00,80808080,00000010,00000010,0033,00,01,00,00,Obtained key item: Healer's attire claim slip.1";
+            string chatText = "20,00,00,80c08080,000010df,00001338,0068,00,01,02,00,Disintegration's attack is countered by the Hilltroll Monk. Disintegration takes 71 points of damage.1";
             ChatLine chatLine = new ChatLine(chatText);
             MessageLine msgLine = new MessageLine(chatLine);
 
@@ -1010,8 +1207,91 @@ namespace WaywardGamers.KParser
         }
 
         [Test]
+        public void TestPlayerAnticipate()
+        {
+            string chatText = "1d,69,91,80742cd4,0000365c,00003e83,0023,00,01,02,00,Motenten anticipates the attack.1";
+            ChatLine chatLine = new ChatLine(chatText);
+            MessageLine msgLine = new MessageLine(chatLine);
+
+            Message msg = Parser.Parse(msgLine);
+
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.ActionType, Is.EqualTo(ActionType.Unknown));
+            Assert.That(msg.EventDetails.CombatDetails.InteractionType, Is.EqualTo(InteractionType.Harm));
+            Assert.That(msg.EventDetails.CombatDetails.HarmType, Is.EqualTo(HarmType.Damage));
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.Empty);
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Unknown));
+            Assert.That(msg.EventDetails.CombatDetails.HasAdditionalEffect, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.IsPreparing, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.SuccessLevel, Is.EqualTo(SuccessType.Unsuccessful));
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Empty);
+            TargetDetails target = msg.EventDetails.CombatDetails.Targets.First();
+            Assert.That(target.EntityType, Is.EqualTo(EntityType.Player));
+            Assert.That(target.Name, Is.EqualTo("Motenten"));
+            Assert.That(target.HarmType, Is.EqualTo(HarmType.Damage));
+            Assert.That(target.DefenseType, Is.EqualTo(DefenseType.Anticipate));
+            Assert.That(target.Amount, Is.EqualTo(0));
+            Assert.That(target.DamageModifier, Is.EqualTo(DamageModifier.None));
+            Assert.That(target.ShadowsUsed, Is.EqualTo(0));
+        }
+
+        [Test]
         [Ignore]
         public void TestPlayerRetaliateHit()
+        {
+            string chatText = "19,ac,9d,80c08080,00000961,00000a83,0045,00,01,02,00,Midas retaliates. The Hilltroll Paladin takes 52 points of damage.1";
+            ChatLine chatLine = new ChatLine(chatText);
+            MessageLine msgLine = new MessageLine(chatLine);
+
+            Message msg = Parser.Parse(msgLine);
+
+            Assert.That(msg.IsParseSuccessful, Is.True);
+        }
+
+        [Test]
+        public void TestPartyRetaliateHit()
+        {
+            string chatText = "19,ac,9d,80c08080,00000961,00000a83,0045,00,01,02,00,Midas retaliates. The Hilltroll Paladin takes 52 points of damage.1";
+            ChatLine chatLine = new ChatLine(chatText);
+            MessageLine msgLine = new MessageLine(chatLine);
+
+            Message msg = Parser.Parse(msgLine);
+
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.ActionType, Is.EqualTo(ActionType.Retaliation));
+            Assert.That(msg.EventDetails.CombatDetails.InteractionType, Is.EqualTo(InteractionType.Harm));
+            Assert.That(msg.EventDetails.CombatDetails.HarmType, Is.EqualTo(HarmType.Damage));
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Midas"));
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Player));
+            Assert.That(msg.EventDetails.CombatDetails.HasAdditionalEffect, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.IsPreparing, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.SuccessLevel, Is.EqualTo(SuccessType.Successful));
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Empty);
+            TargetDetails target = msg.EventDetails.CombatDetails.Targets.First();
+            Assert.That(target.EntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(target.Name, Is.EqualTo("Hilltroll Paladin"));
+            Assert.That(target.HarmType, Is.EqualTo(HarmType.Damage));
+            Assert.That(target.DefenseType, Is.EqualTo(DefenseType.None));
+            Assert.That(target.Amount, Is.EqualTo(52));
+            Assert.That(target.DamageModifier, Is.EqualTo(DamageModifier.None));
+            Assert.That(target.ShadowsUsed, Is.EqualTo(0));
+        }
+
+        [Test]
+        [Ignore]
+        public void TestPlayerRetaliateMiss()
         {
             string chatText = "94,02,00,80808080,00000010,00000010,0033,00,01,00,00,Obtained key item: Healer's attire claim slip.1";
             ChatLine chatLine = new ChatLine(chatText);
@@ -1024,7 +1304,7 @@ namespace WaywardGamers.KParser
 
         [Test]
         [Ignore]
-        public void TestPlayerRetaliateMiss()
+        public void TestPartyRetaliateMiss()
         {
             string chatText = "94,02,00,80808080,00000010,00000010,0033,00,01,00,00,Obtained key item: Healer's attire claim slip.1";
             ChatLine chatLine = new ChatLine(chatText);
