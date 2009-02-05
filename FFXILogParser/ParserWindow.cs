@@ -52,6 +52,7 @@ namespace WaywardGamers.KParser
         TabPage currentTab = null;
 
         private ReparseMode ReparseMode;
+        private string revertToThisDatabaseFile = string.Empty;
 
         ToolStripStatusLabel reparseState = new ToolStripStatusLabel();
         ToolStripProgressBar reparseProgress = new ToolStripProgressBar();
@@ -539,6 +540,7 @@ namespace WaywardGamers.KParser
 
             string inFilename = string.Empty;
             string outFilename = string.Empty;
+            revertToThisDatabaseFile = string.Empty;
 
             if (DatabaseManager.Instance.IsDatabaseOpen)
             {
@@ -552,6 +554,8 @@ namespace WaywardGamers.KParser
                 {
                     inFilename = DatabaseManager.Instance.DatabaseFilename;
                 }
+
+                revertToThisDatabaseFile = DatabaseManager.Instance.DatabaseFilename;
             }
 
             if (inFilename == string.Empty)
@@ -751,8 +755,11 @@ namespace WaywardGamers.KParser
 
                         DetachReparseStatus("Aborted.");
 
-                        // reload original database file
-                        OpenFile(DatabaseReadingManager.Instance.DatabaseFilename);
+                        // reload original database file, or the file we were reparsing if no original
+                        if (revertToThisDatabaseFile != string.Empty)
+                            OpenFile(revertToThisDatabaseFile);
+                        else
+                            OpenFile(DatabaseReadingManager.Instance.DatabaseFilename);
                     }
 
                     return;
@@ -1278,11 +1285,13 @@ namespace WaywardGamers.KParser
                 Monitor.Stop();
                 toolStripStatusLabel.Text = "Status: Stopped.";
 
-                if (Monitor.ParseMode == DataSource.Database)
-                    DetachReparseStatus("Reparse cancelled");
-
                 DatabaseManager.Instance.DatabaseChanging -= MonitorDatabaseChanging;
                 DatabaseManager.Instance.DatabaseChanged -= MonitorDatabaseChanged;
+
+                if (Monitor.ParseMode == DataSource.Database)
+                {
+                    DetachReparseStatus("Reparse cancelled");
+                }
 
                 NotifyPlugins(false);
             }
