@@ -360,9 +360,12 @@ namespace WaywardGamers.KParser
 
                 datasetChanges = (KPDatabaseDataSet)localDB.GetChanges();
 
-                // Notify watchers so that they can view the database with
-                // Row changed/inserted/deleted flags still visible
-                OnDatabaseChanging(new DatabaseWatchEventArgs(datasetChanges));
+                if (datasetChanges != null)
+                {
+                    // Notify watchers so that they can view the database with
+                    // Row changed/inserted/deleted flags still visible
+                    OnDatabaseChanging(new DatabaseWatchEventArgs(datasetChanges));
+                }
 
                 UpdateDatabase();
 
