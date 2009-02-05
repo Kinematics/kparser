@@ -52,6 +52,10 @@ namespace WaywardGamers.KParser
         TabPage currentTab = null;
 
         private ReparseMode ReparseMode;
+
+        ToolStripStatusLabel reparseState = new ToolStripStatusLabel();
+        ToolStripProgressBar reparseProgress = new ToolStripProgressBar();
+
         #endregion
 
         #region Constructor
@@ -791,31 +795,10 @@ namespace WaywardGamers.KParser
                 throw new ArgumentOutOfRangeException("progress", progress,
                     string.Format("Progress value {0} is greater than maximum allowed ({1}).", progress, maxProgress));
 
+            reparseState.Text = currentState;
 
-            ToolStripItem[] itemSearch;
-
-            itemSearch = statusStrip.Items.Find("Reparse State", false);
-
-            if (itemSearch.Length == 1)
-            {
-                ToolStripStatusLabel reparseState = itemSearch[0] as ToolStripStatusLabel;
-                if (reparseState != null)
-                {
-                    reparseState.Text = currentState;
-                }
-            }
-
-            itemSearch = statusStrip.Items.Find("Reparse Progress", false);
-
-            if (itemSearch.Length == 1)
-            {
-                ToolStripProgressBar reparseProgress = itemSearch[0] as ToolStripProgressBar;
-                if (reparseProgress != null)
-                {
-                    reparseProgress.Maximum = maxProgress;
-                    reparseProgress.Value = progress;
-                }
-            }
+            reparseProgress.Maximum = maxProgress;
+            reparseProgress.Value = progress;
         }
 
         /// <summary>
@@ -831,9 +814,9 @@ namespace WaywardGamers.KParser
 
             toolStripStatusLabel.Text = statusLabel;
 
-            ToolStripStatusLabel reparseState = new ToolStripStatusLabel(initialState);
-            ToolStripProgressBar reparseProgress = new ToolStripProgressBar();
+            reparseState.Text = initialState;
             reparseProgress.Minimum = 0;
+            reparseProgress.Value = 0;
 
             reparseState.Name = "Reparse State";
             reparseProgress.Name = "Reparse Progress";
@@ -852,20 +835,10 @@ namespace WaywardGamers.KParser
             Monitoring.DatabaseReader.Instance.ReparseProgressChanged -= MonitorReparse;
             DatabaseManager.Instance.ReparseProgressChanged -= MonitorReparse;
 
-            ToolStripItem[] itemSearch;
-
-            itemSearch = statusStrip.Items.Find("Reparse Progress", false);
-
-            if (itemSearch.Length == 1)
-                statusStrip.Items.Remove(itemSearch[0]);
-
-            itemSearch = statusStrip.Items.Find("Reparse State", false);
-
-            if (itemSearch.Length == 1)
-                statusStrip.Items.Remove(itemSearch[0]);
+            statusStrip.Items.Remove(reparseState);
+            statusStrip.Items.Remove(reparseProgress);
 
             toolStripStatusLabel.Text = statusLabel;
-
         }
         #endregion
 
@@ -1304,6 +1277,9 @@ namespace WaywardGamers.KParser
             {
                 Monitor.Stop();
                 toolStripStatusLabel.Text = "Status: Stopped.";
+
+                if (Monitor.ParseMode == DataSource.Database)
+                    DetachReparseStatus("Reparse cancelled");
 
                 DatabaseManager.Instance.DatabaseChanging -= MonitorDatabaseChanging;
                 DatabaseManager.Instance.DatabaseChanged -= MonitorDatabaseChanged;
