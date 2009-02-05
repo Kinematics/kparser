@@ -704,7 +704,7 @@ namespace WaywardGamers.KParser.Plugin
                     playerAccum.RTHits += succHits.Count();
                     playerAccum.RTMiss += player.Retaliate.Count(b => (DefenseType)b.DefenseType != DefenseType.None);
 
-                    playerAccum.DefRetaliate += playerAccum.RTHits + playerAccum.RTMiss;
+                    playerAccum.DefRetaliate = playerAccum.RTHits + playerAccum.RTMiss;
 
                     int dmg = succHits.Sum(c => c.Amount);
                     playerAccum.RTDmg += dmg;
