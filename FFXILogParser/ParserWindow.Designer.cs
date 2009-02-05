@@ -227,7 +227,7 @@ namespace WaywardGamers.KParser
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
             this.importToolStripMenuItem.Size = new System.Drawing.Size(265, 22);
             this.importToolStripMenuItem.Text = "Import...";
-            this.importToolStripMenuItem.Click += new System.EventHandler(this.importToolStripMenuItem_Click);
+            this.importToolStripMenuItem.Click += new System.EventHandler(this.importDatabaseToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
@@ -321,7 +321,7 @@ namespace WaywardGamers.KParser
             this.toolsReparseMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
             this.toolsReparseMenuItem.Size = new System.Drawing.Size(258, 22);
             this.toolsReparseMenuItem.Text = "Reparse/&Upgrade Database";
-            this.toolsReparseMenuItem.Click += new System.EventHandler(this.databaseReparse_Click);
+            this.toolsReparseMenuItem.Click += new System.EventHandler(this.reparseDatabaseToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 

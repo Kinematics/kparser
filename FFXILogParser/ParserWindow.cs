@@ -524,7 +524,7 @@ namespace WaywardGamers.KParser
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void databaseReparse_Click(object sender, EventArgs e)
+        private void reparseDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (Monitor.IsRunning == true)
             {
@@ -612,7 +612,7 @@ namespace WaywardGamers.KParser
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void importToolStripMenuItem_Click(object sender, EventArgs e)
+        private void importDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (Monitor.IsRunning == true)
             {
