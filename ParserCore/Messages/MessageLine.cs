@@ -83,7 +83,7 @@ namespace WaywardGamers.KParser
 
             // Strip off break codes
             while (postMsg.StartsWith(breakString))
-                postMsg.Substring(breakString.Length);
+                postMsg = postMsg.Substring(breakString.Length);
 
 
             // Extract timestamp plugin modification from onscreen text, if applicable
@@ -108,7 +108,7 @@ namespace WaywardGamers.KParser
 
             // Do another check for the 1E01 value in case of additional break points after the timestamp
             while (postMsg.StartsWith(breakString))
-                postMsg.Substring(breakString.Length);
+                postMsg = postMsg.Substring(breakString.Length);
 
             // Set the MessageLine property for the message text.
             TextOutput = postMsg;
