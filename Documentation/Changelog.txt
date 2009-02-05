@@ -1,14 +1,21 @@
 KParser Change Log
 
 
-1.2.1
+1.2.1 (Feb 5, 2009)
 - Fix bug of crash if there are DLLs in the program directory that don't belong to KParser.
 - Fix error in parry/counter/intimidation rate calculations.
 + Allow 'Copy' of current tab in various formats.
 - Add Curing Waltz IV to the Cure V category of cures.
+- Patch to fix Retaliation counts on Defense page.  Credit: Valyana of Ramuh <valyanaa@gmail.com>
+* Revert to previously open files if a re-parse was cancelled.
+* Slight revision to handling the initial breakdown of text lines.
+- Fix finding successful HELM results that also had a tool break in Loot tab.
++ Added the date to the list of info shown on the Experience tab.
+- Fix issue of full database updates being sent to plugins when they are expecting only change sets (causes issues in accumulations).
 
 
-1.2.0
+
+1.2.0 (Dec 30, 2008)
 + Implement testing framework.
 + Begin implementing unit tests.
 - Fix bad chat text for moogle job change.
@@ -22,7 +29,7 @@ KParser Change Log
 
 ---------------------------------------
 
-1.1.7
+1.1.7 (Dec 8, 2008)
 + Patch: Addition of Salvage Cell listing option in Loot tab.  Credit: Valyana of Ramuh
 * Patch: Show window title when selecting multiple POL processes.  Credit: Valyana of Ramuh
 * Redid display of update progress while reparsing or importing files.
@@ -30,7 +37,7 @@ KParser Change Log
 * New base address for RAM reading (12/8/2008 patch): 0x0057A2C8
 
 
-1.1.6.2
+1.1.6.2 (Nov 11, 2008)
 * Update import code for importing DirectParse files to account for changes in the database structure.
 * Add new DirectParse file extension to file selection box.
 
@@ -39,7 +46,7 @@ KParser Change Log
 * Patch fix for HELM logging filter results.
 
 
-1.1.6
+1.1.6 (Oct 26, 2008)
 * Adjusted output layout of Loot page.
 + Added option to filter mobs killed by certain players when counting killed mobs in Loot tab.
 + Added option to filter mobs killed by certain players when counting killed mobs in Experience tab.
@@ -48,14 +55,14 @@ KParser Change Log
 - Disable Group Mobs option in Defense Details tab while a parse is active (the option is ignored while a parse is active anyway).
 
 
-1.1.5
+1.1.5 (Sept 26, 2008)
 - Fix misspelled "Frostbite" and "Freezebite" so that they show up as Weaponskills properly.
 + Add percentage of number of drops per mob to loot distribution reporting.
 + Add option to show loot groupings.
 * Adjust Thief SATA threshold.
 
 
-1.1.4
+1.1.4 (Sept 22, 2008)
 + New plugin: Items.  Shows details of items used, and when.
 - Fix possible null reference when reading RAM.
 - Fix possible invalid key reference when using a Dictionary in the Extra Attacks plugin.
@@ -69,7 +76,7 @@ KParser Change Log
 * Consolidate smaller non-combat plugin DLLs into a single DLL.
 
 
-1.1.2
+1.1.2 (Sept 19, 2008)
 - Make sure text windows are read-only.
 - Fix issue with updates running twice when a parse is opened.
 - Significant speed improvement fixes for the Buffs plugin.
@@ -77,14 +84,14 @@ KParser Change Log
 * Major rewrite of the Extra Attacks plugin.
 
 
-1.1.1
+1.1.1 (Sept 16, 2008)
 - Fix issues with mob filtering in the Thief plugin.
 - Improved SATA damage lookup mechanism in Thief plugin.
 + Add new plugin for analyzing Extra Attacks (Double/Triple/Kick Attacks and multi-attack weapons).  Experimental.  Recommend only using it for post-parse analysis (a large parse can take 20 seconds to process); do not leave it open while parsing.  Best results from parses with minimal lag.
 + Add new plugin for Damage per Minute calculations.  Experimental.  Note that this shows damage -rates-, not necessarily actual damage done.
 
 
-1.1.0
+1.1.0 (Sept 14, 2008)
 + Allow setting default save directory.
  -- NOTE: The default directory in the Common Application Path now ends in 1.1.  Earlier version of KParser would have had a default path ending in 1.0.  Your existing parses should be in that sister directory.  You may move them to your preferred directory if you wish.
 - Fix bug where buffs were not being credited to appropriate battles, preventing proper filtering.
@@ -115,7 +122,7 @@ KParser Change Log
 * Updated memloc value.
 
 
-1.0.11
+1.0.11 (Sept 1, 2008)
 - Fix issue where a Puppetmaster Overloading would reclassify the player as a mob, effectively removing them from further parse display.
 - Fix parser to parse Hide events.
 + Add Thief plugin for tracking SATA/Hide damage.  Very expensive to process, so minimal set allowed during parsing.  Implemented at the request of Melphina.
@@ -125,7 +132,7 @@ KParser Change Log
 - Fix crash bug in player info dialog.
 
  
-1.0.10
+1.0.10 (Aug 28, 2008)
 + Added ability to save a copy of the database stripped of all chat information (excluding arena/HELM messages) for privacy when sharing database files.
 + Implemented initial report function, allowing user to save current plugin text window to a text file.
 + Added option to allow specifying the particular POL process to monitor when parsing starts.
@@ -133,7 +140,7 @@ KParser Change Log
 * Added melee and ranged Additional Effects and Spikes damage to details reports.
 
 
-1.0.9
+1.0.9 (Aug 27, 2008)
 + Added dialog to allow access to database field to store small bits of info (100 characters of data) about combatants.  This field will probably be expanded when the database is next modified.
 + Addition of Offense and Defense detail/frequency plugins.  Note that these are processor-intensive when run on the full dataset, so the filtering is automatically set to single-battle only while parsing is active.
 + For Frequency plugins, a '+' denotes a mode value (occurs most frequently in sample set, may occur multiple times) and a '^' denotes a median value (frequency of occurances above and below the given sample is roughly equal).
@@ -141,7 +148,7 @@ KParser Change Log
 - Fixed issue of -ga spell damage not showing proper totals.
 
 
-1.0.8
+1.0.8 (Aug 22, 2008)
 - Misc fixes for exception handling and null references for stability.
 - Fix issues in Options dialog error handling.
 + Add additional Puppet weaponskills.
