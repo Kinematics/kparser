@@ -41,7 +41,7 @@ namespace WaywardGamers.KParser.Monitoring
         #endregion
 
         #region Member Variables
-        Thread readerThread;
+        private Thread readerThread;
         private event DatabaseReparseEventHandler reparseProgressWatchers;
         #endregion
 
@@ -86,7 +86,9 @@ namespace WaywardGamers.KParser.Monitoring
             try
             {
                 // Reset the thread
-                if ((readerThread != null) && (readerThread.ThreadState == System.Threading.ThreadState.Running))
+                if ((readerThread != null) &&
+                    ((readerThread.ThreadState == System.Threading.ThreadState.Running) ||
+                    (readerThread.ThreadState == System.Threading.ThreadState.Background)))
                 {
                     readerThread.Abort();
                 }
@@ -146,6 +148,10 @@ namespace WaywardGamers.KParser.Monitoring
                     throw new InvalidDataException("No database to parse.");
                 }
             }
+            catch (ThreadAbortException e)
+            {
+                Logger.Instance.Log(e);
+            }
             catch (Exception e)
             {
                 Logger.Instance.Log(e);
@@ -173,6 +179,13 @@ namespace WaywardGamers.KParser.Monitoring
 
             // Notify MessageManager that we're done so it can turn off its timer loop.
             MessageManager.Instance.CancelParsing();
+
+            //if ((readerThread != null) &&
+            //    ((readerThread.ThreadState == System.Threading.ThreadState.Running) ||
+            //    (readerThread.ThreadState == System.Threading.ThreadState.Background)))
+            //{
+            //    readerThread.Abort();
+            //}
 
             IsRunning = false;
         }
