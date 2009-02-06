@@ -294,6 +294,7 @@ namespace WaywardGamers.KParser
             this.playerInformationToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
             this.playerInformationToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
             this.playerInformationToolStripMenuItem.Text = "Player &Information";
+            this.playerInformationToolStripMenuItem.Click += new System.EventHandler(this.playerInformationToolStripMenuItem_Click);
             // 
             // toolsMenu
             // 
