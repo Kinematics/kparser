@@ -35,8 +35,36 @@ namespace WaywardGamers.KParser
 	internal class MessageLine
 	{
 		#region Member Variables
-        ChatLine originalChatLine;
-		#endregion
+        readonly ChatLine originalChatLine;
+        #endregion
+
+        #region Message parsing regexes
+
+        // Regex describing general chat line format
+        static Regex msgLineBreakdown = new Regex(
+            @"^(?<msgCode>[0-9a-f]{2}),(?<xCode1>[0-9a-f]{2}),(?<xCode2>[0-9a-f]{2}),(?<msgColor>[0-9a-f]{8})," +
+            @"(?<eventSeq>[0-9a-f]{8}),(?<uniqSeq>[0-9a-f]{8}),(?<strLen>[0-9a-f]{4}),(?<unk1>[0-9a-f]{2})," +
+            @"(?<unk2>[0-9a-f]{2}),(?<msgCat>[0-9a-f]{2}),(?<unk3>[0-9a-f]{2})," +
+            @"(\x1e\x01)+(\x81\x40)?(\x1e\x01)*" +
+            @"(?<tsPlugin>((\x1e(\x3f|\xfa|\xfc)\[)|(\x1e.))(?<time>\d{2}:\d{2}:\d{2})\] \x1e\x01)?" +
+            @"(?<remainder>.+)$");
+
+
+        // Regexes for finding words that have special coding that needs to be stripped
+        static Regex autoTrans = new Regex(@"(\xEF\x27(?<autoTransWord>[^\xEF]+)\xEF\x28)|(\x3F\x27(?<autoTransWord>[^\x3F]+)\x3F\x28)");
+        static Regex itemWords = new Regex(@"(\x1E\x02(?<itemWord>[^\x1E]+)\x1E\x01)");
+        static Regex keyItemWords = new Regex(@"(\x1E\x03(?<itemWord>[^\x1E]+)\x1E\x01)");
+
+        // Regexes for extraneous code values
+        static Regex eolMark = new Regex(@"\x7F\x31$");
+        static Regex clipText = new Regex(@"\x1f[\x79\x7f\x3f\x8d\x2019]");
+        //(nextChar == 0x79) || // Item drops
+        //(nextChar == 0x7F) || // Item distribution
+        //(nextChar == 0x3F) || // Time limit warning
+        //(nextChar == 0x8D) || // Limbus time limit, Moogle job change
+        //(nextChar == 0x2019)) // Assault time limit, byte=0x92
+
+        #endregion
 
         #region Constructor
         internal MessageLine(ChatLine chatLine)
@@ -49,7 +77,7 @@ namespace WaywardGamers.KParser
 
             originalChatLine = chatLine;
 
-			TokenizeOriginalChatLine();
+			ExtractDataFromOriginalChatLine();
 		}
 		#endregion
 
@@ -57,193 +85,73 @@ namespace WaywardGamers.KParser
 		/// <summary>
 		/// Function to break down the message into its component parts.
 		/// </summary>
-        private void TokenizeOriginalChatLine()
+        private void ExtractDataFromOriginalChatLine()
 		{
             // Make a copy of the original text to work with
             string msg = originalChatLine.ChatText;
+            string testMsg = string.Format("Test: {0}", msg);
 
-            // Characters that separate code values from text output.
-            //string breakString = string.Format("{0}{1}", (char)0x1E, (char)0x01);
-            // Patch for Oct 18, 2006 change -- string now has two breakpoint positions,
-            // with possible additional material between (unknown use).
-            string breakString = string.Format("{0}{1}", (char)0x1E, (char)0x01);
+            Match msgLineMatch = msgLineBreakdown.Match(msg);
 
-			// Locate the end of the code strip in the message
-			int endCodesBreakPoint = msg.IndexOf(breakString);
-
-            if (endCodesBreakPoint < 0)
-                throw new FormatException("Message string does not contain the proper breakpoint values (position 1).\n"
-                    + msg);
-
-            // Extract the text codes from the front half of the message.
-            string preMsg = msg.Substring(0, endCodesBreakPoint);
-
-            // Pull out the back half of the input string
-            string postMsg = msg.Substring(endCodesBreakPoint);
-
-            // Strip off break codes
-            while (postMsg.StartsWith(breakString))
-                postMsg = postMsg.Substring(breakString.Length);
-
-
-            // Extract timestamp plugin modification from onscreen text, if applicable
-            Match tsCheck = ParseExpressions.TimestampPlugin.Match(postMsg);
-            if (tsCheck.Success == true)
+            if (msgLineMatch.Success == true)
             {
-                postMsg = tsCheck.Groups[ParseFields.Remainder].Value;
+                MessageCode = uint.Parse(msgLineMatch.Groups["msgCode"].Value, NumberStyles.HexNumber);
+                ExtraCode1 = uint.Parse(msgLineMatch.Groups["xCode1"].Value, NumberStyles.HexNumber);
+                ExtraCode2 = uint.Parse(msgLineMatch.Groups["xCode2"].Value, NumberStyles.HexNumber);
+                TextColor = uint.Parse(msgLineMatch.Groups["msgColor"].Value, NumberStyles.HexNumber);
+                EventSequence = uint.Parse(msgLineMatch.Groups["eventSeq"].Value, NumberStyles.HexNumber);
+                UniqueSequence = uint.Parse(msgLineMatch.Groups["uniqSeq"].Value, NumberStyles.HexNumber);
+                TextLength = uint.Parse(msgLineMatch.Groups["strLen"].Value, NumberStyles.HexNumber);
+                MessageCategoryNumber = uint.Parse(msgLineMatch.Groups["msgCat"].Value, NumberStyles.HexNumber);
 
-                // If we're parsing from logs, use the Timestamp field to refine
-                // the message timestamps.
-                if (Monitor.ParseMode == DataSource.Log)
+                MessageCategory = (MessageCategoryType)MessageCategoryNumber;
+
+                // Extract Timestamp plugin data if present
+                if (msgLineMatch.Groups["tsPlugin"].Success == true)
                 {
-                    DateTime baseDate = originalChatLine.Timestamp.Date;
-                    TimeSpan pluginTime;
-                    if (TimeSpan.TryParse(tsCheck.Groups["time"].Value, out pluginTime))
+                    // If we're parsing from logs, use the Timestamp field to refine
+                    // the message timestamps.
+                    if (Monitor.ParseMode == DataSource.Log)
                     {
-                        baseDate += pluginTime;
-                        originalChatLine.Timestamp = baseDate;
+                        DateTime baseDate = originalChatLine.Timestamp.Date;
+                        TimeSpan pluginTime;
+                        if (TimeSpan.TryParse(msgLineMatch.Groups["time"].Value, out pluginTime))
+                        {
+                            baseDate += pluginTime;
+                            originalChatLine.Timestamp = baseDate;
+                        }
                     }
                 }
+
+                // All leftover text gets put into the TextOuput property for further conversion.
+                TextOutput = msgLineMatch.Groups["remainder"].Value;
+
+
+                // Adjustments for words with special display markup
+                TextOutput = autoTrans.Replace(TextOutput, "[${autoTransWord}]");
+                TextOutput = itemWords.Replace(TextOutput, "${itemWord}");
+                TextOutput = keyItemWords.Replace(TextOutput, "${itemWord}");
+
+
+                // Remove other peculiar character values
+
+                // Drop the extraneous characters at the end of non-chat messages.
+                TextOutput = eolMark.Replace(TextOutput, "");
+
+                // Drop the extraneous characters at start (or middle, for moogles) of various messages.
+                TextOutput = clipText.Replace(TextOutput, "");
+
+                // Convert text encoding for display of JP characters
+                byte[] originalBytes = UnicodeEncoding.Default.GetBytes(TextOutput);
+                byte[] convertedBytes = Encoding.Convert(Encoding.GetEncoding("Shift-JIS"), Encoding.Unicode, originalBytes);
+                TextOutput = Encoding.Unicode.GetString(convertedBytes).Trim();
+
             }
-
-            // Do another check for the 1E01 value in case of additional break points after the timestamp
-            while (postMsg.StartsWith(breakString))
-                postMsg = postMsg.Substring(breakString.Length);
-
-            // Set the MessageLine property for the message text.
-            TextOutput = postMsg;
-
-
-            int breakPoint;
-
-            // Drop the extraneous characters at start of various messages.
-
-            char[] textOutputCharArray = TextOutput.ToCharArray();
-            char[] clippedTextOutputCharArray;
-
-            if (textOutputCharArray.Length > 2)
+            else
             {
-                int flagPos = Array.FindIndex(textOutputCharArray, a => a == 0x1f);
-
-                if (flagPos >= 0)
-                {
-                    char nextChar = textOutputCharArray[flagPos + 1];
-
-                    if ((nextChar == 0x79) || // Item drops
-                        (nextChar == 0x7F) || // Item distribution
-                        (nextChar == 0x3F) || // Time limit warning
-                        (nextChar == 0x8D) || // Limbus time limit, Moogle job change
-                        (nextChar == 0x2019)) // Assault time limit, byte=0x92
-                    {
-                        clippedTextOutputCharArray = new char[textOutputCharArray.Length - 2];
-
-                        if (flagPos > 0)
-                            Array.Copy(textOutputCharArray, 0, clippedTextOutputCharArray, 0, flagPos);
-
-                        Array.Copy(textOutputCharArray, flagPos + 2, clippedTextOutputCharArray,
-                            flagPos, clippedTextOutputCharArray.Length - flagPos);
-
-                        TextOutput = new string(clippedTextOutputCharArray);
-                    }
-                }
-
-                /*
-                if (textOutputCharArray[0] == 0x1F)
-                {
-                    if ((textOutputCharArray[1] == 0x79) || // Item drops
-                        (textOutputCharArray[1] == 0x7F) || // Item distribution
-                        (textOutputCharArray[1] == 0x3F) || // Time limit warning
-                        (textOutputCharArray[1] == 0x8D) || // Limbus time limit
-                        (textOutputCharArray[1] == 0x2019)) // Assault time limit, byte=0x92
-                    {
-                        clippedTextOutputCharArray = new char[textOutputCharArray.Length - 2];
-                        Array.Copy(textOutputCharArray, 2, clippedTextOutputCharArray, 0, clippedTextOutputCharArray.Length);
-
-                        TextOutput = new string(clippedTextOutputCharArray);
-                    }
-                }
-                 * */
+                throw new FormatException("Unable to parse the chat message:\n" + msg);
             }
-
-            // Drop the extraneous characters at the end of non-chat messages.
-            breakString = string.Format("{0}{1}", (char)0x7F, (char)0x31);
-            breakPoint = TextOutput.IndexOf(breakString);
-
-            if (breakPoint > 0)
-                TextOutput = TextOutput.Substring(0, breakPoint);
-
-
-
-			// Convert auto-translated characters to []'s
-            // 10/18/2006 - Update changed 0xEF+0x27/8 to 0x3F+0x27/8
-            // 01/08/2008 - Unknown update changed 3F back to EF
-            // 03/21/2008 - Appears that both version exist.
-			string autoTrans;
-			// Open
-			autoTrans = string.Format("{0}{1}", (char) 0xEF, (char) 0x27);
-            TextOutput = TextOutput.Replace(autoTrans, "[");
-            autoTrans = string.Format("{0}{1}", (char)0x3F, (char)0x27);
-            TextOutput = TextOutput.Replace(autoTrans, "[");
-            // Close
-			autoTrans = string.Format("{0}{1}", (char) 0xEF, (char) 0x28);
-            TextOutput = TextOutput.Replace(autoTrans, "]");
-            autoTrans = string.Format("{0}{1}", (char)0x3F, (char)0x28);
-            TextOutput = TextOutput.Replace(autoTrans, "]");
-
-			// Remove item highlighting (green wording)
-			string itemTrans;
-			// Open
-			itemTrans = string.Format("{0}{1}", (char) 0x1E, (char) 0x02);
-            TextOutput = TextOutput.Replace(itemTrans, "");
-			// Close
-			itemTrans = string.Format("{0}{1}", (char) 0x1E, (char) 0x01);
-            TextOutput = TextOutput.Replace(itemTrans, "");
-
-			// Remove key item highlighting (purple wording)
-			string keyTrans;
-			// Open
-			keyTrans = string.Format("{0}{1}", (char) 0x1E, (char) 0x03);
-            TextOutput = TextOutput.Replace(keyTrans, "");
-			// Close
-			keyTrans = string.Format("{0}{1}", (char) 0x1E, (char) 0x01);
-            TextOutput = TextOutput.Replace(keyTrans, "");
-
-            // Other version?
-            //// Open
-            //keyTrans = string.Format("{0}{1}", (char)0x1E, (char)0xFA);
-            //TextOutput = TextOutput.Replace(keyTrans, "");
-            //// Close
-            //keyTrans = string.Format("{0}{1}", (char)0x1E, (char)0x01);
-            //TextOutput = TextOutput.Replace(keyTrans, "");
-
-            // Convert text encoding for display of JP characters
-            byte[] originalBytes = UnicodeEncoding.Default.GetBytes(TextOutput);
-            byte[] convertedBytes = Encoding.Convert(Encoding.GetEncoding("Shift-JIS"), Encoding.Unicode, originalBytes);
-            this.TextOutput = Encoding.Unicode.GetString(convertedBytes).Trim();
-
-
-			// Break up the code sequence values into their individual entries
-			string delimStr = ",";
-			char [] delimiter = delimStr.ToCharArray();
-
-			string[] codeStrings = preMsg.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
-
-            if (codeStrings.Length < 11)
-                throw new InvalidOperationException(string.Format("Invalid code string set:\n{0}", preMsg));
-
-			MessageCode = uint.Parse(codeStrings[0], NumberStyles.HexNumber);
-            ExtraCode1 = uint.Parse(codeStrings[1], NumberStyles.HexNumber);
-            ExtraCode2 = uint.Parse(codeStrings[2], NumberStyles.HexNumber);
-            TextColor = uint.Parse(codeStrings[3], NumberStyles.HexNumber);
-            EventSequence = uint.Parse(codeStrings[4], NumberStyles.HexNumber);
-            UniqueSequence = uint.Parse(codeStrings[5], NumberStyles.HexNumber);
-            TextLength = uint.Parse(codeStrings[6], NumberStyles.HexNumber);
-            // codeStrings[7] - undefined, always 0
-            // codeStrings[8] - undefined, always 1
-            MessageCategoryNumber = uint.Parse(codeStrings[9], NumberStyles.HexNumber);
- 
-            MessageCategory = (MessageCategoryType)MessageCategoryNumber;
-		}
+        }
         #endregion
 
         #region Base chatline Properties
@@ -291,7 +199,7 @@ namespace WaywardGamers.KParser
 
         /// <summary>
         /// Get the message category.  Message category separates messages into
-        /// three general types: system, chat, action/other.
+        /// three general types: system, chat and action/event/other.
         /// </summary>
         internal MessageCategoryType MessageCategory { get; private set; }
         #endregion
