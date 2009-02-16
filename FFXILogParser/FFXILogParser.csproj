@@ -29,7 +29,7 @@
     <OldToolsVersion>2.0</OldToolsVersion>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <ManifestCertificateThumbprint>6A4F6949770E17FEE34BB526853C0F9DA2A161A1</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>6B41E0C347FDF6A2E86089DF26084CE02604E272</ManifestCertificateThumbprint>
     <ManifestKeyFile>FFXILogParser_TemporaryKey.pfx</ManifestKeyFile>
     <SignManifests>true</SignManifests>
     <PublishUrl>D:\Apache\Apache2\htdocs\FFXI\KParser\ClickOnce\</PublishUrl>
@@ -50,6 +50,7 @@
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.2.2.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
