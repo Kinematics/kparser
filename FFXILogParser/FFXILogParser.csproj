@@ -147,7 +147,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gobby.ico" />
-    <Content Include="Resources\App.ico" />
+    <Content Include="Resources\Gobby.ico" />
     <Compile Include="Forms\AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
