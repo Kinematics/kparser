@@ -49,12 +49,35 @@ namespace WaywardGamers.KParser.Monitoring
         #region Member Variables
         Properties.Settings appSettings;
 
-        DriveInfo driveInfo;
+        string watchDirectory = string.Empty; // Only access from the Property
         FileSystemWatcher fileSystemWatcher;
-        Timer networkWatchTimer;
 
         DateTime networkWatchTimestamp;
+        Timer networkWatchTimer;
+
         string lastChangedFile = string.Empty;
+        #endregion
+
+        #region Properties
+        private string WatchDirectory
+        {
+            get
+            {
+                if (watchDirectory == string.Empty)
+                    throw new ArgumentNullException();
+
+                return watchDirectory;
+            }
+            set
+            {
+                DirectoryInfo dInfo = new DirectoryInfo(value);
+                if (dInfo.Exists == false)
+                    throw new ArgumentException(
+                        string.Format("Directory '{0}' does not exist.", value));
+
+                watchDirectory = value;
+            }
+        }
         #endregion
 
         #region Interface Control Methods and Properties
@@ -76,35 +99,34 @@ namespace WaywardGamers.KParser.Monitoring
             {
                 // Get the settings so that we know where to look for the log files.
                 appSettings.Reload();
+                WatchDirectory = appSettings.FFXILogDirectory;
 
                 // Verify the drive
-                driveInfo = new DriveInfo(Path.GetPathRoot(appSettings.FFXILogDirectory));
+                DriveInfo driveInfo = new DriveInfo(Path.GetPathRoot(WatchDirectory));
 
                 if (driveInfo.IsReady == false)
                     throw new InvalidOperationException("Drive for the specified log directory is not available.");
 
+                if ((driveInfo.DriveType != DriveType.Fixed) && (driveInfo.DriveType != DriveType.Network))
+                    throw new InvalidOperationException("Drive is not of a type that can be monitored.");
+
+
+                // Notify MessageManager that we're starting (preparatory).
                 MessageManager.Instance.PrepareToStartParsing();
 
                 // Run the parser on any logs already in existance before starting to monitor,
                 // if that option is set.
                 if (appSettings.ParseExistingLogs == true)
                 {
-                    ReadExistingFFXILogs(appSettings.FFXILogDirectory);
+                    ReadExistingFFXILogs();
                 }
 
                 // Notify MessageManager that we're starting.
                 MessageManager.Instance.StartParsing(true);
 
-                if ((driveInfo.DriveType != DriveType.Fixed) && (driveInfo.DriveType != DriveType.Network))
-                {
-                    // Stop the message manager in case user wants to just run parse on existing
-                    // files from a fixed medium (eg: CDROM).
-                    MessageManager.Instance.StopParsing();
-                    throw new InvalidOperationException("Drive is not of a type that can be monitored");
-                }
 
                 // Set up monitoring of log files for changes.
-                fileSystemWatcher.Path = appSettings.FFXILogDirectory;
+                fileSystemWatcher.Path = WatchDirectory;
 
                 // Begin watching.
                 if (driveInfo.DriveType == DriveType.Fixed)
@@ -126,47 +148,6 @@ namespace WaywardGamers.KParser.Monitoring
             }
         }
 
-        private void StartMonitorNetworkDrive()
-        {
-            // Create timer to run every 5 seconds.
-            networkWatchTimer = new Timer(MonitorNetworkDrive, null, 5000, 5000);
-            networkWatchTimestamp = DateTime.Now;
-        }
-
-        private void MonitorNetworkDrive(Object stateInfo)
-        {
-            // Reuse info from fileSystemWatcher
-            string watchDirectory = fileSystemWatcher.Path;
-
-            string[] files = Directory.GetFiles(watchDirectory, "*.log");
-
-            // Sort files by modification timestamp
-            SortedList<DateTime, FileInfo> sortedFiles = new SortedList<DateTime, FileInfo>(files.Length);
-            FileInfo fi;
-
-            foreach (string file in files)
-            {
-                fi = new FileInfo(file);
-                sortedFiles.Add(fi.LastWriteTimeUtc, fi);
-            }
-
-            // Check each entry in the sorted list.  If it's a newly modified file,
-            // generate a new event for it.
-            for (int i = 0; i < sortedFiles.Count; i++)
-            {
-                if (sortedFiles.Values[i].LastWriteTime > networkWatchTimestamp)
-                {
-                    FileSystemEventArgs eArgs = new FileSystemEventArgs(WatcherChangeTypes.Changed,
-                        sortedFiles.Values[i].Directory.Name, sortedFiles.Values[i].Name);
-
-                    MonitorLogDirectory(this, eArgs);
-
-                    networkWatchTimestamp = sortedFiles.Values[i].LastWriteTime;
-                }
-            }
-        }
-
-
         /// <summary>
         /// Stop monitoring the FFXI log directory.
         /// </summary>
@@ -174,7 +155,6 @@ namespace WaywardGamers.KParser.Monitoring
         {
             if (IsRunning == false)
                 return;
-
 
             try
             {
@@ -204,7 +184,68 @@ namespace WaywardGamers.KParser.Monitoring
         }
         #endregion
 
-        #region General log file reading and writing
+        #region Implement specific monitoring functions
+        /// <summary>
+        /// Handle reading each of any existing log files in the FFXI directory.
+        /// </summary>
+        private void ReadExistingFFXILogs()
+        {
+            string[] files = Directory.GetFiles(WatchDirectory, "*.log");
+
+            // Sort the files by timestamp written to
+            SortedList<DateTime, string> sortedFiles = new SortedList<DateTime, string>(files.Length);
+            FileInfo fi;
+
+            foreach (string file in files)
+            {
+                fi = new FileInfo(file);
+                sortedFiles.Add(fi.LastWriteTimeUtc, file);
+            }
+
+            // Process the files in sorted order
+            foreach (var file in sortedFiles)
+            {
+                ReadFFXILog(file.Value);
+            }
+        }
+
+        private void StartMonitorNetworkDrive()
+        {
+            // Create timer to run every 5 seconds.
+            networkWatchTimestamp = DateTime.Now;
+            networkWatchTimer = new Timer(MonitorNetworkDrive, null, 5000, 5000);
+        }
+
+        private void MonitorNetworkDrive(Object stateInfo)
+        {
+            string[] files = Directory.GetFiles(WatchDirectory, "*.log");
+
+            // Sort files by modification timestamp
+            SortedList<DateTime, FileInfo> sortedFiles = new SortedList<DateTime, FileInfo>(files.Length);
+            FileInfo fi;
+
+            foreach (string file in files)
+            {
+                fi = new FileInfo(file);
+                sortedFiles.Add(fi.LastWriteTimeUtc, fi);
+            }
+
+            // Check each entry in the sorted list.  If it's a newly modified file,
+            // generate a new event for it.
+            foreach (var file in sortedFiles)
+            {
+                if (file.Value.LastWriteTime > networkWatchTimestamp)
+                {
+                    FileSystemEventArgs eArgs = new FileSystemEventArgs(WatcherChangeTypes.Changed,
+                        file.Value.Directory.Name, file.Value.Name);
+
+                    MonitorLogDirectory(this, eArgs);
+
+                    networkWatchTimestamp = file.Value.LastWriteTime;
+                }
+            }
+        }
+
         /// <summary>
         /// Event handler that is activated when any changes are made to files
         /// in the log directory.
@@ -219,9 +260,10 @@ namespace WaywardGamers.KParser.Monitoring
                     (eArg.ChangeType == WatcherChangeTypes.Created))
                 {
                     if (lastChangedFile != eArg.FullPath)
+                    {
                         ReadFFXILog(eArg.FullPath);
-
-                    lastChangedFile = eArg.FullPath;
+                        lastChangedFile = eArg.FullPath;
+                    }
                 }
             }
             catch (Exception e)
@@ -230,28 +272,9 @@ namespace WaywardGamers.KParser.Monitoring
             }
         }
 
-        /// <summary>
-        /// Handle reading each of any existing log files in the FFXI directory.
-        /// </summary>
-        private void ReadExistingFFXILogs(string watchDirectory)
-        {
-            string[] files = Directory.GetFiles(watchDirectory, "*.log");
+        #endregion
 
-            SortedList sortedFiles = new SortedList(files.Length);
-            FileInfo fi;
-
-            foreach (string file in files)
-            {
-                fi = new FileInfo(file);
-                sortedFiles.Add(fi.LastWriteTimeUtc, file);
-            }
-
-            for (int i = 0; i < sortedFiles.Count; i++)
-            {
-                ReadFFXILog(sortedFiles.GetByIndex(i).ToString());
-            }
-        }
-
+        #region General log file reading and writing
         /// <summary>
         /// Read the specified FFXI log and send the extracted data for further processing.
         /// Save the extracted text.
@@ -261,6 +284,8 @@ namespace WaywardGamers.KParser.Monitoring
         {
             if (File.Exists(fileName) == false)
                 throw new ArgumentException(string.Format("File: {0}\ndoes not exist.", fileName));
+            
+            DateTime fileTimeStamp = File.GetLastWriteTime(fileName);
 
             string fileText = string.Empty;
             bool finishedReading = false;
@@ -270,14 +295,14 @@ namespace WaywardGamers.KParser.Monitoring
             {
                 try
                 {
-                    using (FileStream fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.None))
+                    using (FileStream fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
                         using (StreamReader sr = new StreamReader(fileStream, Encoding.ASCII))
                         {
                             // Ignore 0x64 (100) byte header
                             sr.BaseStream.Seek(0x64, SeekOrigin.Begin);
 
-                            // There is no header in saved parses, so just read the entire file.
+                            // Read the remainder of the file
                             fileText = sr.ReadToEnd();
 
                             finishedReading = true;
@@ -293,20 +318,8 @@ namespace WaywardGamers.KParser.Monitoring
                 }
             }
 
-
-            // Create an instance of StreamReader to read from a file.
-            // The using statement also closes the StreamReader.
-            //using (StreamReader sr = new StreamReader(fileName, Encoding.ASCII))
-            //{
-            //    // Ignore 0x64 (100) byte header
-            //    sr.BaseStream.Seek(0x64, SeekOrigin.Begin);
-
-            //    // There is no header in saved parses, so just read the entire file.
-            //    fileText = sr.ReadToEnd();
-            //}
-
             if (finishedReading == true)
-                ProcessRawLogText(fileText, File.GetLastWriteTime(fileName));
+                ProcessRawLogText(fileText, fileTimeStamp);
         }
 
         /// <summary>
@@ -351,19 +364,28 @@ namespace WaywardGamers.KParser.Monitoring
 
             if (fileLines.Length > 0)
             {
+                List<ChatLine> chatLines = new List<ChatLine>(fileLines.Length);
+
                 foreach (string line in fileLines)
                 {
-                    // Ignore empty lines (it's possible the split may leave one dangling).
-                    if (line != "")
+                    try
                     {
                         ChatLine chatLine = new ChatLine(line, timeStamp);
+                        chatLines.Add(chatLine);
 
+                        // TODO: Remove this once the MessageManager is set up to
+                        // watch for the event handler pushes.
                         MessageManager.Instance.AddChatLine(chatLine);
                     }
+                    catch (Exception ex)
+                    {
+                        Logger.Instance.Log(ex);
+                    }
                 }
-            }
 
-            return;
+                if (chatLines.Count > 0)
+                    OnReaderDataChanged(new ReaderDataEventArgs(chatLines));
+            }
         }
         #endregion
     }
