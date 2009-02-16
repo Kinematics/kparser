@@ -42,19 +42,7 @@ namespace WaywardGamers.KParser.Monitoring
 
         #region Member Variables
         private Thread readerThread;
-        public event ReaderStatusHandler ReparseProgressChanged;
-        #endregion
-
-        #region Event Management
-        protected virtual void OnRowProcessed(ReaderStatusEventArgs e)
-        {
-            if (ReparseProgressChanged != null)
-            {
-                // Invokes the delegates. 
-                ReparseProgressChanged(this, e);
-            }
-        }
-
+        private IDBReader dbReaderManager;
         #endregion
 
         #region Interface Control Methods and Properties
@@ -63,10 +51,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// </summary>
         public override DataSource ParseModeType { get { return DataSource.Database; } }
 
-        /// <summary>
-        /// Start a thread that reads log files for parsing.
-        /// </summary>
-        public override void Start()
+        public override void Import(ImportSourceType importSource, IDBReader dbReaderManager)
         {
             IsRunning = true;
 
@@ -80,8 +65,25 @@ namespace WaywardGamers.KParser.Monitoring
                     readerThread.Abort();
                 }
 
-                // Begin the thread
-                readerThread = new Thread(RunThread);
+                this.dbReaderManager = dbReaderManager;
+                readerThread = null;
+
+                // Create the thread
+                switch (importSource)
+                {
+                    case ImportSourceType.KParser:
+                        if (dbReaderManager is KParserReadingManager)
+                            readerThread = new Thread(ImportKParserDB);
+                        break;
+                    case ImportSourceType.DVSParse:
+                    case ImportSourceType.DirectParse:
+                        if (dbReaderManager is DirectParseReadingManager)
+                            readerThread = new Thread(ImportDirectParseDB);
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+
                 readerThread.IsBackground = true;
                 readerThread.Name = "Read database thread";
                 readerThread.Start();
@@ -94,11 +96,39 @@ namespace WaywardGamers.KParser.Monitoring
                 Logger.Instance.Log(e);
                 IsRunning = false;
                 MessageManager.Instance.CancelParsing();
-                DatabaseReadingManager.Instance.CloseDatabase();
+                dbReaderManager.CloseDatabase();
             }
+
+
         }
 
-        public void RunThread()
+        /// <summary>
+        /// Stop the active reader thread.
+        /// </summary>
+        public override void Stop()
+        {
+            if (IsRunning == false)
+                return;
+
+            // Notify MessageManager that we're done so it can turn off its timer loop.
+            MessageManager.Instance.CancelParsing();
+
+            //if ((readerThread != null) &&
+            //    ((readerThread.ThreadState == System.Threading.ThreadState.Running) ||
+            //    (readerThread.ThreadState == System.Threading.ThreadState.Background)))
+            //{
+            //    readerThread.Abort();
+            //}
+
+            IsRunning = false;
+        }
+        #endregion
+
+        #region Importing implementations
+        /// <summary>
+        /// Import (reparse) KParser database files.
+        /// </summary>
+        private void ImportKParserDB()
         {
             int rowCount = 0;
             int totalCount = 0;
@@ -106,7 +136,11 @@ namespace WaywardGamers.KParser.Monitoring
 
             try
             {
-                KPDatabaseReadOnly readDataSet = DatabaseReadingManager.Instance.Database;
+                KParserReadingManager readingManager = dbReaderManager as KParserReadingManager;
+                if (readingManager == null)
+                    throw new ArgumentNullException();
+
+                KPDatabaseReadOnly readDataSet = readingManager.Database;
                 if (readDataSet != null)
                 {
                     totalCount = readDataSet.RecordLog.Count;
@@ -124,7 +158,7 @@ namespace WaywardGamers.KParser.Monitoring
                             ChatLine chat = new ChatLine(logLine.MessageText, logLine.Timestamp);
                             MessageManager.Instance.AddChatLine(chat);
 
-                            OnRowProcessed(new ReaderStatusEventArgs(rowCount, totalCount, completed));
+                            OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed));
                         }
 
                         completed = IsRunning;
@@ -151,79 +185,15 @@ namespace WaywardGamers.KParser.Monitoring
                 else
                     MessageManager.Instance.CancelParsing();
 
-                OnRowProcessed(new ReaderStatusEventArgs(rowCount, totalCount, completed));
-                DatabaseReadingManager.Instance.CloseDatabase();
+                OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed));
+                dbReaderManager.CloseDatabase();
             }
         }
 
         /// <summary>
-        /// Stop the active reader thread.
+        /// Import database files created by DVSParse and DirectParse.
         /// </summary>
-        public override void Stop()
-        {
-            if (IsRunning == false)
-                return;
-
-            // Notify MessageManager that we're done so it can turn off its timer loop.
-            MessageManager.Instance.CancelParsing();
-
-            //if ((readerThread != null) &&
-            //    ((readerThread.ThreadState == System.Threading.ThreadState.Running) ||
-            //    (readerThread.ThreadState == System.Threading.ThreadState.Background)))
-            //{
-            //    readerThread.Abort();
-            //}
-
-            IsRunning = false;
-        }
-
-
-        public override void Import(ImportSource importSource)
-        {
-            switch (importSource)
-            {
-                case ImportSource.DVSParse:
-                case ImportSource.DirectParse:
-                    ImportDirectParseV1();
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-        #endregion
-
-        #region Import functions (slightly rewritten Reparse functions)
-        private void ImportDirectParseV1()
-        {
-            IsRunning = true;
-
-            try
-            {
-                // Reset the thread
-                if ((readerThread != null) && (readerThread.ThreadState == System.Threading.ThreadState.Running))
-                {
-                    readerThread.Abort();
-                }
-
-                // Begin the thread
-                readerThread = new Thread(ImportDirectParseV1IMPL);
-                readerThread.IsBackground = true;
-                readerThread.Name = "Import database thread";
-                readerThread.Start();
-
-                // Notify MessageManager that we're starting.
-                MessageManager.Instance.StartParsing(false);
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Log(e);
-                IsRunning = false;
-                MessageManager.Instance.CancelParsing();
-                ImportDirectParseManager.Instance.CloseDatabase();
-            }
-        }
-
-        private void ImportDirectParseV1IMPL()
+        private void ImportDirectParseDB()
         {
             int rowCount = 0;
             int totalCount = 0;
@@ -248,8 +218,11 @@ namespace WaywardGamers.KParser.Monitoring
 
             try
             {
+                DirectParseReadingManager readingManager = dbReaderManager as DirectParseReadingManager;
+                if (readingManager == null)
+                    throw new ArgumentNullException();
 
-                DPDatabaseImportV1 readDataSet = ImportDirectParseManager.Instance.Database;
+                DPDatabaseImportV1 readDataSet = readingManager.Database;
                 if (readDataSet != null)
                 {
                     totalCount = readDataSet.ChatLog.Count;
@@ -306,7 +279,7 @@ namespace WaywardGamers.KParser.Monitoring
                                 MessageManager.Instance.AddChatLine(chat);
                             }
 
-                            OnRowProcessed(new ReaderStatusEventArgs(rowCount, totalCount, completed));
+                            OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed));
                         }
 
                         completed = IsRunning;
@@ -329,11 +302,10 @@ namespace WaywardGamers.KParser.Monitoring
                 else
                     MessageManager.Instance.CancelParsing();
 
-                OnRowProcessed(new ReaderStatusEventArgs(rowCount, totalCount, completed));
-                ImportDirectParseManager.Instance.CloseDatabase();
+                OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed));
+                dbReaderManager.CloseDatabase();
             }
         }
         #endregion
-
     }
 }
