@@ -10,8 +10,61 @@ namespace WaywardGamers.KParser
     /// </summary>
     public static class Monitor
     {
-        static Properties.Settings settings = new Properties.Settings();
+        #region Class members
         static IReader currentReader = RamReader.Instance;
+        #endregion
+
+        #region Current reader properties
+        /// <summary>
+        /// Gets whether the current reader is running.
+        /// </summary>
+        public static bool IsRunning
+        {
+            get
+            {
+                return currentReader.IsRunning;
+            }
+        }
+
+        /// <summary>
+        /// Gets the DataSource type of the current reader.
+        /// </summary>
+        public static DataSource ParseMode
+        {
+            get
+            {
+                return currentReader.ParseModeType;
+            }
+        }
+        #endregion
+
+        #region Functions to start and stop monitoring.
+
+        public static void Start(DataSource dataSourceType, string sourceFile)
+        {
+            if (currentReader.IsRunning == true)
+                throw new InvalidOperationException(string.Format(
+                    "{0} is already running", currentReader.GetType().Name));
+
+            switch (dataSourceType)
+            {
+                case DataSource.Log:
+                    currentReader = LogReader.Instance;
+                    break;
+                case DataSource.Ram:
+                    currentReader = RamReader.Instance;
+                    break;
+                case DataSource.Database:
+                    currentReader = DatabaseReader.Instance;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("dataSourceType",
+                        string.Format("Unknown DataSource value: {0}", dataSourceType.ToString()));
+            }
+
+            currentReader.Run();
+        }
+
 
         /// <summary>
         /// Initiate monitoring of FFXI RAM/logs for data to be parsed.
@@ -27,8 +80,8 @@ namespace WaywardGamers.KParser
             // Only reload settings values on Start.  Other calls between
             // Starts will use whatever the setting was at the time of the
             // last Start.
+            Properties.Settings settings = new Properties.Settings();
             settings.Reload();
-            ParseMode = settings.ParseMode;
 
             // Set the currentReader to the appropriate reader instance
             // based on program settings.
@@ -62,8 +115,8 @@ namespace WaywardGamers.KParser
             // Only reload settings values on Start.  Other calls between
             // Starts will use whatever the setting was at the time of the
             // last Start.
+            Properties.Settings settings = new Properties.Settings();
             settings.Reload();
-            ParseMode = settings.ParseMode;
 
             // Set the currentReader to the appropriate reader instance
             // based on program settings.
@@ -85,7 +138,6 @@ namespace WaywardGamers.KParser
                 throw new InvalidOperationException(string.Format(
                     "{0} is already running", currentReader.GetType().Name));
 
-            ParseMode = DataSource.Database;
             currentReader = DatabaseReader.Instance;
 
             DatabaseManager.Instance.CreateDatabase(outputFileName);
@@ -105,7 +157,6 @@ namespace WaywardGamers.KParser
                 throw new InvalidOperationException(string.Format(
                     "{0} is already running", currentReader.GetType().Name));
 
-            ParseMode = DataSource.Database;
             currentReader = DatabaseReader.Instance;
 
             DatabaseManager.Instance.CreateDatabase(outputFileName);
@@ -131,35 +182,44 @@ namespace WaywardGamers.KParser
         {
             currentReader.Stop();
         }
+        #endregion
 
+        #region Debugging functions
         /// <summary>
-        /// Gets whether the current reader is running.
+        /// Artificially set the current reader for specific parse modes.
         /// </summary>
-        public static bool IsRunning
+        [System.Diagnostics.Conditional("DEBUG")]
+        internal static void SetParseMode(DataSource dataSource)
         {
-            get { return currentReader.IsRunning; }
+            if (IsRunning == false)
+            {
+                switch (dataSource)
+                {
+                    case DataSource.Log:
+                        currentReader = LogReader.Instance;
+                        break;
+                    case DataSource.Ram:
+                        currentReader = RamReader.Instance;
+                        break;
+                    case DataSource.Database:
+                        currentReader = DatabaseReader.Instance;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException("dataSourceType",
+                            string.Format("Unknown DataSource value: {0}", dataSource.ToString()));
+                }
+            }
         }
 
         /// <summary>
-        /// Gets the current parse mode, as far as the monitor is aware.
+        /// Initiate functions to analyze RAM when seeking for new Memloc.
         /// </summary>
-        public static DataSource ParseMode { get; private set; }
-
-        internal static DataSource TestParseMode
-        {
-            get { return ParseMode; }
-            set { if (IsRunning == false) ParseMode = value; }
-        }
-
+        [System.Diagnostics.Conditional("DEBUG")]
         public static void ScanRAM()
         {
             currentReader = RamReader.Instance;
             RamReader.Instance.ScanRAM();
         }
-
-        public static void Import(string inFilename, string outFilename)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
     }
 }
