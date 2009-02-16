@@ -33,7 +33,8 @@ namespace WaywardGamers.KParser
         [Test]
         public void TestStandardConstruction()
         {
-            string chatText = "01,00,00,80808080,00000019,00000017,0010,00,01,01,00,Motenten : one";
+            string chatText =
+                "01,00,00,80808080,00000019,00000017,0010,00,01,01,00,Motenten : one";
 
             DateTime timestamp = DateTime.Now;
             ChatLine chatLine = new ChatLine(chatText, timestamp);
@@ -250,16 +251,16 @@ namespace WaywardGamers.KParser
         }
 
         [Test]
-        public void TestTokenizeTimestampPluginRAM4()
+        public void TestTokenizeTimestampPluginRAMCorruptedConversion()
         {
             DateTime timestamp = DateTime.Now;
 
             DateTime pluginTimestamp = DateTime.Today;
-            pluginTimestamp = pluginTimestamp.AddHours(17);
-            pluginTimestamp = pluginTimestamp.AddMinutes(26);
-            pluginTimestamp = pluginTimestamp.AddSeconds(20);
+            pluginTimestamp = pluginTimestamp.AddHours(0);
+            pluginTimestamp = pluginTimestamp.AddMinutes(40);
+            pluginTimestamp = pluginTimestamp.AddSeconds(54);
 
-            string chatText = "05,00,00,8020c0a0,00000006,00000006,001d,00,01,01,00,ü[17:26:20] (Motenten) hmm";
+            string chatText = "01,00,00,80808080,00000009,00000009,001c,00,01,01,00,・00:40:54] Aluri : hello";
 
             ChatLine chatLine = new ChatLine(chatText, timestamp);
 
@@ -267,21 +268,21 @@ namespace WaywardGamers.KParser
 
             MessageLine msgLine = new MessageLine(chatLine);
 
-            Assert.That(msgLine.TextOutput, Is.EqualTo("(Motenten) hmm"));
+            Assert.That(msgLine.TextOutput, Is.EqualTo("Aluri : hello"));
             Assert.That(msgLine.Timestamp, Is.EqualTo(timestamp));
         }
 
         [Test]
-        public void TestTokenizeTimestampPluginLOG4()
+        public void TestTokenizeTimestampPluginLOGCorruptedConversion()
         {
             DateTime timestamp = DateTime.Now;
 
             DateTime pluginTimestamp = DateTime.Today;
-            pluginTimestamp = pluginTimestamp.AddHours(17);
-            pluginTimestamp = pluginTimestamp.AddMinutes(26);
-            pluginTimestamp = pluginTimestamp.AddSeconds(20);
+            pluginTimestamp = pluginTimestamp.AddHours(0);
+            pluginTimestamp = pluginTimestamp.AddMinutes(40);
+            pluginTimestamp = pluginTimestamp.AddSeconds(54);
 
-            string chatText = "05,00,00,8020c0a0,00000006,00000006,001d,00,01,01,00,ü[17:26:20] (Motenten) hmm";
+            string chatText = "01,00,00,80808080,00000009,00000009,001c,00,01,01,00,・00:40:54] Aluri : hello";
 
             ChatLine chatLine = new ChatLine(chatText, timestamp);
 
@@ -289,7 +290,7 @@ namespace WaywardGamers.KParser
 
             MessageLine msgLine = new MessageLine(chatLine);
 
-            Assert.That(msgLine.TextOutput, Is.EqualTo("(Motenten) hmm"));
+            Assert.That(msgLine.TextOutput, Is.EqualTo("Aluri : hello"));
             Assert.That(msgLine.Timestamp, Is.EqualTo(pluginTimestamp));
         }
         #endregion
