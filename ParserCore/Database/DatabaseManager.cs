@@ -94,7 +94,7 @@ namespace WaywardGamers.KParser
         public event DatabaseWatchEventHandler DatabaseChanging;
         public event DatabaseWatchEventHandler DatabaseChanged;
 
-        public event DatabaseReparseEventHandler ReparseProgressChanged;
+        public event ReaderStatusHandler ReparseProgressChanged;
 
         private bool disposed = false;
 
@@ -247,7 +247,7 @@ namespace WaywardGamers.KParser
                     if (message.Timestamp > mostRecentTimestamp)
                         mostRecentTimestamp = message.Timestamp;
 
-                    OnMessageProcessed(new DatabaseReparseEventArgs(++messageNumber, totalMessageCount, false));
+                    OnMessageProcessed(new ReaderStatusEventArgs(++messageNumber, totalMessageCount, false));
                 }
             }
             finally
@@ -299,7 +299,7 @@ namespace WaywardGamers.KParser
                 DoneParsing();
         }
 
-        private void OnMessageProcessed(DatabaseReparseEventArgs e)
+        private void OnMessageProcessed(ReaderStatusEventArgs e)
         {
             if (ReparseProgressChanged != null)
             {
