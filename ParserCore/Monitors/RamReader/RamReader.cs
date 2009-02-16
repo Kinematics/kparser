@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.IO;
+using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using WaywardGamers.KParser.Monitoring.Memory;
 
@@ -33,30 +34,25 @@ namespace WaywardGamers.KParser.Monitoring
         /// Gets the singleton instance of the LogParser class.
         /// This is the only internal way to access the singleton.
         /// </summary>
-        internal static RamReader Instance
-        {
-            get
-            {
-                return instance;
-            }
-        }
+        internal static RamReader Instance { get { return instance; } }
 
         /// <summary>
         /// Private constructor ensures singleton purity.
         /// </summary>
         private RamReader()
 		{
-            appSettings = new WaywardGamers.KParser.Properties.Settings();
         }
 		#endregion
 
         #region Member Variables
-        Properties.Settings appSettings;
+        Properties.Settings appSettings = new WaywardGamers.KParser.Properties.Settings();
+
         Thread readerThread;
 
+        int polPID = 0;
         POL pol;
-        ChatLogLocationInfo chatLogLocation;
         uint initialMemoryOffset;
+        ChatLogLocationInfo chatLogLocation;
 
         bool abortMonitorThread;
         #endregion
@@ -78,7 +74,9 @@ namespace WaywardGamers.KParser.Monitoring
             try
             {
                 // Reset the thread
-                if ((readerThread != null) && (readerThread.ThreadState == System.Threading.ThreadState.Running))
+                if ((readerThread != null) && 
+                    ((readerThread.ThreadState == System.Threading.ThreadState.Running) ||
+                     (readerThread.ThreadState == System.Threading.ThreadState.Background)))
                 {
                     readerThread.Abort();
                 }
@@ -86,11 +84,33 @@ namespace WaywardGamers.KParser.Monitoring
                 // Make sure we have the latest version of the app settings data.
                 appSettings.Reload();
 
-                // Add the event handler
-                this.ReaderDataChanged += new ReaderDataHandler(HandleReadData);
-
                 // Update the memory offset of the thread class before starting.
                 initialMemoryOffset = appSettings.MemoryOffset;
+
+                // If the user requests that they be allowed to specify the particular
+                // POL process, bring up a form to determine that value.  If not found
+                // or not requested, set the polPID to 0 to signal that the later
+                // functions should search for it normally.
+                if (appSettings.SpecifyPID == true)
+                {
+                    SelectPOLProcess selectPID = new SelectPOLProcess();
+                    if (selectPID.ShowDialog() == DialogResult.OK)
+                    {
+                        polPID = selectPID.SelectedPID;
+                    }
+                    else
+                    {
+                        polPID = 0;
+                    }
+                }
+                else
+                {
+                    polPID = 0;
+                }
+
+
+                // Add the event handler
+                this.ReaderDataChanged += new ReaderDataHandler(HandleReadData);
 
                 // Begin the thread
                 readerThread = new Thread(Monitor);
@@ -157,7 +177,7 @@ namespace WaywardGamers.KParser.Monitoring
         }
         #endregion
 
-        #region Monitoring Methods
+        #region Monitor RAM
         /// <summary>
         /// This function is run as a thread to read ram and raise events when new
         /// data shows up.
@@ -346,31 +366,53 @@ namespace WaywardGamers.KParser.Monitoring
         }
 
         /// <summary>
-        /// Find the offset for the ending line of the specified log.
+        /// Call this function rather than aborting the thread directly.
         /// </summary>
-        /// <param name="currentDetails"></param>
-        /// <param name="lineIndex"></param>
-        /// <returns></returns>
-        private int GetLineEndingOffset(ChatLogDetails currentDetails, int lineIndex)
+        internal void Abort()
         {
-            //If this is the very last line index (i.e. the chat log JUST filled up)
-            //make sure we don't step over the bounds.  Instead just set the next
-            //line offset to one byte after the end of the chat log.
-            if (lineIndex == currentDetails.Info.NumberOfLines - 1)
-                return (int)currentDetails.Info.FinalOffset;
-            else
-                return (int)currentDetails.Info.newLogOffsets[lineIndex + 1];
+            abortMonitorThread = true;
         }
+        #endregion
 
+        #region Utility functions for reading memory data
         /// <summary>
-        /// Extract the line number from the provided chat line for use
-        /// in tracking line position while monitoring RAM.
+        /// Fetch details such as how many lines are in the chat log, pointers to
+        /// the memory containing the actual text, etc.
         /// </summary>
-        /// <param name="chatLine">The chat line string.</param>
-        /// <returns>The parsed out line number.</returns>
-        private uint GetChatLineLineNumber(string chatLine)
+        /// <param name="chatLogLocation"></param>
+        /// <returns>Returns a completed ChatLogDetails object if successful.
+        /// If unsuccessful, returns null.</returns>
+        private ChatLogDetails ReadChatLogDetails(ChatLogLocationInfo chatLogLocation)
         {
-            return uint.Parse(chatLine.Substring(27, 8), System.Globalization.NumberStyles.AllowHexSpecifier);
+            IntPtr lineOffsetsBuffer = IntPtr.Zero;
+
+            try
+            {
+                // Layout of total structure we're reading:
+                // 50 offsets to new log records (short): 100 bytes
+                // 50 offsets to old log offsets (short): 100 bytes
+                // ChatLogInfoStruct block
+                uint bytesToRead = (uint)(Marshal.SizeOf(typeof(ChatLogInfoStruct)));
+
+                // Get the pointer to the overall structure.
+                lineOffsetsBuffer = PInvoke.ReadProcessMemory(pol.Process.Handle, chatLogLocation.ChatLogOffset, bytesToRead);
+
+                if (lineOffsetsBuffer != IntPtr.Zero)
+                {
+                    ChatLogDetails details = new ChatLogDetails();
+
+                    // Copy the structure from memory buffer to managed class.
+                    details.Info = (ChatLogInfoStruct)Marshal.PtrToStructure(lineOffsetsBuffer, typeof(ChatLogInfoStruct));
+
+                    return details;
+                }
+
+                return null;
+            }
+            finally
+            {
+                PInvoke.DoneReadingProcessMemory(lineOffsetsBuffer);
+            }
         }
 
         /// <summary>
@@ -405,7 +447,8 @@ namespace WaywardGamers.KParser.Monitoring
 
                 // Split the marshalled string on the null delimiter, but allow for an extra
                 // element in case of trailing data.
-                string[] splitStringArray = nullDelimitedChatLines.Split(new char[] { '\0' }, maxLinesToRead + 1);
+                string[] splitStringArray = nullDelimitedChatLines.Split(
+                    new char[] { '\0' }, maxLinesToRead + 1, StringSplitOptions.RemoveEmptyEntries);
 
                 string[] chatLineArray = new string[maxLinesToRead];
 
@@ -422,64 +465,31 @@ namespace WaywardGamers.KParser.Monitoring
         }
 
         /// <summary>
-        /// Fetch details such as how many lines are in the chat log, pointers to
-        /// the memory containing the actual text, etc.
+        /// Find the offset for the ending line of the specified log.
         /// </summary>
-        /// <param name="chatLogLocation"></param>
-        /// <returns>Returns a completed ChatLogDetails object if successful.
-        /// If unsuccessful, returns null.</returns>
-        private ChatLogDetails ReadChatLogDetails(ChatLogLocationInfo chatLogLocation)
+        /// <param name="currentDetails"></param>
+        /// <param name="lineIndex"></param>
+        /// <returns></returns>
+        private int GetLineEndingOffset(ChatLogDetails currentDetails, int lineIndex)
         {
-            IntPtr lineOffsetsBuffer = IntPtr.Zero;
-
-            try
-            {
-
-                // Layout of total structure we're reading:
-                // 50 offsets to new log records (short): 100 bytes
-                // 50 offsets to old log offsets (short): 100 bytes
-                // ChatLogInfoStruct block
-                uint bytesToRead = (uint)(Marshal.SizeOf(typeof(ChatLogInfoStruct)));
-
-                // Get the pointer to the overall structure.
-                lineOffsetsBuffer = PInvoke.ReadProcessMemory(pol.Process.Handle, chatLogLocation.ChatLogOffset, bytesToRead);
-
-                if (lineOffsetsBuffer != IntPtr.Zero)
-                {
-                    ChatLogDetails details = new ChatLogDetails();
-
-                    // Copy the structure from memory buffer to managed class.
-                    details.Info = (ChatLogInfoStruct)Marshal.PtrToStructure(lineOffsetsBuffer, typeof(ChatLogInfoStruct));
-
-                    return details;
-                }
-
-                return null;
-            }
-            finally
-            {
-                PInvoke.DoneReadingProcessMemory(lineOffsetsBuffer);
-            }
+            //If this is the very last line index (i.e. the chat log JUST filled up)
+            //make sure we don't step over the bounds.  Instead just set the next
+            //line offset to one byte after the end of the chat log.
+            if (lineIndex == currentDetails.Info.NumberOfLines - 1)
+                return (int)currentDetails.Info.FinalOffset;
+            else
+                return (int)currentDetails.Info.newLogOffsets[lineIndex + 1];
         }
 
         /// <summary>
-        /// Call this function rather than aborting the thread directly.
+        /// Extract the line number from the provided chat line for use
+        /// in tracking line position while monitoring RAM.
         /// </summary>
-        internal void Abort()
+        /// <param name="chatLine">The chat line string.</param>
+        /// <returns>The parsed out line number.</returns>
+        private uint GetChatLineLineNumber(string chatLine)
         {
-            abortMonitorThread = true;
-        }
-
-        /// <summary>
-        /// This is an event handler for if/when FFXI exits while we're still running
-        /// so that we can clean up properly.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        internal void polExited(object sender, EventArgs e)
-        {
-            // Halt monitoring
-            pol = null;
+            return uint.Parse(chatLine.Substring(27, 8), System.Globalization.NumberStyles.AllowHexSpecifier);
         }
         #endregion
 
@@ -492,8 +502,6 @@ namespace WaywardGamers.KParser.Monitoring
         /// false if monitoring was aborted before it was found.</returns>
         private bool FindFFXIProcess(bool scanning)
         {
-            KParser.Properties.Settings kpSettings = new WaywardGamers.KParser.Properties.Settings();
-
             // Keep going as long as we're still attempting to monitor
             while (abortMonitorThread == false)
             {
@@ -501,10 +509,9 @@ namespace WaywardGamers.KParser.Monitoring
                 {
                     Trace.WriteLine(Thread.CurrentThread.Name + ": Attempting to connect to Final Fantasy.");
 
-                    kpSettings.Reload();
-                    if (kpSettings.SpecifyPID == true)
+                    if (polPID != 0)
                     {
-                        Process processByID = Process.GetProcessById(kpSettings.RequestedPID);
+                        Process processByID = Process.GetProcessById(polPID);
 
                         if (string.Compare(processByID.ProcessName, "pol", true) == 0)
                         {
@@ -514,7 +521,7 @@ namespace WaywardGamers.KParser.Monitoring
                                 {
                                     Trace.WriteLine(string.Format("Module: {0}  Base Address: {1:X8}", module.ModuleName, module.BaseAddress));
                                     pol = new POL(processByID, module.BaseAddress);
-                                    processByID.Exited += new EventHandler(polExited);
+                                    processByID.Exited += new EventHandler(PolExited);
                                     // Turn this off if scanning ram:
                                     if (scanning == false)
                                         LocateChatLog();
@@ -525,7 +532,7 @@ namespace WaywardGamers.KParser.Monitoring
 
                         System.Windows.Forms.MessageBox.Show(
                             string.Format("Specified process ID ({0}) is not a POL process.",
-                              kpSettings.RequestedPID),
+                              polPID),
                             "Process not found", System.Windows.Forms.MessageBoxButtons.OK);
                     }
                     else
@@ -542,7 +549,7 @@ namespace WaywardGamers.KParser.Monitoring
                                     {
                                         Trace.WriteLine(string.Format("Module: {0}  Base Address: {1:X8}", module.ModuleName, module.BaseAddress));
                                         pol = new POL(process, module.BaseAddress);
-                                        process.Exited += new EventHandler(polExited);
+                                        process.Exited += new EventHandler(PolExited);
                                         // Turn this off if scanning ram:
                                         if (scanning == false)
                                             LocateChatLog();
@@ -564,6 +571,7 @@ namespace WaywardGamers.KParser.Monitoring
                 }
                 finally
                 {
+                    // Wait before trying again.
                     System.Threading.Thread.Sleep(5000);
                 }
             }
@@ -613,15 +621,29 @@ namespace WaywardGamers.KParser.Monitoring
 
                 //Finally, we've arrived at the address of the "line offsets arrays".  
                 //Save this, as we'll read the Line Offsets arrays later, and also use it
-                //to get to other interesting chat log related information.
+                //to get to other chat log related information.
                 chatLogLocation = new ChatLogLocationInfo(destination);
 
                 return;
             }
         }
+
+        /// <summary>
+        /// This is an event handler for if/when FFXI exits while we're still running
+        /// so that we can clean up properly.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        internal void PolExited(object sender, EventArgs e)
+        {
+            // Halt monitoring
+            Stop();
+            pol = null;
+        }
         #endregion
 
-        #region Functions for examining RAM to determine new base address
+        #region Utility functions for examining RAM to determine new base address
+        [Conditional("DEBUG")]
         internal void ScanRAM()
         {
             try
@@ -691,6 +713,7 @@ namespace WaywardGamers.KParser.Monitoring
             }
         }
 
+        [Conditional("DEBUG")]
         private void CheckStructure(uint checkAddress)
         {
             try
@@ -714,6 +737,7 @@ namespace WaywardGamers.KParser.Monitoring
             }
         }
 
+        [Conditional("DEBUG")]
         private void FindAddress(uint findTotalAddress)
         {
             uint scanMemoryOffset = 0;
@@ -753,6 +777,7 @@ namespace WaywardGamers.KParser.Monitoring
             }
         }
 
+        [Conditional("DEBUG")]
         private void FindString()
         {
             uint scanMemoryOffset = 0x029CF920;
