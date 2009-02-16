@@ -68,7 +68,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// Activate the file system watcher so that we can catch events when files change.
         /// If the option to parse existing files is true, run the parsing code on them.
         /// </summary>
-        public override void Run()
+        public override void Start()
         {
             IsRunning = true;
 
@@ -78,8 +78,7 @@ namespace WaywardGamers.KParser.Monitoring
                 appSettings.Reload();
 
                 // Verify the drive
-                string directoryRoot = Path.GetPathRoot(appSettings.FFXILogDirectory);
-                driveInfo = new DriveInfo(directoryRoot);
+                driveInfo = new DriveInfo(Path.GetPathRoot(appSettings.FFXILogDirectory));
 
                 if (driveInfo.IsReady == false)
                     throw new InvalidOperationException("Drive for the specified log directory is not available.");
@@ -176,19 +175,26 @@ namespace WaywardGamers.KParser.Monitoring
             if (IsRunning == false)
                 return;
 
-            // Stop watching for new files.
-            fileSystemWatcher.EnableRaisingEvents = false;
 
-            if (networkWatchTimer != null)
+            try
             {
-                networkWatchTimer.Dispose();
-                networkWatchTimer = null;
-            }
-        
-            // Notify MessageManager that we're done so it can turn off its timer loop.
-            MessageManager.Instance.StopParsing();
+                // Stop watching for new files.
+                fileSystemWatcher.EnableRaisingEvents = false;
 
-            IsRunning = false;
+                if (networkWatchTimer != null)
+                {
+                    networkWatchTimer.Dispose();
+                    networkWatchTimer = null;
+                }
+
+                // Notify MessageManager that we're done so it can turn off its timer loop.
+                MessageManager.Instance.StopParsing();
+
+            }
+            finally
+            {
+                IsRunning = false;
+            }
         }
 
 

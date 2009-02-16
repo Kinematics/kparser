@@ -7,7 +7,7 @@ namespace WaywardGamers.KParser.Interface
     /// </summary>
     internal interface IReader
     {
-        void Run();
+        void Start();
         void Stop();
 
         DataSource ParseModeType { get; }
