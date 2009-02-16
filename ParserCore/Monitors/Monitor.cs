@@ -40,7 +40,13 @@ namespace WaywardGamers.KParser
 
         #region Functions to start and stop monitoring.
 
-        public static void Start(DataSource dataSourceType, string sourceFile)
+        /// <summary>
+        /// Initiate monitoring of FFXI RAM/logs for data to be parsed.
+        /// </summary>
+        /// <param name="dataSourceType">The type of data source to monitor.</param>
+        /// <param name="outputFileName">The name of the database file
+        /// that the parsed data will be stored in.</param>
+        public static void Start(DataSource dataSourceType, string outputFileName)
         {
             if (currentReader.IsRunning == true)
                 throw new InvalidOperationException(string.Format(
@@ -62,35 +68,6 @@ namespace WaywardGamers.KParser
                         string.Format("Unknown DataSource value: {0}", dataSourceType.ToString()));
             }
 
-            currentReader.Start();
-        }
-
-
-        /// <summary>
-        /// Initiate monitoring of FFXI RAM/logs for data to be parsed.
-        /// </summary>
-        /// <param name="outputFileName">The name of the database file
-        /// that will be stored to.</param>
-        public static void Start(string outputFileName)
-        {
-            if (currentReader.IsRunning == true)
-                throw new InvalidOperationException(string.Format(
-                    "{0} is already running", currentReader.GetType().Name));
-
-            // Only reload settings values on Start.  Other calls between
-            // Starts will use whatever the setting was at the time of the
-            // last Start.
-            Properties.Settings settings = new Properties.Settings();
-            settings.Reload();
-
-            // Set the currentReader to the appropriate reader instance
-            // based on program settings.
-            if (settings.ParseMode == DataSource.Log)
-                currentReader = LogReader.Instance;
-            else
-                currentReader = RamReader.Instance;
-
-
             // Create the output database in preperation for a new run.
             DatabaseManager.Instance.CreateDatabase(outputFileName);
 
@@ -100,7 +77,7 @@ namespace WaywardGamers.KParser
         /// <summary>
         /// Continue parsing against an existing database.
         /// </summary>
-        public static void Continue()
+        public static void Continue(DataSource dataSourceType)
         {
             if (currentReader.IsRunning == true)
                 throw new InvalidOperationException(string.Format(
@@ -112,37 +89,21 @@ namespace WaywardGamers.KParser
                     "You must have a database already open in order to continue parsing.");
             }
 
-            // Only reload settings values on Start.  Other calls between
-            // Starts will use whatever the setting was at the time of the
-            // last Start.
-            Properties.Settings settings = new Properties.Settings();
-            settings.Reload();
-
-            // Set the currentReader to the appropriate reader instance
-            // based on program settings.
-            if (settings.ParseMode == DataSource.Log)
-                currentReader = LogReader.Instance;
-            else
-                currentReader = RamReader.Instance;
-
-            currentReader.Start();
-        }
-
-        /// <summary>
-        /// Reparse an existing database into a new one.
-        /// </summary>
-        /// <param name="outputFileName">The name of the new database.</param>
-        public static void Reparse(string inFilename, string outputFileName)
-        {
-            if (currentReader.IsRunning == true)
-                throw new InvalidOperationException(string.Format(
-                    "{0} is already running", currentReader.GetType().Name));
-
-            currentReader = DatabaseReader.Instance;
-
-            DatabaseManager.Instance.CreateDatabase(outputFileName);
-            System.Threading.Thread.Sleep(100);
-            DatabaseReadingManager.Instance.OpenDatabase(inFilename);
+            switch (dataSourceType)
+            {
+                case DataSource.Log:
+                    currentReader = LogReader.Instance;
+                    break;
+                case DataSource.Ram:
+                    currentReader = RamReader.Instance;
+                    break;
+                case DataSource.Database:
+                    currentReader = DatabaseReader.Instance;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("dataSourceType",
+                        string.Format("Unknown DataSource value: {0}", dataSourceType.ToString()));
+            }
 
             currentReader.Start();
         }
@@ -151,7 +112,7 @@ namespace WaywardGamers.KParser
         /// Import data from another parser's database (DVS, DirectParse, etc)
         /// </summary>
         /// <param name="outputFileName">The name of the new database.</param>
-        public static void Import(string inFilename, string outputFileName, ImportSource importSource)
+        public static void Import(string inFilename, string outputFileName, ImportSourceType importSource)
         {
             if (currentReader.IsRunning == true)
                 throw new InvalidOperationException(string.Format(
@@ -162,17 +123,24 @@ namespace WaywardGamers.KParser
             DatabaseManager.Instance.CreateDatabase(outputFileName);
             System.Threading.Thread.Sleep(100);
 
+            IDBReader dbReader;
+
             switch (importSource)
             {
-                case ImportSource.DirectParse:
-                case ImportSource.DVSParse:
-                    ImportDirectParseManager.Instance.OpenDatabase(inFilename);
+                case ImportSourceType.KParser:
+                    dbReader = KParserReadingManager.Instance;
+                    break;
+                case ImportSourceType.DirectParse:
+                case ImportSourceType.DVSParse:
+                    dbReader = DirectParseReadingManager.Instance;
                     break;
                 default:
                     throw new InvalidOperationException();
             }
 
-            currentReader.Import(importSource);
+            dbReader.OpenDatabase(inFilename);
+
+            currentReader.Import(importSource, dbReader);
         }
 
         /// <summary>
