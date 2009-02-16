@@ -1,15 +1,15 @@
 System requirements:
 
-.NET 3.5
+.NET 3.5 (SP1)
 
-Available from:
+Available at:
 
-http://www.microsoft.com/downloads/details.aspx?FamilyID=333325fd-ae52-4e35-b531-508d977d32a6&DisplayLang=en
+http://www.microsoft.com/downloads/details.aspx?familyid=ab99342f-5d1a-413d-8319-81da479ab0d7&displaylang=en
 
 
 SQLCE 3.5 SP1
 
-Available from:
+Available at:
 
 http://www.microsoft.com/downloads/details.aspx?FamilyId=DC614AEE-7E1C-4881-9C32-3A6CE53384D9&displaylang=en#filelist
 
