@@ -11,6 +11,7 @@ namespace WaywardGamers.KParser
     public class MMHook
     {
         // Allow direct injection of a message line to see how it behaves.
+        [System.Diagnostics.Conditional("DEBUG")]
         public static void Hook(string msg)
         {
             ChatLine cl = new ChatLine(msg);
