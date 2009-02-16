@@ -14,7 +14,7 @@ namespace WaywardGamers.KParser.Monitoring
     /// in order to monitor the FFXI process space and read
     /// log info to be parsed.
     /// </summary>
-    public class DatabaseReader : IReader
+    public class DatabaseReader : AbstractReader
     {
         #region Singleton Constructor
         // Make the class a singleton
@@ -71,15 +71,14 @@ namespace WaywardGamers.KParser.Monitoring
 
         #region Interface Control Methods and Properties
         /// <summary>
-        /// Gets (publicly) and sets (privately) the state of the
-        /// reader thread.
+        /// Return type of DataSource this reader works on.
         /// </summary>
-        public bool IsRunning { get; private set; }
+        public override DataSource ParseModeType { get { return DataSource.Database; } }
 
         /// <summary>
         /// Start a thread that reads log files for parsing.
         /// </summary>
-        public void Run()
+        public override void Run()
         {
             IsRunning = true;
 
@@ -172,7 +171,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// <summary>
         /// Stop the active reader thread.
         /// </summary>
-        public void Stop()
+        public override void Stop()
         {
             if (IsRunning == false)
                 return;
@@ -191,7 +190,7 @@ namespace WaywardGamers.KParser.Monitoring
         }
 
 
-        public void Import(ImportSource importSource)
+        public override void Import(ImportSource importSource)
         {
             switch (importSource)
             {
