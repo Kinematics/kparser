@@ -174,12 +174,6 @@ namespace WaywardGamers.KParser.Monitoring
                 IsRunning = false;
             }
         }
-
-
-        public override void Import(ImportSource importSource)
-        {
-            throw new InvalidOperationException();
-        }
         #endregion
 
         #region Implement specific monitoring functions

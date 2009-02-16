@@ -14,7 +14,7 @@ namespace WaywardGamers.KParser.Interface
 
         bool IsRunning { get; }
 
-        void Import(ImportSource importSource);
+        void Import(ImportSourceType importSource, IDBReader dbReaderManager);
 
         event ReaderDataHandler ReaderDataChanged;
         event ReaderStatusHandler ReaderStatusChanged;
