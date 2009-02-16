@@ -38,7 +38,7 @@ namespace WaywardGamers.KParser
         readonly ChatLine originalChatLine;
         #endregion
 
-        #region Message parsing regexes
+        #region Message parsing regexes (static data)
 
         // Regex describing general chat line format
         static Regex msgLineBreakdown = new Regex(
@@ -93,64 +93,61 @@ namespace WaywardGamers.KParser
 
             Match msgLineMatch = msgLineBreakdown.Match(msg);
 
-            if (msgLineMatch.Success == true)
-            {
-                MessageCode = uint.Parse(msgLineMatch.Groups["msgCode"].Value, NumberStyles.HexNumber);
-                ExtraCode1 = uint.Parse(msgLineMatch.Groups["xCode1"].Value, NumberStyles.HexNumber);
-                ExtraCode2 = uint.Parse(msgLineMatch.Groups["xCode2"].Value, NumberStyles.HexNumber);
-                TextColor = uint.Parse(msgLineMatch.Groups["msgColor"].Value, NumberStyles.HexNumber);
-                EventSequence = uint.Parse(msgLineMatch.Groups["eventSeq"].Value, NumberStyles.HexNumber);
-                UniqueSequence = uint.Parse(msgLineMatch.Groups["uniqSeq"].Value, NumberStyles.HexNumber);
-                TextLength = uint.Parse(msgLineMatch.Groups["strLen"].Value, NumberStyles.HexNumber);
-                MessageCategoryNumber = uint.Parse(msgLineMatch.Groups["msgCat"].Value, NumberStyles.HexNumber);
-
-                MessageCategory = (MessageCategoryType)MessageCategoryNumber;
-
-                // Extract Timestamp plugin data if present
-                if (msgLineMatch.Groups["tsPlugin"].Success == true)
-                {
-                    // If we're parsing from logs, use the Timestamp field to refine
-                    // the message timestamps.
-                    if (Monitor.ParseMode == DataSource.Log)
-                    {
-                        DateTime baseDate = originalChatLine.Timestamp.Date;
-                        TimeSpan pluginTime;
-                        if (TimeSpan.TryParse(msgLineMatch.Groups["time"].Value, out pluginTime))
-                        {
-                            baseDate += pluginTime;
-                            originalChatLine.Timestamp = baseDate;
-                        }
-                    }
-                }
-
-                // All leftover text gets put into the TextOuput property for further conversion.
-                TextOutput = msgLineMatch.Groups["remainder"].Value;
-
-
-                // Adjustments for words with special display markup
-                TextOutput = autoTrans.Replace(TextOutput, "[${autoTransWord}]");
-                TextOutput = itemWords.Replace(TextOutput, "${itemWord}");
-                TextOutput = keyItemWords.Replace(TextOutput, "${itemWord}");
-
-
-                // Remove other peculiar character values
-
-                // Drop the extraneous characters at the end of non-chat messages.
-                TextOutput = eolMark.Replace(TextOutput, "");
-
-                // Drop the extraneous characters at start (or middle, for moogles) of various messages.
-                TextOutput = clipText.Replace(TextOutput, "");
-
-                // Convert text encoding for display of JP characters
-                byte[] originalBytes = UnicodeEncoding.Default.GetBytes(TextOutput);
-                byte[] convertedBytes = Encoding.Convert(Encoding.GetEncoding("Shift-JIS"), Encoding.Unicode, originalBytes);
-                TextOutput = Encoding.Unicode.GetString(convertedBytes).Trim();
-
-            }
-            else
+            if (msgLineMatch.Success == false)
             {
                 throw new FormatException("Unable to parse the chat message:\n" + msg);
             }
+
+            MessageCode = uint.Parse(msgLineMatch.Groups["msgCode"].Value, NumberStyles.HexNumber);
+            ExtraCode1 = uint.Parse(msgLineMatch.Groups["xCode1"].Value, NumberStyles.HexNumber);
+            ExtraCode2 = uint.Parse(msgLineMatch.Groups["xCode2"].Value, NumberStyles.HexNumber);
+            TextColor = uint.Parse(msgLineMatch.Groups["msgColor"].Value, NumberStyles.HexNumber);
+            EventSequence = uint.Parse(msgLineMatch.Groups["eventSeq"].Value, NumberStyles.HexNumber);
+            UniqueSequence = uint.Parse(msgLineMatch.Groups["uniqSeq"].Value, NumberStyles.HexNumber);
+            TextLength = uint.Parse(msgLineMatch.Groups["strLen"].Value, NumberStyles.HexNumber);
+            MessageCategoryNumber = uint.Parse(msgLineMatch.Groups["msgCat"].Value, NumberStyles.HexNumber);
+
+            MessageCategory = (MessageCategoryType)MessageCategoryNumber;
+
+            // Extract Timestamp plugin data if present
+            if (msgLineMatch.Groups["tsPlugin"].Success == true)
+            {
+                // If we're parsing from logs, use the Timestamp field to refine
+                // the message timestamps.
+                if (Monitor.ParseMode == DataSource.Log)
+                {
+                    DateTime baseDate = originalChatLine.Timestamp.Date;
+                    TimeSpan pluginTime;
+                    if (TimeSpan.TryParse(msgLineMatch.Groups["time"].Value, out pluginTime))
+                    {
+                        baseDate += pluginTime;
+                        originalChatLine.Timestamp = baseDate;
+                    }
+                }
+            }
+
+            // All leftover text gets put into the TextOuput property for further conversion.
+            TextOutput = msgLineMatch.Groups["remainder"].Value;
+
+
+            // Adjustments for words with special display markup
+            TextOutput = autoTrans.Replace(TextOutput, "[${autoTransWord}]");
+            TextOutput = itemWords.Replace(TextOutput, "${itemWord}");
+            TextOutput = keyItemWords.Replace(TextOutput, "${itemWord}");
+
+
+            // Remove other peculiar character values
+
+            // Drop the extraneous characters at the end of non-chat messages.
+            TextOutput = eolMark.Replace(TextOutput, "");
+
+            // Drop the extraneous characters at start (or middle, for moogles) of various messages.
+            TextOutput = clipText.Replace(TextOutput, "");
+
+            // Convert text encoding for display of JP characters
+            byte[] originalBytes = UnicodeEncoding.Default.GetBytes(TextOutput);
+            byte[] convertedBytes = Encoding.Convert(Encoding.GetEncoding("Shift-JIS"), Encoding.Unicode, originalBytes);
+            TextOutput = Encoding.Unicode.GetString(convertedBytes).Trim();
         }
         #endregion
 
@@ -198,7 +195,7 @@ namespace WaywardGamers.KParser
         internal uint MessageCategoryNumber { get; private set; }
 
         /// <summary>
-        /// Get the message category.  Message category separates messages into
+        /// Get the message category enumeration.  Message category separates messages into
         /// three general types: system, chat and action/event/other.
         /// </summary>
         internal MessageCategoryType MessageCategory { get; private set; }
