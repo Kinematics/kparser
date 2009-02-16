@@ -6,6 +6,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using WaywardGamers.KParser.Monitoring.Memory;
+using WaywardGamers.KParser.Interface;
 
 namespace WaywardGamers.KParser.Monitoring
 {
@@ -146,12 +147,6 @@ namespace WaywardGamers.KParser.Monitoring
             MessageManager.Instance.StopParsing();
 
             IsRunning = false;
-        }
-
-
-        public override void Import(ImportSource importSource)
-        {
-            throw new InvalidOperationException();
         }
         #endregion
 

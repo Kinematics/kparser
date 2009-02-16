@@ -7,9 +7,15 @@ namespace WaywardGamers.KParser.Monitoring
     {
         #region IReader Members
 
-        public abstract void Start();
+        public virtual void Start()
+        {
+            throw new InvalidOperationException();
+        }
 
-        public abstract void Import(ImportSource importSource);
+        public virtual void Import(ImportSourceType importSource, IDBReader dbReaderManager)
+        {
+            throw new InvalidOperationException();
+        }
 
         public abstract void Stop();
 
