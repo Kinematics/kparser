@@ -10,8 +10,14 @@ namespace WaywardGamers.KParser.Interface
         void Run();
         void Stop();
 
+        DataSource ParseModeType { get; }
+
         bool IsRunning { get; }
 
         void Import(ImportSource importSource);
+
+        event ReaderDataHandler ReaderDataChanged;
+        event ReaderStatusHandler ReaderStatusChanged;
+
     }
 }
