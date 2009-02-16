@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{626318E4-447D-4BD7-BC3A-294A8E37B07F}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -128,6 +128,7 @@
     <Compile Include="Messages\Message.cs" />
     <Compile Include="Messages\MessageManager.cs" />
     <Compile Include="Messages\Parsing\Parser.cs" />
+    <Compile Include="Monitors\AbstractReader.cs" />
     <Compile Include="Monitors\DatabaseReader\DatabaseReader.cs" />
     <Compile Include="Monitors\LogReader\LogReader.cs" />
     <Compile Include="Monitors\Monitor.cs" />

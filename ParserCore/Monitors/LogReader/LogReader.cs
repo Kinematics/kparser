@@ -13,7 +13,7 @@ namespace WaywardGamers.KParser.Monitoring
     /// <summary>
     /// Class that handles parsing the FFXI Log files.
     /// </summary>
-    internal class LogReader : IReader
+    internal class LogReader : AbstractReader
     {
         #region Singleton Constructor
         // Make the class a singleton
@@ -58,17 +58,17 @@ namespace WaywardGamers.KParser.Monitoring
         #endregion
 
         #region Interface Control Methods and Properties
+
         /// <summary>
-        /// Gets (publicly) and sets (privately) the state of the
-        /// reader thread.
+        /// Return type of DataSource this reader works on.
         /// </summary>
-        public bool IsRunning { get; private set; }
+        public override DataSource ParseModeType { get { return DataSource.Log; } }
 
         /// <summary>
         /// Activate the file system watcher so that we can catch events when files change.
         /// If the option to parse existing files is true, run the parsing code on them.
         /// </summary>
-        public void Run()
+        public override void Run()
         {
             IsRunning = true;
 
@@ -171,7 +171,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// <summary>
         /// Stop monitoring the FFXI log directory.
         /// </summary>
-        public void Stop()
+        public override void Stop()
         {
             if (IsRunning == false)
                 return;
@@ -192,7 +192,7 @@ namespace WaywardGamers.KParser.Monitoring
         }
 
 
-        public void Import(ImportSource importSource)
+        public override void Import(ImportSource importSource)
         {
             throw new InvalidOperationException();
         }
