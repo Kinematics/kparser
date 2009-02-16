@@ -42,28 +42,16 @@ namespace WaywardGamers.KParser.Monitoring
 
         #region Member Variables
         private Thread readerThread;
-        private event DatabaseReparseEventHandler reparseProgressWatchers;
+        public event ReaderStatusHandler ReparseProgressChanged;
         #endregion
 
         #region Event Management
-        public DatabaseReparseEventHandler ReparseProgressChanged
+        protected virtual void OnRowProcessed(ReaderStatusEventArgs e)
         {
-            get
-            {
-                return reparseProgressWatchers;
-            }
-            set
-            {
-                reparseProgressWatchers = value;
-            }
-        }
-
-        protected virtual void OnRowProcessed(DatabaseReparseEventArgs e)
-        {
-            if (reparseProgressWatchers != null)
+            if (ReparseProgressChanged != null)
             {
                 // Invokes the delegates. 
-                reparseProgressWatchers(this, e);
+                ReparseProgressChanged(this, e);
             }
         }
 
@@ -78,7 +66,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// <summary>
         /// Start a thread that reads log files for parsing.
         /// </summary>
-        public override void Run()
+        public override void Start()
         {
             IsRunning = true;
 
@@ -136,7 +124,7 @@ namespace WaywardGamers.KParser.Monitoring
                             ChatLine chat = new ChatLine(logLine.MessageText, logLine.Timestamp);
                             MessageManager.Instance.AddChatLine(chat);
 
-                            OnRowProcessed(new DatabaseReparseEventArgs(rowCount, totalCount, completed));
+                            OnRowProcessed(new ReaderStatusEventArgs(rowCount, totalCount, completed));
                         }
 
                         completed = IsRunning;
@@ -163,7 +151,7 @@ namespace WaywardGamers.KParser.Monitoring
                 else
                     MessageManager.Instance.CancelParsing();
 
-                OnRowProcessed(new DatabaseReparseEventArgs(rowCount, totalCount, completed));
+                OnRowProcessed(new ReaderStatusEventArgs(rowCount, totalCount, completed));
                 DatabaseReadingManager.Instance.CloseDatabase();
             }
         }
@@ -318,7 +306,7 @@ namespace WaywardGamers.KParser.Monitoring
                                 MessageManager.Instance.AddChatLine(chat);
                             }
 
-                            OnRowProcessed(new DatabaseReparseEventArgs(rowCount, totalCount, completed));
+                            OnRowProcessed(new ReaderStatusEventArgs(rowCount, totalCount, completed));
                         }
 
                         completed = IsRunning;
@@ -341,7 +329,7 @@ namespace WaywardGamers.KParser.Monitoring
                 else
                     MessageManager.Instance.CancelParsing();
 
-                OnRowProcessed(new DatabaseReparseEventArgs(rowCount, totalCount, completed));
+                OnRowProcessed(new ReaderStatusEventArgs(rowCount, totalCount, completed));
                 ImportDirectParseManager.Instance.CloseDatabase();
             }
         }
