@@ -7,12 +7,12 @@ namespace WaywardGamers.KParser
 {
     public class ChatLine
     {
-        private string chatText = string.Empty;
+        private readonly string chatText;
         private DateTime timestamp = MagicNumbers.MinSQLDateTime;
 
-        public ChatLine(string chatText)
+        public ChatLine(string chatTextParam)
         {
-            this.chatText = chatText;
+            this.chatText = chatTextParam;
             this.timestamp = DateTime.Now;
         }
 
