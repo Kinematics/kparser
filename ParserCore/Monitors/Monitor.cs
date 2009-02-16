@@ -62,7 +62,7 @@ namespace WaywardGamers.KParser
                         string.Format("Unknown DataSource value: {0}", dataSourceType.ToString()));
             }
 
-            currentReader.Run();
+            currentReader.Start();
         }
 
 
@@ -94,7 +94,7 @@ namespace WaywardGamers.KParser
             // Create the output database in preperation for a new run.
             DatabaseManager.Instance.CreateDatabase(outputFileName);
 
-            currentReader.Run();
+            currentReader.Start();
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace WaywardGamers.KParser
             else
                 currentReader = RamReader.Instance;
 
-            currentReader.Run();
+            currentReader.Start();
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace WaywardGamers.KParser
             System.Threading.Thread.Sleep(100);
             DatabaseReadingManager.Instance.OpenDatabase(inFilename);
 
-            currentReader.Run();
+            currentReader.Start();
         }
 
         /// <summary>

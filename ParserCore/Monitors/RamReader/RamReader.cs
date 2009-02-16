@@ -71,7 +71,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// <summary>
         /// Start a thread that reads log files for parsing.
         /// </summary>
-        public override void Run()
+        public override void Start()
         {
             IsRunning = true;
 

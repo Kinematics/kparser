@@ -7,7 +7,7 @@ namespace WaywardGamers.KParser.Monitoring
     {
         #region IReader Members
 
-        public abstract void Run();
+        public abstract void Start();
 
         public abstract void Import(ImportSource importSource);
 
