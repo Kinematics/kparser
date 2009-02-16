@@ -1,5 +1,13 @@
 KParser Change Log
 
+1.2.2 (Feb 15, 2009)
+- Work around problem of the Windower Timestamp plugin causing chat text to get corrupted (and thus prevent parsing) if the user has Japanese as their primary system language.
+- Misc bug fixes and cleanup.
+
+
+1.2.1.1 (Feb 6, 2009)
+- Fix menu handler for editing player information.
+
 
 1.2.1 (Feb 5, 2009)
 - Fix bug of crash if there are DLLs in the program directory that don't belong to KParser.
