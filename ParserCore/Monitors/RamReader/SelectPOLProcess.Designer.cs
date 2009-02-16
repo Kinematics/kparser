@@ -1,4 +1,4 @@
-﻿namespace WaywardGamers.KParser.Forms
+﻿namespace WaywardGamers.KParser.Monitoring
 {
     partial class SelectPOLProcess
     {
@@ -99,7 +99,6 @@
             this.ShowInTaskbar = false;
             this.Text = "Select POL Process";
             this.Load += new System.EventHandler(this.SelectPOLProcess_Load);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SelectPOLProcess_FormClosing);
             this.ResumeLayout(false);
 
         }

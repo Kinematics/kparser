@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
 
-namespace WaywardGamers.KParser.Forms
+namespace WaywardGamers.KParser.Monitoring
 {
     public partial class SelectPOLProcess : Form
     {
@@ -19,6 +19,27 @@ namespace WaywardGamers.KParser.Forms
         }
 
         Process[] polProcesses;
+        #endregion
+
+        #region Properties
+        public int SelectedPID
+        {
+            get
+            {
+                if (polProcesses.Length == 0)
+                    return 0;
+
+                if (processList.SelectedIndex < 0)
+                    return 0;
+
+                Process selectedProcess = polProcesses[processList.SelectedIndex];
+
+                if (selectedProcess != null)
+                    return selectedProcess.Id;
+
+                return 0;
+            }
+        }
         #endregion
 
         #region Event handlers - initializing
@@ -68,35 +89,6 @@ namespace WaywardGamers.KParser.Forms
         private void cancel_MouseClick(object sender, MouseEventArgs e)
         {
             this.Close();
-        }
-
-        private void SelectPOLProcess_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if ((e.CloseReason == CloseReason.UserClosing) ||
-                (e.CloseReason == CloseReason.None))
-            {
-                if (this.DialogResult == DialogResult.OK)
-                {
-                    if (processList.SelectedItem == null)
-                    {
-                        MessageBox.Show("No process has been selected.",
-                           "Process not selected.", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        e.Cancel = true;
-                    }
-
-                    Properties.Settings settings = new WaywardGamers.KParser.Properties.Settings();
-
-                    if (polProcesses.Length > 0)
-                    {
-                        Process selectedProcess = polProcesses[processList.SelectedIndex];
-
-                        if (selectedProcess != null)
-                            settings.RequestedPID = selectedProcess.Id;
-
-                        settings.Save();
-                    }
-                }
-            }
         }
         #endregion
     }

@@ -135,6 +135,12 @@
     <Compile Include="Monitors\RamReader\MemoryAccess.cs" />
     <Compile Include="Monitors\RamReader\PInvoke.cs" />
     <Compile Include="Monitors\RamReader\RamReader.cs" />
+    <Compile Include="Monitors\RamReader\SelectPOLProcess.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Monitors\RamReader\SelectPOLProcess.Designer.cs">
+      <DependentUpon>SelectPOLProcess.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -224,6 +230,10 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="KPDatabase.sdf">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.resx">
+      <DependentUpon>SelectPOLProcess.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
