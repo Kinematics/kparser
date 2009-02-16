@@ -130,7 +130,7 @@ namespace WaywardGamers.KParser.Monitoring
                 if (driveInfo.DriveType == DriveType.Fixed)
                     fileSystemWatcher.EnableRaisingEvents = true;
                 else if (driveInfo.DriveType == DriveType.Network)
-                    StartMonitorNetworkDrive();
+                    StartMonitoringNetworkDrive();
             }
             catch (Exception)
             {
@@ -207,13 +207,21 @@ namespace WaywardGamers.KParser.Monitoring
             }
         }
 
-        private void StartMonitorNetworkDrive()
+        /// <summary>
+        /// Initiate the timer for periodic polling of the network drive.
+        /// </summary>
+        private void StartMonitoringNetworkDrive()
         {
             // Create timer to run every 5 seconds.
             networkWatchTimestamp = DateTime.Now;
             networkWatchTimer = new Timer(MonitorNetworkDrive, null, 5000, 5000);
         }
 
+        /// <summary>
+        /// Examine the network drive for file changes.  Process any newly modified files
+        /// by creating a bogus event to mimic the local drive monitoring code.
+        /// </summary>
+        /// <param name="stateInfo">Unused.</param>
         private void MonitorNetworkDrive(Object stateInfo)
         {
             string[] files = Directory.GetFiles(WatchDirectory, "*.log");
@@ -249,7 +257,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// in the log directory.
         /// </summary>
         /// <param name="source"></param>
-        /// <param name="e"></param>
+        /// <param name="e">EventArgs about the file that changed.</param>
         private void MonitorLogDirectory(object source, FileSystemEventArgs eArg)
         {
             try
