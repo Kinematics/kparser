@@ -537,15 +537,15 @@ namespace WaywardGamers.KParser
         /// Insert raw (pre-parsed) message lines to the database for consistency.
         /// </summary>
         /// <param name="messageLine"></param>
-        internal void AddMessageToRecordLog(MessageLine messageLine)
+        internal void AddChatLineToRecordLog(ChatLine chatLine)
         {
             // Set ParseSuccessful to False at this point since we don't know the parse outcome.
             try
             {
                 databaseAccessMutex.WaitOne();
 
-                if (messageLine != null)
-                    localDB.RecordLog.AddRecordLogRow(messageLine.Timestamp, messageLine.OriginalText, false);
+                if (chatLine != null)
+                    localDB.RecordLog.AddRecordLogRow(chatLine.Timestamp, chatLine.ChatText, false);
             }
             finally
             {
