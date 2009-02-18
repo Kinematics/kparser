@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 
-namespace WaywardGamers.KParser
+namespace WaywardGamers.KParser.Messages
 {
     [TestFixture]
     public class TestMessage
