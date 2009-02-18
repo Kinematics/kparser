@@ -98,6 +98,11 @@
       <DependentUpon>BasePluginControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Interface\IPlugin.cs" />
+    <Compile Include="Messages\ParsingManagers\EntityManager.cs" />
+    <Compile Include="Messages\ParsingManagers\MsgManager.cs" />
+    <Compile Include="Monitors\LogReader\LogReaderWorker.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Utility\PluginUtilities.cs" />
     <Compile Include="Utility\RTFStringMods.cs" />
     <Compile Include="KPDatabaseDataSet.cs">
