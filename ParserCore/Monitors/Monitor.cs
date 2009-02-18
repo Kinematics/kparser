@@ -38,8 +38,29 @@ namespace WaywardGamers.KParser
         }
         #endregion
 
-        #region Functions to start and stop monitoring.
+        #region Functions to add and remove listeners to the current reader
+        public static void AddDataListener(ReaderDataHandler listener)
+        {
+            currentReader.ReaderDataChanged += listener;
+        }
 
+        public static void RemoveDataListener(ReaderDataHandler listener)
+        {
+            currentReader.ReaderDataChanged -= listener;
+        }
+
+        public static void AddStatusListener(ReaderStatusHandler listener)
+        {
+            currentReader.ReaderStatusChanged += listener;
+        }
+
+        public static void RemoveStatusListener(ReaderStatusHandler listener)
+        {
+            currentReader.ReaderStatusChanged -= listener;
+        }
+        #endregion
+
+        #region Functions to start and stop monitoring.
         /// <summary>
         /// Initiate monitoring of FFXI RAM/logs for data to be parsed.
         /// </summary>
@@ -51,6 +72,8 @@ namespace WaywardGamers.KParser
             if (currentReader.IsRunning == true)
                 throw new InvalidOperationException(string.Format(
                     "{0} is already running", currentReader.GetType().Name));
+
+            
 
             switch (dataSourceType)
             {
