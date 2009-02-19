@@ -654,7 +654,7 @@ namespace WaywardGamers.KParser.Plugin
 
         void optionsMenu_DropDownOpening(object sender, EventArgs e)
         {
-            groupMobsOption.Enabled = !Monitor.IsRunning;
+            groupMobsOption.Enabled = !Monitoring.Monitor.IsRunning;
         }
         #endregion
     }
