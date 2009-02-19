@@ -108,20 +108,12 @@ namespace WaywardGamers.KParser.Monitoring
                 if ((driveInfo.DriveType != DriveType.Fixed) && (driveInfo.DriveType != DriveType.Network))
                     throw new InvalidOperationException("Drive is not of a type that can be monitored.");
 
-
-                // Notify MessageManager that we're starting (preparatory).
-                MessageManager.Instance.PrepareToStartParsing();
-
                 // Run the parser on any logs already in existance before starting to monitor,
                 // if that option is set.
                 if (appSettings.ParseExistingLogs == true)
                 {
                     ReadExistingFFXILogs();
                 }
-
-                // Notify MessageManager that we're starting.
-                MessageManager.Instance.StartParsing(true);
-
 
                 // Set up monitoring of log files for changes.
                 fileSystemWatcher.Path = WatchDirectory;
@@ -141,7 +133,6 @@ namespace WaywardGamers.KParser.Monitoring
                     networkWatchTimer.Dispose();
                     networkWatchTimer = null;
                 }
-                MessageManager.Instance.CancelParsing();
                 throw;
             }
         }
@@ -164,10 +155,6 @@ namespace WaywardGamers.KParser.Monitoring
                     networkWatchTimer.Dispose();
                     networkWatchTimer = null;
                 }
-
-                // Notify MessageManager that we're done so it can turn off its timer loop.
-                MessageManager.Instance.StopParsing();
-
             }
             finally
             {
@@ -370,12 +357,7 @@ namespace WaywardGamers.KParser.Monitoring
                 {
                     try
                     {
-                        ChatLine chatLine = new ChatLine(line, timeStamp);
-                        chatLines.Add(chatLine);
-
-                        // TODO: Remove this once the MessageManager is set up to
-                        // watch for the event handler pushes.
-                        MessageManager.Instance.AddChatLine(chatLine);
+                        chatLines.Add(new ChatLine(line, timeStamp));
                     }
                     catch (Exception ex)
                     {

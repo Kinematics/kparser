@@ -109,24 +109,15 @@ namespace WaywardGamers.KParser.Monitoring
                     polPID = 0;
                 }
 
-
-                // Add the event handler
-                this.ReaderDataChanged += new ReaderDataHandler(HandleReadData);
-
                 // Begin the thread
                 readerThread = new Thread(Monitor);
                 readerThread.IsBackground = true;
                 readerThread.Name = "Memory Monitor Thread";
                 readerThread.Start();
-
-                // Notify MessageManager that we're starting.
-                MessageManager.Instance.StartParsing(true);
             }
             catch (Exception)
             {
                 IsRunning = false;
-                this.ReaderDataChanged -= new ReaderDataHandler(HandleReadData);
-                MessageManager.Instance.CancelParsing();
                 throw;
             }
         }
@@ -139,36 +130,9 @@ namespace WaywardGamers.KParser.Monitoring
             if (IsRunning == false)
                 return;
 
-            // Remove event handler and stop thread.
-            this.ReaderDataChanged -= new ReaderDataHandler(HandleReadData);
             Abort();
 
-            // Notify MessageManager that we're done so it can turn off its timer loop.
-            MessageManager.Instance.StopParsing();
-
             IsRunning = false;
-        }
-        #endregion
-
-        #region Event handlers
-        /// <summary>
-        /// Event handler for when new chat data is being processed.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void HandleReadData(object sender, ReaderDataEventArgs e)
-        {
-            if (e == null)
-            {
-                // Notification that the ram watcher lost connection to FFXI
-                return;
-            }
-
-            // Incoming ram data in e. Process it
-            foreach (ChatLine chat in e.ChatLines)
-            {
-                MessageManager.Instance.AddChatLine(chat);
-            }
         }
         #endregion
 
