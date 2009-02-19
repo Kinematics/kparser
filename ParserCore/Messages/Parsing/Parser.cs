@@ -46,7 +46,7 @@ namespace WaywardGamers.KParser.Parsing
                         ((message.EventDetails.CombatDetails.SuccessLevel != SuccessType.Failed) ||
                          (message.EventDetails.CombatDetails.ActionType == ActionType.Spell)))
                     {
-                        Message prevMsg = MessageManager.Instance.FindLastMessageToMatch(messageLine,
+                        Message prevMsg = MsgManager.Instance.FindLastMessageToMatch(messageLine,
                             ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), message);
 
                         if (prevMsg != null)
@@ -84,27 +84,27 @@ namespace WaywardGamers.KParser.Parsing
                     {
                         // self-samba
                         case 0x1e:
-                            msg = MessageManager.Instance.FindLastMessageToMatch(messageLine,
+                            msg = MsgManager.Instance.FindLastMessageToMatch(messageLine,
                                 new List<uint> {0x14}, null);
                             break;
                         // party-samba
                         case 0x22:
-                            msg = MessageManager.Instance.FindLastMessageToMatch(messageLine,
+                            msg = MsgManager.Instance.FindLastMessageToMatch(messageLine,
                                 new List<uint> { 0x19 }, null);
                             break;
                         // ally drain effect/samba(?)
                         case 0xbb:
-                            msg = MessageManager.Instance.FindLastMessageToMatch(messageLine,
+                            msg = MsgManager.Instance.FindLastMessageToMatch(messageLine,
                                 new List<uint> { 0xa3 }, null);
                             break;
                         // other-samba
                         case 0x2a:
-                            msg = MessageManager.Instance.FindLastMessageToMatch(messageLine,
+                            msg = MsgManager.Instance.FindLastMessageToMatch(messageLine,
                                 new List<uint> { 0x28 }, null);
                             break;
                         // Anything else
                         default:
-                            msg = MessageManager.Instance.FindLastMessageToMatch(messageLine,
+                            msg = MsgManager.Instance.FindLastMessageToMatch(messageLine,
                                 ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), null);
                             break;
                     }
@@ -118,7 +118,7 @@ namespace WaywardGamers.KParser.Parsing
                     {
                         // Recovery (possible AOE)
                         case 0x17:
-                            msg = MessageManager.Instance.FindLastMessageToMatch(messageLine,
+                            msg = MsgManager.Instance.FindLastMessageToMatch(messageLine,
                                 new List<uint> { 0x1f }, null);
                             break;
                     }
@@ -127,7 +127,7 @@ namespace WaywardGamers.KParser.Parsing
                 return msg;
             }
 
-            msg = MessageManager.Instance.FindMessageWithEventNumber(messageLine.EventSequence);
+            msg = MsgManager.Instance.FindMessageWithEventNumber(messageLine.EventSequence);
 
             return msg;
         }
@@ -2205,7 +2205,7 @@ namespace WaywardGamers.KParser.Parsing
                     {
                         // Only for players.  Mobs use other ability names to charm players.
                         // Mob type has been charmed.  Add to the entity lookup list as a pet.
-                        MessageManager.Instance.AddPetEntity(target.Name);
+                        EntityManager.Instance.AddPetEntity(target.Name);
                         target.EntityType = EntityType.Pet;
                         msgCombatDetails.ActorEntityType = EntityType.Player;
                     }
