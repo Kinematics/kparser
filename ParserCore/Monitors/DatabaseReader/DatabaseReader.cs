@@ -87,15 +87,13 @@ namespace WaywardGamers.KParser.Monitoring
                 readerThread.IsBackground = true;
                 readerThread.Name = "Read database thread";
                 readerThread.Start();
-
-                // Notify MessageManager that we're starting.
-                MessageManager.Instance.StartParsing(false);
             }
             catch (Exception e)
             {
                 Logger.Instance.Log(e);
                 IsRunning = false;
-                MessageManager.Instance.CancelParsing();
+                OnReaderStatusChanged(new ReaderStatusEventArgs(0, 0, false, true));
+
                 dbReaderManager.CloseDatabase();
             }
 
@@ -107,12 +105,6 @@ namespace WaywardGamers.KParser.Monitoring
         /// </summary>
         public override void Stop()
         {
-            if (IsRunning == false)
-                return;
-
-            // Notify MessageManager that we're done so it can turn off its timer loop.
-            MessageManager.Instance.CancelParsing();
-
             //if ((readerThread != null) &&
             //    ((readerThread.ThreadState == System.Threading.ThreadState.Running) ||
             //    (readerThread.ThreadState == System.Threading.ThreadState.Background)))
@@ -143,6 +135,8 @@ namespace WaywardGamers.KParser.Monitoring
                 KPDatabaseReadOnly readDataSet = readingManager.Database;
                 if (readDataSet != null)
                 {
+                    List<ChatLine> chatLines = new List<ChatLine>(100);
+
                     totalCount = readDataSet.RecordLog.Count;
 
                     // Read the (fixed) record log from the database, reconstruct
@@ -155,10 +149,20 @@ namespace WaywardGamers.KParser.Monitoring
                             if (IsRunning == false)
                                 break;
 
-                            ChatLine chat = new ChatLine(logLine.MessageText, logLine.Timestamp);
-                            MessageManager.Instance.AddChatLine(chat);
+                            chatLines.Add(new ChatLine(logLine.MessageText, logLine.Timestamp));
 
-                            OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed));
+                            OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed, false));
+
+                            if (chatLines.Count > 99)
+                            {
+                                OnReaderDataChanged(new ReaderDataEventArgs(chatLines));
+                                chatLines = new List<ChatLine>(100);
+                            }
+                        }
+
+                        if (chatLines.Count > 0)
+                        {
+                            OnReaderDataChanged(new ReaderDataEventArgs(chatLines));
                         }
 
                         completed = IsRunning;
@@ -180,12 +184,7 @@ namespace WaywardGamers.KParser.Monitoring
             finally
             {
                 IsRunning = false;
-                if (completed == true)
-                    MessageManager.Instance.StopParsing();
-                else
-                    MessageManager.Instance.CancelParsing();
-
-                OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed));
+                OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed, (completed == false)));
                 dbReaderManager.CloseDatabase();
             }
         }
@@ -204,6 +203,8 @@ namespace WaywardGamers.KParser.Monitoring
             string breakCodesChars;
             uint breakCharVal;
             char breakChar;
+
+            List<ChatLine> chatLines = new List<ChatLine>(100);
 
             // For DVSD files:
             // logLine.RawHeader == "bf,00,00,60808080,00000288,000002f1,0034,00,01,00,00,(1E011E01)"
@@ -275,11 +276,21 @@ namespace WaywardGamers.KParser.Monitoring
 
                                 originalChatLine += logLine.Text;
 
-                                ChatLine chat = new ChatLine(originalChatLine, logLine.DateTime);
-                                MessageManager.Instance.AddChatLine(chat);
+                                chatLines.Add(new ChatLine(originalChatLine, logLine.DateTime));
                             }
 
-                            OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed));
+                            OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed, false));
+
+                            if (chatLines.Count > 99)
+                            {
+                                OnReaderDataChanged(new ReaderDataEventArgs(chatLines));
+                                chatLines = new List<ChatLine>(100);
+                            }
+                        }
+
+                        if (chatLines.Count > 0)
+                        {
+                            OnReaderDataChanged(new ReaderDataEventArgs(chatLines));
                         }
 
                         completed = IsRunning;
@@ -297,12 +308,7 @@ namespace WaywardGamers.KParser.Monitoring
             finally
             {
                 IsRunning = false;
-                if (completed == true)
-                    MessageManager.Instance.StopParsing();
-                else
-                    MessageManager.Instance.CancelParsing();
-
-                OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed));
+                OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed, (completed != true)));
                 dbReaderManager.CloseDatabase();
             }
         }
