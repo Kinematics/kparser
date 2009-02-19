@@ -24,7 +24,7 @@ namespace WaywardGamers.KParser.Parsing
             }
 
             // Check if we already have this name in the entity list.  If so, use that.
-            EntityType entityType = MessageManager.Instance.LookupEntity(entityName);
+            EntityType entityType = EntityManager.Instance.LookupEntity(entityName);
             if (entityType != EntityType.Unknown)
                 return entityType;
 
@@ -100,8 +100,8 @@ namespace WaywardGamers.KParser.Parsing
             // Handle identifying charmed pet entities
             if (target.EntityType == EntityType.Mob && combatDetails.ActorEntityType == EntityType.Mob)
             {
-                EntityType checkTarg = MessageManager.Instance.LookupPetEntity(target.Name);
-                EntityType checkActor = MessageManager.Instance.LookupPetEntity(combatDetails.ActorName);
+                EntityType checkTarg = EntityManager.Instance.LookupPetEntity(target.Name);
+                EntityType checkActor = EntityManager.Instance.LookupPetEntity(combatDetails.ActorName);
 
                 if ((checkActor == EntityType.Pet) ^ (checkTarg == EntityType.Pet))
                 {
@@ -115,7 +115,7 @@ namespace WaywardGamers.KParser.Parsing
                 {
                     // If both show up as being a pet, check the last charmed mob
                     // to break the tie.
-                    string lastPetName = MessageManager.Instance.LastAddedPetEntity;
+                    string lastPetName = EntityManager.Instance.LastAddedPetEntity;
 
                     if (lastPetName != string.Empty)
                     {
@@ -184,7 +184,7 @@ namespace WaywardGamers.KParser.Parsing
                 if (checkActor == EntityType.Mob)
                 {
                     combatDetails.ActorEntityType = EntityType.Mob;
-                    MessageManager.Instance.OverridePlayerToMob(combatDetails.ActorName);
+                    EntityManager.Instance.OverridePlayerToMob(combatDetails.ActorName);
                     return;
                 }
 
@@ -192,7 +192,7 @@ namespace WaywardGamers.KParser.Parsing
                 if (checkTarget == EntityType.Mob)
                 {
                     target.EntityType = EntityType.Mob;
-                    MessageManager.Instance.OverridePlayerToMob(target.Name);
+                    EntityManager.Instance.OverridePlayerToMob(target.Name);
                     return;
                 }
 
