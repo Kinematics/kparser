@@ -247,11 +247,16 @@ namespace WaywardGamers.KParser
                     if (message.Timestamp > mostRecentTimestamp)
                         mostRecentTimestamp = message.Timestamp;
 
-                    OnMessageProcessed(new ReaderStatusEventArgs(++messageNumber, totalMessageCount, false));
+                    OnMessageProcessed(new ReaderStatusEventArgs(++messageNumber, totalMessageCount, false, false));
                 }
+            }
+            catch
+            {
+                OnMessageProcessed(new ReaderStatusEventArgs(++messageNumber, totalMessageCount, false, true));
             }
             finally
             {
+                OnMessageProcessed(new ReaderStatusEventArgs(++messageNumber, totalMessageCount, true, false));
                 databaseAccessMutex.ReleaseMutex();
             }
 
