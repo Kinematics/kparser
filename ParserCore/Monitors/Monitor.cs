@@ -1,8 +1,8 @@
 ﻿using System;
-using WaywardGamers.KParser.Monitoring;
 using WaywardGamers.KParser.Interface;
+using WaywardGamers.KParser.Parsing;
 
-namespace WaywardGamers.KParser
+namespace WaywardGamers.KParser.Monitoring
 {
     /// <summary>
     /// Class to handle directing requests to start and stop monitoring
@@ -15,6 +15,14 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Current reader properties
+        /// <summary>
+        /// Gets the current reader.
+        /// </summary>
+        public static IReader CurrentReader
+        {
+            get { return currentReader; }
+        }
+
         /// <summary>
         /// Gets whether the current reader is running.
         /// </summary>
@@ -73,8 +81,6 @@ namespace WaywardGamers.KParser
                 throw new InvalidOperationException(string.Format(
                     "{0} is already running", currentReader.GetType().Name));
 
-            
-
             switch (dataSourceType)
             {
                 case DataSource.Log:
@@ -94,7 +100,16 @@ namespace WaywardGamers.KParser
             // Create the output database in preperation for a new run.
             DatabaseManager.Instance.CreateDatabase(outputFileName);
 
-            currentReader.Start();
+            try
+            {
+                MsgManager.Instance.ListenToThisReader(currentReader);
+                currentReader.Start();
+            }
+            catch (Exception)
+            {
+                MsgManager.Instance.StopListeningToThisReader(currentReader);
+                throw;
+            }
         }
 
         /// <summary>
@@ -163,6 +178,7 @@ namespace WaywardGamers.KParser
 
             dbReader.OpenDatabase(inFilename);
 
+            currentReader.ReaderStatusChanged += MonitorReaderStatus;
             currentReader.Import(importSource, dbReader);
         }
 
@@ -172,6 +188,18 @@ namespace WaywardGamers.KParser
         public static void Stop()
         {
             currentReader.Stop();
+            MsgManager.Instance.StopListeningToThisReader(currentReader);
+
+            currentReader.ReaderStatusChanged -= MonitorReaderStatus;
+        }
+
+        private static void MonitorReaderStatus(object sender, ReaderStatusEventArgs readerStatus)
+        {
+            if ((readerStatus.Completed == true) || (readerStatus.Failed == true))
+            {
+                MsgManager.Instance.StopListeningToThisReader(currentReader);
+                currentReader.ReaderStatusChanged -= MonitorReaderStatus;
+            }
         }
         #endregion
 
