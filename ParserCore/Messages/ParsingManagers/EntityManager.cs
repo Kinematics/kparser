@@ -239,9 +239,31 @@ namespace WaywardGamers.KParser.Parsing
         #region Debugging output
         internal void DumpData(StreamWriter sw)
         {
-            foreach (var entity in entityCollection)
+            if (sw == null)
+                throw new ArgumentNullException("sw");
+
+            if (sw.BaseStream.CanWrite == false)
+                throw new InvalidOperationException("Provided stream does not support writing.");
+
+            if (entityCollection.Count > 0)
             {
-                sw.WriteLine(string.Format("{0}{1}", entity.Key.PadRight(32), entity.Value));
+                sw.WriteLine("".PadRight(42, '-'));
+                sw.WriteLine("Entity List\n");
+                sw.WriteLine(string.Format("{0}{1}", "Name".PadRight(32), "Type"));
+                sw.WriteLine(string.Format("{0}    {1}", "".PadRight(28, '-'), "".PadRight(10, '-')));
+
+                foreach (var entity in entityCollection)
+                {
+                    sw.WriteLine(string.Format("{0}{1}", entity.Key.PadRight(32), entity.Value));
+                }
+
+                sw.WriteLine("".PadRight(42, '-'));
+                sw.WriteLine();
+            }
+            else
+            {
+                sw.WriteLine("".PadRight(42, '-'));
+                sw.WriteLine("Entity List is Empty\n");
             }
         }
         #endregion
