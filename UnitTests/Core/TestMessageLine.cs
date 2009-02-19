@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using WaywardGamers.KParser.Monitoring;
 
 namespace WaywardGamers.KParser.Messages
 {
