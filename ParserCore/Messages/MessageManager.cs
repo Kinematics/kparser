@@ -600,7 +600,7 @@ namespace WaywardGamers.KParser
                 // --
 
 
-                switch (Monitor.ParseMode)
+                switch (Monitoring.Monitor.ParseMode)
                 {
                     case DataSource.Ram:
                         lock (messageCollection)
