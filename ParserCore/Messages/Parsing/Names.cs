@@ -86,7 +86,7 @@ namespace WaywardGamers.KParser
     /// </summary>
     public static class Puppets
     {
-        public static readonly List<string> NamesList = new List<string>(128)
+        public static readonly List<string> NamesList = new List<string>(178)
         {
             "Luron", "Drille", "Tournefoux", "Chafouin", "Plaisantin", "Loustic", 
             "Histrion", "Bobeche", "Bougrion", "Rouleteau", "Allouette", "Serenade", 
@@ -106,7 +106,14 @@ namespace WaywardGamers.KParser
             "Magalie", "Aurore", "Caroline", "Andrea", "Machinette", "Clarine", "Armelle",
             "Reinette", "Dorlote", "Turlupin", "Klaxon", "Bambino", "Potiron", "Fustige",
             "Amidon", "Machin", "Bidulon", "Tandem", "Prestidige", "Purute-Porute",
-            "Bito-Rabito", "Cocoa", "Totomo"
+            "Bito-Rabito", "Cocoa", "Totomo", "Centurion", "A7V", "Scipio", "Sentinel",
+            "Pioneer", "Seneschal", "Ginjin", "Amagatsu", "Dolly", "Fantoccini", "Joe",
+            "Kikizaru", "Whippet", "Punchinello", "Charlie", "Midge", "Petrouchka",
+            "Schneider", "Ushabti", "Noel", "Yajirobe", "Hina", "Nora", "Shoki", "Kobina",
+            "Kokeshi", "Mame", "Bishop", "Marvin", "Dora", "Data", "Robin", "Robby",
+            "Porlo-Moperlo", "Paroko-Puronko", "Pipima", "Gagaja", "Mobil", "Donzel",
+            "Archer", "Shooter", "Stephen", "Mk.IV", "Conjurer", "Footman", "Tokotoko",
+            "Sancho", "Sarumaro", "Picket", "Mushroom",
         };
 
         /// <summary>
