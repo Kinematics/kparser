@@ -1,5 +1,9 @@
 KParser Change Log
 
+1.2.3 (Feb 21, 2009)
+* Adjust name list and name parsing for more puppet names.
+
+
 1.2.2 (Feb 15, 2009)
 - Work around problem of the Windower Timestamp plugin causing chat text to get corrupted (and thus prevent parsing) if the user has Japanese as their primary system language.
 - Misc bug fixes and cleanup.
