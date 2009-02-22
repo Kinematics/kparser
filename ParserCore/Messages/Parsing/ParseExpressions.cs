@@ -29,7 +29,7 @@ namespace WaywardGamers.KParser
     {
         #region Named substrings
         private static readonly string playername  = @"(?<name>\w{3,16})";
-        private static readonly string npcName     = @"(?<fullname>([Tt]he )?(?<name>\w+((,)|(\.\w?)|['\- ](\d|\w)+)*))";
+        private static readonly string npcName     = @"(?<fullname>([Tt]he )?(?<name>\w+((,)|(\.\w{0,2})|['\- ](\d|\w)+)*))";
 
         private static readonly string name        = @"(?<fullname>([Tt]he )?(?<name>\w+(((('s (?=\w+'s))\w+)|('\w{2,}('s)?)|(-(\w|\d)+)|(the \w+)|( No.\d+)|( \w+)){0,3}|(( \w+)?'s \w+))))";
         private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+(((('s (?=\w+'s))\w+)|('\w{2,}('s)?)|(-(\w|\d)+)|(the \w+)|( No.\d+)|( \w+)){0,3}|(( \w+)?'s \w+))))";
