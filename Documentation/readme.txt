@@ -18,6 +18,13 @@ If you are running a 32 bit OS (eg: Windows XP, etc) then get the x86 install (S
 If you are running a 64 bit OS (eg: Windows Vista x64, Windows 7, etc), then you need to install both the x86 portion (SSCERuntime-ENU-x86.msi) and the x64 portion (SSCERuntime-ENU-x64.msi).
 
 
+SQLCE 3.5
+
+It may still be necessary to install the pre-SP1 version of SQLCE.  If so, you can download it here:
+
+http://www.microsoft.com/downloads/details.aspx?FamilyId=7849B34F-67AB-481F-A5A5-4990597B0297&displaylang=en
+
+
 Installation:
 
 Extract "KParser 1.x.x.zip" file into its own directory.
