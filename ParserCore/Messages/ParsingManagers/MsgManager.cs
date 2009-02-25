@@ -101,13 +101,6 @@ namespace WaywardGamers.KParser.Parsing
         /// </summary>
         private void Reset()
         {
-            // Turn off the update timer
-            if (periodicUpdates != null)
-            {
-                periodicUpdates.Dispose();
-                periodicUpdates = null;
-            }
-
             // Clear the message collections
             lock (currentMessageCollection)
             {
@@ -143,12 +136,13 @@ namespace WaywardGamers.KParser.Parsing
             {
                 try
                 {
-                    // Add this directly to the database before starting to parse.
-                    DatabaseManager.Instance.AddChatLineToRecordLog(chat);
-
                     // Create a message line to extract the embedded data
-                    // from the raw text chat line.
+                    // from the raw text chat line.  Run this first to
+                    // weed out invalid/borked data.
                     messageLine = new MessageLine(chat);
+
+                    // Add the chat line directly to the database before starting to parse.
+                    DatabaseManager.Instance.AddChatLineToRecordLog(chat);
 
                     // Create a message based on parsing the message line.
                     Message msg = Parser.Parse(messageLine);
@@ -583,7 +577,7 @@ namespace WaywardGamers.KParser.Parsing
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void periodicUpdates_Elapsed(object sender, ElapsedEventArgs e)
+        private void periodicUpdates_Elapsed(object sender, ElapsedEventArgs e)
         {
             // Since it's possible that this could be called multiple
             // times by the timer thread before the processing is completed,
@@ -633,18 +627,6 @@ namespace WaywardGamers.KParser.Parsing
 
             List<Message> messagesToProcess = new List<Message>();
 
-            // --
-            // Leave the 20 most recent messages if those messages all have the
-            // same timestamp (ie: read from Log) to allow time for a new log
-            // file dump to happen, in case of partial messages folding across
-            // log files.
-            //
-            // Otherwise process all messages more than 5 seconds old.
-            //
-            // In either case, process all messages more than 2 minutes old.
-            // --
-
-
             switch (Monitoring.Monitor.Instance.ParseMode)
             {
                 case DataSource.Ram:
@@ -690,7 +672,7 @@ namespace WaywardGamers.KParser.Parsing
                 case DataSource.Database:
                     // In database reading mode, the messages are going to come very quickly
                     // Leave the last 10 messages always.  When the re-parse ends, the
-                    // code below will clean up the leftovers.
+                    // ProcessRemainingMessages method will clean up the leftovers.
                     lock (currentMessageCollection)
                     {
                         if (currentMessageCollection.Count > 10)
