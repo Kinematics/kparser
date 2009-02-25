@@ -120,9 +120,9 @@ namespace WaywardGamers.KParser
         /// Short list for only those names that contain characters normally
         /// indicative of mob names.
         /// </summary>
-        public static readonly List<string> ShortNamesList = new List<string>(4)
+        public static readonly List<string> ShortNamesList = new List<string>(5)
         {
-            "X-32", "V-1000", "Purute-Porute", "Bito-Rabito"
+            "X-32", "V-1000", "Purute-Porute", "Bito-Rabito", "Mk.IV"
         };
     }
 
