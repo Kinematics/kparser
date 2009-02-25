@@ -8,25 +8,43 @@ namespace WaywardGamers.KParser.Monitoring
     /// Class to handle directing requests to start and stop monitoring
     /// of FFXI data to the proper type of reader based on settings pref.
     /// </summary>
-    public static class Monitor
+    public class Monitor
     {
+        #region Singleton Construction
+        /// <summary>
+        /// Make the class a singleton
+        /// </summary>
+        private static readonly Monitor instance = new Monitoring.Monitor();
+
+        /// <summary>
+        /// Gets the singleton instance of the NewMessageManager class.
+        /// </summary>
+        public static Monitor Instance { get { return instance; } }
+        
+        /// <summary>
+        /// Private constructor ensures singleton purity.
+        /// </summary>
+        private Monitor()
+		{
+            RamReader.Instance.ReaderDataChanged += ReaderDataListener;
+            LogReader.Instance.ReaderDataChanged += ReaderDataListener;
+            DatabaseReader.Instance.ReaderDataChanged += ReaderDataListener;
+
+            RamReader.Instance.ReaderStatusChanged += ReaderStatusListener;
+            LogReader.Instance.ReaderStatusChanged += ReaderStatusListener;
+            DatabaseReader.Instance.ReaderStatusChanged += ReaderStatusListener;
+        }
+        #endregion
+
         #region Class members
-        static IReader currentReader = RamReader.Instance;
+        IReader currentReader = RamReader.Instance;
         #endregion
 
         #region Current reader properties
         /// <summary>
-        /// Gets the current reader.
-        /// </summary>
-        public static IReader CurrentReader
-        {
-            get { return currentReader; }
-        }
-
-        /// <summary>
         /// Gets whether the current reader is running.
         /// </summary>
-        public static bool IsRunning
+        public bool IsRunning
         {
             get
             {
@@ -37,7 +55,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// <summary>
         /// Gets the DataSource type of the current reader.
         /// </summary>
-        public static DataSource ParseMode
+        public DataSource ParseMode
         {
             get
             {
@@ -46,25 +64,54 @@ namespace WaywardGamers.KParser.Monitoring
         }
         #endregion
 
-        #region Functions to add and remove listeners to the current reader
-        public static void AddDataListener(ReaderDataHandler listener)
+        #region Functions for event handling
+        /// <summary>
+        /// Event to link to to receive the data the reader reads.
+        /// </summary>
+        public event ReaderDataHandler ReaderDataChanged;
+
+        /// <summary>
+        /// Event to link to to receive the reader's current progress/status.
+        /// </summary>
+        public event ReaderStatusHandler ReaderStatusChanged;
+
+        /// <summary>
+        /// This function listens to the current IReader and re-broadcasts any
+        /// events that get sent out.
+        /// </summary>
+        /// <param name="sender">The IReader sender.</param>
+        /// <param name="e">The data event data.</param>
+        private void ReaderDataListener(object sender, ReaderDataEventArgs e)
         {
-            currentReader.ReaderDataChanged += listener;
+            if ((sender as IReader) == currentReader)
+            {
+                if (ReaderDataChanged != null)
+                {
+                    ReaderDataChanged(sender, e);
+                }
+            }
         }
 
-        public static void RemoveDataListener(ReaderDataHandler listener)
+        /// <summary>
+        /// This function listens to the current IReader and re-broadcasts any
+        /// events that get sent out.
+        /// </summary>
+        /// <param name="sender">The IReader sender.</param>
+        /// <param name="e">The status event data.</param>
+        private void ReaderStatusListener(object sender, ReaderStatusEventArgs e)
         {
-            currentReader.ReaderDataChanged -= listener;
-        }
+            if ((sender as IReader) == currentReader)
+            {
+                if (ReaderStatusChanged != null)
+                {
+                    ReaderStatusChanged(sender, e);
+                }
 
-        public static void AddStatusListener(ReaderStatusHandler listener)
-        {
-            currentReader.ReaderStatusChanged += listener;
-        }
-
-        public static void RemoveStatusListener(ReaderStatusHandler listener)
-        {
-            currentReader.ReaderStatusChanged -= listener;
+                if ((e.Completed == true) || (e.Failed == true))
+                {
+                    MsgManager.Instance.EndSession();
+                }
+            }
         }
         #endregion
 
@@ -75,7 +122,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// <param name="dataSourceType">The type of data source to monitor.</param>
         /// <param name="outputFileName">The name of the database file
         /// that the parsed data will be stored in.</param>
-        public static void Start(DataSource dataSourceType, string outputFileName)
+        public void Start(DataSource dataSourceType, string outputFileName)
         {
             if (currentReader.IsRunning == true)
                 throw new InvalidOperationException(string.Format(
@@ -102,12 +149,12 @@ namespace WaywardGamers.KParser.Monitoring
 
             try
             {
-                MsgManager.Instance.ListenToThisReader(currentReader);
+                MsgManager.Instance.StartNewSession();
                 currentReader.Start();
             }
             catch (Exception)
             {
-                MsgManager.Instance.StopListeningToThisReader(currentReader);
+                MsgManager.Instance.EndSession();
                 throw;
             }
         }
@@ -115,7 +162,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// <summary>
         /// Continue parsing against an existing database.
         /// </summary>
-        public static void Continue(DataSource dataSourceType)
+        public void Continue(DataSource dataSourceType)
         {
             if (currentReader.IsRunning == true)
                 throw new InvalidOperationException(string.Format(
@@ -150,7 +197,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// Import data from another parser's database (DVS, DirectParse, etc)
         /// </summary>
         /// <param name="outputFileName">The name of the new database.</param>
-        public static void Import(string inFilename, string outputFileName, ImportSourceType importSource)
+        public void Import(string inFilename, string outputFileName, ImportSourceType importSource)
         {
             if (currentReader.IsRunning == true)
                 throw new InvalidOperationException(string.Format(
@@ -178,28 +225,16 @@ namespace WaywardGamers.KParser.Monitoring
 
             dbReader.OpenDatabase(inFilename);
 
-            currentReader.ReaderStatusChanged += MonitorReaderStatus;
             currentReader.Import(importSource, dbReader);
         }
 
         /// <summary>
         /// Stop the current reader's monitoring.
         /// </summary>
-        public static void Stop()
+        public void Stop()
         {
             currentReader.Stop();
-            MsgManager.Instance.StopListeningToThisReader(currentReader);
-
-            currentReader.ReaderStatusChanged -= MonitorReaderStatus;
-        }
-
-        private static void MonitorReaderStatus(object sender, ReaderStatusEventArgs readerStatus)
-        {
-            if ((readerStatus.Completed == true) || (readerStatus.Failed == true))
-            {
-                MsgManager.Instance.StopListeningToThisReader(currentReader);
-                currentReader.ReaderStatusChanged -= MonitorReaderStatus;
-            }
+            MsgManager.Instance.EndSession();
         }
         #endregion
 
@@ -208,7 +243,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// Artificially set the current reader for specific parse modes.
         /// </summary>
         [System.Diagnostics.Conditional("DEBUG")]
-        internal static void SetParseMode(DataSource dataSource)
+        internal void SetParseMode(DataSource dataSource)
         {
             if (IsRunning == false)
             {
@@ -234,7 +269,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// Initiate functions to analyze RAM when seeking for new Memloc.
         /// </summary>
         [System.Diagnostics.Conditional("DEBUG")]
-        public static void ScanRAM()
+        public void ScanRAM()
         {
             currentReader = RamReader.Instance;
             RamReader.Instance.ScanRAM();
