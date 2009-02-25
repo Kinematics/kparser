@@ -40,6 +40,8 @@ namespace WaywardGamers.KParser.Parsing
             periodicUpdates.AutoReset = true;
             periodicUpdates.Elapsed += new ElapsedEventHandler(periodicUpdates_Elapsed);
             periodicUpdates.Enabled = false;
+
+            Monitoring.Monitor.Instance.ReaderDataChanged += ChatLinesListener;
         }
         #endregion
 
@@ -64,20 +66,7 @@ namespace WaywardGamers.KParser.Parsing
         /// supplied IReader for new chat message lines.
         /// </summary>
         /// <param name="reader">The reader to listen to.</param>
-        internal void ListenToThisReader(IReader reader)
-        {
-            // Always try to remove ourselves from the event handler
-            // list first in case of nested calls.
-            reader.ReaderDataChanged -= ChatLinesListener;
-            // Add ourselves to the event handler list.
-            reader.ReaderDataChanged += ChatLinesListener;
-
-            InitLocalValues();
-
-            periodicUpdates.Start();
-        }
-
-        private void InitLocalValues()
+        internal void StartNewSession()
         {
             Reset();
 
@@ -91,6 +80,8 @@ namespace WaywardGamers.KParser.Parsing
 
             debugOutputFileName = Path.Combine(
                 appSettings.DefaultParseSaveDirectory, "debugOutput.txt");
+
+            periodicUpdates.Start();
         }
 
         /// <summary>
@@ -98,10 +89,8 @@ namespace WaywardGamers.KParser.Parsing
         /// to the given IReader.
         /// </summary>
         /// <param name="reader">The reader to stop listening to.</param>
-        internal void StopListeningToThisReader(IReader reader)
+        internal void EndSession()
         {
-            reader.ReaderDataChanged -= ChatLinesListener;
-
             periodicUpdates.Stop();
 
             ProcessRemainingMessages();
@@ -145,6 +134,9 @@ namespace WaywardGamers.KParser.Parsing
         /// <param name="e"></param>
         internal void ChatLinesListener(object sender, ReaderDataEventArgs e)
         {
+            if (periodicUpdates.Enabled == false)
+                return;
+
             MessageLine messageLine = null;
 
             foreach (ChatLine chat in e.ChatLines)
@@ -653,7 +645,7 @@ namespace WaywardGamers.KParser.Parsing
             // --
 
 
-            switch (Monitoring.Monitor.ParseMode)
+            switch (Monitoring.Monitor.Instance.ParseMode)
             {
                 case DataSource.Ram:
                     lock (currentMessageCollection)
