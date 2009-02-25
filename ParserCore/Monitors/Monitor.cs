@@ -37,6 +37,7 @@ namespace WaywardGamers.KParser.Monitoring
         #endregion
 
         #region Class members
+        // Hold the current reader.  Set to a default value.
         IReader currentReader = RamReader.Instance;
         #endregion
 
@@ -94,7 +95,8 @@ namespace WaywardGamers.KParser.Monitoring
 
         /// <summary>
         /// This function listens to the current IReader and re-broadcasts any
-        /// events that get sent out.
+        /// events that get sent out.  If the parse is ending, also notify
+        /// the MsgManager class to end the session.
         /// </summary>
         /// <param name="sender">The IReader sender.</param>
         /// <param name="e">The status event data.</param>
@@ -107,6 +109,7 @@ namespace WaywardGamers.KParser.Monitoring
                     ReaderStatusChanged(sender, e);
                 }
 
+                // TODO: Move this logic to the MsgManager class.
                 if ((e.Completed == true) || (e.Failed == true))
                 {
                     MsgManager.Instance.EndSession();
@@ -116,6 +119,9 @@ namespace WaywardGamers.KParser.Monitoring
         #endregion
 
         #region Functions to start and stop monitoring.
+        // TODO: Move the logic for creating the database, etc, outside
+        // of this class.
+
         /// <summary>
         /// Initiate monitoring of FFXI RAM/logs for data to be parsed.
         /// </summary>
