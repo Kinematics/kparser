@@ -152,8 +152,13 @@ namespace WaywardGamers.KParser.Parsing
                     EntityManager.Instance.AddEntitiesFromMessage(msg);
 
                     // Deal with issues of determining if a mob dying is a 
-                    // real mob or a pet.
-                    HandlePossiblePetDeaths(msg);
+                    // real mob or a pet.  If we add it to the pending queue,
+                    // continue.
+                    if (AddPossiblePetDeaths(msg))
+                        continue;
+
+                    // Do processing on any messages in the PendingDeaths queue.
+                    ProcessWithPendingDeaths(msg);
 
                     // Add processed messages to the collection that periodically
                     // gets sent to the database manager.
@@ -182,9 +187,8 @@ namespace WaywardGamers.KParser.Parsing
         /// that may be pets or mobs.
         /// </summary>
         /// <param name="msg"></param>
-        private void HandlePossiblePetDeaths(Message msg)
+        private bool AddPossiblePetDeaths(Message msg)
         {
-
             // Special handling for death messages where one might be a pet
             if (msg.EventDetails != null)
             {
@@ -194,11 +198,16 @@ namespace WaywardGamers.KParser.Parsing
                     {
                         // If the message is flagged for pending, store it and move on
                         pendingDeathsCollection.Add(msg);
-                        return;
+                        return true;
                     }
                 }
             }
 
+            return false;
+        }
+
+        private void ProcessWithPendingDeaths(Message msg)
+        {
             // If we've built up any pending messages, look for xp reward
             // messages.  That marks the death as death of mob, so mark
             // actor of pending message as pet.
@@ -584,6 +593,8 @@ namespace WaywardGamers.KParser.Parsing
             // make sure we don't allow additional attempts through.
             if (!Monitor.TryEnter(periodicUpdateLock))
                 return;
+
+            Thread.CurrentThread.Priority = ThreadPriority.BelowNormal;
 
             try
             {
