@@ -290,9 +290,10 @@ namespace WaywardGamers.KParser.Plugin
             using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
             {
                 var playersFighting = from b in dbAccess.Database.Combatants
-                                      where ((b.CombatantType == (byte)EntityType.Player ||
-                                             b.CombatantType == (byte)EntityType.Pet ||
-                                             b.CombatantType == (byte)EntityType.Fellow) &&
+                                      where (((EntityType)b.CombatantType == EntityType.Player ||
+                                             (EntityType)b.CombatantType == EntityType.Pet ||
+                                             (EntityType)b.CombatantType == EntityType.Fellow ||
+                                             (EntityType)b.CombatantType == EntityType.CharmedMob) &&
                                              b.GetInteractionsRowsByActorCombatantRelation().Any() == true)
                                       orderby b.CombatantName
                                       select new

@@ -46,7 +46,8 @@ namespace WaywardGamers.KParser.Forms
                     var playerData = from com in db.Database.Combatants
                                      where ((EntityType)com.CombatantType == EntityType.Player ||
                                         (EntityType)com.CombatantType == EntityType.Pet ||
-                                        (EntityType)com.CombatantType == EntityType.Fellow)
+                                        (EntityType)com.CombatantType == EntityType.Fellow ||
+                                        (EntityType)com.CombatantType == EntityType.CharmedMob)
                                      orderby com.CombatantName
                                      select new CombatantData
                                      {
