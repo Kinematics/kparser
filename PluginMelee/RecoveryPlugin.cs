@@ -163,9 +163,10 @@ namespace WaywardGamers.KParser.Plugin
         private void ProcessDamage(KPDatabaseDataSet dataSet, MobFilter mobFilter)
         {
             var playerData = from c in dataSet.Combatants
-                             where ((c.CombatantType == (byte)EntityType.Player) ||
-                                    (c.CombatantType == (byte)EntityType.Pet) ||
-                                    (c.CombatantType == (byte)EntityType.Fellow))
+                             where (((EntityType)c.CombatantType == EntityType.Player) ||
+                                    ((EntityType)c.CombatantType == EntityType.Pet) ||
+                                    ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
+                                    ((EntityType)c.CombatantType == EntityType.Fellow))
                              orderby c.CombatantType, c.CombatantName
                              select new
                              {
@@ -291,9 +292,10 @@ namespace WaywardGamers.KParser.Plugin
             bool displayCures, bool displayAvgCures)
         {
             var uberHealing = from c in dataSet.Combatants
-                              where ((c.CombatantType == (byte)EntityType.Player) ||
-                                     (c.CombatantType == (byte)EntityType.Pet) ||
-                                     (c.CombatantType == (byte)EntityType.Fellow))
+                              where (((EntityType)c.CombatantType == EntityType.Player) ||
+                                     ((EntityType)c.CombatantType == EntityType.Pet) ||
+                                     ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
+                                     ((EntityType)c.CombatantType == EntityType.Fellow))
                               orderby c.CombatantName
                               select new
                               {

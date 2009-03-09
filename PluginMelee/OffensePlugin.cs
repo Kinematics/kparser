@@ -186,10 +186,11 @@ namespace WaywardGamers.KParser.Plugin
             #region LINQ query
 
             attackSet = from c in dataSet.Combatants
-                        where ((c.CombatantType == (byte)EntityType.Player) ||
-                               (c.CombatantType == (byte)EntityType.Pet) ||
-                               (c.CombatantType == (byte)EntityType.Fellow) ||
-                               (c.CombatantType == (byte)EntityType.Skillchain))
+                        where (((EntityType)c.CombatantType == EntityType.Player) ||
+                               ((EntityType)c.CombatantType == EntityType.Pet) ||
+                               ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
+                               ((EntityType)c.CombatantType == EntityType.Fellow) ||
+                               ((EntityType)c.CombatantType == EntityType.Skillchain))
                         orderby c.CombatantType, c.CombatantName
                         select new AttackGroup
                         {
