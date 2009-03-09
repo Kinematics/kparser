@@ -81,6 +81,8 @@ namespace WaywardGamers.KParser.Parsing
             debugOutputFileName = Path.Combine(
                 appSettings.DefaultParseSaveDirectory, "debugOutput.txt");
 
+            DumpToFile(null, DebugDumpMode.Init);
+
             periodicUpdates.Start();
         }
 
@@ -610,8 +612,7 @@ namespace WaywardGamers.KParser.Parsing
                     finally
                     {
                         // Save dump of that data if debug flag is set.
-                        if (dumpDebugDataToFile == true)
-                            DumpToFile(messagesToProcess, DebugDumpMode.Normal);
+                        DumpToFile(messagesToProcess, DebugDumpMode.Normal);
                     }
                 }
 
@@ -721,8 +722,7 @@ namespace WaywardGamers.KParser.Parsing
                     {
                         // Save dump of that data if debug flag is set.  Save out entities
                         // at the end as well.
-                        if (dumpDebugDataToFile == true)
-                            DumpToFile(currentMessageCollection, DebugDumpMode.Complete);
+                        DumpToFile(currentMessageCollection, DebugDumpMode.Complete);
                     }
                 }
             }
@@ -734,23 +734,33 @@ namespace WaywardGamers.KParser.Parsing
         #endregion
 
         #region Debug output
+        bool entitiesDumped = false;
+
         private void DumpToFile(List<Message> messagesToDump, DebugDumpMode dumpMode)
         {
-            if (messagesToDump == null)
-                throw new ArgumentNullException("messagesToDump");
+            if (dumpDebugDataToFile == false)
+                return;
 
             if (dumpMode == DebugDumpMode.Init)
             {
                 using (StreamWriter sw = File.CreateText(debugOutputFileName))
                 {
-                    foreach (Message msg in messagesToDump)
+                    if (messagesToDump != null)
                     {
-                        sw.Write(msg.ToString());
+                        foreach (Message msg in messagesToDump)
+                        {
+                            sw.Write(msg.ToString());
+                        }
                     }
                 }
 
+                entitiesDumped = false;
                 return;
             }
+
+            if (messagesToDump == null)
+                throw new ArgumentNullException("messagesToDump");
+
 
             // Normal mode
             using (StreamWriter sw = File.AppendText(debugOutputFileName))
@@ -764,9 +774,14 @@ namespace WaywardGamers.KParser.Parsing
             // Finalization -- have the EntityManager dump its data too.
             if (dumpMode == DebugDumpMode.Complete)
             {
-                using (StreamWriter sw = File.AppendText(debugOutputFileName))
+                if (entitiesDumped == false)
                 {
-                    EntityManager.Instance.DumpData(sw);
+                    using (StreamWriter sw = File.AppendText(debugOutputFileName))
+                    {
+                        EntityManager.Instance.DumpData(sw);
+                    }
+
+                    entitiesDumped = true;
                 }
             }
         }
