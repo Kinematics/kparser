@@ -199,9 +199,9 @@ namespace WaywardGamers.KParser.Parsing
                     if (combatDetails.ActorEntityType != EntityType.Skillchain)
                     {
                         if (combatDetails.ActorEntityType == EntityType.Mob)
-                            combatDetails.ActorEntityType = EntityType.Charmed;
+                            combatDetails.ActorEntityType = EntityType.CharmedMob;
                         else if (target.EntityType == EntityType.Mob)
-                            target.EntityType = EntityType.Charmed;
+                            target.EntityType = EntityType.CharmedMob;
                     }
                 }
 
@@ -222,13 +222,13 @@ namespace WaywardGamers.KParser.Parsing
                     {
                         if (combatDetails.ActorName == EntityManager.Instance.LastCharmedMob)
                         {
-                            combatDetails.ActorEntityType = EntityType.Charmed;
+                            combatDetails.ActorEntityType = EntityType.CharmedMob;
                             return;
                         }
 
                         if (target.Name == EntityManager.Instance.LastCharmedMob)
                         {
-                            target.EntityType = EntityType.Charmed;
+                            target.EntityType = EntityType.CharmedMob;
                             return;
                         }
 
@@ -237,17 +237,17 @@ namespace WaywardGamers.KParser.Parsing
                         EntityType actorCharmEntity = EntityManager.Instance.LookupCharmedEntity(combatDetails.ActorName);
                         EntityType targetCharmEntity = EntityManager.Instance.LookupCharmedEntity(target.Name);
 
-                        if ((actorCharmEntity == EntityType.Charmed) ^ (targetCharmEntity == EntityType.Charmed))
+                        if ((actorCharmEntity == EntityType.CharmedMob) ^ (targetCharmEntity == EntityType.CharmedMob))
                         {
-                            if (actorCharmEntity == EntityType.Charmed)
+                            if (actorCharmEntity == EntityType.CharmedMob)
                             {
-                                combatDetails.ActorEntityType = EntityType.Charmed;
+                                combatDetails.ActorEntityType = EntityType.CharmedMob;
                                 return;
                             }
 
-                            if (targetCharmEntity == EntityType.Charmed)
+                            if (targetCharmEntity == EntityType.CharmedMob)
                             {
-                                target.EntityType = EntityType.Charmed;
+                                target.EntityType = EntityType.CharmedMob;
                                 return;
                             }
                         }
@@ -268,9 +268,9 @@ namespace WaywardGamers.KParser.Parsing
                     {
                         // Otherwise just random it.
                         if (random.Next(1000) < 500)
-                            target.EntityType = EntityType.Charmed;
+                            target.EntityType = EntityType.CharmedMob;
                         else
-                            combatDetails.ActorEntityType = EntityType.Charmed;
+                            combatDetails.ActorEntityType = EntityType.CharmedMob;
                     }
                 }
 
@@ -295,27 +295,31 @@ namespace WaywardGamers.KParser.Parsing
                             target.EntityType = EntityType.Mob;
                             return;
                         }
+
+                        // Otherwise it's likely spells/etc cast on charmed players
+                        target.EntityType = EntityType.CharmedPlayer;
+                        return;
                     }
 
                     // If we get here, this is either melee, or we're not sure of the
                     // defined entity types.  Try looking up details from the entity manager first.
                     EntityType actorCharmEntity = EntityManager.Instance.LookupCharmedEntity(combatDetails.ActorName);
-                    if (actorCharmEntity == EntityType.Charmed)
+                    if (actorCharmEntity == EntityType.CharmedPlayer)
                     {
-                        combatDetails.ActorEntityType = EntityType.Charmed;
+                        combatDetails.ActorEntityType = EntityType.CharmedPlayer;
                         return;
                     }
 
                     EntityType targetCharmEntity = EntityManager.Instance.LookupCharmedEntity(target.Name);
-                    if (targetCharmEntity == EntityType.Charmed)
+                    if (targetCharmEntity == EntityType.CharmedPlayer)
                     {
-                        target.EntityType = EntityType.Charmed;
+                        target.EntityType = EntityType.CharmedPlayer;
                         return;
                     }
 
                     // If we don't get anything from the entity manager, assume the
                     // aggressive melee'er is the charmed one.
-                    combatDetails.ActorEntityType = EntityType.Charmed;
+                    combatDetails.ActorEntityType = EntityType.CharmedPlayer;
                     return;
                 }
 
@@ -323,7 +327,7 @@ namespace WaywardGamers.KParser.Parsing
                 if ((combatDetails.ActorEntityType == EntityType.Pet) &&
                     (target.EntityType == EntityType.Player))
                 {
-                    target.EntityType = EntityType.Charmed;
+                    target.EntityType = EntityType.CharmedPlayer;
                     return;
                 }
 

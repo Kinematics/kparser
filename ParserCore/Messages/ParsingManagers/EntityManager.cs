@@ -91,16 +91,29 @@ namespace WaywardGamers.KParser.Parsing
         /// uncharmed versions of the entities.
         /// </summary>
         /// <param name="name">The name of the mob that was charmed.</param>
-        internal void AddCharmedEntity(string name)
+        internal void AddCharmedPlayer(string name)
         {
             if ((name == null) || (name == string.Empty))
                 return;
 
-            string charmedName = name + "_Charmed";
+            string charmedName = name + "_CharmedPlayer";
 
             if (entityCollection.ContainsKey(charmedName) == false)
             {
-                entityCollection[charmedName] = EntityType.Charmed;
+                entityCollection[charmedName] = EntityType.CharmedPlayer;
+            }
+        }
+
+        internal void AddCharmedMob(string name)
+        {
+            if ((name == null) || (name == string.Empty))
+                return;
+
+            string charmedName = name + "_CharmedMob";
+
+            if (entityCollection.ContainsKey(charmedName) == false)
+            {
+                entityCollection[charmedName] = EntityType.CharmedMob;
             }
         }
 
@@ -125,12 +138,17 @@ namespace WaywardGamers.KParser.Parsing
 
             if (entityCollection.ContainsKey(name + "_Pet"))
             {
-                entityList.Add(EntityType.Charmed);
+                entityList.Add(EntityType.CharmedMob);
             }
 
-            if (entityCollection.ContainsKey(name + "_Charmed"))
+            if (entityCollection.ContainsKey(name + "_CharmedPlayer"))
             {
-                entityList.Add(EntityType.Charmed);
+                entityList.Add(EntityType.CharmedPlayer);
+            }
+
+            if (entityCollection.ContainsKey(name + "_CharmedMob"))
+            {
+                entityList.Add(EntityType.CharmedMob);
             }
 
             return entityList;
@@ -151,8 +169,11 @@ namespace WaywardGamers.KParser.Parsing
             if (entityCollection.ContainsKey(name + "_Pet"))
                 return EntityType.Pet;
 
-            if (entityCollection.ContainsKey(name + "_Charmed"))
-                return EntityType.Charmed;
+            if (entityCollection.ContainsKey(name + "_CharmedMob"))
+                return EntityType.CharmedMob;
+
+            if (entityCollection.ContainsKey(name + "_CharmedPlayer"))
+                return EntityType.CharmedPlayer;
 
             if (entityCollection.ContainsKey(name))
                 return entityCollection[name];
@@ -178,9 +199,11 @@ namespace WaywardGamers.KParser.Parsing
             // If we don't have the name in the entity list already, add it.
             if (checkEntityList.Count == 0)
             {
-                if (entityType == EntityType.Charmed)
-                    AddCharmedEntity(name);
-                else
+                if (entityType == EntityType.CharmedPlayer)
+                    AddCharmedPlayer(name);
+                else if (entityType == EntityType.CharmedMob)
+                    AddCharmedMob(name);
+                else 
                     entityCollection[name] = entityType;
 
                 return;
@@ -196,14 +219,22 @@ namespace WaywardGamers.KParser.Parsing
             // value we've been given (which we already know isn't in the list).
             if (checkEntityList.Contains(EntityType.Unknown))
             {
-                if (entityType == EntityType.Charmed)
+                if (entityType == EntityType.CharmedPlayer)
                 {
                     entityCollection.Remove(name);
-                    AddCharmedEntity(name);
+                    AddCharmedPlayer(name);
+                    return;
+                }
+                else if (entityType == EntityType.CharmedMob)
+                {
+                    entityCollection.Remove(name);
+                    AddCharmedMob(name);
+                    return;
                 }
                 else
                 {
                     entityCollection[name] = entityType;
+                    return;
                 }
             }
 
@@ -211,7 +242,7 @@ namespace WaywardGamers.KParser.Parsing
             // given name, add this as a charmed entity.
             if (checkEntityList.Contains(EntityType.Player) && entityType == EntityType.Mob)
             {
-                AddCharmedEntity(name);
+                AddCharmedPlayer(name);
                 return;
             }
 
@@ -220,13 +251,15 @@ namespace WaywardGamers.KParser.Parsing
             if (checkEntityList.Contains(EntityType.Mob) && entityType == EntityType.Player)
             {
                 entityCollection[name] = EntityType.Player;
-                AddCharmedEntity(name);
+                AddCharmedPlayer(name);
                 return;
             }
 
             // Anything else, add as normal.
-            if (entityType == EntityType.Charmed)
-                AddCharmedEntity(name);
+            if (entityType == EntityType.CharmedPlayer)
+                AddCharmedPlayer(name);
+            else if (entityType == EntityType.CharmedMob)
+                AddCharmedMob(name);
             else
                 entityCollection[name] = entityType;
 

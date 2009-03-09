@@ -236,7 +236,8 @@ namespace WaywardGamers.KParser
         Fellow,
         Skillchain,
         TreasureChest,
-        Charmed,
+        CharmedPlayer,
+        CharmedMob,
     }
 
     [Flags]
