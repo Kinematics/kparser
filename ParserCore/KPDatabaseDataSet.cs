@@ -224,11 +224,11 @@ namespace WaywardGamers.KParser
                     throw new ArgumentOutOfRangeException("name", "Name cannot be empty.");
 
                 var mob = this.SingleOrDefault(c => c.CombatantName == name &&
-                    c.CombatantType == (byte)EntityType.Mob);
+                    (EntityType)c.CombatantType == EntityType.Mob);
 
                 if (mob == null)
                     mob = this.SingleOrDefault(c => c.CombatantName == name &&
-                        c.CombatantType == (byte)EntityType.Unknown);
+                        (EntityType)c.CombatantType == EntityType.Unknown);
 
                 return mob;
             }
