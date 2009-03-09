@@ -76,14 +76,18 @@ namespace WaywardGamers.KParser
 
             if (disposing == true)
             {
+                string outputLine = string.Concat("Profiling Region (", regionName, "): ", stopwatch.Elapsed.TotalMilliseconds, " ms");
+
                 if (stopwatch.Elapsed < watermark)
                 {
-                    Debug.WriteLine(string.Concat("Profiling Region (", regionName, "): ", stopwatch.Elapsed.TotalMilliseconds, " ms"));
+                    Debug.WriteLine(outputLine);
                 }
                 else
                 {
-                    Trace.WriteLine(string.Concat("Profiling Region (", regionName, "): ", stopwatch.Elapsed.TotalMilliseconds, " ms"));
+                    Trace.WriteLine(outputLine);
                 }
+
+                //Logger.Instance.Log("Region Profiling", outputLine);
             }
         }
     }
