@@ -145,9 +145,10 @@ namespace WaywardGamers.KParser.Plugin
                 // Process debuffs used by players
 
                 debuffSet = from c in dataSet.Combatants
-                            where ((c.CombatantType == (byte)EntityType.Player) ||
-                                  (c.CombatantType == (byte)EntityType.Pet) ||
-                                  (c.CombatantType == (byte)EntityType.Fellow))
+                            where (((EntityType)c.CombatantType == EntityType.Player) ||
+                                  ((EntityType)c.CombatantType == EntityType.Pet) ||
+                                  ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
+                                  ((EntityType)c.CombatantType == EntityType.Fellow))
                             orderby c.CombatantType, c.CombatantName
                             select new DebuffGroup
                             {
