@@ -59,7 +59,8 @@ namespace WaywardGamers.KParser.Plugin
                          where b.DefaultBattle == false &&
                                b.IsEnemyIDNull() == false &&
                                b.EndTime != MagicNumbers.MinSQLDateTime &&
-                               b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob
+                               ((EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.Mob ||
+                                (EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.CharmedPlayer)
                          select b;
 
             if (fights.Count() == 0)
