@@ -108,6 +108,9 @@ namespace WaywardGamers.KParser.Plugin
             if (index < 0)
                 index = combo.Items.Count - 1;
 
+            if (index > combo.Items.Count)
+                index = combo.Items.Count - 1;
+
             if (index >= 0)
                 combo.SelectedIndex = index;
         }
