@@ -313,8 +313,8 @@ namespace WaywardGamers.KParser.Monitoring
                     finally
                     {
                         // Make sure the thread doesn't hammer the system with constant
-                        // monitoring.
-                        Thread.Sleep(1000);
+                        // monitoring, but often enough to get good event time resolution.
+                        Thread.Sleep(100);
                     }
                 }
             }
