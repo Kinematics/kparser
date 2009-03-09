@@ -33,7 +33,7 @@ namespace WaywardGamers.KParser.Parsing
         #region Member variables
         Dictionary<string, EntityType> entityCollection = new Dictionary<string, EntityType>();
 
-        internal string LastAddedPetEntity { get; private set; }
+        internal string LastCharmedMob { get; set; }
         #endregion
 
         #region Initialization
@@ -44,7 +44,7 @@ namespace WaywardGamers.KParser.Parsing
                 entityCollection.Clear();
             }
 
-            LastAddedPetEntity = string.Empty;
+            LastCharmedMob = string.Empty;
         }
         #endregion
 
@@ -86,12 +86,12 @@ namespace WaywardGamers.KParser.Parsing
         }
 
         /// <summary>
-        /// Explicitly add an player name as charmed.  This adds a _Charmed
-        /// modifier to the lookup name to distinguish between players and
-        /// normal mobs.
+        /// Explicitly add a charmed entity (player or mob).  This adds a _Charmed
+        /// modifier to the lookup name to distinguish between charmed and
+        /// uncharmed versions of the entities.
         /// </summary>
         /// <param name="name">The name of the mob that was charmed.</param>
-        internal void AddCharmedPlayerEntity(string name)
+        internal void AddCharmedEntity(string name)
         {
             if ((name == null) || (name == string.Empty))
                 return;
@@ -100,27 +100,7 @@ namespace WaywardGamers.KParser.Parsing
 
             if (entityCollection.ContainsKey(charmedName) == false)
             {
-                entityCollection[charmedName] = EntityType.Mob;
-            }
-        }
-
-        /// <summary>
-        /// Explicitly add an entity name as a pet.  Called when the parse
-        /// encounters a successful Charm attempt.  This adds a _Pet modifier
-        /// to the lookup name to distinguish between pets and normal mobs.
-        /// </summary>
-        /// <param name="name">The name of the mob that was charmed.</param>
-        internal void AddPetEntity(string name)
-        {
-            if ((name == null) || (name == string.Empty))
-                return;
-
-            string petName = name + "_Pet";
-            LastAddedPetEntity = name;
-
-            if (entityCollection.ContainsKey(petName) == false)
-            {
-                entityCollection[petName] = EntityType.Pet;
+                entityCollection[charmedName] = EntityType.Charmed;
             }
         }
 
@@ -131,21 +111,29 @@ namespace WaywardGamers.KParser.Parsing
         /// </summary>
         /// <param name="name">The name of the combatant to look up.</param>
         /// <returns>The entity type for the name provided, if available.</returns>
-        internal EntityType LookupEntity(string name)
+        internal List<EntityType> LookupEntity(string name)
         {
             if ((name == null) || (name == string.Empty))
-                return EntityType.Unknown;
+                throw new ArgumentNullException("name");
+
+            List<EntityType> entityList = new List<EntityType>();
 
             if (entityCollection.ContainsKey(name))
-                return entityCollection[name];
+            {
+                entityList.Add(entityCollection[name]);
+            }
 
             if (entityCollection.ContainsKey(name + "_Pet"))
-                return EntityType.Pet;
+            {
+                entityList.Add(EntityType.Charmed);
+            }
 
             if (entityCollection.ContainsKey(name + "_Charmed"))
-                return EntityType.Mob;
+            {
+                entityList.Add(EntityType.Charmed);
+            }
 
-            return EntityType.Unknown;
+            return entityList;
         }
 
         /// <summary>
@@ -155,7 +143,7 @@ namespace WaywardGamers.KParser.Parsing
         /// </summary>
         /// <param name="name">The name of the combatant to look up.</param>
         /// <returns>The entity type for the name provided, if available.</returns>
-        internal EntityType LookupPetEntity(string name)
+        internal EntityType LookupCharmedEntity(string name)
         {
             if ((name == null) || (name == string.Empty))
                 return EntityType.Unknown;
@@ -164,7 +152,7 @@ namespace WaywardGamers.KParser.Parsing
                 return EntityType.Pet;
 
             if (entityCollection.ContainsKey(name + "_Charmed"))
-                return EntityType.Mob;
+                return EntityType.Charmed;
 
             if (entityCollection.ContainsKey(name))
                 return entityCollection[name];
@@ -185,53 +173,63 @@ namespace WaywardGamers.KParser.Parsing
         #region Private methods
         private void CheckAndAddEntity(string name, EntityType entityType)
         {
-            // Check to see if we have the specified name in the entity list
-            if (entityCollection.ContainsKey(name))
+            List<EntityType> checkEntityList = LookupEntity(name);
+
+            // If we don't have the name in the entity list already, add it.
+            if (checkEntityList.Count == 0)
             {
-                // Currently known entity type value
-                EntityType entityVal = entityCollection[name];
-
-                // If it's the same as what we have, ignore and return.
-                if (entityType == entityVal)
-                    return;
-
-                // If it's currently unknown, update with whatever we're given
-                if (entityVal == EntityType.Unknown)
-                {
+                if (entityType == EntityType.Charmed)
+                    AddCharmedEntity(name);
+                else
                     entityCollection[name] = entityType;
-                    return;
-                }
 
-                // If we have a pet/mob combination, change the collection type to
-                // mob and add a new pet version (_Pet suffix).
-                if (((entityVal == EntityType.Mob) || (entityType == EntityType.Mob)) &&
-                    ((entityVal == EntityType.Pet) || (entityType == EntityType.Pet)))
-                {
-                    entityCollection[name] = EntityType.Mob;
-                    AddPetEntity(name);
-                    return;
-                }
-
-                // If we have a pet/mob combination, change the collection type to
-                // player and add a new charmed version (_Charmed suffix).
-                if (((entityVal == EntityType.Mob) || (entityType == EntityType.Mob)) &&
-                    ((entityVal == EntityType.Player) || (entityType == EntityType.Player)))
-                {
-                    entityCollection[name] = EntityType.Player;
-                    AddCharmedPlayerEntity(name);
-                    return;
-                }
-
-                // If we get to here we have some other combination that's unaccounted for.
-                // Log it and continue.
-                Logger.Instance.Log("Unresolved entity type mismatch.",
-                    string.Format("Entity table for {0} is {1}, being asked to add as type {2}.",
-                    name, entityVal, entityType));
+                return;
             }
 
-            // If it's not currently in the collection, or we didn't get it
-            // taken care of above, add it.
-            entityCollection[name] = entityType;
+            // If we already have an entry of the given entity type, just return.
+            if (checkEntityList.Contains(entityType))
+            {
+                return;
+            }
+
+            // If we have an Unknown entry in the list, replace it with the
+            // value we've been given (which we already know isn't in the list).
+            if (checkEntityList.Contains(EntityType.Unknown))
+            {
+                if (entityType == EntityType.Charmed)
+                {
+                    entityCollection.Remove(name);
+                    AddCharmedEntity(name);
+                }
+                else
+                {
+                    entityCollection[name] = entityType;
+                }
+            }
+
+            // If we're told this is a mob, but we have a player entry for the
+            // given name, add this as a charmed entity.
+            if (checkEntityList.Contains(EntityType.Player) && entityType == EntityType.Mob)
+            {
+                AddCharmedEntity(name);
+                return;
+            }
+
+            // If we're told this is a player, but we have a mob entry for the
+            // given name, add a charmed entity.
+            if (checkEntityList.Contains(EntityType.Mob) && entityType == EntityType.Player)
+            {
+                entityCollection[name] = EntityType.Player;
+                AddCharmedEntity(name);
+                return;
+            }
+
+            // Anything else, add as normal.
+            if (entityType == EntityType.Charmed)
+                AddCharmedEntity(name);
+            else
+                entityCollection[name] = entityType;
+
         }
 
         #endregion

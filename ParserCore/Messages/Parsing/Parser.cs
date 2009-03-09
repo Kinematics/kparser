@@ -2205,8 +2205,9 @@ namespace WaywardGamers.KParser.Parsing
                     {
                         // Only for players.  Mobs use other ability names to charm players.
                         // Mob type has been charmed.  Add to the entity lookup list as a pet.
-                        EntityManager.Instance.AddPetEntity(target.Name);
-                        target.EntityType = EntityType.Pet;
+                        EntityManager.Instance.AddCharmedEntity(target.Name);
+                        EntityManager.Instance.LastCharmedMob = target.Name;
+                        target.EntityType = EntityType.Charmed;
                         msgCombatDetails.ActorEntityType = EntityType.Player;
                     }
                     message.SetParseSuccess(true);
