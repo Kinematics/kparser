@@ -314,7 +314,9 @@ namespace WaywardGamers.KParser.Monitoring
                     {
                         // Make sure the thread doesn't hammer the system with constant
                         // monitoring, but often enough to get good event time resolution.
-                        Thread.Sleep(100);
+                        // Ram contents seem to be updated once per second, to set the
+                        // monitor delay to half that for best update time.
+                        Thread.Sleep(500);
                     }
                 }
             }
