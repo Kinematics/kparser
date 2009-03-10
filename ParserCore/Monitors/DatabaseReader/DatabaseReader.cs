@@ -141,7 +141,7 @@ namespace WaywardGamers.KParser.Monitoring
 
                     // Read the (fixed) record log from the database, reconstruct
                     // the chat line, and send it to the new database.
-                    using (new ProfileRegion("Reparse: Read database and parse"))
+                    using (new RegionProfiler("Reparse: Read database and parse"))
                     {
                         foreach (var logLine in readDataSet.RecordLog)
                         {
@@ -230,7 +230,7 @@ namespace WaywardGamers.KParser.Monitoring
 
                     // Read the (fixed) record log from the database, reconstruct
                     // the chat line, and send it to the new database.
-                    using (new ProfileRegion("Import: Read database and parse"))
+                    using (new RegionProfiler("Import: Read database and parse"))
                     {
                         foreach (var logLine in readDataSet.ChatLog)
                         {
