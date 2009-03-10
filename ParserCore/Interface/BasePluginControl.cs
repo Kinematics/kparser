@@ -96,8 +96,8 @@ namespace WaywardGamers.KParser.Plugin
                 Action<KPDatabaseDataSet> handleDataset = new Action<KPDatabaseDataSet>(HandleDataset);
                 object[] dbChanges = new object[1] { databaseChanges };
 
-                BeginInvoke(handleDataset, dbChanges);
-                //Invoke(reReadDatabase, passDataset);
+                //BeginInvoke(handleDataset, dbChanges);
+                Invoke(handleDataset, dbChanges);
                 return;
             }
 
@@ -114,12 +114,16 @@ namespace WaywardGamers.KParser.Plugin
 
                     richTextBox.SuspendLayout();
 
-                    using (AccessToTheDatabase dbAccess = new AccessToTheDatabase())
+                    if (databaseChanges == null)
                     {
-                        if (databaseChanges == null)
+                        using (AccessToTheDatabase dbAccess = new AccessToTheDatabase())
+                        {
                             ProcessData(dbAccess.Database);
-                        else
-                            ProcessData(databaseChanges);
+                        }
+                    }
+                    else
+                    {
+                        ProcessData(databaseChanges);
                     }
 
                     // After processing, re-select the same section as before, or
