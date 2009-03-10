@@ -1437,18 +1437,18 @@ namespace WaywardGamers.KParser.Plugin
         #region Utsusemi
         private void ProcessUtsusemi(ref StringBuilder sb, ref List<StringMods> strModList)
         {
-            string tmpText = "Utsusemi\n\n";
-            strModList.Add(new StringMods
-            {
-                Start = sb.Length,
-                Length = tmpText.Length,
-                Bold = true,
-                Color = Color.Red
-            });
-            sb.Append(tmpText);
-
             if (dataAccum.Any(p => p.UtsuICast > 0 || p.UtsuNCast > 0 || p.UtsuUsed > 0))
             {
+                string tmpText = "Utsusemi\n\n";
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = tmpText.Length,
+                    Bold = true,
+                    Color = Color.Red
+                });
+                sb.Append(tmpText);
+
                 tmpText = "Utsusemi Casting\n";
                 strModList.Add(new StringMods
                 {
