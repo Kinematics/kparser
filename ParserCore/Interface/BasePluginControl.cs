@@ -270,13 +270,10 @@ namespace WaywardGamers.KParser.Plugin
             {
                 var speakers = from s in dbAccess.Database.ChatSpeakers
                                orderby s.SpeakerName
-                               select new
-                               {
-                                   Name = s.SpeakerName
-                               };
+                               select  s.SpeakerName;
 
                 foreach (var speaker in speakers)
-                    speakerStrings.Add(speaker.Name);
+                    speakerStrings.Add(speaker);
             }
 
             return speakerStrings.ToArray();
@@ -300,13 +297,10 @@ namespace WaywardGamers.KParser.Plugin
                                              (EntityType)b.CombatantType == EntityType.CharmedMob) &&
                                              b.GetInteractionsRowsByActorCombatantRelation().Any() == true)
                                       orderby b.CombatantName
-                                      select new
-                                      {
-                                          Name = b.CombatantName
-                                      };
+                                      select  b.CombatantName;
 
                 foreach (var player in playersFighting)
-                    playerStrings.Add(player.Name);
+                    playerStrings.Add(player);
             }
 
             return playerStrings.ToArray();
