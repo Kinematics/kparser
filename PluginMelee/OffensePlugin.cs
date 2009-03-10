@@ -19,6 +19,11 @@ namespace WaywardGamers.KParser.Plugin
         int totalDamage;
         IEnumerable<AttackGroup> attackSet = null;
 
+        // Process calls always use the accumulator data.  To prevent the
+        // BasePlugin from trying to get a lock on a new copy of the main
+        // database each call, pass it a fake 'changed' database.
+        KPDatabaseDataSet fakeDatabaseChanges = new KPDatabaseDataSet();
+
         string summaryHeader = "Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg\n";
         string meleeHeader = "Player            Melee Dmg   Melee %   Hit/Miss   M.Acc %  M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
         string rangeHeader = "Player            Range Dmg   Range %   Hit/Miss   R.Acc %  R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
@@ -105,7 +110,7 @@ namespace WaywardGamers.KParser.Plugin
         public override void Reset()
         {
             ResetTextBox();
-            ResetAccumulation(false);
+            ResetAccumulation();
         }
 
         public override void NotifyOfUpdate()
@@ -118,9 +123,9 @@ namespace WaywardGamers.KParser.Plugin
             mobsCombo.CBSelectIndex(0);
             flagNoUpdate = false;
 
-            ResetAccumulation(true);
+            ResetAndUpdateAccumulation();
 
-            HandleDataset(null);
+            HandleDataset(fakeDatabaseChanges);
         }
 
         public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
@@ -143,7 +148,7 @@ namespace WaywardGamers.KParser.Plugin
             if (e.DatasetChanges.Interactions.Count != 0)
             {
                 UpdateAccumulation(e.DatasetChanges);
-                HandleDataset(null);
+                HandleDataset(fakeDatabaseChanges);
             }
         }
         #endregion
@@ -155,12 +160,15 @@ namespace WaywardGamers.KParser.Plugin
             mobsCombo.CBAddStrings(GetMobListing(groupMobs, exclude0XPMobs));
         }
 
-        private void ResetAccumulation(bool withUpdate)
+        private void ResetAccumulation()
         {
             dataAccum.Clear();
+        }
 
-            if (withUpdate == true)
-                UpdateAccumulation(null);
+        private void ResetAndUpdateAccumulation()
+        {
+            ResetAccumulation();
+            UpdateAccumulation(null);
         }
 
         private void UpdateAccumulation(KPDatabaseDataSet datasetChanges)
@@ -663,6 +671,9 @@ namespace WaywardGamers.KParser.Plugin
         #region Processing sections
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
+            // Database parameter is not used at all.  All processing is
+            // based on the accumulator data.
+
             ResetTextBox();
             string actionSourceFilter = categoryCombo.CBSelectedItem();
 
@@ -1218,7 +1229,7 @@ namespace WaywardGamers.KParser.Plugin
         protected void categoryCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (flagNoUpdate == false)
-                HandleDataset(null);
+                HandleDataset(fakeDatabaseChanges);
 
             flagNoUpdate = false;
         }
@@ -1227,8 +1238,8 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (flagNoUpdate == false)
             {
-                ResetAccumulation(true);
-                HandleDataset(null);
+                ResetAndUpdateAccumulation();
+                HandleDataset(fakeDatabaseChanges);
             }
 
             flagNoUpdate = false;
@@ -1248,8 +1259,8 @@ namespace WaywardGamers.KParser.Plugin
                 flagNoUpdate = true;
                 mobsCombo.CBSelectIndex(0);
 
-                ResetAccumulation(true);
-                HandleDataset(null);
+                ResetAndUpdateAccumulation();
+                HandleDataset(fakeDatabaseChanges);
             }
 
             flagNoUpdate = false;
@@ -1269,8 +1280,8 @@ namespace WaywardGamers.KParser.Plugin
                 flagNoUpdate = true;
                 mobsCombo.CBSelectIndex(0);
 
-                ResetAccumulation(true);
-                HandleDataset(null);
+                ResetAndUpdateAccumulation();
+                HandleDataset(fakeDatabaseChanges);
             }
 
             flagNoUpdate = false;
