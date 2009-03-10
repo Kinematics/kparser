@@ -17,8 +17,6 @@ namespace WaywardGamers.KParser.Plugin
         List<MainAccumulator> dataAccum = new List<MainAccumulator>();
 
         int totalDamage;
-        List<string> playerList = new List<string>();
-        Dictionary<string, int> playerDamage = new Dictionary<string, int>();
         IEnumerable<AttackGroup> attackSet = null;
 
         string summaryHeader = "Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg\n";
@@ -34,6 +32,7 @@ namespace WaywardGamers.KParser.Plugin
         bool flagNoUpdate = false;
         bool groupMobs = true;
         bool exclude0XPMobs = false;
+
         ToolStripComboBox categoryCombo = new ToolStripComboBox();
         ToolStripComboBox mobsCombo = new ToolStripComboBox();
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
