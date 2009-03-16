@@ -54,10 +54,32 @@ namespace WaywardGamers.KParser.Parsing
 
         System.Timers.Timer periodicUpdates;
         object periodicUpdateLock = new object();
+
+        List<PlayerInfo> playerInfoList = null;
         #endregion
 
         #region Properties
         internal uint LastMessageEventNumber { get; private set; }
+
+        internal List<PlayerInfo> PlayerInfoList
+        {
+            get
+            {
+                List<PlayerInfo> returnList = null;
+
+                if (playerInfoList != null)
+                {
+                    returnList = playerInfoList;
+                    playerInfoList = null;
+                }
+
+                return returnList;
+            }
+            set
+            {
+                playerInfoList = value;
+            }
+        }
         #endregion
 
         #region Public control methods
