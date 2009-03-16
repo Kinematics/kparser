@@ -82,6 +82,7 @@
     <Compile Include="Database\AccessToTheDatabase.cs" />
     <Compile Include="Database\KParserReadingManager.cs" />
     <Compile Include="Database\DirectParseReadingManager.cs" />
+    <Compile Include="Database\MobXPHandler.cs" />
     <Compile Include="DPDatabaseImportV1.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
