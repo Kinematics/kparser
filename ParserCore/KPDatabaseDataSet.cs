@@ -137,6 +137,20 @@ namespace WaywardGamers.KParser
                 }
                 //throw new InvalidOperationException("Cannot get the fight length.  No End Time specified.");
             }
+
+            public bool IsOver
+            {
+                get
+                {
+                    if (this.Killed == true)
+                        return true;
+
+                    if (this.EndTime != MagicNumbers.MinSQLDateTime)
+                        return true;
+
+                    return false;
+                }
+            }
         }
 
         /// <summary>
@@ -199,11 +213,12 @@ namespace WaywardGamers.KParser
                     throw new ArgumentOutOfRangeException("name", "Name cannot be empty.");
 
                 var player = this.FirstOrDefault(c => c.CombatantName == name &&
-                    (c.CombatantType == (byte)EntityType.Player || c.CombatantType == (byte)EntityType.Pet));
+                    ((EntityType)c.CombatantType == EntityType.Player ||
+                     (EntityType)c.CombatantType == EntityType.Pet));
 
                 if (player == null)
                     player = this.SingleOrDefault(c => c.CombatantName == name &&
-                        c.CombatantType == (byte)EntityType.Unknown);
+                        (EntityType)c.CombatantType == EntityType.Unknown);
 
                 return player;
             }
@@ -223,11 +238,11 @@ namespace WaywardGamers.KParser
                     throw new ArgumentOutOfRangeException("name", "Name cannot be empty.");
 
                 var mob = this.SingleOrDefault(c => c.CombatantName == name &&
-                    c.CombatantType == (byte)EntityType.Mob);
+                    (EntityType)c.CombatantType == EntityType.Mob);
 
                 if (mob == null)
                     mob = this.SingleOrDefault(c => c.CombatantName == name &&
-                        c.CombatantType == (byte)EntityType.Unknown);
+                        (EntityType)c.CombatantType == EntityType.Unknown);
 
                 return mob;
             }

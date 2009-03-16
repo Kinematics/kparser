@@ -6,7 +6,7 @@ namespace WaywardGamers.KParser
     /// <summary>
     /// This class describes a profiled region
     /// </summary>
-    public class ProfileRegion : IDisposable
+    public class RegionProfiler : IDisposable
     {
         private string regionName;
 
@@ -29,7 +29,7 @@ namespace WaywardGamers.KParser
         /// Initializes a new instance of the <see cref="ProfileRegion"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        public ProfileRegion(string name)
+        public RegionProfiler(string name)
         {
             regionName = name;
 
@@ -42,7 +42,7 @@ namespace WaywardGamers.KParser
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="watermarkParam">The watermark param.</param>
-        public ProfileRegion(string name, TimeSpan watermarkParam)
+        public RegionProfiler(string name, TimeSpan watermarkParam)
             : this(name)
         {
             watermark = watermarkParam;
@@ -52,7 +52,7 @@ namespace WaywardGamers.KParser
         /// Releases unmanaged resources and performs other cleanup operations before the
         /// <see cref="ProfileRegion"/> is reclaimed by garbage collection.
         /// </summary>
-        ~ProfileRegion()
+        ~RegionProfiler()
         {
             Dispose(false);
         }
@@ -76,14 +76,18 @@ namespace WaywardGamers.KParser
 
             if (disposing == true)
             {
+                string outputLine = string.Concat("Profiling Region (", regionName, "): ", stopwatch.Elapsed.TotalMilliseconds, " ms");
+
                 if (stopwatch.Elapsed < watermark)
                 {
-                    Debug.WriteLine(string.Concat("Profiling Region (", regionName, "): ", stopwatch.Elapsed.TotalMilliseconds, " ms"));
+                    Debug.WriteLine(outputLine);
                 }
                 else
                 {
-                    Trace.WriteLine(string.Concat("Profiling Region (", regionName, "): ", stopwatch.Elapsed.TotalMilliseconds, " ms"));
+                    Trace.WriteLine(outputLine);
                 }
+
+                //Logger.Instance.Log("Region Profiling", outputLine);
             }
         }
     }

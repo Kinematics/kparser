@@ -5,13 +5,18 @@ namespace WaywardGamers.KParser.Interface
     /// <summary>
     /// Interface for readers of incoming FFXI information logs.
     /// </summary>
-    internal interface IReader
+    public interface IReader
     {
-        void Run();
+        void Start();
+        void Import(ImportSourceType importSource, IDBReader dbReaderManager);
         void Stop();
+
+        DataSource ParseModeType { get; }
 
         bool IsRunning { get; }
 
-        void Import(ImportSource importSource);
+        event ReaderDataHandler ReaderDataChanged;
+        event ReaderStatusHandler ReaderStatusChanged;
+
     }
 }

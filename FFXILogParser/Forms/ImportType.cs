@@ -21,14 +21,14 @@ namespace WaywardGamers.KParser.Forms
             optionDVSParse.Checked = true;
         }
 
-        internal ImportSource ImportSource
+        internal ImportSourceType ImportSource
         {
             get
             {
                 if (optionDVSParse.Checked == true)
-                    return ImportSource.DVSParse;
+                    return ImportSourceType.DVSParse;
 
-                return ImportSource.Unknown;
+                return ImportSourceType.KParser;
             }
         }
     }

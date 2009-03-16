@@ -172,5 +172,49 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         }
     }
 
+    /// <summary>
+    /// Class to handle pointer manipulation.
+    /// </summary>
+    internal static class Pointers
+    {
+        /// <summary>
+        /// This function allows us to do basic pointer arithmatic, incrementing
+        /// a pointer by a set number of bytes.
+        /// </summary>
+        /// <param name="pointer">The initial memory address.</param>
+        /// <param name="numBytes">The number of bytes to move relative to the initial address.</param>
+        /// <returns>Returns the new pointer address.</returns>
+        internal static IntPtr IncrementPointer(IntPtr pointer, uint numBytes)
+        {
+            return (IntPtr)((uint)pointer + numBytes);
+        }
 
+        /// <summary>
+        /// This function dereferences a pointer and returns the address that
+        /// the pointer pointed to.
+        /// </summary>
+        /// <param name="processHandle">The pointer to the process whose memory
+        /// space we're examining.</param>
+        /// <param name="pointerToFollow">The original pointer.</param>
+        /// <returns>The 'value' of the pointer; the location the pointer pointed to.
+        /// Returns IntPtr.Zero (null pointer) if we are unable to read the memory address.</returns>
+        internal static IntPtr FollowPointer(IntPtr processHandle, IntPtr pointerToFollow)
+        {
+            IntPtr pointerToRead = IntPtr.Zero;
+
+            try
+            {
+                pointerToRead = PInvoke.ReadProcessMemory(processHandle, pointerToFollow, (uint)IntPtr.Size);
+
+                if (pointerToRead == IntPtr.Zero)
+                    return IntPtr.Zero;
+
+                return Marshal.ReadIntPtr(pointerToRead);
+            }
+            finally
+            {
+                PInvoke.DoneReadingProcessMemory(pointerToRead);
+            }
+        }
+    }
 }

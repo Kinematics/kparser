@@ -14,7 +14,7 @@ namespace WaywardGamers.KParser.Monitoring
     /// in order to monitor the FFXI process space and read
     /// log info to be parsed.
     /// </summary>
-    public class DatabaseReader : IReader
+    public class DatabaseReader : AbstractReader
     {
         #region Singleton Constructor
         // Make the class a singleton
@@ -42,44 +42,16 @@ namespace WaywardGamers.KParser.Monitoring
 
         #region Member Variables
         private Thread readerThread;
-        private event DatabaseReparseEventHandler reparseProgressWatchers;
-        #endregion
-
-        #region Event Management
-        public DatabaseReparseEventHandler ReparseProgressChanged
-        {
-            get
-            {
-                return reparseProgressWatchers;
-            }
-            set
-            {
-                reparseProgressWatchers = value;
-            }
-        }
-
-        protected virtual void OnRowProcessed(DatabaseReparseEventArgs e)
-        {
-            if (reparseProgressWatchers != null)
-            {
-                // Invokes the delegates. 
-                reparseProgressWatchers(this, e);
-            }
-        }
-
+        private IDBReader dbReaderManager;
         #endregion
 
         #region Interface Control Methods and Properties
         /// <summary>
-        /// Gets (publicly) and sets (privately) the state of the
-        /// reader thread.
+        /// Return type of DataSource this reader works on.
         /// </summary>
-        public bool IsRunning { get; private set; }
+        public override DataSource ParseModeType { get { return DataSource.Database; } }
 
-        /// <summary>
-        /// Start a thread that reads log files for parsing.
-        /// </summary>
-        public void Run()
+        public override void Import(ImportSourceType importSource, IDBReader dbReaderManager)
         {
             IsRunning = true;
 
@@ -93,25 +65,62 @@ namespace WaywardGamers.KParser.Monitoring
                     readerThread.Abort();
                 }
 
-                // Begin the thread
-                readerThread = new Thread(RunThread);
+                this.dbReaderManager = dbReaderManager;
+                readerThread = null;
+
+                // Create the thread
+                switch (importSource)
+                {
+                    case ImportSourceType.KParser:
+                        if (dbReaderManager is KParserReadingManager)
+                            readerThread = new Thread(ImportKParserDB);
+                        break;
+                    case ImportSourceType.DVSParse:
+                    case ImportSourceType.DirectParse:
+                        if (dbReaderManager is DirectParseReadingManager)
+                            readerThread = new Thread(ImportDirectParseDB);
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+
                 readerThread.IsBackground = true;
                 readerThread.Name = "Read database thread";
                 readerThread.Start();
-
-                // Notify MessageManager that we're starting.
-                MessageManager.Instance.StartParsing(false);
             }
             catch (Exception e)
             {
                 Logger.Instance.Log(e);
                 IsRunning = false;
-                MessageManager.Instance.CancelParsing();
-                DatabaseReadingManager.Instance.CloseDatabase();
+                OnReaderStatusChanged(new ReaderStatusEventArgs(0, 0, false, true));
+
+                dbReaderManager.CloseDatabase();
             }
+
+
         }
 
-        public void RunThread()
+        /// <summary>
+        /// Stop the active reader thread.
+        /// </summary>
+        public override void Stop()
+        {
+            //if ((readerThread != null) &&
+            //    ((readerThread.ThreadState == System.Threading.ThreadState.Running) ||
+            //    (readerThread.ThreadState == System.Threading.ThreadState.Background)))
+            //{
+            //    readerThread.Abort();
+            //}
+
+            IsRunning = false;
+        }
+        #endregion
+
+        #region Importing implementations
+        /// <summary>
+        /// Import (reparse) KParser database files.
+        /// </summary>
+        private void ImportKParserDB()
         {
             int rowCount = 0;
             int totalCount = 0;
@@ -119,14 +128,20 @@ namespace WaywardGamers.KParser.Monitoring
 
             try
             {
-                KPDatabaseReadOnly readDataSet = DatabaseReadingManager.Instance.Database;
+                KParserReadingManager readingManager = dbReaderManager as KParserReadingManager;
+                if (readingManager == null)
+                    throw new ArgumentNullException();
+
+                KPDatabaseReadOnly readDataSet = readingManager.Database;
                 if (readDataSet != null)
                 {
+                    List<ChatLine> chatLines = new List<ChatLine>(100);
+
                     totalCount = readDataSet.RecordLog.Count;
 
                     // Read the (fixed) record log from the database, reconstruct
                     // the chat line, and send it to the new database.
-                    using (new ProfileRegion("Reparse: Read database and parse"))
+                    using (new RegionProfiler("Reparse: Read database and parse"))
                     {
                         foreach (var logLine in readDataSet.RecordLog)
                         {
@@ -134,10 +149,20 @@ namespace WaywardGamers.KParser.Monitoring
                             if (IsRunning == false)
                                 break;
 
-                            ChatLine chat = new ChatLine(logLine.MessageText, logLine.Timestamp);
-                            MessageManager.Instance.AddChatLine(chat);
+                            chatLines.Add(new ChatLine(logLine.MessageText, logLine.Timestamp));
 
-                            OnRowProcessed(new DatabaseReparseEventArgs(rowCount, totalCount, completed));
+                            OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed, false));
+
+                            if (chatLines.Count > 99)
+                            {
+                                OnReaderDataChanged(new ReaderDataEventArgs(chatLines));
+                                chatLines = new List<ChatLine>(100);
+                            }
+                        }
+
+                        if (chatLines.Count > 0)
+                        {
+                            OnReaderDataChanged(new ReaderDataEventArgs(chatLines));
                         }
 
                         completed = IsRunning;
@@ -159,84 +184,15 @@ namespace WaywardGamers.KParser.Monitoring
             finally
             {
                 IsRunning = false;
-                if (completed == true)
-                    MessageManager.Instance.StopParsing();
-                else
-                    MessageManager.Instance.CancelParsing();
-
-                OnRowProcessed(new DatabaseReparseEventArgs(rowCount, totalCount, completed));
-                DatabaseReadingManager.Instance.CloseDatabase();
+                OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed, (completed == false)));
+                dbReaderManager.CloseDatabase();
             }
         }
 
         /// <summary>
-        /// Stop the active reader thread.
+        /// Import database files created by DVSParse and DirectParse.
         /// </summary>
-        public void Stop()
-        {
-            if (IsRunning == false)
-                return;
-
-            // Notify MessageManager that we're done so it can turn off its timer loop.
-            MessageManager.Instance.CancelParsing();
-
-            //if ((readerThread != null) &&
-            //    ((readerThread.ThreadState == System.Threading.ThreadState.Running) ||
-            //    (readerThread.ThreadState == System.Threading.ThreadState.Background)))
-            //{
-            //    readerThread.Abort();
-            //}
-
-            IsRunning = false;
-        }
-
-
-        public void Import(ImportSource importSource)
-        {
-            switch (importSource)
-            {
-                case ImportSource.DVSParse:
-                case ImportSource.DirectParse:
-                    ImportDirectParseV1();
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-        #endregion
-
-        #region Import functions (slightly rewritten Reparse functions)
-        private void ImportDirectParseV1()
-        {
-            IsRunning = true;
-
-            try
-            {
-                // Reset the thread
-                if ((readerThread != null) && (readerThread.ThreadState == System.Threading.ThreadState.Running))
-                {
-                    readerThread.Abort();
-                }
-
-                // Begin the thread
-                readerThread = new Thread(ImportDirectParseV1IMPL);
-                readerThread.IsBackground = true;
-                readerThread.Name = "Import database thread";
-                readerThread.Start();
-
-                // Notify MessageManager that we're starting.
-                MessageManager.Instance.StartParsing(false);
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Log(e);
-                IsRunning = false;
-                MessageManager.Instance.CancelParsing();
-                ImportDirectParseManager.Instance.CloseDatabase();
-            }
-        }
-
-        private void ImportDirectParseV1IMPL()
+        private void ImportDirectParseDB()
         {
             int rowCount = 0;
             int totalCount = 0;
@@ -247,6 +203,8 @@ namespace WaywardGamers.KParser.Monitoring
             string breakCodesChars;
             uint breakCharVal;
             char breakChar;
+
+            List<ChatLine> chatLines = new List<ChatLine>(100);
 
             // For DVSD files:
             // logLine.RawHeader == "bf,00,00,60808080,00000288,000002f1,0034,00,01,00,00,(1E011E01)"
@@ -261,15 +219,18 @@ namespace WaywardGamers.KParser.Monitoring
 
             try
             {
+                DirectParseReadingManager readingManager = dbReaderManager as DirectParseReadingManager;
+                if (readingManager == null)
+                    throw new ArgumentNullException();
 
-                DPDatabaseImportV1 readDataSet = ImportDirectParseManager.Instance.Database;
+                DPDatabaseImportV1 readDataSet = readingManager.Database;
                 if (readDataSet != null)
                 {
                     totalCount = readDataSet.ChatLog.Count;
 
                     // Read the (fixed) record log from the database, reconstruct
                     // the chat line, and send it to the new database.
-                    using (new ProfileRegion("Import: Read database and parse"))
+                    using (new RegionProfiler("Import: Read database and parse"))
                     {
                         foreach (var logLine in readDataSet.ChatLog)
                         {
@@ -315,11 +276,21 @@ namespace WaywardGamers.KParser.Monitoring
 
                                 originalChatLine += logLine.Text;
 
-                                ChatLine chat = new ChatLine(originalChatLine, logLine.DateTime);
-                                MessageManager.Instance.AddChatLine(chat);
+                                chatLines.Add(new ChatLine(originalChatLine, logLine.DateTime));
                             }
 
-                            OnRowProcessed(new DatabaseReparseEventArgs(rowCount, totalCount, completed));
+                            OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed, false));
+
+                            if (chatLines.Count > 99)
+                            {
+                                OnReaderDataChanged(new ReaderDataEventArgs(chatLines));
+                                chatLines = new List<ChatLine>(100);
+                            }
+                        }
+
+                        if (chatLines.Count > 0)
+                        {
+                            OnReaderDataChanged(new ReaderDataEventArgs(chatLines));
                         }
 
                         completed = IsRunning;
@@ -337,16 +308,10 @@ namespace WaywardGamers.KParser.Monitoring
             finally
             {
                 IsRunning = false;
-                if (completed == true)
-                    MessageManager.Instance.StopParsing();
-                else
-                    MessageManager.Instance.CancelParsing();
-
-                OnRowProcessed(new DatabaseReparseEventArgs(rowCount, totalCount, completed));
-                ImportDirectParseManager.Instance.CloseDatabase();
+                OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed, (completed != true)));
+                dbReaderManager.CloseDatabase();
             }
         }
         #endregion
-
     }
 }

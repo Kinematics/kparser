@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using WaywardGamers.KParser.Monitoring;
 
-namespace WaywardGamers.KParser
+namespace WaywardGamers.KParser.Messages
 {
     [TestFixture]
     public class TestMessageLine
@@ -132,7 +133,7 @@ namespace WaywardGamers.KParser
 
             ChatLine chatLine = new ChatLine(chatText, timestamp);
 
-            Monitor.TestParseMode = DataSource.Ram;
+            Monitor.Instance.SetParseMode(DataSource.Ram);
 
             MessageLine msgLine = new MessageLine(chatLine);
 
@@ -154,7 +155,7 @@ namespace WaywardGamers.KParser
 
             ChatLine chatLine = new ChatLine(chatText, timestamp);
 
-            Monitor.TestParseMode = DataSource.Log;
+            Monitor.Instance.SetParseMode(DataSource.Log);
 
             MessageLine msgLine = new MessageLine(chatLine);
 
@@ -176,7 +177,7 @@ namespace WaywardGamers.KParser
 
             ChatLine chatLine = new ChatLine(chatText, timestamp);
 
-            Monitor.TestParseMode = DataSource.Ram;
+            Monitor.Instance.SetParseMode(DataSource.Ram);
 
             MessageLine msgLine = new MessageLine(chatLine);
 
@@ -198,7 +199,7 @@ namespace WaywardGamers.KParser
 
             ChatLine chatLine = new ChatLine(chatText, timestamp);
 
-            Monitor.TestParseMode = DataSource.Log;
+            Monitor.Instance.SetParseMode(DataSource.Log);
 
             MessageLine msgLine = new MessageLine(chatLine);
 
@@ -220,7 +221,7 @@ namespace WaywardGamers.KParser
 
             ChatLine chatLine = new ChatLine(chatText, timestamp);
 
-            Monitor.TestParseMode = DataSource.Ram;
+            Monitor.Instance.SetParseMode(DataSource.Ram);
 
             MessageLine msgLine = new MessageLine(chatLine);
 
@@ -242,7 +243,7 @@ namespace WaywardGamers.KParser
 
             ChatLine chatLine = new ChatLine(chatText, timestamp);
 
-            Monitor.TestParseMode = DataSource.Log;
+            Monitor.Instance.SetParseMode(DataSource.Log);
 
             MessageLine msgLine = new MessageLine(chatLine);
 
@@ -264,7 +265,7 @@ namespace WaywardGamers.KParser
 
             ChatLine chatLine = new ChatLine(chatText, timestamp);
 
-            Monitor.TestParseMode = DataSource.Ram;
+            Monitor.Instance.SetParseMode(DataSource.Ram);
 
             MessageLine msgLine = new MessageLine(chatLine);
 
@@ -286,7 +287,7 @@ namespace WaywardGamers.KParser
 
             ChatLine chatLine = new ChatLine(chatText, timestamp);
 
-            Monitor.TestParseMode = DataSource.Log;
+            Monitor.Instance.SetParseMode(DataSource.Log);
 
             MessageLine msgLine = new MessageLine(chatLine);
 
