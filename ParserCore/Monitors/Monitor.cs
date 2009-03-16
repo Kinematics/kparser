@@ -211,7 +211,9 @@ namespace WaywardGamers.KParser.Monitoring
         /// <summary>
         /// Import data from another parser's database (DVS, DirectParse, etc)
         /// </summary>
+        /// <param name="inFilename">The name of the database file to import.</param>
         /// <param name="outputFileName">The name of the new database.</param>
+        /// <param name="importSource">The type of database to import.</param>
         public void Import(string inFilename, string outputFileName, ImportSourceType importSource)
         {
             if (currentReader.IsRunning == true)
@@ -245,6 +247,61 @@ namespace WaywardGamers.KParser.Monitoring
                 MsgManager.Instance.StartNewSession();
 
                 currentReader.Import(importSource, dbReader);
+            }
+            catch (Exception)
+            {
+                MsgManager.Instance.EndSession();
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Reparse the database, but also have the database reader modify
+        /// the timestamps.
+        /// </summary>
+        /// <param name="inFilename"></param>
+        /// <param name="outFilename"></param>
+        /// <param name="importSourceType"></param>
+        public void UpgradeTimestampImport(string inFilename, string outputFileName, ImportSourceType importSource)
+        {
+            if (currentReader.IsRunning == true)
+                throw new InvalidOperationException(string.Format(
+                    "{0} is already running", currentReader.GetType().Name));
+
+            currentReader = DatabaseReader.Instance;
+
+            DatabaseManager.Instance.CreateDatabase(outputFileName);
+            System.Threading.Thread.Sleep(100);
+
+            IDBReader dbReader;
+
+            switch (importSource)
+            {
+                case ImportSourceType.KParser:
+                    dbReader = KParserReadingManager.Instance;
+                    break;
+                case ImportSourceType.DirectParse:
+                case ImportSourceType.DVSParse:
+                default:
+                    throw new InvalidOperationException();
+            }
+
+            dbReader.OpenDatabase(inFilename);
+
+            if (KParserReadingManager.Instance.Database.Version.Count > 0)
+            {
+                var versionLine = KParserReadingManager.Instance.Database.Version[0];
+                if (versionLine.ParserVersion.CompareTo("1.3") >= 0)
+                {
+                    throw new InvalidOperationException("Version 1.3 and higher already use UTC timestamps");
+                }
+            }
+
+            try
+            {
+                MsgManager.Instance.StartNewSession();
+
+                DatabaseReader.Instance.Import(importSource, dbReader, true);
             }
             catch (Exception)
             {
@@ -300,5 +357,6 @@ namespace WaywardGamers.KParser.Monitoring
             RamReader.Instance.ScanRAM();
         }
         #endregion
+
     }
 }
