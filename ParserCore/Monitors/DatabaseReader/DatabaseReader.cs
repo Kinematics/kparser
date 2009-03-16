@@ -148,35 +148,45 @@ namespace WaywardGamers.KParser.Monitoring
 
                     // Read the (fixed) record log from the database, reconstruct
                     // the chat line, and send it to the new database.
-                    using (new RegionProfiler("Reparse: Read database and parse"))
+                    foreach (var logLine in readDataSet.RecordLog)
                     {
-                        foreach (var logLine in readDataSet.RecordLog)
-                        {
-                            rowCount++;
-                            if (IsRunning == false)
-                                break;
+                        rowCount++;
+                        if (IsRunning == false)
+                            break;
 
-                            if (upgradeTimestamp == true)
-                                chatLines.Add(new ChatLine(logLine.MessageText, logLine.Timestamp.ToUniversalTime()));
-                            else
-                                chatLines.Add(new ChatLine(logLine.MessageText, logLine.Timestamp));
+                        if (upgradeTimestamp == true)
+                            chatLines.Add(new ChatLine(logLine.MessageText, logLine.Timestamp.ToUniversalTime()));
+                        else
+                            chatLines.Add(new ChatLine(logLine.MessageText, logLine.Timestamp));
 
-                            OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed, false));
+                        OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed, false));
 
-                            if (chatLines.Count > 99)
-                            {
-                                OnReaderDataChanged(new ReaderDataEventArgs(chatLines));
-                                chatLines = new List<ChatLine>(100);
-                            }
-                        }
-
-                        if (chatLines.Count > 0)
+                        if (chatLines.Count > 99)
                         {
                             OnReaderDataChanged(new ReaderDataEventArgs(chatLines));
+                            chatLines = new List<ChatLine>(100);
                         }
-
-                        completed = IsRunning;
                     }
+
+                    if (chatLines.Count > 0)
+                    {
+                        OnReaderDataChanged(new ReaderDataEventArgs(chatLines));
+                    }
+
+                    completed = IsRunning;
+
+                    List<PlayerInfo> playerInfoList = new List<PlayerInfo>();
+                    foreach (var player in readDataSet.Combatants)
+                    {
+                        playerInfoList.Add(new PlayerInfo()
+                        {
+                            Name = player.CombatantName,
+                            CombatantType = (EntityType)player.CombatantType,
+                            Info = player.PlayerInfo
+                        });
+                    }
+
+                    WaywardGamers.KParser.Parsing.MsgManager.Instance.PlayerInfoList = playerInfoList;
                 }
                 else
                 {
