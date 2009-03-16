@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-
+using WaywardGamers.KParser.Database;
 
 namespace WaywardGamers.KParser.Plugin
 {
@@ -269,7 +269,7 @@ namespace WaywardGamers.KParser.Plugin
                 if (mobFilter.MobXP == -1)
                     return true;
 
-                if (mobFilter.MobXP == rowToCheck.BattlesRow.MinBaseExperience())
+                if (mobFilter.MobXP == MobXPHandler.Instance.GetBaseXP(rowToCheck.BattleID))
                     return true;
             }
 
@@ -312,7 +312,7 @@ namespace WaywardGamers.KParser.Plugin
                 if (mobFilter.MobXP == -1)
                     return true;
 
-                if (mobFilter.MobXP == rowToCheck.BattlesRow.MinBaseExperience())
+                if (mobFilter.MobXP == MobXPHandler.Instance.GetBaseXP(rowToCheck.BattleID))
                     return true;
             }
 
@@ -355,7 +355,7 @@ namespace WaywardGamers.KParser.Plugin
                 if (mobFilter.MobXP == -1)
                     return true;
 
-                if (mobFilter.MobXP == rowToCheck.BattlesRow.MinBaseExperience())
+                if (mobFilter.MobXP == MobXPHandler.Instance.GetBaseXP(rowToCheck.BattleID))
                     return true;
             }
 
