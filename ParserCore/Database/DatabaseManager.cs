@@ -629,29 +629,32 @@ namespace WaywardGamers.KParser
 
             lock (activeBattleList)
             {
-                foreach (var activeBattle in activeBattleList)
+                if (activeBattleList.Count > 0)
                 {
-                    // Never close out the default battle, if it's in the list.
-                    if (activeBattle.Key.DefaultBattle == false)
+                    foreach (var activeBattle in activeBattleList)
                     {
-                        // Anything that hasn't had any activity in more than
-                        // 10 minutes is marked for removal.
-                        if ((closeOutAllBattles == true) || (activeBattle.Value < tenMinutesAgo))
+                        // Never close out the default battle, if it's in the list.
+                        if (activeBattle.Key.DefaultBattle == false)
                         {
-                            battlesToRemove.Add(activeBattle.Key);
+                            // Anything that hasn't had any activity in more than
+                            // 10 minutes is marked for removal.
+                            if ((closeOutAllBattles == true) || (activeBattle.Value < tenMinutesAgo))
+                            {
+                                battlesToRemove.Add(activeBattle.Key);
+                            }
                         }
                     }
-                }
 
-                foreach (var battleToRemove in battlesToRemove)
-                {
-                    // If the battle hasn't been marked as ended, set the
-                    // ending timestamp to match the most recent message's.
-                    // If reparsing, this will be the last message in the
-                    // log.
-                    if (battleToRemove.EndTime == MagicNumbers.MinSQLDateTime)
-                        battleToRemove.EndTime = mostRecentTimestamp;
-                    activeBattleList.Remove(battleToRemove);
+                    foreach (var battleToRemove in battlesToRemove)
+                    {
+                        // If the battle hasn't been marked as ended, set the
+                        // ending timestamp to match the most recent message's.
+                        // If reparsing, this will be the last message in the
+                        // log.
+                        if (battleToRemove.EndTime == MagicNumbers.MinSQLDateTime)
+                            battleToRemove.EndTime = mostRecentTimestamp;
+                        activeBattleList.Remove(battleToRemove);
+                    }
                 }
             }
         }
