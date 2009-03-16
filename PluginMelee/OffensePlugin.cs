@@ -156,10 +156,7 @@ namespace WaywardGamers.KParser.Plugin
         #region Private functions
         private void UpdateMobList()
         {
-            using (new RegionProfiler("mob xp handler"))
-            {
-                mobsCombo.UpdateWithMobList(groupMobs, exclude0XPMobs);
-            }
+            mobsCombo.UpdateWithMobList(groupMobs, exclude0XPMobs);
         }
 
         private void ResetAccumulation()
@@ -175,17 +172,22 @@ namespace WaywardGamers.KParser.Plugin
 
         private void UpdateAccumulation(KPDatabaseDataSet datasetChanges)
         {
-            if (datasetChanges == null)
+            using (new RegionProfiler("offense: update accumulation"))
             {
-                using (AccessToTheDatabase db = new AccessToTheDatabase())
+                if (datasetChanges == null)
                 {
-                    //UpdateAccumulationA(db.Database);
-                    UpdateAccumulationB(db.Database);
+                    using (AccessToTheDatabase db = new AccessToTheDatabase())
+                    {
+                        //UpdateAccumulationA(db.Database);
+                        UpdateAccumulationB(db.Database, false);
+                    }
                 }
-            }
-            else
-            {
-                UpdateAccumulationA(datasetChanges);
+                else
+                {
+                    //UpdateAccumulationA(datasetChanges);
+                    UpdateAccumulationB(datasetChanges, true);
+                }
+                
             }
         }
 
@@ -670,7 +672,7 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
-        private void UpdateAccumulationB(KPDatabaseDataSet dataSet)
+        private void UpdateAccumulationB(KPDatabaseDataSet dataSet, bool newRowsOnly)
         {
             MobFilter mobFilter = mobsCombo.CBGetMobFilter();
 
@@ -685,7 +687,8 @@ namespace WaywardGamers.KParser.Plugin
                 var bSet = from b in dataSet.Battles
                            where (mobFilter.CheckFilterBattle(b) == true)
                            orderby b.BattleID
-                           select b.GetInteractionsRows();
+                           select b.GetInteractionsRows()
+                                   .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added));
 
                 if (bSet.Count() == 0)
                     return;
@@ -773,22 +776,26 @@ namespace WaywardGamers.KParser.Plugin
                                 Name = c.CombatantName,
                                 ComType = (EntityType)c.CombatantType,
                                 Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                   .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                         where ((ActionType)n.ActionType == ActionType.Melee &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain))
                                         select n,
                                 Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                   .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                         where ((ActionType)n.ActionType == ActionType.Ranged &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain))
                                         select n,
                                 Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                   .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                         where ((ActionType)n.ActionType == ActionType.Spell &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
                                                 n.Preparing == false)
                                         select n,
                                 Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                     .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                           where ((ActionType)n.ActionType == ActionType.Ability &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain ||
@@ -796,23 +803,28 @@ namespace WaywardGamers.KParser.Plugin
                                                 n.Preparing == false)
                                           select n,
                                 WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                    .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                          where ((ActionType)n.ActionType == ActionType.Weaponskill &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
                                                 n.Preparing == false)
                                          select n,
                                 SC = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                      where ((ActionType)n.ActionType == ActionType.Skillchain &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain))
                                      select n,
                                 Counter = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                     .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                           where (ActionType)n.ActionType == ActionType.Counterattack
                                           select n,
                                 Retaliate = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                       .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                             where (ActionType)n.ActionType == ActionType.Retaliation
                                             select n,
                                 Spikes = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                    .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                          where (ActionType)n.ActionType == ActionType.Spikes
                                          select n
                             };
@@ -1799,15 +1811,8 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (flagNoUpdate == false)
             {
-                using (new RegionProfiler("change mobs (accumulator)"))
-                {
-                    ResetAndUpdateAccumulation();
-                }
-
-                using (new RegionProfiler("change mobs (display)"))
-                {
-                    HandleDataset(fakeDatabaseChanges);
-                }
+                ResetAndUpdateAccumulation();
+                HandleDataset(fakeDatabaseChanges);
             }
 
             flagNoUpdate = false;
