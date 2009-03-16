@@ -328,7 +328,7 @@ namespace WaywardGamers.KParser.Plugin
                     var mobsKilled = from b in dbAccess.Database.Battles
                                      where ((b.DefaultBattle == false) &&
                                             (b.IsEnemyIDNull() == false) &&
-                                            (b.CombatantsRowByEnemyCombatantRelation.CombatantType == (byte)EntityType.Mob))
+                                            ((EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.Mob))
                                      orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
                                      group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
                                      select new
@@ -403,5 +403,189 @@ namespace WaywardGamers.KParser.Plugin
             return mobStrings.ToArray();
         }
         #endregion
+    }
+
+    public static class BasePluginExtensionMethods
+    {
+        public static void UpdateWithSpeakerList(this ToolStripComboBox combo)
+        {
+            if (combo.ComboBox.InvokeRequired)
+            {
+                Action<ToolStripComboBox> thisFunc = UpdateWithSpeakerList;
+                combo.ComboBox.Invoke(thisFunc, new object[] { combo });
+                return;
+            }
+
+            string[] currentSpeakerList = new string[combo.Items.Count];
+            combo.Items.CopyTo(currentSpeakerList, 0);
+
+
+            List<string> speakerStrings = new List<string>();
+            speakerStrings.Add("All");
+
+            using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
+            {
+                var speakers = from s in dbAccess.Database.ChatSpeakers
+                               orderby s.SpeakerName
+                               select s.SpeakerName;
+
+                foreach (var speaker in speakers)
+                    speakerStrings.Add(speaker);
+            }
+
+            string[] newSpeakerList = speakerStrings.ToArray();
+
+
+            if (Array.Equals(currentSpeakerList, newSpeakerList) == true)
+                return;
+
+
+            combo.Items.Clear();
+
+            combo.Items.AddRange(newSpeakerList);
+        }
+
+        public static void UpdateWithPlayerList(this ToolStripComboBox combo)
+        {
+            if (combo.ComboBox.InvokeRequired)
+            {
+                Action<ToolStripComboBox> thisFunc = UpdateWithPlayerList;
+                combo.ComboBox.Invoke(thisFunc, new object[] { combo });
+                return;
+            }
+
+            string[] currentPlayerList = new string[combo.Items.Count];
+            combo.Items.CopyTo(currentPlayerList, 0);
+
+
+            List<string> playerStrings = new List<string>();
+            playerStrings.Add("All");
+
+            using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
+            {
+                var playersFighting = from b in dbAccess.Database.Combatants
+                                      where (((EntityType)b.CombatantType == EntityType.Player ||
+                                             (EntityType)b.CombatantType == EntityType.Pet ||
+                                             (EntityType)b.CombatantType == EntityType.Fellow ||
+                                             (EntityType)b.CombatantType == EntityType.CharmedMob) &&
+                                             b.GetInteractionsRowsByActorCombatantRelation().Any() == true)
+                                      orderby b.CombatantName
+                                      select b.CombatantName;
+
+                foreach (var player in playersFighting)
+                    playerStrings.Add(player);
+            }
+
+            string[] newPlayerList = playerStrings.ToArray();
+
+
+            if (Array.Equals(currentPlayerList, newPlayerList) == true)
+                return;
+
+
+            combo.Items.Clear();
+
+            combo.Items.AddRange(newPlayerList);
+        }
+
+        public static void UpdateWithMobList(this ToolStripComboBox combo, bool groupMobs, bool exclude0XPMobs)
+        {
+            if (combo.ComboBox.InvokeRequired)
+            {
+                Action<ToolStripComboBox, bool, bool> thisFunc = UpdateWithMobList;
+                combo.ComboBox.Invoke(thisFunc, new object[] { combo, groupMobs, exclude0XPMobs });
+                return;
+            }
+
+            string[] currentMobList = new string[combo.Items.Count];
+            combo.Items.CopyTo(currentMobList, 0);
+
+            MobXPHandler.Instance.Update();
+
+            List<string> mobStrings = new List<string>();
+            mobStrings.Add("All");
+
+            if (groupMobs == true)
+            {
+                // Enemy group listing
+
+                var mobsKilledX = from b in MobXPHandler.Instance.CompleteMobList
+                                  orderby b.Name
+                                  group b by b.Name into bn
+                                  select new
+                                  {
+                                      Name = bn.Key,
+                                      XP = from xb in bn
+                                           group xb by xb.BaseXP into xbn
+                                           orderby xbn.Key
+                                           select xbn
+                                  };
+
+
+                foreach (var mob in mobsKilledX)
+                {
+                    if (mob.XP.Count() > 1)
+                    {
+                        if (exclude0XPMobs == true)
+                        {
+                            if (mob.XP.Any(x => x.Key > 0) == true)
+                                mobStrings.Add(mob.Name);
+                        }
+                        else
+                        {
+                            mobStrings.Add(mob.Name);
+                        }
+                    }
+
+                    foreach (var xp in mob.XP)
+                    {
+                        if (exclude0XPMobs == true)
+                        {
+                            if (xp.Key > 0)
+                                mobStrings.Add(string.Format("{0} ({1})", mob.Name, xp.Key));
+                        }
+                        else
+                        {
+                            mobStrings.Add(string.Format("{0} ({1})", mob.Name, xp.Key));
+                        }
+                    }
+
+                }
+
+            }
+            else
+            {
+                // Enemy battle listing
+
+                var mobsKilled = from b in MobXPHandler.Instance.CompleteMobList
+                                 orderby b.BattleID
+                                 select b;
+
+                foreach (var mob in mobsKilled)
+                {
+                    if (exclude0XPMobs == true)
+                    {
+                        if (mob.XP > 0)
+                            mobStrings.Add(string.Format("{0,3}: {1}", mob.BattleID, mob.Name));
+                    }
+                    else
+                    {
+                        mobStrings.Add(string.Format("{0,3}: {1}", mob.BattleID, mob.Name));
+                    }
+                }
+
+            }
+
+            string[] newMobList = mobStrings.ToArray();
+
+
+            if (Array.Equals(currentMobList, newMobList) == true)
+                return;
+
+
+            combo.Items.Clear();
+
+            combo.Items.AddRange(newMobList);
+        }
     }
 }
