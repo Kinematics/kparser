@@ -231,7 +231,10 @@ namespace WaywardGamers.KParser
         internal void ProcessNewMessages(List<Message> messageList, bool parseEnded)
         {
             if ((messageList == null) || (messageList.Count == 0))
+            {
+                UpdatePlayerInfo(Parsing.MsgManager.Instance.PlayerInfoList);
                 return;
+            }
 
             int totalMessageCount = messageList.Count;
             int messageNumber = 0;
@@ -249,6 +252,8 @@ namespace WaywardGamers.KParser
 
                     OnMessageProcessed(new ReaderStatusEventArgs(++messageNumber, totalMessageCount, false, false));
                 }
+
+                UpdatePlayerInfo(Parsing.MsgManager.Instance.PlayerInfoList);
             }
             catch
             {
@@ -302,6 +307,21 @@ namespace WaywardGamers.KParser
 
             if (parseEnded == true)
                 DoneParsing();
+        }
+
+        private void UpdatePlayerInfo(List<PlayerInfo> playerInfoList)
+        {
+            if (playerInfoList == null)
+                return;
+
+            foreach (var player in playerInfoList)
+            {
+                var combatantLine = localDB.Combatants.FirstOrDefault(c => c.CombatantName == player.Name &&
+                    (EntityType)c.CombatantType == player.CombatantType);
+
+                if (combatantLine != null)
+                    combatantLine.PlayerInfo = player.Info;
+            }
         }
 
         private void OnMessageProcessed(ReaderStatusEventArgs e)
