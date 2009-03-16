@@ -137,6 +137,20 @@ namespace WaywardGamers.KParser
                 }
                 //throw new InvalidOperationException("Cannot get the fight length.  No End Time specified.");
             }
+
+            public bool IsOver
+            {
+                get
+                {
+                    if (this.Killed == true)
+                        return true;
+
+                    if (this.EndTime != MagicNumbers.MinSQLDateTime)
+                        return true;
+
+                    return false;
+                }
+            }
         }
 
         /// <summary>
