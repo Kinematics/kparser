@@ -137,16 +137,19 @@ namespace WaywardGamers.KParser.Plugin
         public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
             // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
-            if (e.DatasetChanges.Battles.Count > 0)
+            if (e.DatasetChanges.Battles != null)
             {
-                string selectedItem = mobsCombo.CBSelectedItem();
-                UpdateMobList(true);
+                if (e.DatasetChanges.Battles.Any(x => x.RowState == DataRowState.Added))
+                {
+                    string selectedItem = mobsCombo.CBSelectedItem();
+                    UpdateMobList(true);
 
-                flagNoUpdate = true;
-                mobsCombo.CBSelectItem(selectedItem);
+                    flagNoUpdate = true;
+                    mobsCombo.CBSelectItem(selectedItem);
+                }
             }
 
-            if (e.DatasetChanges.Interactions.Count != 0)
+            if (e.DatasetChanges.Interactions.Any(x => x.RowState == DataRowState.Added))
             {
                 UpdateAccumulation(e.DatasetChanges);
                 HandleDataset(null);
