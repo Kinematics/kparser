@@ -361,6 +361,45 @@ namespace WaywardGamers.KParser.Plugin
 
             return false;
         }
+
+        /// <summary>
+        /// An extension method to determine whether a given InteractionsRow passes the filter
+        /// check set by the specified MobFilter object.  Checks the filter against the target
+        /// of the action.
+        /// </summary>
+        /// <param name="mobFilter">The filter to check against.</param>
+        /// <param name="rowToCheck">The InteractionsRow to check.</param>
+        /// <returns>Returns true if the row passes the filter test, otherwise false.</returns>
+        public static bool CheckFilterBattle(this MobFilter mobFilter, KPDatabaseDataSet.BattlesRow rowToCheck)
+        {
+            if (mobFilter.AllMobs == true)
+                return true;
+
+            if (rowToCheck.DefaultBattle == true)
+                return false;
+
+            if (mobFilter.GroupMobs == false)
+            {
+                if (rowToCheck.BattleID == mobFilter.FightNumber)
+                    return true;
+                else
+                    return false;
+            }
+
+            if (mobFilter.MobName == string.Empty)
+                return false;
+
+            if (rowToCheck.CombatantsRowByEnemyCombatantRelation.CombatantName == mobFilter.MobName)
+            {
+                if (mobFilter.MobXP == -1)
+                    return true;
+
+                if (mobFilter.MobXP == MobXPHandler.Instance.GetBaseXP(rowToCheck.BattleID))
+                    return true;
+            }
+
+            return false;
+        }
         #endregion
     }
 }
