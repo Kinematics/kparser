@@ -162,7 +162,7 @@ namespace WaywardGamers.KParser
             Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
             Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
             Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
-            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Pet));
             Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Fantoccini"));
         }
 

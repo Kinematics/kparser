@@ -16,11 +16,11 @@ namespace WaywardGamers.KParser.Messages
         [Test]
         public void TestConstruction1()
         {
-            DateTime timestamp = DateTime.Now;
+            DateTime timestamp = DateTime.Now.ToUniversalTime();
             ChatLine testChatLine = new ChatLine("Test Line");
 
             Assert.That(testChatLine.Timestamp, Is.GreaterThanOrEqualTo(timestamp));
-            Assert.That(testChatLine.Timestamp, Is.LessThanOrEqualTo(DateTime.Now));
+            Assert.That(testChatLine.Timestamp, Is.LessThanOrEqualTo(DateTime.Now.ToUniversalTime()));
 
             Assert.That(testChatLine.ChatText, Is.EqualTo("Test Line"));
         }

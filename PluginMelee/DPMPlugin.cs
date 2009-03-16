@@ -328,7 +328,7 @@ namespace WaywardGamers.KParser.Plugin
             if (battle.EndTime > battle.StartTime)
                 endTimeFilter = battle.EndTime;
             else
-                endTimeFilter = DateTime.Now;
+                endTimeFilter = DateTime.Now.ToUniversalTime();
 
             CreateOuput("Cumulative Damage Per Minute\n",
                 attackSet, battle, startTimeFilter, endTimeFilter, ref sb, ref strModList);
@@ -340,7 +340,7 @@ namespace WaywardGamers.KParser.Plugin
             if (battle.EndTime > battle.StartTime)
                 endTimeFilter = battle.EndTime;
             else
-                endTimeFilter = DateTime.Now;
+                endTimeFilter = DateTime.Now.ToUniversalTime();
 
             startTimeFilter = endTimeFilter.AddMinutes(-1);
 
@@ -359,7 +359,7 @@ namespace WaywardGamers.KParser.Plugin
             if (battle.EndTime > battle.StartTime)
                 endTimeFilter = battle.EndTime.AddMinutes(-1);
             else
-                endTimeFilter = DateTime.Now.AddMinutes(-1);
+                endTimeFilter = DateTime.Now.ToUniversalTime().AddMinutes(-1);
 
             startTimeFilter = endTimeFilter.AddMinutes(-1);
 

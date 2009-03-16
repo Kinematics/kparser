@@ -581,10 +581,10 @@ namespace WaywardGamers.KParser
                     parseEnding = (bool)stateInfo;
 
                 // If we're in RAM mode, take anything more than 5 seconds old.
-                DateTime shortCheckTime = DateTime.Now - TimeSpan.FromSeconds(5);
+                DateTime shortCheckTime = DateTime.Now.ToUniversalTime() - TimeSpan.FromSeconds(5);
                 // If we're in LOG mode, leave the last 10 messages with the same timestamp
                 // for at least 2 minutes in case of log file cross-over.
-                DateTime longCheckTime = DateTime.Now - TimeSpan.FromMinutes(2);
+                DateTime longCheckTime = DateTime.Now.ToUniversalTime() - TimeSpan.FromMinutes(2);
 
                 List<Message> messagesToProcess = new List<Message>();
 
