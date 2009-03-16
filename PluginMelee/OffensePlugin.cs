@@ -711,6 +711,7 @@ namespace WaywardGamers.KParser.Plugin
                                    (EntityType)c.CombatantsRowByActorCombatantRelation.CombatantType == EntityType.Fellow ||
                                    (EntityType)c.CombatantsRowByActorCombatantRelation.CombatantType == EntityType.Skillchain)
                             group c by c.CombatantsRowByActorCombatantRelation into ca
+                            orderby ca.Key.CombatantType, ca.Key.CombatantName
                             select new AttackGroup
                             {
                                 Name = ca.Key.CombatantName,
