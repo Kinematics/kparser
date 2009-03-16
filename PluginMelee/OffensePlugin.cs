@@ -133,7 +133,7 @@ namespace WaywardGamers.KParser.Plugin
             // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
             if (e.DatasetChanges.Battles != null)
             {
-                if (e.DatasetChanges.Battles.Count > 0)
+                if (e.DatasetChanges.Battles.Any(x => x.RowState == DataRowState.Added))
                 {
                     string currentSelection = mobsCombo.CBSelectedItem();
                     if (currentSelection == string.Empty)
@@ -145,7 +145,7 @@ namespace WaywardGamers.KParser.Plugin
                 }
             }
 
-            if (e.DatasetChanges.Interactions.Count != 0)
+            if (e.DatasetChanges.Interactions.Any(x => x.RowState == DataRowState.Added))
             {
                 UpdateAccumulation(e.DatasetChanges);
                 HandleDataset(fakeDatabaseChanges);
@@ -179,7 +179,8 @@ namespace WaywardGamers.KParser.Plugin
             {
                 using (AccessToTheDatabase db = new AccessToTheDatabase())
                 {
-                    UpdateAccumulationA(db.Database);
+                    //UpdateAccumulationA(db.Database);
+                    UpdateAccumulationB(db.Database);
                 }
             }
             else
@@ -668,6 +669,564 @@ namespace WaywardGamers.KParser.Plugin
                 }
             }
         }
+
+        private void UpdateAccumulationB(KPDatabaseDataSet dataSet)
+        {
+            MobFilter mobFilter = mobsCombo.CBGetMobFilter();
+
+            #region LINQ query
+
+            if (mobFilter.AllMobs == false)
+            {
+                // If we have any mob filter subset, get that data starting
+                // with the battle table and working outwards.  Significantly
+                // faster (eg: 5-25 ms instead of 400 ms on a 200 mob parse).
+
+                var bSet = from b in dataSet.Battles
+                           where (mobFilter.CheckFilterBattle(b) == true)
+                           orderby b.BattleID
+                           select b.GetInteractionsRows();
+
+                if (bSet.Count() == 0)
+                    return;
+
+                IEnumerable<KPDatabaseDataSet.InteractionsRow> iRows = bSet.First();
+
+                var bSetSkip = bSet.Skip(1);
+
+                foreach (var b in bSetSkip)
+                {
+                    iRows = iRows.Concat(b);
+                }
+
+
+                attackSet = from c in iRows
+                            where (c.IsActorIDNull() == false) &&
+                                  ((EntityType)c.CombatantsRowByActorCombatantRelation.CombatantType == EntityType.Player ||
+                                   (EntityType)c.CombatantsRowByActorCombatantRelation.CombatantType == EntityType.Pet ||
+                                   (EntityType)c.CombatantsRowByActorCombatantRelation.CombatantType == EntityType.CharmedMob ||
+                                   (EntityType)c.CombatantsRowByActorCombatantRelation.CombatantType == EntityType.Fellow ||
+                                   (EntityType)c.CombatantsRowByActorCombatantRelation.CombatantType == EntityType.Skillchain)
+                            group c by c.CombatantsRowByActorCombatantRelation into ca
+                            select new AttackGroup
+                            {
+                                Name = ca.Key.CombatantName,
+                                ComType = (EntityType)ca.Key.CombatantType,
+                                Melee = from q in ca
+                                        where ((ActionType)q.ActionType == ActionType.Melee &&
+                                               ((HarmType)q.HarmType == HarmType.Damage ||
+                                                (HarmType)q.HarmType == HarmType.Drain))
+                                        select q,
+                                Range = from q in ca
+                                        where ((ActionType)q.ActionType == ActionType.Ranged &&
+                                               ((HarmType)q.HarmType == HarmType.Damage ||
+                                                (HarmType)q.HarmType == HarmType.Drain))
+                                        select q,
+                                Spell = from q in ca
+                                        where ((ActionType)q.ActionType == ActionType.Spell &&
+                                               ((HarmType)q.HarmType == HarmType.Damage ||
+                                                (HarmType)q.HarmType == HarmType.Drain) &&
+                                                q.Preparing == false)
+                                        select q,
+                                Ability = from q in ca
+                                          where ((ActionType)q.ActionType == ActionType.Ability &&
+                                               ((HarmType)q.HarmType == HarmType.Damage ||
+                                                (HarmType)q.HarmType == HarmType.Drain ||
+                                                (HarmType)q.HarmType == HarmType.Unknown) &&
+                                                q.Preparing == false)
+                                          select q,
+                                WSkill = from q in ca
+                                         where ((ActionType)q.ActionType == ActionType.Weaponskill &&
+                                               ((HarmType)q.HarmType == HarmType.Damage ||
+                                                (HarmType)q.HarmType == HarmType.Drain) &&
+                                                q.Preparing == false)
+                                         select q,
+                                SC = from q in ca
+                                     where ((ActionType)q.ActionType == ActionType.Skillchain &&
+                                               ((HarmType)q.HarmType == HarmType.Damage ||
+                                                (HarmType)q.HarmType == HarmType.Drain))
+                                     select q,
+                                Counter = from q in ca
+                                          where (ActionType)q.ActionType == ActionType.Counterattack
+                                          select q,
+                                Retaliate = from q in ca
+                                            where (ActionType)q.ActionType == ActionType.Retaliation
+                                            select q,
+                                Spikes = from q in ca
+                                         where (ActionType)q.ActionType == ActionType.Spikes
+                                         select q
+                            };
+            }
+            else
+            {
+                // Faster to process this from the combatant side if our mob filter is 'All'
+
+                attackSet = from c in dataSet.Combatants
+                            where (((EntityType)c.CombatantType == EntityType.Player) ||
+                                   ((EntityType)c.CombatantType == EntityType.Pet) ||
+                                   ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
+                                   ((EntityType)c.CombatantType == EntityType.Fellow) ||
+                                   ((EntityType)c.CombatantType == EntityType.Skillchain))
+                            orderby c.CombatantType, c.CombatantName
+                            select new AttackGroup
+                            {
+                                Name = c.CombatantName,
+                                ComType = (EntityType)c.CombatantType,
+                                Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                        where ((ActionType)n.ActionType == ActionType.Melee &&
+                                               ((HarmType)n.HarmType == HarmType.Damage ||
+                                                (HarmType)n.HarmType == HarmType.Drain))
+                                        select n,
+                                Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                        where ((ActionType)n.ActionType == ActionType.Ranged &&
+                                               ((HarmType)n.HarmType == HarmType.Damage ||
+                                                (HarmType)n.HarmType == HarmType.Drain))
+                                        select n,
+                                Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                        where ((ActionType)n.ActionType == ActionType.Spell &&
+                                               ((HarmType)n.HarmType == HarmType.Damage ||
+                                                (HarmType)n.HarmType == HarmType.Drain) &&
+                                                n.Preparing == false)
+                                        select n,
+                                Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                          where ((ActionType)n.ActionType == ActionType.Ability &&
+                                               ((HarmType)n.HarmType == HarmType.Damage ||
+                                                (HarmType)n.HarmType == HarmType.Drain ||
+                                                (HarmType)n.HarmType == HarmType.Unknown) &&
+                                                n.Preparing == false)
+                                          select n,
+                                WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                         where ((ActionType)n.ActionType == ActionType.Weaponskill &&
+                                               ((HarmType)n.HarmType == HarmType.Damage ||
+                                                (HarmType)n.HarmType == HarmType.Drain) &&
+                                                n.Preparing == false)
+                                         select n,
+                                SC = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                     where ((ActionType)n.ActionType == ActionType.Skillchain &&
+                                               ((HarmType)n.HarmType == HarmType.Damage ||
+                                                (HarmType)n.HarmType == HarmType.Drain))
+                                     select n,
+                                Counter = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                          where (ActionType)n.ActionType == ActionType.Counterattack
+                                          select n,
+                                Retaliate = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                            where (ActionType)n.ActionType == ActionType.Retaliation
+                                            select n,
+                                Spikes = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                         where (ActionType)n.ActionType == ActionType.Spikes
+                                         select n
+                            };
+            }
+            #endregion
+
+            if ((attackSet == null) || (attackSet.Count() == 0))
+                return;
+
+            int min, max;
+
+            foreach (var player in attackSet)
+            {
+                MainAccumulator mainAcc = dataAccum.FirstOrDefault(p => p.Name == player.Name);
+                if (mainAcc == null)
+                {
+                    mainAcc = new MainAccumulator { Name = player.Name, CType = player.ComType };
+                    dataAccum.Add(mainAcc);
+                }
+
+                if (player.ComType == EntityType.Skillchain)
+                {
+                    #region SC
+                    if (player.SC.Count() > 0)
+                    {
+                        if (mainAcc.SCNum == 0)
+                        {
+                            mainAcc.SCHi = player.SC.First().Amount;
+                            mainAcc.SCLow = player.SC.First().Amount;
+                        }
+
+                        mainAcc.TDmg += player.SCDmg;
+                        mainAcc.TSCDmg += player.SCDmg;
+                        mainAcc.SCNum += player.SC.Count();
+
+                        min = player.SC.Min(sc => sc.Amount);
+                        max = player.SC.Max(sc => sc.Amount);
+
+                        if (min < mainAcc.SCLow)
+                            mainAcc.SCLow = min;
+                        if (max > mainAcc.SCHi)
+                            mainAcc.SCHi = max;
+                    }
+                    #endregion
+                }
+                else
+                {
+                    #region Melee
+                    if (player.Melee.Count() > 0)
+                    {
+                        mainAcc.TDmg += player.MeleeDmg;
+                        mainAcc.TMDmg += player.MeleeDmg;
+
+                        var succHits = player.Melee.Where(h => (DefenseType)h.DefenseType == DefenseType.None);
+                        var critHits = succHits.Where(h => (DamageModifier)h.DamageModifier == DamageModifier.Critical);
+                        var nonCritHits = succHits.Where(h => (DamageModifier)h.DamageModifier == DamageModifier.None);
+
+                        if ((mainAcc.MHits == 0) && (nonCritHits.Count() > 0))
+                        {
+                            mainAcc.MHi = nonCritHits.First().Amount;
+                            mainAcc.MLow = mainAcc.MHi;
+                        }
+
+                        if ((mainAcc.MCritHits == 0) && (critHits.Count() > 0))
+                        {
+                            mainAcc.MCritHi = critHits.First().Amount;
+                            mainAcc.MCritLow = mainAcc.MCritHi;
+                        }
+
+                        if (nonCritHits.Count() > 0)
+                        {
+                            min = nonCritHits.Min(h => h.Amount);
+                            max = nonCritHits.Max(h => h.Amount);
+
+                            if (min < mainAcc.MLow)
+                                mainAcc.MLow = min;
+                            if (max > mainAcc.MHi)
+                                mainAcc.MHi = max;
+                        }
+
+                        if (critHits.Count() > 0)
+                        {
+                            min = critHits.Min(h => h.Amount);
+                            max = critHits.Max(h => h.Amount);
+
+                            if (min < mainAcc.MCritLow)
+                                mainAcc.MCritLow = min;
+                            if (max > mainAcc.MCritHi)
+                                mainAcc.MCritHi = max;
+                        }
+
+                        mainAcc.MHits += succHits.Count();
+                        mainAcc.MMiss += player.Melee.Count(b => (DefenseType)b.DefenseType != DefenseType.None);
+
+                        mainAcc.MCritHits += critHits.Count();
+                        mainAcc.MCritDmg += critHits.Sum(h => h.Amount);
+                    }
+                    #endregion
+
+                    #region Range
+                    if (player.Range.Count() > 0)
+                    {
+                        mainAcc.TDmg += player.RangeDmg;
+                        mainAcc.TRDmg += player.RangeDmg;
+
+                        var succHits = player.Range.Where(h => (DefenseType)h.DefenseType == DefenseType.None);
+                        var critHits = succHits.Where(h => (DamageModifier)h.DamageModifier == DamageModifier.Critical);
+                        var nonCritHits = succHits.Where(h => (DamageModifier)h.DamageModifier == DamageModifier.None);
+
+                        if ((mainAcc.RHits == 0) && (nonCritHits.Count() > 0))
+                        {
+                            mainAcc.RHi = nonCritHits.First().Amount;
+                            mainAcc.RLow = mainAcc.RHi;
+                        }
+
+                        if ((mainAcc.RCritHits == 0) && (critHits.Count() > 0))
+                        {
+                            mainAcc.RCritHi = critHits.First().Amount;
+                            mainAcc.RCritLow = mainAcc.RCritHi;
+                        }
+
+                        if (nonCritHits.Count() > 0)
+                        {
+                            min = nonCritHits.Min(h => h.Amount);
+                            max = nonCritHits.Max(h => h.Amount);
+
+                            if (min < mainAcc.RLow)
+                                mainAcc.RLow = min;
+                            if (max > mainAcc.RHi)
+                                mainAcc.RHi = max;
+                        }
+
+                        if (critHits.Count() > 0)
+                        {
+                            min = critHits.Min(h => h.Amount);
+                            max = critHits.Max(h => h.Amount);
+
+                            if (min < mainAcc.RCritLow)
+                                mainAcc.RCritLow = min;
+                            if (max > mainAcc.RCritHi)
+                                mainAcc.RCritHi = max;
+                        }
+
+                        mainAcc.RHits += succHits.Count();
+                        mainAcc.RMiss += player.Range.Count(b => (DefenseType)b.DefenseType != DefenseType.None);
+
+                        mainAcc.RCritHits += critHits.Count();
+                        mainAcc.RCritDmg += critHits.Sum(h => h.Amount);
+                    }
+                    #endregion
+
+                    #region Ability
+                    if (player.Ability.Count() > 0)
+                    {
+                        mainAcc.TDmg += player.AbilityDmg;
+                        mainAcc.TADmg += player.AbilityDmg;
+
+                        var abils = player.Ability.Where(a => a.IsActionIDNull() == false)
+                            .GroupBy(a => a.ActionsRow.ActionName);
+
+                        foreach (var abil in abils)
+                        {
+                            string abilName = abil.Key;
+
+                            AbilAccum abilAcc = mainAcc.Abilities.FirstOrDefault(
+                                a => a.AName == abilName);
+
+                            if (abilAcc == null)
+                            {
+                                abilAcc = new AbilAccum { AName = abilName };
+                                mainAcc.Abilities.Add(abilAcc);
+                            }
+
+                            var succAbil = abil.Where(a => (DefenseType)a.DefenseType == DefenseType.None);
+                            var missAbil = abil.Where(a => (DefenseType)a.DefenseType != DefenseType.None);
+
+                            if ((abilAcc.AHit == 0) && (succAbil.Count() > 0))
+                            {
+                                abilAcc.AHi = succAbil.First().Amount;
+                                abilAcc.ALow = abilAcc.AHi;
+                            }
+
+                            if (succAbil.Count() > 0)
+                            {
+                                min = succAbil.Min(a => a.Amount);
+                                max = succAbil.Max(a => a.Amount);
+
+                                if (min < abilAcc.ALow)
+                                    abilAcc.ALow = min;
+                                if (max > abilAcc.AHi)
+                                    abilAcc.AHi = max;
+                            }
+
+                            abilAcc.AHit += succAbil.Count();
+                            abilAcc.AMiss += missAbil.Count();
+                            abilAcc.ADmg += succAbil.Sum(a => a.Amount);
+                        }
+                    }
+                    #endregion
+
+                    #region Weaponskills
+                    if (player.WSkill.Count() > 0)
+                    {
+                        mainAcc.TDmg += player.WSkillDmg;
+                        mainAcc.TWDmg += player.WSkillDmg;
+
+                        var wskills = player.WSkill.GroupBy(a => a.ActionsRow.ActionName);
+
+                        foreach (var wskill in wskills)
+                        {
+                            string wskillName = wskill.Key;
+
+                            WSAccum wskillAcc = mainAcc.Weaponskills.FirstOrDefault(
+                                a => a.WName == wskillName);
+
+                            if (wskillAcc == null)
+                            {
+                                wskillAcc = new WSAccum { WName = wskillName };
+                                mainAcc.Weaponskills.Add(wskillAcc);
+                            }
+
+                            var succWS = wskill.Where(a => (DefenseType)a.DefenseType == DefenseType.None);
+                            var missWS = wskill.Where(a => (DefenseType)a.DefenseType != DefenseType.None);
+
+                            if ((wskillAcc.WHit == 0) && (succWS.Count() > 0))
+                            {
+                                wskillAcc.WHi = succWS.First().Amount;
+                                wskillAcc.WLow = wskillAcc.WHi;
+                            }
+
+                            if (succWS.Count() > 0)
+                            {
+                                min = succWS.Min(a => a.Amount);
+                                max = succWS.Max(a => a.Amount);
+
+                                if (min < wskillAcc.WLow)
+                                    wskillAcc.WLow = min;
+                                if (max > wskillAcc.WHi)
+                                    wskillAcc.WHi = max;
+                            }
+
+                            wskillAcc.WHit += succWS.Count();
+                            wskillAcc.WMiss += missWS.Count();
+                            wskillAcc.WDmg += succWS.Sum(a => a.Amount);
+                        }
+                    }
+                    #endregion
+
+                    #region Spells
+                    if (player.Spell.Count() > 0)
+                    {
+                        mainAcc.TDmg += player.SpellDmg;
+                        mainAcc.TSDmg += player.SpellDmg;
+
+                        var spells = player.Spell.GroupBy(a => a.ActionsRow.ActionName);
+
+                        foreach (var spell in spells)
+                        {
+                            string spellName = spell.Key;
+
+                            SpellAccum spellAcc = mainAcc.Spells.FirstOrDefault(
+                                a => a.SName == spellName);
+
+                            if (spellAcc == null)
+                            {
+                                spellAcc = new SpellAccum { SName = spellName };
+                                mainAcc.Spells.Add(spellAcc);
+                            }
+
+                            var succSpell = spell.Where(a => (DefenseType)a.DefenseType == DefenseType.None);
+                            var failSpell = spell.Where(a => (DefenseType)a.DefenseType == DefenseType.Resist);
+                            var nonMBSpell = succSpell.Where(a => (DamageModifier)a.DamageModifier == DamageModifier.None);
+                            var mbSpell = succSpell.Where(a => (DamageModifier)a.DamageModifier == DamageModifier.MagicBurst);
+
+                            if ((spellAcc.SNum == 0) && (nonMBSpell.Count() > 0))
+                            {
+                                spellAcc.SHi = nonMBSpell.First().Amount;
+                                spellAcc.SLow = spellAcc.SHi;
+                            }
+
+                            if ((spellAcc.SNumMB == 0) && (mbSpell.Count() > 0))
+                            {
+                                spellAcc.SMBHi = mbSpell.First().Amount;
+                                spellAcc.SMBLow = spellAcc.SMBHi;
+                            }
+
+                            if (nonMBSpell.Count() > 0)
+                            {
+                                min = nonMBSpell.Min(a => a.Amount);
+                                max = nonMBSpell.Max(a => a.Amount);
+
+                                if (min < spellAcc.SLow)
+                                    spellAcc.SLow = min;
+                                if (max > spellAcc.SHi)
+                                    spellAcc.SHi = max;
+                            }
+
+                            if (mbSpell.Count() > 0)
+                            {
+                                min = mbSpell.Min(a => a.Amount);
+                                max = mbSpell.Max(a => a.Amount);
+
+                                if (min < spellAcc.SMBLow)
+                                    spellAcc.SMBLow = min;
+                                if (max > spellAcc.SMBHi)
+                                    spellAcc.SMBHi = max;
+                            }
+
+                            spellAcc.SNum += succSpell.Count();
+                            spellAcc.SFail += failSpell.Count();
+                            spellAcc.SNumMB += mbSpell.Count();
+                            spellAcc.SDmg += succSpell.Sum(a => a.Amount);
+                            spellAcc.SMBDmg += mbSpell.Sum(a => a.Amount);
+                        }
+                    }
+                    #endregion
+
+                    #region Other Magic
+                    if (player.MeleeEffect.Count() > 0)
+                    {
+                        int dmg = player.MeleeEffect.Sum(a => a.SecondAmount);
+
+                        mainAcc.MAENum += player.MeleeEffect.Count();
+                        mainAcc.MAEDmg += dmg;
+                        mainAcc.TODmg += dmg;
+                        mainAcc.TDmg += dmg;
+                    }
+
+                    if (player.RangeEffect.Count() > 0)
+                    {
+                        int dmg = player.RangeEffect.Sum(a => a.SecondAmount);
+
+                        mainAcc.RAENum += player.RangeEffect.Count();
+                        mainAcc.RAEDmg += dmg;
+                        mainAcc.TODmg += dmg;
+                        mainAcc.TDmg += dmg;
+                    }
+
+                    if (player.Spikes.Count() > 0)
+                    {
+                        int dmg = player.Spikes.Sum(a => a.Amount);
+
+                        mainAcc.SpkNum += player.Spikes.Count();
+                        mainAcc.SpkDmg += dmg;
+                        mainAcc.TODmg += dmg;
+                        mainAcc.TDmg += dmg;
+                    }
+                    #endregion
+
+                    #region Other Physical
+                    if (player.Counter.Count() > 0)
+                    {
+                        var succHits = player.Counter.Where(h => (DefenseType)h.DefenseType == DefenseType.None);
+
+                        if ((mainAcc.CAHits == 0) && (succHits.Count() > 0))
+                        {
+                            mainAcc.CAHi = succHits.First().Amount;
+                            mainAcc.CALow = mainAcc.CAHi;
+                        }
+
+                        if (succHits.Count() > 0)
+                        {
+                            min = succHits.Min(h => h.Amount);
+                            max = succHits.Max(h => h.Amount);
+
+                            if (min < mainAcc.CALow)
+                                mainAcc.CALow = min;
+                            if (max > mainAcc.CAHi)
+                                mainAcc.CAHi = max;
+                        }
+
+                        mainAcc.CAHits += succHits.Count();
+                        mainAcc.CAMiss += player.Counter.Count(b => (DefenseType)b.DefenseType != DefenseType.None);
+
+                        int dmg = succHits.Sum(c => c.Amount);
+                        mainAcc.CADmg += dmg;
+                        mainAcc.TDmg += dmg;
+                        mainAcc.TODmg += dmg;
+                    }
+
+                    if (player.Retaliate.Count() > 0)
+                    {
+                        var succHits = player.Retaliate.Where(h => (DefenseType)h.DefenseType == DefenseType.None);
+
+                        if ((mainAcc.RTHits == 0) && (succHits.Count() > 0))
+                        {
+                            mainAcc.RTHi = succHits.First().Amount;
+                            mainAcc.RTLow = mainAcc.RTHi;
+                        }
+
+                        if (succHits.Count() > 0)
+                        {
+                            min = succHits.Min(h => h.Amount);
+                            max = succHits.Max(h => h.Amount);
+
+                            if (min < mainAcc.RTLow)
+                                mainAcc.RTLow = min;
+                            if (max > mainAcc.RTHi)
+                                mainAcc.RTHi = max;
+                        }
+
+                        mainAcc.RTHits += succHits.Count();
+                        mainAcc.RTMiss += player.Retaliate.Count(b => (DefenseType)b.DefenseType != DefenseType.None);
+
+                        int dmg = succHits.Sum(c => c.Amount);
+                        mainAcc.RTDmg += dmg;
+                        mainAcc.TDmg += dmg;
+                        mainAcc.TODmg += dmg;
+                    }
+                    #endregion
+                }
+            }
+        }
+
         #endregion
 
         #region Processing sections
