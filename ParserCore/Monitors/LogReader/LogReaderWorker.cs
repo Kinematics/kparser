@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 using System.Threading;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using WaywardGamers.KParser.Interface;
 
@@ -10,29 +11,13 @@ namespace WaywardGamers.KParser.Monitoring
 {
     /// <summary>
     /// Class that handles parsing the FFXI Log files.
+    /// --
+    /// Variant that is implemented as a BackgroundWorker.
     /// </summary>
-    internal class LogReader : AbstractReader
+    internal class LogReaderWorker : BackgroundWorker
     {
-        #region Singleton Constructor
-        // Make the class a singleton
-        private static readonly LogReader instance = new LogReader();
-
-        /// <summary>
-        /// Gets the singleton instance of the LogParser class.
-        /// This is the only internal way to access the singleton.
-        /// </summary>
-        internal static LogReader Instance
-        {
-            get
-            {
-                return instance;
-            }
-        }
-
-        /// <summary>
-        /// Private constructor ensures singleton purity.
-        /// </summary>
-        private LogReader()
+        #region Constructor
+        public LogReaderWorker()
         {
             fileSystemWatcher = new FileSystemWatcher();
             fileSystemWatcher.Filter = "*.log";
@@ -54,6 +39,10 @@ namespace WaywardGamers.KParser.Monitoring
         Timer networkWatchTimer;
 
         string lastChangedFile = string.Empty;
+
+        public event ReaderDataHandler ReaderDataChanged;
+
+        bool parsingStopped;
         #endregion
 
         #region Properties
@@ -78,35 +67,57 @@ namespace WaywardGamers.KParser.Monitoring
         }
         #endregion
 
+        #region Event speaker
+        protected virtual void OnReaderDataChanged(ReaderDataEventArgs e)
+        {
+            ReaderDataHandler copyReaderDataChanged = ReaderDataChanged;
+            if (copyReaderDataChanged != null)
+                copyReaderDataChanged(this, e);
+
+        }
+        #endregion
+
         #region Interface Control Methods and Properties
 
         /// <summary>
         /// Return type of DataSource this reader works on.
         /// </summary>
-        public override DataSource ParseModeType { get { return DataSource.Log; } }
+        public DataSource ParseModeType { get { return DataSource.Log; } }
 
         /// <summary>
         /// Activate the file system watcher so that we can catch events when files change.
         /// If the option to parse existing files is true, run the parsing code on them.
         /// </summary>
-        public override void Start()
+        public void Start()
         {
-            IsRunning = true;
+            // Get the settings so that we know where to look for the log files.
+            appSettings.Reload();
+            WatchDirectory = appSettings.FFXILogDirectory;
 
+            // Verify the drive
+            DriveInfo driveInfo = new DriveInfo(Path.GetPathRoot(WatchDirectory));
+
+            if (driveInfo.IsReady == false)
+                throw new InvalidOperationException("Drive for the specified log directory is not available.");
+
+            if ((driveInfo.DriveType != DriveType.Fixed) && (driveInfo.DriveType != DriveType.Network))
+                throw new InvalidOperationException("Drive is not of a type that can be monitored.");
+
+            parsingStopped = false;
+            this.RunWorkerAsync(driveInfo);
+        }
+
+        /// <summary>
+        /// Override function for async background thread work.
+        /// </summary>
+        /// <param name="e">Passes in a DriveInfo value.</param>
+        protected override void OnDoWork(DoWorkEventArgs e)
+        {
+ 	        base.OnDoWork(e);
+            
             try
             {
-                // Get the settings so that we know where to look for the log files.
-                appSettings.Reload();
-                WatchDirectory = appSettings.FFXILogDirectory;
-
-                // Verify the drive
-                DriveInfo driveInfo = new DriveInfo(Path.GetPathRoot(WatchDirectory));
-
-                if (driveInfo.IsReady == false)
-                    throw new InvalidOperationException("Drive for the specified log directory is not available.");
-
-                if ((driveInfo.DriveType != DriveType.Fixed) && (driveInfo.DriveType != DriveType.Network))
-                    throw new InvalidOperationException("Drive is not of a type that can be monitored.");
+                DriveInfo driveInfo = e.Argument as DriveInfo;
 
                 // Run the parser on any logs already in existance before starting to monitor,
                 // if that option is set.
@@ -123,10 +134,19 @@ namespace WaywardGamers.KParser.Monitoring
                     fileSystemWatcher.EnableRaisingEvents = true;
                 else if (driveInfo.DriveType == DriveType.Network)
                     StartMonitoringNetworkDrive();
+
+                // Let this function sleep so that the background worker thread
+                // stays claimed.
+                while (CancellationPending == false)
+                {
+                    Thread.Sleep(1000);
+                }
+
+                if (parsingStopped == false)
+                    Stop();
             }
             catch (Exception)
             {
-                IsRunning = false;
                 fileSystemWatcher.EnableRaisingEvents = false;
                 if (networkWatchTimer != null)
                 {
@@ -140,11 +160,8 @@ namespace WaywardGamers.KParser.Monitoring
         /// <summary>
         /// Stop monitoring the FFXI log directory.
         /// </summary>
-        public override void Stop()
+        public void Stop()
         {
-            if (IsRunning == false)
-                return;
-
             try
             {
                 // Stop watching for new files.
@@ -158,7 +175,8 @@ namespace WaywardGamers.KParser.Monitoring
             }
             finally
             {
-                IsRunning = false;
+                parsingStopped = true;
+                this.CancelAsync();
             }
         }
         #endregion
@@ -184,6 +202,9 @@ namespace WaywardGamers.KParser.Monitoring
             // Process the files in sorted order
             foreach (var file in sortedFiles)
             {
+                if (this.CancellationPending)
+                    return;
+
                 ReadFFXILog(file.Value);
             }
         }
@@ -271,14 +292,14 @@ namespace WaywardGamers.KParser.Monitoring
         {
             if (File.Exists(fileName) == false)
                 throw new ArgumentException(string.Format("File: {0}\ndoes not exist.", fileName));
-            
+
             DateTime fileTimeStamp = File.GetLastWriteTime(fileName);
 
             string fileText = string.Empty;
             bool finishedReading = false;
             uint totalWaitTime = 0;
 
-            while ((finishedReading == false) && (totalWaitTime < 5000))
+            while ((finishedReading == false) && (totalWaitTime < 5000) && (this.CancellationPending == false))
             {
                 try
                 {

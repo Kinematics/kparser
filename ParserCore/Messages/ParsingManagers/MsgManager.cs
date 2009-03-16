@@ -1,268 +1,286 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.IO;
 using System.Threading;
-using WaywardGamers.KParser.Parsing;
+using System.Timers;
+using WaywardGamers.KParser.Interface;
 
-namespace WaywardGamers.KParser
+namespace WaywardGamers.KParser.Parsing
 {
-    public class MMHook
+    internal class MsgManager
     {
-        // Allow direct injection of a message line to see how it behaves.
-        [System.Diagnostics.Conditional("DEBUG")]
-        public static void Hook(string msg)
+        #region Private enum for debugging purposes
+        private enum DebugDumpMode
         {
-            ChatLine cl = new ChatLine(msg);
-            MessageManager.Instance.AddChatLine(cl);
+            Init,
+            Normal,
+            Complete
         }
-    }
+        #endregion
 
-    internal class MessageManager
-    {
         #region Singleton Construction
         /// <summary>
         /// Make the class a singleton
         /// </summary>
-        private static readonly MessageManager instance = new MessageManager();
+        private static readonly MsgManager instance = new MsgManager();
 
-         /// <summary>
+        /// <summary>
+        /// Gets the singleton instance of the NewMessageManager class.
+        /// </summary>
+        public static MsgManager Instance { get { return instance; } }
+        
+        /// <summary>
         /// Private constructor ensures singleton purity.
         /// </summary>
-        private MessageManager()
+        private MsgManager()
 		{
-        }
+            periodicUpdates = new System.Timers.Timer(5000.0);
+            periodicUpdates.AutoReset = true;
+            periodicUpdates.Elapsed += new ElapsedEventHandler(periodicUpdates_Elapsed);
+            periodicUpdates.Enabled = false;
 
-		/// <summary>
-        /// Gets the singleton instance of the NewMessageManager class.
-		/// </summary>
-        public static MessageManager Instance
-		{
-			get
-			{
-				return instance;
-			}
+            Monitoring.Monitor.Instance.ReaderDataChanged += ChatLinesListener;
         }
         #endregion
 
-        #region Member Variables
-        List<Message> messageCollection = new List<Message>();
-        Dictionary<string, EntityType> entityCollection = new Dictionary<string, EntityType>();
-        internal string LastAddedPetEntity { get; set; }
+        #region Member variables
+        List<Message> currentMessageCollection = new List<Message>();
+        List<Message> pendingDeathsCollection = new List<Message>();
 
-        List<Message> pendingCollection = new List<Message>();
+        string debugOutputFileName;
+        bool dumpDebugDataToFile;
 
-        Timer periodicUpdates;
-
-        bool prepared;
-
-        Properties.Settings programSettings = new WaywardGamers.KParser.Properties.Settings();
-        #endregion
-
-        #region Parsing state control methods
-        internal void PrepareToStartParsing()
-        {
-            if (periodicUpdates == null)
-            {
-                Reset();
-                DumpToFile(null, true, false);
-                prepared = true;
-            }
-        }
-
-        /// <summary>
-        /// Activate the timer so that we periodically pass accumulated messages
-        /// on to the DatabaseManager to be committed to the database.
-        /// </summary>
-        internal void StartParsing(bool activateTimer)
-        {
-            if (prepared == false)
-                Reset();
-
-            programSettings.Reload();
-
-            if (activateTimer == true)
-            {
-                if (periodicUpdates == null)
-                    periodicUpdates = new Timer(ProcessMessageList, null, 3000, 3000);
-            }
-
-            if (prepared == false)
-                DumpToFile(null, true, false);
-        }
-
-        /// <summary>
-        /// Deactivate the timer so that we're no longer passing on updates.
-        /// Send all currently accumulated messages directly to the database.
-        /// </summary>
-        internal void StopParsing()
-        {
-            if (periodicUpdates != null)
-            {
-                periodicUpdates.Dispose();
-                periodicUpdates = null;
-            }
-
-            ProcessMessageList(true);
-            prepared = false;
-        }
-
-        /// <summary>
-        /// Deactivate the timer, and don't send accumulated messages to
-        /// the database.
-        /// </summary>
-        internal void CancelParsing()
-        {
-            if (periodicUpdates != null)
-            {
-                periodicUpdates.Dispose();
-                periodicUpdates = null;
-            }
-
-            prepared = false;
-        }
-
-        /// <summary>
-        /// Function to reset the state of the manager to empty.
-        /// </summary>
-        private void Reset()
-        {
-            lock (messageCollection)
-            {
-                messageCollection.Clear();
-            }
-
-            entityCollection.Clear();
-            LastMessageEventNumber = 0;
-            LastAddedPetEntity = string.Empty;
-
-            prepared = false;
-        }
+        System.Timers.Timer periodicUpdates;
+        object periodicUpdateLock = new object();
         #endregion
 
         #region Properties
         internal uint LastMessageEventNumber { get; private set; }
         #endregion
 
-        #region Message management
+        #region Public control methods
         /// <summary>
-        /// Given a new chatline, creates a new MessageLine and adds that
-        /// MessageLine to the known messages groupings.  This is only called
-        /// by the Monitor classes.
+        /// Notify the MsgManager to start listening to the
+        /// supplied IReader for new chat message lines.
         /// </summary>
-        /// <param name="chatLine">The chatline to add to the message collection.</param>
-        internal void AddChatLine(ChatLine chatLine)
+        /// <param name="reader">The reader to listen to.</param>
+        internal void StartNewSession()
         {
-            MessageLine messageLine = null;
+            Reset();
 
-            try
-            {
-                // Create a message line that tokenizes the individual text fields.
-                messageLine = new MessageLine(chatLine);
+            // When we start listening to a new reader, note whether
+            // we should be dumping the data to the debug output file.
+            Properties.Settings appSettings = new WaywardGamers.KParser.Properties.Settings();
+            dumpDebugDataToFile = appSettings.DebugMode;
+#if DEBUG
+            dumpDebugDataToFile = true;
+#endif
 
-                // Add the chat line directly to the database before starting to parse.
-                DatabaseManager.Instance.AddChatLineToRecordLog(chatLine);
+            debugOutputFileName = Path.Combine(
+                appSettings.DefaultParseSaveDirectory, "debugOutput.txt");
 
-                Message msg = Parser.Parse(messageLine);
+            DumpToFile(null, DebugDumpMode.Init);
 
-                UpdateEntityCollection(msg);
-
-
-                // Special handling for death messages where one might be a pet
-                if (msg.EventDetails != null)
-                {
-                    if (msg.EventDetails.CombatDetails != null)
-                    {
-                        if (msg.EventDetails.CombatDetails.FlagPetDeath == true)
-                        {
-                            // If the message is flagged for pending, store it and move on
-                            pendingCollection.Add(msg);
-                            return;
-                        }
-                    }
-                }
-
-                // If we've built up any pending messages, look for xp reward
-                // messages.  That marks the death as death of mob, so mark
-                // actor of pending message as pet.
-                if (pendingCollection.Count > 0)
-                {
-                    if (msg.EventDetails != null)
-                    {
-                        if (msg.EventDetails.EventMessageType == EventMessageType.Experience)
-                        {
-                            var pendingDeath = pendingCollection.First();
-                            pendingCollection = pendingCollection.Skip(1).ToList();
-
-                            pendingDeath.EventDetails.CombatDetails.ActorEntityType = EntityType.Pet;
-
-                            lock (messageCollection)
-                            {
-                                if (messageCollection.Contains(pendingDeath) == false)
-                                {
-                                    messageCollection.Add(pendingDeath);
-                                }
-                            }
-                        }
-                    }
-
-                    // If pending messages are still lying around 5+ seconds after
-                    // originally sent, assume it was a mob killing a pet instead, and mark
-                    // them as such.
-                    if (pendingCollection.Count > 0)
-                    {
-                        var oldPending = pendingCollection.Where(m => m.Timestamp < msg.Timestamp.AddSeconds(-5)).ToList();
-
-                        foreach (var pending in oldPending)
-                        {
-                            foreach (var target in pending.EventDetails.CombatDetails.Targets)
-                            {
-                                target.EntityType = EntityType.Pet;
-                            }
-
-                            lock (messageCollection)
-                            {
-                                if (messageCollection.Contains(pending) == false)
-                                {
-                                    messageCollection.Add(pending);
-                                }
-                            }
-
-                            pendingCollection.Remove(pending);
-                        }
-                    }
-                }
-
-                // Done with pending messages; add regular messages to the normal queue.
-                lock (messageCollection)
-                {
-                    if (messageCollection.Contains(msg) == false)
-                    {
-                        messageCollection.Add(msg);
-                        LastMessageEventNumber = msg.MessageID;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Log(e, messageLine);
-            }
+            periodicUpdates.Start();
         }
 
         /// <summary>
-        /// TODO: fix this
+        /// Notify the MsgManager that it no longer needs to listen
+        /// to the given IReader.
         /// </summary>
-        /// <param name="eventNumber"></param>
-        /// <returns></returns>
+        /// <param name="reader">The reader to stop listening to.</param>
+        internal void EndSession()
+        {
+            periodicUpdates.Stop();
+
+            ProcessRemainingMessages();
+        }
+
+        /// <summary>
+        /// Have the MsgManager reset its internal state.
+        /// </summary>
+        private void Reset()
+        {
+            // Clear the message collections
+            lock (currentMessageCollection)
+            {
+                currentMessageCollection.Clear();
+            }
+
+            lock (pendingDeathsCollection)
+            {
+                pendingDeathsCollection.Clear();
+            }
+
+            // Notify the EntityManager to reset as well.
+            EntityManager.Instance.Reset();
+        }
+        #endregion
+
+        #region Event listeners
+        /// <summary>
+        /// Listener function for when messages have been collected by
+        /// the reader class.  Takes the collected messages, parses them,
+        /// and adds them to the queue to be stored in the database.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        internal void ChatLinesListener(object sender, ReaderDataEventArgs e)
+        {
+            if (periodicUpdates.Enabled == false)
+                return;
+
+            MessageLine messageLine = null;
+
+            foreach (ChatLine chat in e.ChatLines)
+            {
+                try
+                {
+                    // Create a message line to extract the embedded data
+                    // from the raw text chat line.  Run this first to
+                    // weed out invalid/borked data.
+                    messageLine = new MessageLine(chat);
+
+                    // Add the chat line directly to the database before starting to parse.
+                    DatabaseManager.Instance.AddChatLineToRecordLog(chat);
+
+                    // Create a message based on parsing the message line.
+                    Message msg = Parser.Parse(messageLine);
+
+                    // Have the EntityManager update its entity list from
+                    // the Message.
+                    EntityManager.Instance.AddEntitiesFromMessage(msg);
+
+                    // Deal with issues of determining if a mob dying is a 
+                    // real mob or a pet.  If we add it to the pending queue,
+                    // continue.
+                    if (AddPossiblePetDeaths(msg))
+                        continue;
+
+                    // Do processing on any messages in the PendingDeaths queue.
+                    ProcessWithPendingDeaths(msg);
+
+                    // Add processed messages to the collection that periodically
+                    // gets sent to the database manager.
+                    lock (currentMessageCollection)
+                    {
+                        if (currentMessageCollection.Contains(msg) == false)
+                        {
+                            currentMessageCollection.Add(msg);
+                            LastMessageEventNumber = msg.MessageID;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Instance.Log(ex, messageLine);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Private methods for dealing with incoming messages
+
+        /// <summary>
+        /// Function for dealing with uncertainties about death messages
+        /// that may be pets or mobs.
+        /// </summary>
+        /// <param name="msg"></param>
+        private bool AddPossiblePetDeaths(Message msg)
+        {
+            // Special handling for death messages where one might be a pet
+            if (msg.EventDetails != null)
+            {
+                if (msg.EventDetails.CombatDetails != null)
+                {
+                    if (msg.EventDetails.CombatDetails.FlagPetDeath == true)
+                    {
+                        // If the message is flagged for pending, store it and move on
+                        pendingDeathsCollection.Add(msg);
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private void ProcessWithPendingDeaths(Message msg)
+        {
+            // If we've built up any pending messages, look for xp reward
+            // messages.  That marks the death as death of mob, so mark
+            // actor of pending message as pet.
+            if (pendingDeathsCollection.Count > 0)
+            {
+                if (msg.EventDetails != null)
+                {
+                    if (msg.EventDetails.EventMessageType == EventMessageType.Experience)
+                    {
+                        var pendingDeath = pendingDeathsCollection.First();
+                        pendingDeathsCollection = pendingDeathsCollection.Skip(1).ToList();
+
+                        pendingDeath.EventDetails.CombatDetails.ActorEntityType = EntityType.Pet;
+
+                        lock (currentMessageCollection)
+                        {
+                            if (currentMessageCollection.Contains(pendingDeath) == false)
+                            {
+                                currentMessageCollection.Add(pendingDeath);
+                            }
+                        }
+                    }
+                }
+
+                // If pending messages are still lying around 5+ seconds after
+                // originally sent, assume it was a mob killing a pet instead, and mark
+                // them as such.
+                if (pendingDeathsCollection.Count > 0)
+                {
+                    var oldPending = pendingDeathsCollection
+                        .Where(m => m.Timestamp < msg.Timestamp.AddSeconds(-5))
+                        .ToList();
+
+                    foreach (var pending in oldPending)
+                    {
+                        foreach (var target in pending.EventDetails.CombatDetails.Targets)
+                        {
+                            target.EntityType = EntityType.Pet;
+                        }
+
+                        lock (currentMessageCollection)
+                        {
+                            if (currentMessageCollection.Contains(pending) == false)
+                            {
+                                currentMessageCollection.Add(pending);
+                            }
+                        }
+
+                        pendingDeathsCollection.Remove(pending);
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region Methods for querying the message collection
+        /// <summary>
+        /// Try to locate the most recent message in the collection that
+        /// has the given event number value.
+        /// </summary>
+        /// <param name="eventNumber">The event number to locate.</param>
+        /// <returns>Returns the message if found, or null if not.</returns>
         internal Message FindMessageWithEventNumber(uint eventNumber)
         {
             Message msg = null;
 
-            lock (messageCollection)
+            lock (currentMessageCollection)
             {
                 // Reverse search the collection list
-                msg = messageCollection.LastOrDefault(m => m.MessageID == eventNumber);
+                msg = currentMessageCollection.LastOrDefault(m => m.MessageID == eventNumber);
             }
 
             return msg;
@@ -286,22 +304,22 @@ namespace WaywardGamers.KParser
             if (mcode == 0)
                 throw new ArgumentOutOfRangeException("mcode", "No proper message code provided.");
 
-            if (messageCollection.Count == 0)
+            if (currentMessageCollection.Count == 0)
                 return null;
 
             Message msg = null;
             // Don't attach to message that are too far back in time
             DateTime minTimestamp = timestamp - TimeSpan.FromSeconds(10);
 
-            lock (messageCollection)
+            lock (currentMessageCollection)
             {
                 // Search the last 50 messages of the collection (restricted in case of reparsing)
-                int startIndex = messageCollection.Count - 50;
+                int startIndex = currentMessageCollection.Count - 50;
                 if (startIndex < 0)
                     startIndex = 0;
 
-                var searchSet = messageCollection.Skip(startIndex);
-                Message lastMessage = messageCollection.Last();
+                var searchSet = currentMessageCollection.Skip(startIndex);
+                Message lastMessage = currentMessageCollection.Last();
                 // Check for lastTimestamp in case we're reading from logs
                 // where all messages from 50 message blocks will have the same
                 // timestamp, then an unknown interval before the next block.
@@ -560,103 +578,29 @@ namespace WaywardGamers.KParser
             return msg;
         }
 
+        #endregion
+
+        #region Methods to periodically push the accumulated messages to the database.
+
         /// <summary>
         /// Go through the messages in the messageCollection and send excess
         /// and older messages to the database for storage.
         /// </summary>
-        /// <param name="stateInfo">This is a parameter passed in by the Timer.
-        /// When the timer fires, it passes in a null.  When the parse is ending,
-        /// this function gets called with a bool value for notification.</param>
-        private void ProcessMessageList(Object stateInfo)
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void periodicUpdates_Elapsed(object sender, ElapsedEventArgs e)
         {
+            // Since it's possible that this could be called multiple
+            // times by the timer thread before the processing is completed,
+            // make sure we don't allow additional attempts through.
+            if (!Monitor.TryEnter(periodicUpdateLock))
+                return;
+
+            Thread.CurrentThread.Priority = ThreadPriority.BelowNormal;
+
             try
             {
-                bool dumpDebugToFile = programSettings.DebugMode;
-#if DEBUG
-                dumpDebugToFile = true;
-#endif
-
-                bool parseEnding = false;
-                if (stateInfo != null)
-                    parseEnding = (bool)stateInfo;
-
-                // If we're in RAM mode, take anything more than 5 seconds old.
-                DateTime shortCheckTime = DateTime.Now - TimeSpan.FromSeconds(5);
-                // If we're in LOG mode, leave the last 10 messages with the same timestamp
-                // for at least 2 minutes in case of log file cross-over.
-                DateTime longCheckTime = DateTime.Now - TimeSpan.FromMinutes(2);
-
-                List<Message> messagesToProcess = new List<Message>();
-
-                // --
-                // Leave the 20 most recent messages if those messages all have the
-                // same timestamp (ie: read from Log) to allow time for a new log
-                // file dump to happen, in case of partial messages folding across
-                // log files.
-                //
-                // Otherwise process all messages more than 5 seconds old.
-                //
-                // In either case, process all messages more than 2 minutes old.
-                // --
-
-
-                switch (Monitoring.Monitor.Instance.ParseMode)
-                {
-                    case DataSource.Ram:
-                        lock (messageCollection)
-                        {
-                            messagesToProcess.AddRange(messageCollection.FindAll(m => m.Timestamp.CompareTo(shortCheckTime) < 0));
-
-                            // Remove those messages from the list.
-                            messageCollection.RemoveAll(m => m.Timestamp.CompareTo(shortCheckTime) < 0);
-                        }
-                        break;
-                    case DataSource.Log:
-                        // If we're in LOG mode, leave the last 10 messages with the same timestamp
-                        // for at least 2 minutes in case of log file cross-over.
-                        lock (messageCollection)
-                        {
-                            if (messageCollection.Count > 0)
-                            {
-                                Message lastMessage = messageCollection.Last();
-                                int numberOfMessagesToLeave = 0;
-
-                                // But only if they haven't crossed the long time threshhold (2 minutes)
-                                if (lastMessage.Timestamp.CompareTo(longCheckTime) >= 0)
-                                    numberOfMessagesToLeave = messageCollection.Count(m => m.Timestamp == lastMessage.Timestamp);
-
-                                // cap at 10
-                                if (numberOfMessagesToLeave > 20)
-                                    numberOfMessagesToLeave = 20;
-
-                                int numberOfMessagesToTake = messageCollection.Count() - numberOfMessagesToLeave;
-
-                                if (numberOfMessagesToTake < 0)
-                                    numberOfMessagesToTake = 0;
-
-                                if (numberOfMessagesToTake > 0)
-                                {
-                                    messagesToProcess.AddRange(messageCollection.Take(numberOfMessagesToTake));
-                                    messageCollection.RemoveRange(0, numberOfMessagesToTake);
-                                }
-                            }
-                        }
-                        break;
-                    case DataSource.Database:
-                        // In database reading mode, the messages are going to come very quickly
-                        // Leave the last 10 messages always.  When the re-parse ends, the
-                        // code below will clean up the leftovers.
-                        lock (messageCollection)
-                        {
-                            if (messageCollection.Count > 10)
-                            {
-                                messagesToProcess.AddRange(messageCollection.GetRange(0, messageCollection.Count - 10));
-                                messageCollection.RemoveRange(0, messageCollection.Count - 10);
-                            }
-                        }
-                        break;
-                }
-
+                List<Message> messagesToProcess = GetMessagesToProcess();
 
                 // send those messages to the database
                 if (messagesToProcess.Count > 0)
@@ -668,255 +612,180 @@ namespace WaywardGamers.KParser
                     finally
                     {
                         // Save dump of that data if debug flag is set.
-                        if (dumpDebugToFile == true)
-                            DumpToFile(messagesToProcess, false, false);
+                        DumpToFile(messagesToProcess, DebugDumpMode.Normal);
                     }
                 }
 
-                // If we're done parsing, send all remaining messages to the database as well
-                if (parseEnding == true)
-                {
-                    lock (messageCollection)
-                    {
-                        try
-                        {
-                            DatabaseManager.Instance.ProcessNewMessages(messageCollection, true);
-                        }
-                        finally
-                        {
-                            // Save dump of that data if debug flag is set.  Save out entities
-                            // at the end as well.
-                            if (dumpDebugToFile == true)
-                                DumpToFile(messageCollection, false, true);
-                        }
-                    }
-                }
             }
-            catch (Exception e)
+            finally
             {
-                Logger.Instance.Log(e);
+                Monitor.Exit(periodicUpdateLock);
             }
         }
-        #endregion
 
-        #region Entity management
         /// <summary>
-        /// Maintain a listing of entity types for combatants so that we
-        /// don't have to continually reevaluate them at the message level.
+        /// Get a filtered subset of the currentMessageList to actually
+        /// send to the database.
         /// </summary>
-        /// <param name="message">The message to add to the entity collection.</param>
-        private void UpdateEntityCollection(Message msg)
+        /// <returns>Returns the list of messages that should be sent
+        /// to the database based on filter conditions.</returns>
+        private List<Message> GetMessagesToProcess()
         {
-            if (msg == null)
-                return;
+            // If we're in RAM mode, take anything more than 5 seconds old.
+            DateTime shortCheckTime = DateTime.Now - TimeSpan.FromSeconds(5);
+            // If we're in LOG mode, leave the last 10 messages with the same timestamp
+            // for at least 2 minutes in case of log file cross-over.
+            DateTime longCheckTime = DateTime.Now - TimeSpan.FromMinutes(2);
 
-            if (msg.EventDetails == null)
-                return;
+            List<Message> messagesToProcess = new List<Message>();
 
-            if (msg.EventDetails.CombatDetails == null)
-                return;
-
-            // Update base actor name
-            string name = msg.EventDetails.CombatDetails.ActorName;
-            bool update = true;
-
-            if (name != string.Empty)
+            switch (Monitoring.Monitor.Instance.ParseMode)
             {
-                if (entityCollection.ContainsKey(name))
-                {
-                    if (entityCollection[name] != EntityType.Unknown)
+                case DataSource.Ram:
+                    lock (currentMessageCollection)
                     {
-                        // If a chamed mob name has been entered as a pet, and we receive notice
-                        // of that same named mob as a mob, enter it as a mob and add the special
-                        // version name as a pet.
-                        if ((entityCollection[name] == EntityType.Pet) &&
-                            (msg.EventDetails.CombatDetails.ActorEntityType == EntityType.Mob))
-                        {
-                            entityCollection[name] = EntityType.Mob;
-                            AddPetEntity(name);
-                        }
-                        else if ((entityCollection[name] == EntityType.Mob) &&
-                            (msg.EventDetails.CombatDetails.ActorEntityType == EntityType.Pet))
-                        {
-                            AddPetEntity(name);
-                        }
+                        messagesToProcess.AddRange(currentMessageCollection.FindAll(m => m.Timestamp.CompareTo(shortCheckTime) < 0));
 
-                        update = false;
+                        // Remove those messages from the list.
+                        currentMessageCollection.RemoveAll(m => m.Timestamp.CompareTo(shortCheckTime) < 0);
                     }
-                }
-
-                if (update == true)
-                    entityCollection[name] = msg.EventDetails.CombatDetails.ActorEntityType;
-            }
-
-            // Update all target names
-            foreach (TargetDetails target in msg.EventDetails.CombatDetails.Targets)
-            {
-                name = target.Name;
-                update = true;
-
-                if ((name != null) && (name != string.Empty))
-                {
-                    if (entityCollection.ContainsKey(name))
+                    break;
+                case DataSource.Log:
+                    // If we're in LOG mode, leave the last 10 messages with the same timestamp
+                    // for at least 2 minutes in case of log file cross-over.
+                    lock (currentMessageCollection)
                     {
-                        if (entityCollection[name] != EntityType.Unknown)
+                        if (currentMessageCollection.Count > 0)
                         {
-                            // If a chamed mob name has been entered as a pet, and we receive notice
-                            // of that same named mob as a mob, enter it as a mob and add the special
-                            // version name as a pet.
-                            if ((entityCollection[name] == EntityType.Pet) &&
-                                (target.EntityType == EntityType.Mob))
+                            Message lastMessage = currentMessageCollection.Last();
+                            int numberOfMessagesToLeave = 0;
+
+                            // But only if they haven't crossed the long time threshhold (2 minutes)
+                            if (lastMessage.Timestamp.CompareTo(longCheckTime) >= 0)
+                                numberOfMessagesToLeave = currentMessageCollection.Count(m => m.Timestamp == lastMessage.Timestamp);
+
+                            // cap at 10
+                            if (numberOfMessagesToLeave > 20)
+                                numberOfMessagesToLeave = 20;
+
+                            int numberOfMessagesToTake = currentMessageCollection.Count() - numberOfMessagesToLeave;
+
+                            if (numberOfMessagesToTake < 0)
+                                numberOfMessagesToTake = 0;
+
+                            if (numberOfMessagesToTake > 0)
                             {
-                                entityCollection[name] = EntityType.Mob;
-                                AddPetEntity(name);
+                                messagesToProcess.AddRange(currentMessageCollection.Take(numberOfMessagesToTake));
+                                currentMessageCollection.RemoveRange(0, numberOfMessagesToTake);
                             }
-                            else if ((entityCollection[name] == EntityType.Mob) &&
-                                     (target.EntityType == EntityType.Pet))
-                            {
-                                AddPetEntity(name);
-                            }
-
-                            update = false;
                         }
                     }
+                    break;
+                case DataSource.Database:
+                    // In database reading mode, the messages are going to come very quickly
+                    // Leave the last 10 messages always.  When the re-parse ends, the
+                    // ProcessRemainingMessages method will clean up the leftovers.
+                    lock (currentMessageCollection)
+                    {
+                        if (currentMessageCollection.Count > 10)
+                        {
+                            messagesToProcess.AddRange(currentMessageCollection.GetRange(0, currentMessageCollection.Count - 10));
+                            currentMessageCollection.RemoveRange(0, currentMessageCollection.Count - 10);
+                        }
+                    }
+                    break;
+            }
 
-                    if (update == true)
-                        entityCollection[name] = target.EntityType;
+            return messagesToProcess;
+        }
+
+        /// <summary>
+        /// Send all remaining messages from the currentMessageList to the
+        /// database.
+        /// </summary>
+        private void ProcessRemainingMessages()
+        {
+            // This locks while waiting for the timer thread function
+            // (periodicUpdates_Elapsed) to complete its partial update
+            // before completing any remaining messages.
+            Monitor.Enter(periodicUpdateLock);
+
+            try
+            {
+                lock (currentMessageCollection)
+                {
+                    try
+                    {
+                        DatabaseManager.Instance.ProcessNewMessages(currentMessageCollection, true);
+                    }
+                    finally
+                    {
+                        // Save dump of that data if debug flag is set.  Save out entities
+                        // at the end as well.
+                        DumpToFile(currentMessageCollection, DebugDumpMode.Complete);
+                    }
                 }
             }
-        }
-
-        /// <summary>
-        /// Explicitly add an entity name as a pet.  Called when the parse
-        /// encounters a successful Charm attempt.  This adds a _Pet modifier
-        /// to the lookup name to distinguish between pets and normal mobs.
-        /// </summary>
-        /// <param name="name">The name of the mob that was charmed.</param>
-        internal void AddPetEntity(string name)
-        {
-            if ((name == null) || (name == string.Empty))
-                return;
-
-            string petName = name + "_Pet";
-            LastAddedPetEntity = name;
-
-            if (entityCollection.ContainsKey(petName) == false)
+            finally
             {
-                entityCollection[petName] = EntityType.Pet;
-            }
-        }
-
-        /// <summary>
-        /// Explicitly remove an entity name as a pet.  Called when the parse
-        /// encounters a "charm wore off" message.
-        /// </summary>
-        /// <param name="name">The name of the mob that was charmed.</param>
-        internal void RemovePetEntity(string name)
-        {
-            if ((name == null) || (name == string.Empty))
-                return;
-
-            string petName = name + "_Pet";
-
-            if (entityCollection.ContainsKey(petName))
-                entityCollection.Remove(petName);
-        }
-
-        /// <summary>
-        /// Check to see if we've encountered the named combatant before.
-        /// If so, use the entity type we got last time.  This checks for
-        /// _Pets -after- normal mob name lookup.
-        /// </summary>
-        /// <param name="name">The name of the combatant to look up.</param>
-        /// <returns>The entity type for the name provided, if available.</returns>
-        internal EntityType LookupEntity(string name)
-        {
-            if ((name == null) || (name == string.Empty))
-                return EntityType.Unknown;
-
-            if (entityCollection.ContainsKey(name))
-                return entityCollection[name];
-
-            if (entityCollection.ContainsKey(name + "_Pet"))
-                return EntityType.Pet;
-
-            return EntityType.Unknown;
-        }
-
-        /// <summary>
-        /// Check to see if we've encountered the named combatant before.
-        /// If so, use the entity type we got last time.  This checks for
-        /// _Pets -before- normal mob name lookup.
-        /// </summary>
-        /// <param name="name">The name of the combatant to look up.</param>
-        /// <returns>The entity type for the name provided, if available.</returns>
-        internal EntityType LookupPetEntity(string name)
-        {
-            if ((name == null) || (name == string.Empty))
-                return EntityType.Unknown;
-
-            if (entityCollection.ContainsKey(name + "_Pet"))
-                return EntityType.Pet;
-
-            if (entityCollection.ContainsKey(name))
-                return entityCollection[name];
-
-            return EntityType.Unknown;
-        }
-
-        internal void OverridePlayerToMob(string name)
-        {
-            if (entityCollection.ContainsKey(name))
-            {
-                if (entityCollection[name] == EntityType.Player)
-                    entityCollection[name] = EntityType.Mob;
+                Monitor.Exit(periodicUpdateLock);
             }
         }
         #endregion
 
         #region Debug output
-        internal void DumpToFile(List<Message> messagesToDump, bool init, bool dumpEntities)
+        bool entitiesDumped = false;
+
+        private void DumpToFile(List<Message> messagesToDump, DebugDumpMode dumpMode)
         {
-            string fileName = "debugOutput.txt";
-
-            if (init == true)
-            {
-                //if (File.Exists(fileName) == true)
-                //    File.Delete(fileName);
-
-                using (StreamWriter sw = File.CreateText(fileName))
-                {
-                }
-            }
-
-            if (((messagesToDump == null) || (messagesToDump.Count == 0)) &&
-                (dumpEntities == false))
+            if (dumpDebugDataToFile == false)
                 return;
 
-            using (StreamWriter sw = File.AppendText(fileName))
+            if (dumpMode == DebugDumpMode.Init)
+            {
+                using (StreamWriter sw = File.CreateText(debugOutputFileName))
+                {
+                    if (messagesToDump != null)
+                    {
+                        foreach (Message msg in messagesToDump)
+                        {
+                            sw.Write(msg.ToString());
+                        }
+                    }
+                }
+
+                entitiesDumped = false;
+                return;
+            }
+
+            if (messagesToDump == null)
+                throw new ArgumentNullException("messagesToDump");
+
+
+            // Normal mode
+            using (StreamWriter sw = File.AppendText(debugOutputFileName))
             {
                 foreach (Message msg in messagesToDump)
                 {
                     sw.Write(msg.ToString());
                 }
+            }
 
-                if (dumpEntities == true)
+            // Finalization -- have the EntityManager dump its data too.
+            if (dumpMode == DebugDumpMode.Complete)
+            {
+                if (entitiesDumped == false)
                 {
-                    sw.WriteLine("".PadRight(42, '-'));
-                    sw.WriteLine("Entity List\n");
-                    sw.WriteLine(string.Format("{0}{1}", "Name".PadRight(32), "Type"));
-                    sw.WriteLine(string.Format("{0}    {1}", "".PadRight(28, '-'), "".PadRight(10, '-')));
-
-                    foreach (var entity in entityCollection)
+                    using (StreamWriter sw = File.AppendText(debugOutputFileName))
                     {
-                        sw.WriteLine(string.Format("{0}{1}", entity.Key.PadRight(32), entity.Value));
+                        EntityManager.Instance.DumpData(sw);
                     }
 
-                    sw.WriteLine("".PadRight(42, '-'));
-                    sw.WriteLine();
+                    entitiesDumped = true;
                 }
             }
         }
         #endregion
+
     }
 }

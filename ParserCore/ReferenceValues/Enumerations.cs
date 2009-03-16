@@ -21,17 +21,17 @@ namespace WaywardGamers.KParser
         Database,
     }
 
-    public enum ImportSource
+    public enum ImportSourceType
     {
-        Unknown,
+        KParser,
         DVSParse,
         DirectParse,
     }
 
-    public enum ReparseMode
+    public enum ImportMode
     {
-        Reparse,
         Import,
+        Reparse,
     }
 
     #region General message types
@@ -236,6 +236,8 @@ namespace WaywardGamers.KParser
         Fellow,
         Skillchain,
         TreasureChest,
+        CharmedPlayer,
+        CharmedMob,
     }
 
     [Flags]

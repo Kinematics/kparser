@@ -267,9 +267,10 @@ namespace WaywardGamers.KParser.Plugin
 
             // Setup work for calculating attack round timing
             var simpleAttackList = from c in dataSet.Combatants
-                                   where ((c.CombatantType == (byte)EntityType.Player) ||
-                                         (c.CombatantType == (byte)EntityType.Pet) ||
-                                         (c.CombatantType == (byte)EntityType.Fellow)) &&
+                                   where (((EntityType)c.CombatantType == EntityType.Player) ||
+                                         ((EntityType)c.CombatantType == EntityType.Pet) ||
+                                         ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
+                                         ((EntityType)c.CombatantType == EntityType.Fellow)) &&
                                          (playersList.Contains(c.CombatantName))
                                    orderby c.CombatantType, c.CombatantName
                                    let actions = c.GetInteractionsRowsByActorCombatantRelation()
@@ -296,9 +297,10 @@ namespace WaywardGamers.KParser.Plugin
 
             #region LINQ query
             var attacksMade = from c in dataSet.Combatants
-                              where ((c.CombatantType == (byte)EntityType.Player) ||
-                                     (c.CombatantType == (byte)EntityType.Pet) ||
-                                     (c.CombatantType == (byte)EntityType.Fellow)) &&
+                              where (((EntityType)c.CombatantType == EntityType.Player) ||
+                                     ((EntityType)c.CombatantType == EntityType.Pet) ||
+                                     ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
+                                     ((EntityType)c.CombatantType == EntityType.Fellow)) &&
                                     (playersList.Contains(c.CombatantName))
                               orderby c.CombatantType, c.CombatantName
                               let actions = c.GetInteractionsRowsByActorCombatantRelation()

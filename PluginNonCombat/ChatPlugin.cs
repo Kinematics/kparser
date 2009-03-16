@@ -186,14 +186,7 @@ namespace WaywardGamers.KParser.Plugin
         /// <param name="dataSet">Dataset with possibly new speakers to add to the list.</param>
         private void UpdateSpeakerList()
         {
-            string[] currentSpeakerList = speakerCombo.CBGetStrings();
-            string[] newSpeakerList = GetSpeakerListing();
-
-            if (Array.Equals(currentSpeakerList, newSpeakerList) == true)
-                return;
-
-            speakerCombo.CBReset();
-            speakerCombo.CBAddStrings(newSpeakerList);
+            speakerCombo.UpdateWithSpeakerList();
         }
         #endregion
 

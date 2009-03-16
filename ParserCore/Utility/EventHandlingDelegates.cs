@@ -1,25 +1,42 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace WaywardGamers.KParser
 {
-    #region Reparsing
-    public delegate void DatabaseReparseEventHandler(object sender, DatabaseReparseEventArgs ramArgs);
+    #region IReader delegates
+    public delegate void ReaderDataHandler(object sender, ReaderDataEventArgs readerStatusArgs);
 
-    public class DatabaseReparseEventArgs : EventArgs
+    public class ReaderDataEventArgs : EventArgs
     {
-        public int RowsRead { get; private set; }
-        public int TotalRows { get; private set; }
-        public bool Complete { get; private set; }
+        public List<ChatLine> ChatLines { get; private set; }
 
-        internal DatabaseReparseEventArgs(int rowRead, int totalRows, bool complete)
+        internal ReaderDataEventArgs(List<ChatLine> chatLines)
         {
-            RowsRead = rowRead;
-            TotalRows = totalRows;
-            Complete = complete;
+            ChatLines = chatLines;
         }
     }
+
+    public delegate void ReaderStatusHandler(object sender, ReaderStatusEventArgs readerStatusArgs);
+
+    public class ReaderStatusEventArgs : EventArgs
+    {
+        public int ProcessedItems { get; private set; }
+        public int TotalItems { get; private set; }
+        public bool Completed { get; private set; }
+        public bool Failed { get; private set; }
+
+        internal ReaderStatusEventArgs(int processed, int totalItems, bool completed, bool failed)
+        {
+            ProcessedItems = processed;
+            TotalItems = totalItems;
+            Completed = completed;
+            Failed = failed;
+        }
+    }
+
     #endregion
+
 
     #region Watching the database
     public delegate void DatabaseWatchEventHandler(object sender, DatabaseWatchEventArgs dbArgs);

@@ -61,8 +61,9 @@ namespace WaywardGamers.KParser.Plugin
 
             var playerData = from c in dataSet.Combatants
                              where ((EntityType)c.CombatantType == EntityType.Player ||
-                                     (EntityType)c.CombatantType == EntityType.Pet ||
-                                     (EntityType)c.CombatantType == EntityType.Fellow)
+                                    (EntityType)c.CombatantType == EntityType.Pet ||
+                                    (EntityType)c.CombatantType == EntityType.CharmedMob ||
+                                    (EntityType)c.CombatantType == EntityType.Fellow)
                              orderby c.CombatantName
                              select new
                              {

@@ -94,7 +94,7 @@ namespace WaywardGamers.KParser
         public event DatabaseWatchEventHandler DatabaseChanging;
         public event DatabaseWatchEventHandler DatabaseChanged;
 
-        public event DatabaseReparseEventHandler ReparseProgressChanged;
+        public event ReaderStatusHandler ReparseProgressChanged;
 
         private bool disposed = false;
 
@@ -247,11 +247,16 @@ namespace WaywardGamers.KParser
                     if (message.Timestamp > mostRecentTimestamp)
                         mostRecentTimestamp = message.Timestamp;
 
-                    OnMessageProcessed(new DatabaseReparseEventArgs(++messageNumber, totalMessageCount, false));
+                    OnMessageProcessed(new ReaderStatusEventArgs(++messageNumber, totalMessageCount, false, false));
                 }
+            }
+            catch
+            {
+                OnMessageProcessed(new ReaderStatusEventArgs(++messageNumber, totalMessageCount, false, true));
             }
             finally
             {
+                OnMessageProcessed(new ReaderStatusEventArgs(++messageNumber, totalMessageCount, true, false));
                 databaseAccessMutex.ReleaseMutex();
             }
 
@@ -299,7 +304,7 @@ namespace WaywardGamers.KParser
                 DoneParsing();
         }
 
-        private void OnMessageProcessed(DatabaseReparseEventArgs e)
+        private void OnMessageProcessed(ReaderStatusEventArgs e)
         {
             if (ReparseProgressChanged != null)
             {
@@ -537,15 +542,15 @@ namespace WaywardGamers.KParser
         /// Insert raw (pre-parsed) message lines to the database for consistency.
         /// </summary>
         /// <param name="messageLine"></param>
-        internal void AddMessageToRecordLog(MessageLine messageLine)
+        internal void AddChatLineToRecordLog(ChatLine chatLine)
         {
             // Set ParseSuccessful to False at this point since we don't know the parse outcome.
             try
             {
                 databaseAccessMutex.WaitOne();
 
-                if (messageLine != null)
-                    localDB.RecordLog.AddRecordLogRow(messageLine.Timestamp, messageLine.OriginalText, false);
+                if (chatLine != null)
+                    localDB.RecordLog.AddRecordLogRow(chatLine.Timestamp, chatLine.ChatText, false);
             }
             finally
             {
@@ -852,7 +857,8 @@ namespace WaywardGamers.KParser
             {
                 // No targets, so preparing a move
 
-                if (message.EventDetails.CombatDetails.ActorEntityType == EntityType.Mob)
+                if ((message.EventDetails.CombatDetails.ActorEntityType == EntityType.Mob) ||
+                    (message.EventDetails.CombatDetails.ActorEntityType == EntityType.CharmedPlayer))
                 {
                     // If a mob is taking action, look it up in the battle list, or
                     // create a new battle for it.
@@ -891,7 +897,8 @@ namespace WaywardGamers.KParser
             else
             {
                 // Ok, in this case there are targets
-                if (message.EventDetails.CombatDetails.ActorEntityType == EntityType.Mob)
+                if ((message.EventDetails.CombatDetails.ActorEntityType == EntityType.Mob) ||
+                    (message.EventDetails.CombatDetails.ActorEntityType == EntityType.CharmedPlayer))
                 {
                     // If there is none, create a new battle.
                     // If it's one mob buffing another, assume this is a link and must be
@@ -1011,7 +1018,8 @@ namespace WaywardGamers.KParser
                         secondAction = localDB.Actions.GetAction(target.SecondaryAction);
 
                     // Get the battle each time through the loop if the targets are mobs.
-                    if (target.EntityType == EntityType.Mob)
+                    if ((target.EntityType == EntityType.Mob) ||
+                        (target.EntityType == EntityType.CharmedPlayer))
                     {
                         if (activeMobBattleList.TryGetValue(target.Name, out battle) == false)
                         {
@@ -1149,7 +1157,8 @@ namespace WaywardGamers.KParser
             {
                 var targetRow = localDB.Combatants.GetCombatant(target.Name, target.EntityType);
 
-                if (target.EntityType == EntityType.Mob)
+                if ((target.EntityType == EntityType.Mob) ||
+                    (target.EntityType == EntityType.CharmedPlayer))
                 {
                     // If target is mob, pick that battle
                     if (activeMobBattleList.TryGetValue(target.Name, out battle) == true)

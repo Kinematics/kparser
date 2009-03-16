@@ -3,6 +3,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using WaywardGamers.KParser.Monitoring;
 
 namespace WaywardGamers.KParser
 {
@@ -114,7 +115,7 @@ namespace WaywardGamers.KParser
             {
                 // If we're parsing from logs, use the Timestamp field to refine
                 // the message timestamps.
-                if (Monitor.ParseMode == DataSource.Log)
+                if (Monitor.Instance.ParseMode == DataSource.Log)
                 {
                     DateTime baseDate = originalChatLine.Timestamp.Date;
                     TimeSpan pluginTime;

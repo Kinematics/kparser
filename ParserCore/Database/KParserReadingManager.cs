@@ -6,21 +6,22 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Diagnostics;
+using WaywardGamers.KParser.Interface;
 
 namespace WaywardGamers.KParser
 {
-    public class DatabaseReadingManager : IDisposable
+    public class KParserReadingManager : IDisposable, IDBReader
     {
         #region Singleton Construction
         /// <summary>
         /// Make the class a singleton
         /// </summary>
-        private static readonly DatabaseReadingManager instance = new DatabaseReadingManager();
+        private static readonly KParserReadingManager instance = new KParserReadingManager();
 
         /// <summary>
         /// Private constructor ensures singleton purity.
         /// </summary>
-        private DatabaseReadingManager()
+        private KParserReadingManager()
         {
             defaultSaveDirectory = System.Windows.Forms.Application.CommonAppDataPath;
         }
@@ -28,7 +29,7 @@ namespace WaywardGamers.KParser
         /// <summary>
         /// Gets the singleton instance of the DatabaseManager class.
         /// </summary>
-        public static DatabaseReadingManager Instance
+        public static KParserReadingManager Instance
         {
             get
             {
