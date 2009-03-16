@@ -157,17 +157,14 @@ namespace WaywardGamers.KParser.Plugin
         private void UpdateMobList()
         {
             UpdateMobList(false);
-            mobsCombo.CBSelectIndex(0);
         }
 
         private void UpdateMobList(bool overrideGrouping)
         {
-            mobsCombo.CBReset();
-
-            if (overrideGrouping == false)
-                mobsCombo.CBAddStrings(GetMobListing(groupMobs, exclude0XPMobs));
+            if (overrideGrouping == true)
+                mobsCombo.UpdateWithMobList(false, exclude0XPMobs);
             else
-                mobsCombo.CBAddStrings(GetMobListing(false, exclude0XPMobs));
+                mobsCombo.UpdateWithMobList(groupMobs, exclude0XPMobs);
         }
         #endregion
 

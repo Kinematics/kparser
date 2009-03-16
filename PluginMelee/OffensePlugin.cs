@@ -156,8 +156,10 @@ namespace WaywardGamers.KParser.Plugin
         #region Private functions
         private void UpdateMobList()
         {
-            mobsCombo.CBReset();
-            mobsCombo.CBAddStrings(GetMobListing(groupMobs, exclude0XPMobs));
+            using (new RegionProfiler("mob xp handler"))
+            {
+                mobsCombo.UpdateWithMobList(groupMobs, exclude0XPMobs);
+            }
         }
 
         private void ResetAccumulation()
@@ -1238,8 +1240,15 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (flagNoUpdate == false)
             {
-                ResetAndUpdateAccumulation();
-                HandleDataset(fakeDatabaseChanges);
+                using (new RegionProfiler("change mobs (accumulator)"))
+                {
+                    ResetAndUpdateAccumulation();
+                }
+
+                using (new RegionProfiler("change mobs (display)"))
+                {
+                    HandleDataset(fakeDatabaseChanges);
+                }
             }
 
             flagNoUpdate = false;
