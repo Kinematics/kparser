@@ -22,6 +22,9 @@ namespace WaywardGamers.KParser.Plugin
 
         #region Member Variables
         List<MainAccumulator> dataAccum = new List<MainAccumulator>();
+        IEnumerable<DefenseGroup2> defenseSet = null;
+        IEnumerable<DefenseGroup2> counterSet = null;
+        IEnumerable<DefenseGroup2> utsuSet = null;
 
         int totalDamage;
         List<string> playerList = new List<string>();
@@ -116,7 +119,7 @@ namespace WaywardGamers.KParser.Plugin
         public override void Reset()
         {
             ResetTextBox();
-            ResetAccumulation(false);
+            ResetAccumulation();
         }
 
         public override void NotifyOfUpdate()
@@ -129,7 +132,7 @@ namespace WaywardGamers.KParser.Plugin
             mobsCombo.CBSelectIndex(0);
             flagNoUpdate = false;
 
-            ResetAccumulation(true);
+            ResetAndUpdateAccumulation();
 
             HandleDataset(null);
         }
@@ -171,26 +174,35 @@ namespace WaywardGamers.KParser.Plugin
                 mobsCombo.UpdateWithMobList(groupMobs, exclude0XPMobs);
         }
 
-        private void ResetAccumulation(bool withUpdate)
+        private void ResetAccumulation()
         {
             dataAccum.Clear();
+        }
 
-            if (withUpdate == true)
-                UpdateAccumulation(null);
+        private void ResetAndUpdateAccumulation()
+        {
+            ResetAccumulation();
+            UpdateAccumulation(null);
         }
 
         private void UpdateAccumulation(KPDatabaseDataSet datasetChanges)
         {
-            if (datasetChanges == null)
+            using (new RegionProfiler("defense: update accumulation"))
             {
-                using (AccessToTheDatabase db = new AccessToTheDatabase())
+                if (datasetChanges == null)
                 {
-                    UpdateAccumulationA(db.Database);
+                    using (AccessToTheDatabase db = new AccessToTheDatabase())
+                    {
+                        //UpdateAccumulationA(db.Database);
+                        UpdateAccumulationB(db.Database, false);
+                    }
                 }
-            }
-            else
-            {
-                UpdateAccumulationA(datasetChanges);
+                else
+                {
+                    //UpdateAccumulationA(datasetChanges);
+                    UpdateAccumulationB(datasetChanges, true);
+                }
+                
             }
         }
 
@@ -685,6 +697,710 @@ namespace WaywardGamers.KParser.Plugin
                     playerAccum.TDmg += dmg;
                     playerAccum.TODmg += dmg;
                 }
+
+                if (player.Retaliate.Count() > 0)
+                {
+                    var succHits = player.Retaliate.Where(h => (DefenseType)h.DefenseType == DefenseType.None);
+
+                    if ((playerAccum.RTHits == 0) && (succHits.Count() > 0))
+                    {
+                        playerAccum.RTHi = succHits.First().Amount;
+                        playerAccum.RTLow = playerAccum.RTHi;
+                    }
+
+                    if (succHits.Count() > 0)
+                    {
+                        min = succHits.Min(h => h.Amount);
+                        max = succHits.Max(h => h.Amount);
+
+                        if (min < playerAccum.RTLow)
+                            playerAccum.RTLow = min;
+                        if (max > playerAccum.RTHi)
+                            playerAccum.RTHi = max;
+                    }
+
+                    playerAccum.RTHits += succHits.Count();
+                    playerAccum.RTMiss += player.Retaliate.Count(b => (DefenseType)b.DefenseType != DefenseType.None);
+
+                    playerAccum.DefRetaliate = playerAccum.RTHits + playerAccum.RTMiss;
+
+                    int dmg = succHits.Sum(c => c.Amount);
+                    playerAccum.RTDmg += dmg;
+                    playerAccum.TDmg += dmg;
+                    playerAccum.TODmg += dmg;
+                }
+                #endregion
+
+                #region Misc Defenses
+                playerAccum.DefParry += player.Unknown.Where(h => (DefenseType)h.DefenseType == DefenseType.Parry).Count();
+                playerAccum.DefAnticipate += player.Unknown.Where(h => (DefenseType)h.DefenseType == DefenseType.Anticipate).Count();
+                playerAccum.DefShadow += player.Unknown.Where(h => (DefenseType)h.DefenseType == DefenseType.Shadow).Count();
+                playerAccum.DefIntimidate += player.Unknown.Where(h => (DefenseType)h.DefenseType == DefenseType.Intimidate).Count();
+
+                playerAccum.UtsuUsed += player.Unknown.Where(h => (DefenseType)h.DefenseType == DefenseType.Shadow).Sum(u => u.ShadowsUsed);
+                #endregion
+
+                #region Utsusemi counting
+                var playerUtsu = utsuSet.SingleOrDefault(p => p.Name == player.Name && p.ComType == player.ComType);
+                if (playerUtsu != null)
+                {
+                    playerAccum.UtsuICast = playerUtsu.UtsuIchiCast.Count();
+                    playerAccum.UtsuIFin = playerUtsu.UtsuIchiFinish.Count();
+                    playerAccum.UtsuNCast = playerUtsu.UtsuNiCast.Count();
+                    playerAccum.UtsuNFin = playerUtsu.UtsuNiFinish.Count();
+                }
+                #endregion
+            }
+        }
+
+
+        private void UpdateAccumulationB(KPDatabaseDataSet dataSet, bool newRowsOnly)
+        {
+            MobFilter mobFilter = mobsCombo.CBGetMobFilter();
+
+            #region LINQ queries
+
+            if (mobFilter.AllMobs == false)
+            {
+                // If we have any mob filter subset, get that data starting
+                // with the battle table and working outwards.
+
+                var bSet = from b in dataSet.Battles
+                           where (mobFilter.CheckFilterBattle(b) == true)
+                           orderby b.BattleID
+                           select b.GetInteractionsRows()
+                                   .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added));
+
+                if (bSet.Count() == 0)
+                    return;
+
+                IEnumerable<KPDatabaseDataSet.InteractionsRow> iRows = bSet.First();
+
+                var bSetSkip = bSet.Skip(1);
+
+                foreach (var b in bSetSkip)
+                {
+                    iRows = iRows.Concat(b);
+                }
+
+                var counterRows = iRows.Where(x => (ActionType)x.ActionType == ActionType.Counterattack);
+
+                defenseSet = from c in iRows
+                             where (c.IsTargetIDNull() == false) &&
+                                   ((EntityType)c.CombatantsRowByTargetCombatantRelation.CombatantType == EntityType.Player ||
+                                    (EntityType)c.CombatantsRowByTargetCombatantRelation.CombatantType == EntityType.Pet ||
+                                    (EntityType)c.CombatantsRowByTargetCombatantRelation.CombatantType == EntityType.CharmedMob ||
+                                    (EntityType)c.CombatantsRowByTargetCombatantRelation.CombatantType == EntityType.Fellow)
+                             group c by c.CombatantsRowByTargetCombatantRelation into ca
+                             orderby ca.Key.CombatantType, ca.Key.CombatantName
+                             select new DefenseGroup2
+                            {
+                                Name = ca.Key.CombatantName,
+                                ComType = (EntityType)ca.Key.CombatantType,
+                                Melee = from q in ca
+                                        where ((ActionType)q.ActionType == ActionType.Melee &&
+                                               ((HarmType)q.HarmType == HarmType.Damage ||
+                                                (HarmType)q.HarmType == HarmType.Drain))
+                                        select q,
+                                Range = from q in ca
+                                        where ((ActionType)q.ActionType == ActionType.Ranged &&
+                                               ((HarmType)q.HarmType == HarmType.Damage ||
+                                                (HarmType)q.HarmType == HarmType.Drain))
+                                        select q,
+                                Spell = from q in ca
+                                        where ((ActionType)q.ActionType == ActionType.Spell &&
+                                               ((HarmType)q.HarmType == HarmType.Damage ||
+                                                (HarmType)q.HarmType == HarmType.Drain) &&
+                                                q.Preparing == false)
+                                        select q,
+                                Ability = from q in ca
+                                          where ((ActionType)q.ActionType == ActionType.Ability &&
+                                               ((HarmType)q.HarmType == HarmType.Damage ||
+                                                (HarmType)q.HarmType == HarmType.Drain ||
+                                                (HarmType)q.HarmType == HarmType.Unknown) &&
+                                                q.Preparing == false)
+                                          select q,
+                                WSkill = from q in ca
+                                         where ((ActionType)q.ActionType == ActionType.Weaponskill &&
+                                               ((HarmType)q.HarmType == HarmType.Damage ||
+                                                (HarmType)q.HarmType == HarmType.Drain) &&
+                                                q.Preparing == false)
+                                         select q,
+                                Counter = from q in ca
+                                          where (ActionType)q.ActionType == ActionType.Counterattack
+                                          select q,
+                                Retaliate = from q in ca
+                                            where (ActionType)q.ActionType == ActionType.Retaliation
+                                            select q,
+                                SC = from q in ca
+                                     where ((ActionType)q.ActionType == ActionType.Skillchain &&
+                                               ((HarmType)q.HarmType == HarmType.Damage ||
+                                                (HarmType)q.HarmType == HarmType.Drain))
+                                     select q,
+                                Spikes = from q in ca
+                                         where (ActionType)q.ActionType == ActionType.Spikes
+                                         select q,
+                                Unknown = from q in ca
+                                          where ((HarmType)q.HarmType == HarmType.Damage ||
+                                                 (HarmType)q.HarmType == HarmType.Drain) &&
+                                                 (ActionType)q.ActionType == ActionType.Unknown
+                                          select q
+                            };
+
+                counterSet = from c in iRows
+                             where (c.IsActorIDNull() == false) &&
+                                   ((EntityType)c.CombatantsRowByActorCombatantRelation.CombatantType == EntityType.Player ||
+                                    (EntityType)c.CombatantsRowByActorCombatantRelation.CombatantType == EntityType.Pet ||
+                                    (EntityType)c.CombatantsRowByActorCombatantRelation.CombatantType == EntityType.CharmedMob ||
+                                    (EntityType)c.CombatantsRowByActorCombatantRelation.CombatantType == EntityType.Fellow)
+                             group c by c.CombatantsRowByActorCombatantRelation into ca
+                             orderby ca.Key.CombatantType, ca.Key.CombatantName
+                             select new DefenseGroup2
+                            {
+                                Name = ca.Key.CombatantName,
+                                ComType = (EntityType)ca.Key.CombatantType,
+                                Countered = from q in ca
+                                            where (ActionType)q.ActionType == ActionType.Counterattack
+                                            select q,
+                                Retaliated = from q in ca
+                                            where (ActionType)q.ActionType == ActionType.Retaliation
+                                            select q,
+
+                            };
+
+                utsuSet = from c in iRows
+                          where (c.IsActorIDNull() == false &&
+                                 (EntityType)c.CombatantsRowByActorCombatantRelation.CombatantType == EntityType.Player)
+                          group c by c.CombatantsRowByActorCombatantRelation into ca
+                          orderby ca.Key.CombatantType, ca.Key.CombatantName
+                          select new DefenseGroup2
+                          {
+                              Name = ca.Key.CombatantName,
+                              ComType = (EntityType)ca.Key.CombatantType,
+                              UtsuIchiCast = from s in ca
+                                             where ((ActionType)s.ActionType == ActionType.Spell &&
+                                                    s.Preparing == true &&
+                                                    s.IsActionIDNull() == false &&
+                                                    s.ActionsRow.ActionName == SpellNames.UtsuIchi)
+                                             select s,
+                              UtsuIchiFinish = from s in ca
+                                               where ((ActionType)s.ActionType == ActionType.Spell &&
+                                                      s.Preparing == false &&
+                                                      s.IsActionIDNull() == false &&
+                                                      s.ActionsRow.ActionName == SpellNames.UtsuIchi)
+                                               select s,
+                              UtsuNiCast = from s in ca
+                                           where ((ActionType)s.ActionType == ActionType.Spell &&
+                                                  s.Preparing == true &&
+                                                  s.IsActionIDNull() == false &&
+                                                  s.ActionsRow.ActionName == SpellNames.UtsuNi)
+                                           select s,
+                              UtsuNiFinish = from s in ca
+                                             where ((ActionType)s.ActionType == ActionType.Spell &&
+                                                    s.Preparing == false &&
+                                                    s.IsActionIDNull() == false &&
+                                                    s.ActionsRow.ActionName == SpellNames.UtsuNi)
+                                             select s,
+                          };
+            }
+            else
+            {
+
+                // Faster to process this from the combatant side if our mob filter is 'All'
+
+                defenseSet = from c in dataSet.Combatants
+                             where (((EntityType)c.CombatantType == EntityType.Player) ||
+                                    ((EntityType)c.CombatantType == EntityType.Pet) ||
+                                    ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
+                                    ((EntityType)c.CombatantType == EntityType.Fellow))
+                             orderby c.CombatantType, c.CombatantName
+                             select new DefenseGroup2
+                             {
+                                 Name = c.CombatantName,
+                                 ComType = (EntityType)c.CombatantType,
+                                 Melee = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                         where ((ActionType)n.ActionType == ActionType.Melee &&
+                                                ((HarmType)n.HarmType == HarmType.Damage ||
+                                                 (HarmType)n.HarmType == HarmType.Drain))
+                                         select n,
+                                 Range = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                         where ((ActionType)n.ActionType == ActionType.Ranged &&
+                                                ((HarmType)n.HarmType == HarmType.Damage ||
+                                                 (HarmType)n.HarmType == HarmType.Drain))
+                                         select n,
+                                 Spell = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                         where ((ActionType)n.ActionType == ActionType.Spell &&
+                                                ((HarmType)n.HarmType == HarmType.Damage ||
+                                                 (HarmType)n.HarmType == HarmType.Drain) &&
+                                                 n.Preparing == false)
+                                         select n,
+                                 Ability = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                           where ((ActionType)n.ActionType == ActionType.Ability &&
+                                                ((HarmType)n.HarmType == HarmType.Damage ||
+                                                 (HarmType)n.HarmType == HarmType.Drain ||
+                                                 (HarmType)n.HarmType == HarmType.Unknown) &&
+                                                 n.Preparing == false)
+                                           select n,
+                                 WSkill = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                          where ((ActionType)n.ActionType == ActionType.Weaponskill &&
+                                                ((HarmType)n.HarmType == HarmType.Damage ||
+                                                 (HarmType)n.HarmType == HarmType.Drain) &&
+                                                 n.Preparing == false)
+                                          select n,
+                                 SC = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                      where ((ActionType)n.ActionType == ActionType.Skillchain &&
+                                                ((HarmType)n.HarmType == HarmType.Damage ||
+                                                 (HarmType)n.HarmType == HarmType.Drain))
+                                      select n,
+                                 Counter = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                             where (ActionType)n.ActionType == ActionType.Counterattack
+                                             select n,
+                                 Retaliate = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                             where (ActionType)n.ActionType == ActionType.Retaliation
+                                             select n,
+                                 Spikes = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                          where (ActionType)n.ActionType == ActionType.Spikes
+                                          select n,
+                                 Unknown = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                           where ((HarmType)n.HarmType == HarmType.Damage ||
+                                                  (HarmType)n.HarmType == HarmType.Drain) &&
+                                                  (ActionType)n.ActionType == ActionType.Unknown
+                                           select n
+                             };
+
+                counterSet = from c in dataSet.Combatants
+                             where (((EntityType)c.CombatantType == EntityType.Player) ||
+                                    ((EntityType)c.CombatantType == EntityType.Pet) ||
+                                    ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
+                                    ((EntityType)c.CombatantType == EntityType.Fellow))
+                             orderby c.CombatantType, c.CombatantName
+                             select new DefenseGroup2
+                             {
+                                 Name = c.CombatantName,
+                                 ComType = (EntityType)c.CombatantType,
+                                 Countered = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                             where (ActionType)n.ActionType == ActionType.Counterattack
+                                             select n,
+                                 Retaliated = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                              where (ActionType)n.ActionType == ActionType.Counterattack
+                                              select n,
+                             };
+
+
+
+                utsuSet = from c in dataSet.Combatants
+                          where (((EntityType)c.CombatantType == EntityType.Player) ||
+                                ((EntityType)c.CombatantType == EntityType.Pet) ||
+                                ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
+                                ((EntityType)c.CombatantType == EntityType.Fellow))
+                          orderby c.CombatantType, c.CombatantName
+                          select new DefenseGroup2
+                          {
+                              Name = c.CombatantName,
+                              ComType = (EntityType)c.CombatantType,
+                              UtsuIchiCast = from s in c.GetInteractionsRowsByActorCombatantRelation()
+                                             where ((ActionType)s.ActionType == ActionType.Spell &&
+                                                    s.Preparing == true &&
+                                                    s.IsActionIDNull() == false &&
+                                                    s.ActionsRow.ActionName == SpellNames.UtsuIchi)
+                                             select s,
+                              UtsuIchiFinish = from s in c.GetInteractionsRowsByActorCombatantRelation()
+                                               where ((ActionType)s.ActionType == ActionType.Spell &&
+                                                      s.Preparing == false &&
+                                                      s.IsActionIDNull() == false &&
+                                                      s.ActionsRow.ActionName == SpellNames.UtsuIchi)
+                                               select s,
+                              UtsuNiCast = from s in c.GetInteractionsRowsByActorCombatantRelation()
+                                           where ((ActionType)s.ActionType == ActionType.Spell &&
+                                                  s.Preparing == true &&
+                                                  s.IsActionIDNull() == false &&
+                                                  s.ActionsRow.ActionName == SpellNames.UtsuNi)
+                                           select s,
+                              UtsuNiFinish = from s in c.GetInteractionsRowsByActorCombatantRelation()
+                                             where ((ActionType)s.ActionType == ActionType.Spell &&
+                                                    s.Preparing == false &&
+                                                    s.IsActionIDNull() == false &&
+                                                    s.ActionsRow.ActionName == SpellNames.UtsuNi)
+                                             select s,
+
+                          };
+            }
+            #endregion
+
+            if ((defenseSet == null) || (defenseSet.Count() == 0))
+                return;
+
+            int min, max;
+
+            // Each player is the target of misc damage; total the amounts
+            foreach (var player in defenseSet)
+            {
+                MainAccumulator playerAccum = dataAccum.FirstOrDefault(p => p.Name == player.Name);
+                if (playerAccum == null)
+                {
+                    playerAccum = new MainAccumulator { Name = player.Name, CType = player.ComType };
+                    dataAccum.Add(playerAccum);
+                }
+
+                #region Melee
+                if (player.Melee.Count() > 0)
+                {
+                    playerAccum.TDmg += player.MeleeDmg;
+                    playerAccum.TMDmg += player.MeleeDmg;
+
+                    var succHits = player.Melee.Where(h => (DefenseType)h.DefenseType == DefenseType.None);
+                    var critHits = succHits.Where(h => (DamageModifier)h.DamageModifier == DamageModifier.Critical);
+                    var nonCritHits = succHits.Where(h => (DamageModifier)h.DamageModifier == DamageModifier.None);
+
+                    if ((playerAccum.MHits == 0) && (nonCritHits.Count() > 0))
+                    {
+                        playerAccum.MHi = nonCritHits.First().Amount;
+                        playerAccum.MLow = playerAccum.MHi;
+                    }
+
+                    if ((playerAccum.MCritHits == 0) && (critHits.Count() > 0))
+                    {
+                        playerAccum.MCritHi = critHits.First().Amount;
+                        playerAccum.MCritLow = playerAccum.MCritHi;
+                    }
+
+                    if (nonCritHits.Count() > 0)
+                    {
+                        min = nonCritHits.Min(h => h.Amount);
+                        max = nonCritHits.Max(h => h.Amount);
+
+                        if (min < playerAccum.MLow)
+                            playerAccum.MLow = min;
+                        if (max > playerAccum.MHi)
+                            playerAccum.MHi = max;
+                    }
+
+                    if (critHits.Count() > 0)
+                    {
+                        min = critHits.Min(h => h.Amount);
+                        max = critHits.Max(h => h.Amount);
+
+                        if (min < playerAccum.MCritLow)
+                            playerAccum.MCritLow = min;
+                        if (max > playerAccum.MCritHi)
+                            playerAccum.MCritHi = max;
+                    }
+
+                    playerAccum.MHits += succHits.Count();
+                    playerAccum.MMiss += player.Melee.Count(b => (DefenseType)b.DefenseType != DefenseType.None);
+
+                    playerAccum.MCritHits += critHits.Count();
+                    playerAccum.MCritDmg += critHits.Sum(h => h.Amount);
+
+                    // Unsuccessful:
+                    playerAccum.DefEvasion += player.Melee.Where(h => (DefenseType)h.DefenseType == DefenseType.Evasion).Count();
+                    playerAccum.DefShadow += player.Melee.Where(h => (DefenseType)h.DefenseType == DefenseType.Shadow).Count();
+                    playerAccum.DefParry += player.Melee.Where(h => (DefenseType)h.DefenseType == DefenseType.Parry).Count();
+                    playerAccum.DefIntimidate += player.Melee.Where(h => (DefenseType)h.DefenseType == DefenseType.Intimidate).Count();
+                    //playerAccum.DefCounter += player.Melee.Where(h => (DefenseType)h.DefenseType == DefenseType.Counter).Count();
+
+                    var playerCounter = counterSet.FirstOrDefault(x =>
+                        x.Name == player.Name && x.ComType == player.ComType);
+                    if (playerCounter != null)
+                    {
+                        playerAccum.DefCounter += playerCounter.Countered.Count();
+                        playerAccum.DefRetaliate += playerCounter.Retaliated.Count();
+                    }
+
+                    playerAccum.UtsuUsed += player.Melee.Where(h => (DefenseType)h.DefenseType == DefenseType.Shadow).Sum(u => u.ShadowsUsed);
+                }
+                #endregion
+
+                #region Range
+                if (player.Range.Count() > 0)
+                {
+                    playerAccum.TDmg += player.RangeDmg;
+                    playerAccum.TRDmg += player.RangeDmg;
+
+                    var succHits = player.Range.Where(h => (DefenseType)h.DefenseType == DefenseType.None);
+                    var critHits = succHits.Where(h => (DamageModifier)h.DamageModifier == DamageModifier.Critical);
+                    var nonCritHits = succHits.Where(h => (DamageModifier)h.DamageModifier == DamageModifier.None);
+
+                    if ((playerAccum.RHits == 0) && (nonCritHits.Count() > 0))
+                    {
+                        playerAccum.RHi = nonCritHits.First().Amount;
+                        playerAccum.RLow = playerAccum.RHi;
+                    }
+
+                    if ((playerAccum.RCritHits == 0) && (critHits.Count() > 0))
+                    {
+                        playerAccum.RCritHi = critHits.First().Amount;
+                        playerAccum.RCritLow = playerAccum.RCritHi;
+                    }
+
+                    if (nonCritHits.Count() > 0)
+                    {
+                        min = nonCritHits.Min(h => h.Amount);
+                        max = nonCritHits.Max(h => h.Amount);
+
+                        if (min < playerAccum.RLow)
+                            playerAccum.RLow = min;
+                        if (max > playerAccum.RHi)
+                            playerAccum.RHi = max;
+                    }
+
+                    if (critHits.Count() > 0)
+                    {
+                        min = critHits.Min(h => h.Amount);
+                        max = critHits.Max(h => h.Amount);
+
+                        if (min < playerAccum.RCritLow)
+                            playerAccum.RCritLow = min;
+                        if (max > playerAccum.RCritHi)
+                            playerAccum.RCritHi = max;
+                    }
+
+                    playerAccum.RHits += succHits.Count();
+                    playerAccum.RMiss += player.Range.Count(b => (DefenseType)b.DefenseType != DefenseType.None);
+
+                    playerAccum.RCritHits += critHits.Count();
+                    playerAccum.RCritDmg += critHits.Sum(h => h.Amount);
+
+                    // Unsuccessful:
+                    playerAccum.DefEvasion += player.Range.Where(h => (DefenseType)h.DefenseType == DefenseType.Evasion).Count();
+                }
+                #endregion
+
+                #region Ability
+                if (player.Ability.Count() > 0)
+                {
+                    playerAccum.TDmg += player.AbilityDmg;
+                    playerAccum.TADmg += player.AbilityDmg;
+
+                    var abils = player.Ability.Where(a => a.IsActionIDNull() == false)
+                        .GroupBy(a => a.ActionsRow.ActionName);
+
+                    foreach (var abil in abils)
+                    {
+                        string abilName = abil.Key;
+
+                        AbilAccum abilAcc = playerAccum.Abilities.FirstOrDefault(
+                            a => a.AName == abilName);
+
+                        if (abilAcc == null)
+                        {
+                            abilAcc = new AbilAccum { AName = abilName };
+                            playerAccum.Abilities.Add(abilAcc);
+                        }
+
+                        var succAbil = abil.Where(a => (DefenseType)a.DefenseType == DefenseType.None);
+                        var missAbil = abil.Where(a => (DefenseType)a.DefenseType != DefenseType.None);
+
+                        if ((abilAcc.AHit == 0) && (succAbil.Count() > 0))
+                        {
+                            abilAcc.AHi = succAbil.First().Amount;
+                            abilAcc.ALow = abilAcc.AHi;
+                        }
+
+                        if (succAbil.Count() > 0)
+                        {
+                            min = succAbil.Min(a => a.Amount);
+                            max = succAbil.Max(a => a.Amount);
+
+                            if (min < abilAcc.ALow)
+                                abilAcc.ALow = min;
+                            if (max > abilAcc.AHi)
+                                abilAcc.AHi = max;
+                        }
+
+                        abilAcc.AHit += succAbil.Count();
+                        abilAcc.AMiss += missAbil.Count();
+                        abilAcc.ADmg += succAbil.Sum(a => a.Amount);
+
+                        playerAccum.DefEvasion += abil.Where(h => (DefenseType)h.DefenseType == DefenseType.Evasion).Count();
+                    }
+                }
+                #endregion
+
+                #region Weaponskills
+                if (player.WSkill.Count() > 0)
+                {
+                    playerAccum.TDmg += player.WSkillDmg;
+                    playerAccum.TWDmg += player.WSkillDmg;
+
+                    var wskills = player.WSkill.GroupBy(a => a.ActionsRow.ActionName);
+
+                    foreach (var wskill in wskills)
+                    {
+                        string wskillName = wskill.Key;
+
+                        WSAccum wskillAcc = playerAccum.Weaponskills.FirstOrDefault(
+                            a => a.WName == wskillName);
+
+                        if (wskillAcc == null)
+                        {
+                            wskillAcc = new WSAccum { WName = wskillName };
+                            playerAccum.Weaponskills.Add(wskillAcc);
+                        }
+
+                        var succWS = wskill.Where(a => (DefenseType)a.DefenseType == DefenseType.None);
+                        var missWS = wskill.Where(a => (DefenseType)a.DefenseType != DefenseType.None);
+
+                        if ((wskillAcc.WHit == 0) && (succWS.Count() > 0))
+                        {
+                            wskillAcc.WHi = succWS.First().Amount;
+                            wskillAcc.WLow = wskillAcc.WHi;
+                        }
+
+                        if (succWS.Count() > 0)
+                        {
+                            min = succWS.Min(a => a.Amount);
+                            max = succWS.Max(a => a.Amount);
+
+                            if (min < wskillAcc.WLow)
+                                wskillAcc.WLow = min;
+                            if (max > wskillAcc.WHi)
+                                wskillAcc.WHi = max;
+                        }
+
+                        wskillAcc.WHit += succWS.Count();
+                        wskillAcc.WMiss += missWS.Count();
+                        wskillAcc.WDmg += succWS.Sum(a => a.Amount);
+
+                        playerAccum.DefEvasion += wskill.Where(h => (DefenseType)h.DefenseType == DefenseType.Evasion).Count();
+                    }
+                }
+                #endregion
+
+                #region Spells
+                if (player.Spell.Count() > 0)
+                {
+                    playerAccum.TDmg += player.SpellDmg;
+                    playerAccum.TSDmg += player.SpellDmg;
+
+                    var spells = player.Spell.GroupBy(a => a.ActionsRow.ActionName);
+
+                    foreach (var spell in spells)
+                    {
+                        string spellName = spell.Key;
+
+                        SpellAccum spellAcc = playerAccum.Spells.FirstOrDefault(
+                            a => a.SName == spellName);
+
+                        if (spellAcc == null)
+                        {
+                            spellAcc = new SpellAccum { SName = spellName };
+                            playerAccum.Spells.Add(spellAcc);
+                        }
+
+                        var succSpell = spell.Where(a => (DefenseType)a.DefenseType == DefenseType.None);
+                        var failSpell = spell.Where(a => (DefenseType)a.DefenseType == DefenseType.Resist);
+                        var nonMBSpell = succSpell.Where(a => (DamageModifier)a.DamageModifier == DamageModifier.None);
+                        var mbSpell = succSpell.Where(a => (DamageModifier)a.DamageModifier == DamageModifier.MagicBurst);
+
+                        if ((spellAcc.SNum == 0) && (nonMBSpell.Count() > 0))
+                        {
+                            spellAcc.SHi = nonMBSpell.First().Amount;
+                            spellAcc.SLow = spellAcc.SHi;
+                        }
+
+                        if ((spellAcc.SNumMB == 0) && (mbSpell.Count() > 0))
+                        {
+                            spellAcc.SMBHi = mbSpell.First().Amount;
+                            spellAcc.SMBLow = spellAcc.SMBHi;
+                        }
+
+                        if (nonMBSpell.Count() > 0)
+                        {
+                            min = nonMBSpell.Min(a => a.Amount);
+                            max = nonMBSpell.Max(a => a.Amount);
+
+                            if (min < spellAcc.SLow)
+                                spellAcc.SLow = min;
+                            if (max > spellAcc.SHi)
+                                spellAcc.SHi = max;
+                        }
+
+                        if (mbSpell.Count() > 0)
+                        {
+                            min = mbSpell.Min(a => a.Amount);
+                            max = mbSpell.Max(a => a.Amount);
+
+                            if (min < spellAcc.SMBLow)
+                                spellAcc.SMBLow = min;
+                            if (max > spellAcc.SMBHi)
+                                spellAcc.SMBHi = max;
+                        }
+
+                        spellAcc.SNum += succSpell.Count();
+                        spellAcc.SFail += failSpell.Count();
+                        spellAcc.SNumMB += mbSpell.Count();
+                        spellAcc.SDmg += succSpell.Sum(a => a.Amount);
+                        spellAcc.SMBDmg += mbSpell.Sum(a => a.Amount);
+
+                        playerAccum.DefIntimidate += spell.Where(h => (DefenseType)h.DefenseType == DefenseType.Intimidate).Count();
+                    }
+                }
+                #endregion
+
+                #region Other Magic
+                if (player.MeleeEffect.Count() > 0)
+                {
+                    int dmg = player.MeleeEffect.Sum(a => a.SecondAmount);
+
+                    playerAccum.MAENum += player.MeleeEffect.Count();
+                    playerAccum.MAEDmg += dmg;
+                    playerAccum.TODmg += dmg;
+                    playerAccum.TDmg += dmg;
+                }
+
+                if (player.RangeEffect.Count() > 0)
+                {
+                    int dmg = player.RangeEffect.Sum(a => a.SecondAmount);
+
+                    playerAccum.RAENum += player.RangeEffect.Count();
+                    playerAccum.RAEDmg += dmg;
+                    playerAccum.TODmg += dmg;
+                    playerAccum.TDmg += dmg;
+                }
+
+                if (player.Spikes.Count() > 0)
+                {
+                    int dmg = player.Spikes.Sum(a => a.Amount);
+
+                    playerAccum.SpkNum += player.Spikes.Count();
+                    playerAccum.SpkDmg += dmg;
+                    playerAccum.TODmg += dmg;
+                    playerAccum.TDmg += dmg;
+                }
+                #endregion
+
+                #region Other Physical
+                if (player.Counter.Count() > 0)
+                {
+                    var succHits = player.Counter.Where(h => (DefenseType)h.DefenseType == DefenseType.None);
+
+                    if ((playerAccum.CAHits == 0) && (succHits.Count() > 0))
+                    {
+                        playerAccum.CAHi = succHits.First().Amount;
+                        playerAccum.CALow = playerAccum.CAHi;
+                    }
+
+                    if (succHits.Count() > 0)
+                    {
+                        min = succHits.Min(h => h.Amount);
+                        max = succHits.Max(h => h.Amount);
+
+                        if (min < playerAccum.CALow)
+                            playerAccum.CALow = min;
+                        if (max > playerAccum.CAHi)
+                            playerAccum.CAHi = max;
+                    }
+
+                    playerAccum.CAHits += succHits.Count();
+                    playerAccum.CAMiss += player.Counter.Count(b => (DefenseType)b.DefenseType != DefenseType.None);
+
+                    int dmg = succHits.Sum(c => c.Amount);
+                    playerAccum.CADmg += dmg;
+                    playerAccum.TDmg += dmg;
+                    playerAccum.TODmg += dmg;
+                }
+
 
                 if (player.Retaliate.Count() > 0)
                 {
@@ -1625,7 +2341,7 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (flagNoUpdate == false)
             {
-                ResetAccumulation(true);
+                ResetAndUpdateAccumulation();
                 HandleDataset(null);
             }
 
@@ -1646,7 +2362,7 @@ namespace WaywardGamers.KParser.Plugin
                 flagNoUpdate = true;
                 mobsCombo.CBSelectIndex(0);
 
-                ResetAccumulation(true);
+                ResetAndUpdateAccumulation();
                 HandleDataset(null);
             }
 
@@ -1667,7 +2383,7 @@ namespace WaywardGamers.KParser.Plugin
                 flagNoUpdate = true;
                 mobsCombo.CBSelectIndex(0);
 
-                ResetAccumulation(true);
+                ResetAndUpdateAccumulation();
                 HandleDataset(null);
             }
 
