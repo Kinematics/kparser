@@ -596,7 +596,7 @@ namespace WaywardGamers.KParser.Parsing
             if (!Monitor.TryEnter(periodicUpdateLock))
                 return;
 
-            Thread.CurrentThread.Priority = ThreadPriority.BelowNormal;
+            //Thread.CurrentThread.Priority = ThreadPriority.BelowNormal;
 
             try
             {
@@ -723,6 +723,7 @@ namespace WaywardGamers.KParser.Parsing
                         // Save dump of that data if debug flag is set.  Save out entities
                         // at the end as well.
                         DumpToFile(currentMessageCollection, DebugDumpMode.Complete);
+                        currentMessageCollection.Clear();
                     }
                 }
             }
