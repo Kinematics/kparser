@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Drawing;
 using System.Windows.Forms;
 using WaywardGamers.KParser.Interface;
+using WaywardGamers.KParser.Database;
 
 namespace WaywardGamers.KParser.Plugin
 {
@@ -79,6 +80,7 @@ namespace WaywardGamers.KParser.Plugin
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
             ResetTextBox();
+            MobXPHandler.Instance.Update();
             ProcessExperience(dataSet);
             ProcessMobs(dataSet);
         }
@@ -215,16 +217,13 @@ namespace WaywardGamers.KParser.Plugin
                          select new
                          {
                              Mob = c.CombatantName,
-                             //Battles = from b in c.GetBattlesRowsByEnemyCombatantRelation()
-                             //          group b by b.BaseExperience() into bx
-                             //          orderby bx.Key
-                             //          select bx,
                              Battles = from b in c.GetBattlesRowsByEnemyCombatantRelation()
                                        where b.Killed == true &&
                                             (excludedPlayerInfo == false ||
                                              b.IsKillerIDNull() == true ||
                                              RegexUtility.ExcludedPlayer.Match(b.CombatantsRowByBattleKillerRelation.PlayerInfo).Success == false)
-                                       group b by b.MinBaseExperience() into bx
+                                       //group b by b.MinBaseExperience() into bx
+                                       group b by MobXPHandler.Instance.GetBaseXP(b.BattleID) into bx
                                        orderby bx.Key
                                        select bx
                          };

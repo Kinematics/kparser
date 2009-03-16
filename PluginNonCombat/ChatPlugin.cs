@@ -187,15 +187,6 @@ namespace WaywardGamers.KParser.Plugin
         private void UpdateSpeakerList()
         {
             speakerCombo.UpdateWithSpeakerList();
-
-            //string[] currentSpeakerList = speakerCombo.CBGetStrings();
-            //string[] newSpeakerList = GetSpeakerListing();
-
-            //if (Array.Equals(currentSpeakerList, newSpeakerList) == true)
-            //    return;
-
-            //speakerCombo.CBReset();
-            //speakerCombo.CBAddStrings(newSpeakerList);
         }
         #endregion
 
