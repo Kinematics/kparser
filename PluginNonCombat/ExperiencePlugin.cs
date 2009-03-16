@@ -166,9 +166,9 @@ namespace WaywardGamers.KParser.Plugin
 
                 sb1.AppendFormat("Total Experience : {0}\n", totalXP);
                 sb1.AppendFormat("Number of Fights : {0}\n", totalFights);
-                sb1.AppendFormat("Date             : {0}\n", startTime.ToShortDateString());
-                sb1.AppendFormat("Start Time       : {0}\n", startTime.ToLongTimeString());
-                sb1.AppendFormat("End Time         : {0}\n", endTime.ToLongTimeString());
+                sb1.AppendFormat("Date             : {0}\n", startTime.ToLocalTime().ToShortDateString());
+                sb1.AppendFormat("Start Time       : {0}\n", startTime.ToLocalTime().ToLongTimeString());
+                sb1.AppendFormat("End Time         : {0}\n", endTime.ToLocalTime().ToLongTimeString());
                 sb1.AppendFormat("Party Duration   : {0:d}:{1:d2}:{2:d2}\n",
                     partyDuration.Hours, partyDuration.Minutes, partyDuration.Seconds);
                 sb1.AppendFormat("Total Fight Time : {0:d}:{1:d2}:{2:d2}\n",

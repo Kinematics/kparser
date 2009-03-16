@@ -311,8 +311,8 @@ namespace WaywardGamers.KParser.Plugin
 
             sb.AppendFormat("{0,-20}{1,12}{2,12}{3,11}",
                 battle.CombatantsRowByEnemyCombatantRelation.CombatantName,
-                battle.StartTime.ToShortTimeString(),
-                battle.EndTime > battle.StartTime ? battle.EndTime.ToShortTimeString() : "--:--:--",
+                battle.StartTime.ToLocalTime().ToShortTimeString(),
+                battle.EndTime > battle.StartTime ? battle.EndTime.ToLocalTime().ToShortTimeString() : "--:--:--",
                 fightLength != TimeSpan.Zero
                     ? string.Format("{0:d2}:{1:d2}:{2:d2}",
                         fightLength.Hours, fightLength.Minutes, fightLength.Seconds)
