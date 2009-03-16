@@ -919,22 +919,26 @@ namespace WaywardGamers.KParser.Plugin
                                  Name = c.CombatantName,
                                  ComType = (EntityType)c.CombatantType,
                                  Melee = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                                    .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                          where ((ActionType)n.ActionType == ActionType.Melee &&
                                                 ((HarmType)n.HarmType == HarmType.Damage ||
                                                  (HarmType)n.HarmType == HarmType.Drain))
                                          select n,
                                  Range = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                                    .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                          where ((ActionType)n.ActionType == ActionType.Ranged &&
                                                 ((HarmType)n.HarmType == HarmType.Damage ||
                                                  (HarmType)n.HarmType == HarmType.Drain))
                                          select n,
                                  Spell = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                                    .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                          where ((ActionType)n.ActionType == ActionType.Spell &&
                                                 ((HarmType)n.HarmType == HarmType.Damage ||
                                                  (HarmType)n.HarmType == HarmType.Drain) &&
                                                  n.Preparing == false)
                                          select n,
                                  Ability = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                                      .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                            where ((ActionType)n.ActionType == ActionType.Ability &&
                                                 ((HarmType)n.HarmType == HarmType.Damage ||
                                                  (HarmType)n.HarmType == HarmType.Drain ||
@@ -942,26 +946,32 @@ namespace WaywardGamers.KParser.Plugin
                                                  n.Preparing == false)
                                            select n,
                                  WSkill = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                                     .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                           where ((ActionType)n.ActionType == ActionType.Weaponskill &&
                                                 ((HarmType)n.HarmType == HarmType.Damage ||
                                                  (HarmType)n.HarmType == HarmType.Drain) &&
                                                  n.Preparing == false)
                                           select n,
                                  SC = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                                 .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                       where ((ActionType)n.ActionType == ActionType.Skillchain &&
                                                 ((HarmType)n.HarmType == HarmType.Damage ||
                                                  (HarmType)n.HarmType == HarmType.Drain))
                                       select n,
                                  Counter = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                                      .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                              where (ActionType)n.ActionType == ActionType.Counterattack
                                              select n,
                                  Retaliate = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                                        .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                              where (ActionType)n.ActionType == ActionType.Retaliation
                                              select n,
                                  Spikes = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                                     .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                           where (ActionType)n.ActionType == ActionType.Spikes
                                           select n,
                                  Unknown = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                                      .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                            where ((HarmType)n.HarmType == HarmType.Damage ||
                                                   (HarmType)n.HarmType == HarmType.Drain) &&
                                                   (ActionType)n.ActionType == ActionType.Unknown
@@ -979,9 +989,11 @@ namespace WaywardGamers.KParser.Plugin
                                  Name = c.CombatantName,
                                  ComType = (EntityType)c.CombatantType,
                                  Countered = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                        .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                              where (ActionType)n.ActionType == ActionType.Counterattack
                                              select n,
                                  Retaliated = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                         .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                               where (ActionType)n.ActionType == ActionType.Counterattack
                                               select n,
                              };
@@ -999,24 +1011,28 @@ namespace WaywardGamers.KParser.Plugin
                               Name = c.CombatantName,
                               ComType = (EntityType)c.CombatantType,
                               UtsuIchiCast = from s in c.GetInteractionsRowsByActorCombatantRelation()
+                                                        .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                              where ((ActionType)s.ActionType == ActionType.Spell &&
                                                     s.Preparing == true &&
                                                     s.IsActionIDNull() == false &&
                                                     s.ActionsRow.ActionName == SpellNames.UtsuIchi)
                                              select s,
                               UtsuIchiFinish = from s in c.GetInteractionsRowsByActorCombatantRelation()
+                                                          .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                                where ((ActionType)s.ActionType == ActionType.Spell &&
                                                       s.Preparing == false &&
                                                       s.IsActionIDNull() == false &&
                                                       s.ActionsRow.ActionName == SpellNames.UtsuIchi)
                                                select s,
                               UtsuNiCast = from s in c.GetInteractionsRowsByActorCombatantRelation()
+                                                      .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                            where ((ActionType)s.ActionType == ActionType.Spell &&
                                                   s.Preparing == true &&
                                                   s.IsActionIDNull() == false &&
                                                   s.ActionsRow.ActionName == SpellNames.UtsuNi)
                                            select s,
                               UtsuNiFinish = from s in c.GetInteractionsRowsByActorCombatantRelation()
+                                                        .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                              where ((ActionType)s.ActionType == ActionType.Spell &&
                                                     s.Preparing == false &&
                                                     s.IsActionIDNull() == false &&
