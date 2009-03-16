@@ -106,8 +106,8 @@ namespace WaywardGamers.KParser.Plugin
                 
                 sb.AppendFormat("{0,-10}{1,-24}{2,-10}{3,-20}{4,10}{5,11}{6,15}{7,6}\n",
                     fightNum, fight.CombatantsRowByEnemyCombatantRelation.CombatantName,
-                    fight.Killed, killer, fight.StartTime.ToShortTimeString(),
-                    fight.EndTime.ToShortTimeString(), fightLengthString, fight.ExperiencePoints);
+                    fight.Killed, killer, fight.StartTime.ToLocalTime().ToShortTimeString(),
+                    fight.EndTime.ToLocalTime().ToShortTimeString(), fightLengthString, fight.ExperiencePoints);
 
             }
 
