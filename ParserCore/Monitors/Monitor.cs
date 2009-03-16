@@ -196,7 +196,16 @@ namespace WaywardGamers.KParser.Monitoring
                         string.Format("Unknown DataSource value: {0}", dataSourceType.ToString()));
             }
 
-            currentReader.Start();
+            try
+            {
+                MsgManager.Instance.StartNewSession();
+                currentReader.Start();
+            }
+            catch (Exception)
+            {
+                MsgManager.Instance.EndSession();
+                throw;
+            }
         }
 
         /// <summary>
