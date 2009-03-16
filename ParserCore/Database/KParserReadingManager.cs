@@ -130,6 +130,8 @@ namespace WaywardGamers.KParser
             localTAManager = new KPDatabaseReadOnlyTableAdapters.TableAdapterManager();
 
             localTAManager.RecordLogTableAdapter = new KPDatabaseReadOnlyTableAdapters.RecordLogTableAdapter();
+            localTAManager.VersionTableAdapter = new KPDatabaseReadOnlyTableAdapters.VersionTableAdapter();
+            localTAManager.CombatantsTableAdapter = new KPDatabaseReadOnlyTableAdapters.CombatantsTableAdapter();
 
 
             System.Data.SqlServerCe.SqlCeConnection sqlConn =
@@ -138,11 +140,15 @@ namespace WaywardGamers.KParser
             localTAManager.Connection = sqlConn;
 
             localTAManager.RecordLogTableAdapter.Connection = sqlConn;
+            localTAManager.VersionTableAdapter.Connection = sqlConn;
+            localTAManager.CombatantsTableAdapter.Connection = sqlConn;
 
 
             // If opening an existing database, need to check version info before filling data
 
             localTAManager.RecordLogTableAdapter.Fill(localDB.RecordLog);
+            localTAManager.VersionTableAdapter.Fill(localDB.Version);
+            localTAManager.CombatantsTableAdapter.Fill(localDB.Combatants);
         }
         #endregion
 
