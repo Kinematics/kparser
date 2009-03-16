@@ -13,7 +13,7 @@ namespace WaywardGamers.KParser
         public ChatLine(string chatTextParam)
         {
             this.chatText = chatTextParam;
-            this.timestamp = DateTime.Now;
+            this.timestamp = DateTime.Now.ToUniversalTime();
         }
 
         public ChatLine(string chatText, DateTime timestamp)

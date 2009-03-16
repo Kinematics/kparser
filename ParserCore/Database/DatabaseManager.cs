@@ -531,7 +531,8 @@ namespace WaywardGamers.KParser
 
             // Insert default battle row
             if (localDB.Battles.Rows.Count == 0)
-                localDB.Battles.AddBattlesRow(null, DateTime.Now, DateTime.Now, false, null, 0, 0, 0, 0, true);
+                localDB.Battles.AddBattlesRow(null, DateTime.Now.ToUniversalTime(),
+                    DateTime.Now.ToUniversalTime(), false, null, 0, 0, 0, 0, true);
 
             UpdateDatabase();
         }
