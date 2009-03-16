@@ -177,7 +177,7 @@ namespace WaywardGamers.KParser.Database
                             {
                                 difference = fight.BaseXP - oneBattle.BaseXP;
 
-                                if (difference > 0)
+                                if (difference != 0)
                                 {
                                     // get absolute value
                                     if (difference < 0)
@@ -186,9 +186,13 @@ namespace WaywardGamers.KParser.Database
                                     if (difference <= 2)
                                     {
                                         if (fight.BaseXP > oneBattle.BaseXP)
+                                        {
                                             fight.BaseXP = oneBattle.BaseXP;
+                                        }
                                         else
+                                        {
                                             oneBattle.BaseXP = fight.BaseXP;
+                                        }
                                     }
                                 }
                             }
@@ -220,7 +224,7 @@ namespace WaywardGamers.KParser.Database
 
                             difference = mainFight.BaseXP - checkFight.BaseXP;
 
-                            if (difference > 0)
+                            if (difference != 0)
                             {
                                 // get absolute value
                                 if (difference < 0)
@@ -229,9 +233,13 @@ namespace WaywardGamers.KParser.Database
                                 if (difference <= 2)
                                 {
                                     if (mainFight.BaseXP > checkFight.BaseXP)
+                                    {
                                         mainFight.BaseXP = checkFight.BaseXP;
+                                    }
                                     else
+                                    {
                                         checkFight.BaseXP = mainFight.BaseXP;
+                                    }
                                 }
                             }
                         }
