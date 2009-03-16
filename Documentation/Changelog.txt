@@ -1,5 +1,12 @@
 KParser Change Log
 
+
+1.3.1 (March 16, 2009)
++ Add function to reparse older parses and update their timestamp information.
++ Fixed reparsing function to carry over user-edited player information.
+- Using 'Save As' and trying to overwrite an existing file works now.
+
+
 1.3.0 (March 16, 2009)
 * Major refactoring of core elements for piping messages through the program.
 * Rewrite of Offense and Defense tab accumulators.  Old accumulators had some issues, new ones should be significantly faster.
