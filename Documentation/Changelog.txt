@@ -1,5 +1,13 @@
 KParser Change Log
 
+1.3.0 (March 16, 2009)
+* Major refactoring of core elements for piping messages through the program.
+* Rewrite of Offense and Defense tab accumulators.  Old accumulators had some issues, new ones should be significantly faster.
+- Fix issue with charmed players not being reported properly.  General bug fix on resolving entity types.
+- General bug fixing of architecture issues.
+
+
+
 1.2.3 (Feb 21, 2009)
 * Adjust name list and name parsing for more puppet names.
 
