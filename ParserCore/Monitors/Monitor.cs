@@ -240,7 +240,17 @@ namespace WaywardGamers.KParser.Monitoring
 
             dbReader.OpenDatabase(inFilename);
 
-            currentReader.Import(importSource, dbReader);
+            try
+            {
+                MsgManager.Instance.StartNewSession();
+
+                currentReader.Import(importSource, dbReader);
+            }
+            catch (Exception)
+            {
+                MsgManager.Instance.EndSession();
+                throw;
+            }
         }
 
         /// <summary>
