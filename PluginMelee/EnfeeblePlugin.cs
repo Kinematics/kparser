@@ -123,9 +123,7 @@ namespace WaywardGamers.KParser.Plugin
         #region Private functions
         private void UpdateMobList()
         {
-            mobsCombo.CBReset();
-            mobsCombo.CBAddStrings(GetMobListing(groupMobs, exclude0XPMobs));
-            mobsCombo.CBSelectIndex(0);
+            mobsCombo.UpdateWithMobList(groupMobs, exclude0XPMobs);
         }
         #endregion
 

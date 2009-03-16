@@ -128,15 +128,12 @@ namespace WaywardGamers.KParser.Plugin
 
         private void UpdateMobList()
         {
-            mobsCombo.CBReset();
-            string[] tmpList = GetMobListing(false, false);
-
-            if (tmpList[0] == "All")
-            {
-                tmpList[0] = "None";
-            }
+            //if (tmpList[0] == "All")
+            //{
+            //    tmpList[0] = "None";
+            //}
             
-            mobsCombo.CBAddStrings(tmpList);
+            mobsCombo.UpdateWithMobList(false, false);
         }
         #endregion
 
