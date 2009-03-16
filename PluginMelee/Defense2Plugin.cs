@@ -783,8 +783,6 @@ namespace WaywardGamers.KParser.Plugin
                     iRows = iRows.Concat(b);
                 }
 
-                var counterRows = iRows.Where(x => (ActionType)x.ActionType == ActionType.Counterattack);
-
                 defenseSet = from c in iRows
                              where (c.IsTargetIDNull() == false) &&
                                    ((EntityType)c.CombatantsRowByTargetCombatantRelation.CombatantType == EntityType.Player ||
