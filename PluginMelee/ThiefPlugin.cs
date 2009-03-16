@@ -154,7 +154,11 @@ namespace WaywardGamers.KParser.Plugin
             playersCombo.CBSelectIndex(0);
 
             // Setting the second combo box will cause the display to load.
-            mobsCombo.CBSelectIndex(0);
+            using (new RegionProfiler("thief: full load"))
+            {
+                mobsCombo.CBSelectIndex(0);
+                
+            }
         }
 
         public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
@@ -165,25 +169,29 @@ namespace WaywardGamers.KParser.Plugin
             if (playersCombo.CBSelectedIndex() > 0)
                 currentlySelectedPlayer = playersCombo.CBSelectedItem();
 
-            if ((e.DatasetChanges.Combatants != null) &&
-                (e.DatasetChanges.Combatants.Count > 0))
+            if (e.DatasetChanges.Combatants != null)
             {
-                UpdatePlayerList();
-                changesFound = true;
+                if (e.DatasetChanges.Combatants.Any(x => x.RowState == DataRowState.Added))
+                {
+                    UpdatePlayerList();
+                    changesFound = true;
 
-                flagNoUpdate = true;
-                playersCombo.CBSelectIndex(0);
+                    flagNoUpdate = true;
+                    playersCombo.CBSelectIndex(0);
+                }
             }
 
             // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
-            if ((e.DatasetChanges.Battles != null) &&
-                (e.DatasetChanges.Battles.Count > 0))
+            if (e.DatasetChanges.Battles != null)
             {
-                UpdateMobList(true);
-                changesFound = true;
+                if (e.DatasetChanges.Battles.Any(x => x.RowState == DataRowState.Added))
+                {
+                    UpdateMobList(true);
+                    changesFound = true;
 
-                flagNoUpdate = true;
-                mobsCombo.CBSelectIndex(-1);
+                    flagNoUpdate = true;
+                    mobsCombo.CBSelectIndex(-1);
+                }
             }
 
             if (currentlySelectedPlayer != playersCombo.CBSelectedItem())
@@ -235,7 +243,6 @@ namespace WaywardGamers.KParser.Plugin
                 return;
 
             string selectedPlayer = playersCombo.CBSelectedItem();
-            MobFilter mobFilter = mobsCombo.CBGetMobFilter();
 
             List<string> playerList = new List<string>();
 
@@ -257,7 +264,76 @@ namespace WaywardGamers.KParser.Plugin
 
             string[] selectedPlayers = playerList.ToArray();
 
-            var attackSet = from c in dataSet.Combatants
+
+            MobFilter mobFilter = mobsCombo.CBGetMobFilter();
+
+            IEnumerable<AttackGroup> attackSet;
+
+            if (mobFilter.AllMobs == false)
+            {
+                // For single or grouped mobs
+
+                // If we have any mob filter subset, get that data starting
+                // with the battle table and working outwards.  Significantly
+                // faster (eg: 5-25 ms instead of 400 ms on a 200 mob parse).
+
+                var bSet = from b in dataSet.Battles
+                           where (mobFilter.CheckFilterBattle(b) == true)
+                           orderby b.BattleID
+                           select b.GetInteractionsRows();
+
+                if (bSet.Count() == 0)
+                    return;
+
+                IEnumerable<KPDatabaseDataSet.InteractionsRow> iRows = bSet.First();
+
+                var bSetSkip = bSet.Skip(1);
+
+                foreach (var b in bSetSkip)
+                {
+                    iRows = iRows.Concat(b);
+                }
+
+                DateTime initialTime = iRows.First().Timestamp - TimeSpan.FromSeconds(70);
+                DateTime endTime = iRows.Last().Timestamp;
+
+                var dSet = dataSet.Battles.GetDefaultBattle().GetInteractionsRows()
+                    .Where(i => i.Timestamp >= initialTime && i.Timestamp <= endTime);
+
+                iRows = iRows.Concat(dSet);
+
+                attackSet = from c in iRows
+                            where (c.IsActorIDNull() == false) &&
+                                  (selectedPlayers.Contains(c.CombatantsRowByActorCombatantRelation.CombatantName))
+                            group c by c.CombatantsRowByActorCombatantRelation into ca
+                            orderby ca.Key.CombatantType, ca.Key.CombatantName
+                            select new AttackGroup
+                            {
+                                Name = ca.Key.CombatantName,
+                                ComType = (EntityType)ca.Key.CombatantType,
+                                Melee = from q in ca
+                                        where ((ActionType)q.ActionType == ActionType.Melee &&
+                                               ((HarmType)q.HarmType == HarmType.Damage ||
+                                                (HarmType)q.HarmType == HarmType.Drain))
+                                        select q,
+                                Ability = from q in ca
+                                          where ((ActionType)q.ActionType == ActionType.Ability &&
+                                                 (AidType)q.AidType == AidType.Enhance &&
+                                                 q.Preparing == false)
+                                          select q,
+                                WSkill = from q in ca
+                                         where ((ActionType)q.ActionType == ActionType.Weaponskill &&
+                                               ((HarmType)q.HarmType == HarmType.Damage ||
+                                                (HarmType)q.HarmType == HarmType.Drain) &&
+                                                q.Preparing == false)
+                                         select q,
+                            };
+            }
+            else
+            {
+                // For all mobs
+
+                attackSet = from c in dataSet.Combatants
                             where (selectedPlayers.Contains(c.CombatantName))
                             select new AttackGroup
                             {
@@ -266,25 +342,22 @@ namespace WaywardGamers.KParser.Plugin
                                         where ((ActionType)n.ActionType == ActionType.Melee &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None)) &&
-                                               mobFilter.CheckFilterMobBattle(n) == true
+                                               ((DefenseType)n.DefenseType == DefenseType.None))
                                         select n,
                                 Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                           where ((ActionType)n.ActionType == ActionType.Ability &&
                                                  (AidType)n.AidType == AidType.Enhance &&
-                                                 n.Preparing == false) &&
-                                               (mobFilter.CheckFilterMobBattle(n) == true ||
-                                               n.IsBattleIDNull() == true)
+                                                 n.Preparing == false)
                                           select n,
                                 WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                          where ((ActionType)n.ActionType == ActionType.Weaponskill &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
                                                 n.Preparing == false &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None)) &&
-                                               mobFilter.CheckFilterMobBattle(n) == true
+                                               ((DefenseType)n.DefenseType == DefenseType.None))
                                          select n,
                             };
+            }
 
             ProcessAttackSet(attackSet);
 
@@ -294,7 +367,7 @@ namespace WaywardGamers.KParser.Plugin
         /// Process the attack set generated by the mob collection functions
         /// </summary>
         /// <param name="attackSet"></param>
-        private void ProcessAttackSet(EnumerableRowCollection<AttackGroup> attackSet)
+        private void ProcessAttackSet(IEnumerable<AttackGroup> attackSet)
         {
             ResetTextBox();
 
@@ -320,7 +393,11 @@ namespace WaywardGamers.KParser.Plugin
 
                     double avgNonCrit = 0;
                     if (avgNonCritSet.Count() > 0)
-                        avgNonCrit = avgNonCritSet.Average(m => m.Amount);
+                    {
+                        // Limit the average calculation to the first 200 hits
+                        var avgNonCritSubset = avgNonCritSet.Take(200);
+                        avgNonCrit = avgNonCritSubset.Average(m => m.Amount);
+                    }
 
                     double critThreshold = avgNonCrit * 4;
                     double nonCritThreshold = avgNonCrit * 2.75;
@@ -674,9 +751,12 @@ namespace WaywardGamers.KParser.Plugin
 
         protected void mobsCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (flagNoUpdate == false)
-                HandleDataset(null);
-
+            using (new RegionProfiler("thief: mob change"))
+            {
+                if (flagNoUpdate == false)
+                    HandleDataset(null);
+                
+            }
             flagNoUpdate = false;
         }
 
