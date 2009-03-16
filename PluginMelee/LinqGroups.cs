@@ -177,8 +177,13 @@ namespace WaywardGamers.KParser.Plugin
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Counter { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Countered { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Retaliate { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Retaliated { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Spikes { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Unknown { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> UtsuIchiCast { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> UtsuIchiFinish { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> UtsuNiCast { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> UtsuNiFinish { get; set; }
 
         public DefenseGroup2()
         {
