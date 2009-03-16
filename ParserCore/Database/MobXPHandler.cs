@@ -128,7 +128,8 @@ namespace WaywardGamers.KParser.Database
 
                 foreach (var battle in battles)
                 {
-                    if (mobFightsThatEnded.ContainsKey(battle.BattleID) == false)
+                    if ((mobFightsThatEnded.ContainsKey(battle.BattleID) == false) &&
+                        (mobFightsThatHaveNotEnded.ContainsKey(battle.BattleID) == false))
                     {
                         if (battle.IsOver == true)
                         {
@@ -250,7 +251,13 @@ namespace WaywardGamers.KParser.Database
 
         public int GetBaseXP(int battleID)
         {
-            return mobFightsThatEnded[battleID].BaseXP;
+            if (mobFightsThatEnded.ContainsKey(battleID))
+                return mobFightsThatEnded[battleID].BaseXP;
+            else if (mobFightsThatHaveNotEnded.ContainsKey(battleID))
+                return 0;
+            else
+                throw new ArgumentOutOfRangeException("battleID", battleID, "Unknown battle ID");
+
         }
 
         public Dictionary<int, MobXPValues>.ValueCollection CompleteMobList
