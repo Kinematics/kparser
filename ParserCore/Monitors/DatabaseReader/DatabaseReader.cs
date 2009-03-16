@@ -43,6 +43,7 @@ namespace WaywardGamers.KParser.Monitoring
         #region Member Variables
         private Thread readerThread;
         private IDBReader dbReaderManager;
+        private bool upgradeTimestamp;
         #endregion
 
         #region Interface Control Methods and Properties
@@ -53,6 +54,12 @@ namespace WaywardGamers.KParser.Monitoring
 
         public override void Import(ImportSourceType importSource, IDBReader dbReaderManager)
         {
+            Import(importSource, dbReaderManager, false);
+        }
+
+        public void Import(ImportSourceType importSource, IDBReader dbReaderManager, bool upgradeTimestamp)
+        {
+            this.upgradeTimestamp = upgradeTimestamp;
             IsRunning = true;
 
             try
@@ -149,7 +156,10 @@ namespace WaywardGamers.KParser.Monitoring
                             if (IsRunning == false)
                                 break;
 
-                            chatLines.Add(new ChatLine(logLine.MessageText, logLine.Timestamp));
+                            if (upgradeTimestamp == true)
+                                chatLines.Add(new ChatLine(logLine.MessageText, logLine.Timestamp.ToUniversalTime()));
+                            else
+                                chatLines.Add(new ChatLine(logLine.MessageText, logLine.Timestamp));
 
                             OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed, false));
 
@@ -277,6 +287,12 @@ namespace WaywardGamers.KParser.Monitoring
                                 originalChatLine += logLine.Text;
 
                                 chatLines.Add(new ChatLine(originalChatLine, logLine.DateTime));
+
+                                //if (upgradeTimestamp == true)
+                                //    chatLines.Add(new ChatLine(originalChatLine, logLine.DateTime.ToUniversalTime()));
+                                //else
+                                //    chatLines.Add(new ChatLine(originalChatLine, logLine.DateTime));
+
                             }
 
                             OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed, false));
