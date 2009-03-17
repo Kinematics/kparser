@@ -1,6 +1,10 @@
 KParser Change Log
 
 
+1.3.2.1 (March 16, 2009)
+- Fix major bottleneck in message insertion in the database.  Should speed up back end processing by a factor of about 10.
+
+
 1.3.2 (March 16, 2009)
 - Fix bug that terminated long reparse sessions prematurely.
 - Fix Thief plugin analysis code for better accuracy.
