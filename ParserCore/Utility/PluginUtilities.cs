@@ -249,6 +249,20 @@ namespace WaywardGamers.KParser.Plugin
             if (mobFilter.AllMobs == true)
                 return true;
 
+            if (mobFilter.CustomSelection == true)
+            {
+                if (rowToCheck.IsBattleIDNull() == true)
+                    return false;
+
+                if (mobFilter.CustomBattleIDs.Contains(rowToCheck.BattleID))
+                {
+                    if (rowToCheck.IsActorIDNull() == true)
+                        return false;
+
+                    return (rowToCheck.ActorID == rowToCheck.BattlesRow.EnemyID);
+                }
+            }
+
             if (mobFilter.GroupMobs == false)
             {
                 if ((rowToCheck.IsBattleIDNull() == false) &&
@@ -292,6 +306,20 @@ namespace WaywardGamers.KParser.Plugin
             if (mobFilter.AllMobs == true)
                 return true;
 
+            if (mobFilter.CustomSelection == true)
+            {
+                if (rowToCheck.IsBattleIDNull() == true)
+                    return false;
+
+                if (mobFilter.CustomBattleIDs.Contains(rowToCheck.BattleID))
+                {
+                    if (rowToCheck.IsTargetIDNull() == true)
+                        return false;
+
+                    return (rowToCheck.TargetID == rowToCheck.BattlesRow.EnemyID);
+                }
+            }
+
             if (mobFilter.GroupMobs == false)
             {
                 if ((rowToCheck.IsBattleIDNull() == false) &&
@@ -334,6 +362,14 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (mobFilter.AllMobs == true)
                 return true;
+
+            if (mobFilter.CustomSelection == true)
+            {
+                if (rowToCheck.IsBattleIDNull() == true)
+                    return false;
+
+                return mobFilter.CustomBattleIDs.Contains(rowToCheck.BattleID);
+            }
 
             if (mobFilter.GroupMobs == false)
             {
@@ -380,6 +416,11 @@ namespace WaywardGamers.KParser.Plugin
 
             if (rowToCheck.DefaultBattle == true)
                 return false;
+
+            if (mobFilter.CustomSelection == true)
+            {
+                return mobFilter.CustomBattleIDs.Contains(rowToCheck.BattleID);
+            }
 
             if (mobFilter.GroupMobs == false)
             {
