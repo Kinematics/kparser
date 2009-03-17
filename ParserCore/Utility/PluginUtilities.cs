@@ -21,6 +21,9 @@ namespace WaywardGamers.KParser.Plugin
 
         public string MobName { get; set; }
         public int MobXP { get; set; }
+
+        public bool CustomSelection { get; set; }
+        public HashSet<int> CustomBattleIDs { get; set; }
     }
 
     /// <summary>

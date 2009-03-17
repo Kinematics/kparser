@@ -21,6 +21,7 @@ namespace WaywardGamers.KParser.Plugin
         void WatchDatabaseChanged(object sender, DatabaseWatchEventArgs e);
 
         void NotifyOfUpdate();
+        void UpdateUsingMobFilter(MobFilter mobFilter);
         void Reset();
 
         bool IsDebug { get; }

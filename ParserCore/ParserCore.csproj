@@ -83,6 +83,12 @@
     <Compile Include="Database\KParserReadingManager.cs" />
     <Compile Include="Database\DirectParseReadingManager.cs" />
     <Compile Include="Database\MobXPHandler.cs" />
+    <Compile Include="Interface\CustomMobSelectionDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interface\CustomMobSelectionDlg.Designer.cs">
+      <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
+    </Compile>
     <Compile Include="ReferenceValues\PlayerInfo.cs" />
     <Compile Include="DPDatabaseImportV1.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -236,6 +242,9 @@
     <EmbeddedResource Include="Interface\BasePluginControl.resx">
       <DependentUpon>BasePluginControl.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interface\CustomMobSelectionDlg.resx">
+      <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="KPDatabase.sdf">
     </EmbeddedResource>
