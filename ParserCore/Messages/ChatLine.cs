@@ -9,6 +9,7 @@ namespace WaywardGamers.KParser
     {
         private readonly string chatText;
         private DateTime timestamp = MagicNumbers.MinSQLDateTime;
+        private int recordLogID = -1;
 
         public ChatLine(string chatTextParam)
         {
@@ -39,6 +40,18 @@ namespace WaywardGamers.KParser
                     timestamp = MagicNumbers.MinSQLDateTime;
                 else
                     timestamp = value;
+            }
+        }
+
+        public int RecordLogID
+        {
+            get
+            {
+                return recordLogID;
+            }
+            set
+            {
+                recordLogID = value;
             }
         }
     }

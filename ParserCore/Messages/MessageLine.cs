@@ -174,6 +174,14 @@ namespace WaywardGamers.KParser
                 return originalChatLine.ChatText;
             }
         }
+
+        internal int ChatRecordID
+        {
+            get
+            {
+                return originalChatLine.RecordLogID;
+            }
+        }
         #endregion
         
         #region Raw Source Properties
