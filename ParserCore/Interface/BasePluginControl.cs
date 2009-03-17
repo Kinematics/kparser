@@ -76,6 +76,10 @@ namespace WaywardGamers.KParser.Plugin
             HandleDataset(null);
         }
 
+        public virtual void UpdateUsingMobFilter(MobFilter mobFilter)
+        {
+        }
+
         public virtual void Reset()
         {
             throw new NotImplementedException();
