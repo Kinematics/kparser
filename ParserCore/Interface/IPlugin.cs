@@ -17,12 +17,15 @@ namespace WaywardGamers.KParser.Plugin
         string TextContentsAsRTF { get; }
         DataTable GeneratedDataTableForExcel { get; }
 
+        bool IsActive { get; set; }
+
         void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e);
         void WatchDatabaseChanged(object sender, DatabaseWatchEventArgs e);
 
         void NotifyOfUpdate();
-        void UpdateUsingMobFilter(MobFilter mobFilter);
         void Reset();
+
+        void CustomFilterChanged(object sender, EventArgs e);
 
         bool IsDebug { get; }
     }

@@ -30,7 +30,14 @@ namespace WaywardGamers.KParser.Plugin
             boldFont = new Font(FontFamily.GenericMonospace, 9.00f, FontStyle.Bold);
             underFont = new Font(FontFamily.GenericMonospace, 9.00f, FontStyle.Underline);
             buFont = new Font(FontFamily.GenericMonospace, 9.00f, FontStyle.Bold | FontStyle.Underline);
+
+            IsActive = false;
+            MobXPHandler.Instance.CustomMobFilterChanged += this.CustomFilterChanged;
         }
+        #endregion
+
+        #region Properties to be set by main window
+        public bool IsActive { get; set; }
         #endregion
 
         #region IPlugin Members
@@ -76,7 +83,15 @@ namespace WaywardGamers.KParser.Plugin
             HandleDataset(null);
         }
 
-        public virtual void UpdateUsingMobFilter(MobFilter mobFilter)
+        public virtual void CustomFilterChanged(object sender, EventArgs e)
+        {
+            if (IsActive)
+            {
+                ImplementCustomFilterChanged();
+            }
+        }
+
+        protected virtual void ImplementCustomFilterChanged()
         {
         }
 

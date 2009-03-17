@@ -2,22 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WaywardGamers.KParser.Plugin;
 
 namespace WaywardGamers.KParser.Database
 {
+    #region Data subclass
+    public class MobXPValues
+    {
+        public int BattleID { get; set; }
+        public string Name { get; set; }
+        public int XP { get; set; }
+        public int Chain { get; set; }
+        public int BaseXP { get; set; }
+    }
+    #endregion
+
     public class MobXPHandler
     {
-        #region Data subclass
-        public class MobXPValues
-        {
-            public int BattleID { get; set; }
-            public string Name { get; set; }
-            public int XP { get; set; }
-            public int Chain { get; set; }
-            public int BaseXP { get; set; }
-        }
-        #endregion
-
         #region Singleton Construction
         /// <summary>
         /// Make the class a singleton
@@ -34,6 +35,8 @@ namespace WaywardGamers.KParser.Database
         /// </summary>
         private MobXPHandler()
 		{
+            mobFilter.CustomSelection = true;
+            mobFilter.CustomBattleIDs = new HashSet<int>();
         }
         #endregion
 
@@ -41,6 +44,17 @@ namespace WaywardGamers.KParser.Database
         Dictionary<int, MobXPValues> completeMobFightList = new Dictionary<int, MobXPValues>();
         Dictionary<int, MobXPValues> mobFightsThatEnded = new Dictionary<int, MobXPValues>();
         Dictionary<int, MobXPValues> mobFightsThatHaveNotEnded = new Dictionary<int, MobXPValues>();
+
+        MobFilter mobFilter = new MobFilter();
+
+        public event EventHandler CustomMobFilterChanged;
+        #endregion
+
+        #region Properties
+        public MobFilter CustomMobFilter
+        {
+            get { return mobFilter; }
+        }
         #endregion
 
         #region Public Methods
@@ -49,6 +63,7 @@ namespace WaywardGamers.KParser.Database
             completeMobFightList.Clear();
             mobFightsThatEnded.Clear();
             mobFightsThatHaveNotEnded.Clear();
+            mobFilter.CustomBattleIDs.Clear();
         }
 
         public void Update()
@@ -246,6 +261,14 @@ namespace WaywardGamers.KParser.Database
                         }
                     }
                 }
+            }
+        }
+
+        public void OnCustomMobFilterWasChanged()
+        {
+            if (CustomMobFilterChanged != null)
+            {
+                CustomMobFilterChanged(this, new EventArgs());
             }
         }
 
