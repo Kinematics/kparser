@@ -16,25 +16,20 @@ namespace WaywardGamers.KParser.Interface
         #region Constructor
         MobFilter mobFilter;
 
-        public CustomMobSelectionDlg(MobFilter mobFilter)
+        public CustomMobSelectionDlg()
         {
             InitializeComponent();
 
-            this.mobFilter = mobFilter;
-            if (this.mobFilter.CustomSelection == false)
-            {
-                this.mobFilter.CustomSelection = true;
-                if (this.mobFilter.CustomBattleIDs == null)
-                    this.mobFilter.CustomBattleIDs = new HashSet<int>();
-                else
-                    this.mobFilter.CustomBattleIDs.Clear();
-            }
+            mobFilter = MobXPHandler.Instance.CustomMobFilter;
 
             FillMobsList();
         }
         #endregion
 
         #region Event Handlers
+        
+        // List box event handlers
+
         private void mobList_ItemCheck(object sender, ItemCheckEventArgs e)
         {
             if (e.NewValue == CheckState.Checked)
@@ -46,8 +41,10 @@ namespace WaywardGamers.KParser.Interface
                 mobFilter.CustomBattleIDs.Remove(MobXPHandler.Instance.CompleteMobList.ElementAt(e.Index).BattleID);
             }
 
-            NotifyOfChangedMobList();
+            NotifyMobXPHandlerOfChangedMobList();
         }
+
+        // Button event handlers
 
         private void selectAllButton_Click(object sender, EventArgs e)
         {
@@ -57,7 +54,6 @@ namespace WaywardGamers.KParser.Interface
             }
 
             UpdateFilter();
-            NotifyOfChangedMobList();
         }
 
         private void invertSelectionButton_Click(object sender, EventArgs e)
@@ -68,7 +64,6 @@ namespace WaywardGamers.KParser.Interface
             }
 
             UpdateFilter();
-            NotifyOfChangedMobList();
         }
 
         private void selectNoneButton_Click(object sender, EventArgs e)
@@ -79,7 +74,6 @@ namespace WaywardGamers.KParser.Interface
             }
 
             UpdateFilter();
-            NotifyOfChangedMobList();
         }
 
         private void uncheck0XPMobs_Click(object sender, EventArgs e)
@@ -93,46 +87,138 @@ namespace WaywardGamers.KParser.Interface
             }
 
             UpdateFilter();
-            NotifyOfChangedMobList();
         }
 
-        private void allCurrentSelectionTypes_Click(object sender, EventArgs e)
-        {
-            string mobName = GetSelectedMobName();
+        // Context menu event handlers
 
-            if (mobName != string.Empty)
+        private void mobListContextMenuStrip_Opening(object sender, CancelEventArgs e)
+        {
+            if ((mobList.Items.Count == 0) || (mobList.SelectedIndex < 0))
+            {
+                checkAllMobsBelowCurrentSelectionToolStripMenuItem.Enabled = false;
+                uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Enabled = false;
+                checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Enabled = false;
+                uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Enabled = false;
+                checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Enabled = false;
+                uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Enabled = false;
+            }
+            else
+            {
+                checkAllMobsBelowCurrentSelectionToolStripMenuItem.Enabled = true;
+                uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Enabled = true;
+                checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Enabled = true;
+                uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Enabled = true;
+                checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Enabled = true;
+                uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Enabled = true;
+            }
+        }
+
+        private void checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MobXPValues mob = GetSelectedMob();
+
+            if (mob != null)
             {
                 var mobXPVals = MobXPHandler.Instance.CompleteMobList;
 
                 for (int i = 0; i < mobList.Items.Count; i++)
                 {
-                    if (mobXPVals.ElementAt(i).Name == mobName)
+                    if (mobXPVals.ElementAt(i).Name == mob.Name)
                         mobList.SetItemChecked(i, true);
                 }
 
                 UpdateFilter();
-                NotifyOfChangedMobList();
             }
         }
 
-        private void noneOfCurrentSelectionTypes_Click(object sender, EventArgs e)
+        private void uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string mobName = GetSelectedMobName();
+            MobXPValues mob = GetSelectedMob();
 
-            if (mobName != string.Empty)
+            if (mob != null)
             {
                 var mobXPVals = MobXPHandler.Instance.CompleteMobList;
 
                 for (int i = 0; i < mobList.Items.Count; i++)
                 {
-                    if (mobXPVals.ElementAt(i).Name == mobName)
+                    if (mobXPVals.ElementAt(i).Name == mob.Name)
                         mobList.SetItemChecked(i, false);
                 }
 
                 UpdateFilter();
-                NotifyOfChangedMobList();
             }
         }
+
+        private void checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MobXPValues selectedMob = GetSelectedMob();
+
+            if (selectedMob != null)
+            {
+                var mobXPVals = MobXPHandler.Instance.CompleteMobList;
+
+                for (int i = 0; i < mobList.Items.Count; i++)
+                {
+                    MobXPValues mob = mobXPVals.ElementAt(i);
+
+                    if ((mob.Name == selectedMob.Name) && (mob.BaseXP == selectedMob.BaseXP))
+                        mobList.SetItemChecked(i, true);
+                }
+
+                UpdateFilter();
+            }
+        }
+
+        private void uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MobXPValues selectedMob = GetSelectedMob();
+
+            if (selectedMob != null)
+            {
+                var mobXPVals = MobXPHandler.Instance.CompleteMobList;
+
+                for (int i = 0; i < mobList.Items.Count; i++)
+                {
+                    MobXPValues mob = mobXPVals.ElementAt(i);
+
+                    if ((mob.Name == selectedMob.Name) && (mob.BaseXP == selectedMob.BaseXP))
+                        mobList.SetItemChecked(i, false);
+                }
+
+                UpdateFilter();
+            }
+        }
+
+        private void checkAllMobsBelowCurrentSelectionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int currentSelectedIndex = mobList.SelectedIndex;
+
+            if (currentSelectedIndex >= 0)
+            {
+                for (int i = currentSelectedIndex+1; i < mobList.Items.Count; i++)
+                {
+                    mobList.SetItemChecked(i, true);
+                }
+
+                UpdateFilter();
+            }
+        }
+
+        private void uncheckAllMobsBelowCurrentSelectionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int currentSelectedIndex = mobList.SelectedIndex;
+
+            if (currentSelectedIndex >= 0)
+            {
+                for (int i = currentSelectedIndex + 1; i < mobList.Items.Count; i++)
+                {
+                    mobList.SetItemChecked(i, false);
+                }
+
+                UpdateFilter();
+            }
+        }
+
         #endregion
 
         #region Utility Functions
@@ -157,16 +243,16 @@ namespace WaywardGamers.KParser.Interface
             }
         }
 
-        private string GetSelectedMobName()
+        private MobXPValues GetSelectedMob()
         {
-            string mobName = string.Empty;
-
+            MobXPValues mob = null;
+            
             if (mobList.SelectedIndex >= 0)
             {
-                mobName = MobXPHandler.Instance.CompleteMobList.ElementAt(mobList.SelectedIndex).Name;
+                mob = MobXPHandler.Instance.CompleteMobList.ElementAt(mobList.SelectedIndex);
             }
 
-            return mobName;
+            return mob;
         }
 
         private void UpdateFilter()
@@ -178,19 +264,14 @@ namespace WaywardGamers.KParser.Interface
             {
                 mobFilter.CustomBattleIDs.Add(mobXPVals.ElementAt(index).BattleID);
             }
+
+            NotifyMobXPHandlerOfChangedMobList();
         }
 
-        private void NotifyOfChangedMobList()
+        private void NotifyMobXPHandlerOfChangedMobList()
         {
             // Update the mob filter and send event to controlling plugin to update
-
-            // First, determine the plugin
-            IPlugin parentPlugin = this.Parent as IPlugin;
-
-            if (parentPlugin != null)
-            {
-                parentPlugin.UpdateUsingMobFilter(mobFilter);
-            }
+            MobXPHandler.Instance.OnCustomMobFilterWasChanged();
         }
 
         #endregion
