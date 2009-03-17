@@ -565,19 +565,21 @@ namespace WaywardGamers.KParser
         /// <param name="messageLine"></param>
         internal void AddChatLineToRecordLog(ChatLine chatLine)
         {
+            if (chatLine == null)
+                return;
+
             // Set ParseSuccessful to False at this point since we don't know the parse outcome.
             try
             {
                 databaseAccessMutex.WaitOne();
 
-                if (chatLine != null)
-                    localDB.RecordLog.AddRecordLogRow(chatLine.Timestamp, chatLine.ChatText, false);
+                var logRow = localDB.RecordLog.AddRecordLogRow(chatLine.Timestamp, chatLine.ChatText, false);
+                chatLine.RecordLogID = logRow.RecordLogID;
             }
             finally
             {
                 databaseAccessMutex.ReleaseMutex();
             }
-
         }
 
         /// <summary>
@@ -588,6 +590,7 @@ namespace WaywardGamers.KParser
         private void AddMessageToDatabase(Message message)
         {
             // Don't try to insert data from unsuccessful parses.
+            // Record log already defaults to false on ParseSuccessful, so don't have to update.
             if (message.IsParseSuccessful == false)
             {
                 return;
@@ -597,17 +600,27 @@ namespace WaywardGamers.KParser
             // message.
             foreach (var msgLine in message.MessageLineCollection)
             {
-                var recordRows = localDB.RecordLog.Where(t => t.Timestamp == msgLine.Timestamp);
+                if (msgLine.ChatRecordID >= 0)
+                {
+                    var chatLogRow = localDB.RecordLog[msgLine.ChatRecordID];
+                    chatLogRow.ParseSuccessful = message.IsParseSuccessful;
+                }
+                else
+                {
+                    var recordRows = localDB.RecordLog.Where(t => t.Timestamp == msgLine.Timestamp);
 
-                if (recordRows.Count() > 0)
-                    recordRows = recordRows.Where(t => t.MessageText == msgLine.OriginalText);
+                    if (recordRows.Count() > 0)
+                        recordRows = recordRows.Where(t => t.MessageText == msgLine.OriginalText);
 
-                if (recordRows.Count() > 0)
-                    recordRows = recordRows.Where(t => t.ParseSuccessful == false);
+                    if (recordRows.Count() > 0)
+                        recordRows = recordRows.Where(t => t.ParseSuccessful == false);
 
-                if (recordRows.Count() > 0)
-                    recordRows.First().ParseSuccessful = true;
+                    if (recordRows.Count() > 0)
+                        recordRows.First().ParseSuccessful = true;
+                }
             }
+
+
 
             // Call functions depending on type of message.
             switch (message.MessageCategory)
