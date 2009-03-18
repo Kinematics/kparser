@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace WaywardGamers.KParser.Interface
+namespace WaywardGamers.KParser.Plugin
 {
     public partial class CustomMobSelectionDlg : Form
     {
@@ -32,20 +32,20 @@ namespace WaywardGamers.KParser.Interface
         {
             this.components = new System.ComponentModel.Container();
             this.mobList = new System.Windows.Forms.CheckedListBox();
+            this.mobListContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.checkAllMobsBelowCurrentSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uncheckAllMobsBelowCurrentSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.selectAllButton = new System.Windows.Forms.Button();
             this.selectNoneButton = new System.Windows.Forms.Button();
             this.closeButton = new System.Windows.Forms.Button();
             this.invertSelectionButton = new System.Windows.Forms.Button();
             this.uncheck0XPMobs = new System.Windows.Forms.Button();
-            this.mobListContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.checkAllMobsBelowCurrentSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.uncheckAllMobsBelowCurrentSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.mobListContextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -62,6 +62,73 @@ namespace WaywardGamers.KParser.Interface
             this.mobList.Size = new System.Drawing.Size(237, 289);
             this.mobList.TabIndex = 0;
             this.mobList.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.mobList_ItemCheck);
+            // 
+            // mobListContextMenuStrip
+            // 
+            this.mobListContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem,
+            this.uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem,
+            this.uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.checkAllMobsBelowCurrentSelectionToolStripMenuItem,
+            this.uncheckAllMobsBelowCurrentSelectionToolStripMenuItem});
+            this.mobListContextMenuStrip.Name = "mobListContextMenuStrip";
+            this.mobListContextMenuStrip.Size = new System.Drawing.Size(336, 148);
+            this.mobListContextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.mobListContextMenuStrip_Opening);
+            // 
+            // checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem
+            // 
+            this.checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Name = "checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem";
+            this.checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Size = new System.Drawing.Size(335, 22);
+            this.checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Text = "Check All Mobs of Currently Selected Type";
+            this.checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Click += new System.EventHandler(this.checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem_Click);
+            // 
+            // uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem
+            // 
+            this.uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Name = "uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem";
+            this.uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Size = new System.Drawing.Size(335, 22);
+            this.uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Text = "Uncheck All Mobs of Currently Selected Type";
+            this.uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Click += new System.EventHandler(this.uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(332, 6);
+            // 
+            // checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem
+            // 
+            this.checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Name = "checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem";
+            this.checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Size = new System.Drawing.Size(335, 22);
+            this.checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Text = "Check All Mobs of Currently Selected Type and XP";
+            this.checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Click += new System.EventHandler(this.checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem_Click);
+            // 
+            // uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem
+            // 
+            this.uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Name = "uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem";
+            this.uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Size = new System.Drawing.Size(335, 22);
+            this.uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Text = "Uncheck All Mobs of Currently Selected Type and XP";
+            this.uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Click += new System.EventHandler(this.uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(332, 6);
+            // 
+            // checkAllMobsBelowCurrentSelectionToolStripMenuItem
+            // 
+            this.checkAllMobsBelowCurrentSelectionToolStripMenuItem.Name = "checkAllMobsBelowCurrentSelectionToolStripMenuItem";
+            this.checkAllMobsBelowCurrentSelectionToolStripMenuItem.Size = new System.Drawing.Size(335, 22);
+            this.checkAllMobsBelowCurrentSelectionToolStripMenuItem.Text = "Check All Mobs Below Current Selection";
+            this.checkAllMobsBelowCurrentSelectionToolStripMenuItem.Click += new System.EventHandler(this.checkAllMobsBelowCurrentSelectionToolStripMenuItem_Click);
+            // 
+            // uncheckAllMobsBelowCurrentSelectionToolStripMenuItem
+            // 
+            this.uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Name = "uncheckAllMobsBelowCurrentSelectionToolStripMenuItem";
+            this.uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Size = new System.Drawing.Size(335, 22);
+            this.uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Text = "Uncheck All Mobs Below Current Selection";
+            this.uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Click += new System.EventHandler(this.uncheckAllMobsBelowCurrentSelectionToolStripMenuItem_Click);
             // 
             // selectAllButton
             // 
@@ -95,6 +162,7 @@ namespace WaywardGamers.KParser.Interface
             this.closeButton.TabIndex = 5;
             this.closeButton.Text = "Close";
             this.closeButton.UseVisualStyleBackColor = true;
+            this.closeButton.Click += new System.EventHandler(this.closeButton_Click);
             // 
             // invertSelectionButton
             // 
@@ -118,73 +186,6 @@ namespace WaywardGamers.KParser.Interface
             this.uncheck0XPMobs.UseVisualStyleBackColor = true;
             this.uncheck0XPMobs.Click += new System.EventHandler(this.uncheck0XPMobs_Click);
             // 
-            // mobListContextMenuStrip
-            // 
-            this.mobListContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem,
-            this.uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem,
-            this.toolStripSeparator2,
-            this.checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem,
-            this.uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem,
-            this.toolStripSeparator1,
-            this.checkAllMobsBelowCurrentSelectionToolStripMenuItem,
-            this.uncheckAllMobsBelowCurrentSelectionToolStripMenuItem});
-            this.mobListContextMenuStrip.Name = "mobListContextMenuStrip";
-            this.mobListContextMenuStrip.Size = new System.Drawing.Size(336, 148);
-            this.mobListContextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.mobListContextMenuStrip_Opening);
-            // 
-            // checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem
-            // 
-            this.checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Name = "checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem";
-            this.checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Size = new System.Drawing.Size(299, 22);
-            this.checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Text = "Check All Mobs of Currently Selected Type";
-            this.checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Click += new System.EventHandler(this.checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem_Click);
-            // 
-            // uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem
-            // 
-            this.uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Name = "uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem";
-            this.uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Size = new System.Drawing.Size(299, 22);
-            this.uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Text = "Uncheck All Mobs of Currently Selected Type";
-            this.uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Click += new System.EventHandler(this.uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem_Click);
-            // 
-            // checkAllMobsBelowCurrentSelectionToolStripMenuItem
-            // 
-            this.checkAllMobsBelowCurrentSelectionToolStripMenuItem.Name = "checkAllMobsBelowCurrentSelectionToolStripMenuItem";
-            this.checkAllMobsBelowCurrentSelectionToolStripMenuItem.Size = new System.Drawing.Size(299, 22);
-            this.checkAllMobsBelowCurrentSelectionToolStripMenuItem.Text = "Check All Mobs Below Current Selection";
-            this.checkAllMobsBelowCurrentSelectionToolStripMenuItem.Click += new System.EventHandler(this.checkAllMobsBelowCurrentSelectionToolStripMenuItem_Click);
-            // 
-            // uncheckAllMobsBelowCurrentSelectionToolStripMenuItem
-            // 
-            this.uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Name = "uncheckAllMobsBelowCurrentSelectionToolStripMenuItem";
-            this.uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Size = new System.Drawing.Size(299, 22);
-            this.uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Text = "Uncheck All Mobs Below Current Selection";
-            this.uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Click += new System.EventHandler(this.uncheckAllMobsBelowCurrentSelectionToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(296, 6);
-            // 
-            // checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem
-            // 
-            this.checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Name = "checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem";
-            this.checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Size = new System.Drawing.Size(335, 22);
-            this.checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Text = "Check All Mobs of Currently Selected Type and XP";
-            this.checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Click += new System.EventHandler(this.checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem_Click);
-            // 
-            // uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem
-            // 
-            this.uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Name = "uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem";
-            this.uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Size = new System.Drawing.Size(335, 22);
-            this.uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Text = "Uncheck All Mobs of Currently Selected Type and XP";
-            this.uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Click += new System.EventHandler(this.uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(332, 6);
-            // 
             // CustomMobSelectionDlg
             // 
             this.AcceptButton = this.closeButton;
@@ -204,6 +205,7 @@ namespace WaywardGamers.KParser.Interface
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.Text = "Custom Mob Selection";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CustomMobSelectionDlg_FormClosing);
             this.mobListContextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
 

@@ -9,29 +9,35 @@ using System.Windows.Forms;
 using WaywardGamers.KParser.Database;
 using WaywardGamers.KParser.Plugin;
 
-namespace WaywardGamers.KParser.Interface
+namespace WaywardGamers.KParser.Plugin
 {
     public partial class CustomMobSelectionDlg : Form
     {
         #region Constructor
-        MobFilter mobFilter;
+        //static CustomMobSelectionDlg singleReference = null;
 
         public CustomMobSelectionDlg()
         {
             InitializeComponent();
-
-            mobFilter = MobXPHandler.Instance.CustomMobFilter;
-
-            FillMobsList();
         }
         #endregion
 
         #region Event Handlers
-        
+
+        // Window events
+
+        private void CustomMobSelectionDlg_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = true;
+            this.Hide();
+        }
+
         // List box event handlers
 
         private void mobList_ItemCheck(object sender, ItemCheckEventArgs e)
         {
+            MobFilter mobFilter = MobXPHandler.Instance.CustomMobFilter;
+
             if (e.NewValue == CheckState.Checked)
             {
                 mobFilter.CustomBattleIDs.Add(MobXPHandler.Instance.CompleteMobList.ElementAt(e.Index).BattleID);
@@ -87,6 +93,11 @@ namespace WaywardGamers.KParser.Interface
             }
 
             UpdateFilter();
+        }
+
+        private void closeButton_Click(object sender, EventArgs e)
+        {
+            this.Hide();
         }
 
         // Context menu event handlers
@@ -221,10 +232,25 @@ namespace WaywardGamers.KParser.Interface
 
         #endregion
 
+        #region Public Methods
+        public void UpdateMobsList()
+        {
+            FillMobsList();
+        }
+
+        public void ResetMobsList()
+        {
+            mobList.Items.Clear();
+        }
+        #endregion
+
         #region Utility Functions
         private void FillMobsList()
         {
+            mobList.Items.Clear();
+
             // Get data from Mob XP Handler to add mob entries to the checked item list.
+            MobFilter mobFilter = MobXPHandler.Instance.CustomMobFilter;
 
             string mobString;
             var mobXPVals = MobXPHandler.Instance.CompleteMobList;
@@ -258,6 +284,7 @@ namespace WaywardGamers.KParser.Interface
         private void UpdateFilter()
         {
             var mobXPVals = MobXPHandler.Instance.CompleteMobList;
+            MobFilter mobFilter = MobXPHandler.Instance.CustomMobFilter;
 
             mobFilter.CustomBattleIDs.Clear();
             foreach (int index in mobList.CheckedIndices)
