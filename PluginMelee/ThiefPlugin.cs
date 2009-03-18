@@ -6,8 +6,9 @@ using System.Text.RegularExpressions;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
-using WaywardGamers.KParser;
 using System.Diagnostics;
+using WaywardGamers.KParser;
+using WaywardGamers.KParser.Database;
 
 namespace WaywardGamers.KParser.Plugin
 {
@@ -57,6 +58,7 @@ namespace WaywardGamers.KParser.Plugin
         bool groupMobs = false;
         bool exclude0XPMobs = false;
         bool flagNoUpdate = false;
+        bool customMobSelection = false;
 
         HashSet<SATATypes> SASet = new HashSet<SATATypes> { SATATypes.SneakAttack };
         HashSet<SATATypes> TASet = new HashSet<SATATypes> { SATATypes.TrickAttack };
@@ -73,6 +75,11 @@ namespace WaywardGamers.KParser.Plugin
         ToolStripComboBox mobsCombo = new ToolStripComboBox();
 
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
+        ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
+        ToolStripMenuItem exclude0XPOption = new ToolStripMenuItem();
+        ToolStripMenuItem customMobSelectionOption = new ToolStripMenuItem();
+
+        ToolStripButton editCustomMobFilter = new ToolStripButton();
 
         public ThiefPlugin()
         {
@@ -103,21 +110,34 @@ namespace WaywardGamers.KParser.Plugin
             optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
             optionsMenu.Text = "Options";
 
-            ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
             groupMobsOption.Text = "Group Mobs";
             groupMobsOption.CheckOnClick = true;
             groupMobsOption.Checked = false;
             groupMobsOption.Click += new EventHandler(groupMobs_Click);
             optionsMenu.DropDownItems.Add(groupMobsOption);
 
-            ToolStripMenuItem exclude0XPOption = new ToolStripMenuItem();
             exclude0XPOption.Text = "Exclude 0 XP Mobs";
             exclude0XPOption.CheckOnClick = true;
             exclude0XPOption.Checked = false;
             exclude0XPOption.Click += new EventHandler(exclude0XPMobs_Click);
             optionsMenu.DropDownItems.Add(exclude0XPOption);
 
+            customMobSelectionOption.Text = "Custom Mob Selection";
+            customMobSelectionOption.CheckOnClick = true;
+            customMobSelectionOption.Checked = false;
+            customMobSelectionOption.Click += new EventHandler(customMobSelection_Click);
+            optionsMenu.DropDownItems.Add(customMobSelectionOption);
+
             toolStrip.Items.Add(optionsMenu);
+
+            ToolStripSeparator aSeparator = new ToolStripSeparator();
+            toolStrip.Items.Add(aSeparator);
+
+            editCustomMobFilter.Text = "Edit Mob Filter";
+            editCustomMobFilter.Enabled = false;
+            editCustomMobFilter.Click += new EventHandler(editCustomMobFilter_Click);
+
+            toolStrip.Items.Add(editCustomMobFilter);
         }
         #endregion
 
@@ -231,12 +251,17 @@ namespace WaywardGamers.KParser.Plugin
         /// <param name="dataSet"></param>
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
+            if (dataSet == null)
+                return;
+
             // If we get here during initialization, skip.
             if (playersCombo.Items.Count == 0)
                 return;
 
             if (mobsCombo.Items.Count == 0)
                 return;
+
+            ResetTextBox();
 
             string selectedPlayer = playersCombo.CBSelectedItem();
 
@@ -260,8 +285,11 @@ namespace WaywardGamers.KParser.Plugin
 
             string[] selectedPlayers = playerList.ToArray();
 
-
-            MobFilter mobFilter = mobsCombo.CBGetMobFilter();
+            MobFilter mobFilter;
+            if (customMobSelection)
+                mobFilter = MobXPHandler.Instance.CustomMobFilter;
+            else
+                mobFilter = mobsCombo.CBGetMobFilter();
 
             IEnumerable<AttackGroup> attackSet;
 
@@ -290,13 +318,16 @@ namespace WaywardGamers.KParser.Plugin
                     iRows = iRows.Concat(b);
                 }
 
-                DateTime initialTime = iRows.First().Timestamp - TimeSpan.FromSeconds(70);
-                DateTime endTime = iRows.Last().Timestamp;
+                if (iRows.Count() > 0)
+                {
+                    DateTime initialTime = iRows.First().Timestamp - TimeSpan.FromSeconds(70);
+                    DateTime endTime = iRows.Last().Timestamp;
 
-                var dSet = dataSet.Battles.GetDefaultBattle().GetInteractionsRows()
-                    .Where(i => i.Timestamp >= initialTime && i.Timestamp <= endTime);
+                    var dSet = dataSet.Battles.GetDefaultBattle().GetInteractionsRows()
+                        .Where(i => i.Timestamp >= initialTime && i.Timestamp <= endTime);
 
-                iRows = iRows.Concat(dSet);
+                    iRows = iRows.Concat(dSet);
+                }
 
                 attackSet = from c in iRows
                             where (c.IsActorIDNull() == false) &&
@@ -366,8 +397,6 @@ namespace WaywardGamers.KParser.Plugin
         /// <param name="attackSet"></param>
         private void ProcessAttackSet(IEnumerable<AttackGroup> attackSet)
         {
-            ResetTextBox();
-
             foreach (var player in attackSet)
             {
                 var sataActions = player.Ability.Where(
@@ -460,34 +489,31 @@ namespace WaywardGamers.KParser.Plugin
                         // in case of out-of-order text.
                         if (sataDamage == null)
                         {
-                            using (new RegionProfiler("thief: time melee lookup"))
+                            var nearMelee = player.Melee.Where(m => m.Timestamp >= preTime &&
+                                m.Timestamp <= postTime);
+
+                            var beforeMelee = nearMelee.TakeWhile(m => m.Timestamp < firstAction.Timestamp);
+                            var afterMelee = nearMelee.SkipWhile(m => m.Timestamp < firstAction.Timestamp);
+
+                            if (afterMelee.Any(m => ((DamageModifier)m.DamageModifier == DamageModifier.Critical
+                                && m.Amount > critThreshold) || (m.Amount > nonCritThreshold)))
                             {
-                                var nearMelee = player.Melee.Where(m => m.Timestamp >= preTime &&
-                                    m.Timestamp <= postTime);
 
-                                var beforeMelee = nearMelee.TakeWhile(m => m.Timestamp < firstAction.Timestamp);
-                                var afterMelee = nearMelee.SkipWhile(m => m.Timestamp < firstAction.Timestamp);
+                                sataDamage = afterMelee.First(m =>
+                                                          ((DamageModifier)m.DamageModifier == DamageModifier.Critical
+                                                             && m.Amount > critThreshold)
+                                                           || (m.Amount > nonCritThreshold));
 
-                                if (afterMelee.Any(m => ((DamageModifier)m.DamageModifier == DamageModifier.Critical
-                                    && m.Amount > critThreshold) || (m.Amount > nonCritThreshold)))
-                                {
-
-                                    sataDamage = afterMelee.First(m =>
-                                                              ((DamageModifier)m.DamageModifier == DamageModifier.Critical
-                                                                 && m.Amount > critThreshold)
-                                                               || (m.Amount > nonCritThreshold));
-
-                                    sataEvent.ActionType = ActionType.Melee;
-                                    sataEvent.SATASuccess = true;
-                                }
-                                else if (beforeMelee.Any(m => ((DamageModifier)m.DamageModifier == DamageModifier.Critical
-                                    && m.Amount > critThreshold) || (m.Amount > nonCritThreshold)))
-                                {
-                                    sataDamage = beforeMelee.First(m =>
-                                                              ((DamageModifier)m.DamageModifier == DamageModifier.Critical
-                                                                 && m.Amount > critThreshold)
-                                                               || (m.Amount > nonCritThreshold));
-                                }
+                                sataEvent.ActionType = ActionType.Melee;
+                                sataEvent.SATASuccess = true;
+                            }
+                            else if (beforeMelee.Any(m => ((DamageModifier)m.DamageModifier == DamageModifier.Critical
+                                && m.Amount > critThreshold) || (m.Amount > nonCritThreshold)))
+                            {
+                                sataDamage = beforeMelee.First(m =>
+                                                          ((DamageModifier)m.DamageModifier == DamageModifier.Critical
+                                                             && m.Amount > critThreshold)
+                                                           || (m.Amount > nonCritThreshold));
                             }
                         }
 
@@ -776,6 +802,38 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             flagNoUpdate = false;
+        }
+
+        protected void customMobSelection_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            customMobSelection = sentBy.Checked;
+
+            mobsCombo.Enabled = !customMobSelection;
+            groupMobsOption.Enabled = !customMobSelection;
+            exclude0XPOption.Enabled = !customMobSelection;
+
+            editCustomMobFilter.Enabled = customMobSelection;
+
+            if (flagNoUpdate == false)
+            {
+                HandleDataset(null);
+            }
+
+            flagNoUpdate = false;
+        }
+
+        protected void editCustomMobFilter_Click(object sender, EventArgs e)
+        {
+            MobXPHandler.Instance.ShowCustomMobFilter();
+        }
+
+        protected override void OnCustomMobFilterChanged()
+        {
+            HandleDataset(null);
         }
 
         #endregion

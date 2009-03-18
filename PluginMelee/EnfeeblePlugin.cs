@@ -7,21 +7,33 @@ using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using WaywardGamers.KParser;
+using WaywardGamers.KParser.Interface;
+using WaywardGamers.KParser.Database;
 
 namespace WaywardGamers.KParser.Plugin
 {
     public class EnfeeblePlugin : BasePluginControl
     {
-        #region Constructor
+        #region Member Variables
         string debuffHeader = "Debuff              Used on                 # Times   # Successful   # No Effect   % Successful\n";
 
         bool flagNoUpdate = false;
         bool groupMobs = true;
         bool exclude0XPMobs = false;
+        bool customMobSelection = false;
+
         ToolStripComboBox categoryCombo = new ToolStripComboBox();
         ToolStripComboBox mobsCombo = new ToolStripComboBox();
-        ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
 
+        ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
+        ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
+        ToolStripMenuItem exclude0XPOption = new ToolStripMenuItem();
+        ToolStripMenuItem customMobSelectionOption = new ToolStripMenuItem();
+
+        ToolStripButton editCustomMobFilter = new ToolStripButton();
+        #endregion
+
+        #region Constructor
         public EnfeeblePlugin()
         {
             ToolStripLabel catLabel = new ToolStripLabel();
@@ -52,21 +64,35 @@ namespace WaywardGamers.KParser.Plugin
             optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
             optionsMenu.Text = "Options";
 
-            ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
             groupMobsOption.Text = "Group Mobs";
             groupMobsOption.CheckOnClick = true;
             groupMobsOption.Checked = true;
             groupMobsOption.Click += new EventHandler(groupMobs_Click);
             optionsMenu.DropDownItems.Add(groupMobsOption);
 
-            ToolStripMenuItem exclude0XPOption = new ToolStripMenuItem();
             exclude0XPOption.Text = "Exclude 0 XP Mobs";
             exclude0XPOption.CheckOnClick = true;
             exclude0XPOption.Checked = false;
             exclude0XPOption.Click += new EventHandler(exclude0XPMobs_Click);
             optionsMenu.DropDownItems.Add(exclude0XPOption);
 
+            customMobSelectionOption.Text = "Custom Mob Selection";
+            customMobSelectionOption.CheckOnClick = true;
+            customMobSelectionOption.Checked = false;
+            customMobSelectionOption.Click += new EventHandler(customMobSelection_Click);
+            optionsMenu.DropDownItems.Add(customMobSelectionOption);
+
             toolStrip.Items.Add(optionsMenu);
+
+            ToolStripSeparator aSeparator = new ToolStripSeparator();
+            toolStrip.Items.Add(aSeparator);
+
+            editCustomMobFilter.Text = "Edit Mob Filter";
+            editCustomMobFilter.Enabled = false;
+            editCustomMobFilter.Click += new EventHandler(editCustomMobFilter_Click);
+
+            toolStrip.Items.Add(editCustomMobFilter);
+
         }
         #endregion
 
@@ -130,8 +156,17 @@ namespace WaywardGamers.KParser.Plugin
         #region Processing sections
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
+            if (dataSet == null)
+                return;
+
             ResetTextBox();
-            MobFilter mobFilter = mobsCombo.CBGetMobFilter();
+
+            MobFilter mobFilter;
+            if (customMobSelection)
+                mobFilter = MobXPHandler.Instance.CustomMobFilter;
+            else
+                mobFilter = mobsCombo.CBGetMobFilter();
+
 
             #region LINQ group construction
 
@@ -379,6 +414,38 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             flagNoUpdate = false;
+        }
+
+        protected void customMobSelection_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            customMobSelection = sentBy.Checked;
+
+            mobsCombo.Enabled = !customMobSelection;
+            groupMobsOption.Enabled = !customMobSelection;
+            exclude0XPOption.Enabled = !customMobSelection;
+
+            editCustomMobFilter.Enabled = customMobSelection;
+
+            if (flagNoUpdate == false)
+            {
+                HandleDataset(null);
+            }
+
+            flagNoUpdate = false;
+        }
+
+        protected void editCustomMobFilter_Click(object sender, EventArgs e)
+        {
+            MobXPHandler.Instance.ShowCustomMobFilter();
+        }
+
+        protected override void OnCustomMobFilterChanged()
+        {
+            HandleDataset(null);
         }
 
         #endregion
