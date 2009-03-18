@@ -266,6 +266,9 @@ namespace WaywardGamers.KParser.Plugin
         #region Process display output
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
+            if (dataSet == null)
+                return;
+
             // For now, rebuild the entire page each time.
             ResetTextBox();
 
