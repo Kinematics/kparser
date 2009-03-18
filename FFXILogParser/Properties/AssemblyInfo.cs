@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Wayward Gamers")]
 [assembly: AssemblyProduct("KParser")]
-[assembly: AssemblyCopyright("2007-2008")]
+[assembly: AssemblyCopyright("Copyright © Wayward Gamers 2007-2009")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]		
 
@@ -56,4 +56,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDelaySign(false)]
 [assembly: AssemblyKeyFile("")]
 [assembly: AssemblyKeyName("")]
-[assembly: AssemblyFileVersionAttribute("1.3.2.1")]
+[assembly: AssemblyFileVersionAttribute("1.3.3.0")]
