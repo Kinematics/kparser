@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WaywardGamers.KParser.Plugin;
+using WaywardGamers.KParser.Interface;
 
 namespace WaywardGamers.KParser.Database
 {
@@ -46,6 +47,7 @@ namespace WaywardGamers.KParser.Database
         Dictionary<int, MobXPValues> mobFightsThatHaveNotEnded = new Dictionary<int, MobXPValues>();
 
         MobFilter mobFilter = new MobFilter();
+        CustomMobSelectionDlg customMobFilterDlg = new CustomMobSelectionDlg();
 
         public event EventHandler CustomMobFilterChanged;
         #endregion
@@ -64,6 +66,8 @@ namespace WaywardGamers.KParser.Database
             mobFightsThatEnded.Clear();
             mobFightsThatHaveNotEnded.Clear();
             mobFilter.CustomBattleIDs.Clear();
+
+            customMobFilterDlg.ResetMobsList();
         }
 
         public void Update()
@@ -74,124 +78,173 @@ namespace WaywardGamers.KParser.Database
             int difference;
 
 
-            using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
+            try
             {
-                // If we don't have any data, or nothing has changed, short-circuit and leave
-
-                if (dbAccess.Database.Battles.Count == 0)
-                    return;
-
-                var lastBattle = dbAccess.Database.Battles.Last();
-                if (lastBattle.DefaultBattle == true)
-                    return;
-
-                if ((mobFightsThatEnded.Count > 0) && (mobFightsThatHaveNotEnded.Count == 0))
+                using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
                 {
-                    MobXPValues lastDictionaryBattle = mobFightsThatEnded.Last().Value;
+                    // If we don't have any data, or nothing has changed, short-circuit and leave
 
-                    if (lastDictionaryBattle.BattleID == lastBattle.BattleID)
+                    if (dbAccess.Database.Battles.Count == 0)
                         return;
-                }
 
-                // Ok, we have potential new data
+                    var lastBattle = dbAccess.Database.Battles.Last();
+                    if (lastBattle.DefaultBattle == true)
+                        return;
 
-                // First update any incomplete data
-
-                if (mobFightsThatHaveNotEnded.Count > 0)
-                {
-                    List<int> clearedFights = new List<int>();
-
-                    foreach (var incompleteFight in mobFightsThatHaveNotEnded)
+                    if ((mobFightsThatEnded.Count > 0) && (mobFightsThatHaveNotEnded.Count == 0))
                     {
-                        var battle = dbAccess.Database.Battles.FindByBattleID(incompleteFight.Value.BattleID);
+                        MobXPValues lastDictionaryBattle = mobFightsThatEnded.Last().Value;
 
-                        if (battle.IsOver == true)
+                        if (lastDictionaryBattle.BattleID == lastBattle.BattleID)
+                            return;
+                    }
+
+                    // Ok, we have potential new data
+
+                    // First update any incomplete data
+
+                    if (mobFightsThatHaveNotEnded.Count > 0)
+                    {
+                        List<int> clearedFights = new List<int>();
+
+                        foreach (var incompleteFight in mobFightsThatHaveNotEnded)
                         {
-                            modified = true;
-                            modifiedCount++;
-                            clearedFights.Add(incompleteFight.Key);
+                            var battle = dbAccess.Database.Battles.FindByBattleID(incompleteFight.Value.BattleID);
 
-                            mobFightsThatEnded.Add(battle.BattleID, new MobXPValues()
+                            if (battle.IsOver == true)
                             {
-                                BattleID = battle.BattleID,
-                                Name = battle.CombatantsRowByEnemyCombatantRelation.CombatantName,
-                                XP = battle.ExperiencePoints,
-                                Chain = battle.ExperienceChain,
-                                BaseXP = XPWithoutChain(battle.ExperiencePoints, battle.ExperienceChain)
-                            });
+                                modified = true;
+                                modifiedCount++;
+                                clearedFights.Add(incompleteFight.Key);
 
-                            oneBattle = mobFightsThatEnded[battle.BattleID];
+                                mobFightsThatEnded.Add(battle.BattleID, new MobXPValues()
+                                {
+                                    BattleID = battle.BattleID,
+                                    Name = battle.CombatantsRowByEnemyCombatantRelation.CombatantName,
+                                    XP = battle.ExperiencePoints,
+                                    Chain = battle.ExperienceChain,
+                                    BaseXP = XPWithoutChain(battle.ExperiencePoints, battle.ExperienceChain)
+                                });
 
-                            if (completeMobFightList.ContainsKey(battle.BattleID))
-                                completeMobFightList.Remove(battle.BattleID);
+                                oneBattle = mobFightsThatEnded[battle.BattleID];
 
-                            completeMobFightList.Add(battle.BattleID, mobFightsThatEnded[battle.BattleID]);
+                                if (completeMobFightList.ContainsKey(battle.BattleID))
+                                    completeMobFightList.Remove(battle.BattleID);
+
+                                completeMobFightList.Add(battle.BattleID, mobFightsThatEnded[battle.BattleID]);
+                            }
+                        }
+
+                        foreach (var clearedFight in clearedFights)
+                            mobFightsThatHaveNotEnded.Remove(clearedFight);
+                    }
+
+                    // Next find any battles that we don't already have a record of
+
+                    var battles = from b in dbAccess.Database.Battles
+                                  where ((b.DefaultBattle == false) &&
+                                         (b.IsEnemyIDNull() == false) &&
+                                         ((EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.Mob))
+                                  select b;
+
+                    foreach (var battle in battles)
+                    {
+                        if ((mobFightsThatEnded.ContainsKey(battle.BattleID) == false) &&
+                            (mobFightsThatHaveNotEnded.ContainsKey(battle.BattleID) == false))
+                        {
+                            if (battle.IsOver == true)
+                            {
+                                modified = true;
+                                modifiedCount++;
+
+                                mobFightsThatEnded.Add(battle.BattleID, new MobXPValues()
+                                {
+                                    BattleID = battle.BattleID,
+                                    Name = battle.CombatantsRowByEnemyCombatantRelation.CombatantName,
+                                    XP = battle.ExperiencePoints,
+                                    Chain = battle.ExperienceChain,
+                                    BaseXP = XPWithoutChain(battle.ExperiencePoints, battle.ExperienceChain)
+                                });
+
+                                oneBattle = mobFightsThatEnded[battle.BattleID];
+
+                                completeMobFightList.Add(battle.BattleID, mobFightsThatEnded[battle.BattleID]);
+                            }
+                            else
+                            {
+                                mobFightsThatHaveNotEnded.Add(battle.BattleID, new MobXPValues()
+                                {
+                                    BattleID = battle.BattleID,
+                                    Name = battle.CombatantsRowByEnemyCombatantRelation.CombatantName,
+                                    XP = 0,
+                                    Chain = 0,
+                                    BaseXP = 0
+                                });
+
+                                completeMobFightList.Add(battle.BattleID, mobFightsThatHaveNotEnded[battle.BattleID]);
+                            }
                         }
                     }
 
-                    foreach (var clearedFight in clearedFights)
-                        mobFightsThatHaveNotEnded.Remove(clearedFight);
-                }
 
-                // Next find any battles that we don't already have a record of
-
-                var battles = from b in dbAccess.Database.Battles
-                              where ((b.DefaultBattle == false) &&
-                                     (b.IsEnemyIDNull() == false) &&
-                                     ((EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.Mob))
-                              select b;
-
-                foreach (var battle in battles)
-                {
-                    if ((mobFightsThatEnded.ContainsKey(battle.BattleID) == false) &&
-                        (mobFightsThatHaveNotEnded.ContainsKey(battle.BattleID) == false))
+                    // If only one new entry was added we only need to run the calculations
+                    // once.
+                    if ((modified == true) && (modifiedCount == 1))
                     {
-                        if (battle.IsOver == true)
+                        if (oneBattle.BaseXP != 0)
                         {
-                            modified = true;
-                            modifiedCount++;
-
-                            mobFightsThatEnded.Add(battle.BattleID, new MobXPValues()
+                            foreach (var fight in mobFightsThatEnded.Values)
                             {
-                                BattleID = battle.BattleID,
-                                Name = battle.CombatantsRowByEnemyCombatantRelation.CombatantName,
-                                XP = battle.ExperiencePoints,
-                                Chain = battle.ExperienceChain,
-                                BaseXP = XPWithoutChain(battle.ExperiencePoints, battle.ExperienceChain)
-                            });
+                                if (fight.BattleID != oneBattle.BattleID)
+                                {
+                                    difference = fight.BaseXP - oneBattle.BaseXP;
 
-                            oneBattle = mobFightsThatEnded[battle.BattleID];
+                                    if (difference != 0)
+                                    {
+                                        // get absolute value
+                                        if (difference < 0)
+                                            difference = difference * -1;
 
-                            completeMobFightList.Add(battle.BattleID, mobFightsThatEnded[battle.BattleID]);
+                                        if (difference <= 2)
+                                        {
+                                            if (fight.BaseXP > oneBattle.BaseXP)
+                                            {
+                                                fight.BaseXP = oneBattle.BaseXP;
+                                            }
+                                            else
+                                            {
+                                                oneBattle.BaseXP = fight.BaseXP;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
-                        else
-                        {
-                            mobFightsThatHaveNotEnded.Add(battle.BattleID, new MobXPValues()
-                            {
-                                BattleID = battle.BattleID,
-                                Name = battle.CombatantsRowByEnemyCombatantRelation.CombatantName,
-                                XP = 0,
-                                Chain = 0,
-                                BaseXP = 0
-                            });
 
-                            completeMobFightList.Add(battle.BattleID, mobFightsThatHaveNotEnded[battle.BattleID]);
-                        }
+                        return;
                     }
-                }
 
 
-                // If only one new entry was added we only need to run the calculations
-                // once.
-                if ((modified == true) && (modifiedCount == 1))
-                {
-                    if (oneBattle.BaseXP != 0)
+                    // If the main dictionary list has been modified, iterate over it
+                    // to recalculate min base xp values.
+
+                    if ((modified == true) && (mobFightsThatEnded.Count > 1))
                     {
-                        foreach (var fight in mobFightsThatEnded.Values)
+                        Dictionary<int, MobXPValues> remainingList = mobFightsThatEnded;
+
+                        var keyList = mobFightsThatEnded.Keys;
+                        var remainingKeys = keyList.Skip(0);
+
+                        foreach (var mainFightKey in keyList)
                         {
-                            if (fight.BattleID != oneBattle.BattleID)
+                            var mainFight = mobFightsThatEnded[mainFightKey];
+                            remainingKeys = remainingKeys.Skip(1);
+
+                            foreach (var fightID in remainingKeys)
                             {
-                                difference = fight.BaseXP - oneBattle.BaseXP;
+                                var checkFight = mobFightsThatEnded[fightID];
+
+                                difference = mainFight.BaseXP - checkFight.BaseXP;
 
                                 if (difference != 0)
                                 {
@@ -201,60 +254,14 @@ namespace WaywardGamers.KParser.Database
 
                                     if (difference <= 2)
                                     {
-                                        if (fight.BaseXP > oneBattle.BaseXP)
+                                        if (mainFight.BaseXP > checkFight.BaseXP)
                                         {
-                                            fight.BaseXP = oneBattle.BaseXP;
+                                            mainFight.BaseXP = checkFight.BaseXP;
                                         }
                                         else
                                         {
-                                            oneBattle.BaseXP = fight.BaseXP;
+                                            checkFight.BaseXP = mainFight.BaseXP;
                                         }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    return;
-                }
-
-
-                // If the main dictionary list has been modified, iterate over it
-                // to recalculate min base xp values.
-
-                if ((modified == true) && (mobFightsThatEnded.Count > 1))
-                {
-                    Dictionary<int, MobXPValues> remainingList = mobFightsThatEnded;
-
-                    var keyList = mobFightsThatEnded.Keys;
-                    var remainingKeys = keyList.Skip(0);
-
-                    foreach (var mainFightKey in keyList)
-                    {
-                        var mainFight = mobFightsThatEnded[mainFightKey];
-                        remainingKeys = remainingKeys.Skip(1);
-
-                        foreach (var fightID in remainingKeys)
-                        {
-                            var checkFight = mobFightsThatEnded[fightID];
-
-                            difference = mainFight.BaseXP - checkFight.BaseXP;
-
-                            if (difference != 0)
-                            {
-                                // get absolute value
-                                if (difference < 0)
-                                    difference = difference * -1;
-
-                                if (difference <= 2)
-                                {
-                                    if (mainFight.BaseXP > checkFight.BaseXP)
-                                    {
-                                        mainFight.BaseXP = checkFight.BaseXP;
-                                    }
-                                    else
-                                    {
-                                        checkFight.BaseXP = mainFight.BaseXP;
                                     }
                                 }
                             }
@@ -262,6 +269,18 @@ namespace WaywardGamers.KParser.Database
                     }
                 }
             }
+            finally
+            {
+                customMobFilterDlg.UpdateMobsList();
+            }
+        }
+
+        public void ShowCustomMobFilter()
+        {
+            if (customMobFilterDlg.Visible)
+                customMobFilterDlg.Focus();
+            else
+                customMobFilterDlg.Show();
         }
 
         public void OnCustomMobFilterWasChanged()
