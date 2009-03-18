@@ -7,6 +7,7 @@ using System.Data;
 using System.Drawing;
 using WaywardGamers.KParser;
 using System.Windows.Forms;
+using WaywardGamers.KParser.Database;
 
 namespace WaywardGamers.KParser.Plugin
 {
@@ -16,10 +17,18 @@ namespace WaywardGamers.KParser.Plugin
         bool flagNoUpdate;
         bool groupMobs = false;
         bool exclude0XPMobs = false;
+        bool customMobSelection = false;
         bool showDetails = false;
+
         ToolStripComboBox playersCombo = new ToolStripComboBox();
         ToolStripComboBox mobsCombo = new ToolStripComboBox();
+
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
+        ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
+        ToolStripMenuItem exclude0XPOption = new ToolStripMenuItem();
+        ToolStripMenuItem customMobSelectionOption = new ToolStripMenuItem();
+
+        ToolStripButton editCustomMobFilter = new ToolStripButton();
 
         public OffenseFrequencyDataPlugin()
         {
@@ -51,20 +60,28 @@ namespace WaywardGamers.KParser.Plugin
 
             optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
             optionsMenu.Text = "Options";
+            optionsMenu.DropDownOpening += new EventHandler(optionsMenu_DropDownOpening);
 
-            ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
             groupMobsOption.Text = "Group Mobs";
             groupMobsOption.CheckOnClick = true;
             groupMobsOption.Checked = false;
             groupMobsOption.Click += new EventHandler(groupMobs_Click);
             optionsMenu.DropDownItems.Add(groupMobsOption);
 
-            ToolStripMenuItem exclude0XPOption = new ToolStripMenuItem();
             exclude0XPOption.Text = "Exclude 0 XP Mobs";
             exclude0XPOption.CheckOnClick = true;
             exclude0XPOption.Checked = false;
             exclude0XPOption.Click += new EventHandler(exclude0XPMobs_Click);
             optionsMenu.DropDownItems.Add(exclude0XPOption);
+
+            customMobSelectionOption.Text = "Custom Mob Selection";
+            customMobSelectionOption.CheckOnClick = true;
+            customMobSelectionOption.Checked = false;
+            customMobSelectionOption.Click += new EventHandler(customMobSelection_Click);
+            optionsMenu.DropDownItems.Add(customMobSelectionOption);
+
+            ToolStripSeparator bSeparator = new ToolStripSeparator();
+            optionsMenu.DropDownItems.Add(bSeparator);
 
             ToolStripMenuItem showDetailOption = new ToolStripMenuItem();
             showDetailOption.Text = "Show Detail";
@@ -74,6 +91,16 @@ namespace WaywardGamers.KParser.Plugin
             optionsMenu.DropDownItems.Add(showDetailOption);
 
             toolStrip.Items.Add(optionsMenu);
+
+            ToolStripSeparator aSeparator = new ToolStripSeparator();
+            toolStrip.Items.Add(aSeparator);
+
+            editCustomMobFilter.Text = "Edit Mob Filter";
+            editCustomMobFilter.Enabled = false;
+            editCustomMobFilter.Click += new EventHandler(editCustomMobFilter_Click);
+
+            toolStrip.Items.Add(editCustomMobFilter);
+
         }
         #endregion
 
@@ -112,7 +139,7 @@ namespace WaywardGamers.KParser.Plugin
                 currentlySelectedPlayer = playersCombo.CBSelectedItem();
 
             if ((e.DatasetChanges.Combatants != null) &&
-                (e.DatasetChanges.Combatants.Count > 0))
+                (e.DatasetChanges.Combatants.Any(c => c.RowState == DataRowState.Added)))
             {
                 UpdatePlayerList();
                 changesFound = true;
@@ -123,7 +150,8 @@ namespace WaywardGamers.KParser.Plugin
 
             // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
             if ((e.DatasetChanges.Battles != null) &&
-                (e.DatasetChanges.Battles.Count > 0))
+                (e.DatasetChanges.Battles.Any(
+                 b => b.RowState == DataRowState.Added || b.RowState == DataRowState.Modified)))
             {
                 UpdateMobList(true);
                 changesFound = true;
@@ -182,7 +210,12 @@ namespace WaywardGamers.KParser.Plugin
 
 
             string selectedPlayer = playersCombo.CBSelectedItem();
-            MobFilter mobFilter = mobsCombo.CBGetMobFilter();
+
+            MobFilter mobFilter;
+            if ((customMobSelection == true) && (Monitoring.Monitor.Instance.IsRunning == false))
+                mobFilter = MobXPHandler.Instance.CustomMobFilter;
+            else
+                mobFilter = mobsCombo.CBGetMobFilter();
 
             List<string> playerList = new List<string>();
 
@@ -650,6 +683,45 @@ namespace WaywardGamers.KParser.Plugin
 
             flagNoUpdate = false;
         }
+
+        void optionsMenu_DropDownOpening(object sender, EventArgs e)
+        {
+            groupMobsOption.Enabled = !Monitoring.Monitor.Instance.IsRunning & !customMobSelectionOption.Checked;
+            customMobSelectionOption.Enabled = !Monitoring.Monitor.Instance.IsRunning;
+        }
+
+        protected void customMobSelection_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            customMobSelection = sentBy.Checked;
+
+            mobsCombo.Enabled = !customMobSelection;
+            groupMobsOption.Enabled = !customMobSelection;
+            exclude0XPOption.Enabled = !customMobSelection;
+
+            editCustomMobFilter.Enabled = customMobSelection;
+
+            if (flagNoUpdate == false)
+            {
+                HandleDataset(null);
+            }
+
+            flagNoUpdate = false;
+        }
+
+        protected void editCustomMobFilter_Click(object sender, EventArgs e)
+        {
+            MobXPHandler.Instance.ShowCustomMobFilter();
+        }
+
+        protected override void OnCustomMobFilterChanged()
+        {
+            HandleDataset(null);
+        }
+
         #endregion
 
     }
