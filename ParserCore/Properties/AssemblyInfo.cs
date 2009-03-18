@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Wayward Gamers")]
 [assembly: AssemblyProduct("ParserCore")]
-[assembly: AssemblyCopyright("Copyright © Wayward Gamers 2007-2008")]
+[assembly: AssemblyCopyright("Copyright © Wayward Gamers 2007-2009")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -33,6 +33,6 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.3")]
-[assembly: AssemblyFileVersion("1.3.2.1")]
+[assembly: AssemblyFileVersion("1.3.3.0")]
 
 [assembly: InternalsVisibleTo("UnitTests")]
