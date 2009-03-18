@@ -25,7 +25,7 @@ namespace WaywardGamers.KParser.Plugin
         void NotifyOfUpdate();
         void Reset();
 
-        void CustomFilterChanged(object sender, EventArgs e);
+        void CustomMobFilterChanged(object sender, EventArgs e);
 
         bool IsDebug { get; }
     }
