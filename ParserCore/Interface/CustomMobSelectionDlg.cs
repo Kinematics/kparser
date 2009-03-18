@@ -14,7 +14,7 @@ namespace WaywardGamers.KParser.Plugin
     public partial class CustomMobSelectionDlg : Form
     {
         #region Constructor
-        //static CustomMobSelectionDlg singleReference = null;
+        bool checkingMobList = false;
 
         public CustomMobSelectionDlg()
         {
@@ -36,6 +36,9 @@ namespace WaywardGamers.KParser.Plugin
 
         private void mobList_ItemCheck(object sender, ItemCheckEventArgs e)
         {
+            if (checkingMobList)
+                return;
+
             MobFilter mobFilter = MobXPHandler.Instance.CustomMobFilter;
 
             if (e.NewValue == CheckState.Checked)
@@ -54,9 +57,18 @@ namespace WaywardGamers.KParser.Plugin
 
         private void selectAllButton_Click(object sender, EventArgs e)
         {
-            for (int i = 0; i < mobList.Items.Count; i++)
+            try
             {
-                mobList.SetItemChecked(i, true);
+                checkingMobList = true;
+
+                for (int i = 0; i < mobList.Items.Count; i++)
+                {
+                    mobList.SetItemChecked(i, true);
+                }
+            }
+            finally
+            {
+                checkingMobList = false;
             }
 
             UpdateFilter();
@@ -64,9 +76,18 @@ namespace WaywardGamers.KParser.Plugin
 
         private void invertSelectionButton_Click(object sender, EventArgs e)
         {
-            for (int i = 0; i < mobList.Items.Count; i++)
+            try
             {
-                mobList.SetItemChecked(i, !mobList.GetItemChecked(i));
+                checkingMobList = true;
+
+                for (int i = 0; i < mobList.Items.Count; i++)
+                {
+                    mobList.SetItemChecked(i, !mobList.GetItemChecked(i));
+                }
+            }
+            finally
+            {
+                checkingMobList = false;
             }
 
             UpdateFilter();
@@ -74,9 +95,18 @@ namespace WaywardGamers.KParser.Plugin
 
         private void selectNoneButton_Click(object sender, EventArgs e)
         {
-            for (int i = 0; i < mobList.Items.Count; i++)
+            try
             {
-                mobList.SetItemChecked(i, false);
+                checkingMobList = true;
+
+                for (int i = 0; i < mobList.Items.Count; i++)
+                {
+                    mobList.SetItemChecked(i, false);
+                }
+            }
+            finally
+            {
+                checkingMobList = false;
             }
 
             UpdateFilter();
@@ -86,10 +116,19 @@ namespace WaywardGamers.KParser.Plugin
         {
             var mobXPVals = MobXPHandler.Instance.CompleteMobList;
 
-            for (int i = 0; i < mobList.Items.Count; i++)
+            try
             {
-                if (mobXPVals.ElementAt(i).BaseXP == 0)
-                    mobList.SetItemChecked(i, false);
+                checkingMobList = true;
+
+                for (int i = 0; i < mobList.Items.Count; i++)
+                {
+                    if (mobXPVals.ElementAt(i).BaseXP == 0)
+                        mobList.SetItemChecked(i, false);
+                }
+            }
+            finally
+            {
+                checkingMobList = false;
             }
 
             UpdateFilter();
@@ -132,10 +171,19 @@ namespace WaywardGamers.KParser.Plugin
             {
                 var mobXPVals = MobXPHandler.Instance.CompleteMobList;
 
-                for (int i = 0; i < mobList.Items.Count; i++)
+                try
                 {
-                    if (mobXPVals.ElementAt(i).Name == mob.Name)
-                        mobList.SetItemChecked(i, true);
+                    checkingMobList = true;
+
+                    for (int i = 0; i < mobList.Items.Count; i++)
+                    {
+                        if (mobXPVals.ElementAt(i).Name == mob.Name)
+                            mobList.SetItemChecked(i, true);
+                    }
+                }
+                finally
+                {
+                    checkingMobList = false;
                 }
 
                 UpdateFilter();
@@ -150,10 +198,19 @@ namespace WaywardGamers.KParser.Plugin
             {
                 var mobXPVals = MobXPHandler.Instance.CompleteMobList;
 
-                for (int i = 0; i < mobList.Items.Count; i++)
+                try
                 {
-                    if (mobXPVals.ElementAt(i).Name == mob.Name)
-                        mobList.SetItemChecked(i, false);
+                    checkingMobList = true;
+
+                    for (int i = 0; i < mobList.Items.Count; i++)
+                    {
+                        if (mobXPVals.ElementAt(i).Name == mob.Name)
+                            mobList.SetItemChecked(i, false);
+                    }
+                }
+                finally
+                {
+                    checkingMobList = false;
                 }
 
                 UpdateFilter();
@@ -168,12 +225,21 @@ namespace WaywardGamers.KParser.Plugin
             {
                 var mobXPVals = MobXPHandler.Instance.CompleteMobList;
 
-                for (int i = 0; i < mobList.Items.Count; i++)
+                try
                 {
-                    MobXPValues mob = mobXPVals.ElementAt(i);
+                    checkingMobList = true;
 
-                    if ((mob.Name == selectedMob.Name) && (mob.BaseXP == selectedMob.BaseXP))
-                        mobList.SetItemChecked(i, true);
+                    for (int i = 0; i < mobList.Items.Count; i++)
+                    {
+                        MobXPValues mob = mobXPVals.ElementAt(i);
+
+                        if ((mob.Name == selectedMob.Name) && (mob.BaseXP == selectedMob.BaseXP))
+                            mobList.SetItemChecked(i, true);
+                    }
+                }
+                finally
+                {
+                    checkingMobList = false;
                 }
 
                 UpdateFilter();
@@ -188,12 +254,21 @@ namespace WaywardGamers.KParser.Plugin
             {
                 var mobXPVals = MobXPHandler.Instance.CompleteMobList;
 
-                for (int i = 0; i < mobList.Items.Count; i++)
+                try
                 {
-                    MobXPValues mob = mobXPVals.ElementAt(i);
+                    checkingMobList = true;
 
-                    if ((mob.Name == selectedMob.Name) && (mob.BaseXP == selectedMob.BaseXP))
-                        mobList.SetItemChecked(i, false);
+                    for (int i = 0; i < mobList.Items.Count; i++)
+                    {
+                        MobXPValues mob = mobXPVals.ElementAt(i);
+
+                        if ((mob.Name == selectedMob.Name) && (mob.BaseXP == selectedMob.BaseXP))
+                            mobList.SetItemChecked(i, false);
+                    }
+                }
+                finally
+                {
+                    checkingMobList = false;
                 }
 
                 UpdateFilter();
@@ -206,9 +281,18 @@ namespace WaywardGamers.KParser.Plugin
 
             if (currentSelectedIndex >= 0)
             {
-                for (int i = currentSelectedIndex+1; i < mobList.Items.Count; i++)
+                try
                 {
-                    mobList.SetItemChecked(i, true);
+                    checkingMobList = true;
+
+                    for (int i = currentSelectedIndex + 1; i < mobList.Items.Count; i++)
+                    {
+                        mobList.SetItemChecked(i, true);
+                    }
+                }
+                finally
+                {
+                    checkingMobList = false;
                 }
 
                 UpdateFilter();
@@ -221,11 +305,19 @@ namespace WaywardGamers.KParser.Plugin
 
             if (currentSelectedIndex >= 0)
             {
-                for (int i = currentSelectedIndex + 1; i < mobList.Items.Count; i++)
+                try
                 {
-                    mobList.SetItemChecked(i, false);
-                }
+                    checkingMobList = true;
 
+                    for (int i = currentSelectedIndex + 1; i < mobList.Items.Count; i++)
+                    {
+                        mobList.SetItemChecked(i, false);
+                    }
+                }
+                finally
+                {
+                    checkingMobList = false;
+                }
                 UpdateFilter();
             }
         }
