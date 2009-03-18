@@ -32,7 +32,7 @@ namespace WaywardGamers.KParser.Plugin
             buFont = new Font(FontFamily.GenericMonospace, 9.00f, FontStyle.Bold | FontStyle.Underline);
 
             IsActive = false;
-            MobXPHandler.Instance.CustomMobFilterChanged += this.CustomFilterChanged;
+            MobXPHandler.Instance.CustomMobFilterChanged += this.CustomMobFilterChanged;
         }
         #endregion
 
@@ -83,15 +83,15 @@ namespace WaywardGamers.KParser.Plugin
             HandleDataset(null);
         }
 
-        public virtual void CustomFilterChanged(object sender, EventArgs e)
+        public virtual void CustomMobFilterChanged(object sender, EventArgs e)
         {
             if (IsActive)
             {
-                ImplementCustomFilterChanged();
+                OnCustomMobFilterChanged();
             }
         }
 
-        protected virtual void ImplementCustomFilterChanged()
+        protected virtual void OnCustomMobFilterChanged()
         {
         }
 
