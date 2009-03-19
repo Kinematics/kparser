@@ -78,8 +78,11 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
+
+            int i = playersCombo.CBSelectedIndex();
+
             if ((e.DatasetChanges.Combatants != null) &&
-                (e.DatasetChanges.Combatants.Count > 0))
+                (e.DatasetChanges.Combatants.Any(c => c.RowState == DataRowState.Added)))
             {
                 UpdatePlayerList();
 
@@ -93,7 +96,7 @@ namespace WaywardGamers.KParser.Plugin
             // Check for new mobs being fought.  If any exist, update the Mob Group dropdown list.
             if (e.DatasetChanges.Battles != null)
             {
-                if (e.DatasetChanges.Battles.Count > 0)
+                if (e.DatasetChanges.Battles.Any(b => b.RowState == DataRowState.Added))
                 {
                     int selectedIndex = mobsCombo.CBSelectedIndex();
 
