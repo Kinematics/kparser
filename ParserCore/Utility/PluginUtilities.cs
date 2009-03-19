@@ -98,7 +98,7 @@ namespace WaywardGamers.KParser.Plugin
         /// </summary>
         /// <param name="combo"></param>
         /// <param name="index">The new index value to select.  A value of -1 selects
-        /// the last entry in the list.</param>
+        /// the last entry in the list, rather than unselecting any entry.</param>
         public static void CBSelectIndex(this ToolStripComboBox combo, int index)
         {
             if (combo.ComboBox.InvokeRequired)
@@ -108,14 +108,16 @@ namespace WaywardGamers.KParser.Plugin
                 return;
             }
 
+            if (combo.Items.Count == 0)
+                return;
+
             if (index < 0)
                 index = combo.Items.Count - 1;
 
-            if (index > combo.Items.Count)
+            if (index >= combo.Items.Count)
                 index = combo.Items.Count - 1;
 
-            if (index >= 0)
-                combo.SelectedIndex = index;
+            combo.SelectedIndex = index;
         }
 
         /// <summary>
@@ -149,7 +151,7 @@ namespace WaywardGamers.KParser.Plugin
             if (combo.ComboBox.InvokeRequired)
             {
                 Func<ToolStripComboBox, int> thisFunc = CBSelectedIndex;
-                return (int)combo.ComboBox.Invoke(thisFunc, new object[] { combo });
+                return (int)combo.Owner.Invoke(thisFunc, new object[] { combo });
             }
 
             return combo.SelectedIndex;
