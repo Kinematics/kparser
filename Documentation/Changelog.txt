@@ -1,6 +1,10 @@
 KParser Change Log
 
 
+1.3.4 (March 19, 2009)
+- Fix bug in combo box selection/update with the DPM plugin.
+
+
 1.3.3 (March 18, 2009)
 + Add new methodology to provide custom filtering of mobs for most plugins.
 
