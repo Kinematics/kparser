@@ -78,9 +78,6 @@ namespace WaywardGamers.KParser.Plugin
 
         public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
-
-            int i = playersCombo.CBSelectedIndex();
-
             if ((e.DatasetChanges.Combatants != null) &&
                 (e.DatasetChanges.Combatants.Any(c => c.RowState == DataRowState.Added)))
             {
@@ -110,7 +107,7 @@ namespace WaywardGamers.KParser.Plugin
                     if (selectedIndex < 1)
                     {
                         flagNoUpdate = true;
-                        mobsCombo.CBSelectIndex(mobBattleNumber);
+                        mobsCombo.CBSelectIndex(mobBattleNumber-1);
                     }
                 }
             }
