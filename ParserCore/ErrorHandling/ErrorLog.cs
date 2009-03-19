@@ -110,6 +110,11 @@ namespace WaywardGamers.KParser
 			}
 		}
 
+        /// <summary>
+        /// Log a parsed Message to the error log.
+        /// </summary>
+        /// <param name="label">Label for the logged error/message.</param>
+        /// <param name="message">Message to be written to the log.</param>
         internal void Log(string label, Message message)
         {
             programSettings.Reload();
@@ -133,20 +138,25 @@ namespace WaywardGamers.KParser
         }
 
         /// <summary>
-		/// Shortcut versions for the call to log exceptions.
-		/// </summary>
-		/// <param name="e">The exception to be logged.</param>
-		public void Log(Exception e)
-		{
-			Log(e, "");
-		}
-
+        /// Log a parsed MesssageLine to the error log with an exception.
+        /// </summary>
+        /// <param name="e">Exception that was thrown.</param>
+        /// <param name="messageLine">MessageLine to be logged.</param>
         internal void Log(Exception e, MessageLine messageLine)
         {
             if (messageLine == null)
                 Log(e, "");
             else
                 Log(e, messageLine.OriginalText);
+        }
+
+        /// <summary>
+        /// Shortcut versions for the call to log exceptions.
+        /// </summary>
+        /// <param name="e">The exception to be logged.</param>
+        public void Log(Exception e)
+        {
+            Log(e, "");
         }
 
         /// <summary>
@@ -164,6 +174,16 @@ namespace WaywardGamers.KParser
                     WriteHeader(sw, e.GetType().ToString(), message, ErrorLevel.Error);
                     sw.Write(e.ToString());
                     sw.WriteLine();
+
+                    Exception subException = e.InnerException;
+                    while (subException != null)
+                    {
+                        sw.WriteLine("Contained Exception:");
+                        sw.Write(subException.ToString());
+                        sw.WriteLine();
+                        subException = e.InnerException;
+                    }
+
                     WriteFooter(sw);
                 }
 			}
