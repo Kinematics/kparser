@@ -180,6 +180,7 @@
     <Compile Include="Forms\Options.Designer.cs">
       <DependentUpon>Options.cs</DependentUpon>
     </Compile>
+    <Compile Include="Properties\WindowSettings.cs" />
     <Compile Include="Properties\WindowSettings.Designer.cs">
       <DependentUpon>WindowSettings.settings</DependentUpon>
       <AutoGen>True</AutoGen>
