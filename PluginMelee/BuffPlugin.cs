@@ -18,7 +18,7 @@ namespace WaywardGamers.KParser.Plugin
         ToolStripLabel catLabel = new ToolStripLabel();
         ToolStripComboBox categoryCombo = new ToolStripComboBox();
 
-        public EnhancePlugin()
+        public BuffsPlugin()
         {
             catLabel.Text = "Category:";
             toolStrip.Items.Add(catLabel);
