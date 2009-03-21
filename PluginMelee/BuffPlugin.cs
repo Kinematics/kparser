@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class EnhancePlugin : BasePluginControl
+    public class BuffsPlugin : BasePluginControl
     {
         #region Constructor
         bool processBuffsUsed;
