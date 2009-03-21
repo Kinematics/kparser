@@ -34,7 +34,7 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Constructor
-        public EnfeeblePlugin()
+        public DebuffPlugin()
         {
             ToolStripLabel catLabel = new ToolStripLabel();
             catLabel.Text = "Category:";
