@@ -349,7 +349,7 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var mob in mobXPVals)
             {
-                mobString = string.Format("{0}  ({1})", mob.Name, mob.BaseXP);
+                mobString = string.Format("{2} - {0}  ({1})", mob.Name, mob.BaseXP, mob.BattleID);
                 mobList.Items.Add(mobString);
             }
 
