@@ -72,10 +72,13 @@
     <Compile Include="DPMPlugin.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="EnfeeblePlugin.cs">
+    <Compile Include="DebuffPlugin.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="EnhancePlugin.cs">
+    <Compile Include="BuffPlugin.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="EnfeeblePlugin.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ExtraAttacksPlugin.cs">
