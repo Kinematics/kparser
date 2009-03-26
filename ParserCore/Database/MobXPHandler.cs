@@ -271,7 +271,8 @@ namespace WaywardGamers.KParser.Database
             }
             finally
             {
-                customMobFilterDlg.UpdateMobsList();
+                if (modified == true)
+                    customMobFilterDlg.UpdateMobsList();
             }
         }
 
