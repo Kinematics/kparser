@@ -196,6 +196,24 @@ namespace WaywardGamers.KParser
             "Savul-Kivul", "Sufhi Uchnouma", "Vinja-Kanja", "Tsuim Nhomango", "Yarga-Umiga",
             "Yoli Kohlpaka"
         };
+    }
 
+    public static class JobAbilities
+    {
+        public static readonly List<string> CharmJAs = new List<string>()
+        {
+            "Charm"
+        };
+
+        public static readonly List<string> StealJAs = new List<string>()
+        {
+            "Steal", "Mug"
+        };
+
+        public static readonly List<string> EnfeebleJAs = new List<string>()
+        {
+            "Box Step", "Quickstep", "Violent Flourish", "Desperate Flourish",
+            "Light Shot", "Dark Shot"
+        };
     }
 }
