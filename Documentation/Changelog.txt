@@ -1,6 +1,13 @@
 KParser Change Log
 
 
+1.3.5 (March 27, 2009)
+- Fix annoying problem of losing preferences when updating the parser.  Old settings are now carried over when using a new version of the program.
+- Fix multiple redraws when Group flag is changed.
+* Custom mob filter shows fight number to match the dropdown listing.
+- Dancer Steps and Flourishes are properly categorized as Enfeebles rather than ordinary damaging abilities.
+
+
 1.3.4 (March 19, 2009)
 - Fix bug in combo box selection/update with the DPM plugin.
 
