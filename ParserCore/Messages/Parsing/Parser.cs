@@ -1547,15 +1547,19 @@ namespace WaywardGamers.KParser.Parsing
                 combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
-                    if (Weaponskills.NamesList.Contains(combatMatch.Groups[ParseFields.Ability].Value))
-                        combatDetails.ActionType = ActionType.Weaponskill;
-                    else
-                        combatDetails.ActionType = ActionType.Ability;
                     combatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                     combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
 
-                    if ((combatDetails.ActionName == "Steal") || (combatDetails.ActionName == "Mug"))
+                    if (Weaponskills.NamesList.Contains(combatDetails.ActionName))
+                        combatDetails.ActionType = ActionType.Weaponskill;
+                    else
+                        combatDetails.ActionType = ActionType.Ability;
+
+                    if (JobAbilities.StealJAs.Contains(combatDetails.ActionName))
                         message.EventDetails.EventMessageType = EventMessageType.Steal;
+
+                    if (JobAbilities.EnfeebleJAs.Contains(combatDetails.ActionName))
+                        combatDetails.HarmType = HarmType.Enfeeble;
                 }
             }
 
@@ -1751,10 +1755,11 @@ namespace WaywardGamers.KParser.Parsing
                         combatDetails.ActionType = ActionType.Ability;
 
                     // Make corrections for certain special actions that are really enfeebles
-                    if (combatDetails.ActionName == "Charm")
+                    if (JobAbilities.CharmJAs.Contains(combatDetails.ActionName) ||
+                        JobAbilities.EnfeebleJAs.Contains(combatDetails.ActionName))
                         combatDetails.HarmType = HarmType.Enfeeble;
 
-                    if ((combatDetails.ActionName == "Steal") || (combatDetails.ActionName == "Mug"))
+                    if (JobAbilities.StealJAs.Contains(combatDetails.ActionName))
                         message.EventDetails.EventMessageType = EventMessageType.Steal;
                 }
             }
@@ -2201,7 +2206,7 @@ namespace WaywardGamers.KParser.Parsing
                     target.HarmType = msgCombatDetails.HarmType;
                     target.AidType = msgCombatDetails.AidType;
 
-                    if (msgCombatDetails.ActionName == "Charm")
+                    if (JobAbilities.CharmJAs.Contains(msgCombatDetails.ActionName))
                     {
                         // Only for players.  Mobs use other ability names to charm players.
                         // Mob type has been charmed.  Add to the entity lookup list as a pet.
@@ -2792,7 +2797,12 @@ namespace WaywardGamers.KParser.Parsing
                                 msgCombatDetails.HarmType = HarmType.Damage;
                             }
                             else
+                            {
                                 msgCombatDetails.ActionType = ActionType.Ability;
+
+                                if (JobAbilities.EnfeebleJAs.Contains(msgCombatDetails.ActionName))
+                                    msgCombatDetails.HarmType = HarmType.Enfeeble;
+                            }
                         }
 
                         msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
@@ -2806,7 +2816,7 @@ namespace WaywardGamers.KParser.Parsing
 
                 if (combatMatch.Success == false)
                 {
-                    combatMatch = ParseExpressions.MissAbility2.Match(currentMessageText);
+                    combatMatch = ParseExpressions.MissAbilityNoTarget.Match(currentMessageText);
                     if (combatMatch.Success == true)
                     {
                         msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
