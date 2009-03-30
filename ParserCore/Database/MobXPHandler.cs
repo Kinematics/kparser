@@ -195,7 +195,8 @@ namespace WaywardGamers.KParser.Database
                         {
                             foreach (var fight in mobFightsThatEnded.Values)
                             {
-                                if (fight.BattleID != oneBattle.BattleID)
+                                if ((fight.BattleID != oneBattle.BattleID) &&
+                                    (fight.Chain > 0))
                                 {
                                     difference = fight.BaseXP - oneBattle.BaseXP;
 
@@ -254,11 +255,12 @@ namespace WaywardGamers.KParser.Database
 
                                     if (difference <= 2)
                                     {
-                                        if (mainFight.BaseXP > checkFight.BaseXP)
+                                        if ((mainFight.BaseXP > checkFight.BaseXP) &&
+                                            (mainFight.Chain > 0))
                                         {
                                             mainFight.BaseXP = checkFight.BaseXP;
                                         }
-                                        else
+                                        else if (checkFight.Chain > 0)
                                         {
                                             checkFight.BaseXP = mainFight.BaseXP;
                                         }
