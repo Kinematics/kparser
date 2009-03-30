@@ -66,7 +66,7 @@ namespace WaywardGamers.KParser.Plugin
             if (fights.Count() == 0)
                 return;
 
-            string fightHeader = "Fight #   Enemy                   Killed?   Killed By           Start Time   End Time   Fight Length   Exp\n";
+            string fightHeader = "Fight #   Enemy                   Killed?   Killed By           Start Time   End Time   Fight Length   Exp   Chain\n";
 
             strModList.Add(new StringMods
             {
@@ -109,10 +109,13 @@ namespace WaywardGamers.KParser.Plugin
                 else
                     enemy = fight.CombatantsRowByEnemyCombatantRelation.CombatantName;
                 
-                sb.AppendFormat("{0,-10}{1,-24}{2,-10}{3,-20}{4,10}{5,11}{6,15}{7,6}\n",
+                sb.AppendFormat("{0,-10}{1,-24}{2,-10}{3,-20}{4,10}{5,11}{6,15}{7,6}{8,8}\n",
                     fightNum, enemy,
-                    fight.Killed, killer, fight.StartTime.ToLocalTime().ToShortTimeString(),
-                    fight.EndTime.ToLocalTime().ToShortTimeString(), fightLengthString, fight.ExperiencePoints);
+                    fight.Killed, killer,
+                    fight.StartTime.ToLocalTime().ToShortTimeString(),
+                    fight.EndTime.ToLocalTime().ToShortTimeString(),
+                    fightLengthString,
+                    fight.ExperiencePoints, fight.ExperienceChain);
 
             }
 
