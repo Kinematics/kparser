@@ -1305,7 +1305,47 @@ namespace WaywardGamers.KParser.Parsing
             Match combatMatch = null;
             CombatDetails msgCombatDetails = message.EventDetails.CombatDetails;
             TargetDetails target = null;
-         
+
+            // Failed enfeebles or enhancements.  IE: <spell> had no effect.
+            combatMatch = ParseExpressions.NoEffect.Match(message.CurrentMessageText);
+            if (combatMatch.Success == true)
+            {
+                msgCombatDetails.ActionType = ActionType.Spell;
+                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
+                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                target.FailedActionType = FailedActionType.NoEffect;
+                if (msgCombatDetails.ActorEntityType == target.EntityType)
+                {
+                    msgCombatDetails.InteractionType = InteractionType.Aid;
+
+                    if ((msgCombatDetails.ActionName == SpellNames.Erase) ||
+                        (msgCombatDetails.ActionName == SpellNames.HealWaltz) ||
+                        (msgCombatDetails.ActionName.EndsWith(SpellNames.RemoveStatus)))
+                        target.AidType = AidType.RemoveStatus;
+                    else
+                        target.AidType = AidType.Enhance;
+
+                    target.HarmType = HarmType.None;
+                }
+                else
+                {
+                    msgCombatDetails.InteractionType = InteractionType.Harm;
+
+                    if ((msgCombatDetails.ActionName == SpellNames.Dispel) ||
+                        (msgCombatDetails.ActionName == SpellNames.Finale))
+                        target.HarmType = HarmType.Dispel;
+                    else
+                        target.HarmType = HarmType.Enfeeble;
+
+                    target.AidType = AidType.None;
+                }
+
+                msgCombatDetails.SuccessLevel = SuccessType.Failed;
+                message.SetParseSuccess(true);
+                return;
+            }
+
             // Prepping spell or ability of unknown type
 
             combatMatch = ParseExpressions.PrepSpellOn.Match(message.CurrentMessageText);
@@ -1403,6 +1443,7 @@ namespace WaywardGamers.KParser.Parsing
                         }
                         break;
                 }
+
 
                 msgCombatDetails.ActionType = ActionType.Ability;
 
@@ -2232,40 +2273,44 @@ namespace WaywardGamers.KParser.Parsing
                     return;
                 }
 
-                // Failed enfeebles.  IE: <spell> had no effect.
-                combatMatch = ParseExpressions.NoEffect.Match(currentMessageText);
-                if (combatMatch.Success == true)
-                {
-                    msgCombatDetails.ActionType = ActionType.Spell;
-                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                    target.FailedActionType = FailedActionType.NoEffect;
-                    if (msgCombatDetails.ActorEntityType == target.EntityType)
-                    {
-                        if ((msgCombatDetails.ActionName == SpellNames.Erase) ||
-                            (msgCombatDetails.ActionName == SpellNames.HealWaltz) ||
-                            (msgCombatDetails.ActionName.EndsWith(SpellNames.RemoveStatus)))
-                            target.AidType = AidType.RemoveStatus;
-                        else
-                            target.AidType = AidType.Enhance;
+                // Failed enfeebles or enhancements.  IE: <spell> had no effect.
+                //combatMatch = ParseExpressions.NoEffect.Match(currentMessageText);
+                //if (combatMatch.Success == true)
+                //{
+                //    msgCombatDetails.ActionType = ActionType.Spell;
+                //    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                //    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
+                //    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                //    target.FailedActionType = FailedActionType.NoEffect;
+                //    if (msgCombatDetails.ActorEntityType == target.EntityType)
+                //    {
+                //        msgCombatDetails.InteractionType = InteractionType.Aid;
 
-                        target.HarmType = HarmType.None;
-                    }
-                    else
-                    {
-                        if ((msgCombatDetails.ActionName == SpellNames.Dispel) ||
-                            (msgCombatDetails.ActionName == SpellNames.Finale))
-                            target.HarmType = HarmType.Dispel;
-                        else
-                            target.HarmType = HarmType.Enfeeble;
+                //        if ((msgCombatDetails.ActionName == SpellNames.Erase) ||
+                //            (msgCombatDetails.ActionName == SpellNames.HealWaltz) ||
+                //            (msgCombatDetails.ActionName.EndsWith(SpellNames.RemoveStatus)))
+                //            target.AidType = AidType.RemoveStatus;
+                //        else
+                //            target.AidType = AidType.Enhance;
 
-                        target.AidType = AidType.None;
-                    }
-                    msgCombatDetails.SuccessLevel = SuccessType.Failed;
-                    message.SetParseSuccess(true);
-                    return;
-                }
+                //        target.HarmType = HarmType.None;
+                //    }
+                //    else
+                //    {
+                //        msgCombatDetails.InteractionType = InteractionType.Harm;
+
+                //        if ((msgCombatDetails.ActionName == SpellNames.Dispel) ||
+                //            (msgCombatDetails.ActionName == SpellNames.Finale))
+                //            target.HarmType = HarmType.Dispel;
+                //        else
+                //            target.HarmType = HarmType.Enfeeble;
+
+                //        target.AidType = AidType.None;
+                //    }
+                //    msgCombatDetails.SuccessLevel = SuccessType.Failed;
+                //    message.SetParseSuccess(true);
+                //    return;
+                //}
 
                 combatMatch = ParseExpressions.NoEffect2.Match(currentMessageText);
                 if (combatMatch.Success == true)
