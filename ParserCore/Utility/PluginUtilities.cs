@@ -435,6 +435,9 @@ namespace WaywardGamers.KParser.Plugin
             if (mobFilter.MobName == string.Empty)
                 return false;
 
+            if (rowToCheck.IsEnemyIDNull() == true)
+                return false;
+
             if (rowToCheck.CombatantsRowByEnemyCombatantRelation.CombatantName == mobFilter.MobName)
             {
                 if (mobFilter.MobXP == -1)
