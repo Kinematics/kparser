@@ -725,11 +725,40 @@ namespace WaywardGamers.KParser
         private void InsertExperience(Message message)
         {
             if ((lastFinishedBattle == null) || (lastFinishedBattle.ExperiencePoints != 0))
-                lastFinishedBattle = localDB.Battles.AddBattlesRow(null,
-                    message.Timestamp, message.Timestamp, true,
-                    null, (byte)ActorType.Unknown,
-                    0, 0, // XP Points & Chain
-                    (byte)MobDifficulty.Unknown, false);
+            {
+                lastFinishedBattle = null;
+
+                if (activeBattleList.Count > 0)
+                {
+                    lastFinishedBattle = activeBattleList.FirstOrDefault(
+                        b => b.Key.DefaultBattle == false &&
+                            (b.Key.IsOver == false || b.Key.ExperiencePoints == 0)).Key;
+
+                    if (lastFinishedBattle != null)
+                    {
+                        // close out this battle
+                        if (lastFinishedBattle.IsOver == false)
+                        {
+                            lastFinishedBattle.EndTime = message.Timestamp;
+                            lastFinishedBattle.Killed = true;
+                        }
+
+                        activeMobBattleList.Remove(lastFinishedBattle.CombatantsRowByEnemyCombatantRelation.CombatantName);
+                        lock (activeBattleList)
+                            activeBattleList.Remove(lastFinishedBattle);
+
+                    }
+                }
+
+                if (lastFinishedBattle == null)
+                {
+                    lastFinishedBattle = localDB.Battles.AddBattlesRow(null,
+                        message.Timestamp, message.Timestamp, true,
+                        null, (byte)ActorType.Unknown,
+                        0, 0, // XP Points & Chain
+                        (byte)MobDifficulty.Unknown, false);
+                }
+            }
 
             lastFinishedBattle.ExperiencePoints = message.EventDetails.ExperienceDetails.ExperiencePoints;
             lastFinishedBattle.ExperienceChain = message.EventDetails.ExperienceDetails.ExperienceChain;
@@ -772,10 +801,28 @@ namespace WaywardGamers.KParser
                 }
                 else
                 {
-                    // Or if we didn't find any battles for this target, create a new one.
-                    lastBattle = localDB.Battles.AddBattlesRow(targetCombatant, message.Timestamp,
-                        message.Timestamp, true, null, (byte)ActorType.Unknown, 0, 0,
-                        (byte)MobDifficulty.Unknown, false);
+                    // If we didn't find any battles for this target, look for recently
+                    // ended battles with no target (ie: battle created when player
+                    // gained xp, but no enemy name given so no targetCombatant).
+
+                    var recentNonTargetBattles = localDB.Battles.Where(
+                        b => b.DefaultBattle == false &&
+                            b.IsOver == true &&
+                            b.IsEnemyIDNull() == true &&
+                            b.EndTime > message.Timestamp.AddSeconds(-30));
+
+                    if ((recentNonTargetBattles != null) && (recentNonTargetBattles.Count() > 0))
+                    {
+                        lastBattle = recentNonTargetBattles.Last();
+                        lastBattle.EnemyID = targetCombatant.CombatantID;
+                    }
+                    else
+                    {
+                        // Or if we didn't find any battles for this target, create a new one.
+                        lastBattle = localDB.Battles.AddBattlesRow(targetCombatant, message.Timestamp,
+                            message.Timestamp, true, null, (byte)ActorType.Unknown, 0, 0,
+                            (byte)MobDifficulty.Unknown, false);
+                    }
                 }
                 
                 // Locate the item by name in the item table.
