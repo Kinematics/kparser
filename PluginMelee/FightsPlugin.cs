@@ -57,10 +57,10 @@ namespace WaywardGamers.KParser.Plugin
 
             var fights = from b in dataSet.Battles
                          where b.DefaultBattle == false &&
-                               b.IsEnemyIDNull() == false &&
                                b.EndTime != MagicNumbers.MinSQLDateTime &&
+                               (b.IsEnemyIDNull() == true ||
                                ((EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.Mob ||
-                                (EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.CharmedPlayer)
+                                (EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.CharmedPlayer))
                          select b;
 
             if (fights.Count() == 0)
@@ -79,6 +79,7 @@ namespace WaywardGamers.KParser.Plugin
 
 
             int fightNum = 0;
+            string enemy = string.Empty;
 
             foreach (var fight in fights)
             {
@@ -103,9 +104,13 @@ namespace WaywardGamers.KParser.Plugin
                         fightLength.Hours, fightLength.Minutes, fightLength.Seconds, fightLength.Days);
                 }
 
+                if (fight.IsEnemyIDNull())
+                    enemy = "-Unknown-";
+                else
+                    enemy = fight.CombatantsRowByEnemyCombatantRelation.CombatantName;
                 
                 sb.AppendFormat("{0,-10}{1,-24}{2,-10}{3,-20}{4,10}{5,11}{6,15}{7,6}\n",
-                    fightNum, fight.CombatantsRowByEnemyCombatantRelation.CombatantName,
+                    fightNum, enemy,
                     fight.Killed, killer, fight.StartTime.ToLocalTime().ToShortTimeString(),
                     fight.EndTime.ToLocalTime().ToShortTimeString(), fightLengthString, fight.ExperiencePoints);
 
