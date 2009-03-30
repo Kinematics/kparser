@@ -98,7 +98,7 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0x38] = InteractionType.Aid; // buff <me>
             interactionTypeLookup[0x39] = InteractionType.Harm; // enfeeble <me>
             interactionTypeLookup[0x3a] = InteractionType.Unknown; //
-            interactionTypeLookup[0x3b] = InteractionType.Harm; // enfeeble <me>, resisted (failed enhance?)
+            interactionTypeLookup[0x3b] = InteractionType.Unknown; // enfeeble <me>, resisted (failed enhance)
             interactionTypeLookup[0x3c] = InteractionType.Aid; // buff <pm>
             interactionTypeLookup[0x3d] = InteractionType.Harm; // enfeeble <pm>
             interactionTypeLookup[0x3e] = InteractionType.Unknown; //
