@@ -1,5 +1,13 @@
 KParser Change Log
 
+1.3.6 (March 30, 2009)
+- Bug fix: Failed enhancements (eg: blindna failed to take effect) were incorrectly parsed and ended up causing a false CharmedPlayer to show up in the logs, and thus in the fight lists.  Reparsing is necessary to get corrected data.
+- Bug fix: Crash bug due to empty battle data when changing selected mob.
+* Fights tab now shows fights where you received XP, but were not in range to see what was killed.
+* Fights tab shows the chain number for each battle.
+- Fix issues in creating new battle entries in situations where the mob was killed by not named (ie: outside of range of seeing what was killed).
+- Fix issue of corrected base XP value (after removing chain multiplier) being applied to fights of chain 0.  The full spread of proper xp value should now show up.
+
 
 1.3.5 (March 27, 2009)
 - Fix annoying problem of losing preferences when updating the parser.  Old settings are now carried over when using a new version of the program.
