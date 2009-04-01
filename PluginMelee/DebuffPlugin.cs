@@ -177,6 +177,42 @@ namespace WaywardGamers.KParser.Plugin
             {
                 // Process debuffs used by players
 
+                //debuffSet = from c in dataSet.Combatants
+                //            where (((EntityType)c.CombatantType == EntityType.Player) ||
+                //                  ((EntityType)c.CombatantType == EntityType.Pet) ||
+                //                  ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
+                //                  ((EntityType)c.CombatantType == EntityType.Fellow))
+                //            orderby c.CombatantType, c.CombatantName
+                //            select new DebuffGroup
+                //            {
+                //                DebufferName = c.CombatantName,
+                //                Debuffs = from b in c.GetInteractionsRowsByActorCombatantRelation()
+                //                          where (((HarmType)b.HarmType == HarmType.Enfeeble ||
+                //                                  (HarmType)b.HarmType == HarmType.Dispel ||
+                //                                  (HarmType)b.HarmType == HarmType.Unknown) &&
+                //                                 b.Preparing == false &&
+                //                                 b.IsActionIDNull() == false)
+                //                          group b by b.ActionsRow.ActionName into ba
+                //                          orderby ba.Key
+                //                          select new Debuffs
+                //                          {
+                //                              DebuffName = ba.Key,
+                //                              DebuffTargets = from bt in ba
+                //                                              where (bt.IsTargetIDNull() == false &&
+                //                                                     mobFilter.CheckFilterMobTarget(bt))
+                //                                              group bt by bt.CombatantsRowByTargetCombatantRelation.CombatantName into btn
+                //                                              orderby btn.Key
+                //                                              select new DebuffTargets
+                //                                              {
+                //                                                  TargetName = btn.Key,
+                //                                                  DebuffData = btn.OrderBy(i => i.Timestamp)
+                //                                              }
+                //                          }
+                //            };
+
+
+
+
                 debuffSet = from c in dataSet.Combatants
                             where (((EntityType)c.CombatantType == EntityType.Player) ||
                                   ((EntityType)c.CombatantType == EntityType.Pet) ||
@@ -187,11 +223,15 @@ namespace WaywardGamers.KParser.Plugin
                             {
                                 DebufferName = c.CombatantName,
                                 Debuffs = from b in c.GetInteractionsRowsByActorCombatantRelation()
-                                          where (b.HarmType == (byte)HarmType.Enfeeble ||
-                                                 b.HarmType == (byte)HarmType.Dispel ||
-                                                 b.HarmType == (byte)HarmType.Unknown) &&
-                                                b.Preparing == false &&
-                                                b.IsActionIDNull() == false
+                                          where (((HarmType)b.HarmType == HarmType.Enfeeble ||
+                                                  (HarmType)b.HarmType == HarmType.Dispel ||
+                                                  (HarmType)b.HarmType == HarmType.Unknown) &&
+                                                  b.Preparing == false && b.IsActionIDNull() == false)
+                                                 ||
+                                                 (b.Preparing == false && b.IsActionIDNull() == false &&
+                                                  b.ActionsRow.GetInteractionsRows()
+                                                   .Any(q => (HarmType)q.SecondHarmType == HarmType.Enfeeble ||
+                                                             (HarmType)q.SecondHarmType == HarmType.Dispel))
                                           group b by b.ActionsRow.ActionName into ba
                                           orderby ba.Key
                                           select new Debuffs
@@ -215,6 +255,37 @@ namespace WaywardGamers.KParser.Plugin
             {
                 // Process debuffs used by mobs
 
+                //debuffSet = from c in dataSet.Combatants
+                //            where c.CombatantType == (byte)EntityType.Mob
+                //            orderby c.CombatantType, c.CombatantName
+                //            select new DebuffGroup
+                //            {
+                //                DebufferName = c.CombatantName,
+                //                Debuffs = from b in c.GetInteractionsRowsByActorCombatantRelation()
+                //                          where ((b.HarmType == (byte)HarmType.Enfeeble ||
+                //                                 b.HarmType == (byte)HarmType.Dispel ||
+                //                                 b.HarmType == (byte)HarmType.Unknown) &&
+                //                                 b.Preparing == false &&
+                //                                 b.IsActionIDNull() == false) &&
+                //                                 mobFilter.CheckFilterMobActor(b)
+                //                          group b by b.ActionsRow.ActionName into ba
+                //                          orderby ba.Key
+                //                          select new Debuffs
+                //                          {
+                //                              DebuffName = ba.Key,
+                //                              DebuffTargets = from bt in ba
+                //                                              where (bt.IsTargetIDNull() == false)
+                //                                              group bt by bt.CombatantsRowByTargetCombatantRelation.CombatantName into btn
+                //                                              orderby btn.Key
+                //                                              select new DebuffTargets
+                //                                              {
+                //                                                  TargetName = btn.Key,
+                //                                                  DebuffData = btn.OrderBy(i => i.Timestamp)
+                //                                              }
+                //                          }
+                //            };
+
+
                 debuffSet = from c in dataSet.Combatants
                             where c.CombatantType == (byte)EntityType.Mob
                             orderby c.CombatantType, c.CombatantName
@@ -222,11 +293,17 @@ namespace WaywardGamers.KParser.Plugin
                             {
                                 DebufferName = c.CombatantName,
                                 Debuffs = from b in c.GetInteractionsRowsByActorCombatantRelation()
-                                          where ((b.HarmType == (byte)HarmType.Enfeeble ||
-                                                 b.HarmType == (byte)HarmType.Dispel ||
-                                                 b.HarmType == (byte)HarmType.Unknown) &&
-                                                 b.Preparing == false &&
-                                                 b.IsActionIDNull() == false) &&
+                                          where ((((HarmType)b.HarmType == HarmType.Enfeeble ||
+                                                   (HarmType)b.HarmType == HarmType.Dispel ||
+                                                   (HarmType)b.HarmType == HarmType.Unknown) &&
+                                                   b.Preparing == false && b.IsActionIDNull() == false)
+                                                  ||
+                                                 (b.Preparing == false && b.IsActionIDNull() == false &&
+                                                  b.ActionsRow.GetInteractionsRows()
+                                                   .Any(q => (HarmType)q.SecondHarmType == HarmType.Enfeeble ||
+                                                             (HarmType)q.SecondHarmType == HarmType.Dispel))
+                                                 )
+                                                 &&
                                                  mobFilter.CheckFilterMobActor(b)
                                           group b by b.ActionsRow.ActionName into ba
                                           orderby ba.Key
@@ -290,8 +367,13 @@ namespace WaywardGamers.KParser.Plugin
                             AppendText(target.TargetName.PadRight(24));
 
                             successful = target.DebuffData.Count(d =>
-                                (d.DefenseType == (byte)DefenseType.None) &&
-                                (d.FailedActionType == (byte)FailedActionType.None));
+                                (((HarmType)d.HarmType == HarmType.Dispel ||
+                                 (HarmType)d.HarmType == HarmType.Enfeeble ||
+                                 (HarmType)d.HarmType == HarmType.Unknown) &&
+                                 ((DefenseType)d.DefenseType == DefenseType.None &&
+                                 (FailedActionType)d.FailedActionType == FailedActionType.None)) ||
+                                ((HarmType)d.SecondHarmType == HarmType.Dispel ||
+                                 (HarmType)d.SecondHarmType == HarmType.Enfeeble));
 
                             noEffect = target.DebuffData.Count(d => d.FailedActionType == (byte)FailedActionType.NoEffect);
 
