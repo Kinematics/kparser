@@ -1691,17 +1691,23 @@ namespace WaywardGamers.KParser.Parsing
             }
 
             // Violent Flourish: damage + stun
-            combatMatch = ParseExpressions.DamageAndStun.Match(currentMessageText);
-            if (combatMatch.Success == true)
+            if (combatMatch.Success == false)
             {
-                target = combatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
-                if (target == null)
-                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                combatMatch = ParseExpressions.DamageAndStun.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    target = combatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
+                    if (target == null)
+                        target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
 
-                target.HarmType = HarmType.Damage;
-                target.Amount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
-                target.SecondaryHarmType = HarmType.Enfeeble;
-                target.SecondaryAction = EffectNames.Stun;
+                    combatDetails.HarmType = HarmType.Damage;
+                    combatDetails.AidType = AidType.None;
+
+                    target.HarmType = HarmType.Damage;
+                    target.Amount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
+                    target.SecondaryHarmType = HarmType.Enfeeble;
+                    target.SecondaryAction = EffectNames.Stun;
+                }
             }
 
             // Check for limited additional damage
