@@ -193,6 +193,7 @@ namespace WaywardGamers.KParser
         internal static readonly Regex CriticalHit       = new Regex(string.Format("^{0} score(s)? a critical hit!$", name));
         internal static readonly Regex RangedCriticalHit = new Regex(string.Format("^{0}'(s)? ranged attack scores a critical hit!$", name));
         internal static readonly Regex TargetTakesDamage = new Regex(string.Format("{0} take(s)? {1}( additional)? point(s)? of damage\\.$", target, damage));
+        internal static readonly Regex DamageAndStun     = new Regex(string.Format("^{0} take(s)? {1} point(s)? of damage and is stunned\\.$", target, damage));
         internal static readonly Regex Spikes            = new Regex(string.Format("{0}'(s)? spikes deal {1} point(s)? of damage to {2}\\.", name, damage, target));
         internal static readonly Regex Skillchain        = new Regex(string.Format("^Skillchain: {0}\\.$", skillchain));
         #endregion
@@ -253,6 +254,7 @@ namespace WaywardGamers.KParser
     internal class EffectNames
     {
         internal static readonly string Overloaded = "Overloaded";
+        internal static readonly string Stun = "Stun";
     }
 
     public class RegexUtility
