@@ -1690,6 +1690,20 @@ namespace WaywardGamers.KParser.Parsing
                 }
             }
 
+            // Violent Flourish: damage + stun
+            combatMatch = ParseExpressions.DamageAndStun.Match(currentMessageText);
+            if (combatMatch.Success == true)
+            {
+                target = combatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
+                if (target == null)
+                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+
+                target.HarmType = HarmType.Damage;
+                target.Amount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
+                target.SecondaryHarmType = HarmType.Enfeeble;
+                target.SecondaryAction = EffectNames.Stun;
+            }
+
             // Check for limited additional damage
             if (combatMatch.Success == false)
             {
@@ -2272,45 +2286,6 @@ namespace WaywardGamers.KParser.Parsing
                     message.SetParseSuccess(true);
                     return;
                 }
-
-                // Failed enfeebles or enhancements.  IE: <spell> had no effect.
-                //combatMatch = ParseExpressions.NoEffect.Match(currentMessageText);
-                //if (combatMatch.Success == true)
-                //{
-                //    msgCombatDetails.ActionType = ActionType.Spell;
-                //    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                //    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                //    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                //    target.FailedActionType = FailedActionType.NoEffect;
-                //    if (msgCombatDetails.ActorEntityType == target.EntityType)
-                //    {
-                //        msgCombatDetails.InteractionType = InteractionType.Aid;
-
-                //        if ((msgCombatDetails.ActionName == SpellNames.Erase) ||
-                //            (msgCombatDetails.ActionName == SpellNames.HealWaltz) ||
-                //            (msgCombatDetails.ActionName.EndsWith(SpellNames.RemoveStatus)))
-                //            target.AidType = AidType.RemoveStatus;
-                //        else
-                //            target.AidType = AidType.Enhance;
-
-                //        target.HarmType = HarmType.None;
-                //    }
-                //    else
-                //    {
-                //        msgCombatDetails.InteractionType = InteractionType.Harm;
-
-                //        if ((msgCombatDetails.ActionName == SpellNames.Dispel) ||
-                //            (msgCombatDetails.ActionName == SpellNames.Finale))
-                //            target.HarmType = HarmType.Dispel;
-                //        else
-                //            target.HarmType = HarmType.Enfeeble;
-
-                //        target.AidType = AidType.None;
-                //    }
-                //    msgCombatDetails.SuccessLevel = SuccessType.Failed;
-                //    message.SetParseSuccess(true);
-                //    return;
-                //}
 
                 combatMatch = ParseExpressions.NoEffect2.Match(currentMessageText);
                 if (combatMatch.Success == true)
