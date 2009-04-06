@@ -250,6 +250,12 @@ namespace WaywardGamers.KParser
         public static readonly string UtsuNi = "Utsusemi: Ni";
 
         public static readonly string Paralyze = "Paralyze";
+        public static readonly string Jubaku = "Jubaku";
+
+        public static readonly string Slow = "Slow";
+        public static readonly string Elegy = "Elegy";
+        public static readonly string Hojo = "Hojo";
+
     }
 
     // Special other names we want to check for, but also allow for localization
