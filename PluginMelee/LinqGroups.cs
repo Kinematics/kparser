@@ -320,6 +320,21 @@ namespace WaywardGamers.KParser.Plugin
         }
     }
 
+    internal class TPMovesGroup
+    {
+        internal TimeSpan FightLength { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> TPMoves { get; set; }
+    }
+
+    internal class EnfeebleGroup
+    {
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Enfeebled { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Actions { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Paralyzed { get; set; }
+        internal DateTime FightStartTime { get; set; }
+        internal DateTime FightEndTime { get; set; }
+    }
+
     #region Accumulator classes
     class MainAccumulator
     {
