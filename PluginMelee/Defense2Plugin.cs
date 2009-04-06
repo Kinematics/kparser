@@ -30,7 +30,7 @@ namespace WaywardGamers.KParser.Plugin
         List<string> playerList = new List<string>();
         Dictionary<string, int> playerDamage = new Dictionary<string, int>();
 
-        string incAttacksHeader = "Player           Melee   Range   Abil/Ws   Spells   Unknown   Total   Attack# %   Avoided   Avoid %\n";
+        //string incAttacksHeader = "Player           Melee   Range   Abil/Ws   Spells   Unknown   Total   Attack# %   Avoided   Avoid %\n";
 
         //--
         
