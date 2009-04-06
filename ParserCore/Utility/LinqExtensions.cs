@@ -92,4 +92,35 @@ namespace WaywardGamers.KParser
             return maxElement;
         }
     }
+
+    public static class StringExtensions
+    {
+        public static string FormattedString(this TimeSpan timeSpan, bool forceIncludeHours)
+        {
+            if (timeSpan == null)
+                return default(string);
+
+            string formattedTimeSpan = string.Empty;
+
+            double baseSeconds = timeSpan.Seconds + ((double)timeSpan.Milliseconds / 1000);
+            int roundedSeconds = (int)Math.Round(baseSeconds);
+
+            if ((forceIncludeHours == true) || (timeSpan.Hours > 0))
+            {
+                formattedTimeSpan = string.Format("{0:d}:{1,2:d2}:{2,2:d2}",
+                    (int)timeSpan.TotalHours, timeSpan.Minutes,
+                    roundedSeconds);
+            }
+            else
+            {
+                formattedTimeSpan = string.Format("{0:d}:{1,2:d2}",
+                    (int)timeSpan.TotalMinutes,
+                    roundedSeconds);
+            }
+
+
+            return formattedTimeSpan;
+        }
+    }
+
 }
