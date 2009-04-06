@@ -43,7 +43,7 @@ namespace WaywardGamers.KParser.Plugin
             categoryCombo.Items.Add("All");
             categoryCombo.Items.Add("Enfeeble Durations");
             categoryCombo.Items.Add("Paralyze");
-            categoryCombo.Items.Add("Attack Speed");
+            //categoryCombo.Items.Add("Attack Speed");
             categoryCombo.Items.Add("TP Moves");
             categoryCombo.SelectedIndex = 0;
             categoryCombo.SelectedIndexChanged += new EventHandler(this.categoryCombo_SelectedIndexChanged);
@@ -355,7 +355,7 @@ namespace WaywardGamers.KParser.Plugin
                 default:
                     ProcessDurations(durationSet);
                     ProcessParalyze(paralyzeSet);
-                    ProcessAttackSpeed(slowSet);
+                    //ProcessAttackSpeed(slowSet);
                     ProcessTPMoves(tpMoveSet);
                     break;
             }
@@ -368,6 +368,7 @@ namespace WaywardGamers.KParser.Plugin
             string debuffName;
             TimeSpan totalRemainingFight, avgRemainingFight;
             string totalDurationString, avgDurationString;
+            bool playerHeader;
 
             AppendText("Enfeeble Durations\n\n", Color.Red, true, false);
 
@@ -379,8 +380,8 @@ namespace WaywardGamers.KParser.Plugin
                 if (player.Debuffs.Sum(d => d.DebuffTargets.Count()) == 0)
                     continue;
 
-                AppendText(string.Format("{0}\n", player.DebufferName), Color.Blue, true, false);
-                AppendText("Debuff               #Successful     Total Duration     Avg Duration\n", Color.Black, true, true);
+                playerHeader = false;
+
 
                 foreach (var debuff in player.Debuffs)
                 {
@@ -424,6 +425,13 @@ namespace WaywardGamers.KParser.Plugin
 
                     if (count > 0)
                     {
+                        if (playerHeader == false)
+                        {
+                            AppendText(string.Format("{0}\n", player.DebufferName), Color.Blue, true, false);
+                            AppendText("Debuff               #Successful     Total Duration     Avg Duration\n", Color.Black, true, true);
+                            playerHeader = true;
+                        }
+
                         AppendText(debuffName.PadRight(20));
 
                         avgRemainingFight = TimeSpan.FromMilliseconds(
@@ -438,7 +446,8 @@ namespace WaywardGamers.KParser.Plugin
                     }
                 }
             
-                AppendText("\n");
+                if (playerHeader == true)
+                    AppendText("\n");
             }
 
             AppendText("\n");
