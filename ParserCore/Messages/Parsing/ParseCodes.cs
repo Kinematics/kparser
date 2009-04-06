@@ -209,7 +209,7 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0xa7] = InteractionType.Death; // <am> dies
             interactionTypeLookup[0xa8] = InteractionType.Unknown; //
             interactionTypeLookup[0xa9] = InteractionType.Unknown; //
-            interactionTypeLookup[0xaa] = InteractionType.Harm; // <am> is resisted, or misses /ra
+            interactionTypeLookup[0xaa] = InteractionType.Unknown; // <am> is resisted, or misses /ra
             interactionTypeLookup[0xab] = InteractionType.Aid; // <am> uses item
             interactionTypeLookup[0xac] = InteractionType.Unknown; //
             interactionTypeLookup[0xad] = InteractionType.Unknown; //
@@ -386,7 +386,7 @@ namespace WaywardGamers.KParser
             aidTypeLookup[0xa7] = AidType.None; // <am> dies
             aidTypeLookup[0xa8] = AidType.None; //
             aidTypeLookup[0xa9] = AidType.None; //
-            aidTypeLookup[0xaa] = AidType.None; // <am> is resisted, or misses /ra
+            aidTypeLookup[0xaa] = AidType.Enhance; // <am> is resisted, or misses /ra
             aidTypeLookup[0xab] = AidType.Item; // <am> uses item
             aidTypeLookup[0xac] = AidType.None; //
             aidTypeLookup[0xad] = AidType.None; //
@@ -563,7 +563,7 @@ namespace WaywardGamers.KParser
             harmTypeLookup[0xa7] = HarmType.None; // <am> dies
             harmTypeLookup[0xa8] = HarmType.None; //
             harmTypeLookup[0xa9] = HarmType.None; //
-            harmTypeLookup[0xaa] = HarmType.Unknown; // <am> is resisted, or misses /ra
+            harmTypeLookup[0xaa] = HarmType.Enfeeble; // <am> is resisted, or misses /ra
             harmTypeLookup[0xab] = HarmType.None; //
             harmTypeLookup[0xac] = HarmType.None; //
             harmTypeLookup[0xad] = HarmType.None; //
