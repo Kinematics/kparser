@@ -15,7 +15,8 @@ namespace WaywardGamers.KParser.Plugin
     public class DebuffPlugin : BasePluginControl
     {
         #region Member Variables
-        string debuffHeader = "Debuff              Used on                 # Times   # Successful   # No Effect   % Successful\n";
+        string debuffHeader = "Debuff                # Times   # Successful   # No Effect   % Successful\n";
+        string debuffHeaderWithTargets = "Debuff              Target              # Times   # Successful   # No Effect   % Successful\n";
 
         bool flagNoUpdate = false;
         bool groupMobs = true;
@@ -177,42 +178,6 @@ namespace WaywardGamers.KParser.Plugin
             {
                 // Process debuffs used by players
 
-                //debuffSet = from c in dataSet.Combatants
-                //            where (((EntityType)c.CombatantType == EntityType.Player) ||
-                //                  ((EntityType)c.CombatantType == EntityType.Pet) ||
-                //                  ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
-                //                  ((EntityType)c.CombatantType == EntityType.Fellow))
-                //            orderby c.CombatantType, c.CombatantName
-                //            select new DebuffGroup
-                //            {
-                //                DebufferName = c.CombatantName,
-                //                Debuffs = from b in c.GetInteractionsRowsByActorCombatantRelation()
-                //                          where (((HarmType)b.HarmType == HarmType.Enfeeble ||
-                //                                  (HarmType)b.HarmType == HarmType.Dispel ||
-                //                                  (HarmType)b.HarmType == HarmType.Unknown) &&
-                //                                 b.Preparing == false &&
-                //                                 b.IsActionIDNull() == false)
-                //                          group b by b.ActionsRow.ActionName into ba
-                //                          orderby ba.Key
-                //                          select new Debuffs
-                //                          {
-                //                              DebuffName = ba.Key,
-                //                              DebuffTargets = from bt in ba
-                //                                              where (bt.IsTargetIDNull() == false &&
-                //                                                     mobFilter.CheckFilterMobTarget(bt))
-                //                                              group bt by bt.CombatantsRowByTargetCombatantRelation.CombatantName into btn
-                //                                              orderby btn.Key
-                //                                              select new DebuffTargets
-                //                                              {
-                //                                                  TargetName = btn.Key,
-                //                                                  DebuffData = btn.OrderBy(i => i.Timestamp)
-                //                                              }
-                //                          }
-                //            };
-
-
-
-
                 debuffSet = from c in dataSet.Combatants
                             where (((EntityType)c.CombatantType == EntityType.Player) ||
                                   ((EntityType)c.CombatantType == EntityType.Pet) ||
@@ -255,37 +220,6 @@ namespace WaywardGamers.KParser.Plugin
             {
                 // Process debuffs used by mobs
 
-                //debuffSet = from c in dataSet.Combatants
-                //            where c.CombatantType == (byte)EntityType.Mob
-                //            orderby c.CombatantType, c.CombatantName
-                //            select new DebuffGroup
-                //            {
-                //                DebufferName = c.CombatantName,
-                //                Debuffs = from b in c.GetInteractionsRowsByActorCombatantRelation()
-                //                          where ((b.HarmType == (byte)HarmType.Enfeeble ||
-                //                                 b.HarmType == (byte)HarmType.Dispel ||
-                //                                 b.HarmType == (byte)HarmType.Unknown) &&
-                //                                 b.Preparing == false &&
-                //                                 b.IsActionIDNull() == false) &&
-                //                                 mobFilter.CheckFilterMobActor(b)
-                //                          group b by b.ActionsRow.ActionName into ba
-                //                          orderby ba.Key
-                //                          select new Debuffs
-                //                          {
-                //                              DebuffName = ba.Key,
-                //                              DebuffTargets = from bt in ba
-                //                                              where (bt.IsTargetIDNull() == false)
-                //                                              group bt by bt.CombatantsRowByTargetCombatantRelation.CombatantName into btn
-                //                                              orderby btn.Key
-                //                                              select new DebuffTargets
-                //                                              {
-                //                                                  TargetName = btn.Key,
-                //                                                  DebuffData = btn.OrderBy(i => i.Timestamp)
-                //                                              }
-                //                          }
-                //            };
-
-
                 debuffSet = from c in dataSet.Combatants
                             where c.CombatantType == (byte)EntityType.Mob
                             orderby c.CombatantType, c.CombatantName
@@ -296,7 +230,8 @@ namespace WaywardGamers.KParser.Plugin
                                           where ((((HarmType)b.HarmType == HarmType.Enfeeble ||
                                                    (HarmType)b.HarmType == HarmType.Dispel ||
                                                    (HarmType)b.HarmType == HarmType.Unknown) &&
-                                                   b.Preparing == false && b.IsActionIDNull() == false)
+                                                   b.Preparing == false && 
+                                                   b.IsActionIDNull() == false)
                                                   ||
                                                  (b.Preparing == false && b.IsActionIDNull() == false &&
                                                   b.ActionsRow.GetInteractionsRows()
@@ -335,8 +270,9 @@ namespace WaywardGamers.KParser.Plugin
         private void ProcessPlayerDebuffs(IEnumerable<DebuffGroup> debuffSet)
         {
             int used;
-            int successful;
-            int noEffect;
+            int usedCount;
+            int successfulCount;
+            int noEffectCount;
             double percSuccess;
             string debuffName;
 
@@ -355,18 +291,18 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     debuffName = debuff.DebuffName;
 
+                    usedCount = 0;
+                    successfulCount = 0;
+                    noEffectCount = 0;
+
                     foreach (var target in debuff.DebuffTargets)
                     {
                         used = target.DebuffData.Count();
+                        usedCount += used;
 
                         if (used > 0)
                         {
-                            AppendText(debuffName.PadRight(20));
-                            debuffName = "";
-
-                            AppendText(target.TargetName.PadRight(24));
-
-                            successful = target.DebuffData.Count(d =>
+                            successfulCount += target.DebuffData.Count(d =>
                                 (((HarmType)d.HarmType == HarmType.Dispel ||
                                  (HarmType)d.HarmType == HarmType.Enfeeble ||
                                  (HarmType)d.HarmType == HarmType.Unknown) &&
@@ -375,13 +311,19 @@ namespace WaywardGamers.KParser.Plugin
                                 ((HarmType)d.SecondHarmType == HarmType.Dispel ||
                                  (HarmType)d.SecondHarmType == HarmType.Enfeeble));
 
-                            noEffect = target.DebuffData.Count(d => d.FailedActionType == (byte)FailedActionType.NoEffect);
-
-                            percSuccess = (double)successful / used;
-
-                            AppendText(string.Format("{0,7:d}{1,15:d}{2,14:d}{3,15:p2}\n",
-                                used, successful, noEffect, percSuccess));
+                            noEffectCount += target.DebuffData.Count(d => d.FailedActionType == (byte)FailedActionType.NoEffect);
                         }
+                    }
+
+                    if (usedCount > 0)
+                    {
+                        AppendText(debuffName.PadRight(20));
+
+                        percSuccess = (double)successfulCount / usedCount;
+
+                        AppendText(string.Format("{0,9:d}{1,15:d}{2,14:d}{3,15:p2}\n",
+                            usedCount, successfulCount, noEffectCount, percSuccess));
+
                     }
                 }
 
@@ -392,8 +334,9 @@ namespace WaywardGamers.KParser.Plugin
         private void ProcessMobDebuffs(IEnumerable<DebuffGroup> debuffSet)
         {
             int used;
-            int successful;
-            int noEffect;
+            int usedCount;
+            int successfulCount;
+            int noEffectCount;
             double percSuccess;
             string debuffName;
 
@@ -406,36 +349,59 @@ namespace WaywardGamers.KParser.Plugin
                     continue;
 
                 AppendText(string.Format("{0}\n", mob.DebufferName), Color.Blue, true, false);
-                AppendText(debuffHeader, Color.Black, true, true);
+                AppendText(debuffHeaderWithTargets, Color.Black, true, true);
 
                 foreach (var debuff in mob.Debuffs)
                 {
                     debuffName = debuff.DebuffName;
 
+                    usedCount = 0;
+                    successfulCount = 0;
+                    noEffectCount = 0;
+
                     foreach (var target in debuff.DebuffTargets)
                     {
                         used = target.DebuffData.Count();
+                        usedCount += used;
 
                         if (used > 0)
                         {
                             AppendText(debuffName.PadRight(20));
                             debuffName = "";
 
+                            successfulCount += target.DebuffData.Count(d =>
+                                (((HarmType)d.HarmType == HarmType.Dispel ||
+                                 (HarmType)d.HarmType == HarmType.Enfeeble ||
+                                 (HarmType)d.HarmType == HarmType.Unknown) &&
+                                 ((DefenseType)d.DefenseType == DefenseType.None &&
+                                 (FailedActionType)d.FailedActionType == FailedActionType.None)) ||
+                                ((HarmType)d.SecondHarmType == HarmType.Dispel ||
+                                 (HarmType)d.SecondHarmType == HarmType.Enfeeble));
 
-                            AppendText(target.TargetName.PadRight(24));
+                            //successfulCount += target.DebuffData.Count(d =>
+                            //    (((HarmType)d.HarmType == HarmType.Dispel ||
+                            //     (HarmType)d.HarmType == HarmType.Enfeeble ||
+                            //     (HarmType)d.HarmType == HarmType.Unknown) &&
+                            //     ((DefenseType)d.DefenseType == DefenseType.None &&
+                            //     (FailedActionType)d.FailedActionType == FailedActionType.None) &&
+                            //     d.Preparing == true) ||
+                            //    ((HarmType)d.SecondHarmType == HarmType.Dispel ||
+                            //     (HarmType)d.SecondHarmType == HarmType.Enfeeble));
 
-                            successful = target.DebuffData.Count(d =>
-                                (d.DefenseType == (byte)DefenseType.None) &&
-                                (d.FailedActionType == (byte)FailedActionType.None));
+                            noEffectCount += target.DebuffData.Count(d => d.FailedActionType == (byte)FailedActionType.NoEffect);
 
-                            noEffect = target.DebuffData.Count(d => d.FailedActionType == (byte)FailedActionType.NoEffect);
+                            AppendText(target.TargetName.PadRight(20));
 
-                            percSuccess = (double)successful / used;
+                            percSuccess = (double)successfulCount / usedCount;
 
                             AppendText(string.Format("{0,7:d}{1,15:d}{2,14:d}{3,15:p2}\n",
-                                used, successful, noEffect, percSuccess));
+                                usedCount, successfulCount, noEffectCount, percSuccess));
+
                         }
                     }
+
+
+
                 }
 
                 AppendText("\n");
