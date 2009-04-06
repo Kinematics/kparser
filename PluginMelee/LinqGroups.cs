@@ -139,31 +139,12 @@ namespace WaywardGamers.KParser.Plugin
         }
     }
 
+
     /// <summary>
     /// Class to handle a LINQ query result so that it can be passed
     /// as a function argument.
     /// </summary>
     internal class DefenseGroup
-    {
-        internal string Name { get; set; }
-        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> AllAttacks { get; set; }
-        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Melee { get; set; }
-        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Range { get; set; }
-        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Spell { get; set; }
-        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Abil { get; set; }
-        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Unknown { get; set; }
-        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Retaliations { get; set; }
-
-        public DefenseGroup()
-        {
-        }
-    }
-
-    /// <summary>
-    /// Class to handle a LINQ query result so that it can be passed
-    /// as a function argument.
-    /// </summary>
-    internal class DefenseGroup2
     {
         internal string Name { get; set; }
         internal EntityType ComType { get; set; }
@@ -185,7 +166,7 @@ namespace WaywardGamers.KParser.Plugin
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> UtsuNiCast { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> UtsuNiFinish { get; set; }
 
-        public DefenseGroup2()
+        public DefenseGroup()
         {
         }
 

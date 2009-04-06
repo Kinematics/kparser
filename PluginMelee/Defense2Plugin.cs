@@ -22,9 +22,9 @@ namespace WaywardGamers.KParser.Plugin
 
         #region Member Variables
         List<MainAccumulator> dataAccum = new List<MainAccumulator>();
-        IEnumerable<DefenseGroup2> defenseSet = null;
-        IEnumerable<DefenseGroup2> counterSet = null;
-        IEnumerable<DefenseGroup2> utsuSet = null;
+        IEnumerable<DefenseGroup> defenseSet = null;
+        IEnumerable<DefenseGroup> counterSet = null;
+        IEnumerable<DefenseGroup> utsuSet = null;
 
         int totalDamage;
         List<string> playerList = new List<string>();
@@ -230,7 +230,7 @@ namespace WaywardGamers.KParser.Plugin
 
             #region LINQ queries
 
-            IEnumerable<DefenseGroup2> defenseSet = null;
+            IEnumerable<DefenseGroup> defenseSet = null;
 
             defenseSet = from c in dataSet.Combatants
                          where (((EntityType)c.CombatantType == EntityType.Player) ||
@@ -238,7 +238,7 @@ namespace WaywardGamers.KParser.Plugin
                                 ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
                                 ((EntityType)c.CombatantType == EntityType.Fellow))
                          orderby c.CombatantType, c.CombatantName
-                         select new DefenseGroup2
+                         select new DefenseGroup
                          {
                              Name = c.CombatantName,
                              ComType = (EntityType)c.CombatantType,
@@ -816,7 +816,7 @@ namespace WaywardGamers.KParser.Plugin
                                     (EntityType)c.CombatantsRowByTargetCombatantRelation.CombatantType == EntityType.Fellow)
                              group c by c.CombatantsRowByTargetCombatantRelation into ca
                              orderby ca.Key.CombatantType, ca.Key.CombatantName
-                             select new DefenseGroup2
+                             select new DefenseGroup
                             {
                                 Name = ca.Key.CombatantName,
                                 ComType = (EntityType)ca.Key.CombatantType,
@@ -878,7 +878,7 @@ namespace WaywardGamers.KParser.Plugin
                                     (EntityType)c.CombatantsRowByActorCombatantRelation.CombatantType == EntityType.Fellow)
                              group c by c.CombatantsRowByActorCombatantRelation into ca
                              orderby ca.Key.CombatantType, ca.Key.CombatantName
-                             select new DefenseGroup2
+                             select new DefenseGroup
                             {
                                 Name = ca.Key.CombatantName,
                                 ComType = (EntityType)ca.Key.CombatantType,
@@ -896,7 +896,7 @@ namespace WaywardGamers.KParser.Plugin
                                  (EntityType)c.CombatantsRowByActorCombatantRelation.CombatantType == EntityType.Player)
                           group c by c.CombatantsRowByActorCombatantRelation into ca
                           orderby ca.Key.CombatantType, ca.Key.CombatantName
-                          select new DefenseGroup2
+                          select new DefenseGroup
                           {
                               Name = ca.Key.CombatantName,
                               ComType = (EntityType)ca.Key.CombatantType,
@@ -937,7 +937,7 @@ namespace WaywardGamers.KParser.Plugin
                                     ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
                                     ((EntityType)c.CombatantType == EntityType.Fellow))
                              orderby c.CombatantType, c.CombatantName
-                             select new DefenseGroup2
+                             select new DefenseGroup
                              {
                                  Name = c.CombatantName,
                                  ComType = (EntityType)c.CombatantType,
@@ -1007,7 +1007,7 @@ namespace WaywardGamers.KParser.Plugin
                                     ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
                                     ((EntityType)c.CombatantType == EntityType.Fellow))
                              orderby c.CombatantType, c.CombatantName
-                             select new DefenseGroup2
+                             select new DefenseGroup
                              {
                                  Name = c.CombatantName,
                                  ComType = (EntityType)c.CombatantType,
@@ -1029,7 +1029,7 @@ namespace WaywardGamers.KParser.Plugin
                                 ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
                                 ((EntityType)c.CombatantType == EntityType.Fellow))
                           orderby c.CombatantType, c.CombatantName
-                          select new DefenseGroup2
+                          select new DefenseGroup
                           {
                               Name = c.CombatantName,
                               ComType = (EntityType)c.CombatantType,
@@ -2300,71 +2300,6 @@ namespace WaywardGamers.KParser.Plugin
         }
         #endregion
 
-        #endregion
-
-        #region Old processing sections
-        private void ProcessDefenseAttacks(IEnumerable<DefenseGroup> incAttacks)
-        {
-            if (incAttacks.Count() == 0)
-                return;
-
-            AppendText("Attacks Against:\n", Color.Blue, true, false);
-            AppendText(incAttacksHeader, Color.Black, true, true);
-
-            StringBuilder sb = new StringBuilder();
-
-            //"Player           Melee   Range   Abil/Ws   Spells   Unknown   Total   Attack# %   Avoided   Avoid %"
-
-            int totalAttacks = incAttacks.Sum(b =>
-                b.Melee.Count() + b.Range.Count() + b.Abil.Count() + b.Spell.Count() + b.Unknown.Count());
-
-            foreach (var player in incAttacks)
-            {
-                int mHits = 0;
-                int rHits = 0;
-                int sHits = 0;
-                int aHits = 0;
-                int uHits = 0;
-                int incHits = 0;
-                int avoidHits = 0;
-
-                double avoidPerc = 0;
-                double attackPerc = 0;
-
-                if (player.Melee != null)
-                    mHits = player.Melee.Count();
-                if (player.Range != null)
-                    rHits = player.Range.Count();
-                if (player.Abil != null)
-                    aHits = player.Abil.Count();
-                if (player.Spell != null)
-                    sHits = player.Spell.Count();
-                if (player.Unknown != null)
-                    uHits = player.Unknown.Count();
-
-                incHits = mHits + rHits + aHits + sHits + uHits;
-
-                avoidHits = player.AllAttacks.Count(h => h.DefenseType != (byte)DefenseType.None);
-
-                if (incHits > 0)
-                {
-                    if (incHits > 0)
-                        avoidPerc = (double)avoidHits / incHits;
-
-                    if (totalAttacks > 0)
-                        attackPerc = (double)incHits / totalAttacks;
-
-
-                    sb.Append(player.Name.PadRight(17));
-
-                    sb.AppendFormat("{0,5}{1,8}{2,10}{3,9}{4,10}{5,8}{6,12:p2}{7,10}{8,10:p2}\n",
-                        mHits, rHits, aHits, sHits, uHits, incHits, attackPerc, avoidHits, avoidPerc);
-                }
-            }
-
-            sb.Append("\n\n");
-            AppendText(sb.ToString());
-        }
         #endregion
 
         #region Event Handlers
