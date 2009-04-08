@@ -1346,6 +1346,22 @@ namespace WaywardGamers.KParser.Parsing
                 return;
             }
 
+            // Resisted spell
+
+            combatMatch = ParseExpressions.ResistSpell.Match(message.CurrentMessageText);
+            if (combatMatch.Success == true)
+            {
+                msgCombatDetails.ActionType = ActionType.Spell;
+                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                target.DefenseType = DefenseType.Resist;
+                target.HarmType = msgCombatDetails.HarmType;
+
+                msgCombatDetails.SuccessLevel = SuccessType.Unsuccessful;
+                message.SetParseSuccess(true);
+                return;
+            }
+
+
             // Prepping spell or ability of unknown type
 
             combatMatch = ParseExpressions.PrepSpellOn.Match(message.CurrentMessageText);
@@ -1457,6 +1473,19 @@ namespace WaywardGamers.KParser.Parsing
                 message.SetParseSuccess(true);
                 return;
             }
+
+            combatMatch = ParseExpressions.CastSpell.Match(message.CurrentMessageText);
+            if (combatMatch.Success == true)
+            {
+                msgCombatDetails.IsPreparing = false;
+                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
+                msgCombatDetails.ActionType = ActionType.Spell;
+                msgCombatDetails.HarmType = HarmType.Unknown;
+                message.SetParseSuccess(true);
+                return;
+            }
+
         }
         #endregion
 
