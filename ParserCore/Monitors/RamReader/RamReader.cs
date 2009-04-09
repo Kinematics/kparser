@@ -626,6 +626,7 @@ namespace WaywardGamers.KParser.Monitoring
 
                 // Locate a pointer to the start of the chat log messages. (0x03ec0fac)
                 // From that, determine the start of the ChatLogInfoStruct.
+                //FindRelativeAddress(0x2C2C008);
                 //FindAddress(0x479F920);
                 // Take scanAddress + j*4 at breakpoint
                 // Result: 0x043e8000 + 0x213*4 = 0x043e884c
@@ -634,24 +635,28 @@ namespace WaywardGamers.KParser.Monitoring
                 // The start of ChatLogInfoStruct is (4 bytes + 50 shorts + 50 shorts =
                 // 204 bytes (0xCC) before the located pointer.
                 // Result: 0x043e884c - 0xCC = 0x043E8780
-                // Result: 0x0479F904 - 0xCC = 0x0479F838
+                // Result: 0x02a2ff34 - 0xCC = 0x02A2FE68
 
 
                 // Examine the ChatLogInfoStruct from the previous address
                 // to make sure things match up.
                 //CheckStructure(0x0479F838);
+                //CheckStructureRelative(0x02A2FE68);
 
                 // Since we know where the structure lives, find the address
                 // that points to that.
                 //FindAddress(0x0479F838);
+                //FindRelativeAddress(0x02A2FE68);
                 // Take scanAddress + j*4 at breakpoint
                 // Result: 0x043e8000 + 0x1d7*4 = 0x043E875C
                 // Result: 0x0479F000 + 0x205*4 = 0x0479F814
+                // 0x02a2fe44
 
                 // That pointer is the second in a structure that is pointed
                 // to by an initial address point.  Locate the address of our
                 // pointer - 4.
                 //FindAddress(0x0479F810);
+                //FindRelativeAddress(0x02a2fe40);
                 // Take scanAddress + j*4 at breakpoint
                 // Result: 0x02065000 + 0x25a*4 = 0x02065968
                 // Result: 0x0234a000 + 0x0b2*4 = 0x0234A2C8
@@ -661,12 +666,18 @@ namespace WaywardGamers.KParser.Monitoring
                 // Result: 0x02065968 - 0x01af0000 == 0x00575968
                 // Result: 0x02346D58 - 0x01dd0000 == 0x00576D58
                 // Result: 0x0234A2C8 - 0x01dd0000 == 0x0057A2C8
+                // Result: 0x0057d768
 
                 // Base address before patch for 2008-03-10: 0x0056A788
                 // Base address after patch for 2008-03-10:  0x0056DA48
                 // Base address after update on 2008-06-09:  0x00575968
                 // Base address after update on 2008-09-08:  0x00576D58
                 // Base address after update on 2008-12-08:  0x0057A2C8
+                // Base address after update on 2009-04-08:  0x0057d768
+
+
+                // stop break point
+                int i = 0;
             }
             finally
             {
@@ -675,26 +686,47 @@ namespace WaywardGamers.KParser.Monitoring
         }
 
         [Conditional("DEBUG")]
-        private void CheckStructure(uint checkAddress)
+        private void FindString()
         {
-            try
-            {
-                //Dereference that pointer to get our next address.
-                IntPtr dataStructurePointer = new IntPtr(checkAddress);
+            uint scanMemoryOffset = 0x029C0000;
+            //uint scanMemoryOffset = 0x029CF000;
+            uint blockSize = 1024;
+            uint blockOffset = blockSize - 32;
+            MemScanStringStruct scanStruct = new MemScanStringStruct();
 
-                ChatLogLocationInfo scanChatLogLocation = new ChatLogLocationInfo(dataStructurePointer);
+            string byteString;
+            string prevByteString;
 
-                ChatLogDetails examineDetails = ReadChatLogDetails(scanChatLogLocation);
+            for (int i = 0; i < 64000; i++)
+            {
+                IntPtr scanAddress = Pointers.IncrementPointer(pol.BaseAddress, scanMemoryOffset);
+                IntPtr scanResults = IntPtr.Zero;
 
-                string[] scanChatLines = ReadChatLines(examineDetails.Info.NewChatLogPtr,
-                        examineDetails.Info.FinalOffset, examineDetails.Info.NumberOfLines);
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Log(e);
-            }
-            finally
-            {
+                try
+                {
+                    scanResults = PInvoke.ReadProcessMemory(pol.Process.Handle, scanAddress, blockSize);
+
+                    scanStruct = (MemScanStringStruct)Marshal.PtrToStructure(scanResults, typeof(MemScanStringStruct));
+
+                    byteString = new string(scanStruct.memScanCharacters);
+
+                    int j = byteString.IndexOf("Unicorn");
+
+                    if (j >= 0)
+                        Trace.WriteLine(string.Format("Offset = {0}, Index j = {1}\n", scanMemoryOffset, j));
+
+                    prevByteString = byteString;
+                }
+                catch (Exception e)
+                {
+                    Logger.Instance.Log(e);
+                }
+                finally
+                {
+                    PInvoke.DoneReadingProcessMemory(scanResults);
+                }
+
+                scanMemoryOffset += blockOffset;
             }
         }
 
@@ -739,16 +771,14 @@ namespace WaywardGamers.KParser.Monitoring
         }
 
         [Conditional("DEBUG")]
-        private void FindString()
+        private void FindRelativeAddress(uint address)
         {
-            uint scanMemoryOffset = 0x029CF920;
-            //uint scanMemoryOffset = 0x029CF000;
-            uint blockSize = 1024;
-            uint blockOffset = blockSize - 32;
-            MemScanStringStruct scanStruct = new MemScanStringStruct();
+            uint addressToFind = address + (uint)pol.BaseAddress.ToInt32();
 
-            string byteString;
-            string prevByteString;
+            uint scanMemoryOffset = 0;
+            MemScanAddressStruct scanStruct = new MemScanAddressStruct();
+
+            uint bytesToRead = (uint)(Marshal.SizeOf(typeof(MemScanAddressStruct)));
 
             for (int i = 0; i < 64000; i++)
             {
@@ -757,18 +787,20 @@ namespace WaywardGamers.KParser.Monitoring
 
                 try
                 {
-                    scanResults = PInvoke.ReadProcessMemory(pol.Process.Handle, scanAddress, blockSize);
+                    scanResults = PInvoke.ReadProcessMemory(pol.Process.Handle, scanAddress, bytesToRead);
 
-                    scanStruct = (MemScanStringStruct)Marshal.PtrToStructure(scanResults, typeof(MemScanStringStruct));
+                    scanStruct = (MemScanAddressStruct)Marshal.PtrToStructure(scanResults, typeof(MemScanAddressStruct));
 
-                    byteString = new string(scanStruct.memScanCharacters);
-
-                    int j = byteString.IndexOf("Unicorn Claymore");
-
+                    int j = Array.IndexOf(scanStruct.addressValues, addressToFind);
                     if (j >= 0)
-                        Trace.WriteLine(string.Format("Offset = {0}, Index j = {1}\n", scanMemoryOffset, j));
+                    {
+                        uint pointerLocation = (uint) (scanAddress.ToInt32() + (j * 4) - pol.BaseAddress.ToInt32());
 
-                    prevByteString = byteString;
+                        Trace.WriteLine(
+                            string.Format(
+                            "Scan Address 0x{0:x8} + Index j ({1}) * 4 - Base address 0x{2:x8} = Pointer location 0x{3:x8}\n",
+                            scanAddress.ToInt32(), j, pol.BaseAddress.ToInt32(), pointerLocation));
+                    }
                 }
                 catch (Exception e)
                 {
@@ -779,7 +811,57 @@ namespace WaywardGamers.KParser.Monitoring
                     PInvoke.DoneReadingProcessMemory(scanResults);
                 }
 
-                scanMemoryOffset += blockOffset;
+                scanMemoryOffset += bytesToRead;
+            }
+        }
+
+        [Conditional("DEBUG")]
+        private void CheckStructure(uint checkAddress)
+        {
+            try
+            {
+                //Dereference that pointer to get our next address.
+                IntPtr dataStructurePointer = new IntPtr(checkAddress);
+
+                ChatLogLocationInfo scanChatLogLocation = new ChatLogLocationInfo(dataStructurePointer);
+
+                ChatLogDetails examineDetails = ReadChatLogDetails(scanChatLogLocation);
+
+                string[] scanChatLines = ReadChatLines(examineDetails.Info.NewChatLogPtr,
+                        examineDetails.Info.FinalOffset, examineDetails.Info.NumberOfLines);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Log(e);
+            }
+            finally
+            {
+            }
+        }
+
+        [Conditional("DEBUG")]
+        private void CheckStructureRelative(uint checkRelativeAddress)
+        {
+            try
+            {
+                uint checkAddress = checkRelativeAddress + (uint)pol.BaseAddress.ToInt32();
+
+                //Dereference that pointer to get our next address.
+                IntPtr dataStructurePointer = new IntPtr(checkAddress);
+
+                ChatLogLocationInfo scanChatLogLocation = new ChatLogLocationInfo(dataStructurePointer);
+
+                ChatLogDetails examineDetails = ReadChatLogDetails(scanChatLogLocation);
+
+                string[] scanChatLines = ReadChatLines(examineDetails.Info.NewChatLogPtr,
+                        examineDetails.Info.FinalOffset, examineDetails.Info.NumberOfLines);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Log(e);
+            }
+            finally
+            {
             }
         }
         #endregion
