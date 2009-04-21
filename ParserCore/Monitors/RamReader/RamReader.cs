@@ -617,59 +617,68 @@ namespace WaywardGamers.KParser.Monitoring
                 if (FindFFXIProcess(true) == false)
                     return;
 
-                // Locate a known string in memory space.  From there, determine the start
-                // of the array of chat log messages.
-                //FindString();
-                // Take scanAddress and increment it by the index in scanStruct.memScanCharacters
-                // Result: 0x043e86a0 + 0x1c8 = 0x043E8868
-                // Result: 0x029CF920 + 0x01dd0000 (base) = 0x479F920
+                // Section 1
 
-                // Locate a pointer to the start of the chat log messages. (0x03ec0fac)
+                // Locate a known string in memory space.  Adjust the string until you can locate
+                // the start of the chat log messages within the byteString variable in the
+                // FindString function.
+                // From there, determine the start of the array of chat log messages.
+                // Use that address in Section 2.
+                //FindString("Apr. 19, 2009");
+                // EG: memory offset of 0x02a8fcc0 + index of 0x2d0 == 
+                // chat log start address of 0x02A8FF90
+
+
+                // Section 2
+
+                // Locate a pointer to the start of the chat log messages. (0x02A8FF90)
+                // The location of that pointer is used in Section 3.
+                //FindAddress(0x02A8FF90);
+                // Use calculated pointerLocation.
+                // EG: Scan Address 0x0488f000 + Index j (989) * 4 -
+                //     Base address 0x01e00000 = Pointer location 0x02a8ff74
+
+
+                // Section 3
+
                 // From that, determine the start of the ChatLogInfoStruct.
-                //FindRelativeAddress(0x2C2C008);
-                //FindAddress(0x479F920);
-                // Take scanAddress + j*4 at breakpoint
-                // Result: 0x043e8000 + 0x213*4 = 0x043e884c
-                // Result: 0x0479f000 + 0x241*4 = 0x0479F904
-
                 // The start of ChatLogInfoStruct is (4 bytes + 50 shorts + 50 shorts =
                 // 204 bytes (0xCC) before the located pointer.
-                // Result: 0x043e884c - 0xCC = 0x043E8780
-                // Result: 0x02a2ff34 - 0xCC = 0x02A2FE68
+                // Result: 0x02a8ff74 - 0xCC = 0x02A8FEA8
 
+
+                // Section 4
 
                 // Examine the ChatLogInfoStruct from the previous address
                 // to make sure things match up.
-                //CheckStructure(0x0479F838);
-                //CheckStructureRelative(0x02A2FE68);
+                //CheckStructureAtAddress(0x02A8FEA8);
+
+                // Section 5
 
                 // Since we know where the structure lives, find the address
-                // that points to that.
-                //FindAddress(0x0479F838);
-                //FindRelativeAddress(0x02A2FE68);
-                // Take scanAddress + j*4 at breakpoint
-                // Result: 0x043e8000 + 0x1d7*4 = 0x043E875C
-                // Result: 0x0479F000 + 0x205*4 = 0x0479F814
-                // 0x02a2fe44
+                // that points to that.  Use the same address as that used when
+                // checking the ChatLog structure.
+                //FindAddress(0x02A8FEA8);
+                // Use calculated pointerLocation.
+                // EG: Scan Address 0x0488f000 + Index j (929) * 4 - 
+                //     Base address 0x01e00000 = Pointer location 0x02a8fe84
+
+                // Section 6
 
                 // That pointer is the second in a structure that is pointed
                 // to by an initial address point.  Locate the address of our
-                // pointer - 4.
-                //FindAddress(0x0479F810);
-                //FindRelativeAddress(0x02a2fe40);
-                // Take scanAddress + j*4 at breakpoint
-                // Result: 0x02065000 + 0x25a*4 = 0x02065968
-                // Result: 0x0234a000 + 0x0b2*4 = 0x0234A2C8
+                // (pointer from section 5) - 4.
+                // EG: 0x02a8fe84 - 4 = 0x02a8fe80
+                //FindAddress(0x02a8fe80);
+                // Use calculated pointerLocation.
+                // EG: Scan Address 0x0237d000 + Index j (474) * 4 - 
+                //     Base address 0x01e00000 = Pointer location 0x0057d768
 
-                // Base offset address is the above pointer relative to the
-                // POL base address.  Remove that value.
-                // Result: 0x02065968 - 0x01af0000 == 0x00575968
-                // Result: 0x02346D58 - 0x01dd0000 == 0x00576D58
-                // Result: 0x0234A2C8 - 0x01dd0000 == 0x0057A2C8
-                // Result: 0x0057d768
+
+                // History Section
 
                 // Base address before patch for 2008-03-10: 0x0056A788
-                // Base address after patch for 2008-03-10:  0x0056DA48
+                // Base address after patch  for 2008-03-10: 0x0056DA48
                 // Base address after update on 2008-06-09:  0x00575968
                 // Base address after update on 2008-09-08:  0x00576D58
                 // Base address after update on 2008-12-08:  0x0057A2C8
@@ -681,41 +690,63 @@ namespace WaywardGamers.KParser.Monitoring
             }
             finally
             {
+                Debug.WriteLine("Done with ScanRAM function.");
                 IsRunning = false;
             }
         }
 
         [Conditional("DEBUG")]
-        private void FindString()
+        private void FindString(string stringToFind)
         {
             uint scanMemoryOffset = 0x029C0000;
-            //uint scanMemoryOffset = 0x029CF000;
+            uint prevScanMemoryOffset = scanMemoryOffset;
             uint blockSize = 1024;
             uint blockOffset = blockSize - 32;
             MemScanStringStruct scanStruct = new MemScanStringStruct();
+            MemScanStringStruct prevScanStruct = scanStruct;
 
             string byteString;
             string prevByteString;
 
             for (int i = 0; i < 64000; i++)
             {
+                // Specify the location that you're searching for the requested string.
                 IntPtr scanAddress = Pointers.IncrementPointer(pol.BaseAddress, scanMemoryOffset);
                 IntPtr scanResults = IntPtr.Zero;
 
                 try
                 {
+                    // Read a chunk of memory and convert it to a byte array.
                     scanResults = PInvoke.ReadProcessMemory(pol.Process.Handle, scanAddress, blockSize);
-
                     scanStruct = (MemScanStringStruct)Marshal.PtrToStructure(scanResults, typeof(MemScanStringStruct));
 
+                    // Convert the byte array to a string for examination.
                     byteString = new string(scanStruct.memScanCharacters);
 
-                    int j = byteString.IndexOf("Unicorn");
+                    // See if our requested string is found in this chunk of memory.
+                    int j = byteString.IndexOf(stringToFind);
 
                     if (j >= 0)
-                        Trace.WriteLine(string.Format("Offset = {0}, Index j = {1}\n", scanMemoryOffset, j));
+                    {
+                        // If it is, write out the offset that we're using.
+                        Debug.WriteLine(string.Format("Offset = 0x{0:x8}, Index j = {1}", scanMemoryOffset, j));
+
+                        // Examine byteString and prevByteString to locate the start of the
+                        // chat log (prevByteString in case the log overlaps two memory
+                        // segments).
+
+                        // If located, use scanStruct or prevScanStruct to find the specific
+                        // index into the memoryOffset value to determine our 'real' starting  point.
+
+                        Debug.WriteLine(string.Format("Previous Offset = 0x{0:x8}\n", prevScanMemoryOffset));
+
+                        // EG: memory offset of 0x02a8fcc0 + index of 0x2d0 == 
+                        // chat log start address of 0x02A8FF90
+
+                    }
 
                     prevByteString = byteString;
+                    prevScanStruct = scanStruct;
                 }
                 catch (Exception e)
                 {
@@ -726,54 +757,15 @@ namespace WaywardGamers.KParser.Monitoring
                     PInvoke.DoneReadingProcessMemory(scanResults);
                 }
 
+                prevScanMemoryOffset = scanMemoryOffset;
                 scanMemoryOffset += blockOffset;
             }
         }
 
         [Conditional("DEBUG")]
-        private void FindAddress(uint findTotalAddress)
+        private void FindAddress(uint address)
         {
-            uint scanMemoryOffset = 0;
-            MemScanAddressStruct scanStruct = new MemScanAddressStruct();
-
-            uint bytesToRead = (uint)(Marshal.SizeOf(typeof(MemScanAddressStruct)));
-
-            //uint findTotalAddress = 0x03EC0FC8;
-            //uint findTotalAddress = 0x03EC0EE0;
-            //uint findTotalAddress = 0x03EC0EB8;
-
-            for (int i = 0; i < 64000; i++)
-            {
-                IntPtr scanAddress = Pointers.IncrementPointer(pol.BaseAddress, scanMemoryOffset);
-                IntPtr scanResults = IntPtr.Zero;
-
-                try
-                {
-                    scanResults = PInvoke.ReadProcessMemory(pol.Process.Handle, scanAddress, bytesToRead);
-
-                    scanStruct = (MemScanAddressStruct)Marshal.PtrToStructure(scanResults, typeof(MemScanAddressStruct));
-
-                    int j = Array.IndexOf(scanStruct.addressValues, findTotalAddress);
-                    if (j >= 0)
-                        Trace.WriteLine(string.Format("Total Index j = {0}\n", j));
-                }
-                catch (Exception e)
-                {
-                    Logger.Instance.Log(e);
-                }
-                finally
-                {
-                    PInvoke.DoneReadingProcessMemory(scanResults);
-                }
-
-                scanMemoryOffset += bytesToRead;
-            }
-        }
-
-        [Conditional("DEBUG")]
-        private void FindRelativeAddress(uint address)
-        {
-            uint addressToFind = address + (uint)pol.BaseAddress.ToInt32();
+            uint absoluteAddress = address + (uint)pol.BaseAddress.ToInt32();
 
             uint scanMemoryOffset = 0;
             MemScanAddressStruct scanStruct = new MemScanAddressStruct();
@@ -791,12 +783,12 @@ namespace WaywardGamers.KParser.Monitoring
 
                     scanStruct = (MemScanAddressStruct)Marshal.PtrToStructure(scanResults, typeof(MemScanAddressStruct));
 
-                    int j = Array.IndexOf(scanStruct.addressValues, addressToFind);
+                    int j = Array.IndexOf(scanStruct.addressValues, absoluteAddress);
                     if (j >= 0)
                     {
                         uint pointerLocation = (uint) (scanAddress.ToInt32() + (j * 4) - pol.BaseAddress.ToInt32());
 
-                        Trace.WriteLine(
+                        Debug.WriteLine(
                             string.Format(
                             "Scan Address 0x{0:x8} + Index j ({1}) * 4 - Base address 0x{2:x8} = Pointer location 0x{3:x8}\n",
                             scanAddress.ToInt32(), j, pol.BaseAddress.ToInt32(), pointerLocation));
@@ -816,31 +808,7 @@ namespace WaywardGamers.KParser.Monitoring
         }
 
         [Conditional("DEBUG")]
-        private void CheckStructure(uint checkAddress)
-        {
-            try
-            {
-                //Dereference that pointer to get our next address.
-                IntPtr dataStructurePointer = new IntPtr(checkAddress);
-
-                ChatLogLocationInfo scanChatLogLocation = new ChatLogLocationInfo(dataStructurePointer);
-
-                ChatLogDetails examineDetails = ReadChatLogDetails(scanChatLogLocation);
-
-                string[] scanChatLines = ReadChatLines(examineDetails.Info.NewChatLogPtr,
-                        examineDetails.Info.FinalOffset, examineDetails.Info.NumberOfLines);
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Log(e);
-            }
-            finally
-            {
-            }
-        }
-
-        [Conditional("DEBUG")]
-        private void CheckStructureRelative(uint checkRelativeAddress)
+        private void CheckStructureAtAddress(uint checkRelativeAddress)
         {
             try
             {
