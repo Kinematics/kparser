@@ -757,12 +757,9 @@ namespace WaywardGamers.KParser.Plugin
 
         protected void mobsCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            using (new RegionProfiler("thief: mob change"))
-            {
-                if (flagNoUpdate == false)
-                    HandleDataset(null);
+            if (flagNoUpdate == false)
+                HandleDataset(null);
                 
-            }
             flagNoUpdate = false;
         }
 
