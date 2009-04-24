@@ -677,16 +677,17 @@ namespace WaywardGamers.KParser.Monitoring
 
                 // History Section
 
-                // Base address before patch for 2008-03-10: 0x0056A788
-                // Base address after patch  for 2008-03-10: 0x0056DA48
+                // Base address before patch on 2008-03-10: 0x0056A788
+                // Base address after patch  on 2008-03-10: 0x0056DA48
                 // Base address after update on 2008-06-09:  0x00575968
                 // Base address after update on 2008-09-08:  0x00576D58
                 // Base address after update on 2008-12-08:  0x0057A2C8
                 // Base address after update on 2009-04-08:  0x0057d768
+                // Base address after patch  on 2009-04-22:  0x0057d7e8
 
 
                 // stop break point
-                int i = 0;
+                //int i = 0;
             }
             finally
             {
