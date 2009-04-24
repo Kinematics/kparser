@@ -1,6 +1,11 @@
 KParser Change Log
 
 
+1.3.8 (April 24, 2009)
+* Update the default memloc after the patch on April 22.
+- Fix issue where missed ranged attacks were not getting added to an associated battle properly.  This meant that all display filters other than 'All' always reported 100% ranged accuracy.  Older data will need to be reparsed to get correct values.
+
+
 1.3.7 (April 8, 2009)
 - Fix parsing of Violent Flourish's damage+stun effect.
 - Damage+debuff effects (Violent Flourish, stun kukri, etc) should now get reported properly in the Debuff tab.
