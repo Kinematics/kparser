@@ -103,6 +103,8 @@ namespace WaywardGamers.KParser
         private Dictionary<KPDatabaseDataSet.BattlesRow, DateTime> activeBattleList;
         private Dictionary<string, KPDatabaseDataSet.BattlesRow> activeMobBattleList;
 
+        private List<KPDatabaseDataSet.InteractionsRow> deferredInteractions = new List<KPDatabaseDataSet.InteractionsRow>();
+
         private Mutex databaseAccessMutex = new Mutex();
         #endregion
 
@@ -255,9 +257,10 @@ namespace WaywardGamers.KParser
 
                 UpdatePlayerInfo(Parsing.MsgManager.Instance.PlayerInfoList);
             }
-            catch
+            catch (Exception e)
             {
                 OnMessageProcessed(new ReaderStatusEventArgs(++messageNumber, totalMessageCount, false, true));
+                Logger.Instance.Log(e);
             }
             finally
             {
@@ -934,7 +937,9 @@ namespace WaywardGamers.KParser
                 item = localDB.Items.GetItem(message.EventDetails.CombatDetails.ItemName);
 
             // Bogus target for passing in data on incomplete messages.
-            TargetDetails bogusTarget = message.EventDetails.CombatDetails.Targets.SingleOrDefault(t => t.Name == "");
+            TargetDetails bogusTarget = null;
+            bogusTarget = message.EventDetails.CombatDetails
+                                 .Targets.FirstOrDefault(t => t.Name == string.Empty || t.Name == null);
 
             // Get the battle (if any) this interaction is associated with.
             if ((message.EventDetails.CombatDetails.Targets.Count == 0) || (bogusTarget != null))
@@ -1033,6 +1038,19 @@ namespace WaywardGamers.KParser
                     activeBattleList[battle] = message.Timestamp;
             }
 
+            if ((battle != null) && (battle != localDB.Battles.GetDefaultBattle()))
+            {
+                while (deferredInteractions.Count > 0)
+                {
+                    var deferredInteraction = deferredInteractions.First();
+                    if (deferredInteraction != null)
+                    {
+                        deferredInteraction.BattlesRow = battle;
+                        deferredInteractions = deferredInteractions.Skip(1).ToList<KPDatabaseDataSet.InteractionsRow>();
+                    }
+                }
+            }
+
             if (message.EventDetails.CombatDetails.Targets.Count == 0)
             {
                 localDB.Interactions.AddInteractionsRow(
@@ -1064,6 +1082,7 @@ namespace WaywardGamers.KParser
             {
                 var targetRow = battle.CombatantsRowByEnemyCombatantRelation;
 
+                var deferredBattleInteraction = 
                 localDB.Interactions.AddInteractionsRow(
                     message.Timestamp,
                     actor,
@@ -1087,6 +1106,9 @@ namespace WaywardGamers.KParser
                     0,
                     secondAction,
                     item);
+
+                if (battle == localDB.Battles.GetDefaultBattle())
+                    deferredInteractions.Add(deferredBattleInteraction);
             }
             else
             {
