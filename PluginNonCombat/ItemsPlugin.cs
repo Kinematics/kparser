@@ -208,7 +208,7 @@ namespace WaywardGamers.KParser.Plugin
                             {
                                 sb.AppendFormat("{0,-32}{1,10}\n",
                                     string.Empty,
-                                    itemEntry.Timestamp.ToShortTimeString());
+                                    itemEntry.Timestamp.ToLocalTime().ToShortTimeString());
                             }
                         }
                     }
