@@ -35,10 +35,10 @@ namespace WaywardGamers.KParser
         private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+(((('s (?=\w+'s))\w+)|('\w{2,}('s)?)|(-(\w|\d)+)|(the \w+)|( No.\d+)|( \w+)){0,3}|(( \w+)?'s \w+))))";
         private static readonly string repeatname  = @"([Tt]he )?(?<repeatname>\w+(((('s (?=\w+'s))\w+)|('\w{2,}('s)?)|(-(\w|\d)+)|(the \w+)|( No.\d+)|( \w+)){0,3}|(( \w+)?'s \w+)))";
 
-        private static readonly string damage      = @"(?<damage>\d{1,4})";
-        private static readonly string number      = @"(?<number>\d{1,4})";
+        private static readonly string damage      = @"(?<damage>\d{1,5})";
+        private static readonly string number      = @"(?<number>\d{1,5})";
         private static readonly string item        = @"(([Aa]|[Aa]n|[Tt]he) )?(?<item>(\?\?\? )?.{3,})";
-        private static readonly string money       = @"((?<money>\d{1,4}?) gil)";
+        private static readonly string money       = @"((?<money>\d{1,5}?) gil)";
         private static readonly string spell       = @"(?<spell>\w+((: (Ichi|Ni|San))|(((('s |. |-)\w+)|(( \w+(?<! (on|III|II|IV|VI|V))){1,2}))?( (III|II|IV|VI|V))?))?)";
         private static readonly string ability     = @"(?<ability>\w+((: \w+)|(-\w+)( \w+)?|('s \w+)|( \w+)( \w+)?)?( \w+'\w{2,})?)";
         private static readonly string effect      = @"(?<effect>\w+( \w+){0,2})";
