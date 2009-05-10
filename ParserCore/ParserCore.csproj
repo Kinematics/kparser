@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Database\AccessToTheDatabase.cs" />
+    <Compile Include="Database\DatabaseEntry.cs" />
     <Compile Include="Database\KParserReadingManager.cs" />
     <Compile Include="Database\DirectParseReadingManager.cs" />
     <Compile Include="Database\MobXPHandler.cs" />
