@@ -1017,7 +1017,7 @@ namespace WaywardGamers.KParser.Plugin
                                              select n,
                                  Retaliated = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                                          .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
-                                              where (ActionType)n.ActionType == ActionType.Counterattack
+                                              where (ActionType)n.ActionType == ActionType.Retaliation
                                               select n,
                              };
 
