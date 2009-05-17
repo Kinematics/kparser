@@ -42,6 +42,11 @@ namespace WaywardGamers.KParser.Monitoring
         /// </summary>
         private RamReader()
 		{
+            // Layout of total structure:
+            // 50 offsets to new log records (short): 100 bytes
+            // 50 offsets to old log offsets (short): 100 bytes
+            // ChatLogInfoStruct block
+            sizeOfChatLogInfoStruct = (uint)(Marshal.SizeOf(typeof(ChatLogInfoStruct)));
         }
 		#endregion
 
@@ -54,6 +59,8 @@ namespace WaywardGamers.KParser.Monitoring
         POL pol;
         uint initialMemoryOffset;
         ChatLogLocationInfo chatLogLocation;
+
+        uint sizeOfChatLogInfoStruct;
 
         bool abortMonitorThread;
         #endregion
@@ -194,12 +201,6 @@ namespace WaywardGamers.KParser.Monitoring
                             oldDetails = null;
                             continue;
                         }
-
-                        // Determine the first line number of the current chat log so we know
-                        // where we are with respect to where the last line we processed was.
-                        int firstOffset = 0;
-                        int secondOffset = GetLineEndingOffset(currentDetails, 0);
-                        int lineBytes = secondOffset - firstOffset;
 
                         // Read the chat log strings
                         string[] newChatLines = ReadChatLines(currentDetails.Info.NewChatLogPtr,
@@ -347,32 +348,17 @@ namespace WaywardGamers.KParser.Monitoring
         {
             IntPtr lineOffsetsBuffer = IntPtr.Zero;
 
-            try
+            using (ProcessMemoryReading pmr = new ProcessMemoryReading(pol.Process.Handle, chatLogLocation.ChatLogOffset, sizeOfChatLogInfoStruct))
             {
-                // Layout of total structure we're reading:
-                // 50 offsets to new log records (short): 100 bytes
-                // 50 offsets to old log offsets (short): 100 bytes
-                // ChatLogInfoStruct block
-                uint bytesToRead = (uint)(Marshal.SizeOf(typeof(ChatLogInfoStruct)));
+                if (pmr.ReadBufferPtr == IntPtr.Zero)
+                    return null;
 
-                // Get the pointer to the overall structure.
-                lineOffsetsBuffer = PInvoke.ReadProcessMemory(pol.Process.Handle, chatLogLocation.ChatLogOffset, bytesToRead);
+                ChatLogDetails details = new ChatLogDetails();
 
-                if (lineOffsetsBuffer != IntPtr.Zero)
-                {
-                    ChatLogDetails details = new ChatLogDetails();
+                // Copy the structure from memory buffer to managed class.
+                details.Info = (ChatLogInfoStruct)Marshal.PtrToStructure(pmr.ReadBufferPtr, typeof(ChatLogInfoStruct));
 
-                    // Copy the structure from memory buffer to managed class.
-                    details.Info = (ChatLogInfoStruct)Marshal.PtrToStructure(lineOffsetsBuffer, typeof(ChatLogInfoStruct));
-
-                    return details;
-                }
-
-                return null;
-            }
-            finally
-            {
-                PInvoke.DoneReadingProcessMemory(lineOffsetsBuffer);
+                return details;
             }
         }
 
@@ -384,7 +370,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// <param name="bufferSize">The size of the buffer being read.</param>
         /// <param name="maxLinesToRead">Maximum number of lines to read.</param>
         /// <returns>Returns an array of strings from the buffer.</returns>
-        private string[] ReadChatLines(IntPtr bufferStart, short bufferSize, byte maxLinesToRead)
+        private string[] ReadChatLines(IntPtr bufferStartAddress, short bufferSize, byte maxLinesToRead)
         {
             if (maxLinesToRead == 0)
                 return new string[0];
@@ -393,53 +379,30 @@ namespace WaywardGamers.KParser.Monitoring
             if (maxLinesToRead > 50)
                 maxLinesToRead = 50;
 
+            string nullDelimitedChatLines = string.Empty;
 
-            IntPtr linesBuffer = IntPtr.Zero;
-
-            try
+            // Read the raw databuffer from the process space
+            using (ProcessMemoryReading pmr = new ProcessMemoryReading(pol.Process.Handle, bufferStartAddress, (uint)bufferSize))
             {
-                // Read the raw databuffer from the process space
-                linesBuffer = PInvoke.ReadProcessMemory(pol.Process.Handle, bufferStart, (uint)bufferSize);
-                if (linesBuffer == IntPtr.Zero)
+                if (pmr.ReadBufferPtr == IntPtr.Zero)
                     return new string[0];
 
                 // Marshall the entire databuffer into a string with embedded nulls.
-                string nullDelimitedChatLines = Marshal.PtrToStringAnsi(linesBuffer, (int)bufferSize);
-
-                // Split the marshalled string on the null delimiter, but allow for an extra
-                // element in case of trailing data.
-                string[] splitStringArray = nullDelimitedChatLines.Split(
-                    new char[] { '\0' }, maxLinesToRead + 1, StringSplitOptions.RemoveEmptyEntries);
-
-                string[] chatLineArray = new string[maxLinesToRead];
-
-                // Copy the split array into the array we're returning while removing any
-                // potential extraneous data from the last array slot.
-                Array.ConstrainedCopy(splitStringArray, 0, chatLineArray, 0, maxLinesToRead);
-
-                return chatLineArray;
+                nullDelimitedChatLines = Marshal.PtrToStringUni(pmr.ReadBufferPtr, (int)bufferSize);
             }
-            finally
-            {
-                PInvoke.DoneReadingProcessMemory(linesBuffer);
-            }
-        }
 
-        /// <summary>
-        /// Find the offset for the ending line of the specified log.
-        /// </summary>
-        /// <param name="currentDetails"></param>
-        /// <param name="lineIndex"></param>
-        /// <returns></returns>
-        private int GetLineEndingOffset(ChatLogDetails currentDetails, int lineIndex)
-        {
-            //If this is the very last line index (i.e. the chat log JUST filled up)
-            //make sure we don't step over the bounds.  Instead just set the next
-            //line offset to one byte after the end of the chat log.
-            if (lineIndex == currentDetails.Info.NumberOfLines - 1)
-                return (int)currentDetails.Info.FinalOffset;
-            else
-                return (int)currentDetails.Info.newLogOffsets[lineIndex + 1];
+            // Split the marshalled string on the null delimiter, but allow for an extra
+            // element in case of trailing data.
+            string[] splitStringArray = nullDelimitedChatLines.Split(
+                new char[] { '\0' }, maxLinesToRead, StringSplitOptions.RemoveEmptyEntries);
+
+            string[] chatLineArray = new string[maxLinesToRead];
+
+            // Copy the split array into the array we're returning while removing any
+            // potential extraneous data from the last array slot.
+            Array.ConstrainedCopy(splitStringArray, 0, chatLineArray, 0, maxLinesToRead);
+
+            return chatLineArray;
         }
 
         /// <summary>
@@ -713,14 +676,18 @@ namespace WaywardGamers.KParser.Monitoring
             {
                 // Specify the location that you're searching for the requested string.
                 IntPtr scanAddress = Pointers.IncrementPointer(pol.BaseAddress, scanMemoryOffset);
-                IntPtr scanResults = IntPtr.Zero;
+
+                using (ProcessMemoryReading pmr = new ProcessMemoryReading(pol.Process.Handle, scanAddress, blockSize))
+                {
+                    if (pmr.ReadBufferPtr == IntPtr.Zero)
+                        continue;
+
+                    // Read a chunk of memory and convert it to a byte array.
+                    scanStruct = (MemScanStringStruct)Marshal.PtrToStructure(pmr.ReadBufferPtr, typeof(MemScanStringStruct));
+                }
 
                 try
                 {
-                    // Read a chunk of memory and convert it to a byte array.
-                    scanResults = PInvoke.ReadProcessMemory(pol.Process.Handle, scanAddress, blockSize);
-                    scanStruct = (MemScanStringStruct)Marshal.PtrToStructure(scanResults, typeof(MemScanStringStruct));
-
                     // Convert the byte array to a string for examination.
                     byteString = new string(scanStruct.memScanCharacters);
 
@@ -753,10 +720,6 @@ namespace WaywardGamers.KParser.Monitoring
                 {
                     Logger.Instance.Log(e);
                 }
-                finally
-                {
-                    PInvoke.DoneReadingProcessMemory(scanResults);
-                }
 
                 prevScanMemoryOffset = scanMemoryOffset;
                 scanMemoryOffset += blockOffset;
@@ -778,12 +741,13 @@ namespace WaywardGamers.KParser.Monitoring
                 IntPtr scanAddress = Pointers.IncrementPointer(pol.BaseAddress, scanMemoryOffset);
                 IntPtr scanResults = IntPtr.Zero;
 
+                using (ProcessMemoryReading pmr = new ProcessMemoryReading(pol.Process.Handle, scanAddress, bytesToRead))
+                {
+                    scanStruct = (MemScanAddressStruct)Marshal.PtrToStructure(pmr.ReadBufferPtr, typeof(MemScanAddressStruct));
+                }
+
                 try
                 {
-                    scanResults = PInvoke.ReadProcessMemory(pol.Process.Handle, scanAddress, bytesToRead);
-
-                    scanStruct = (MemScanAddressStruct)Marshal.PtrToStructure(scanResults, typeof(MemScanAddressStruct));
-
                     int j = Array.IndexOf(scanStruct.addressValues, absoluteAddress);
                     if (j >= 0)
                     {
@@ -798,10 +762,6 @@ namespace WaywardGamers.KParser.Monitoring
                 catch (Exception e)
                 {
                     Logger.Instance.Log(e);
-                }
-                finally
-                {
-                    PInvoke.DoneReadingProcessMemory(scanResults);
                 }
 
                 scanMemoryOffset += bytesToRead;
