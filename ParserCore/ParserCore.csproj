@@ -147,7 +147,7 @@
     <Compile Include="Monitors\DatabaseReader\DatabaseReader.cs" />
     <Compile Include="Monitors\LogReader\LogReader.cs" />
     <Compile Include="Monitors\Monitor.cs" />
-    <Compile Include="Monitors\RamReader\MemoryAccess.cs" />
+    <Compile Include="Monitors\RamReader\POLStructures.cs" />
     <Compile Include="Monitors\RamReader\PInvoke.cs" />
     <Compile Include="Monitors\RamReader\RamReader.cs" />
     <Compile Include="Monitors\RamReader\SelectPOLProcess.cs">
