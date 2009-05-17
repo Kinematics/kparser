@@ -14,18 +14,6 @@ namespace WaywardGamers.KParser
         private TimeSpan watermark = new TimeSpan(0, 0, 2);
 
         /// <summary>
-        /// Gets the elapsed time.
-        /// </summary>
-        /// <value>The elapsed time.</value>
-        public TimeSpan ElapsedTime
-        {
-            get
-            {
-                return stopwatch.Elapsed;
-            }
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ProfileRegion"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
@@ -33,7 +21,6 @@ namespace WaywardGamers.KParser
         {
             regionName = name;
 
-            stopwatch.Reset();
             stopwatch.Start();
         }
 
