@@ -102,77 +102,6 @@ namespace WaywardGamers.KParser.Monitoring.Memory
     #endregion
 
     /// <summary>
-    /// Class to handling calling kernal functions.
-    /// </summary>
-    internal class PInvoke
-    {
-        /// <summary>
-        /// Import kernal function to read process memory.
-        /// </summary>
-        /// <param name="processHandle">A handle to the process with memory that is being read.
-        /// The handle must have PROCESS_VM_READ access to the process.</param>
-        /// <param name="address">A pointer to the base address in the specified process from which to read.</param>
-        /// <param name="outputBuffer">A pointer to a buffer that receives the contents from the address
-        /// space of the specified process.</param>
-        /// <param name="nBufferSize">The number of bytes to be read from the specified process.</param>
-        /// <param name="lpNumberOfBytesRead">A pointer to a variable that receives the number of bytes
-        /// transferred into the specified buffer. If lpNumberOfBytesRead is NULL,
-        /// the parameter is ignored.</param>
-        /// <returns>Returns true if completed successfully, false otherwise.</returns>
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern bool ReadProcessMemory(IntPtr processHandle, IntPtr address, IntPtr outputBuffer,
-            UIntPtr nBufferSize, out UIntPtr lpNumberOfBytesRead);
-
-        //[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        //private static extern bool ReadProcessMemory(IntPtr processHandle, IntPtr address, IntPtr outputBuffer,
-        //    UIntPtr nBufferSize, out UIntPtr lpNumberOfBytesRead);
-
-
-        /// <summary>
-        /// Wrapper to read process memory with error handling.
-        /// </summary>
-        /// <param name="processHandle">See above.</param>
-        /// <param name="address">See above.  Note that this is platform-specific,
-        /// so an x64 OS will have a 64 bit pointer.</param>
-        /// <param name="nBytesToRead">See above.</param>
-        /// <returns>Returns a pointer to a global memory buffer.
-        /// Call DoneReadingProcessMemory to release the memory.</returns>
-        internal static IntPtr ReadProcessMemory(IntPtr processHandle, IntPtr address, uint nBytesToRead)
-        {
-            IntPtr buffer = Marshal.AllocHGlobal((int)nBytesToRead);
-
-            UIntPtr bytesRead = UIntPtr.Zero;
-            UIntPtr bytesToRead = (UIntPtr)nBytesToRead;
-
-            if (!ReadProcessMemory(processHandle, address, buffer, bytesToRead, out bytesRead))
-            {
-                int Error = Marshal.GetLastWin32Error();
-                if (Error == 299)	//ERROR_PARTIAL_COPY
-                    return buffer;
-                Marshal.FreeHGlobal(buffer);
-                return IntPtr.Zero;
-            }
-
-            return buffer;
-        }
-
-        internal static void DoneReadingProcessMemory(IntPtr memoryPointer)
-        {
-            if (memoryPointer != IntPtr.Zero)
-            {
-                try
-                {
-                    Marshal.FreeHGlobal(memoryPointer);
-                }
-                catch (Exception e)
-                {
-                    Logger.Instance.Log(e);
-                }
-            }
-        }
-    }
-
-    /// <summary>
     /// Class to handle pointer manipulation.
     /// </summary>
     internal static class Pointers
@@ -200,21 +129,149 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         /// Returns IntPtr.Zero (null pointer) if we are unable to read the memory address.</returns>
         internal static IntPtr FollowPointer(IntPtr processHandle, IntPtr pointerToFollow)
         {
-            IntPtr pointerToRead = IntPtr.Zero;
+            if (pointerToFollow == IntPtr.Zero)
+                throw new ArgumentOutOfRangeException("pointerToFollow", "Cannot dereference a null pointer.");
 
-            try
+            using (ProcessMemoryReading pmr = new ProcessMemoryReading(processHandle, pointerToFollow, (uint)IntPtr.Size))
             {
-                pointerToRead = PInvoke.ReadProcessMemory(processHandle, pointerToFollow, (uint)IntPtr.Size);
-
-                if (pointerToRead == IntPtr.Zero)
+                if (pmr.ReadBufferPtr == IntPtr.Zero)
                     return IntPtr.Zero;
 
-                return Marshal.ReadIntPtr(pointerToRead);
-            }
-            finally
-            {
-                PInvoke.DoneReadingProcessMemory(pointerToRead);
+                return Marshal.ReadIntPtr(pmr.ReadBufferPtr);
             }
         }
+    }
+
+    /// <summary>
+    /// Class to allow encapsulation of accessing process memory in a using() block.
+    /// EG:
+    /// using (ProcessMemoryReading pmr = new ProcessMemoryReading(pol.Process.Handle, bufferStartAddress, (uint)bufferSize))
+    /// {
+    ///     Marshal.PtrToStringUni(pmr.ReadBufferPtr, (int)bufferSize);
+    /// }
+    /// 
+    /// This class automatically disposes/releases the PInvoke pointer at the end of the using clause.
+    /// </summary>
+    internal class ProcessMemoryReading : IDisposable
+    {
+        #region Imported Functionality
+
+        /// <summary>
+        /// Import kernal function to read process memory.
+        /// </summary>
+        /// <param name="processHandle">A handle to the process with memory that is being read.
+        /// The handle must have PROCESS_VM_READ access to the process.</param>
+        /// <param name="address">A pointer to the base address in the specified process from which to read.</param>
+        /// <param name="outputBuffer">A pointer to a buffer that receives the contents from the address
+        /// space of the specified process.</param>
+        /// <param name="nBufferSize">The number of bytes to be read from the specified process.</param>
+        /// <param name="lpNumberOfBytesRead">A pointer to a variable that receives the number of bytes
+        /// transferred into the specified buffer. If lpNumberOfBytesRead is NULL,
+        /// the parameter is ignored.</param>
+        /// <returns>Returns true if completed successfully, false otherwise.</returns>
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern bool ReadProcessMemory(
+            IntPtr processHandle,
+            IntPtr address,
+            IntPtr outputBuffer,
+            uint nBufferSize,
+            ref uint lpNumberOfBytesRead);
+
+        #endregion
+
+        #region Member Variables
+        bool disposed;
+        private IntPtr pointerToMemoryBuffer;
+        #endregion
+
+        #region Properties
+        internal IntPtr ReadBufferPtr
+        {
+            get { return pointerToMemoryBuffer; }
+        }
+        #endregion
+
+        #region Constructor / Destructor
+
+        internal ProcessMemoryReading(IntPtr processHandle, IntPtr address, uint nBytesToRead)
+        {
+            pointerToMemoryBuffer = ReadProcessMemory(processHandle, address, nBytesToRead);
+        }
+
+        ~ProcessMemoryReading()
+        {
+            Dispose(false);
+        }
+        #endregion
+
+        #region Private Functions
+        /// <summary>
+        /// Wrapper to read process memory with error handling.
+        /// </summary>
+        /// <param name="processHandle">See above.</param>
+        /// <param name="address">See above.  Note that this is platform-specific,
+        /// so an x64 OS will have a 64 bit pointer.</param>
+        /// <param name="nBytesToRead">See above.</param>
+        /// <returns>Returns a pointer to a global memory buffer.
+        /// Returns IntPtr.Zero if an error occured in the kernel call.
+        /// Throws an exception if nBytesToRead overflows an int value.
+        /// Call DoneReadingProcessMemory to release the memory.</returns>
+        private IntPtr ReadProcessMemory(IntPtr processHandle, IntPtr address, uint nBytesToRead)
+        {
+            // This will throw an exception on overflow conversion.
+            int bufferBytes = Convert.ToInt32(nBytesToRead);
+
+            IntPtr buffer = Marshal.AllocHGlobal(bufferBytes);
+
+            uint bytesRead = 0;
+
+            if (ReadProcessMemory(processHandle, address, buffer, nBytesToRead, ref bytesRead) == false)
+            {
+                // Returned false, that means an error occured.
+
+                int Error = Marshal.GetLastWin32Error();
+
+                // Go ahead and allow partial copies through
+                if (Error == 299)	//ERROR_PARTIAL_COPY
+                    return buffer;
+
+                // Otherwise release the buffer immediately and return a null pointer.
+                Marshal.FreeHGlobal(buffer);
+                return IntPtr.Zero;
+            }
+
+            return buffer;
+        }
+
+        #endregion
+
+        #region IDisposable Members
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool p)
+        {
+            if (disposed == false)
+            {
+                if (pointerToMemoryBuffer != IntPtr.Zero)
+                {
+                    try
+                    {
+                        Marshal.FreeHGlobal(pointerToMemoryBuffer);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Instance.Log(e);
+                    }
+                }
+
+                disposed = true;
+            }
+        }
+        #endregion
+
     }
 }
