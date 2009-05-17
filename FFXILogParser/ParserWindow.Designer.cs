@@ -61,12 +61,12 @@ namespace WaywardGamers.KParser
             this.toolsMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsTestFunctionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsReparseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.upgradeDatabaseTimestampToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
-            this.upgradeDatabaseTimestampToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip.SuspendLayout();
             this.tabContextMenuStrip.SuspendLayout();
             this.mainMenuStrip.SuspendLayout();
@@ -315,7 +315,7 @@ namespace WaywardGamers.KParser
             this.toolsTestFunctionMenuItem.Name = "toolsTestFunctionMenuItem";
             this.toolsTestFunctionMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.T)));
             this.toolsTestFunctionMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.toolsTestFunctionMenuItem.Text = "Test Function";
+            this.toolsTestFunctionMenuItem.Text = "&Test Function";
             this.toolsTestFunctionMenuItem.Click += new System.EventHandler(this.menuTestItem_Click);
             // 
             // toolsReparseMenuItem
@@ -323,8 +323,15 @@ namespace WaywardGamers.KParser
             this.toolsReparseMenuItem.Name = "toolsReparseMenuItem";
             this.toolsReparseMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
             this.toolsReparseMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.toolsReparseMenuItem.Text = "Reparse";
+            this.toolsReparseMenuItem.Text = "&Reparse";
             this.toolsReparseMenuItem.Click += new System.EventHandler(this.reparseDatabaseToolStripMenuItem_Click);
+            // 
+            // upgradeDatabaseTimestampToolStripMenuItem
+            // 
+            this.upgradeDatabaseTimestampToolStripMenuItem.Name = "upgradeDatabaseTimestampToolStripMenuItem";
+            this.upgradeDatabaseTimestampToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.upgradeDatabaseTimestampToolStripMenuItem.Text = "Reparse w/Timestamp Upgrade";
+            this.upgradeDatabaseTimestampToolStripMenuItem.Click += new System.EventHandler(this.upgradeDatabaseTimestampToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
@@ -360,13 +367,6 @@ namespace WaywardGamers.KParser
             // 
             this.windowsToolStripSeparator.Name = "windowsToolStripSeparator";
             this.windowsToolStripSeparator.Size = new System.Drawing.Size(149, 6);
-            // 
-            // upgradeDatabaseTimestampToolStripMenuItem
-            // 
-            this.upgradeDatabaseTimestampToolStripMenuItem.Name = "upgradeDatabaseTimestampToolStripMenuItem";
-            this.upgradeDatabaseTimestampToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.upgradeDatabaseTimestampToolStripMenuItem.Text = "Reparse w/Timestamp Upgrade";
-            this.upgradeDatabaseTimestampToolStripMenuItem.Click += new System.EventHandler(this.upgradeDatabaseTimestampToolStripMenuItem_Click);
             // 
             // ParserWindow
             // 
