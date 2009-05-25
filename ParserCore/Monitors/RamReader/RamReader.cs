@@ -47,6 +47,8 @@ namespace WaywardGamers.KParser.Monitoring
             // 50 offsets to old log offsets (short): 100 bytes
             // ChatLogInfoStruct block
             sizeOfChatLogInfoStruct = (uint)(Marshal.SizeOf(typeof(ChatLogInfoStruct)));
+
+            sizeOfChatLogControlStruct = (uint)(Marshal.SizeOf(typeof(ChatLogControlStruct)));
         }
 		#endregion
 
@@ -59,8 +61,10 @@ namespace WaywardGamers.KParser.Monitoring
         POL pol;
         uint initialMemoryOffset;
         ChatLogLocationInfo chatLogLocation;
+        ChatLogControlStruct chatLogControl;
 
         uint sizeOfChatLogInfoStruct;
+        uint sizeOfChatLogControlStruct;
 
         bool abortMonitorThread;
         #endregion
@@ -141,6 +145,28 @@ namespace WaywardGamers.KParser.Monitoring
 
             IsRunning = false;
         }
+
+        /// <summary>
+        /// Call this function rather than aborting the thread directly.
+        /// </summary>
+        internal void Abort()
+        {
+            abortMonitorThread = true;
+        }
+
+        /// <summary>
+        /// This is an event handler for if/when FFXI exits while we're still running
+        /// so that we can clean up properly.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        internal void PolExited(object sender, EventArgs e)
+        {
+            // Halt monitoring
+            Stop();
+            pol = null;
+        }
+
         #endregion
 
         #region Monitor RAM
@@ -157,9 +183,26 @@ namespace WaywardGamers.KParser.Monitoring
                 if (FindFFXIProcess(false) == false)
                     return;
 
-                ChatLogDetails oldDetails = null;
-                ChatLogDetails currentDetails;
-                uint highestLineProcessed = 0;
+                //ChatLogDetails oldDetails = null;
+                //ChatLogDetails currentDetails;
+                //int highestLineProcessed = 0;
+                ChatLogInfoStruct chatLogInfo;
+
+                int nextUniqueLineNumber = 0;
+                int lastUniqueLineNumber = 0;
+                
+                int numberOfNewLines;
+                int numberOfNewLinesToRead;
+                int numberOfLinesMissed;
+
+                short firstNewIndex;
+                short firstOldIndex;
+                short oldLogFinalOffset;
+
+                string[] newChatLines;
+                string[] missedChatLines;
+                //string[] linesToProcess;
+
 
                 // Loop until notified to stop or the FFXI process exits.
                 while (abortMonitorThread == false)
@@ -177,9 +220,116 @@ namespace WaywardGamers.KParser.Monitoring
 
                     try
                     {
+                        // Read the control structure from memory to get access to the
+                        // current value of the next unique ID that will be assigned
+                        // to chat log lines.
+                        var chatLogStruct = ReadControlStructure(chatLogLocation.ChatLogControlAddress);
+                        nextUniqueLineNumber = chatLogStruct.NextUniqueChatID;
+
+                        // If we're just starting a parse, update the last unique number and
+                        // restart the loop, to avoid loading in stale data.
+                        if (lastUniqueLineNumber == 0)
+                        {
+                            lastUniqueLineNumber = nextUniqueLineNumber;
+                            continue;
+                        }
+
+                        // If it's higher than our previous value, new lines have been added.
+                        if (nextUniqueLineNumber > lastUniqueLineNumber)
+                        {
+                            //Fetch details such as how many lines are in the chat log, pointers to
+                            //the memory containing the actual text, etc.
+                            chatLogInfo = ReadChatLogDetails(chatLogLocation.ChatLogInfoAddress);
+
+                            // If read failed, it will return null.
+                            //if (currentDetails == null)
+                            //    continue;
+
+                            // Find out how many new lines have been added
+                            numberOfNewLines = nextUniqueLineNumber - lastUniqueLineNumber;
+
+                            // Update for next time through the loop
+                            lastUniqueLineNumber = nextUniqueLineNumber;
+
+                            missedChatLines = new string[0];
+
+                            // If we have more new lines than lines in the current log, that means
+                            // we missed some and they got pushed to the old log.  We need
+                            // to read those from the old log, plus whatever new ones have been
+                            // added to the current log.
+                            if (numberOfNewLines > chatLogInfo.NumberOfLines)
+                            {
+                                // First check to see that we have a pointer to the old chat log.
+                                // If we don't, there's no point in trying to read it.
+                                if (chatLogInfo.OldChatLogPtr != IntPtr.Zero)
+                                {
+                                    // Find out how many of the new chat lines are in the old log.
+                                    numberOfLinesMissed = numberOfNewLines - chatLogInfo.NumberOfLines;
+
+                                    // Old chat log won't have more than 50 lines.
+                                    if (numberOfLinesMissed > 50)
+                                        numberOfLinesMissed = 50;
+
+                                    int firstOldLine = 50 - numberOfLinesMissed;
+                                    firstOldIndex = chatLogInfo.oldLogOffsets[firstOldLine];
+
+                                    // No info is provided on the size of the old chat log array, so have to
+                                    // take an overestimate.  If we go past the normal memory boundaries,
+                                    // the marshalling will still return as much as we were legally allowed
+                                    // to read.
+                                    oldLogFinalOffset = (short)(chatLogInfo.oldLogOffsets[49] + 256);
+
+                                    missedChatLines = ReadChatLines(chatLogInfo.OldChatLogPtr, firstOldIndex,
+                                        oldLogFinalOffset, numberOfLinesMissed);
+                                }
+
+                                // Set the starting index for reading from the new chat log to
+                                // 0 since obviously everything in the current log will be new,
+                                // in addition to the missed lines from the old chat log.
+                                firstNewIndex = 0;
+                                numberOfNewLinesToRead = chatLogInfo.NumberOfLines;
+                            }
+                            else
+                            {
+                                // If we're here, that means that all new lines are in the
+                                // current log.  Figure out what the offset value for the first
+                                // new line in the current chat log is, to be used below.
+
+                                int firstNewLine = chatLogInfo.NumberOfLines - numberOfNewLines;
+                                firstNewIndex = chatLogInfo.newLogOffsets[firstNewLine];
+
+                                numberOfNewLinesToRead = chatLogInfo.NumberOfLines - firstNewLine;
+                            }
+
+
+                            // Read everything from the start of the first new line to the end of the
+                            // new chat log.
+                            newChatLines = ReadChatLines(chatLogInfo.NewChatLogPtr, firstNewIndex,
+                                chatLogInfo.FinalOffset, numberOfNewLinesToRead);
+
+                            // We now have missedChatLines (if any) and newChatLines filled in.
+
+                            // Time to fill in the ChatLine list and notify watchers.
+
+                            // Add chat data to eventArgs array for watchers to process
+                            List<ChatLine> chatData = new List<ChatLine>(missedChatLines.Length + newChatLines.Length);
+
+                            foreach (string line in missedChatLines)
+                                chatData.Add(new ChatLine(line));
+
+                            foreach (string line in newChatLines)
+                                chatData.Add(new ChatLine(line));
+
+                            // Notify watchers
+                            this.OnReaderDataChanged(new ReaderDataEventArgs(chatData));
+
+
+                        }
+
+                        /*
                         //Fetch details such as how many lines are in the chat log, pointers to
                         //the memory containing the actual text, etc.
-                        currentDetails = ReadChatLogDetails(chatLogLocation);
+                        currentDetails = ReadChatLogDetails(chatLogLocation.ChatLogInfoAddress);
 
                         // If read failed, it will return null.
                         if (currentDetails == null)
@@ -195,20 +345,21 @@ namespace WaywardGamers.KParser.Monitoring
                         //up and get copied over to the old log until there is one too many lines.  
                         //And then this log will still contain 1 line, the new one.  Obviously let's
                         //not do anything if they aren't logged in ;-)
-                        if ((currentDetails.Info.NumberOfLines <= 0) || (currentDetails.Info.NumberOfLines > 50))
+                        if ((currentDetails.ChatLogInfo.NumberOfLines <= 0) || (currentDetails.ChatLogInfo.NumberOfLines > 50))
                         {
                             highestLineProcessed = 0;
                             oldDetails = null;
                             continue;
                         }
 
+
                         // Read the chat log strings
-                        string[] newChatLines = ReadChatLines(currentDetails.Info.NewChatLogPtr,
-                            currentDetails.Info.FinalOffset, currentDetails.Info.NumberOfLines);
+                        newChatLines = ReadChatLines(currentDetails.ChatLogInfo.NewChatLogPtr,
+                            currentDetails.ChatLogInfo.FinalOffset, currentDetails.ChatLogInfo.NumberOfLines);
 
                         // Extract the unique line number from the first line so we know where
                         // we are in the chat sequence.
-                        uint firstLineNumber = GetChatLineLineNumber(newChatLines[0]);
+                        int firstLineNumber = (int) GetChatLineLineNumber(newChatLines[0]);
 
                         if (oldDetails == null)
                         {
@@ -218,22 +369,19 @@ namespace WaywardGamers.KParser.Monitoring
                             //when the parser started.
 
                             oldDetails = currentDetails;
-                            highestLineProcessed = firstLineNumber + (uint)currentDetails.Info.NumberOfLines - 1;
+                            highestLineProcessed = firstLineNumber + currentDetails.ChatLogInfo.NumberOfLines - 1;
 
                             continue;
                         }
 
-                        string[] missedChatLines;
-                        string[] linesToProcess = null;
 
                         //It's not our first pass through the loop.  Check if lines were missed
-                        if (firstLineNumber > (highestLineProcessed + 1))
-                        {
-                            // If we're here, that means lines were missed, and we need to get 
-                            // them from the OLD log.  We know that numberOfLinesMissed must be
-                            // 1 or greater.
-                            byte numberOfLinesMissed = (byte)(firstLineNumber - highestLineProcessed - 1);
+                        numberOfLinesMissed = (int)(firstLineNumber - highestLineProcessed - 1);
 
+                        lastUniqueLineNumber = nextUniqueLineNumber;
+
+                        if (numberOfLinesMissed > 0)
+                        {
                             // However we can't deal with more than 50 missed lines. That's as
                             // many as the old log holds.
                             if (numberOfLinesMissed > 50)
@@ -243,11 +391,11 @@ namespace WaywardGamers.KParser.Monitoring
                             // maximum array size) by the number of lines missed.
                             int indexOfFirstMissedLine = 50 - numberOfLinesMissed;
 
-                            IntPtr startOfFirstMissedLine = Pointers.IncrementPointer(currentDetails.Info.OldChatLogPtr,
-                                (uint)currentDetails.Info.oldLogOffsets[indexOfFirstMissedLine]);
+                            IntPtr startOfFirstMissedLine = Pointers.IncrementPointer(currentDetails.ChatLogInfo.OldChatLogPtr,
+                                (uint)currentDetails.ChatLogInfo.oldLogOffsets[indexOfFirstMissedLine]);
 
-                            uint numberOfBytesUntilStartOfLastMissedLine = (uint)(currentDetails.Info.oldLogOffsets[49]
-                                - currentDetails.Info.oldLogOffsets[indexOfFirstMissedLine]);
+                            uint numberOfBytesUntilStartOfLastMissedLine = (uint)(currentDetails.ChatLogInfo.oldLogOffsets[49]
+                                - currentDetails.ChatLogInfo.oldLogOffsets[indexOfFirstMissedLine]);
 
                             //There is a field "FinalOffset" in the main Chat log meta struct that tells
                             //us where the last byte of actual chat log text is for the NEW log.  Unfortunately
@@ -279,18 +427,18 @@ namespace WaywardGamers.KParser.Monitoring
                             // We have probably already processed some of the lines in the current array.
                             // So the only ones we want to copy to the array of items to process are ones
                             // with a line number higher that the highest line number we've seen.
-                            uint indexOfFirstLineToProcess = (highestLineProcessed + 1) - firstLineNumber;
-                            int numberOfNewLines = (int)(currentDetails.Info.NumberOfLines - indexOfFirstLineToProcess);
+                            int indexOfFirstLineToProcess = (highestLineProcessed + 1) - firstLineNumber;
+                            numberOfNewLines = currentDetails.ChatLogInfo.NumberOfLines - indexOfFirstLineToProcess;
 
                             linesToProcess = new string[numberOfNewLines];
-                            Array.ConstrainedCopy(newChatLines, (int)indexOfFirstLineToProcess, linesToProcess, 0, numberOfNewLines);
+                            Array.ConstrainedCopy(newChatLines, (int)indexOfFirstLineToProcess, linesToProcess, 0, (int)numberOfNewLines);
                         }
 
 
 
                         if ((linesToProcess != null) && (linesToProcess.Length > 0))
                         {
-                            highestLineProcessed = GetChatLineLineNumber(linesToProcess[linesToProcess.Length - 1]);
+                            highestLineProcessed = (int) GetChatLineLineNumber(linesToProcess[linesToProcess.Length - 1]);
 
                             // Add chat data to eventArgs array for watchers to process
                             List<ChatLine> chatData = new List<ChatLine>(linesToProcess.Length);
@@ -306,6 +454,7 @@ namespace WaywardGamers.KParser.Monitoring
 
                         // Set for the next time through the loop
                         oldDetails = currentDetails;
+                        */
                     }
                     catch (Exception e)
                     {
@@ -326,14 +475,6 @@ namespace WaywardGamers.KParser.Monitoring
                 Logger.Instance.Log(e);
             }
         }
-
-        /// <summary>
-        /// Call this function rather than aborting the thread directly.
-        /// </summary>
-        internal void Abort()
-        {
-            abortMonitorThread = true;
-        }
         #endregion
 
         #region Utility functions for reading memory data
@@ -344,21 +485,21 @@ namespace WaywardGamers.KParser.Monitoring
         /// <param name="chatLogLocation"></param>
         /// <returns>Returns a completed ChatLogDetails object if successful.
         /// If unsuccessful, returns null.</returns>
-        private ChatLogDetails ReadChatLogDetails(ChatLogLocationInfo chatLogLocation)
+        private ChatLogInfoStruct ReadChatLogDetails(IntPtr chatLogInfoAddress)
         {
             IntPtr lineOffsetsBuffer = IntPtr.Zero;
 
-            using (ProcessMemoryReading pmr = new ProcessMemoryReading(pol.Process.Handle, chatLogLocation.ChatLogOffset, sizeOfChatLogInfoStruct))
+            using (ProcessMemoryReading pmr = new ProcessMemoryReading(pol.Process.Handle, chatLogInfoAddress, sizeOfChatLogInfoStruct))
             {
-                if (pmr.ReadBufferPtr == IntPtr.Zero)
-                    return null;
+                return (ChatLogInfoStruct)Marshal.PtrToStructure(pmr.ReadBufferPtr, typeof(ChatLogInfoStruct));
 
-                ChatLogDetails details = new ChatLogDetails();
+                //if (pmr.ReadBufferPtr == IntPtr.Zero)
+                //    return null;
 
-                // Copy the structure from memory buffer to managed class.
-                details.Info = (ChatLogInfoStruct)Marshal.PtrToStructure(pmr.ReadBufferPtr, typeof(ChatLogInfoStruct));
+                //// Copy the structure from memory buffer to managed class.
+                //ChatLogDetails details = new ChatLogDetails((ChatLogInfoStruct)Marshal.PtrToStructure(pmr.ReadBufferPtr, typeof(ChatLogInfoStruct)));
 
-                return details;
+                //return details;
             }
         }
 
@@ -370,7 +511,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// <param name="bufferSize">The size of the buffer being read.</param>
         /// <param name="maxLinesToRead">Maximum number of lines to read.</param>
         /// <returns>Returns an array of strings from the buffer.</returns>
-        private string[] ReadChatLines(IntPtr bufferStartAddress, short bufferSize, byte maxLinesToRead)
+        private string[] ReadChatLines(IntPtr bufferStartAddress, short bufferSize, int maxLinesToRead)
         {
             if (maxLinesToRead == 0)
                 return new string[0];
@@ -388,7 +529,7 @@ namespace WaywardGamers.KParser.Monitoring
                     return new string[0];
 
                 // Marshall the entire databuffer into a string with embedded nulls.
-                nullDelimitedChatLines = Marshal.PtrToStringUni(pmr.ReadBufferPtr, (int)bufferSize);
+                nullDelimitedChatLines = Marshal.PtrToStringAnsi(pmr.ReadBufferPtr, (int)bufferSize);
             }
 
             // Split the marshalled string on the null delimiter, but allow for an extra
@@ -403,6 +544,62 @@ namespace WaywardGamers.KParser.Monitoring
             Array.ConstrainedCopy(splitStringArray, 0, chatLineArray, 0, maxLinesToRead);
 
             return chatLineArray;
+        }
+
+        private string[] ReadChatLines(IntPtr bufferStartAddress, short startingIndex, short limitIndex, int linesToRead)
+        {
+            if (bufferStartAddress == IntPtr.Zero)
+                throw new ArgumentNullException("bufferStartAddress");
+
+            if (linesToRead > 50)
+                throw new ArgumentOutOfRangeException("linesToRead", linesToRead, "Cannot request more than 50 lines at a time.");
+
+            if (startingIndex < 0)
+                throw new ArgumentOutOfRangeException("startingIndex", startingIndex, "Invalid start point.");
+
+            if (limitIndex < 1)
+                throw new ArgumentOutOfRangeException("limitIndex", limitIndex, "Invalid end point.");
+
+            if (startingIndex >= limitIndex)
+                throw new ArgumentOutOfRangeException("startingIndex", startingIndex, "Starting index is higher than the limit.");
+
+            if (linesToRead < 1)
+                return new string[0];
+
+            int length = limitIndex - startingIndex;
+            byte[] byteBuffer = new byte[length];
+
+            // Read the raw databuffer from the process space
+            using (ProcessMemoryReading pmr = new ProcessMemoryReading(pol.Process.Handle, bufferStartAddress, (uint) startingIndex, (uint)limitIndex))
+            {
+                if (pmr.ReadBufferPtr == IntPtr.Zero)
+                    return new string[0];
+
+                Marshal.Copy(pmr.ReadBufferPtr, byteBuffer, 0, length);
+            }
+
+            char[] transitionBuffer = new char[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                transitionBuffer[i] = (char)byteBuffer[i];
+            }
+
+            string nullDelimitedChatLines = new string(transitionBuffer, 0, length);
+
+            // Split the marshalled string on the null delimiter, but allow for an extra
+            // element in case of trailing data.
+            string[] splitStringArray = nullDelimitedChatLines.Split(
+                new char[] { '\0' }, linesToRead + 1, StringSplitOptions.RemoveEmptyEntries);
+
+            string[] chatLineArray = new string[linesToRead];
+
+            // Copy the split array into the array we're returning while removing any
+            // potential extraneous data from the last array slot.
+            Array.ConstrainedCopy(splitStringArray, 0, chatLineArray, 0, linesToRead);
+
+            return chatLineArray;
+
         }
 
         /// <summary>
@@ -505,64 +702,56 @@ namespace WaywardGamers.KParser.Monitoring
 
         /// <summary>
         /// This function digs into the FFXI address space to locate the
-        /// address of where the chat log data is stored.
+        /// address of where the chat log data is stored.  This info is
+        /// saved in the class variable chatLogLocation.
         /// </summary>
         private void LocateChatLog()
         {
-            // Loop until we find the address, or the thread is requested to stop
-            while (abortMonitorThread == false)
+            // initialMemoryOffset is the offset to the address that contains the
+            // first pointer in the hierarchy of FFXI's chat log data structures.
+            // It is an offset from the base address that FFXIMain.dll is loaded at.
+            // This is a pointer to a data structure we want to read.
+            IntPtr rootAddress = Pointers.IncrementPointer(pol.FFXIBaseAddress, initialMemoryOffset);
+
+            //Dereference that pointer to get our next address.
+            IntPtr dataStructurePointer = Pointers.FollowPointer(pol.Process.Handle, rootAddress);
+
+            if (dataStructurePointer == IntPtr.Zero)
             {
-                //FFXIMainStaticOffset is the offset to the address that contains the
-                //first pointer in the hierarchy of FFXI's chat log data structures.  Obviously,
-                //it is an offset from the base address that FFXIMain.dll is loaded at.
-                // :: This is a pointer to a data structure we want to read
-                IntPtr rootAddress = Pointers.IncrementPointer(pol.BaseAddress, initialMemoryOffset);
-
-                //Dereference that pointer to get our next address.
-                IntPtr dataStructurePointer = Pointers.FollowPointer(pol.Process.Handle, rootAddress);
-
-                if (dataStructurePointer == IntPtr.Zero)
-                {
-                    Trace.WriteLine("Error dereferencing first pointer.");
-                    System.Threading.Thread.Sleep(700);
-                    continue;
-                }
-
-                //This is just the way it is (discovered through trial and error).  4 bytes from
-                //where the first pointer takes us is where the second pointer of interest lives.
-                // :: The second dword of the data structure is a pointer to our location of interest.
-                IntPtr fieldPointer = Pointers.IncrementPointer(dataStructurePointer, 4);
-
-
-                //Follow the second pointer inside the address space of the FFXI process.
-                IntPtr destination = Pointers.FollowPointer(pol.Process.Handle, fieldPointer);
-                if (destination == IntPtr.Zero)
-                {
-                    Trace.WriteLine("Error dereferencing second pointer.");
-                    System.Threading.Thread.Sleep(700);
-                    continue;
-                }
-
-                //Finally, we've arrived at the address of the "line offsets arrays".  
-                //Save this, as we'll read the Line Offsets arrays later, and also use it
-                //to get to other chat log related information.
-                chatLogLocation = new ChatLogLocationInfo(destination);
-
-                return;
+                throw new InvalidOperationException("Error dereferencing memloc pointer.");
             }
+
+            chatLogControl = ReadControlStructure(dataStructurePointer);
+
+            if (chatLogControl.ChatLogInfoPtr == IntPtr.Zero)
+            {
+                throw new InvalidOperationException("Control structure chat info pointer is zero.");
+            }
+
+            chatLogLocation = new ChatLogLocationInfo(dataStructurePointer, chatLogControl.ChatLogInfoPtr);
         }
 
         /// <summary>
-        /// This is an event handler for if/when FFXI exits while we're still running
-        /// so that we can clean up properly.
+        /// Read the ChatLogControlStruct from the memory location specified in the IntPtr parameter.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        internal void PolExited(object sender, EventArgs e)
+        /// <param name="dataStructurePointer">Where in POL process memory to look for the
+        /// ChatLogControlStruct.</param>
+        /// <returns>Returns the extracted ChatLogControlStruct.  Throws an exception on
+        /// an invalid read (null address pointer provided in the parameter).</returns>
+        internal ChatLogControlStruct ReadControlStructure(IntPtr dataStructurePointer)
         {
-            // Halt monitoring
-            Stop();
-            pol = null;
+            // The general memloc points to a control structure that handles some metadata on
+            // the chat log.  This includes the unique line IDs and the pointer to more chat
+            // log metadata that describes where all the chat log data actually is.
+
+            using (ProcessMemoryReading pmr = new ProcessMemoryReading(pol.Process.Handle, dataStructurePointer, sizeOfChatLogControlStruct))
+            {
+                if (pmr.ReadBufferPtr == IntPtr.Zero)
+                    throw new InvalidOperationException("Error reading chat log control structure.");
+
+                // Copy the structure from memory buffer to managed class.
+                return (ChatLogControlStruct)Marshal.PtrToStructure(pmr.ReadBufferPtr, typeof(ChatLogControlStruct));
+            }
         }
         #endregion
 
@@ -675,7 +864,7 @@ namespace WaywardGamers.KParser.Monitoring
             for (int i = 0; i < 64000; i++)
             {
                 // Specify the location that you're searching for the requested string.
-                IntPtr scanAddress = Pointers.IncrementPointer(pol.BaseAddress, scanMemoryOffset);
+                IntPtr scanAddress = Pointers.IncrementPointer(pol.FFXIBaseAddress, scanMemoryOffset);
 
                 using (ProcessMemoryReading pmr = new ProcessMemoryReading(pol.Process.Handle, scanAddress, blockSize))
                 {
@@ -729,7 +918,7 @@ namespace WaywardGamers.KParser.Monitoring
         [Conditional("DEBUG")]
         private void FindAddress(uint address)
         {
-            uint absoluteAddress = address + (uint)pol.BaseAddress.ToInt32();
+            uint absoluteAddress = address + (uint)pol.FFXIBaseAddress.ToInt32();
 
             uint scanMemoryOffset = 0;
             MemScanAddressStruct scanStruct = new MemScanAddressStruct();
@@ -738,7 +927,7 @@ namespace WaywardGamers.KParser.Monitoring
 
             for (int i = 0; i < 64000; i++)
             {
-                IntPtr scanAddress = Pointers.IncrementPointer(pol.BaseAddress, scanMemoryOffset);
+                IntPtr scanAddress = Pointers.IncrementPointer(pol.FFXIBaseAddress, scanMemoryOffset);
                 IntPtr scanResults = IntPtr.Zero;
 
                 using (ProcessMemoryReading pmr = new ProcessMemoryReading(pol.Process.Handle, scanAddress, bytesToRead))
@@ -751,12 +940,12 @@ namespace WaywardGamers.KParser.Monitoring
                     int j = Array.IndexOf(scanStruct.addressValues, absoluteAddress);
                     if (j >= 0)
                     {
-                        uint pointerLocation = (uint) (scanAddress.ToInt32() + (j * 4) - pol.BaseAddress.ToInt32());
+                        uint pointerLocation = (uint) (scanAddress.ToInt32() + (j * 4) - pol.FFXIBaseAddress.ToInt32());
 
                         Debug.WriteLine(
                             string.Format(
                             "Scan Address 0x{0:x8} + Index j ({1}) * 4 - Base address 0x{2:x8} = Pointer location 0x{3:x8}\n",
-                            scanAddress.ToInt32(), j, pol.BaseAddress.ToInt32(), pointerLocation));
+                            scanAddress.ToInt32(), j, pol.FFXIBaseAddress.ToInt32(), pointerLocation));
                     }
                 }
                 catch (Exception e)
@@ -773,17 +962,15 @@ namespace WaywardGamers.KParser.Monitoring
         {
             try
             {
-                uint checkAddress = checkRelativeAddress + (uint)pol.BaseAddress.ToInt32();
+                uint checkAddress = checkRelativeAddress + (uint)pol.FFXIBaseAddress.ToInt32();
 
                 //Dereference that pointer to get our next address.
                 IntPtr dataStructurePointer = new IntPtr(checkAddress);
 
-                ChatLogLocationInfo scanChatLogLocation = new ChatLogLocationInfo(dataStructurePointer);
+                ChatLogInfoStruct examineDetails = ReadChatLogDetails(dataStructurePointer);
 
-                ChatLogDetails examineDetails = ReadChatLogDetails(scanChatLogLocation);
-
-                string[] scanChatLines = ReadChatLines(examineDetails.Info.NewChatLogPtr,
-                        examineDetails.Info.FinalOffset, examineDetails.Info.NumberOfLines);
+                string[] scanChatLines = ReadChatLines(examineDetails.NewChatLogPtr,
+                        examineDetails.FinalOffset, examineDetails.NumberOfLines);
             }
             catch (Exception e)
             {
