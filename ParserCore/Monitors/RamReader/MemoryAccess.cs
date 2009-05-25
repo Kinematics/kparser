@@ -195,7 +195,12 @@ namespace WaywardGamers.KParser.Monitoring.Memory
 
         internal ProcessMemoryReading(IntPtr processHandle, IntPtr address, uint nBytesToRead)
         {
-            pointerToMemoryBuffer = ReadProcessMemory(processHandle, address, nBytesToRead);
+            pointerToMemoryBuffer = ReadProcessMemory(processHandle, address, 0, nBytesToRead);
+        }
+
+        internal ProcessMemoryReading(IntPtr processHandle, IntPtr address, uint startingOffset, uint nBytesToRead)
+        {
+            pointerToMemoryBuffer = ReadProcessMemory(processHandle, address, startingOffset, nBytesToRead);
         }
 
         ~ProcessMemoryReading()
@@ -216,16 +221,18 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         /// Returns IntPtr.Zero if an error occured in the kernel call.
         /// Throws an exception if nBytesToRead overflows an int value.
         /// Call DoneReadingProcessMemory to release the memory.</returns>
-        private IntPtr ReadProcessMemory(IntPtr processHandle, IntPtr address, uint nBytesToRead)
+        private IntPtr ReadProcessMemory(IntPtr processHandle, IntPtr address, uint startingOffset, uint nBytesToRead)
         {
             // This will throw an exception on overflow conversion.
             int bufferBytes = Convert.ToInt32(nBytesToRead);
 
             IntPtr buffer = Marshal.AllocHGlobal(bufferBytes);
 
+            IntPtr startAddress = new IntPtr(address.ToInt32() + startingOffset);
+
             uint bytesRead = 0;
 
-            if (ReadProcessMemory(processHandle, address, buffer, nBytesToRead, ref bytesRead) == false)
+            if (ReadProcessMemory(processHandle, startAddress, buffer, nBytesToRead, ref bytesRead) == false)
             {
                 // Returned false, that means an error occured.
 
