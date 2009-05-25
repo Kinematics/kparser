@@ -11,52 +11,84 @@ namespace WaywardGamers.KParser.Monitoring.Memory
     internal class POL
     {
         internal Process Process { get; private set; }
-        internal IntPtr BaseAddress { get; private set; }
+        internal IntPtr FFXIBaseAddress { get; private set; }
 
         internal POL(Process process, IntPtr address)
         {
             Process = process;
-            BaseAddress = address;
+            FFXIBaseAddress = address;
         }
     }
 
     internal class ChatLogLocationInfo
     {
-        internal IntPtr ChatLogOffset { get; private set; }
+        internal IntPtr ChatLogControlAddress { get; private set; }
+        internal IntPtr ChatLogInfoAddress { get; private set; }
 
-        internal ChatLogLocationInfo(IntPtr offset)
+        internal ChatLogLocationInfo(IntPtr controlAddress, IntPtr infoAddress)
         {
-            ChatLogOffset = offset;
+            ChatLogControlAddress = controlAddress;
+            ChatLogInfoAddress = infoAddress;
         }
     }
 
     internal class ChatLogDetails
     {
-        internal ChatLogInfoStruct Info;
+        internal ChatLogInfoStruct ChatLogInfo { get; private set; }
+
+        public ChatLogDetails(ChatLogInfoStruct chatLogInfo)
+        {
+            ChatLogInfo = chatLogInfo;
+        }
 
         public override bool Equals(object obj)
         {
             ChatLogDetails rhs = obj as ChatLogDetails;
             if (rhs == null)
                 return false;
-            if (Info.NumberOfLines != rhs.Info.NumberOfLines)
+            if (ChatLogInfo.NumberOfLines != rhs.ChatLogInfo.NumberOfLines)
                 return false;
-            if (Info.NewChatLogPtr != rhs.Info.NewChatLogPtr)
+            if (ChatLogInfo.NewChatLogPtr != rhs.ChatLogInfo.NewChatLogPtr)
                 return false;
-            if (Info.OldChatLogPtr != rhs.Info.OldChatLogPtr)
+            if (ChatLogInfo.OldChatLogPtr != rhs.ChatLogInfo.OldChatLogPtr)
                 return false;
-            if (Info.FinalOffset != rhs.Info.FinalOffset)
+            if (ChatLogInfo.FinalOffset != rhs.ChatLogInfo.FinalOffset)
                 return false;
-            if (Info.ChatLogBytes != rhs.Info.ChatLogBytes)
+            if (ChatLogInfo.ChatLogBytes != rhs.ChatLogInfo.ChatLogBytes)
                 return false;
             return true;
         }
 
         public override int GetHashCode()
         {
-            return Info.NewChatLogPtr.GetHashCode() ^ Info.OldChatLogPtr.GetHashCode();
+            return ChatLogInfo.NewChatLogPtr.GetHashCode() ^ ChatLogInfo.OldChatLogPtr.GetHashCode();
         }
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct ChatLogControlStruct
+    {
+        internal uint Unknown1;
+
+        internal IntPtr ChatLogInfoPtr; // Points to ChatLogInfoStruct
+
+        internal int NextUniqueChatID;
+
+        internal IntPtr UnknownPtr1;
+
+        internal uint Dummy1;
+        internal uint Dummy2;
+        internal uint Dummy3;
+
+        internal uint Unknown2;
+
+        internal short Unknown3;
+        internal short Unknown4;
+        internal short Unknown5;
+        internal short Unknown6;
+
+    }
+
 
     [StructLayout(LayoutKind.Sequential)]
     internal struct ChatLogInfoStruct
@@ -67,11 +99,12 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 50)]
         internal short[] oldLogOffsets;
 
-        internal byte NumberOfLines;
+        internal int NumberOfLines;
+        //internal byte NumberOfLines;
 
-        internal byte dummy1;
-        internal byte dummy2;
-        internal byte dummy3;
+        //internal byte dummy1;
+        //internal byte dummy2;
+        //internal byte dummy3;
 
         internal IntPtr NewChatLogPtr;
         internal IntPtr OldChatLogPtr;
