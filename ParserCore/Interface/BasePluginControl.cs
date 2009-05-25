@@ -422,6 +422,13 @@ namespace WaywardGamers.KParser.Plugin
             return mobStrings.ToArray();
         }
         #endregion
+
+        #region Event Handlers
+        private void richTextBox_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(e.LinkText);
+        }
+        #endregion
     }
 
     public static class BasePluginExtensionMethods
