@@ -134,6 +134,7 @@ namespace WaywardGamers.KParser.Plugin
             DateTime lasttime;
 
             string buffName;
+            bool firstEntryShown;
 
             foreach (var player in buffs)
             {
@@ -161,12 +162,18 @@ namespace WaywardGamers.KParser.Plugin
 
                 foreach (var buff in player.Buffs)
                 {
+                    firstEntryShown = false;
                     buffName = buff.BuffName;
+
+                    if ((buff.SelfTargeted.Count() > 0) || (buff.BuffTargets.Count() > 0))
+                    {
+                        sb.AppendFormat("{0,-20}", buffName);
+                    }
 
                     if (buff.SelfTargeted.Count() > 0)
                     {
-                        sb.AppendFormat("{0,-20}", buffName);
                         sb.AppendFormat("{0,-20}", "Self");
+                        firstEntryShown = true;
 
                         var allDistinctBuffs = buff.SelfTargeted.Distinct(new KPDatabaseDataSet.InteractionTimestampComparer());
                         used = allDistinctBuffs.Count();
@@ -203,17 +210,20 @@ namespace WaywardGamers.KParser.Plugin
 
                         sb.Append("\n");
                     }
-                    else
+                    
+                    if (buff.BuffTargets.Count() > 0)
                     {
                         foreach (var target in buff.BuffTargets)
                         {
-                            sb.AppendFormat("{0,-20}", buffName);
-                            buffName = "";
+                            if (firstEntryShown == true)
+                                sb.AppendFormat("{0,-20}", string.Empty);
 
                             used = target.Buffs.Count();
 
                             sb.AppendFormat("{0,-20}", target.TargetName);
                             sb.AppendFormat("{0,7}", used);
+
+                            firstEntryShown = true;
 
                             if (used > 1)
                             {
