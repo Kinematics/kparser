@@ -1,6 +1,17 @@
 KParser Change Log
 
 
+1.3.9 (May 28, 2009)
+* Significant rewrite of RAM monitoring code for simplified detection and better handling of message tracking.
+* Link detection and handling is added to the tabs' text boxes.  This means that if a URL shows up in the Chat tab (must start with http://), you can click on it to open the link in a browser window.
+* Adjust parsing to allow 5-digit numbers, for instances of over 10,000 damage being done.
+* Start adjusting code to better handle different OS locales.
+- On Items tab, details view, times were not being converted to local timezone.  Corrected.
+- Fix typo that caused counters to be listed as retaliations.
+- Bug fix: The Thief plugin occasionally had a null reference when checking weaponskill usage.
+- Bug fix: Self-cast AOE buffs weren't showing everyone who was affected by the spell in the Buffs tab.
+
+
 1.3.8 (April 24, 2009)
 * Update the default memloc after the patch on April 22.
 - Fix issue where missed ranged attacks were not getting added to an associated battle properly.  This meant that all display filters other than 'All' always reported 100% ranged accuracy.  Older data will need to be reparsed to get correct values.
