@@ -419,6 +419,42 @@ namespace WaywardGamers.KParser.Parsing
 
                 if (msg == null)
                 {
+                    // Secondary check to see if we have a primary message code line
+                    // with ecodes of 0.  Shouldn't normally be able to attach to these,
+                    // but that rule doesn't always hold.  We should attach to a same-type
+                    // message code before an alt message code. [Note: is this always valid?]
+                    msg = searchSet.LastOrDefault(m =>
+                        ((m.PrimaryMessageCode == mcode) &&
+                         ((m.ExtraCode1 == 0) && (m.ExtraCode2 == 0)) &&
+                         (m.EventDetails != null) &&
+                         ((m.Timestamp >= minTimestamp) || (m.Timestamp == lastTimestamp)) &&
+                         (m.EventDetails.CombatDetails != null) &&
+                         (m.EventDetails.CombatDetails.ActorName != string.Empty) &&
+                         (
+                          (m.EventDetails.CombatDetails.Targets.Count == 0) ||
+                          (
+                           (parsedMessage == null) ||
+                           (
+                            (parsedMessage.EventDetails.CombatDetails.Targets.Count > 0) &&
+                            (m.EventDetails.CombatDetails.Targets.Any(t =>
+                               t.Name == parsedMessage.EventDetails.CombatDetails.Targets.First().Name) == false) &&
+                            ((m.EventDetails.CombatDetails.Targets.Any(t =>
+                               t.EffectName == parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName) == true) ||
+                             (parsedMessage.EventDetails.CombatDetails.Targets.First().EffectName == string.Empty)) &&
+                            (m.EventDetails.CombatDetails.Targets.Any(t =>
+                               t.EntityType == parsedMessage.EventDetails.CombatDetails.Targets.First().EntityType) == true) &&
+                            ((parsedMessage.EventDetails.CombatDetails.Targets.First().RecoveryType == RecoveryType.None) ||
+                             (m.EventDetails.CombatDetails.Targets.Any(t =>
+                               t.RecoveryType == parsedMessage.EventDetails.CombatDetails.Targets.First().RecoveryType))
+                            )
+                           )
+                          )
+                         ) &&
+                         (m.EventDetails.CombatDetails.HasAdditionalEffect == false)));
+                }
+
+                if (msg == null)
+                {
                     // If no message found, and we're given an altCode list, check each of those.
                     if (altCodes != null)
                     {
@@ -435,7 +471,8 @@ namespace WaywardGamers.KParser.Parsing
                              (m.EventDetails.CombatDetails != null) &&
                              ((m.ExtraCode1 != 0) ||
                               (m.ExtraCode2 != 0) ||
-                              (m.EventDetails.CombatDetails.AidType == AidType.Item)
+                              (m.EventDetails.CombatDetails.AidType == AidType.Item) ||
+                              (m.EventDetails.CombatDetails.AidType == AidType.Enhance)
                              ) &&
                              ((m.Timestamp >= minTimestamp) || (m.Timestamp == lastTimestamp)) &&
                              (m.EventDetails.CombatDetails.ActorName != string.Empty) &&
