@@ -545,9 +545,21 @@ namespace WaywardGamers.KParser.Plugin
                         {
                             if (nextWS != null)
                             {
-                                if ((nextWS.Timestamp < nextMelee.Timestamp) ||
-                                    (nextMelee.Timestamp == firstAction.Timestamp))
+                                // But only if we have a melee action to check against
+                                if (nextMelee != null)
                                 {
+                                    if ((nextWS.Timestamp < nextMelee.Timestamp) ||
+                                        (nextMelee.Timestamp == firstAction.Timestamp))
+                                    {
+                                        sataDamage = nextWS;
+                                        sataEvent.ActionType = ActionType.Weaponskill;
+                                        sataEvent.SATASuccess = true;
+                                    }
+                                }
+                                else
+                                {
+                                    // If no melee, and we have a weaponskill within a minute,
+                                    // use the weaponskill
                                     sataDamage = nextWS;
                                     sataEvent.ActionType = ActionType.Weaponskill;
                                     sataEvent.SATASuccess = true;
