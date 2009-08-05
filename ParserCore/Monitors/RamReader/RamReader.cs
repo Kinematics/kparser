@@ -668,7 +668,7 @@ namespace WaywardGamers.KParser.Monitoring
                                 {
                                     if (string.Compare(module.ModuleName, "ffximain.dll", true) == 0)
                                     {
-                                        Trace.WriteLine(string.Format("Module: {0}  Base Address: {1:X8}", module.ModuleName, module.BaseAddress));
+                                        Trace.WriteLine(string.Format("Module: {0}  Base Address: 0x{1:X8}", module.ModuleName, (uint)module.BaseAddress));
                                         pol = new POL(process, module.BaseAddress);
                                         process.Exited += new EventHandler(PolExited);
                                         // Turn this off if scanning ram:
@@ -688,13 +688,10 @@ namespace WaywardGamers.KParser.Monitoring
                 catch (Exception e)
                 {
                     Logger.Instance.Log("Memory access", String.Format(Thread.CurrentThread.Name + ": ERROR: An exception occured while trying to connect to Final Fantasy.  Message = {0}", e.Message));
-                    System.Threading.Thread.Sleep(5000);
                 }
-                finally
-                {
-                    // Wait before trying again.
-                    System.Threading.Thread.Sleep(5000);
-                }
+
+                // Wait before trying again.
+                System.Threading.Thread.Sleep(5000);
             }
 
             return false;
