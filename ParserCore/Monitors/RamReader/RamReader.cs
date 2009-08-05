@@ -239,7 +239,7 @@ namespace WaywardGamers.KParser.Monitoring
                         {
                             //Fetch details such as how many lines are in the chat log, pointers to
                             //the memory containing the actual text, etc.
-                            chatLogInfo = ReadChatLogDetails(chatLogLocation.ChatLogInfoAddress);
+                            chatLogInfo = ReadChatLogDetails(chatLogStruct.ChatLogInfoPtr);
 
                             // If read failed, it will return null.
                             //if (currentDetails == null)
