@@ -296,9 +296,10 @@ namespace WaywardGamers.KParser.Monitoring
                                 // new line in the current chat log is, to be used below.
 
                                 int firstNewLine = chatLogInfo.NumberOfLines - numberOfNewLines;
+
                                 firstNewIndex = chatLogInfo.newLogOffsets[firstNewLine];
 
-                                numberOfNewLinesToRead = chatLogInfo.NumberOfLines - firstNewLine;
+                                numberOfNewLinesToRead = numberOfNewLines;
                             }
 
 
