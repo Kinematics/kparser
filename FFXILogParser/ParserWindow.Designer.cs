@@ -67,6 +67,7 @@ namespace WaywardGamers.KParser
             this.windowsMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
+            this.closeAllTabsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip.SuspendLayout();
             this.tabContextMenuStrip.SuspendLayout();
             this.mainMenuStrip.SuspendLayout();
@@ -349,7 +350,8 @@ namespace WaywardGamers.KParser
             // 
             this.windowsMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aboutToolStripMenuItem,
-            this.windowsToolStripSeparator});
+            this.windowsToolStripSeparator,
+            this.closeAllTabsToolStripMenuItem});
             this.windowsMenu.Name = "windowsMenu";
             this.windowsMenu.Size = new System.Drawing.Size(62, 20);
             this.windowsMenu.Text = "Windows";
@@ -367,6 +369,13 @@ namespace WaywardGamers.KParser
             // 
             this.windowsToolStripSeparator.Name = "windowsToolStripSeparator";
             this.windowsToolStripSeparator.Size = new System.Drawing.Size(149, 6);
+            // 
+            // closeAllTabsToolStripMenuItem
+            // 
+            this.closeAllTabsToolStripMenuItem.Name = "closeAllTabsToolStripMenuItem";
+            this.closeAllTabsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.closeAllTabsToolStripMenuItem.Text = "Close All Tabs";
+            this.closeAllTabsToolStripMenuItem.Click += new System.EventHandler(this.closeAllTabsToolStripMenuItem_Click);
             // 
             // ParserWindow
             // 
@@ -431,5 +440,6 @@ namespace WaywardGamers.KParser
         private System.Windows.Forms.ToolStripMenuItem copyTabasRTFToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyTabInfoAsBBCodeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem upgradeDatabaseTimestampToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem closeAllTabsToolStripMenuItem;
     }
 }
