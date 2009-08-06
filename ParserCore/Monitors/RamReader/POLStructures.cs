@@ -32,39 +32,6 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         }
     }
 
-    internal class ChatLogDetails
-    {
-        internal ChatLogInfoStruct ChatLogInfo { get; private set; }
-
-        public ChatLogDetails(ChatLogInfoStruct chatLogInfo)
-        {
-            ChatLogInfo = chatLogInfo;
-        }
-
-        public override bool Equals(object obj)
-        {
-            ChatLogDetails rhs = obj as ChatLogDetails;
-            if (rhs == null)
-                return false;
-            if (ChatLogInfo.NumberOfLines != rhs.ChatLogInfo.NumberOfLines)
-                return false;
-            if (ChatLogInfo.NewChatLogPtr != rhs.ChatLogInfo.NewChatLogPtr)
-                return false;
-            if (ChatLogInfo.OldChatLogPtr != rhs.ChatLogInfo.OldChatLogPtr)
-                return false;
-            if (ChatLogInfo.FinalOffset != rhs.ChatLogInfo.FinalOffset)
-                return false;
-            if (ChatLogInfo.ChatLogBytes != rhs.ChatLogInfo.ChatLogBytes)
-                return false;
-            return true;
-        }
-
-        public override int GetHashCode()
-        {
-            return ChatLogInfo.NewChatLogPtr.GetHashCode() ^ ChatLogInfo.OldChatLogPtr.GetHashCode();
-        }
-    }
-
     [StructLayout(LayoutKind.Sequential)]
     internal struct ChatLogControlStruct
     {
@@ -72,7 +39,7 @@ namespace WaywardGamers.KParser.Monitoring.Memory
 
         internal IntPtr ChatLogInfoPtr; // Points to ChatLogInfoStruct
 
-        internal int NextUniqueChatID;
+        internal int NumberOfLinesInChatHistory;
 
         internal IntPtr UnknownPtr1;
 
@@ -110,6 +77,39 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         internal IntPtr OldChatLogPtr;
         internal int ChatLogBytes;
         internal short FinalOffset;
+    }
+
+    internal class ChatLogInfoClass
+    {
+        readonly internal ChatLogInfoStruct ChatLogInfo;
+
+        public ChatLogInfoClass(ChatLogInfoStruct chatLogInfo)
+        {
+            ChatLogInfo = chatLogInfo;
+        }
+
+        public override bool Equals(object obj)
+        {
+            ChatLogInfoClass rhs = obj as ChatLogInfoClass;
+            if (rhs == null)
+                return false;
+            if (ChatLogInfo.NumberOfLines != rhs.ChatLogInfo.NumberOfLines)
+                return false;
+            if (ChatLogInfo.NewChatLogPtr != rhs.ChatLogInfo.NewChatLogPtr)
+                return false;
+            if (ChatLogInfo.OldChatLogPtr != rhs.ChatLogInfo.OldChatLogPtr)
+                return false;
+            if (ChatLogInfo.FinalOffset != rhs.ChatLogInfo.FinalOffset)
+                return false;
+            if (ChatLogInfo.ChatLogBytes != rhs.ChatLogInfo.ChatLogBytes)
+                return false;
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            return ChatLogInfo.NewChatLogPtr.GetHashCode() ^ ChatLogInfo.OldChatLogPtr.GetHashCode();
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]
