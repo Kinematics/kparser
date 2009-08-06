@@ -183,25 +183,25 @@ namespace WaywardGamers.KParser.Monitoring
                 if (FindFFXIProcess(false) == false)
                     return;
 
-                //ChatLogDetails oldDetails = null;
-                //ChatLogDetails currentDetails;
-                //int highestLineProcessed = 0;
-                ChatLogInfoStruct chatLogInfo;
+                ChatLogInfoClass oldDetails = null;
+                ChatLogInfoClass currentDetails;
+                int highestLineProcessed = 0;
+                //ChatLogInfoStruct chatLogInfo;
 
-                int nextUniqueLineNumber = 0;
-                int lastUniqueLineNumber = 0;
+                //int nextUniqueLineNumber = 0;
+                //int lastUniqueLineNumber = 0;
                 
                 int numberOfNewLines;
-                int numberOfNewLinesToRead;
+                //int numberOfNewLinesToRead;
                 int numberOfLinesMissed;
 
-                short firstNewIndex;
-                short firstOldIndex;
-                short oldLogFinalOffset;
+                //short firstNewIndex;
+                //short firstOldIndex;
+                //short oldLogFinalOffset;
 
                 string[] newChatLines;
                 string[] missedChatLines;
-                //string[] linesToProcess;
+                string[] linesToProcess;
 
 
                 // Loop until notified to stop or the FFXI process exits.
@@ -220,11 +220,13 @@ namespace WaywardGamers.KParser.Monitoring
 
                     try
                     {
+
+                        /*
                         // Read the control structure from memory to get access to the
                         // current value of the next unique ID that will be assigned
                         // to chat log lines.
                         var chatLogStruct = ReadControlStructure(chatLogLocation.ChatLogControlAddress);
-                        nextUniqueLineNumber = chatLogStruct.NextUniqueChatID;
+                        nextUniqueLineNumber = chatLogStruct.NumberOfLinesInChatHistory;
 
                         // If we're just starting a parse, update the last unique number and
                         // restart the loop, to avoid loading in stale data.
@@ -323,14 +325,14 @@ namespace WaywardGamers.KParser.Monitoring
 
                             // Notify watchers
                             this.OnReaderDataChanged(new ReaderDataEventArgs(chatData));
-
-
                         }
+                        */
 
-                        /*
+                        
                         //Fetch details such as how many lines are in the chat log, pointers to
                         //the memory containing the actual text, etc.
-                        currentDetails = ReadChatLogDetails(chatLogLocation.ChatLogInfoAddress);
+                        var chatInfoStruct = ReadChatLogDetails(chatLogLocation.ChatLogInfoAddress);
+                        currentDetails = new ChatLogInfoClass(chatInfoStruct);
 
                         // If read failed, it will return null.
                         if (currentDetails == null)
@@ -342,10 +344,7 @@ namespace WaywardGamers.KParser.Monitoring
                             continue;
 
                         //If there are zero lines in the NEW chat log, they are not logged into
-                        //the game (e.g. at the character selection screen).  The log doesn't fill
-                        //up and get copied over to the old log until there is one too many lines.  
-                        //And then this log will still contain 1 line, the new one.  Obviously let's
-                        //not do anything if they aren't logged in ;-)
+                        //the game (e.g. at the character selection screen).
                         if ((currentDetails.ChatLogInfo.NumberOfLines <= 0) || (currentDetails.ChatLogInfo.NumberOfLines > 50))
                         {
                             highestLineProcessed = 0;
@@ -360,7 +359,7 @@ namespace WaywardGamers.KParser.Monitoring
 
                         // Extract the unique line number from the first line so we know where
                         // we are in the chat sequence.
-                        int firstLineNumber = (int) GetChatLineLineNumber(newChatLines[0]);
+                        int firstLineNumber = GetChatLineLineNumber(newChatLines[0]);
 
                         if (oldDetails == null)
                         {
@@ -377,9 +376,9 @@ namespace WaywardGamers.KParser.Monitoring
 
 
                         //It's not our first pass through the loop.  Check if lines were missed
-                        numberOfLinesMissed = (int)(firstLineNumber - highestLineProcessed - 1);
+                        numberOfLinesMissed = firstLineNumber - highestLineProcessed - 1;
 
-                        lastUniqueLineNumber = nextUniqueLineNumber;
+                        //lastUniqueLineNumber = nextUniqueLineNumber;
 
                         if (numberOfLinesMissed > 0)
                         {
@@ -455,7 +454,7 @@ namespace WaywardGamers.KParser.Monitoring
 
                         // Set for the next time through the loop
                         oldDetails = currentDetails;
-                        */
+                        
                     }
                     catch (Exception e)
                     {
@@ -538,11 +537,44 @@ namespace WaywardGamers.KParser.Monitoring
             string[] splitStringArray = nullDelimitedChatLines.Split(
                 new char[] { '\0' }, maxLinesToRead, StringSplitOptions.RemoveEmptyEntries);
 
-            string[] chatLineArray = new string[maxLinesToRead];
+            int numberOfLinesToCopy = splitStringArray.Length;
+
+            // Check the last entry for bogus data from reading past the end in the OldChatLog
+            string lastLine = splitStringArray[splitStringArray.Length - 1];
+
+            // Sample line: 01,00,00,80808080,00000019,00000017,0010,00,01,01,00,.. etc
+
+            // Check length of the header values of the message line, not counting the line itself.
+            if (lastLine.Length < 50)
+            {
+                // If it fails, don't copy it
+                numberOfLinesToCopy--;
+            }
+            else
+            {
+                if (lastLine.Substring(2, 1) != ",")
+                {
+                    // If the third character isn't a comma, don't copy it
+                    numberOfLinesToCopy--;
+                }
+                else
+                {
+                    // If the first two characters aren't hex digits, don't copy it
+                    uint firstNumber = 0;
+                    if (uint.TryParse(lastLine.Substring(0, 2), System.Globalization.NumberStyles.AllowHexSpecifier, null, out firstNumber) == false)
+                        numberOfLinesToCopy--;
+                }
+            }
+
+            // Make sure we're under our max lines limit
+            if (numberOfLinesToCopy > maxLinesToRead)
+                numberOfLinesToCopy = maxLinesToRead;
+
+            string[] chatLineArray = new string[numberOfLinesToCopy];
 
             // Copy the split array into the array we're returning while removing any
             // potential extraneous data from the last array slot.
-            Array.ConstrainedCopy(splitStringArray, 0, chatLineArray, 0, maxLinesToRead);
+            Array.ConstrainedCopy(splitStringArray, 0, chatLineArray, 0, numberOfLinesToCopy);
 
             return chatLineArray;
         }
@@ -608,10 +640,17 @@ namespace WaywardGamers.KParser.Monitoring
         /// in tracking line position while monitoring RAM.
         /// </summary>
         /// <param name="chatLine">The chat line string.</param>
-        /// <returns>The parsed out line number.</returns>
-        private uint GetChatLineLineNumber(string chatLine)
+        /// <returns>The parsed out line number.  Returns -1 if unable to get valid data parsed.</returns>
+        private int GetChatLineLineNumber(string chatLine)
         {
-            return uint.Parse(chatLine.Substring(27, 8), System.Globalization.NumberStyles.AllowHexSpecifier);
+            if (chatLine == null)
+                throw new ArgumentNullException();
+
+            if (chatLine.Length < 35)
+                throw new ArgumentOutOfRangeException("chatLine", chatLine, "Invalid chat line length.");
+
+            // Parse it.  If it fails, it will throw an exception.
+            return int.Parse(chatLine.Substring(27, 8), System.Globalization.NumberStyles.AllowHexSpecifier);
         }
         #endregion
 
