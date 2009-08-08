@@ -283,12 +283,13 @@ namespace WaywardGamers.KParser.Messages
         [Test]
         public void TestTokenizeTimestampPluginLOGCorruptedConversion()
         {
-            DateTime timestamp = DateTime.Now;
+            DateTime timestamp = DateTime.Now.ToUniversalTime();
 
             DateTime pluginTimestamp = DateTime.Today;
             pluginTimestamp = pluginTimestamp.AddHours(0);
             pluginTimestamp = pluginTimestamp.AddMinutes(40);
             pluginTimestamp = pluginTimestamp.AddSeconds(54);
+            pluginTimestamp = pluginTimestamp.ToUniversalTime();
 
             string chatText = "01,00,00,80808080,00000009,00000009,001c,00,01,01,00,・00:40:54] Aluri : hello";
 
