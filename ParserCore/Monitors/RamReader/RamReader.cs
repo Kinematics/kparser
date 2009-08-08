@@ -199,9 +199,13 @@ namespace WaywardGamers.KParser.Monitoring
                 //short firstOldIndex;
                 //short oldLogFinalOffset;
 
-                string[] newChatLines;
-                string[] missedChatLines;
-                string[] linesToProcess;
+                //string[] newChatLines;
+                //string[] missedChatLines;
+                //string[] linesToProcess;
+
+                byte[][] newChatLinesBytes;
+                byte[][] missedChatLinesBytes;
+                byte[][] linesToProcessBytes;
 
 
                 // Loop until notified to stop or the FFXI process exits.
@@ -343,8 +347,9 @@ namespace WaywardGamers.KParser.Monitoring
                         if (currentDetails.Equals(oldDetails))
                             continue;
 
-                        //If there are zero lines in the NEW chat log, they are not logged into
-                        //the game (e.g. at the character selection screen).
+                        // If there are zero lines in the NEW chat log, they are not logged into
+                        // the game (e.g. at the character selection screen).  Loop in a holding
+                        // pattern.
                         if ((currentDetails.ChatLogInfo.NumberOfLines <= 0) || (currentDetails.ChatLogInfo.NumberOfLines > 50))
                         {
                             highestLineProcessed = 0;
@@ -354,12 +359,12 @@ namespace WaywardGamers.KParser.Monitoring
 
 
                         // Read the chat log strings
-                        newChatLines = ReadChatLines(currentDetails.ChatLogInfo.NewChatLogPtr,
+                        newChatLinesBytes = ReadChatLinesAsByteArrays(currentDetails.ChatLogInfo.PtrToCurrentChatLog,
                             currentDetails.ChatLogInfo.FinalOffset, currentDetails.ChatLogInfo.NumberOfLines);
 
                         // Extract the unique line number from the first line so we know where
                         // we are in the chat sequence.
-                        int firstLineNumber = GetChatLineLineNumber(newChatLines[0]);
+                        int firstLineNumber = GetChatLineLineNumber(newChatLinesBytes[0]);
 
                         if (oldDetails == null)
                         {
@@ -378,8 +383,6 @@ namespace WaywardGamers.KParser.Monitoring
                         //It's not our first pass through the loop.  Check if lines were missed
                         numberOfLinesMissed = firstLineNumber - highestLineProcessed - 1;
 
-                        //lastUniqueLineNumber = nextUniqueLineNumber;
-
                         if (numberOfLinesMissed > 0)
                         {
                             // However we can't deal with more than 50 missed lines. That's as
@@ -391,36 +394,36 @@ namespace WaywardGamers.KParser.Monitoring
                             // maximum array size) by the number of lines missed.
                             int indexOfFirstMissedLine = 50 - numberOfLinesMissed;
 
-                            IntPtr startOfFirstMissedLine = Pointers.IncrementPointer(currentDetails.ChatLogInfo.OldChatLogPtr,
-                                (uint)currentDetails.ChatLogInfo.oldLogOffsets[indexOfFirstMissedLine]);
+                            IntPtr startOfFirstMissedLine = Pointers.IncrementPointer(currentDetails.ChatLogInfo.PtrToPreviousChatLog,
+                                (uint)currentDetails.ChatLogInfo.prevLogOffsets[indexOfFirstMissedLine]);
 
-                            uint numberOfBytesUntilStartOfLastMissedLine = (uint)(currentDetails.ChatLogInfo.oldLogOffsets[49]
-                                - currentDetails.ChatLogInfo.oldLogOffsets[indexOfFirstMissedLine]);
+                            uint numberOfBytesUntilStartOfLastMissedLine = (uint)(currentDetails.ChatLogInfo.prevLogOffsets[49]
+                                - currentDetails.ChatLogInfo.prevLogOffsets[indexOfFirstMissedLine]);
 
-                            //There is a field "FinalOffset" in the main Chat log meta struct that tells
-                            //us where the last byte of actual chat log text is for the NEW log.  Unfortunately
-                            //there is no analogous field for the OLD log.  Because of this, the best
-                            //we can do is overestimate.  This has the nasty side effect of leading to 
-                            //rare ReadProcessMemory() errors where we attempt to read past the end
-                            //of a memory region, and into a block with different protection settings.
-                            //Fortunately, even though ReadProcessMemory() returns an error in this case
-                            //we can sleep well knowing we got everything we needed.
-                            short totalBytesToRead = (short)(numberOfBytesUntilStartOfLastMissedLine + 240);
+                            // There is a field "FinalOffset" in the main Chat log meta struct that tells
+                            // us where the last byte of actual chat log text is for the NEW log.  Unfortunately
+                            // there is no analogous field for the OLD log.  Because of this, the best
+                            // we can do is overestimate.  This has the nasty side effect of leading to 
+                            // rare ReadProcessMemory() errors where we attempt to read past the end
+                            // of a memory region, and into a block with different protection settings.
+                            // Fortunately, even though ReadProcessMemory() returns an error in this case
+                            // we can sleep well knowing we got everything we needed.
+                            short totalBytesToRead = (short)(numberOfBytesUntilStartOfLastMissedLine + 295);
 
                             // Read lines from the old chat log.
-                            missedChatLines = ReadChatLines(startOfFirstMissedLine, totalBytesToRead, numberOfLinesMissed);
+                            missedChatLinesBytes = ReadChatLinesAsByteArrays(startOfFirstMissedLine, totalBytesToRead, numberOfLinesMissed);
 
                             // We know we missed lines or we wouldn't be here.  On the other hand, when 
                             // we tried to read them we got back nothing.  Log a warning and continue.
-                            if (missedChatLines.Length == 0)
+                            if (missedChatLinesBytes.Length == 0)
                                 Trace.WriteLine(String.Format(Thread.CurrentThread.Name + ": Chat monitor missed line(s) [{0}, {1}]",
                                     indexOfFirstMissedLine, indexOfFirstMissedLine + numberOfLinesMissed));
 
                             // Make a single array containing all missed lines plus all new lines.
-                            linesToProcess = new string[missedChatLines.Length + newChatLines.Length];
+                            linesToProcessBytes = new byte[missedChatLinesBytes.GetLength(0) + newChatLinesBytes.GetLength(0)][];
 
-                            Array.ConstrainedCopy(missedChatLines, 0, linesToProcess, 0, missedChatLines.Length);
-                            Array.ConstrainedCopy(newChatLines, 0, linesToProcess, missedChatLines.Length, newChatLines.Length);
+                            Array.ConstrainedCopy(missedChatLinesBytes, 0, linesToProcessBytes, 0, missedChatLinesBytes.GetLength(0));
+                            Array.ConstrainedCopy(newChatLinesBytes, 0, linesToProcessBytes, missedChatLinesBytes.GetLength(0), newChatLinesBytes.GetLength(0));
                         }
                         else
                         {
@@ -430,20 +433,20 @@ namespace WaywardGamers.KParser.Monitoring
                             int indexOfFirstLineToProcess = (highestLineProcessed + 1) - firstLineNumber;
                             numberOfNewLines = currentDetails.ChatLogInfo.NumberOfLines - indexOfFirstLineToProcess;
 
-                            linesToProcess = new string[numberOfNewLines];
-                            Array.ConstrainedCopy(newChatLines, (int)indexOfFirstLineToProcess, linesToProcess, 0, (int)numberOfNewLines);
+                            linesToProcessBytes = new byte[numberOfNewLines][];
+                            Array.ConstrainedCopy(newChatLinesBytes, (int)indexOfFirstLineToProcess, linesToProcessBytes, 0, (int)numberOfNewLines);
                         }
 
 
 
-                        if ((linesToProcess != null) && (linesToProcess.Length > 0))
+                        if ((linesToProcessBytes != null) && (linesToProcessBytes.GetLength(0) > 0))
                         {
-                            highestLineProcessed = (int) GetChatLineLineNumber(linesToProcess[linesToProcess.Length - 1]);
+                            highestLineProcessed = (int)GetChatLineLineNumber(linesToProcessBytes[linesToProcessBytes.GetLength(0) - 1]);
 
                             // Add chat data to eventArgs array for watchers to process
-                            List<ChatLine> chatData = new List<ChatLine>(linesToProcess.Length);
+                            List<ChatLine> chatData = new List<ChatLine>(linesToProcessBytes.GetLength(0));
 
-                            foreach (string newLine in linesToProcess)
+                            foreach (var newLine in linesToProcessBytes)
                             {
                                 chatData.Add(new ChatLine(newLine));
                             }
@@ -475,6 +478,7 @@ namespace WaywardGamers.KParser.Monitoring
                 Logger.Instance.Log(e);
             }
         }
+
         #endregion
 
         #region Utility functions for reading memory data
@@ -511,7 +515,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// <param name="bufferSize">The size of the buffer being read.</param>
         /// <param name="maxLinesToRead">Maximum number of lines to read.</param>
         /// <returns>Returns an array of strings from the buffer.</returns>
-        private string[] ReadChatLines(IntPtr bufferStartAddress, short bufferSize, int maxLinesToRead)
+        private string[] ReadChatLinesAsStrings(IntPtr bufferStartAddress, short bufferSize, int maxLinesToRead)
         {
             if (maxLinesToRead == 0)
                 return new string[0];
@@ -533,9 +537,10 @@ namespace WaywardGamers.KParser.Monitoring
             }
 
             // Split the marshalled string on the null delimiter, but allow for an extra
-            // element in case of trailing data.
+            // element in case of trailing data (otherwise it gets embedded in the last
+            // entry).
             string[] splitStringArray = nullDelimitedChatLines.Split(
-                new char[] { '\0' }, maxLinesToRead, StringSplitOptions.RemoveEmptyEntries);
+                new char[] { '\0' }, maxLinesToRead + 1, StringSplitOptions.RemoveEmptyEntries);
 
             int numberOfLinesToCopy = splitStringArray.Length;
 
@@ -579,60 +584,76 @@ namespace WaywardGamers.KParser.Monitoring
             return chatLineArray;
         }
 
-        private string[] ReadChatLines(IntPtr bufferStartAddress, short startingIndex, short limitIndex, int linesToRead)
+        /// <summary>
+        /// Read memory starting at the provided buffer point and break
+        /// it out into an array of strings.
+        /// </summary>
+        /// <param name="bufferStart">Where to start reading.</param>
+        /// <param name="bufferSize">The size of the buffer being read.</param>
+        /// <param name="maxLinesToRead">Maximum number of lines to read.</param>
+        /// <returns>Returns an array of strings from the buffer.</returns>
+        private byte[][] ReadChatLinesAsByteArrays(IntPtr bufferStartAddress, short bufferSize, int maxLinesToRead)
         {
-            if (bufferStartAddress == IntPtr.Zero)
-                throw new ArgumentNullException("bufferStartAddress");
+            if (maxLinesToRead == 0)
+                return new byte[0][];
 
-            if (linesToRead > 50)
-                throw new ArgumentOutOfRangeException("linesToRead", linesToRead, "Cannot request more than 50 lines at a time.");
+            // Don't try to read more than 50 lines
+            if (maxLinesToRead > 50)
+                maxLinesToRead = 50;
 
-            if (startingIndex < 0)
-                throw new ArgumentOutOfRangeException("startingIndex", startingIndex, "Invalid start point.");
-
-            if (limitIndex < 1)
-                throw new ArgumentOutOfRangeException("limitIndex", limitIndex, "Invalid end point.");
-
-            if (startingIndex >= limitIndex)
-                throw new ArgumentOutOfRangeException("startingIndex", startingIndex, "Starting index is higher than the limit.");
-
-            if (linesToRead < 1)
-                return new string[0];
-
-            int length = limitIndex - startingIndex;
-            byte[] byteBuffer = new byte[length];
+            byte[] byteArrayOfAllChatLines = new byte[bufferSize];
+            byte[][] arrayOfArraysOfChatLineBytes = new byte[maxLinesToRead][];
 
             // Read the raw databuffer from the process space
-            using (ProcessMemoryReading pmr = new ProcessMemoryReading(pol.Process.Handle, bufferStartAddress, (uint) startingIndex, (uint)limitIndex))
+            using (ProcessMemoryReading pmr = new ProcessMemoryReading(pol.Process.Handle, bufferStartAddress, (uint)bufferSize))
             {
                 if (pmr.ReadBufferPtr == IntPtr.Zero)
-                    return new string[0];
+                    return new byte[0][];
 
-                Marshal.Copy(pmr.ReadBufferPtr, byteBuffer, 0, length);
+                // Marshal the buffer data as a byte array.
+                Marshal.Copy(pmr.ReadBufferPtr, byteArrayOfAllChatLines, 0, bufferSize);
             }
 
-            char[] transitionBuffer = new char[length];
+            // If nothing got marshalled, return empty string array.
+            if (byteArrayOfAllChatLines.Length == 0)
+                return new byte[0][];
 
-            for (int i = 0; i < length; i++)
+            // Extract out the null-delimited string elements from the full byte array.  No encoding is done at this point.
+
+            int fullByteArrayStartIndex = 0;
+            int fullByteArray0Index = 0;
+            int subarrayLength = 0;
+
+            for (int i = 0; i < maxLinesToRead; i++)
             {
-                transitionBuffer[i] = (char)byteBuffer[i];
+                if (fullByteArrayStartIndex < byteArrayOfAllChatLines.Length)
+                {
+                    fullByteArray0Index = Array.IndexOf<byte>(byteArrayOfAllChatLines, 0, fullByteArrayStartIndex);
+
+                    if (fullByteArray0Index > fullByteArrayStartIndex)
+                    {
+                        subarrayLength = fullByteArray0Index - fullByteArrayStartIndex;
+                        arrayOfArraysOfChatLineBytes[i] = new byte[subarrayLength];
+                        Array.ConstrainedCopy(byteArrayOfAllChatLines, fullByteArrayStartIndex, arrayOfArraysOfChatLineBytes[i], 0, subarrayLength);
+
+                        fullByteArrayStartIndex = fullByteArray0Index + 1;
+                    }
+                }
             }
 
-            string nullDelimitedChatLines = new string(transitionBuffer, 0, length);
+            // Sample line: 01,00,00,80808080,00000019,00000017,0010,00,01,01,00,.. etc
 
-            // Split the marshalled string on the null delimiter, but allow for an extra
-            // element in case of trailing data.
-            string[] splitStringArray = nullDelimitedChatLines.Split(
-                new char[] { '\0' }, linesToRead + 1, StringSplitOptions.RemoveEmptyEntries);
+            // Ok, all substrings should be in their own byte arrays in arrayOfArraysOfChatLineBytes.
+            // We now need to convert them to strings with appropriate encoding.
 
-            string[] chatLineArray = new string[linesToRead];
+            string[] chatLineArray = new string[maxLinesToRead];
 
-            // Copy the split array into the array we're returning while removing any
-            // potential extraneous data from the last array slot.
-            Array.ConstrainedCopy(splitStringArray, 0, chatLineArray, 0, linesToRead);
+            for (int i = 0; i < maxLinesToRead; i++)
+            {
+                chatLineArray[i] = System.Text.Encoding.GetEncoding("Shift-JIS").GetString(arrayOfArraysOfChatLineBytes[i]);
+            }
 
-            return chatLineArray;
-
+            return arrayOfArraysOfChatLineBytes;
         }
 
         /// <summary>
@@ -652,6 +673,20 @@ namespace WaywardGamers.KParser.Monitoring
             // Parse it.  If it fails, it will throw an exception.
             return int.Parse(chatLine.Substring(27, 8), System.Globalization.NumberStyles.AllowHexSpecifier);
         }
+
+        private int GetChatLineLineNumber(byte[] chatLine)
+        {
+            if (chatLine == null)
+                throw new ArgumentNullException();
+
+            if (chatLine.Length < 50)
+                throw new ArgumentOutOfRangeException("chatLine", chatLine, "Invalid chat line length.");
+
+            string str = System.Text.Encoding.ASCII.GetString(chatLine, 27, 8);
+
+            return int.Parse(str, System.Globalization.NumberStyles.AllowHexSpecifier);
+        }
+
         #endregion
 
         #region Process Location Methods
@@ -1007,7 +1042,7 @@ namespace WaywardGamers.KParser.Monitoring
 
                 ChatLogInfoStruct examineDetails = ReadChatLogDetails(dataStructurePointer);
 
-                string[] scanChatLines = ReadChatLines(examineDetails.NewChatLogPtr,
+                byte[][] scanChatLines = ReadChatLinesAsByteArrays(examineDetails.PtrToCurrentChatLog,
                         examineDetails.FinalOffset, examineDetails.NumberOfLines);
             }
             catch (Exception e)
