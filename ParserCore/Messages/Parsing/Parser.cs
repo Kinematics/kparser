@@ -204,10 +204,24 @@ namespace WaywardGamers.KParser.Parsing
                     message.ChatDetails.ChatMessageType = ChatMessageType.Linkshell;
                     message.ChatDetails.ChatSpeakerName = "-Linkshell-";
                     message.ChatDetails.ChatSpeakerType = SpeakerType.Unknown;
+                    message.ChatDetails.FullChatText = message.CompleteMessageText;
                     message.SetParseSuccess(true);
                     break;
                 case 0xce:
-                    message.SystemDetails.SystemMessageType = SystemMessageType.Echo;
+                    if (message.CompleteMessageText.StartsWith("KP:", StringComparison.InvariantCultureIgnoreCase) ||
+                        message.CompleteMessageText.StartsWith("KPARSER:", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        message.SetMessageCategory(MessageCategoryType.Chat);
+                        message.ChatDetails.ChatMessageType = ChatMessageType.Echo;
+                        message.ChatDetails.ChatSpeakerName = "-Echo-";
+                        message.ChatDetails.ChatSpeakerType = SpeakerType.Self;
+                        message.ChatDetails.FullChatText = message.CompleteMessageText;
+                        message.SetParseSuccess(true);
+                    }
+                    else
+                    {
+                        message.SystemDetails.SystemMessageType = SystemMessageType.Echo;
+                    }
                     break;
                 case 0xd0:
                     message.SystemDetails.SystemMessageType = SystemMessageType.Examine;
@@ -226,6 +240,7 @@ namespace WaywardGamers.KParser.Parsing
                     message.ChatDetails.ChatMessageType = ChatMessageType.Arena;
                     message.ChatDetails.ChatSpeakerName = "-Arena-";
                     message.ChatDetails.ChatSpeakerType = SpeakerType.NPC;
+                    message.ChatDetails.FullChatText = message.CompleteMessageText;
                     message.SetParseSuccess(true);
                     break;
                 default:

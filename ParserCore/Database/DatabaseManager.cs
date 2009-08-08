@@ -345,7 +345,8 @@ namespace WaywardGamers.KParser
                 // First delete all non-Arena rows in the message table.
                 foreach (KPDatabaseDataSet.ChatMessagesRow row in localDB.ChatMessages)
                 {
-                    if ((ChatMessageType)row.ChatType != ChatMessageType.Arena)
+                    if (((ChatMessageType)row.ChatType != ChatMessageType.Arena) &&
+                        ((ChatMessageType)row.ChatType != ChatMessageType.Echo))
                         row.Delete();
                 }
 
