@@ -61,21 +61,30 @@ namespace WaywardGamers.KParser.Monitoring.Memory
     internal struct ChatLogInfoStruct
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 50)]
-        internal short[] newLogOffsets;
+        internal short[] currLogOffsets;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 50)]
-        internal short[] oldLogOffsets;
+        internal short[] prevLogOffsets;
 
+        // Number of lines currently stored in the new log offsets list
         internal int NumberOfLines;
-        //internal byte NumberOfLines;
 
-        //internal byte dummy1;
-        //internal byte dummy2;
-        //internal byte dummy3;
+        // Pointer to the buffers that store the current/previous log buffers
+        internal IntPtr PtrToCurrentChatLog;
+        internal IntPtr PtrToPreviousChatLog;
 
-        internal IntPtr NewChatLogPtr;
-        internal IntPtr OldChatLogPtr;
+        // The number of bytes allocated in the current log buffer.
+        // This value seems to default to 3200 bytes, and doubles to 6400 bytes when needed.
+        // Maximum length chat line (English) is 175 bytes, including the 53 bytes used by
+        // the header values.  JP text can use 2 bytes per character, so presumably max
+        // length for a JP line would be about 295 bytes.  That would put the maximum
+        // buffer length at 14,750 bytes.
+        // Observed buffer size progression each time the current buffer length is exceeded:
+        // 3200, 6400, 9600 bytes.  Predicted additional progression for maximum JP text
+        // would be 12,800 and 16,000 bytes.
         internal int ChatLogBytes;
+
+        // The total number of bytes used by 'real' chat lines in the current chat buffer.
         internal short FinalOffset;
     }
 
@@ -95,9 +104,9 @@ namespace WaywardGamers.KParser.Monitoring.Memory
                 return false;
             if (ChatLogInfo.NumberOfLines != rhs.ChatLogInfo.NumberOfLines)
                 return false;
-            if (ChatLogInfo.NewChatLogPtr != rhs.ChatLogInfo.NewChatLogPtr)
+            if (ChatLogInfo.PtrToCurrentChatLog != rhs.ChatLogInfo.PtrToCurrentChatLog)
                 return false;
-            if (ChatLogInfo.OldChatLogPtr != rhs.ChatLogInfo.OldChatLogPtr)
+            if (ChatLogInfo.PtrToPreviousChatLog != rhs.ChatLogInfo.PtrToPreviousChatLog)
                 return false;
             if (ChatLogInfo.FinalOffset != rhs.ChatLogInfo.FinalOffset)
                 return false;
@@ -108,7 +117,7 @@ namespace WaywardGamers.KParser.Monitoring.Memory
 
         public override int GetHashCode()
         {
-            return ChatLogInfo.NewChatLogPtr.GetHashCode() ^ ChatLogInfo.OldChatLogPtr.GetHashCode();
+            return ChatLogInfo.PtrToCurrentChatLog.GetHashCode() ^ ChatLogInfo.PtrToPreviousChatLog.GetHashCode();
         }
     }
 
