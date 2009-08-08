@@ -64,7 +64,7 @@ namespace WaywardGamers.KParser.Plugin
                     {
 
                         start = sb.Length;
-                        sb.AppendFormat("[{0}] ", row.Timestamp.ToLongTimeString());
+                        sb.AppendFormat("[{0}] ", row.Timestamp.ToLocalTime().ToLongTimeString());
 
                         strModList.Add(new StringMods
                         {
