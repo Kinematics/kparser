@@ -1827,7 +1827,17 @@ namespace WaywardGamers.KParser.Plugin
         protected void categoryCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (flagNoUpdate == false)
-                HandleDataset(fakeDatabaseChanges);
+            {
+                try
+                {
+                    HandleDataset(fakeDatabaseChanges);
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.Instance.Log(ex);
+                }
+            }
 
             flagNoUpdate = false;
         }
@@ -1836,8 +1846,16 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (flagNoUpdate == false)
             {
-                ResetAndUpdateAccumulation();
-                HandleDataset(fakeDatabaseChanges);
+                try
+                {
+                    ResetAndUpdateAccumulation();
+                    HandleDataset(fakeDatabaseChanges);
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.Instance.Log(ex);
+                }
             }
 
             flagNoUpdate = false;
@@ -1853,12 +1871,20 @@ namespace WaywardGamers.KParser.Plugin
 
             if (flagNoUpdate == false)
             {
-                UpdateMobList();
-                flagNoUpdate = true;
-                mobsCombo.CBSelectIndex(0);
+                try
+                {
+                    UpdateMobList();
+                    flagNoUpdate = true;
+                    mobsCombo.CBSelectIndex(0);
 
-                ResetAndUpdateAccumulation();
-                HandleDataset(fakeDatabaseChanges);
+                    ResetAndUpdateAccumulation();
+                    HandleDataset(fakeDatabaseChanges);
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.Instance.Log(ex);
+                }
             }
 
             flagNoUpdate = false;
@@ -1874,12 +1900,20 @@ namespace WaywardGamers.KParser.Plugin
 
             if (flagNoUpdate == false)
             {
-                UpdateMobList();
-                flagNoUpdate = true;
-                mobsCombo.CBSelectIndex(0);
+                try
+                {
+                    UpdateMobList();
+                    flagNoUpdate = true;
+                    mobsCombo.CBSelectIndex(0);
 
-                ResetAndUpdateAccumulation();
-                HandleDataset(fakeDatabaseChanges);
+                    ResetAndUpdateAccumulation();
+                    HandleDataset(fakeDatabaseChanges);
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.Instance.Log(ex);
+                }
             }
 
             flagNoUpdate = false;
@@ -1901,8 +1935,16 @@ namespace WaywardGamers.KParser.Plugin
 
             if (flagNoUpdate == false)
             {
-                ResetAndUpdateAccumulation();
-                HandleDataset(fakeDatabaseChanges);
+                try
+                {
+                    ResetAndUpdateAccumulation();
+                    HandleDataset(fakeDatabaseChanges);
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.Instance.Log(ex);
+                }
             }
 
             flagNoUpdate = false;
@@ -1915,8 +1957,16 @@ namespace WaywardGamers.KParser.Plugin
 
         protected override void OnCustomMobFilterChanged()
         {
-            ResetAndUpdateAccumulation();
-            HandleDataset(fakeDatabaseChanges);
+            try
+            {
+                ResetAndUpdateAccumulation();
+                HandleDataset(fakeDatabaseChanges);
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Log(ex);
+            }
         }
         #endregion
     }
