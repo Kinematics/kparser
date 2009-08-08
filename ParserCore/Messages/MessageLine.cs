@@ -46,10 +46,18 @@ namespace WaywardGamers.KParser
             @"^(?<msgCode>[0-9a-f]{2}),(?<xCode1>[0-9a-f]{2}),(?<xCode2>[0-9a-f]{2}),(?<msgColor>[0-9a-f]{8})," +
             @"(?<eventSeq>[0-9a-f]{8}),(?<uniqSeq>[0-9a-f]{8}),(?<strLen>[0-9a-f]{4}),(?<unk1>[0-9a-f]{2})," +
             @"(?<unk2>[0-9a-f]{2}),(?<msgCat>[0-9a-f]{2}),(?<unk3>[0-9a-f]{2})," +
-            @"(\x1e\x01)+(\x81\x40)?(\x1e\x01)*" +
-            @"(?<tsPlugin>((\x1e(\x3f|\xfa|\xfc)\[)|(\x1e.))(?<time>\d{2}:\d{2}:\d{2})\] \x1e\x01)?" +
+            @"((\x1e\x01)+(\x81\x40)?(\x1e\x01)*)?" +
+            @"(?<tsPlugin>((\x1e(\x3f|\xfa|\xfc)\[)|(\x1e.)|(\[))(?<time>\d{2}:\d{2}:\d{2})\] (\x1e\x01)?)?" +
             @"(?<remainder>.+)$");
 
+        static Regex msgLineBreakdownOfFilteredChat = new Regex(
+            @"^(?<msgCode>[0-9a-f]{2}),(?<xCode1>[0-9a-f]{2}),(?<xCode2>[0-9a-f]{2}),(?<msgColor>[0-9a-f]{8})," +
+            @"(?<eventSeq>[0-9a-f]{8}),(?<uniqSeq>[0-9a-f]{8}),(?<strLen>[0-9a-f]{4}),(?<unk1>[0-9a-f]{2})," +
+            @"(?<unk2>[0-9a-f]{2}),(?<msgCat>[0-9a-f]{2}),(?<unk3>[0-9a-f]{2})," +
+            @"(?<tsPlugin>\[?(?<time>\d{1,2}:\d{2}:\d{2})\] )?" +
+            @"(?<remainder>.+)$");
+
+        // The initial [ of the Windower Timestamp plugin may get lost in text corruption.
 
         // Regexes for finding words that have special coding that needs to be stripped
         static Regex autoTrans = new Regex(@"(\xEF\x27(?<autoTransWord>[^\xEF]+)\xEF\x28)|(\x3F\x27(?<autoTransWord>[^\x3F]+)\x3F\x28)");
@@ -89,10 +97,12 @@ namespace WaywardGamers.KParser
         private void ExtractDataFromOriginalChatLine()
 		{
             // Make a copy of the original text to work with
-            string msg = originalChatLine.ChatText;
-            string testMsg = string.Format("Test: {0}", msg);
+            string msg = originalChatLine.FilteredChatText;
 
-            Match msgLineMatch = msgLineBreakdown.Match(msg);
+            // Filtered text has already been through the Shift_JIS encoding process,
+            // and had various bogus data removed.
+
+            Match msgLineMatch = msgLineBreakdownOfFilteredChat.Match(msg);
 
             if (msgLineMatch.Success == false)
             {
@@ -117,12 +127,12 @@ namespace WaywardGamers.KParser
                 // the message timestamps.
                 if (Monitor.Instance.ParseMode == DataSource.Log)
                 {
-                    DateTime baseDate = originalChatLine.Timestamp.Date;
+                    DateTime baseDate = originalChatLine.Timestamp.ToLocalTime().Date;
                     TimeSpan pluginTime;
                     if (TimeSpan.TryParse(msgLineMatch.Groups["time"].Value, out pluginTime))
                     {
                         baseDate += pluginTime;
-                        originalChatLine.Timestamp = baseDate;
+                        originalChatLine.Timestamp = baseDate.ToUniversalTime();
                     }
                 }
             }
@@ -130,25 +140,28 @@ namespace WaywardGamers.KParser
             // All leftover text gets put into the TextOuput property for further conversion.
             TextOutput = msgLineMatch.Groups["remainder"].Value;
 
+            // --
+            // All character code filtering is now done at the ChatLine level
+            // --
 
             // Adjustments for words with special display markup
-            TextOutput = autoTrans.Replace(TextOutput, "[${autoTransWord}]");
-            TextOutput = itemWords.Replace(TextOutput, "${itemWord}");
-            TextOutput = keyItemWords.Replace(TextOutput, "${itemWord}");
+            //TextOutput = autoTrans.Replace(TextOutput, "[${autoTransWord}]");
+            //TextOutput = itemWords.Replace(TextOutput, "${itemWord}");
+            //TextOutput = keyItemWords.Replace(TextOutput, "${itemWord}");
 
 
             // Remove other peculiar character values
 
             // Drop the extraneous characters at the end of non-chat messages.
-            TextOutput = eolMark.Replace(TextOutput, "");
+            //TextOutput = eolMark.Replace(TextOutput, "");
 
             // Drop the extraneous characters at start (or middle, for moogles) of various messages.
-            TextOutput = clipText.Replace(TextOutput, "");
+            //TextOutput = clipText.Replace(TextOutput, "");
 
             // Convert text encoding for display of JP characters
-            byte[] originalBytes = UnicodeEncoding.Default.GetBytes(TextOutput);
-            byte[] convertedBytes = Encoding.Convert(Encoding.GetEncoding("Shift-JIS"), Encoding.Unicode, originalBytes);
-            TextOutput = Encoding.Unicode.GetString(convertedBytes).Trim();
+            //byte[] originalBytes = UnicodeEncoding.Default.GetBytes(TextOutput);
+            //byte[] convertedBytes = Encoding.Convert(Encoding.GetEncoding("Shift-JIS"), Encoding.Unicode, originalBytes);
+            //TextOutput = Encoding.Unicode.GetString(convertedBytes).Trim();
         }
         #endregion
 
