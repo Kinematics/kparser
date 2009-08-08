@@ -67,6 +67,7 @@ namespace WaywardGamers.KParser
         Emote,
         NPC,
         Arena,
+        Echo,
     }
 
     public enum EventMessageType : byte
