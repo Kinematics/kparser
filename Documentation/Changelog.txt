@@ -1,6 +1,19 @@
 KParser Change Log
 
 
+1.4.0 (August 08, 2009)
+* Update default memloc to 0x0057DA98.
+* Changed SQLCE reference to explicitly use/require SQLCE 3.5/SP1.
+* Reverted some of the RAM code from the last version since some of the information I thought was there was wrong.
+* Modified RAM reading code to better track original raw data to avoid certain types of data corruption for people with, eg, JP locale OSes.
+- Fix timestamps reported in the Chat tab.
+- Fix timestamps reported in the Unparsed Data tab.
++ Add menu item to close all tabs.
+* Clean up handling of tracking tabs.
+- Fix bug of not properly tracking certain JA enfeebles.
+
+
+
 1.3.9 (May 28, 2009)
 * Significant rewrite of RAM monitoring code for simplified detection and better handling of message tracking.
 * Link detection and handling is added to the tabs' text boxes.  This means that if a URL shows up in the Chat tab (must start with http://), you can click on it to open the link in a browser window.
