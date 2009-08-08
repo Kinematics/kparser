@@ -122,12 +122,13 @@ namespace WaywardGamers.KParser.Messages
         [Test]
         public void TestTokenizeTimestampPluginRAM1()
         {
-            DateTime timestamp = DateTime.Now;
+            DateTime timestamp = DateTime.Now.ToUniversalTime();
 
             DateTime pluginTimestamp = DateTime.Today;
             pluginTimestamp = pluginTimestamp.AddHours(12);
             pluginTimestamp = pluginTimestamp.AddMinutes(15);
             pluginTimestamp = pluginTimestamp.AddSeconds(10);
+            pluginTimestamp = pluginTimestamp.ToUniversalTime();
 
             string chatText = "01,00,00,80808080,00000019,00000017,0010,00,01,01,00,?[12:15:10] Motenten : one";
 
@@ -144,12 +145,13 @@ namespace WaywardGamers.KParser.Messages
         [Test]
         public void TestTokenizeTimestampPluginLOG1()
         {
-            DateTime timestamp = DateTime.Now;
+            DateTime timestamp = DateTime.Now.ToUniversalTime();
 
             DateTime pluginTimestamp = DateTime.Today;
             pluginTimestamp = pluginTimestamp.AddHours(12);
             pluginTimestamp = pluginTimestamp.AddMinutes(15);
             pluginTimestamp = pluginTimestamp.AddSeconds(10);
+            pluginTimestamp = pluginTimestamp.ToUniversalTime();
 
             string chatText = "01,00,00,80808080,00000019,00000017,0010,00,01,01,00,?[12:15:10] Motenten : one";
 
@@ -166,12 +168,13 @@ namespace WaywardGamers.KParser.Messages
         [Test]
         public void TestTokenizeTimestampPluginRAM2()
         {
-            DateTime timestamp = DateTime.Now;
+            DateTime timestamp = DateTime.Now.ToUniversalTime();
 
             DateTime pluginTimestamp = DateTime.Today;
             pluginTimestamp = pluginTimestamp.AddHours(12);
             pluginTimestamp = pluginTimestamp.AddMinutes(15);
             pluginTimestamp = pluginTimestamp.AddSeconds(10);
+            pluginTimestamp = pluginTimestamp.ToUniversalTime();
 
             string chatText = "01,00,00,80808080,00000019,00000017,0010,00,01,01,00,ú[12:15:10] Motenten : one";
 
@@ -188,12 +191,13 @@ namespace WaywardGamers.KParser.Messages
         [Test]
         public void TestTokenizeTimestampPluginLOG2()
         {
-            DateTime timestamp = DateTime.Now;
+            DateTime timestamp = DateTime.Now.ToUniversalTime();
 
             DateTime pluginTimestamp = DateTime.Today;
             pluginTimestamp = pluginTimestamp.AddHours(12);
             pluginTimestamp = pluginTimestamp.AddMinutes(15);
             pluginTimestamp = pluginTimestamp.AddSeconds(10);
+            pluginTimestamp = pluginTimestamp.ToUniversalTime();
 
             string chatText = "01,00,00,80808080,00000019,00000017,0010,00,01,01,00,ú[12:15:10] Motenten : one";
 
@@ -210,12 +214,13 @@ namespace WaywardGamers.KParser.Messages
         [Test]
         public void TestTokenizeTimestampPluginRAM3()
         {
-            DateTime timestamp = DateTime.Now;
+            DateTime timestamp = DateTime.Now.ToUniversalTime();
 
             DateTime pluginTimestamp = DateTime.Today;
             pluginTimestamp = pluginTimestamp.AddHours(12);
             pluginTimestamp = pluginTimestamp.AddMinutes(15);
             pluginTimestamp = pluginTimestamp.AddSeconds(10);
+            pluginTimestamp = pluginTimestamp.ToUniversalTime();
 
             string chatText = "01,00,00,80808080,00000019,00000017,0010,00,01,01,00,ú[12:15:10] Motenten : one";
 
@@ -232,12 +237,13 @@ namespace WaywardGamers.KParser.Messages
         [Test]
         public void TestTokenizeTimestampPluginLOG3()
         {
-            DateTime timestamp = DateTime.Now;
+            DateTime timestamp = DateTime.Now.ToUniversalTime();
 
             DateTime pluginTimestamp = DateTime.Today;
             pluginTimestamp = pluginTimestamp.AddHours(12);
             pluginTimestamp = pluginTimestamp.AddMinutes(15);
             pluginTimestamp = pluginTimestamp.AddSeconds(10);
+            pluginTimestamp = pluginTimestamp.ToUniversalTime();
 
             string chatText = "01,00,00,80808080,00000019,00000017,0010,00,01,01,00,ú[12:15:10] Motenten : one";
 
@@ -254,12 +260,13 @@ namespace WaywardGamers.KParser.Messages
         [Test]
         public void TestTokenizeTimestampPluginRAMCorruptedConversion()
         {
-            DateTime timestamp = DateTime.Now;
+            DateTime timestamp = DateTime.Now.ToUniversalTime();
 
             DateTime pluginTimestamp = DateTime.Today;
             pluginTimestamp = pluginTimestamp.AddHours(0);
             pluginTimestamp = pluginTimestamp.AddMinutes(40);
             pluginTimestamp = pluginTimestamp.AddSeconds(54);
+            pluginTimestamp = pluginTimestamp.ToUniversalTime();
 
             string chatText = "01,00,00,80808080,00000009,00000009,001c,00,01,01,00,・00:40:54] Aluri : hello";
 
