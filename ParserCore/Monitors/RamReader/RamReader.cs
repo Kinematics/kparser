@@ -408,7 +408,7 @@ namespace WaywardGamers.KParser.Monitoring
                             // of a memory region, and into a block with different protection settings.
                             // Fortunately, even though ReadProcessMemory() returns an error in this case
                             // we can sleep well knowing we got everything we needed.
-                            short totalBytesToRead = (short)(numberOfBytesUntilStartOfLastMissedLine + 295);
+                            short totalBytesToRead = (short)(numberOfBytesUntilStartOfLastMissedLine + 310);
 
                             // Read lines from the old chat log.
                             missedChatLinesBytes = ReadChatLinesAsByteArrays(startOfFirstMissedLine, totalBytesToRead, numberOfLinesMissed);
