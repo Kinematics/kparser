@@ -15,6 +15,12 @@ namespace WaywardGamers.KParser.Plugin
     {
         #region Constructor
         bool checkingMobList = false;
+        List<int> oldIndices = new List<int>();
+
+        // Can't depend on mobList.SelectedIndex to be accurate to the
+        // item selected with a right-click, so storing in a local class
+        // local variable.
+        int rightClickIndex = -1;
 
         public CustomMobSelectionDlg()
         {
@@ -34,23 +40,32 @@ namespace WaywardGamers.KParser.Plugin
 
         // List box event handlers
 
-        private void mobList_ItemCheck(object sender, ItemCheckEventArgs e)
+        private void mobList_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (checkingMobList)
                 return;
 
             MobFilter mobFilter = MobXPHandler.Instance.CustomMobFilter;
+            var indices = mobList.SelectedIndices;
 
-            if (e.NewValue == CheckState.Checked)
+            foreach (int i in indices)
             {
-                mobFilter.CustomBattleIDs.Add(MobXPHandler.Instance.CompleteMobList.ElementAt(e.Index).BattleID);
-            }
-            else
-            {
-                mobFilter.CustomBattleIDs.Remove(MobXPHandler.Instance.CompleteMobList.ElementAt(e.Index).BattleID);
+                if (oldIndices.BinarySearch(i) >= 0)
+                {
+                    mobFilter.CustomBattleIDs.Add(MobXPHandler.Instance.CompleteMobList.ElementAt(i).BattleID);
+                }
             }
 
-            NotifyMobXPHandlerOfChangedMobList();
+            foreach (int i in oldIndices)
+            {
+                if (!indices.Contains(i))
+                    mobFilter.CustomBattleIDs.Remove(MobXPHandler.Instance.CompleteMobList.ElementAt(i).BattleID);
+            }
+
+            oldIndices = indices.Cast<int>().ToList<int>();
+            oldIndices.Sort();
+
+            UpdateFilter();
         }
 
         // Button event handlers
@@ -63,7 +78,7 @@ namespace WaywardGamers.KParser.Plugin
 
                 for (int i = 0; i < mobList.Items.Count; i++)
                 {
-                    mobList.SetItemChecked(i, true);
+                    mobList.SetSelected(i, true);
                 }
             }
             finally
@@ -82,7 +97,7 @@ namespace WaywardGamers.KParser.Plugin
 
                 for (int i = 0; i < mobList.Items.Count; i++)
                 {
-                    mobList.SetItemChecked(i, !mobList.GetItemChecked(i));
+                    mobList.SetSelected(i, !mobList.GetSelected(i));
                 }
             }
             finally
@@ -101,7 +116,7 @@ namespace WaywardGamers.KParser.Plugin
 
                 for (int i = 0; i < mobList.Items.Count; i++)
                 {
-                    mobList.SetItemChecked(i, false);
+                    mobList.SetSelected(i, false);
                 }
             }
             finally
@@ -123,7 +138,9 @@ namespace WaywardGamers.KParser.Plugin
                 for (int i = 0; i < mobList.Items.Count; i++)
                 {
                     if (mobXPVals.ElementAt(i).BaseXP == 0)
-                        mobList.SetItemChecked(i, false);
+                    {
+                        mobList.SetSelected(i, false);
+                    }
                 }
             }
             finally
@@ -140,6 +157,19 @@ namespace WaywardGamers.KParser.Plugin
         }
 
         // Context menu event handlers
+
+        private void mobList_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                rightClickIndex = mobList.IndexFromPoint(e.X, e.Y);
+
+                if (rightClickIndex >= 0)
+                {
+                    mobList.SetSelected(rightClickIndex, true);
+                }
+            }
+        }
 
         private void mobListContextMenuStrip_Opening(object sender, CancelEventArgs e)
         {
@@ -165,7 +195,7 @@ namespace WaywardGamers.KParser.Plugin
 
         private void checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MobXPValues mob = GetSelectedMob();
+            MobXPValues mob = GetRCSelectedMob();
 
             if (mob != null)
             {
@@ -178,7 +208,9 @@ namespace WaywardGamers.KParser.Plugin
                     for (int i = 0; i < mobList.Items.Count; i++)
                     {
                         if (mobXPVals.ElementAt(i).Name == mob.Name)
-                            mobList.SetItemChecked(i, true);
+                        {
+                            mobList.SetSelected(i, true);
+                        }
                     }
                 }
                 finally
@@ -192,7 +224,7 @@ namespace WaywardGamers.KParser.Plugin
 
         private void uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MobXPValues mob = GetSelectedMob();
+            MobXPValues mob = GetRCSelectedMob();
 
             if (mob != null)
             {
@@ -205,7 +237,9 @@ namespace WaywardGamers.KParser.Plugin
                     for (int i = 0; i < mobList.Items.Count; i++)
                     {
                         if (mobXPVals.ElementAt(i).Name == mob.Name)
-                            mobList.SetItemChecked(i, false);
+                        {
+                            mobList.SetSelected(i, false);
+                        }
                     }
                 }
                 finally
@@ -219,7 +253,7 @@ namespace WaywardGamers.KParser.Plugin
 
         private void checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MobXPValues selectedMob = GetSelectedMob();
+            MobXPValues selectedMob = GetRCSelectedMob();
 
             if (selectedMob != null)
             {
@@ -234,7 +268,9 @@ namespace WaywardGamers.KParser.Plugin
                         MobXPValues mob = mobXPVals.ElementAt(i);
 
                         if ((mob.Name == selectedMob.Name) && (mob.BaseXP == selectedMob.BaseXP))
-                            mobList.SetItemChecked(i, true);
+                        {
+                            mobList.SetSelected(i, true);
+                        }
                     }
                 }
                 finally
@@ -248,7 +284,7 @@ namespace WaywardGamers.KParser.Plugin
 
         private void uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MobXPValues selectedMob = GetSelectedMob();
+            MobXPValues selectedMob = GetRCSelectedMob();
 
             if (selectedMob != null)
             {
@@ -263,7 +299,9 @@ namespace WaywardGamers.KParser.Plugin
                         MobXPValues mob = mobXPVals.ElementAt(i);
 
                         if ((mob.Name == selectedMob.Name) && (mob.BaseXP == selectedMob.BaseXP))
-                            mobList.SetItemChecked(i, false);
+                        {
+                            mobList.SetSelected(i, false);
+                        }
                     }
                 }
                 finally
@@ -277,17 +315,15 @@ namespace WaywardGamers.KParser.Plugin
 
         private void checkAllMobsBelowCurrentSelectionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int currentSelectedIndex = mobList.SelectedIndex;
-
-            if (currentSelectedIndex >= 0)
+            if (rightClickIndex >= 0)
             {
                 try
                 {
                     checkingMobList = true;
 
-                    for (int i = currentSelectedIndex + 1; i < mobList.Items.Count; i++)
+                    for (int i = rightClickIndex + 1; i < mobList.Items.Count; i++)
                     {
-                        mobList.SetItemChecked(i, true);
+                        mobList.SetSelected(i, true);
                     }
                 }
                 finally
@@ -301,23 +337,22 @@ namespace WaywardGamers.KParser.Plugin
 
         private void uncheckAllMobsBelowCurrentSelectionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int currentSelectedIndex = mobList.SelectedIndex;
-
-            if (currentSelectedIndex >= 0)
+            if (rightClickIndex >= 0)
             {
                 try
                 {
                     checkingMobList = true;
 
-                    for (int i = currentSelectedIndex + 1; i < mobList.Items.Count; i++)
+                    for (int i = rightClickIndex + 1; i < mobList.Items.Count; i++)
                     {
-                        mobList.SetItemChecked(i, false);
+                        mobList.SetSelected(i, false);
                     }
                 }
                 finally
                 {
                     checkingMobList = false;
                 }
+
                 UpdateFilter();
             }
         }
@@ -357,17 +392,21 @@ namespace WaywardGamers.KParser.Plugin
             for (int i = 0; i < mobList.Items.Count; i++)
             {
                 if (mobFilter.CustomBattleIDs.Contains(mobXPVals.ElementAt(i).BattleID))
-                    mobList.SetItemChecked(i, true);
+                    mobList.SetSelected(i, true);
             }
         }
 
-        private MobXPValues GetSelectedMob()
+        private MobXPValues GetRCSelectedMob()
         {
+            // Can't depend on mobList.SelectedIndex to be accurate to the
+            // item selected with a right-click, so storing in a local class
+            // local variable.
+
             MobXPValues mob = null;
-            
-            if (mobList.SelectedIndex >= 0)
+
+            if (rightClickIndex >= 0)
             {
-                mob = MobXPHandler.Instance.CompleteMobList.ElementAt(mobList.SelectedIndex);
+                mob = MobXPHandler.Instance.CompleteMobList.ElementAt(rightClickIndex);
             }
 
             return mob;
@@ -379,12 +418,14 @@ namespace WaywardGamers.KParser.Plugin
             MobFilter mobFilter = MobXPHandler.Instance.CustomMobFilter;
 
             mobFilter.CustomBattleIDs.Clear();
-            foreach (int index in mobList.CheckedIndices)
+            foreach (int index in mobList.SelectedIndices)
             {
                 mobFilter.CustomBattleIDs.Add(mobXPVals.ElementAt(index).BattleID);
             }
 
             NotifyMobXPHandlerOfChangedMobList();
+
+            numMobsSelected.Text = mobList.SelectedIndices.Count.ToString();
         }
 
         private void NotifyMobXPHandlerOfChangedMobList()
@@ -393,6 +434,9 @@ namespace WaywardGamers.KParser.Plugin
             MobXPHandler.Instance.OnCustomMobFilterWasChanged();
         }
 
+        #endregion
+
+        #region List Box Handlers
         #endregion
 
     }
