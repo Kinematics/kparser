@@ -857,7 +857,7 @@ namespace WaywardGamers.KParser.Monitoring
 
                 // Locate a pointer to the start of the chat log messages. (0x02A8FF90)
                 // The location of that pointer is used in Section 3.
-                //FindAddress(0x02A8FF90);
+                //FindAddress(0x22900E8);
                 // Use calculated pointerLocation.
                 // EG: Scan Address 0x0488f000 + Index j (989) * 4 -
                 //     Base address 0x01e00000 = Pointer location 0x02a8ff74
@@ -875,14 +875,14 @@ namespace WaywardGamers.KParser.Monitoring
 
                 // Examine the ChatLogInfoStruct from the previous address
                 // to make sure things match up.
-                //CheckStructureAtAddress(0x02A8FEA8);
+                //CheckStructureAtAddress(0x02290000);
 
                 // Section 5
 
                 // Since we know where the structure lives, find the address
                 // that points to that.  Use the same address as that used when
                 // checking the ChatLog structure.
-                //FindAddress(0x02A8FEA8);
+                //FindAddress(0x02290000);
                 // Use calculated pointerLocation.
                 // EG: Scan Address 0x0488f000 + Index j (929) * 4 - 
                 //     Base address 0x01e00000 = Pointer location 0x02a8fe84
@@ -893,7 +893,7 @@ namespace WaywardGamers.KParser.Monitoring
                 // to by an initial address point.  Locate the address of our
                 // (pointer from section 5) - 4.
                 // EG: 0x02a8fe84 - 4 = 0x02a8fe80
-                //FindAddress(0x02a8fe80);
+                //FindAddress(0x0228ffd8);
                 // Use calculated pointerLocation.
                 // EG: Scan Address 0x0237d000 + Index j (474) * 4 - 
                 //     Base address 0x01e00000 = Pointer location 0x0057d768
@@ -924,17 +924,17 @@ namespace WaywardGamers.KParser.Monitoring
         [Conditional("DEBUG")]
         private void FindString(string stringToFind)
         {
-            uint scanMemoryOffset = 0x029C0000;
+            uint scanMemoryOffset = 0x02000000;
             uint prevScanMemoryOffset = scanMemoryOffset;
-            uint blockSize = 1024;
-            uint blockOffset = blockSize - 32;
+            uint blockSize = 3200;
+            uint blockOffset = blockSize - 128;
             MemScanStringStruct scanStruct = new MemScanStringStruct();
             MemScanStringStruct prevScanStruct = scanStruct;
 
             string byteString;
             string prevByteString;
 
-            for (int i = 0; i < 64000; i++)
+            for (int i = 0; i < 16000; i++)
             {
                 // Specify the location that you're searching for the requested string.
                 IntPtr scanAddress = Pointers.IncrementPointer(pol.FFXIBaseAddress, scanMemoryOffset);
@@ -998,7 +998,7 @@ namespace WaywardGamers.KParser.Monitoring
 
             uint bytesToRead = (uint)(Marshal.SizeOf(typeof(MemScanAddressStruct)));
 
-            for (int i = 0; i < 64000; i++)
+            for (int i = 0; i < 16000; i++)
             {
                 IntPtr scanAddress = Pointers.IncrementPointer(pol.FFXIBaseAddress, scanMemoryOffset);
                 IntPtr scanResults = IntPtr.Zero;
