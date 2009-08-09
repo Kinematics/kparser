@@ -107,7 +107,7 @@ namespace WaywardGamers.KParser
                 if (activeMessageStrings.Count == 0)
                     return string.Empty;
                 else if (activeMessageStrings.Count > 1)
-                    return activeMessageStrings.Aggregate((s1, s2) => s1 + " " + s2);
+                    return activeMessageStrings.Aggregate((s1, s2) => s1 + "" + s2);
                 else
                     return activeMessageStrings[0];
             }
@@ -120,7 +120,7 @@ namespace WaywardGamers.KParser
                 if (completedMessageStrings.Count == 0)
                     return string.Empty;
                 else if (completedMessageStrings.Count > 1)
-                    return completedMessageStrings.Aggregate((s1, s2) => s1 + " " + s2);
+                    return completedMessageStrings.Aggregate((s1, s2) => s1 + "" + s2);
                 else
                     return completedMessageStrings[0];
             }
@@ -135,7 +135,7 @@ namespace WaywardGamers.KParser
                 if (completedMessageStrings.Count == 0)
                     fullText = string.Empty;
                 else if (completedMessageStrings.Count > 1)
-                    fullText = completedMessageStrings.Aggregate((s1, s2) => s1 + " " + s2);
+                    fullText = completedMessageStrings.Aggregate((s1, s2) => s1 + "" + s2);
                 else
                     fullText = completedMessageStrings[0];
 
@@ -143,12 +143,12 @@ namespace WaywardGamers.KParser
                 {
                     if (fullText != string.Empty)
                     {
-                        fullText = activeMessageStrings.Aggregate(fullText, (s1, s2) => s1 + " " + s2);
+                        fullText = activeMessageStrings.Aggregate(fullText, (s1, s2) => s1 + "" + s2);
                     }
                     else
                     {
                         if (activeMessageStrings.Count > 1)
-                            fullText = activeMessageStrings.Aggregate((s1, s2) => s1 + " " + s2);
+                            fullText = activeMessageStrings.Aggregate((s1, s2) => s1 + "" + s2);
                         else
                             fullText = activeMessageStrings[0];
                     }
