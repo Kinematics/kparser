@@ -124,14 +124,14 @@ namespace WaywardGamers.KParser.Monitoring.Memory
     [StructLayout(LayoutKind.Sequential)]
     internal struct MemScanStringStruct
     {
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1024)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3200)]
         internal char[] memScanCharacters;
     }
 
     [StructLayout(LayoutKind.Sequential)]
     internal struct MemScanAddressStruct
     {
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 1024)]
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 3200)]
         internal uint[] addressValues;
     }
 
