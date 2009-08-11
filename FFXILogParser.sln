@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual C# Express 2008
+# Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFXILogParser", "FFXILogParser\FFXILogParser.csproj", "{1BD73407-4C1F-4280-A322-150FB545A7FB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParserCore", "ParserCore\ParserCore.csproj", "{626318E4-447D-4BD7-BC3A-294A8E37B07F}"
@@ -11,6 +11,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginNonCombat", "PluginNonCombat\PluginNonCombat.csproj", "{29B154A9-81AE-4220-A4A8-27F1779409B1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{B61B2053-F298-4C9C-B162-68C001C7135D}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "KParserSetup", "KParserSetup\KParserSetup.vdproj", "{76F3F9DF-ECE2-4912-8E9E-2CDECEADD067}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +69,10 @@ Global
 		{B61B2053-F298-4C9C-B162-68C001C7135D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B61B2053-F298-4C9C-B162-68C001C7135D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B61B2053-F298-4C9C-B162-68C001C7135D}.Release|x86.ActiveCfg = Release|x86
+		{76F3F9DF-ECE2-4912-8E9E-2CDECEADD067}.Debug|Any CPU.ActiveCfg = Debug
+		{76F3F9DF-ECE2-4912-8E9E-2CDECEADD067}.Debug|x86.ActiveCfg = Debug
+		{76F3F9DF-ECE2-4912-8E9E-2CDECEADD067}.Release|Any CPU.ActiveCfg = Release
+		{76F3F9DF-ECE2-4912-8E9E-2CDECEADD067}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
