@@ -137,14 +137,11 @@
   <data name="saveCurrentDataAsMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>265, 22</value>
   </data>
-  <data name="mainMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>992, 24</value>
-  </data>
-  <data name="&gt;&gt;copyasHTMLToolStripMenuItem.Name" xml:space="preserve">
-    <value>copyasHTMLToolStripMenuItem</value>
-  </data>
   <data name="&gt;&gt;pluginTabs.Name" xml:space="preserve">
     <value>pluginTabs</value>
+  </data>
+  <data name="&gt;&gt;playerInformationToolStripMenuItem.Name" xml:space="preserve">
+    <value>playerInformationToolStripMenuItem</value>
   </data>
   <data name="&gt;&gt;continueParsingMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -163,9 +160,6 @@
   </data>
   <data name="toolsReparseMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>235, 22</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="statusStrip.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -194,9 +188,6 @@
   <data name="&gt;&gt;closeTabToolStripMenuItem.Name" xml:space="preserve">
     <value>closeTabToolStripMenuItem</value>
   </data>
-  <data name="copyTabasRTFToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>210, 22</value>
-  </data>
   <data name="&gt;&gt;pluginTabs.Type" xml:space="preserve">
     <value>System.Windows.Forms.TabControl, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -207,17 +198,14 @@
   <data name="pluginTabs.ItemSize" type="System.Drawing.Size, System.Drawing">
     <value>80, 21</value>
   </data>
-  <data name="&gt;&gt;quitParsingMenuItem.Name" xml:space="preserve">
-    <value>quitParsingMenuItem</value>
-  </data>
   <data name="exitMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+X</value>
   </data>
+  <data name="openSavedDataMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>265, 22</value>
+  </data>
   <data name="aboutToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>151, 22</value>
-  </data>
-  <data name="editToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>37, 20</value>
   </data>
   <data name="openSavedDataMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+O</value>
@@ -240,6 +228,9 @@
   <data name="&gt;&gt;mainMenuStrip.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
+  <data name="closeTabToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>168, 22</value>
+  </data>
   <data name="$this.Text" xml:space="preserve">
     <value>K-Parser</value>
   </data>
@@ -261,20 +252,29 @@
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
     <value>6, 13</value>
   </data>
-  <data name="closeAllTabsToolStripMenuItem.Text" xml:space="preserve">
-    <value>Close All Tabs</value>
-  </data>
   <data name="copyTabInfoAsBBCodeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>210, 22</value>
+  </data>
+  <data name="fileMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>35, 20</value>
+  </data>
+  <data name="&gt;&gt;optionsToolStripMenuItem.Name" xml:space="preserve">
+    <value>optionsToolStripMenuItem</value>
   </data>
   <data name="&gt;&gt;closeOtherTabsToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="playerInformationToolStripMenuItem.Text" xml:space="preserve">
+    <value>Player &amp;Information</value>
+  </data>
   <data name="optionsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>235, 22</value>
   </data>
-  <data name="&gt;&gt;optionsToolStripMenuItem.Name" xml:space="preserve">
-    <value>optionsToolStripMenuItem</value>
+  <data name="&gt;&gt;closeAllTabsToolStripMenuItem.Name" xml:space="preserve">
+    <value>closeAllTabsToolStripMenuItem</value>
+  </data>
+  <data name="quitParsingMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+Q</value>
   </data>
   <data name="statusStrip.Size" type="System.Drawing.Size, System.Drawing">
     <value>992, 22</value>
@@ -294,17 +294,8 @@
   <data name="windowsMenu.Text" xml:space="preserve">
     <value>Windows</value>
   </data>
-  <data name="toolsReparseMenuItem.Text" xml:space="preserve">
-    <value>&amp;Reparse</value>
-  </data>
-  <data name="&gt;&gt;editToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="importToolStripMenuItem.Text" xml:space="preserve">
     <value>Import...</value>
-  </data>
-  <data name="aboutToolStripMenuItem.Text" xml:space="preserve">
-    <value>About</value>
   </data>
   <data name="openSavedDataMenuItem.Text" xml:space="preserve">
     <value>&amp;Open Saved Data</value>
@@ -314,6 +305,12 @@
   </data>
   <data name="&gt;&gt;aboutToolStripMenuItem.Name" xml:space="preserve">
     <value>aboutToolStripMenuItem</value>
+  </data>
+  <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>262, 6</value>
+  </data>
+  <data name="fileMenu.Text" xml:space="preserve">
+    <value>File</value>
   </data>
   <data name="&gt;&gt;saveReportMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -333,8 +330,8 @@
   <data name="closeOtherTabsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>168, 22</value>
   </data>
-  <data name="tabContextMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>169, 48</value>
+  <data name="saveReportMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>265, 22</value>
   </data>
   <data name="&gt;&gt;toolsReparseMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -360,32 +357,32 @@
   <data name="&gt;&gt;beginParseAndSaveDataMenuItem.Name" xml:space="preserve">
     <value>beginParseAndSaveDataMenuItem</value>
   </data>
-  <data name="&gt;&gt;copyTabInfoAsBBCodeToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="continueParsingMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>265, 22</value>
   </data>
-  <data name="beginDefaultParseMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+D</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator3.Name" xml:space="preserve">
-    <value>toolStripSeparator3</value>
+  <data name="tabContextMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>169, 48</value>
   </data>
   <data name="&gt;&gt;saveCurrentDataAsMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="exitMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>265, 22</value>
+  <data name="statusStrip.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 435</value>
   </data>
-  <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>262, 6</value>
+  <data name="&gt;&gt;toolStripStatusLabel.Name" xml:space="preserve">
+    <value>toolStripStatusLabel</value>
+  </data>
+  <data name="toolsTestFunctionMenuItem.Text" xml:space="preserve">
+    <value>&amp;Test Function</value>
+  </data>
+  <data name="copyTabasRTFToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>210, 22</value>
   </data>
   <data name="&gt;&gt;fileMenu.Name" xml:space="preserve">
     <value>fileMenu</value>
   </data>
-  <data name="statusStrip.Text" xml:space="preserve">
-    <value>statusStrip</value>
-  </data>
-  <data name="continueParsingMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>265, 22</value>
+  <data name="&gt;&gt;toolStripSeparator1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="playerInformationToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>210, 22</value>
@@ -402,17 +399,29 @@
   <data name="&gt;&gt;fileMenu.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="saveReportMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>265, 22</value>
+  <data name="&gt;&gt;toolStripSeparator3.Name" xml:space="preserve">
+    <value>toolStripSeparator3</value>
   </data>
   <data name="&gt;&gt;openSavedDataMenuItem.Name" xml:space="preserve">
     <value>openSavedDataMenuItem</value>
+  </data>
+  <data name="pluginTabs.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 24</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator4.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="beginDefaultParseMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+D</value>
   </data>
   <data name="&gt;&gt;exitMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;toolStripSeparator4.Name" xml:space="preserve">
     <value>toolStripSeparator4</value>
+  </data>
+  <data name="quitParsingMenuItem.Text" xml:space="preserve">
+    <value>&amp;Quit Parsing</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -445,9 +454,6 @@
   <data name="editToolStripMenuItem.Text" xml:space="preserve">
     <value>Edit</value>
   </data>
-  <data name="aboutToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>F1</value>
-  </data>
   <data name="&gt;&gt;copyTabInfoAsBBCodeToolStripMenuItem.Name" xml:space="preserve">
     <value>copyTabInfoAsBBCodeToolStripMenuItem</value>
   </data>
@@ -463,8 +469,8 @@
   <data name="upgradeDatabaseTimestampToolStripMenuItem.Text" xml:space="preserve">
     <value>Reparse w/Timestamp Upgrade</value>
   </data>
-  <data name="fileMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>35, 20</value>
+  <data name="exitMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>265, 22</value>
   </data>
   <data name="windowsToolStripSeparator.Size" type="System.Drawing.Size, System.Drawing">
     <value>148, 6</value>
@@ -475,20 +481,20 @@
   <data name="&gt;&gt;copyasTextToolStripMenuItem.Name" xml:space="preserve">
     <value>copyasTextToolStripMenuItem</value>
   </data>
-  <data name="statusStrip.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 435</value>
+  <data name="statusStrip.Text" xml:space="preserve">
+    <value>statusStrip</value>
   </data>
   <data name="toolsMenu.Size" type="System.Drawing.Size, System.Drawing">
     <value>44, 20</value>
   </data>
-  <data name="openSavedDataMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>265, 22</value>
+  <data name="&gt;&gt;copyTabInfoAsBBCodeToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;continueParsingMenuItem.Name" xml:space="preserve">
     <value>continueParsingMenuItem</value>
   </data>
-  <data name="playerInformationToolStripMenuItem.Text" xml:space="preserve">
-    <value>Player &amp;Information</value>
+  <data name="toolsReparseMenuItem.Text" xml:space="preserve">
+    <value>&amp;Reparse</value>
   </data>
   <data name="toolStripSeparator5.Size" type="System.Drawing.Size, System.Drawing">
     <value>207, 6</value>
@@ -502,14 +508,14 @@
   <data name="copyTabasRTFToolStripMenuItem.Text" xml:space="preserve">
     <value>Copy Tab Info as RTF</value>
   </data>
-  <data name="&gt;&gt;playerInformationToolStripMenuItem.Name" xml:space="preserve">
-    <value>playerInformationToolStripMenuItem</value>
+  <data name="&gt;&gt;copyasHTMLToolStripMenuItem.Name" xml:space="preserve">
+    <value>copyasHTMLToolStripMenuItem</value>
   </data>
   <data name="&gt;&gt;copyasTextToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="fileMenu.Text" xml:space="preserve">
-    <value>File</value>
+  <data name="editToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>37, 20</value>
   </data>
   <data name="pluginTabs.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Bottom, Left, Right</value>
@@ -535,11 +541,11 @@
   <data name="playerInformationToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+I</value>
   </data>
-  <data name="closeTabToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>168, 22</value>
+  <data name="&gt;&gt;quitParsingMenuItem.Name" xml:space="preserve">
+    <value>quitParsingMenuItem</value>
   </data>
-  <data name="&gt;&gt;closeAllTabsToolStripMenuItem.Name" xml:space="preserve">
-    <value>closeAllTabsToolStripMenuItem</value>
+  <data name="pluginTabs.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
   </data>
   <data name="upgradeDatabaseTimestampToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>235, 22</value>
@@ -574,11 +580,11 @@
   <data name="mainMenuStrip.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
-  <data name="quitParsingMenuItem.Text" xml:space="preserve">
-    <value>&amp;Quit Parsing</value>
+  <data name="aboutToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>F1</value>
   </data>
-  <data name="quitParsingMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+Q</value>
+  <data name="closeAllTabsToolStripMenuItem.Text" xml:space="preserve">
+    <value>Close All Tabs</value>
   </data>
   <data name="&gt;&gt;copyTabasRTFToolStripMenuItem.Name" xml:space="preserve">
     <value>copyTabasRTFToolStripMenuItem</value>
@@ -592,14 +598,11 @@
   <data name="&gt;&gt;openSavedDataMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="pluginTabs.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
+  <data name="aboutToolStripMenuItem.Text" xml:space="preserve">
+    <value>About</value>
   </data>
-  <data name="beginDefaultParseMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>265, 22</value>
-  </data>
-  <data name="&gt;&gt;toolStripStatusLabel.Name" xml:space="preserve">
-    <value>toolStripStatusLabel</value>
+  <data name="&gt;&gt;editToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;mainMenuStrip.ZOrder" xml:space="preserve">
     <value>2</value>
@@ -622,8 +625,8 @@
   <data name="&gt;&gt;toolsMenu.Name" xml:space="preserve">
     <value>toolsMenu</value>
   </data>
-  <data name="toolsTestFunctionMenuItem.Text" xml:space="preserve">
-    <value>&amp;Test Function</value>
+  <data name="beginDefaultParseMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>265, 22</value>
   </data>
   <data name="&gt;&gt;importToolStripMenuItem.Name" xml:space="preserve">
     <value>importToolStripMenuItem</value>
@@ -631,17 +634,14 @@
   <data name="copyTabInfoAsBBCodeToolStripMenuItem.Text" xml:space="preserve">
     <value>Copy Tab Info as BBCode</value>
   </data>
-  <data name="pluginTabs.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 24</value>
-  </data>
   <data name="closeOtherTabsToolStripMenuItem.Text" xml:space="preserve">
     <value>Close Other Tabs</value>
   </data>
   <data name="mainMenuStrip.Text" xml:space="preserve">
     <value>Main Menu Strip</value>
   </data>
-  <data name="&gt;&gt;toolStripSeparator4.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="mainMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>992, 24</value>
   </data>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>30</value>
@@ -649,16 +649,16 @@
   <metadata name="mainMenuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>0, 0</value>
   </metadata>
+  <metadata name="tabContextMenuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>117, 5</value>
+  </metadata>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <metadata name="statusStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>0, 505</value>
+    <value>0, 435</value>
   </metadata>
   <metadata name="$this.Language" type="System.Globalization.CultureInfo, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>Japanese</value>
-  </metadata>
-  <metadata name="tabContextMenuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>117, 5</value>
+    <value>German</value>
   </metadata>
 </root>
