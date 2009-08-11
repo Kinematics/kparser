@@ -41,96 +41,87 @@
             // 
             // ok
             // 
-            this.ok.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ok.AccessibleDescription = null;
+            this.ok.AccessibleName = null;
+            resources.ApplyResources(this.ok, "ok");
+            this.ok.BackgroundImage = null;
             this.ok.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.ok.Location = new System.Drawing.Point(211, 195);
             this.ok.Name = "ok";
-            this.ok.Size = new System.Drawing.Size(75, 23);
-            this.ok.TabIndex = 6;
-            this.ok.Text = "OK";
             this.ok.UseVisualStyleBackColor = true;
             this.ok.Click += new System.EventHandler(this.ok_Click);
             // 
             // cancel
             // 
-            this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cancel.AccessibleDescription = null;
+            this.cancel.AccessibleName = null;
+            resources.ApplyResources(this.cancel, "cancel");
+            this.cancel.BackgroundImage = null;
             this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancel.Location = new System.Drawing.Point(292, 195);
             this.cancel.Name = "cancel";
-            this.cancel.Size = new System.Drawing.Size(75, 23);
-            this.cancel.TabIndex = 7;
-            this.cancel.Text = "Cancel";
             this.cancel.UseVisualStyleBackColor = true;
             this.cancel.Click += new System.EventHandler(this.cancel_Click);
             // 
             // combatantListBox
             // 
-            this.combatantListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.combatantListBox.AccessibleDescription = null;
+            this.combatantListBox.AccessibleName = null;
+            resources.ApplyResources(this.combatantListBox, "combatantListBox");
+            this.combatantListBox.BackgroundImage = null;
+            this.combatantListBox.Font = null;
             this.combatantListBox.FormattingEnabled = true;
-            this.combatantListBox.Location = new System.Drawing.Point(12, 25);
             this.combatantListBox.Name = "combatantListBox";
-            this.combatantListBox.Size = new System.Drawing.Size(158, 160);
-            this.combatantListBox.TabIndex = 1;
             this.combatantListBox.SelectedIndexChanged += new System.EventHandler(this.combatantListBox_SelectedIndexChanged);
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 9);
+            this.label1.AccessibleDescription = null;
+            this.label1.AccessibleName = null;
+            resources.ApplyResources(this.label1, "label1");
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(99, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Players combatants";
             // 
             // combatantType
             // 
-            this.combatantType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.combatantType.Location = new System.Drawing.Point(267, 31);
+            this.combatantType.AccessibleDescription = null;
+            this.combatantType.AccessibleName = null;
+            resources.ApplyResources(this.combatantType, "combatantType");
+            this.combatantType.BackgroundImage = null;
+            this.combatantType.Font = null;
             this.combatantType.Name = "combatantType";
             this.combatantType.ReadOnly = true;
-            this.combatantType.Size = new System.Drawing.Size(100, 20);
-            this.combatantType.TabIndex = 3;
             // 
             // label2
             // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(176, 34);
+            this.label2.AccessibleDescription = null;
+            this.label2.AccessibleName = null;
+            resources.ApplyResources(this.label2, "label2");
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(85, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Combatant Type";
             // 
             // label3
             // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(176, 74);
+            this.label3.AccessibleDescription = null;
+            this.label3.AccessibleName = null;
+            resources.ApplyResources(this.label3, "label3");
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(60, 13);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "Description";
             // 
             // combatantDescription
             // 
-            this.combatantDescription.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.combatantDescription.Location = new System.Drawing.Point(179, 90);
-            this.combatantDescription.MaxLength = 100;
-            this.combatantDescription.Multiline = true;
+            this.combatantDescription.AccessibleDescription = null;
+            this.combatantDescription.AccessibleName = null;
+            resources.ApplyResources(this.combatantDescription, "combatantDescription");
+            this.combatantDescription.BackgroundImage = null;
+            this.combatantDescription.Font = null;
             this.combatantDescription.Name = "combatantDescription";
-            this.combatantDescription.Size = new System.Drawing.Size(188, 95);
-            this.combatantDescription.TabIndex = 5;
             this.combatantDescription.TextChanged += new System.EventHandler(this.combatantDescription_TextChanged);
             // 
             // PlayerInfo
             // 
             this.AcceptButton = this.ok;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AccessibleDescription = null;
+            this.AccessibleName = null;
+            resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackgroundImage = null;
             this.CancelButton = this.cancel;
-            this.ClientSize = new System.Drawing.Size(379, 230);
             this.ControlBox = false;
             this.Controls.Add(this.combatantDescription);
             this.Controls.Add(this.label3);
@@ -140,12 +131,11 @@
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.ok);
             this.Controls.Add(this.label1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Font = null;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "PlayerInfo";
             this.ShowInTaskbar = false;
-            this.Text = "Player Information";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PlayerInfo_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();

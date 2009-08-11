@@ -209,6 +209,15 @@
       <SubType>Designer</SubType>
       <DependentUpon>Options.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PlayerInfo.de.resx">
+      <DependentUpon>PlayerInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PlayerInfo.fr.resx">
+      <DependentUpon>PlayerInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PlayerInfo.ja.resx">
+      <DependentUpon>PlayerInfo.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\PlayerInfo.resx">
       <DependentUpon>PlayerInfo.cs</DependentUpon>
       <SubType>Designer</SubType>
