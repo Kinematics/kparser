@@ -219,7 +219,7 @@
     <EmbeddedResource Include="ParserWindow.fr.resx">
       <DependentUpon>ParserWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ParserWindow.ja-JP.resx">
+    <EmbeddedResource Include="ParserWindow.ja.resx">
       <DependentUpon>ParserWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ParserWindow.resx">
