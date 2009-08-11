@@ -124,6 +124,15 @@
   <data name="tabContextMenuStrip.Font" type="System.Drawing.Font, System.Drawing">
     <value>Arial Unicode MS, 8.25pt</value>
   </data>
+  <data name="tabContextMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>174, 48</value>
+  </data>
+  <data name="pluginTabs.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 28</value>
+  </data>
+  <data name="pluginTabs.Size" type="System.Drawing.Size, System.Drawing">
+    <value>994, 475</value>
+  </data>
   <data name="closeTabToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>173, 22</value>
   </data>
@@ -136,15 +145,6 @@
   <data name="closeOtherTabsToolStripMenuItem.Text" xml:space="preserve">
     <value>他のタブを閉じる</value>
   </data>
-  <data name="tabContextMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>174, 48</value>
-  </data>
-  <data name="pluginTabs.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 28</value>
-  </data>
-  <data name="pluginTabs.Size" type="System.Drawing.Size, System.Drawing">
-    <value>994, 475</value>
-  </data>
   <data name="mainMenuStrip.Font" type="System.Drawing.Font, System.Drawing">
     <value>Arial Unicode MS, 8.25pt</value>
   </data>
@@ -153,6 +153,39 @@
   </data>
   <data name="fileMenu.Text" xml:space="preserve">
     <value>ファイル</value>
+  </data>
+  <data name="beginParseAndSaveDataMenuItem.Text" xml:space="preserve">
+    <value>解析、データの保存を開始...</value>
+  </data>
+  <data name="beginDefaultParseMenuItem.Text" xml:space="preserve">
+    <value>デフォルトの解析を開始</value>
+  </data>
+  <data name="quitParsingMenuItem.Text" xml:space="preserve">
+    <value>解析を終了</value>
+  </data>
+  <data name="openSavedDataMenuItem.Text" xml:space="preserve">
+    <value>開く...</value>
+  </data>
+  <data name="continueParsingMenuItem.Text" xml:space="preserve">
+    <value>解析を継続</value>
+  </data>
+  <data name="saveCurrentDataAsMenuItem.Text" xml:space="preserve">
+    <value>保存されたものを解析として</value>
+  </data>
+  <data name="saveReportMenuItem.Text" xml:space="preserve">
+    <value>レポートを保存...</value>
+  </data>
+  <data name="importToolStripMenuItem.Text" xml:space="preserve">
+    <value>インポート...</value>
+  </data>
+  <data name="exitMenuItem.Text" xml:space="preserve">
+    <value>終了</value>
+  </data>
+  <data name="editToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>74, 20</value>
+  </data>
+  <data name="editToolStripMenuItem.Text" xml:space="preserve">
+    <value>エディット</value>
   </data>
   <data name="copyasTextToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>294, 22</value>
@@ -187,11 +220,11 @@
   <data name="playerInformationToolStripMenuItem.Text" xml:space="preserve">
     <value>選手情報</value>
   </data>
-  <data name="editToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>74, 20</value>
+  <data name="toolsMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>41, 20</value>
   </data>
-  <data name="editToolStripMenuItem.Text" xml:space="preserve">
-    <value>エディット</value>
+  <data name="toolsMenu.Text" xml:space="preserve">
+    <value>道具</value>
   </data>
   <data name="toolsTestFunctionMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>238, 22</value>
@@ -217,11 +250,11 @@
   <data name="optionsToolStripMenuItem.Text" xml:space="preserve">
     <value>オプション...</value>
   </data>
-  <data name="toolsMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>41, 20</value>
+  <data name="windowsMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>30, 20</value>
   </data>
-  <data name="toolsMenu.Text" xml:space="preserve">
-    <value>道具</value>
+  <data name="windowsMenu.Text" xml:space="preserve">
+    <value>窓</value>
   </data>
   <data name="aboutToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>155, 22</value>
@@ -237,39 +270,6 @@
   </data>
   <data name="closeAllTabsToolStripMenuItem.Text" xml:space="preserve">
     <value>すべてのタブを閉じる</value>
-  </data>
-  <data name="windowsMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>30, 20</value>
-  </data>
-  <data name="windowsMenu.Text" xml:space="preserve">
-    <value>窓</value>
-  </data>
-  <data name="beginParseAndSaveDataMenuItem.Text" xml:space="preserve">
-    <value>解析、データの保存を開始...</value>
-  </data>
-  <data name="beginDefaultParseMenuItem.Text" xml:space="preserve">
-    <value>デフォルトの解析を開始</value>
-  </data>
-  <data name="quitParsingMenuItem.Text" xml:space="preserve">
-    <value>解析を終了</value>
-  </data>
-  <data name="openSavedDataMenuItem.Text" xml:space="preserve">
-    <value>開く...</value>
-  </data>
-  <data name="continueParsingMenuItem.Text" xml:space="preserve">
-    <value>解析を継続</value>
-  </data>
-  <data name="saveCurrentDataAsMenuItem.Text" xml:space="preserve">
-    <value>保存されたものを解析として</value>
-  </data>
-  <data name="saveReportMenuItem.Text" xml:space="preserve">
-    <value>レポートを保存...</value>
-  </data>
-  <data name="importToolStripMenuItem.Text" xml:space="preserve">
-    <value>インポート...</value>
-  </data>
-  <data name="exitMenuItem.Text" xml:space="preserve">
-    <value>終了</value>
   </data>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
     <value>6, 15</value>
