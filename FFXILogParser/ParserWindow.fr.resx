@@ -118,6 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="fileMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>50, 20</value>
+  </data>
+  <data name="fileMenu.Text" xml:space="preserve">
+    <value>Fichier</value>
+  </data>
   <data name="beginParseAndSaveDataMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>308, 22</value>
   </data>
@@ -157,38 +163,11 @@
   <data name="exitMenuItem.Text" xml:space="preserve">
     <value>Quitter</value>
   </data>
-  <data name="fileMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>50, 20</value>
-  </data>
-  <data name="fileMenu.Text" xml:space="preserve">
-    <value>Fichier</value>
-  </data>
   <data name="editToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>47, 20</value>
   </data>
   <data name="editToolStripMenuItem.Text" xml:space="preserve">
     <value>Editer</value>
-  </data>
-  <data name="toolsReparseMenuItem.Text" xml:space="preserve">
-    <value>Analyser de Nouveau</value>
-  </data>
-  <data name="toolsMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>41, 20</value>
-  </data>
-  <data name="toolsMenu.Text" xml:space="preserve">
-    <value>Outil</value>
-  </data>
-  <data name="closeAllTabsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>201, 22</value>
-  </data>
-  <data name="closeAllTabsToolStripMenuItem.Text" xml:space="preserve">
-    <value>Fermer Tous les Onglets</value>
-  </data>
-  <data name="windowsMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>57, 20</value>
-  </data>
-  <data name="windowsMenu.Text" xml:space="preserve">
-    <value>Fenêtre</value>
   </data>
   <data name="copyasTextToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>277, 22</value>
@@ -222,6 +201,27 @@
   </data>
   <data name="playerInformationToolStripMenuItem.Text" xml:space="preserve">
     <value>Joueur de l'&amp;information</value>
+  </data>
+  <data name="toolsMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>41, 20</value>
+  </data>
+  <data name="toolsMenu.Text" xml:space="preserve">
+    <value>Outil</value>
+  </data>
+  <data name="toolsReparseMenuItem.Text" xml:space="preserve">
+    <value>Analyser de Nouveau</value>
+  </data>
+  <data name="windowsMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>57, 20</value>
+  </data>
+  <data name="windowsMenu.Text" xml:space="preserve">
+    <value>Fenêtre</value>
+  </data>
+  <data name="closeAllTabsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>201, 22</value>
+  </data>
+  <data name="closeAllTabsToolStripMenuItem.Text" xml:space="preserve">
+    <value>Fermer Tous les Onglets</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

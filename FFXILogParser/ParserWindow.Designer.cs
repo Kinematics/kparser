@@ -144,7 +144,6 @@ namespace WaywardGamers.KParser
             this.mainMenuStrip.AccessibleName = null;
             resources.ApplyResources(this.mainMenuStrip, "mainMenuStrip");
             this.mainMenuStrip.BackgroundImage = null;
-            this.mainMenuStrip.Font = null;
             this.mainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileMenu,
             this.editToolStripMenuItem,
@@ -474,7 +473,6 @@ namespace WaywardGamers.KParser
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.mainMenuStrip);
             this.Controls.Add(this.pluginTabs);
-            this.Font = null;
             this.MainMenuStrip = this.mainMenuStrip;
             this.Name = "ParserWindow";
             this.Load += new System.EventHandler(this.ParserWindow_Load);
