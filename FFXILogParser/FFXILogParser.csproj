@@ -192,6 +192,15 @@
       <DependentUpon>AboutBox.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ImportType.de.resx">
+      <DependentUpon>ImportType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ImportType.fr.resx">
+      <DependentUpon>ImportType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ImportType.ja.resx">
+      <DependentUpon>ImportType.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImportType.resx">
       <DependentUpon>ImportType.cs</DependentUpon>
       <SubType>Designer</SubType>
