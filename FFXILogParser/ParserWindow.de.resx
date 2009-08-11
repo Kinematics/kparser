@@ -131,7 +131,7 @@
     <value>Schließen Sie andere Tabs </value>
   </data>
   <data name="tabContextMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>214, 70</value>
+    <value>214, 48</value>
   </data>
   <data name="fileMenu.Size" type="System.Drawing.Size, System.Drawing">
     <value>44, 20</value>

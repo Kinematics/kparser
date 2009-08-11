@@ -152,6 +152,9 @@
   <data name="closeAllTabsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>151, 22</value>
   </data>
+  <data name="upgradeDatabaseTimestampToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>235, 22</value>
+  </data>
   <data name="&gt;&gt;copyTabasRTFToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -252,14 +255,17 @@
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
     <value>6, 13</value>
   </data>
+  <data name="closeAllTabsToolStripMenuItem.Text" xml:space="preserve">
+    <value>Close All Tabs</value>
+  </data>
   <data name="copyTabInfoAsBBCodeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>210, 22</value>
   </data>
   <data name="fileMenu.Size" type="System.Drawing.Size, System.Drawing">
     <value>35, 20</value>
   </data>
-  <data name="&gt;&gt;optionsToolStripMenuItem.Name" xml:space="preserve">
-    <value>optionsToolStripMenuItem</value>
+  <data name="copyTabInfoAsBBCodeToolStripMenuItem.Text" xml:space="preserve">
+    <value>Copy Tab Info as BBCode</value>
   </data>
   <data name="&gt;&gt;closeOtherTabsToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -270,8 +276,8 @@
   <data name="optionsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>235, 22</value>
   </data>
-  <data name="&gt;&gt;closeAllTabsToolStripMenuItem.Name" xml:space="preserve">
-    <value>closeAllTabsToolStripMenuItem</value>
+  <data name="&gt;&gt;optionsToolStripMenuItem.Name" xml:space="preserve">
+    <value>optionsToolStripMenuItem</value>
   </data>
   <data name="quitParsingMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+Q</value>
@@ -321,6 +327,9 @@
   <data name="copyasTextToolStripMenuItem.Text" xml:space="preserve">
     <value>Copy Tab Info as Text</value>
   </data>
+  <data name="pluginTabs.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
   <data name="&gt;&gt;toolsTestFunctionMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -359,9 +368,6 @@
   </data>
   <data name="continueParsingMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>265, 22</value>
-  </data>
-  <data name="tabContextMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>169, 48</value>
   </data>
   <data name="&gt;&gt;saveCurrentDataAsMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -411,9 +417,6 @@
   <data name="&gt;&gt;toolStripSeparator4.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="beginDefaultParseMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+D</value>
-  </data>
   <data name="&gt;&gt;exitMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -422,25 +425,6 @@
   </data>
   <data name="quitParsingMenuItem.Text" xml:space="preserve">
     <value>&amp;Quit Parsing</value>
-  </data>
-  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        AAABAAEAEBAAAAEAGABoAwAAFgAAACgAAAAQAAAAIAAAAAEAGAAAAAAAAAAAAEgAAABIAAAAAAAAAAAA
-        AADc///b///b///b///c///c///b///b///b///c///c///b///b///c///c///H5+fe///d///d///d
-        ///d///d///f///T9vu+2N292N7Q9Pje///d///d///e///I5+fd///b///b///b///d///f//+qy9Qq
-        TGwXNFM4ZodRh6i13uvd///d///d///I5+fd///b///c///b///c///Q9PcoSmokWnxDeZqBt9iCt9iB
-        tNPe///c///d///H5+fd///b///c///c///e//+/19wbQWE8cZJWhKSTyOmPxOSNwuLU/f/c///d///H
-        5+fd///b///c///e//+21t1le48bOFo4bI1qmbmGtNOQxuGMwtvc///d///d///I5+fe///d///e///H
-        6e8jNFQbJkccNFUjS2xPg6Sg1vaWy+uazuvf///e///e///I5+fc///a///d//92nLMaKUsdOlssUHEb
-        PF0bNFRvo8J3rMtOfp9ifZTe///c///H5+fW+v3e///g//9JcIscL1EdQmMoQ2QlQmMkRWZuoMFlmruF
-        utgcOlnF6O7j///H5+dTh6S74+q+4ekZMFEdNVYdQGEqVXY9ZYZfkLGbz++Sx+ePxONwmLNpmrZMgaAx
-        XnomW3wuZIUwX4AaLk8lUnMcRmc7cZJroMGMwuOFu9qHu9mRx+hFeJkqXX8kV3keSmgmUnMcQ2QcNVYo
-        SWpwpsc0Z4h4rc6XzO55rs3J8vjY/f6Nw+UfQ2QbSGkbRWdZeY1slK1HeZpRh6hEbY2YzutnnL6Wy+x+
-        s9LM9Pje///D7fWDudxilLRtk6m33+vJ5+fd///Y+/3S9fir0uGn0d9+r8tlmr2x4vHQ9fy/7fev2+jR
-        9/zZ/v/f///e///H5+fd///d///c///e///e///f///I7PLO9PnP9fzX+/3d///c///b///c///d///I
-        5+fj///i///i///i///j///j///i///i///i///j///j///i///i///j///j///M5+cAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-</value>
   </data>
   <data name="toolsReparseMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+R</value>
@@ -544,11 +528,11 @@
   <data name="&gt;&gt;quitParsingMenuItem.Name" xml:space="preserve">
     <value>quitParsingMenuItem</value>
   </data>
-  <data name="pluginTabs.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
+  <data name="&gt;&gt;closeAllTabsToolStripMenuItem.Name" xml:space="preserve">
+    <value>closeAllTabsToolStripMenuItem</value>
   </data>
-  <data name="upgradeDatabaseTimestampToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>235, 22</value>
+  <data name="beginDefaultParseMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+D</value>
   </data>
   <data name="toolsMenu.Text" xml:space="preserve">
     <value>Tools</value>
@@ -583,8 +567,24 @@
   <data name="aboutToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>F1</value>
   </data>
-  <data name="closeAllTabsToolStripMenuItem.Text" xml:space="preserve">
-    <value>Close All Tabs</value>
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAEAEBAAAAEAGABoAwAAFgAAACgAAAAQAAAAIAAAAAEAGAAAAAAAAAAAAEgAAABIAAAAAAAAAAAA
+        AADc///b///b///b///c///c///b///b///b///c///c///b///b///c///c///H5+fe///d///d///d
+        ///d///d///f///T9vu+2N292N7Q9Pje///d///d///e///I5+fd///b///b///b///d///f//+qy9Qq
+        TGwXNFM4ZodRh6i13uvd///d///d///I5+fd///b///c///b///c///Q9PcoSmokWnxDeZqBt9iCt9iB
+        tNPe///c///d///H5+fd///b///c///c///e//+/19wbQWE8cZJWhKSTyOmPxOSNwuLU/f/c///d///H
+        5+fd///b///c///e//+21t1le48bOFo4bI1qmbmGtNOQxuGMwtvc///d///d///I5+fe///d///e///H
+        6e8jNFQbJkccNFUjS2xPg6Sg1vaWy+uazuvf///e///e///I5+fc///a///d//92nLMaKUsdOlssUHEb
+        PF0bNFRvo8J3rMtOfp9ifZTe///c///H5+fW+v3e///g//9JcIscL1EdQmMoQ2QlQmMkRWZuoMFlmruF
+        utgcOlnF6O7j///H5+dTh6S74+q+4ekZMFEdNVYdQGEqVXY9ZYZfkLGbz++Sx+ePxONwmLNpmrZMgaAx
+        XnomW3wuZIUwX4AaLk8lUnMcRmc7cZJroMGMwuOFu9qHu9mRx+hFeJkqXX8kV3keSmgmUnMcQ2QcNVYo
+        SWpwpsc0Z4h4rc6XzO55rs3J8vjY/f6Nw+UfQ2QbSGkbRWdZeY1slK1HeZpRh6hEbY2YzutnnL6Wy+x+
+        s9LM9Pje///D7fWDudxilLRtk6m33+vJ5+fd///Y+/3S9fir0uGn0d9+r8tlmr2x4vHQ9fy/7fev2+jR
+        9/zZ/v/f///e///H5+fd///d///c///e///e///f///I7PLO9PnP9fzX+/3d///c///b///c///d///I
+        5+fj///i///i///i///j///j///i///i///i///j///j///i///i///j///j///M5+cAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+</value>
   </data>
   <data name="&gt;&gt;copyTabasRTFToolStripMenuItem.Name" xml:space="preserve">
     <value>copyTabasRTFToolStripMenuItem</value>
@@ -631,8 +631,8 @@
   <data name="&gt;&gt;importToolStripMenuItem.Name" xml:space="preserve">
     <value>importToolStripMenuItem</value>
   </data>
-  <data name="copyTabInfoAsBBCodeToolStripMenuItem.Text" xml:space="preserve">
-    <value>Copy Tab Info as BBCode</value>
+  <data name="tabContextMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>169, 48</value>
   </data>
   <data name="closeOtherTabsToolStripMenuItem.Text" xml:space="preserve">
     <value>Close Other Tabs</value>
@@ -659,6 +659,6 @@
     <value>0, 435</value>
   </metadata>
   <metadata name="$this.Language" type="System.Globalization.CultureInfo, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>German</value>
+    <value>French</value>
   </metadata>
 </root>
