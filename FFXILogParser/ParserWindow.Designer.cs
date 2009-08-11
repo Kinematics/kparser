@@ -112,7 +112,6 @@ namespace WaywardGamers.KParser
             this.tabContextMenuStrip.AccessibleName = null;
             resources.ApplyResources(this.tabContextMenuStrip, "tabContextMenuStrip");
             this.tabContextMenuStrip.BackgroundImage = null;
-            this.tabContextMenuStrip.Font = null;
             this.tabContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.closeTabToolStripMenuItem,
             this.closeOtherTabsToolStripMenuItem});
