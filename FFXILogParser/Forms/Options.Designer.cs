@@ -28,6 +28,7 @@ namespace WaywardGamers.KParser
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Options));
             this.dataSourceGroup = new System.Windows.Forms.GroupBox();
             this.specifyPID = new System.Windows.Forms.CheckBox();
             this.editMemoryAddress = new System.Windows.Forms.CheckBox();
@@ -54,8 +55,10 @@ namespace WaywardGamers.KParser
             // 
             // dataSourceGroup
             // 
-            this.dataSourceGroup.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataSourceGroup.AccessibleDescription = null;
+            this.dataSourceGroup.AccessibleName = null;
+            resources.ApplyResources(this.dataSourceGroup, "dataSourceGroup");
+            this.dataSourceGroup.BackgroundImage = null;
             this.dataSourceGroup.Controls.Add(this.specifyPID);
             this.dataSourceGroup.Controls.Add(this.editMemoryAddress);
             this.dataSourceGroup.Controls.Add(this.readExistingLogs);
@@ -66,229 +69,236 @@ namespace WaywardGamers.KParser
             this.dataSourceGroup.Controls.Add(this.getLogDirectory);
             this.dataSourceGroup.Controls.Add(this.dataSourceRam);
             this.dataSourceGroup.Controls.Add(this.dataSourceLogs);
-            this.dataSourceGroup.Location = new System.Drawing.Point(12, 12);
+            this.dataSourceGroup.Font = null;
             this.dataSourceGroup.Name = "dataSourceGroup";
-            this.dataSourceGroup.Size = new System.Drawing.Size(358, 206);
-            this.dataSourceGroup.TabIndex = 0;
             this.dataSourceGroup.TabStop = false;
-            this.dataSourceGroup.Text = "Data Source";
+            this.dataSourceGroup.UseWaitCursor = true;
             // 
             // specifyPID
             // 
-            this.specifyPID.AutoSize = true;
-            this.specifyPID.Location = new System.Drawing.Point(28, 175);
+            this.specifyPID.AccessibleDescription = null;
+            this.specifyPID.AccessibleName = null;
+            resources.ApplyResources(this.specifyPID, "specifyPID");
+            this.specifyPID.BackgroundImage = null;
+            this.specifyPID.Font = null;
             this.specifyPID.Name = "specifyPID";
-            this.specifyPID.Size = new System.Drawing.Size(167, 17);
-            this.specifyPID.TabIndex = 8;
-            this.specifyPID.Text = "Specify process when starting";
             this.specifyPID.UseVisualStyleBackColor = true;
+            this.specifyPID.UseWaitCursor = true;
             // 
             // editMemoryAddress
             // 
-            this.editMemoryAddress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.editMemoryAddress.Appearance = System.Windows.Forms.Appearance.Button;
-            this.editMemoryAddress.AutoSize = true;
-            this.editMemoryAddress.Location = new System.Drawing.Point(313, 146);
+            this.editMemoryAddress.AccessibleDescription = null;
+            this.editMemoryAddress.AccessibleName = null;
+            resources.ApplyResources(this.editMemoryAddress, "editMemoryAddress");
+            this.editMemoryAddress.BackgroundImage = null;
+            this.editMemoryAddress.Font = null;
             this.editMemoryAddress.Name = "editMemoryAddress";
-            this.editMemoryAddress.Size = new System.Drawing.Size(35, 23);
-            this.editMemoryAddress.TabIndex = 6;
-            this.editMemoryAddress.Text = "Edit";
             this.editMemoryAddress.UseVisualStyleBackColor = true;
+            this.editMemoryAddress.UseWaitCursor = true;
             this.editMemoryAddress.CheckedChanged += new System.EventHandler(this.editMemoryAddress_CheckedChanged);
             // 
             // readExistingLogs
             // 
-            this.readExistingLogs.AutoSize = true;
-            this.readExistingLogs.Location = new System.Drawing.Point(28, 81);
+            this.readExistingLogs.AccessibleDescription = null;
+            this.readExistingLogs.AccessibleName = null;
+            resources.ApplyResources(this.readExistingLogs, "readExistingLogs");
+            this.readExistingLogs.BackgroundImage = null;
+            this.readExistingLogs.Font = null;
             this.readExistingLogs.Name = "readExistingLogs";
-            this.readExistingLogs.Size = new System.Drawing.Size(128, 17);
-            this.readExistingLogs.TabIndex = 0;
-            this.readExistingLogs.Text = "Read existing log files";
             this.readExistingLogs.UseVisualStyleBackColor = true;
+            this.readExistingLogs.UseWaitCursor = true;
             // 
             // memoryOffsetAddress
             // 
-            this.memoryOffsetAddress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.memoryOffsetAddress.Location = new System.Drawing.Point(28, 149);
+            this.memoryOffsetAddress.AccessibleDescription = null;
+            this.memoryOffsetAddress.AccessibleName = null;
+            resources.ApplyResources(this.memoryOffsetAddress, "memoryOffsetAddress");
+            this.memoryOffsetAddress.BackgroundImage = null;
+            this.memoryOffsetAddress.Font = null;
             this.memoryOffsetAddress.Name = "memoryOffsetAddress";
             this.memoryOffsetAddress.ReadOnly = true;
-            this.memoryOffsetAddress.Size = new System.Drawing.Size(279, 20);
-            this.memoryOffsetAddress.TabIndex = 5;
+            this.memoryOffsetAddress.UseWaitCursor = true;
             this.memoryOffsetAddress.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.memoryOffsetAddress_KeyPress);
             // 
             // logDirectory
             // 
-            this.logDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.logDirectory.Location = new System.Drawing.Point(28, 55);
+            this.logDirectory.AccessibleDescription = null;
+            this.logDirectory.AccessibleName = null;
+            resources.ApplyResources(this.logDirectory, "logDirectory");
+            this.logDirectory.BackgroundImage = null;
+            this.logDirectory.Font = null;
             this.logDirectory.Name = "logDirectory";
             this.logDirectory.ReadOnly = true;
-            this.logDirectory.Size = new System.Drawing.Size(289, 20);
-            this.logDirectory.TabIndex = 2;
+            this.logDirectory.UseWaitCursor = true;
             // 
             // memoryLabel
             // 
-            this.memoryLabel.AutoSize = true;
-            this.memoryLabel.Location = new System.Drawing.Point(25, 133);
+            this.memoryLabel.AccessibleDescription = null;
+            this.memoryLabel.AccessibleName = null;
+            resources.ApplyResources(this.memoryLabel, "memoryLabel");
+            this.memoryLabel.Font = null;
             this.memoryLabel.Name = "memoryLabel";
-            this.memoryLabel.Size = new System.Drawing.Size(184, 13);
-            this.memoryLabel.TabIndex = 7;
-            this.memoryLabel.Text = "Memory offset address (hexadecimal):";
+            this.memoryLabel.UseWaitCursor = true;
             // 
             // directoryLabel
             // 
-            this.directoryLabel.AutoSize = true;
-            this.directoryLabel.Location = new System.Drawing.Point(25, 39);
+            this.directoryLabel.AccessibleDescription = null;
+            this.directoryLabel.AccessibleName = null;
+            resources.ApplyResources(this.directoryLabel, "directoryLabel");
+            this.directoryLabel.Font = null;
             this.directoryLabel.Name = "directoryLabel";
-            this.directoryLabel.Size = new System.Drawing.Size(92, 13);
-            this.directoryLabel.TabIndex = 4;
-            this.directoryLabel.Text = "FFXI log directory:";
+            this.directoryLabel.UseWaitCursor = true;
             // 
             // getLogDirectory
             // 
-            this.getLogDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.getLogDirectory.Location = new System.Drawing.Point(323, 55);
+            this.getLogDirectory.AccessibleDescription = null;
+            this.getLogDirectory.AccessibleName = null;
+            resources.ApplyResources(this.getLogDirectory, "getLogDirectory");
+            this.getLogDirectory.BackgroundImage = null;
+            this.getLogDirectory.Font = null;
             this.getLogDirectory.Name = "getLogDirectory";
-            this.getLogDirectory.Size = new System.Drawing.Size(25, 20);
-            this.getLogDirectory.TabIndex = 3;
-            this.getLogDirectory.Text = "...";
             this.getLogDirectory.UseVisualStyleBackColor = true;
+            this.getLogDirectory.UseWaitCursor = true;
             this.getLogDirectory.Click += new System.EventHandler(this.getLogDirectory_Click);
             // 
             // dataSourceRam
             // 
-            this.dataSourceRam.AutoSize = true;
-            this.dataSourceRam.Location = new System.Drawing.Point(6, 113);
+            this.dataSourceRam.AccessibleDescription = null;
+            this.dataSourceRam.AccessibleName = null;
+            resources.ApplyResources(this.dataSourceRam, "dataSourceRam");
+            this.dataSourceRam.BackgroundImage = null;
+            this.dataSourceRam.Font = null;
             this.dataSourceRam.Name = "dataSourceRam";
-            this.dataSourceRam.Size = new System.Drawing.Size(85, 17);
-            this.dataSourceRam.TabIndex = 1;
             this.dataSourceRam.TabStop = true;
-            this.dataSourceRam.Text = "Live Memory";
             this.dataSourceRam.UseVisualStyleBackColor = true;
+            this.dataSourceRam.UseWaitCursor = true;
             // 
             // dataSourceLogs
             // 
-            this.dataSourceLogs.AutoSize = true;
-            this.dataSourceLogs.Location = new System.Drawing.Point(6, 19);
+            this.dataSourceLogs.AccessibleDescription = null;
+            this.dataSourceLogs.AccessibleName = null;
+            resources.ApplyResources(this.dataSourceLogs, "dataSourceLogs");
+            this.dataSourceLogs.BackgroundImage = null;
+            this.dataSourceLogs.Font = null;
             this.dataSourceLogs.Name = "dataSourceLogs";
-            this.dataSourceLogs.Size = new System.Drawing.Size(67, 17);
-            this.dataSourceLogs.TabIndex = 0;
             this.dataSourceLogs.TabStop = true;
-            this.dataSourceLogs.Text = "Log Files";
             this.dataSourceLogs.UseVisualStyleBackColor = true;
+            this.dataSourceLogs.UseWaitCursor = true;
             this.dataSourceLogs.CheckedChanged += new System.EventHandler(this.dataSourceLogs_CheckedChanged);
             // 
             // ok
             // 
-            this.ok.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ok.AccessibleDescription = null;
+            this.ok.AccessibleName = null;
+            resources.ApplyResources(this.ok, "ok");
+            this.ok.BackgroundImage = null;
             this.ok.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.ok.Location = new System.Drawing.Point(214, 332);
+            this.ok.Font = null;
             this.ok.Name = "ok";
-            this.ok.Size = new System.Drawing.Size(75, 23);
-            this.ok.TabIndex = 1;
-            this.ok.Text = "OK";
             this.ok.UseVisualStyleBackColor = true;
             this.ok.Click += new System.EventHandler(this.ok_Click);
             // 
             // cancel
             // 
-            this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cancel.AccessibleDescription = null;
+            this.cancel.AccessibleName = null;
+            resources.ApplyResources(this.cancel, "cancel");
+            this.cancel.BackgroundImage = null;
             this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancel.Location = new System.Drawing.Point(295, 332);
+            this.cancel.Font = null;
             this.cancel.Name = "cancel";
-            this.cancel.Size = new System.Drawing.Size(75, 23);
-            this.cancel.TabIndex = 2;
-            this.cancel.Text = "Cancel";
             this.cancel.UseVisualStyleBackColor = true;
             this.cancel.Click += new System.EventHandler(this.cancel_Click);
             // 
             // reset
             // 
-            this.reset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.reset.Location = new System.Drawing.Point(18, 332);
+            this.reset.AccessibleDescription = null;
+            this.reset.AccessibleName = null;
+            resources.ApplyResources(this.reset, "reset");
+            this.reset.BackgroundImage = null;
+            this.reset.Font = null;
             this.reset.Name = "reset";
-            this.reset.Size = new System.Drawing.Size(75, 23);
-            this.reset.TabIndex = 4;
-            this.reset.Text = "Reset";
             this.reset.UseVisualStyleBackColor = true;
             this.reset.Click += new System.EventHandler(this.reset_Click);
             // 
             // debugMode
             // 
-            this.debugMode.AutoSize = true;
-            this.debugMode.Location = new System.Drawing.Point(9, 71);
+            this.debugMode.AccessibleDescription = null;
+            this.debugMode.AccessibleName = null;
+            resources.ApplyResources(this.debugMode, "debugMode");
+            this.debugMode.BackgroundImage = null;
+            this.debugMode.Font = null;
             this.debugMode.Name = "debugMode";
-            this.debugMode.Size = new System.Drawing.Size(87, 17);
-            this.debugMode.TabIndex = 5;
-            this.debugMode.Text = "Debug mode";
             this.debugMode.UseVisualStyleBackColor = true;
+            // 
+            // folderBrowserDialog
+            // 
+            resources.ApplyResources(this.folderBrowserDialog, "folderBrowserDialog");
             // 
             // otherGroup
             // 
-            this.otherGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.otherGroup.AccessibleDescription = null;
+            this.otherGroup.AccessibleName = null;
+            resources.ApplyResources(this.otherGroup, "otherGroup");
+            this.otherGroup.BackgroundImage = null;
             this.otherGroup.Controls.Add(this.defaultSaveDirectory);
             this.otherGroup.Controls.Add(this.saveDirectoryLabel);
             this.otherGroup.Controls.Add(this.getSaveDirectory);
             this.otherGroup.Controls.Add(this.debugMode);
-            this.otherGroup.Location = new System.Drawing.Point(12, 224);
+            this.otherGroup.Font = null;
             this.otherGroup.Name = "otherGroup";
-            this.otherGroup.Size = new System.Drawing.Size(358, 94);
-            this.otherGroup.TabIndex = 6;
             this.otherGroup.TabStop = false;
-            this.otherGroup.Text = "Other";
             // 
             // defaultSaveDirectory
             // 
-            this.defaultSaveDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.defaultSaveDirectory.Location = new System.Drawing.Point(15, 35);
+            this.defaultSaveDirectory.AccessibleDescription = null;
+            this.defaultSaveDirectory.AccessibleName = null;
+            resources.ApplyResources(this.defaultSaveDirectory, "defaultSaveDirectory");
+            this.defaultSaveDirectory.BackgroundImage = null;
+            this.defaultSaveDirectory.Font = null;
             this.defaultSaveDirectory.Name = "defaultSaveDirectory";
             this.defaultSaveDirectory.ReadOnly = true;
-            this.defaultSaveDirectory.Size = new System.Drawing.Size(302, 20);
-            this.defaultSaveDirectory.TabIndex = 6;
             // 
             // saveDirectoryLabel
             // 
-            this.saveDirectoryLabel.AutoSize = true;
-            this.saveDirectoryLabel.Location = new System.Drawing.Point(6, 19);
+            this.saveDirectoryLabel.AccessibleDescription = null;
+            this.saveDirectoryLabel.AccessibleName = null;
+            resources.ApplyResources(this.saveDirectoryLabel, "saveDirectoryLabel");
+            this.saveDirectoryLabel.Font = null;
             this.saveDirectoryLabel.Name = "saveDirectoryLabel";
-            this.saveDirectoryLabel.Size = new System.Drawing.Size(114, 13);
-            this.saveDirectoryLabel.TabIndex = 8;
-            this.saveDirectoryLabel.Text = "Default Save Directory";
             // 
             // getSaveDirectory
             // 
-            this.getSaveDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.getSaveDirectory.Location = new System.Drawing.Point(323, 33);
+            this.getSaveDirectory.AccessibleDescription = null;
+            this.getSaveDirectory.AccessibleName = null;
+            resources.ApplyResources(this.getSaveDirectory, "getSaveDirectory");
+            this.getSaveDirectory.BackgroundImage = null;
+            this.getSaveDirectory.Font = null;
             this.getSaveDirectory.Name = "getSaveDirectory";
-            this.getSaveDirectory.Size = new System.Drawing.Size(25, 23);
-            this.getSaveDirectory.TabIndex = 7;
-            this.getSaveDirectory.Text = "...";
             this.getSaveDirectory.UseVisualStyleBackColor = true;
             this.getSaveDirectory.Click += new System.EventHandler(this.getSaveDirectory_Click);
             // 
             // Options
             // 
             this.AcceptButton = this.ok;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AccessibleDescription = null;
+            this.AccessibleName = null;
+            resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackgroundImage = null;
             this.CancelButton = this.cancel;
-            this.ClientSize = new System.Drawing.Size(382, 367);
             this.Controls.Add(this.otherGroup);
             this.Controls.Add(this.reset);
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.ok);
             this.Controls.Add(this.dataSourceGroup);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = null;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Options";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.Text = "Options";
             this.Load += new System.EventHandler(this.Options_Load);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Options_FormClosed);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Options_FormClosing);
