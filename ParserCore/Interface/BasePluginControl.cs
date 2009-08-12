@@ -77,6 +77,14 @@ namespace WaywardGamers.KParser.Plugin
             //HandleDataset(null);
         }
 
+        public void NotifyOfCultureChange()
+        {
+            HandleCultureChange();
+
+            if (IsActive)
+                NotifyOfUpdate();
+        }
+
         public virtual void NotifyOfUpdate()
         {
             ResetTextBox();
@@ -167,6 +175,10 @@ namespace WaywardGamers.KParser.Plugin
         protected virtual void ProcessData(KPDatabaseDataSet dataSet)
         {
             throw new NotImplementedException();
+        }
+
+        protected virtual void HandleCultureChange()
+        {
         }
 
         #endregion
