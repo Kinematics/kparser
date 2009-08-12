@@ -37,4 +37,9 @@ If you are running Windows Vista, you may need to adjust the runtime permisssion
 
 Right click on the .exe file and select Properties. Go to the Compatibility tab and check the check box "Run this program as an Administrator".
 
+If you are running 64-bit Windows Vista you may need to install the patch from this page:
+
+http://www.microsoft.com/downloads/details.aspx?FamilyID=98E83614-C30A-4B75-9E05-0A9C3FBDD20D&amp;displaylang=en&displaylang=en
+
+In order to fix some problems with .NET 3.5.
 
