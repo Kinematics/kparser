@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using WaywardGamers.KParser.Database;
 
-namespace WaywardGamers.KParser
+namespace WaywardGamers.KParser.Forms
 {
     partial class AboutBox : Form
     {

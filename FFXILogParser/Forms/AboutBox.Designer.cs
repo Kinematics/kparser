@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace WaywardGamers.KParser
+namespace WaywardGamers.KParser.Forms
 {
     partial class AboutBox : Form
     {
