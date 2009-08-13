@@ -34,7 +34,13 @@ namespace WaywardGamers.KParser.Plugin
 
         private void CustomMobSelectionDlg_FormClosing(object sender, FormClosingEventArgs e)
         {
-            e.Cancel = true;
+            // If the user closed the window, just hide it.
+            // If CloseReason is something else (eg: application shutdown, windows shutdown),
+            // then allow it to proceed normally.
+            if ((e.CloseReason == CloseReason.None) ||
+                (e.CloseReason == CloseReason.UserClosing))
+                e.Cancel = true;
+
             this.Hide();
         }
 
