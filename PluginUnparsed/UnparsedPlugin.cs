@@ -85,7 +85,7 @@ namespace WaywardGamers.KParser.Plugin
         {
             base.LoadResources();
 
-            ResourceManager resManager = new ResourceManager("WaywardGamers.KParser.Resources.DebuggingPluginsResources",
+            ResourceManager resManager = new ResourceManager("WaywardGamers.KParser.Resources.DebuggingPlugin",
                 this.GetType().Assembly);
 
             this.tabName = resManager.GetString("unparsedDataPluginTabName");

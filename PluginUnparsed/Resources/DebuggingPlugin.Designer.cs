@@ -22,14 +22,14 @@ namespace WaywardGamers.KParser.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "2.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class DebuggingPluginsResources {
+    internal class DebuggingPlugin {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal DebuggingPluginsResources() {
+        internal DebuggingPlugin() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace WaywardGamers.KParser.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WaywardGamers.KParser.Resources.DebuggingPluginsResources", typeof(DebuggingPluginsResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WaywardGamers.KParser.Resources.DebuggingPlugin", typeof(DebuggingPlugin).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
