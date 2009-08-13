@@ -61,7 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DebuggingPluginsResources.Designer.cs">
+    <Compile Include="Resources\DebuggingPluginsResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>DebuggingPluginsResources.resx</DependentUpon>
@@ -78,10 +78,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="DebuggingPluginsResources.de.resx" />
-    <EmbeddedResource Include="DebuggingPluginsResources.fr.resx" />
-    <EmbeddedResource Include="DebuggingPluginsResources.ja.resx" />
-    <EmbeddedResource Include="DebuggingPluginsResources.resx">
+    <EmbeddedResource Include="Resources\DebuggingPluginsResources.de.resx" />
+    <EmbeddedResource Include="Resources\DebuggingPluginsResources.fr.resx" />
+    <EmbeddedResource Include="Resources\DebuggingPluginsResources.ja.resx" />
+    <EmbeddedResource Include="Resources\DebuggingPluginsResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>DebuggingPluginsResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WaywardGamers.KParser {
+namespace WaywardGamers.KParser.Resources {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace WaywardGamers.KParser {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WaywardGamers.KParser.DebuggingPluginsResources", typeof(DebuggingPluginsResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WaywardGamers.KParser.Resources.DebuggingPluginsResources", typeof(DebuggingPluginsResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
