@@ -12,6 +12,10 @@ namespace WaywardGamers.KParser.Plugin
 {
     public partial class BasePluginControl : UserControl, IPlugin
     {
+        #region Protected Variables
+        protected string tabName;
+        #endregion
+
         #region Font Variables
         protected Font normFont;
         protected Font boldFont;
@@ -44,7 +48,7 @@ namespace WaywardGamers.KParser.Plugin
 
         public virtual string TabName
         {
-            get { throw new NotImplementedException(); }
+            get { return tabName; }
         }
 
         public UserControl Control
@@ -145,7 +149,8 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         using (AccessToTheDatabase dbAccess = new AccessToTheDatabase())
                         {
-                            ProcessData(dbAccess.Database);
+                            if (dbAccess.Database != null)
+                                ProcessData(dbAccess.Database);
                         }
                     }
                     else
@@ -179,8 +184,12 @@ namespace WaywardGamers.KParser.Plugin
 
         protected virtual void HandleCultureChange()
         {
+            LoadResources();
         }
 
+        protected virtual void LoadResources()
+        {
+        }
         #endregion
 
         #region Helper functions for RTF TextBox

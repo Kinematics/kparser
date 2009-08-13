@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{3EEB8410-FE5C-49D2-BFB9-5F4A8B5AD995}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -61,6 +61,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DebuggingPluginsResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DebuggingPluginsResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnparsedPlugin.cs">
       <SubType>UserControl</SubType>
@@ -71,6 +76,15 @@
       <Project>{626318E4-447D-4BD7-BC3A-294A8E37B07F}</Project>
       <Name>ParserCore</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DebuggingPluginsResources.de.resx" />
+    <EmbeddedResource Include="DebuggingPluginsResources.fr.resx" />
+    <EmbeddedResource Include="DebuggingPluginsResources.ja.resx" />
+    <EmbeddedResource Include="DebuggingPluginsResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DebuggingPluginsResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

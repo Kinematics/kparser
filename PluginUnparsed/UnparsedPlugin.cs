@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using System.Resources;
 
 namespace WaywardGamers.KParser.Plugin
 {
@@ -23,15 +24,12 @@ namespace WaywardGamers.KParser.Plugin
                 System.Windows.Forms.AnchorStyles.Left |
                 System.Windows.Forms.AnchorStyles.Right |
                 System.Windows.Forms.AnchorStyles.Bottom;
+
+            LoadResources();
         }
         #endregion
 
         #region IPlugin Overrides
-        public override string TabName
-        {
-            get { return "Unparsed Data"; }
-        }
-
         public override bool IsDebug
         {
             get
@@ -79,6 +77,18 @@ namespace WaywardGamers.KParser.Plugin
 
                 PushStrings(sb, strModList);
             }
+        }
+        #endregion
+
+        #region Localization Overrides
+        protected override void LoadResources()
+        {
+            base.LoadResources();
+
+            ResourceManager resManager = new ResourceManager("WaywardGamers.KParser.DebuggingPluginsResources",
+                this.GetType().Assembly);
+
+            this.tabName = resManager.GetString("unparsedDataPluginTabName");
         }
         #endregion
     }
