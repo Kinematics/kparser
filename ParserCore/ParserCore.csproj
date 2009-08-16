@@ -119,6 +119,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CoreResources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Resources\PublicResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PublicResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Utility\PluginUtilities.cs" />
     <Compile Include="Utility\RTFStringMods.cs" />
     <Compile Include="KPDatabaseDataSet.cs">
@@ -266,6 +271,13 @@
     <EmbeddedResource Include="Resources\CoreResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CoreResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\PublicResources.de.resx" />
+    <EmbeddedResource Include="Resources\PublicResources.fr.resx" />
+    <EmbeddedResource Include="Resources\PublicResources.ja.resx" />
+    <EmbeddedResource Include="Resources\PublicResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>PublicResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
