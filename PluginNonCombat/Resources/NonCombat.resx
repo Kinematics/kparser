@@ -141,4 +141,10 @@
   <data name="ItemsPluginTabName" xml:space="preserve">
     <value>Items</value>
   </data>
+  <data name="PlayerInfoPluginNoInfo" xml:space="preserve">
+    <value>-No Information-</value>
+  </data>
+  <data name="PlayerInfoPluginTabName" xml:space="preserve">
+    <value>Player Info</value>
+  </data>
 </root>

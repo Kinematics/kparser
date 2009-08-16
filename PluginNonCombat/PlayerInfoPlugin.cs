@@ -28,11 +28,6 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region IPlugin Overrides
-        public override string TabName
-        {
-            get { return "Player Info"; }
-        }
-
         public override void Reset()
         {
             ResetTextBox();
@@ -75,22 +70,36 @@ namespace WaywardGamers.KParser.Plugin
             if (playerData.Count() == 0)
                 return;
 
+            string playerDescrip;
+
             foreach (var player in playerData)
             {
                 if (player.Description != "")
                 {
+                    playerDescrip = string.Format("\n    {0}\n\n", player.Description);
                     AppendText(player.Name, Color.Blue, true, false);
-                    AppendText(string.Format("\n    {0}\n\n", player.Description));
+                    AppendText(playerDescrip);
                 }
                 else
                 {
+                    playerDescrip = string.Format("\n    {0}\n\n", Resources.NonCombat.PlayerInfoPluginNoInfo);
                     AppendText(player.Name, Color.Blue, true, false);
-                    AppendText("\n    -No Information-\n\n", Color.Red, true, false);
+                    AppendText(playerDescrip, Color.Red, true, false);
                 }
             }
 
             AppendText("\n");
         }
         #endregion
+
+        #region Localization Overrides
+        protected override void LoadResources()
+        {
+            base.LoadResources();
+
+            this.tabName = Resources.NonCombat.PlayerInfoPluginTabName;
+        }
+        #endregion
+
     }
 }
