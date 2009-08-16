@@ -22,14 +22,14 @@ namespace WaywardGamers.KParser.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "2.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class DebuggingPlugin {
+    internal class NonCombat {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal DebuggingPlugin() {
+        internal NonCombat() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace WaywardGamers.KParser.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WaywardGamers.KParser.Resources.DebuggingPlugin", typeof(DebuggingPlugin).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WaywardGamers.KParser.Resources.NonCombat", typeof(NonCombat).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,15 +57,6 @@ namespace WaywardGamers.KParser.Resources {
             }
             set {
                 resourceCulture = value;
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unparsed Data.
-        /// </summary>
-        internal static string unparsedDataPluginTabName {
-            get {
-                return ResourceManager.GetString("unparsedDataPluginTabName", resourceCulture);
             }
         }
     }

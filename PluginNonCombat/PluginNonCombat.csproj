@@ -77,10 +77,10 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resources\NonCombatPlugin.Designer.cs">
+    <Compile Include="Resources\NonCombat.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>NonCombatPlugin.resx</DependentUpon>
+      <DependentUpon>NonCombat.resx</DependentUpon>
     </Compile>
     <Compile Include="TreasurePlugin.cs">
       <SubType>UserControl</SubType>
@@ -93,12 +93,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\NonCombatPlugin.de.resx" />
-    <EmbeddedResource Include="Resources\NonCombatPlugin.fr.resx" />
-    <EmbeddedResource Include="Resources\NonCombatPlugin.ja.resx" />
-    <EmbeddedResource Include="Resources\NonCombatPlugin.resx">
+    <EmbeddedResource Include="Resources\NonCombat.de.resx" />
+    <EmbeddedResource Include="Resources\NonCombat.fr.resx" />
+    <EmbeddedResource Include="Resources\NonCombat.ja.resx" />
+    <EmbeddedResource Include="Resources\NonCombat.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>NonCombatPlugin.Designer.cs</LastGenOutput>
+      <LastGenOutput>NonCombat.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
