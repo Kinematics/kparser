@@ -62,10 +62,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Resources\CombatPlugin.Designer.cs">
+    <Compile Include="Resources\Combat.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>CombatPlugin.resx</DependentUpon>
+      <DependentUpon>Combat.resx</DependentUpon>
     </Compile>
     <Compile Include="Defense2Plugin.cs">
       <SubType>UserControl</SubType>
@@ -114,12 +114,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\CombatPlugin.de.resx" />
-    <EmbeddedResource Include="Resources\CombatPlugin.fr.resx" />
-    <EmbeddedResource Include="Resources\CombatPlugin.ja.resx" />
-    <EmbeddedResource Include="Resources\CombatPlugin.resx">
+    <EmbeddedResource Include="Resources\Combat.de.resx" />
+    <EmbeddedResource Include="Resources\Combat.fr.resx" />
+    <EmbeddedResource Include="Resources\Combat.ja.resx" />
+    <EmbeddedResource Include="Resources\Combat.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>CombatPlugin.Designer.cs</LastGenOutput>
+      <LastGenOutput>Combat.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
