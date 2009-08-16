@@ -85,7 +85,7 @@ namespace WaywardGamers.KParser.Plugin
         {
             base.LoadResources();
 
-            this.tabName = Resources.DebuggingPlugin.unparsedDataPluginTabName;
+            this.tabName = Resources.Debugging.unparsedDataPluginTabName;
         }
         #endregion
     }
