@@ -37,6 +37,8 @@ namespace WaywardGamers.KParser.Plugin
 
             IsActive = false;
             MobXPHandler.Instance.CustomMobFilterChanged += this.CustomMobFilterChanged;
+
+            LoadResources();
         }
         #endregion
 

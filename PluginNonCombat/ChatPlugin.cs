@@ -46,8 +46,6 @@ namespace WaywardGamers.KParser.Plugin
             speakerCombo.SelectedIndex = 0;
             speakerCombo.SelectedIndexChanged += new EventHandler(this.speakerCombo_SelectedIndexChanged);
             toolStrip.Items.Add(speakerCombo);
-
-            LoadResources();
         }
         #endregion
 

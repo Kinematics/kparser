@@ -24,8 +24,6 @@ namespace WaywardGamers.KParser.Plugin
                 System.Windows.Forms.AnchorStyles.Left |
                 System.Windows.Forms.AnchorStyles.Right |
                 System.Windows.Forms.AnchorStyles.Bottom;
-
-            LoadResources();
         }
         #endregion
 
