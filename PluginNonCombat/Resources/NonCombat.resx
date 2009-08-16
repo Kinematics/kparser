@@ -126,4 +126,19 @@
   <data name="ChatPluginTabName" xml:space="preserve">
     <value>Chat</value>
   </data>
+  <data name="ItemsPluginDetailsHeader" xml:space="preserve">
+    <value>Item                 Time Used\n</value>
+  </data>
+  <data name="ItemsPluginGeneralHeader" xml:space="preserve">
+    <value>Item                                  Used\n</value>
+  </data>
+  <data name="ItemsPluginPlayerLabel" xml:space="preserve">
+    <value>Player:</value>
+  </data>
+  <data name="ItemsPluginShowDetail" xml:space="preserve">
+    <value>Show Detail</value>
+  </data>
+  <data name="ItemsPluginTabName" xml:space="preserve">
+    <value>Items</value>
+  </data>
 </root>

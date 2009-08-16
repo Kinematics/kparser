@@ -12,24 +12,25 @@ namespace WaywardGamers.KParser.Plugin
 {
     public class ItemsPlugin : BasePluginControl
     {
-        #region Constructor
+        #region Member Variables
         bool flagNoUpdate = false;
         bool showDetails = false;
         ToolStripComboBox playersCombo = new ToolStripComboBox();
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
 
-        string generalHeader = "Item                                  Used\n";
-        //string detailsHeader = "Item                 Time Used\n";
+        string generalHeader;
+        string detailsHeader;
+        #endregion
 
-
+        #region Constructor
         public ItemsPlugin()
         {
             ToolStripLabel playerLabel = new ToolStripLabel();
-            playerLabel.Text = "Players:";
+            playerLabel.Text = Resources.NonCombat.ItemsPluginPlayerLabel;
             toolStrip.Items.Add(playerLabel);
 
             playersCombo.DropDownStyle = ComboBoxStyle.DropDownList;
-            playersCombo.Items.Add("All");
+            playersCombo.Items.Add(Resources.PublicResources.All);
             playersCombo.MaxDropDownItems = 10;
             playersCombo.SelectedIndex = 0;
             playersCombo.SelectedIndexChanged += new EventHandler(this.playersCombo_SelectedIndexChanged);
@@ -38,10 +39,10 @@ namespace WaywardGamers.KParser.Plugin
 
 
             optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            optionsMenu.Text = "Options";
+            optionsMenu.Text = Resources.PublicResources.Options;
 
             ToolStripMenuItem showDetailOption = new ToolStripMenuItem();
-            showDetailOption.Text = "Show Detail";
+            showDetailOption.Text = Resources.NonCombat.ItemsPluginShowDetail;
             showDetailOption.CheckOnClick = true;
             showDetailOption.Checked = false;
             showDetailOption.Click += new EventHandler(showDetailOption_Click);
@@ -52,11 +53,6 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region IPlugin Overrides
-        public override string TabName
-        {
-            get { return "Items"; }
-        }
-
         public override void Reset()
         {
             ResetTextBox();
@@ -74,7 +70,7 @@ namespace WaywardGamers.KParser.Plugin
         public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
             bool changesFound = false;
-            string currentlySelectedPlayer = "All";
+            string currentlySelectedPlayer = Resources.PublicResources.All;
 
             if (playersCombo.CBSelectedIndex() > 0)
                 currentlySelectedPlayer = playersCombo.CBSelectedItem();
@@ -101,7 +97,6 @@ namespace WaywardGamers.KParser.Plugin
                 HandleDataset(null);
             }
         }
-
         #endregion
 
         #region Private functions
@@ -128,11 +123,11 @@ namespace WaywardGamers.KParser.Plugin
             string selectedPlayer = playersCombo.CBSelectedItem();
             List<string> playerList = new List<string>();
 
-            if (selectedPlayer == "All")
+            if (selectedPlayer == Resources.PublicResources.All)
             {
                 foreach (string player in playersCombo.CBGetStrings())
                 {
-                    if (player != "All")
+                    if (player != Resources.PublicResources.All)
                         playerList.Add(player.ToString());
                 }
             }
@@ -244,5 +239,17 @@ namespace WaywardGamers.KParser.Plugin
             flagNoUpdate = false;
         }
         #endregion
+
+        #region Localization Overrides
+        protected override void LoadResources()
+        {
+            base.LoadResources();
+
+            this.tabName = Resources.NonCombat.ItemsPluginTabName;
+            generalHeader = Resources.NonCombat.ItemsPluginGeneralHeader;
+            detailsHeader = Resources.NonCombat.ItemsPluginDetailsHeader;
+        }
+        #endregion
+
     }
 }

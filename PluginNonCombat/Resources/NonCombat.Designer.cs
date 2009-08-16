@@ -86,5 +86,50 @@ namespace WaywardGamers.KParser.Resources {
                 return ResourceManager.GetString("ChatPluginTabName", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item                 Time Used\n.
+        /// </summary>
+        internal static string ItemsPluginDetailsHeader {
+            get {
+                return ResourceManager.GetString("ItemsPluginDetailsHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item                                  Used\n.
+        /// </summary>
+        internal static string ItemsPluginGeneralHeader {
+            get {
+                return ResourceManager.GetString("ItemsPluginGeneralHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player:.
+        /// </summary>
+        internal static string ItemsPluginPlayerLabel {
+            get {
+                return ResourceManager.GetString("ItemsPluginPlayerLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Detail.
+        /// </summary>
+        internal static string ItemsPluginShowDetail {
+            get {
+                return ResourceManager.GetString("ItemsPluginShowDetail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Items.
+        /// </summary>
+        internal static string ItemsPluginTabName {
+            get {
+                return ResourceManager.GetString("ItemsPluginTabName", resourceCulture);
+            }
+        }
     }
 }
