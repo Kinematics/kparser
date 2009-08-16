@@ -59,5 +59,32 @@ namespace WaywardGamers.KParser.Resources {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat Type:.
+        /// </summary>
+        internal static string ChatPluginCategoryLabel {
+            get {
+                return ResourceManager.GetString("ChatPluginCategoryLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Speaker:.
+        /// </summary>
+        internal static string ChatPluginSpeakerLabel {
+            get {
+                return ResourceManager.GetString("ChatPluginSpeakerLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat.
+        /// </summary>
+        internal static string ChatPluginTabName {
+            get {
+                return ResourceManager.GetString("ChatPluginTabName", resourceCulture);
+            }
+        }
     }
 }
