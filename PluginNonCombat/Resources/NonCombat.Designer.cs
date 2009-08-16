@@ -131,5 +131,23 @@ namespace WaywardGamers.KParser.Resources {
                 return ResourceManager.GetString("ItemsPluginTabName", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -No Information-.
+        /// </summary>
+        internal static string PlayerInfoPluginNoInfo {
+            get {
+                return ResourceManager.GetString("PlayerInfoPluginNoInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player Info.
+        /// </summary>
+        internal static string PlayerInfoPluginTabName {
+            get {
+                return ResourceManager.GetString("PlayerInfoPluginTabName", resourceCulture);
+            }
+        }
     }
 }
