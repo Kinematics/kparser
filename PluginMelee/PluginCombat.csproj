@@ -62,6 +62,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Resources\CombatPlugin.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CombatPlugin.resx</DependentUpon>
+    </Compile>
     <Compile Include="Defense2Plugin.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -107,6 +112,15 @@
       <Project>{626318E4-447D-4BD7-BC3A-294A8E37B07F}</Project>
       <Name>ParserCore</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\CombatPlugin.de.resx" />
+    <EmbeddedResource Include="Resources\CombatPlugin.fr.resx" />
+    <EmbeddedResource Include="Resources\CombatPlugin.ja.resx" />
+    <EmbeddedResource Include="Resources\CombatPlugin.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CombatPlugin.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
