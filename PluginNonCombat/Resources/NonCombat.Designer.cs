@@ -169,6 +169,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Don&apos;t Count &apos;exclude&apos;d Player Kills.
+        /// </summary>
+        internal static string ExcludedPlayerOption {
+            get {
+                return ResourceManager.GetString("ExcludedPlayerOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Avg Fight Length.
         /// </summary>
         internal static string ExperiencePluginAverageFightLength {
@@ -219,15 +228,6 @@ namespace WaywardGamers.KParser.Resources {
         internal static string ExperiencePluginEndTime {
             get {
                 return ResourceManager.GetString("ExperiencePluginEndTime", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Don&apos;t Count &apos;exclude&apos;d Player Kills.
-        /// </summary>
-        internal static string ExperiencePluginExcludedPlayerOption {
-            get {
-                return ResourceManager.GetString("ExperiencePluginExcludedPlayerOption", resourceCulture);
             }
         }
         
@@ -444,6 +444,87 @@ namespace WaywardGamers.KParser.Resources {
         internal static string PlayerInfoPluginTabName {
             get {
                 return ResourceManager.GetString("PlayerInfoPluginTabName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Drop Rates.
+        /// </summary>
+        internal static string TreasurePluginLootTypeDropRates {
+            get {
+                return ResourceManager.GetString("TreasurePluginLootTypeDropRates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HELM/Chocobo.
+        /// </summary>
+        internal static string TreasurePluginLootTypeHELM {
+            get {
+                return ResourceManager.GetString("TreasurePluginLootTypeHELM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loot Type.
+        /// </summary>
+        internal static string TreasurePluginLootTypeMenu {
+            get {
+                return ResourceManager.GetString("TreasurePluginLootTypeMenu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Salvage.
+        /// </summary>
+        internal static string TreasurePluginLootTypeSalvage {
+            get {
+                return ResourceManager.GetString("TreasurePluginLootTypeSalvage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stealing.
+        /// </summary>
+        internal static string TreasurePluginLootTypeStealing {
+            get {
+                return ResourceManager.GetString("TreasurePluginLootTypeStealing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Summary.
+        /// </summary>
+        internal static string TreasurePluginLootTypeSummary {
+            get {
+                return ResourceManager.GetString("TreasurePluginLootTypeSummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exclude Crystals and Seals.
+        /// </summary>
+        internal static string TreasurePluginOptionExcludeCrystals {
+            get {
+                return ResourceManager.GetString("TreasurePluginOptionExcludeCrystals", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Group Details.
+        /// </summary>
+        internal static string TreasurePluginOptionGroupMobs {
+            get {
+                return ResourceManager.GetString("TreasurePluginOptionGroupMobs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loot.
+        /// </summary>
+        internal static string TreasurePluginTabName {
+            get {
+                return ResourceManager.GetString("TreasurePluginTabName", resourceCulture);
             }
         }
     }
