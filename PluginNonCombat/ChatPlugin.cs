@@ -24,25 +24,21 @@ namespace WaywardGamers.KParser.Plugin
         {
             richTextBox.WordWrap = true;
 
-            catLabel.Text = Resources.NonCombat.ChatPluginCategoryLabel;
-            toolStrip.Items.Add(catLabel);
+            LoadLocalizedUI();
 
             chatTypeCombo.DropDownStyle = ComboBoxStyle.DropDownList;
             chatTypeCombo.MaxDropDownItems = 10;
-            PopulateChatTypes();
             chatTypeCombo.SelectedIndex = 0;
             chatTypeCombo.SelectedIndexChanged += new EventHandler(this.chatTypeCombo_SelectedIndexChanged);
-            toolStrip.Items.Add(chatTypeCombo);
-
-
-            speakerLabel.Text = Resources.NonCombat.ChatPluginSpeakerLabel;
-            toolStrip.Items.Add(speakerLabel);
 
             speakerCombo.DropDownStyle = ComboBoxStyle.DropDownList;
             speakerCombo.MaxDropDownItems = 10;
-            speakerCombo.Items.Add(Resources.PublicResources.All);
             speakerCombo.SelectedIndex = 0;
             speakerCombo.SelectedIndexChanged += new EventHandler(this.speakerCombo_SelectedIndexChanged);
+
+            toolStrip.Items.Add(catLabel);
+            toolStrip.Items.Add(chatTypeCombo);
+            toolStrip.Items.Add(speakerLabel);
             toolStrip.Items.Add(speakerCombo);
         }
         #endregion
@@ -258,10 +254,8 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Localization Overrides
-        protected override void HandleCultureChange()
+        protected override void LoadLocalizedUI()
         {
-            base.HandleCultureChange();
-
             catLabel.Text = Resources.NonCombat.ChatPluginCategoryLabel;
             speakerLabel.Text = Resources.NonCombat.ChatPluginSpeakerLabel;
 
@@ -271,8 +265,6 @@ namespace WaywardGamers.KParser.Plugin
 
         protected override void LoadResources()
         {
-            base.LoadResources();
-
             this.tabName = Resources.NonCombat.ChatPluginTabName;
         }
         #endregion
