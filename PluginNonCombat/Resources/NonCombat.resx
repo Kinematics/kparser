@@ -120,17 +120,116 @@
   <data name="ChatPluginCategoryLabel" xml:space="preserve">
     <value>Chat Type:</value>
   </data>
+  <data name="ChatPluginChatTypeArena" xml:space="preserve">
+    <value>Arena</value>
+  </data>
+  <data name="ChatPluginChatTypeEcho" xml:space="preserve">
+    <value>Echo</value>
+  </data>
+  <data name="ChatPluginChatTypeEmote" xml:space="preserve">
+    <value>Emote</value>
+  </data>
+  <data name="ChatPluginChatTypeLinkshell" xml:space="preserve">
+    <value>Linkshell</value>
+  </data>
+  <data name="ChatPluginChatTypeNPC" xml:space="preserve">
+    <value>NPC</value>
+  </data>
+  <data name="ChatPluginChatTypeParty" xml:space="preserve">
+    <value>Party</value>
+  </data>
+  <data name="ChatPluginChatTypeSay" xml:space="preserve">
+    <value>Say</value>
+  </data>
+  <data name="ChatPluginChatTypeShout" xml:space="preserve">
+    <value>Shout</value>
+  </data>
+  <data name="ChatPluginChatTypeTell" xml:space="preserve">
+    <value>Tell</value>
+  </data>
   <data name="ChatPluginSpeakerLabel" xml:space="preserve">
     <value>Speaker:</value>
   </data>
   <data name="ChatPluginTabName" xml:space="preserve">
     <value>Chat</value>
   </data>
-  <data name="ItemsPluginDetailsHeader" xml:space="preserve">
-    <value>Item                 Time Used\n</value>
+  <data name="ExperiencePluginAverageFightLength" xml:space="preserve">
+    <value>Avg Fight Length</value>
+  </data>
+  <data name="ExperiencePluginAverageTimePerFight" xml:space="preserve">
+    <value>Avg Time/Fight</value>
+  </data>
+  <data name="ExperiencePluginChainFormat" xml:space="preserve">
+    <value>{0,-5}{1,8}{2,11}{3,9:F2}</value>
+  </data>
+  <data name="ExperiencePluginChainHeader" xml:space="preserve">
+    <value>Chain   Count   Total XP   Avg XP</value>
+  </data>
+  <data name="ExperiencePluginDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="ExperiencePluginEndTime" xml:space="preserve">
+    <value>End Time</value>
+  </data>
+  <data name="ExperiencePluginExcludedPlayerOption" xml:space="preserve">
+    <value>Don't Count 'exclude'd Player Kills</value>
+  </data>
+  <data name="ExperiencePluginExperienceChains" xml:space="preserve">
+    <value>Experience Chains</value>
+  </data>
+  <data name="ExperiencePluginExperienceRates" xml:space="preserve">
+    <value>Experience Rates</value>
+  </data>
+  <data name="ExperiencePluginHighestChain" xml:space="preserve">
+    <value>Highest Chain</value>
+  </data>
+  <data name="ExperiencePluginMobListing" xml:space="preserve">
+    <value>Mob Listing</value>
+  </data>
+  <data name="ExperiencePluginMobListingHeader" xml:space="preserve">
+    <value>Mob                        Base XP   Number   Avg Fight Time</value>
+  </data>
+  <data name="ExperiencePluginNumberOfFights" xml:space="preserve">
+    <value>Number of Fights</value>
+  </data>
+  <data name="ExperiencePluginPartyDuration" xml:space="preserve">
+    <value>Party Duration</value>
+  </data>
+  <data name="ExperiencePluginStartTime" xml:space="preserve">
+    <value>Start Time</value>
+  </data>
+  <data name="ExperiencePluginTabName" xml:space="preserve">
+    <value>Experience</value>
+  </data>
+  <data name="ExperiencePluginTotalExperience" xml:space="preserve">
+    <value>Total Experience</value>
+  </data>
+  <data name="ExperiencePluginTotalFightTime" xml:space="preserve">
+    <value>Total Fight Time</value>
+  </data>
+  <data name="ExperiencePluginXPListFormatDec" xml:space="preserve">
+    <value>{0,-16} : {1:F2}</value>
+  </data>
+  <data name="ExperiencePluginXPListFormatNum" xml:space="preserve">
+    <value>{0,-16} : {1}</value>
+  </data>
+  <data name="ExperiencePluginXPListFormatSec" xml:space="preserve">
+    <value>{0,-16} : {1:F2} seconds</value>
+  </data>
+  <data name="ExperiencePluginXPListFormatTime" xml:space="preserve">
+    <value>{0,-16} : {1:d}:{2:d2}:{3:d2}</value>
+  </data>
+  <data name="ExperiencePluginXPPerFight" xml:space="preserve">
+    <value>XP/Fight</value>
+  </data>
+  <data name="ExperiencePluginXPPerHour" xml:space="preserve">
+    <value>XP/Hour</value>
+  </data>
+  <data name="ExperiencePluginXPPerMinute" xml:space="preserve">
+    <value>XP/Minute</value>
   </data>
   <data name="ItemsPluginGeneralHeader" xml:space="preserve">
-    <value>Item                                  Used\n</value>
+    <value>Item                                  Used</value>
   </data>
   <data name="ItemsPluginPlayerLabel" xml:space="preserve">
     <value>Player:</value>
