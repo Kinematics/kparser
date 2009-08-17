@@ -61,11 +61,29 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gil|beastmen&apos;s seal|Kindred&apos;s seal|fire crystal|earth crystal|water crystal|wind crystal|ice crystal|thunder crystal|light crystal|dark crystal.
+        /// </summary>
+        public static string CrystalsAndSealsRegex {
+            get {
+                return ResourceManager.GetString("CrystalsAndSealsRegex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gil.
         /// </summary>
         public static string Gil {
             get {
                 return ResourceManager.GetString("Gil", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ([a-z]+) cell.
+        /// </summary>
+        public static string SalvageCellRegex {
+            get {
+                return ResourceManager.GetString("SalvageCellRegex", resourceCulture);
             }
         }
     }
