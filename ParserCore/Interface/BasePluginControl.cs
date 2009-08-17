@@ -184,11 +184,18 @@ namespace WaywardGamers.KParser.Plugin
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Overridable function to allow reloading resource strings for UI elements.
+        /// </summary>
         protected virtual void HandleCultureChange()
         {
+            // Should always call LoadResources for reinitializing non-UI localized strings.
             LoadResources();
         }
 
+        /// <summary>
+        /// Overridable function to allow reloading resource strings for general elements.
+        /// </summary>
         protected virtual void LoadResources()
         {
         }
@@ -470,7 +477,7 @@ namespace WaywardGamers.KParser.Plugin
 
 
             List<string> speakerStrings = new List<string>();
-            speakerStrings.Add("All");
+            speakerStrings.Add(Resources.PublicResources.All);
 
             using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
             {
@@ -508,7 +515,7 @@ namespace WaywardGamers.KParser.Plugin
 
 
             List<string> playerStrings = new List<string>();
-            playerStrings.Add("All");
+            playerStrings.Add(Resources.PublicResources.All);
 
             using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
             {
@@ -552,7 +559,7 @@ namespace WaywardGamers.KParser.Plugin
             MobXPHandler.Instance.Update();
 
             List<string> mobStrings = new List<string>();
-            mobStrings.Add("All");
+            mobStrings.Add(Resources.PublicResources.All);
 
             if (groupMobs == true)
             {
