@@ -119,6 +119,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CoreResources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Resources\ParseStrings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ParseStrings.resx</DependentUpon>
+    </Compile>
     <Compile Include="Resources\PublicResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -271,6 +276,13 @@
     <EmbeddedResource Include="Resources\CoreResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CoreResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\ParseStrings.de.resx" />
+    <EmbeddedResource Include="Resources\ParseStrings.fr.resx" />
+    <EmbeddedResource Include="Resources\ParseStrings.ja.resx" />
+    <EmbeddedResource Include="Resources\ParseStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ParseStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\PublicResources.de.resx" />
     <EmbeddedResource Include="Resources\PublicResources.fr.resx" />
