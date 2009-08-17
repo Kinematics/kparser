@@ -117,7 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CrystalsAndSealsRegex" xml:space="preserve">
+    <value>Gil|beastmen's seal|Kindred's seal|fire crystal|earth crystal|water crystal|wind crystal|ice crystal|thunder crystal|light crystal|dark crystal</value>
+  </data>
   <data name="Gil" xml:space="preserve">
     <value>Gil</value>
+  </data>
+  <data name="SalvageCellRegex" xml:space="preserve">
+    <value>([a-z]+) cell</value>
   </data>
 </root>
