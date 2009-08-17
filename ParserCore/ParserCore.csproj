@@ -281,7 +281,7 @@
     <EmbeddedResource Include="Resources\ParseStrings.fr.resx" />
     <EmbeddedResource Include="Resources\ParseStrings.ja.resx" />
     <EmbeddedResource Include="Resources\ParseStrings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ParseStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\PublicResources.de.resx" />
