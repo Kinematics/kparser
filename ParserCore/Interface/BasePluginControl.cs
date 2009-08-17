@@ -38,6 +38,10 @@ namespace WaywardGamers.KParser.Plugin
             IsActive = false;
             MobXPHandler.Instance.CustomMobFilterChanged += this.CustomMobFilterChanged;
 
+            // Don't call this during the base constructor.  Let the plugins call it themselves.
+            // While it has the same effect, putting it in the constructor allows for
+            // an explicit reminder of what needs to be set.
+            //LoadLocalizedUI();
             LoadResources();
         }
         #endregion
@@ -185,12 +189,13 @@ namespace WaywardGamers.KParser.Plugin
         }
 
         /// <summary>
-        /// Overridable function to allow reloading resource strings for UI elements.
+        /// Call the available overridable functions for reloading localizable elements
+        /// for each plugin.
         /// </summary>
         protected virtual void HandleCultureChange()
         {
-            // Should always call LoadResources for reinitializing non-UI localized strings.
             LoadResources();
+            LoadLocalizedUI();
         }
 
         /// <summary>
@@ -199,6 +204,14 @@ namespace WaywardGamers.KParser.Plugin
         protected virtual void LoadResources()
         {
         }
+
+        /// <summary>
+        /// Overridable function to allow reloading resource strings for UI elements.
+        /// </summary>
+        protected virtual void LoadLocalizedUI()
+        {
+        }
+
         #endregion
 
         #region Helper functions for RTF TextBox
@@ -335,21 +348,24 @@ namespace WaywardGamers.KParser.Plugin
         protected string[] GetPlayerListing()
         {
             List<string> playerStrings = new List<string>();
-            playerStrings.Add("All");
+            playerStrings.Add(Resources.PublicResources.All);
 
             using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
             {
-                var playersFighting = from b in dbAccess.Database.Combatants
-                                      where (((EntityType)b.CombatantType == EntityType.Player ||
-                                             (EntityType)b.CombatantType == EntityType.Pet ||
-                                             (EntityType)b.CombatantType == EntityType.Fellow ||
-                                             (EntityType)b.CombatantType == EntityType.CharmedMob) &&
-                                             b.GetInteractionsRowsByActorCombatantRelation().Any() == true)
-                                      orderby b.CombatantName
-                                      select  b.CombatantName;
+                if (dbAccess.Database != null)
+                {
+                    var playersFighting = from b in dbAccess.Database.Combatants
+                                          where (((EntityType)b.CombatantType == EntityType.Player ||
+                                                 (EntityType)b.CombatantType == EntityType.Pet ||
+                                                 (EntityType)b.CombatantType == EntityType.Fellow ||
+                                                 (EntityType)b.CombatantType == EntityType.CharmedMob) &&
+                                                 b.GetInteractionsRowsByActorCombatantRelation().Any() == true)
+                                          orderby b.CombatantName
+                                          select b.CombatantName;
 
-                foreach (var player in playersFighting)
-                    playerStrings.Add(player);
+                    foreach (var player in playersFighting)
+                        playerStrings.Add(player);
+                }
             }
 
             return playerStrings.ToArray();
@@ -364,86 +380,89 @@ namespace WaywardGamers.KParser.Plugin
         protected string[] GetMobListing(bool groupMobs, bool exclude0XPMobs)
         {
             List<string> mobStrings = new List<string>();
-            mobStrings.Add("All");
+            mobStrings.Add(Resources.PublicResources.All);
 
             // Group enemies check
 
             using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
             {
-                if (groupMobs == true)
+                if (dbAccess.Database != null)
                 {
-                    // Enemy group listing
-
-                    var mobsKilled = from b in dbAccess.Database.Battles
-                                     where ((b.DefaultBattle == false) &&
-                                            (b.IsEnemyIDNull() == false) &&
-                                            ((EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.Mob))
-                                     orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
-                                     group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
-                                     select new
-                                     {
-                                         Name = bn.Key,
-                                         XP = from xb in bn
-                                              group xb by xb.MinBaseExperience() into xbn
-                                              orderby xbn.Key
-                                              select new { BaseXP = xbn.Key }
-                                     };
-
-                    foreach (var mob in mobsKilled)
+                    if (groupMobs == true)
                     {
-                        if (mob.XP.Count() > 1)
-                        {
-                            if (exclude0XPMobs == true)
-                            {
-                                if (mob.XP.Any(x => x.BaseXP > 0) == true)
-                                    mobStrings.Add(mob.Name);
-                            }
-                            else
-                            {
-                                mobStrings.Add(mob.Name);
-                            }
-                        }
+                        // Enemy group listing
 
-                        foreach (var xp in mob.XP)
+                        var mobsKilled = from b in dbAccess.Database.Battles
+                                         where ((b.DefaultBattle == false) &&
+                                                (b.IsEnemyIDNull() == false) &&
+                                                ((EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.Mob))
+                                         orderby b.CombatantsRowByEnemyCombatantRelation.CombatantName
+                                         group b by b.CombatantsRowByEnemyCombatantRelation.CombatantName into bn
+                                         select new
+                                         {
+                                             Name = bn.Key,
+                                             XP = from xb in bn
+                                                  group xb by xb.MinBaseExperience() into xbn
+                                                  orderby xbn.Key
+                                                  select new { BaseXP = xbn.Key }
+                                         };
+
+                        foreach (var mob in mobsKilled)
                         {
-                            if (exclude0XPMobs == true)
+                            if (mob.XP.Count() > 1)
                             {
-                                if (xp.BaseXP > 0)
-                                    mobStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
+                                if (exclude0XPMobs == true)
+                                {
+                                    if (mob.XP.Any(x => x.BaseXP > 0) == true)
+                                        mobStrings.Add(mob.Name);
+                                }
+                                else
+                                {
+                                    mobStrings.Add(mob.Name);
+                                }
                             }
-                            else
+
+                            foreach (var xp in mob.XP)
                             {
-                                mobStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
+                                if (exclude0XPMobs == true)
+                                {
+                                    if (xp.BaseXP > 0)
+                                        mobStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
+                                }
+                                else
+                                {
+                                    mobStrings.Add(string.Format("{0} ({1})", mob.Name, xp.BaseXP));
+                                }
                             }
                         }
                     }
-                }
-                else
-                {
-                    // Enemy battle listing
-
-                    var mobsKilled = from b in dbAccess.Database.Battles
-                                     where ((b.DefaultBattle == false) &&
-                                            (b.IsEnemyIDNull() == false) &&
-                                            ((EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.Mob))
-                                     orderby b.BattleID
-                                     select new
-                                     {
-                                         Name = b.CombatantsRowByEnemyCombatantRelation.CombatantName,
-                                         Battle = b.BattleID,
-                                         XP = b.BaseExperience()
-                                     };
-
-                    foreach (var mob in mobsKilled)
+                    else
                     {
-                        if (exclude0XPMobs == true)
+                        // Enemy battle listing
+
+                        var mobsKilled = from b in dbAccess.Database.Battles
+                                         where ((b.DefaultBattle == false) &&
+                                                (b.IsEnemyIDNull() == false) &&
+                                                ((EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.Mob))
+                                         orderby b.BattleID
+                                         select new
+                                         {
+                                             Name = b.CombatantsRowByEnemyCombatantRelation.CombatantName,
+                                             Battle = b.BattleID,
+                                             XP = b.BaseExperience()
+                                         };
+
+                        foreach (var mob in mobsKilled)
                         {
-                            if (mob.XP > 0)
+                            if (exclude0XPMobs == true)
+                            {
+                                if (mob.XP > 0)
+                                    mobStrings.Add(string.Format("{0,3}: {1}", mob.Battle, mob.Name));
+                            }
+                            else
+                            {
                                 mobStrings.Add(string.Format("{0,3}: {1}", mob.Battle, mob.Name));
-                        }
-                        else
-                        {
-                            mobStrings.Add(string.Format("{0,3}: {1}", mob.Battle, mob.Name));
+                            }
                         }
                     }
                 }
@@ -481,23 +500,23 @@ namespace WaywardGamers.KParser.Plugin
 
             using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
             {
-                var speakers = from s in dbAccess.Database.ChatSpeakers
-                               orderby s.SpeakerName
-                               select s.SpeakerName;
+                if (dbAccess.Database != null)
+                {
+                    var speakers = from s in dbAccess.Database.ChatSpeakers
+                                   orderby s.SpeakerName
+                                   select s.SpeakerName;
 
-                foreach (var speaker in speakers)
-                    speakerStrings.Add(speaker);
+                    foreach (var speaker in speakers)
+                        speakerStrings.Add(speaker);
+                }
             }
 
             string[] newSpeakerList = speakerStrings.ToArray();
 
-
             if (Array.Equals(currentSpeakerList, newSpeakerList) == true)
                 return;
 
-
             combo.Items.Clear();
-
             combo.Items.AddRange(newSpeakerList);
         }
 
@@ -519,17 +538,20 @@ namespace WaywardGamers.KParser.Plugin
 
             using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
             {
-                var playersFighting = from b in dbAccess.Database.Combatants
-                                      where (((EntityType)b.CombatantType == EntityType.Player ||
-                                             (EntityType)b.CombatantType == EntityType.Pet ||
-                                             (EntityType)b.CombatantType == EntityType.Fellow ||
-                                             (EntityType)b.CombatantType == EntityType.CharmedMob) &&
-                                             b.GetInteractionsRowsByActorCombatantRelation().Any() == true)
-                                      orderby b.CombatantName
-                                      select b.CombatantName;
+                if (dbAccess.Database != null)
+                {
+                    var playersFighting = from b in dbAccess.Database.Combatants
+                                          where (((EntityType)b.CombatantType == EntityType.Player ||
+                                                 (EntityType)b.CombatantType == EntityType.Pet ||
+                                                 (EntityType)b.CombatantType == EntityType.Fellow ||
+                                                 (EntityType)b.CombatantType == EntityType.CharmedMob) &&
+                                                 b.GetInteractionsRowsByActorCombatantRelation().Any() == true)
+                                          orderby b.CombatantName
+                                          select b.CombatantName;
 
-                foreach (var player in playersFighting)
-                    playerStrings.Add(player);
+                    foreach (var player in playersFighting)
+                        playerStrings.Add(player);
+                }
             }
 
             string[] newPlayerList = playerStrings.ToArray();
