@@ -70,6 +70,87 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Arena.
+        /// </summary>
+        internal static string ChatPluginChatTypeArena {
+            get {
+                return ResourceManager.GetString("ChatPluginChatTypeArena", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Echo.
+        /// </summary>
+        internal static string ChatPluginChatTypeEcho {
+            get {
+                return ResourceManager.GetString("ChatPluginChatTypeEcho", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Emote.
+        /// </summary>
+        internal static string ChatPluginChatTypeEmote {
+            get {
+                return ResourceManager.GetString("ChatPluginChatTypeEmote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Linkshell.
+        /// </summary>
+        internal static string ChatPluginChatTypeLinkshell {
+            get {
+                return ResourceManager.GetString("ChatPluginChatTypeLinkshell", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NPC.
+        /// </summary>
+        internal static string ChatPluginChatTypeNPC {
+            get {
+                return ResourceManager.GetString("ChatPluginChatTypeNPC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party.
+        /// </summary>
+        internal static string ChatPluginChatTypeParty {
+            get {
+                return ResourceManager.GetString("ChatPluginChatTypeParty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Say.
+        /// </summary>
+        internal static string ChatPluginChatTypeSay {
+            get {
+                return ResourceManager.GetString("ChatPluginChatTypeSay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shout.
+        /// </summary>
+        internal static string ChatPluginChatTypeShout {
+            get {
+                return ResourceManager.GetString("ChatPluginChatTypeShout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tell.
+        /// </summary>
+        internal static string ChatPluginChatTypeTell {
+            get {
+                return ResourceManager.GetString("ChatPluginChatTypeTell", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Speaker:.
         /// </summary>
         internal static string ChatPluginSpeakerLabel {
@@ -88,16 +169,232 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Item                 Time Used\n.
+        ///   Looks up a localized string similar to Avg Fight Length.
         /// </summary>
-        internal static string ItemsPluginDetailsHeader {
+        internal static string ExperiencePluginAverageFightLength {
             get {
-                return ResourceManager.GetString("ItemsPluginDetailsHeader", resourceCulture);
+                return ResourceManager.GetString("ExperiencePluginAverageFightLength", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Item                                  Used\n.
+        ///   Looks up a localized string similar to Avg Time/Fight.
+        /// </summary>
+        internal static string ExperiencePluginAverageTimePerFight {
+            get {
+                return ResourceManager.GetString("ExperiencePluginAverageTimePerFight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-5}{1,8}{2,11}{3,9:F2}.
+        /// </summary>
+        internal static string ExperiencePluginChainFormat {
+            get {
+                return ResourceManager.GetString("ExperiencePluginChainFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chain   Count   Total XP   Avg XP.
+        /// </summary>
+        internal static string ExperiencePluginChainHeader {
+            get {
+                return ResourceManager.GetString("ExperiencePluginChainHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date.
+        /// </summary>
+        internal static string ExperiencePluginDate {
+            get {
+                return ResourceManager.GetString("ExperiencePluginDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End Time.
+        /// </summary>
+        internal static string ExperiencePluginEndTime {
+            get {
+                return ResourceManager.GetString("ExperiencePluginEndTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Don&apos;t Count &apos;exclude&apos;d Player Kills.
+        /// </summary>
+        internal static string ExperiencePluginExcludedPlayerOption {
+            get {
+                return ResourceManager.GetString("ExperiencePluginExcludedPlayerOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experience Chains.
+        /// </summary>
+        internal static string ExperiencePluginExperienceChains {
+            get {
+                return ResourceManager.GetString("ExperiencePluginExperienceChains", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experience Rates.
+        /// </summary>
+        internal static string ExperiencePluginExperienceRates {
+            get {
+                return ResourceManager.GetString("ExperiencePluginExperienceRates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Highest Chain.
+        /// </summary>
+        internal static string ExperiencePluginHighestChain {
+            get {
+                return ResourceManager.GetString("ExperiencePluginHighestChain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mob Listing.
+        /// </summary>
+        internal static string ExperiencePluginMobListing {
+            get {
+                return ResourceManager.GetString("ExperiencePluginMobListing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mob                        Base XP   Number   Avg Fight Time.
+        /// </summary>
+        internal static string ExperiencePluginMobListingHeader {
+            get {
+                return ResourceManager.GetString("ExperiencePluginMobListingHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number of Fights.
+        /// </summary>
+        internal static string ExperiencePluginNumberOfFights {
+            get {
+                return ResourceManager.GetString("ExperiencePluginNumberOfFights", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party Duration.
+        /// </summary>
+        internal static string ExperiencePluginPartyDuration {
+            get {
+                return ResourceManager.GetString("ExperiencePluginPartyDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start Time.
+        /// </summary>
+        internal static string ExperiencePluginStartTime {
+            get {
+                return ResourceManager.GetString("ExperiencePluginStartTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experience.
+        /// </summary>
+        internal static string ExperiencePluginTabName {
+            get {
+                return ResourceManager.GetString("ExperiencePluginTabName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total Experience.
+        /// </summary>
+        internal static string ExperiencePluginTotalExperience {
+            get {
+                return ResourceManager.GetString("ExperiencePluginTotalExperience", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total Fight Time.
+        /// </summary>
+        internal static string ExperiencePluginTotalFightTime {
+            get {
+                return ResourceManager.GetString("ExperiencePluginTotalFightTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-16} : {1:F2}.
+        /// </summary>
+        internal static string ExperiencePluginXPListFormatDec {
+            get {
+                return ResourceManager.GetString("ExperiencePluginXPListFormatDec", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-16} : {1}.
+        /// </summary>
+        internal static string ExperiencePluginXPListFormatNum {
+            get {
+                return ResourceManager.GetString("ExperiencePluginXPListFormatNum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-16} : {1:F2} seconds.
+        /// </summary>
+        internal static string ExperiencePluginXPListFormatSec {
+            get {
+                return ResourceManager.GetString("ExperiencePluginXPListFormatSec", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-16} : {1:d}:{2:d2}:{3:d2}.
+        /// </summary>
+        internal static string ExperiencePluginXPListFormatTime {
+            get {
+                return ResourceManager.GetString("ExperiencePluginXPListFormatTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to XP/Fight.
+        /// </summary>
+        internal static string ExperiencePluginXPPerFight {
+            get {
+                return ResourceManager.GetString("ExperiencePluginXPPerFight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to XP/Hour.
+        /// </summary>
+        internal static string ExperiencePluginXPPerHour {
+            get {
+                return ResourceManager.GetString("ExperiencePluginXPPerHour", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to XP/Minute.
+        /// </summary>
+        internal static string ExperiencePluginXPPerMinute {
+            get {
+                return ResourceManager.GetString("ExperiencePluginXPPerMinute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item                                  Used.
         /// </summary>
         internal static string ItemsPluginGeneralHeader {
             get {
