@@ -153,6 +153,9 @@
   <data name="ChatPluginTabName" xml:space="preserve">
     <value>Chat</value>
   </data>
+  <data name="ExcludedPlayerOption" xml:space="preserve">
+    <value>Don't Count 'exclude'd Player Kills</value>
+  </data>
   <data name="ExperiencePluginAverageFightLength" xml:space="preserve">
     <value>Avg Fight Length</value>
   </data>
@@ -170,9 +173,6 @@
   </data>
   <data name="ExperiencePluginEndTime" xml:space="preserve">
     <value>End Time</value>
-  </data>
-  <data name="ExperiencePluginExcludedPlayerOption" xml:space="preserve">
-    <value>Don't Count 'exclude'd Player Kills</value>
   </data>
   <data name="ExperiencePluginExperienceChains" xml:space="preserve">
     <value>Experience Chains</value>
@@ -245,5 +245,32 @@
   </data>
   <data name="PlayerInfoPluginTabName" xml:space="preserve">
     <value>Player Info</value>
+  </data>
+  <data name="TreasurePluginLootTypeDropRates" xml:space="preserve">
+    <value>Drop Rates</value>
+  </data>
+  <data name="TreasurePluginLootTypeHELM" xml:space="preserve">
+    <value>HELM/Chocobo</value>
+  </data>
+  <data name="TreasurePluginLootTypeMenu" xml:space="preserve">
+    <value>Loot Type</value>
+  </data>
+  <data name="TreasurePluginLootTypeSalvage" xml:space="preserve">
+    <value>Salvage</value>
+  </data>
+  <data name="TreasurePluginLootTypeStealing" xml:space="preserve">
+    <value>Stealing</value>
+  </data>
+  <data name="TreasurePluginLootTypeSummary" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="TreasurePluginOptionExcludeCrystals" xml:space="preserve">
+    <value>Exclude Crystals and Seals</value>
+  </data>
+  <data name="TreasurePluginOptionGroupMobs" xml:space="preserve">
+    <value>Show Group Details</value>
+  </data>
+  <data name="TreasurePluginTabName" xml:space="preserve">
+    <value>Loot</value>
   </data>
 </root>

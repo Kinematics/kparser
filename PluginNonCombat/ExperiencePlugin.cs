@@ -340,7 +340,7 @@ namespace WaywardGamers.KParser.Plugin
         protected override void LoadLocalizedUI()
         {
             optionsMenu.Text = Resources.PublicResources.Options;
-            excludedPlayerInfoOption.Text = Resources.NonCombat.ExperiencePluginExcludedPlayerOption;
+            excludedPlayerInfoOption.Text = Resources.NonCombat.ExcludedPlayerOption;
         }
 
         protected override void LoadResources()
