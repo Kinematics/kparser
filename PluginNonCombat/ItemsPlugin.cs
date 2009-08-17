@@ -17,37 +17,31 @@ namespace WaywardGamers.KParser.Plugin
         bool showDetails = false;
         ToolStripComboBox playersCombo = new ToolStripComboBox();
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
+        ToolStripLabel playerLabel = new ToolStripLabel();
+        ToolStripMenuItem showDetailOption = new ToolStripMenuItem();
 
         string generalHeader;
-        string detailsHeader;
         #endregion
 
         #region Constructor
         public ItemsPlugin()
         {
-            ToolStripLabel playerLabel = new ToolStripLabel();
-            playerLabel.Text = Resources.NonCombat.ItemsPluginPlayerLabel;
-            toolStrip.Items.Add(playerLabel);
+            LoadLocalizedUI();
 
             playersCombo.DropDownStyle = ComboBoxStyle.DropDownList;
-            playersCombo.Items.Add(Resources.PublicResources.All);
             playersCombo.MaxDropDownItems = 10;
             playersCombo.SelectedIndex = 0;
             playersCombo.SelectedIndexChanged += new EventHandler(this.playersCombo_SelectedIndexChanged);
-            toolStrip.Items.Add(playersCombo);
-
-
 
             optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            optionsMenu.Text = Resources.PublicResources.Options;
-
-            ToolStripMenuItem showDetailOption = new ToolStripMenuItem();
-            showDetailOption.Text = Resources.NonCombat.ItemsPluginShowDetail;
+            
             showDetailOption.CheckOnClick = true;
             showDetailOption.Checked = false;
             showDetailOption.Click += new EventHandler(showDetailOption_Click);
             optionsMenu.DropDownItems.Add(showDetailOption);
 
+            toolStrip.Items.Add(playerLabel);
+            toolStrip.Items.Add(playersCombo);
             toolStrip.Items.Add(optionsMenu);
         }
         #endregion
@@ -188,7 +182,7 @@ namespace WaywardGamers.KParser.Plugin
                         Underline = true,
                         Color = Color.Black
                     });
-                    sb.Append(generalHeader);
+                    sb.Append(generalHeader + "\n");
 
 
                     foreach (var item in player.Items)
@@ -241,13 +235,19 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Localization Overrides
+        protected override void LoadLocalizedUI()
+        {
+            playerLabel.Text = Resources.NonCombat.ItemsPluginPlayerLabel;
+            optionsMenu.Text = Resources.PublicResources.Options;
+            showDetailOption.Text = Resources.NonCombat.ItemsPluginShowDetail;
+
+            UpdatePlayerList();
+        }
+
         protected override void LoadResources()
         {
-            base.LoadResources();
-
             this.tabName = Resources.NonCombat.ItemsPluginTabName;
             generalHeader = Resources.NonCombat.ItemsPluginGeneralHeader;
-            detailsHeader = Resources.NonCombat.ItemsPluginDetailsHeader;
         }
         #endregion
 
