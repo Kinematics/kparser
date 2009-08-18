@@ -70,6 +70,60 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Category:.
+        /// </summary>
+        public static string CategoryLabel {
+            get {
+                return ResourceManager.GetString("CategoryLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom Mob Selection.
+        /// </summary>
+        public static string CustomMobSelection {
+            get {
+                return ResourceManager.GetString("CustomMobSelection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Mob Filter.
+        /// </summary>
+        public static string EditMobFilter {
+            get {
+                return ResourceManager.GetString("EditMobFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exclude 0 XP Mobs.
+        /// </summary>
+        public static string Exclude0XPMobs {
+            get {
+                return ResourceManager.GetString("Exclude0XPMobs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Group Mobs.
+        /// </summary>
+        public static string GroupMobs {
+            get {
+                return ResourceManager.GetString("GroupMobs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mobs:.
+        /// </summary>
+        public static string MobsLabel {
+            get {
+                return ResourceManager.GetString("MobsLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Options.
         /// </summary>
         public static string Options {

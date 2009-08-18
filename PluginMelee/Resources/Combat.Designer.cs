@@ -79,15 +79,6 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Category:.
-        /// </summary>
-        internal static string BuffPluginCategoryLabel {
-            get {
-                return ResourceManager.GetString("BuffPluginCategoryLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to {0,15}{1,15}{2,15}.
         /// </summary>
         internal static string BuffPluginIntervalsFormat {
@@ -138,6 +129,69 @@ namespace WaywardGamers.KParser.Resources {
         internal static string BuffPluginUsedHeader {
             get {
                 return ResourceManager.GetString("BuffPluginUsedHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Debuff                # Times   # Successful   # No Effect   % Successful.
+        /// </summary>
+        internal static string DebuffPluginDebuffHeader {
+            get {
+                return ResourceManager.GetString("DebuffPluginDebuffHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Debuff Mobs.
+        /// </summary>
+        internal static string DebuffPluginDebuffMobsCategory {
+            get {
+                return ResourceManager.GetString("DebuffPluginDebuffMobsCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Debuff Players.
+        /// </summary>
+        internal static string DebuffPluginDebuffPlayersCategory {
+            get {
+                return ResourceManager.GetString("DebuffPluginDebuffPlayersCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Debuff              Target              # Times   # Successful   # No Effect   % Successful.
+        /// </summary>
+        internal static string DebuffPluginDebuffWithTargetsHeader {
+            get {
+                return ResourceManager.GetString("DebuffPluginDebuffWithTargetsHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,7:d}{1,15:d}{2,14:d}{3,15:p2}.
+        /// </summary>
+        internal static string DebuffPluginMobDebuffFormat {
+            get {
+                return ResourceManager.GetString("DebuffPluginMobDebuffFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,9:d}{1,15:d}{2,14:d}{3,15:p2}.
+        /// </summary>
+        internal static string DebuffPluginPlayerDebuffFormat {
+            get {
+                return ResourceManager.GetString("DebuffPluginPlayerDebuffFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Debuffs.
+        /// </summary>
+        internal static string DebuffPluginTabName {
+            get {
+                return ResourceManager.GetString("DebuffPluginTabName", resourceCulture);
             }
         }
     }

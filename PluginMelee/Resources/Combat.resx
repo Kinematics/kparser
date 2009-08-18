@@ -123,9 +123,6 @@
   <data name="BuffPluginBuffsUsedCategory" xml:space="preserve">
     <value>Buffs Used</value>
   </data>
-  <data name="BuffPluginCategoryLabel" xml:space="preserve">
-    <value>Category:</value>
-  </data>
   <data name="BuffPluginIntervalsFormat" xml:space="preserve">
     <value>{0,15}{1,15}{2,15}</value>
   </data>
@@ -143,5 +140,26 @@
   </data>
   <data name="BuffPluginUsedHeader" xml:space="preserve">
     <value>Buff                Used on             # Times   Min Interval   Max Interval   Avg Interval</value>
+  </data>
+  <data name="DebuffPluginDebuffHeader" xml:space="preserve">
+    <value>Debuff                # Times   # Successful   # No Effect   % Successful</value>
+  </data>
+  <data name="DebuffPluginDebuffMobsCategory" xml:space="preserve">
+    <value>Debuff Mobs</value>
+  </data>
+  <data name="DebuffPluginDebuffPlayersCategory" xml:space="preserve">
+    <value>Debuff Players</value>
+  </data>
+  <data name="DebuffPluginDebuffWithTargetsHeader" xml:space="preserve">
+    <value>Debuff              Target              # Times   # Successful   # No Effect   % Successful</value>
+  </data>
+  <data name="DebuffPluginMobDebuffFormat" xml:space="preserve">
+    <value>{0,7:d}{1,15:d}{2,14:d}{3,15:p2}</value>
+  </data>
+  <data name="DebuffPluginPlayerDebuffFormat" xml:space="preserve">
+    <value>{0,9:d}{1,15:d}{2,14:d}{3,15:p2}</value>
+  </data>
+  <data name="DebuffPluginTabName" xml:space="preserve">
+    <value>Debuffs</value>
   </data>
 </root>

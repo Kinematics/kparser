@@ -477,12 +477,11 @@ namespace WaywardGamers.KParser.Plugin
         #region Localization Overrides
         protected override void LoadLocalizedUI()
         {
-            catLabel.Text = Resources.Combat.BuffPluginCategoryLabel;
+            catLabel.Text = Resources.PublicResources.CategoryLabel;
 
             categoryCombo.Items.Clear();
             categoryCombo.Items.Add(Resources.Combat.BuffPluginBuffsUsedCategory);
             categoryCombo.Items.Add(Resources.Combat.BuffPluginBuffsReceivedCategory);
-
         }
 
         protected override void LoadResources()

@@ -583,6 +583,9 @@ namespace WaywardGamers.KParser.Plugin
             List<string> mobStrings = new List<string>();
             mobStrings.Add(Resources.PublicResources.All);
 
+            if (MobXPHandler.Instance.CompleteMobList.Count == 0)
+                return;
+
             if (groupMobs == true)
             {
                 // Enemy group listing
