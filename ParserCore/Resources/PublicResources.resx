@@ -120,6 +120,24 @@
   <data name="All" xml:space="preserve">
     <value>All</value>
   </data>
+  <data name="CategoryLabel" xml:space="preserve">
+    <value>Category:</value>
+  </data>
+  <data name="CustomMobSelection" xml:space="preserve">
+    <value>Custom Mob Selection</value>
+  </data>
+  <data name="EditMobFilter" xml:space="preserve">
+    <value>Edit Mob Filter</value>
+  </data>
+  <data name="Exclude0XPMobs" xml:space="preserve">
+    <value>Exclude 0 XP Mobs</value>
+  </data>
+  <data name="GroupMobs" xml:space="preserve">
+    <value>Group Mobs</value>
+  </data>
+  <data name="MobsLabel" xml:space="preserve">
+    <value>Mobs:</value>
+  </data>
   <data name="Options" xml:space="preserve">
     <value>Options</value>
   </data>
