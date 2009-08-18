@@ -583,89 +583,86 @@ namespace WaywardGamers.KParser.Plugin
             List<string> mobStrings = new List<string>();
             mobStrings.Add(Resources.PublicResources.All);
 
-            if (MobXPHandler.Instance.CompleteMobList.Count == 0)
-                return;
-
-            if (groupMobs == true)
+            if (MobXPHandler.Instance.CompleteMobList.Count > 0)
             {
-                // Enemy group listing
-
-                var mobsKilledX = from b in MobXPHandler.Instance.CompleteMobList
-                                  orderby b.Name
-                                  group b by b.Name into bn
-                                  select new
-                                  {
-                                      Name = bn.Key,
-                                      XP = from xb in bn
-                                           group xb by xb.BaseXP into xbn
-                                           orderby xbn.Key
-                                           select xbn
-                                  };
-
-
-                foreach (var mob in mobsKilledX)
+                if (groupMobs == true)
                 {
-                    if (mob.XP.Count() > 1)
+                    // Enemy group listing
+
+                    var mobsKilledX = from b in MobXPHandler.Instance.CompleteMobList
+                                      orderby b.Name
+                                      group b by b.Name into bn
+                                      select new
+                                      {
+                                          Name = bn.Key,
+                                          XP = from xb in bn
+                                               group xb by xb.BaseXP into xbn
+                                               orderby xbn.Key
+                                               select xbn
+                                      };
+
+
+                    foreach (var mob in mobsKilledX)
                     {
-                        if (exclude0XPMobs == true)
+                        if (mob.XP.Count() > 1)
                         {
-                            if (mob.XP.Any(x => x.Key > 0) == true)
+                            if (exclude0XPMobs == true)
+                            {
+                                if (mob.XP.Any(x => x.Key > 0) == true)
+                                    mobStrings.Add(mob.Name);
+                            }
+                            else
+                            {
                                 mobStrings.Add(mob.Name);
+                            }
                         }
-                        else
+
+                        foreach (var xp in mob.XP)
                         {
-                            mobStrings.Add(mob.Name);
+                            if (exclude0XPMobs == true)
+                            {
+                                if (xp.Key > 0)
+                                    mobStrings.Add(string.Format("{0} ({1})", mob.Name, xp.Key));
+                            }
+                            else
+                            {
+                                mobStrings.Add(string.Format("{0} ({1})", mob.Name, xp.Key));
+                            }
                         }
+
                     }
 
-                    foreach (var xp in mob.XP)
+                }
+                else
+                {
+                    // Enemy battle listing
+
+                    var mobsKilled = from b in MobXPHandler.Instance.CompleteMobList
+                                     orderby b.BattleID
+                                     select b;
+
+                    foreach (var mob in mobsKilled)
                     {
                         if (exclude0XPMobs == true)
                         {
-                            if (xp.Key > 0)
-                                mobStrings.Add(string.Format("{0} ({1})", mob.Name, xp.Key));
+                            if (mob.XP > 0)
+                                mobStrings.Add(string.Format("{0,3}: {1}", mob.BattleID, mob.Name));
                         }
                         else
                         {
-                            mobStrings.Add(string.Format("{0} ({1})", mob.Name, xp.Key));
+                            mobStrings.Add(string.Format("{0,3}: {1}", mob.BattleID, mob.Name));
                         }
                     }
 
                 }
-
-            }
-            else
-            {
-                // Enemy battle listing
-
-                var mobsKilled = from b in MobXPHandler.Instance.CompleteMobList
-                                 orderby b.BattleID
-                                 select b;
-
-                foreach (var mob in mobsKilled)
-                {
-                    if (exclude0XPMobs == true)
-                    {
-                        if (mob.XP > 0)
-                            mobStrings.Add(string.Format("{0,3}: {1}", mob.BattleID, mob.Name));
-                    }
-                    else
-                    {
-                        mobStrings.Add(string.Format("{0,3}: {1}", mob.BattleID, mob.Name));
-                    }
-                }
-
             }
 
             string[] newMobList = mobStrings.ToArray();
 
-
             if (Array.Equals(currentMobList, newMobList) == true)
                 return;
 
-
             combo.Items.Clear();
-
             combo.Items.AddRange(newMobList);
         }
     }
