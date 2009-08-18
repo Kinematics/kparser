@@ -448,6 +448,87 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cell Drops.
+        /// </summary>
+        internal static string TreasurePluginCellDrops {
+            get {
+                return ResourceManager.GetString("TreasurePluginCellDrops", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Distribution.
+        /// </summary>
+        internal static string TreasurePluginDistribution {
+            get {
+                return ResourceManager.GetString("TreasurePluginDistribution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,9} {1,-28} [Average:   {2,8:f2}].
+        /// </summary>
+        internal static string TreasurePluginDropGilFormat {
+            get {
+                return ResourceManager.GetString("TreasurePluginDropGilFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,9} {1,-28} [Max #: {2}]  [Items/Kill: {3,6:f3}]  [Drop Rate: {4,8:p2}]  [% of Drops: {5,8:p2}].
+        /// </summary>
+        internal static string TreasurePluginDropItemFormat {
+            get {
+                return ResourceManager.GetString("TreasurePluginDropItemFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dropped {0,2} items {1,5} times ({2,8:p2}).
+        /// </summary>
+        internal static string TreasurePluginDroppedItemNTimesFormat {
+            get {
+                return ResourceManager.GetString("TreasurePluginDroppedItemNTimesFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,9} [{1,8:p2}] -- {2}.
+        /// </summary>
+        internal static string TreasurePluginDropRateFormat {
+            get {
+                return ResourceManager.GetString("TreasurePluginDropRateFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Drop Rates.
+        /// </summary>
+        internal static string TreasurePluginDropRates {
+            get {
+                return ResourceManager.GetString("TreasurePluginDropRates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gil.
+        /// </summary>
+        internal static string TreasurePluginGil {
+            get {
+                return ResourceManager.GetString("TreasurePluginGil", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item Drops.
+        /// </summary>
+        internal static string TreasurePluginItemDrops {
+            get {
+                return ResourceManager.GetString("TreasurePluginItemDrops", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Drop Rates.
         /// </summary>
         internal static string TreasurePluginLootTypeDropRates {
@@ -502,6 +583,42 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No drops..
+        /// </summary>
+        internal static string TreasurePluginNoDrops {
+            get {
+                return ResourceManager.GetString("TreasurePluginNoDrops", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nothing.
+        /// </summary>
+        internal static string TreasurePluginNothing {
+            get {
+                return ResourceManager.GetString("TreasurePluginNothing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number of times each group of items dropped..
+        /// </summary>
+        internal static string TreasurePluginNumberOfTimesDropped {
+            get {
+                return ResourceManager.GetString("TreasurePluginNumberOfTimesDropped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} (Opened {1} times).
+        /// </summary>
+        internal static string TreasurePluginOpenedNTimesFormat {
+            get {
+                return ResourceManager.GetString("TreasurePluginOpenedNTimesFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Exclude Crystals and Seals.
         /// </summary>
         internal static string TreasurePluginOptionExcludeCrystals {
@@ -525,6 +642,24 @@ namespace WaywardGamers.KParser.Resources {
         internal static string TreasurePluginTabName {
             get {
                 return ResourceManager.GetString("TreasurePluginTabName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} (Killed {1} times).
+        /// </summary>
+        internal static string TreasurePluginTimesKilledFormat {
+            get {
+                return ResourceManager.GetString("TreasurePluginTimesKilledFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Treasure Chests.
+        /// </summary>
+        internal static string TreasurePluginTreasureChests {
+            get {
+                return ResourceManager.GetString("TreasurePluginTreasureChests", resourceCulture);
             }
         }
     }
