@@ -246,6 +246,33 @@
   <data name="PlayerInfoPluginTabName" xml:space="preserve">
     <value>Player Info</value>
   </data>
+  <data name="TreasurePluginCellDrops" xml:space="preserve">
+    <value>Cell Drops</value>
+  </data>
+  <data name="TreasurePluginDistribution" xml:space="preserve">
+    <value>Distribution</value>
+  </data>
+  <data name="TreasurePluginDropGilFormat" xml:space="preserve">
+    <value>{0,9} {1,-28} [Average:   {2,8:f2}]</value>
+  </data>
+  <data name="TreasurePluginDropItemFormat" xml:space="preserve">
+    <value>{0,9} {1,-28} [Max #: {2}]  [Items/Kill: {3,6:f3}]  [Drop Rate: {4,8:p2}]  [% of Drops: {5,8:p2}]</value>
+  </data>
+  <data name="TreasurePluginDroppedItemNTimesFormat" xml:space="preserve">
+    <value>Dropped {0,2} items {1,5} times ({2,8:p2})</value>
+  </data>
+  <data name="TreasurePluginDropRateFormat" xml:space="preserve">
+    <value>{0,9} [{1,8:p2}] -- {2}</value>
+  </data>
+  <data name="TreasurePluginDropRates" xml:space="preserve">
+    <value>Drop Rates</value>
+  </data>
+  <data name="TreasurePluginGil" xml:space="preserve">
+    <value>Gil</value>
+  </data>
+  <data name="TreasurePluginItemDrops" xml:space="preserve">
+    <value>Item Drops</value>
+  </data>
   <data name="TreasurePluginLootTypeDropRates" xml:space="preserve">
     <value>Drop Rates</value>
   </data>
@@ -264,6 +291,18 @@
   <data name="TreasurePluginLootTypeSummary" xml:space="preserve">
     <value>Summary</value>
   </data>
+  <data name="TreasurePluginNoDrops" xml:space="preserve">
+    <value>No drops.</value>
+  </data>
+  <data name="TreasurePluginNothing" xml:space="preserve">
+    <value>Nothing</value>
+  </data>
+  <data name="TreasurePluginNumberOfTimesDropped" xml:space="preserve">
+    <value>Number of times each group of items dropped.</value>
+  </data>
+  <data name="TreasurePluginOpenedNTimesFormat" xml:space="preserve">
+    <value>{0} (Opened {1} times)</value>
+  </data>
   <data name="TreasurePluginOptionExcludeCrystals" xml:space="preserve">
     <value>Exclude Crystals and Seals</value>
   </data>
@@ -272,5 +311,11 @@
   </data>
   <data name="TreasurePluginTabName" xml:space="preserve">
     <value>Loot</value>
+  </data>
+  <data name="TreasurePluginTimesKilledFormat" xml:space="preserve">
+    <value>{0} (Killed {1} times)</value>
+  </data>
+  <data name="TreasurePluginTreasureChests" xml:space="preserve">
+    <value>Treasure Chests</value>
   </data>
 </root>
