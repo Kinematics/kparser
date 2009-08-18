@@ -13,31 +13,34 @@ namespace WaywardGamers.KParser.Plugin
 {
     public class BuffsPlugin : BasePluginControl
     {
-        #region Constructor
+        #region Member Variables
         bool processBuffsUsed;
         ToolStripLabel catLabel = new ToolStripLabel();
         ToolStripComboBox categoryCombo = new ToolStripComboBox();
 
+        string lsBuffUsedHeader;
+        string lsBuffRecHeader;
+        string lsSelf;
+
+        string lsNumTimesFormat;
+        string lsIntervalsFormat;
+        #endregion
+
+        #region Constructor
         public BuffsPlugin()
         {
-            catLabel.Text = "Category:";
-            toolStrip.Items.Add(catLabel);
+            LoadLocalizedUI();
 
             categoryCombo.DropDownStyle = ComboBoxStyle.DropDownList;
-            categoryCombo.Items.Add("Buffs Used");
-            categoryCombo.Items.Add("Buffs Received");
             categoryCombo.SelectedIndex = 0;
             categoryCombo.SelectedIndexChanged += new EventHandler(this.categoryCombo_SelectedIndexChanged);
+
+            toolStrip.Items.Add(catLabel);
             toolStrip.Items.Add(categoryCombo);
         }
         #endregion
 
         #region IPlugin Overrides
-        public override string TabName
-        {
-            get { return "Buffs"; }
-        }
-
         public override void Reset()
         {
             ResetTextBox();
@@ -61,11 +64,6 @@ namespace WaywardGamers.KParser.Plugin
                 }
             }
         }
-        #endregion
-
-        #region Member Variables
-        string buffUsedHeader = "Buff                Used on             # Times   Min Interval   Max Interval   Avg Interval\n";
-        string buffRecHeader = "Buff                Used by             # Times   Min Interval   Max Interval   Avg Interval\n";
         #endregion
 
         #region Processing sections
@@ -153,12 +151,13 @@ namespace WaywardGamers.KParser.Plugin
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = buffUsedHeader.Length,
+                    Length = lsBuffUsedHeader.Length,
                     Bold = true,
                     Underline = true,
                     Color = Color.Black
                 });
-                sb.Append(buffUsedHeader);
+                sb.Append(lsBuffUsedHeader);
+                sb.Append("\n");
 
                 foreach (var buff in player.Buffs)
                 {
@@ -172,13 +171,13 @@ namespace WaywardGamers.KParser.Plugin
 
                     if (buff.SelfTargeted.Count() > 0)
                     {
-                        sb.AppendFormat("{0,-20}", "Self");
+                        sb.AppendFormat("{0,-20}", lsSelf);
                         firstEntryShown = true;
 
                         var allDistinctBuffs = buff.SelfTargeted.Distinct(new KPDatabaseDataSet.InteractionTimestampComparer());
                         used = allDistinctBuffs.Count();
 
-                        sb.AppendFormat("{0,7}", used);
+                        sb.AppendFormat(lsNumTimesFormat, used);
 
                         if (used > 1)
                         {
@@ -202,7 +201,7 @@ namespace WaywardGamers.KParser.Plugin
                                     minInterval = thisInterval;
                             }
 
-                            sb.AppendFormat("{0,15}{1,15}{2,15}",
+                            sb.AppendFormat(lsIntervalsFormat,
                                 TimespanString(minInterval),
                                 TimespanString(maxInterval),
                                 TimespanString(avgInterval));
@@ -221,7 +220,7 @@ namespace WaywardGamers.KParser.Plugin
                             used = target.Buffs.Count();
 
                             sb.AppendFormat("{0,-20}", target.TargetName);
-                            sb.AppendFormat("{0,7}", used);
+                            sb.AppendFormat(lsNumTimesFormat, used);
 
                             firstEntryShown = true;
 
@@ -246,7 +245,7 @@ namespace WaywardGamers.KParser.Plugin
                                         minInterval = thisInterval;
                                 }
 
-                                sb.AppendFormat("{0,15}{1,15}{2,15}",
+                                sb.AppendFormat(lsIntervalsFormat,
                                     TimespanString(minInterval),
                                     TimespanString(maxInterval),
                                     TimespanString(avgInterval));
@@ -343,12 +342,13 @@ namespace WaywardGamers.KParser.Plugin
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = buffRecHeader.Length,
+                    Length = lsBuffRecHeader.Length,
                     Bold = true,
                     Underline = true,
                     Color = Color.Black
                 });
-                sb.Append(buffRecHeader);
+                sb.Append(lsBuffRecHeader);
+                sb.Append("\n");
 
                 if (player.Buffs.Count() > 0)
                 {
@@ -363,7 +363,7 @@ namespace WaywardGamers.KParser.Plugin
 
                             used = target.Buffs.Count();
                             sb.AppendFormat("{0,-20}", target.CasterName);
-                            sb.AppendFormat("{0,7}", used);
+                            sb.AppendFormat(lsNumTimesFormat, used);
 
                             if (used > 1)
                             {
@@ -386,7 +386,7 @@ namespace WaywardGamers.KParser.Plugin
                                         minInterval = thisInterval;
                                 }
 
-                                sb.AppendFormat("{0,15}{1,15}{2,15}",
+                                sb.AppendFormat(lsIntervalsFormat,
                                     TimespanString(minInterval),
                                     TimespanString(maxInterval),
                                     TimespanString(avgInterval));
@@ -409,7 +409,7 @@ namespace WaywardGamers.KParser.Plugin
                         var allDistinctBuffs = buff.Buffs.Distinct(new KPDatabaseDataSet.InteractionTimestampComparer());
                         used = allDistinctBuffs.Count();
 
-                        sb.AppendFormat("{0,7}", used);
+                        sb.AppendFormat(lsNumTimesFormat, used);
 
                         if (used > 1)
                         {
@@ -432,7 +432,7 @@ namespace WaywardGamers.KParser.Plugin
                                     minInterval = thisInterval;
                             }
 
-                            sb.AppendFormat("{0,15}{1,15}{2,15}",
+                            sb.AppendFormat(lsIntervalsFormat,
                                 TimespanString(minInterval),
                                 TimespanString(maxInterval),
                                 TimespanString(avgInterval));
@@ -473,5 +473,30 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
         #endregion
+
+        #region Localization Overrides
+        protected override void LoadLocalizedUI()
+        {
+            catLabel.Text = Resources.Combat.BuffPluginCategoryLabel;
+
+            categoryCombo.Items.Clear();
+            categoryCombo.Items.Add(Resources.Combat.BuffPluginBuffsUsedCategory);
+            categoryCombo.Items.Add(Resources.Combat.BuffPluginBuffsReceivedCategory);
+
+        }
+
+        protected override void LoadResources()
+        {
+            this.tabName = Resources.Combat.BuffPluginTabName;
+
+            lsBuffUsedHeader = Resources.Combat.BuffPluginUsedHeader;
+            lsBuffRecHeader = Resources.Combat.BuffPluginReceivedHeader;
+            lsNumTimesFormat = Resources.Combat.BuffPluginNumTimesFormat;
+            lsIntervalsFormat = Resources.Combat.BuffPluginIntervalsFormat;
+
+            lsSelf = Resources.Combat.BuffPluginSelf;
+        }
+        #endregion
+
     }
 }

@@ -59,5 +59,86 @@ namespace WaywardGamers.KParser.Resources {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buffs Received.
+        /// </summary>
+        internal static string BuffPluginBuffsReceivedCategory {
+            get {
+                return ResourceManager.GetString("BuffPluginBuffsReceivedCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buffs Used.
+        /// </summary>
+        internal static string BuffPluginBuffsUsedCategory {
+            get {
+                return ResourceManager.GetString("BuffPluginBuffsUsedCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Category:.
+        /// </summary>
+        internal static string BuffPluginCategoryLabel {
+            get {
+                return ResourceManager.GetString("BuffPluginCategoryLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,15}{1,15}{2,15}.
+        /// </summary>
+        internal static string BuffPluginIntervalsFormat {
+            get {
+                return ResourceManager.GetString("BuffPluginIntervalsFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,7}.
+        /// </summary>
+        internal static string BuffPluginNumTimesFormat {
+            get {
+                return ResourceManager.GetString("BuffPluginNumTimesFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buff                Used by             # Times   Min Interval   Max Interval   Avg Interval.
+        /// </summary>
+        internal static string BuffPluginReceivedHeader {
+            get {
+                return ResourceManager.GetString("BuffPluginReceivedHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Self.
+        /// </summary>
+        internal static string BuffPluginSelf {
+            get {
+                return ResourceManager.GetString("BuffPluginSelf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buffs.
+        /// </summary>
+        internal static string BuffPluginTabName {
+            get {
+                return ResourceManager.GetString("BuffPluginTabName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buff                Used on             # Times   Min Interval   Max Interval   Avg Interval.
+        /// </summary>
+        internal static string BuffPluginUsedHeader {
+            get {
+                return ResourceManager.GetString("BuffPluginUsedHeader", resourceCulture);
+            }
+        }
     }
 }
