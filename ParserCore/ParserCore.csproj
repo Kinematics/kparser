@@ -119,10 +119,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CoreResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Resources\ParseStrings.Designer.cs">
+    <Compile Include="Resources\ParsedStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>ParseStrings.resx</DependentUpon>
+      <DependentUpon>ParsedStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="Resources\PublicResources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -277,12 +277,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CoreResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\ParseStrings.de.resx" />
-    <EmbeddedResource Include="Resources\ParseStrings.fr.resx" />
-    <EmbeddedResource Include="Resources\ParseStrings.ja.resx" />
-    <EmbeddedResource Include="Resources\ParseStrings.resx">
+    <EmbeddedResource Include="Resources\ParsedStrings.de.resx" />
+    <EmbeddedResource Include="Resources\ParsedStrings.fr.resx" />
+    <EmbeddedResource Include="Resources\ParsedStrings.ja.resx" />
+    <EmbeddedResource Include="Resources\ParsedStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ParseStrings.Designer.cs</LastGenOutput>
+      <LastGenOutput>ParsedStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\PublicResources.de.resx" />
     <EmbeddedResource Include="Resources\PublicResources.fr.resx" />
