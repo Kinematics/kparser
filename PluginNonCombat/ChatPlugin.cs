@@ -28,7 +28,6 @@ namespace WaywardGamers.KParser.Plugin
 
             chatTypeCombo.DropDownStyle = ComboBoxStyle.DropDownList;
             chatTypeCombo.MaxDropDownItems = 10;
-            chatTypeCombo.SelectedIndex = 0;
             chatTypeCombo.SelectedIndexChanged += new EventHandler(this.chatTypeCombo_SelectedIndexChanged);
 
             speakerCombo.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -260,6 +259,8 @@ namespace WaywardGamers.KParser.Plugin
             speakerLabel.Text = Resources.NonCombat.ChatPluginSpeakerLabel;
 
             PopulateChatTypes();
+            chatTypeCombo.SelectedIndex = 0;
+
             UpdateSpeakerList();
         }
 
