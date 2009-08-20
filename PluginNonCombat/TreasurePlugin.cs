@@ -1012,176 +1012,94 @@ namespace WaywardGamers.KParser.Plugin
             int chocoboDiggingFailures = arenaChat.Count(ac => ac.Message == lsChocoDiggingFail);
             #endregion
 
+            // Consolidated build
+            StringBuilder sb = new StringBuilder();
+            List<StringMods> strModList = new List<StringMods>();
+
+            // Build the full set of strings for all types of HELM
+            BuildHELMResults(lsHELMHarvesting, harvestedItems, harvestingBreaks, harvestingFailures, sb, strModList);
+            BuildHELMResults(lsHELMLogging, loggedItems, loggingBreaks, loggingFailures, sb, strModList);
+            BuildHELMResults(lsHELMMining, minedItems, miningBreaks, miningFailures, sb, strModList);
+            BuildHELMResults(lsHELMDigging, chocoboItems, -1, chocoboDiggingFailures, sb, strModList);
+
+            // Then display them
+            PushStrings(sb, strModList);
+        }
+
+        /// <summary>
+        /// Function to add on to the string builder with a constructed display
+        /// for each section of HELM results.
+        /// </summary>
+        /// <param name="sectionTitle">The title of this section.</param>
+        /// <param name="helmedItems">The IEnumerable HELMList of HELMed items.</param>
+        /// <param name="helmedBreaks">A count of breaks for this HELM type.  -1 if not applicable (IE: Choco digging)</param>
+        /// <param name="helmedFailures">A count of the number of failures for this HELM type.</param>
+        /// <param name="sb">The StringBuilder that's being added to.</param>
+        /// <param name="strModList">The list of string mods for color/bold/etc.</param>
+        private void BuildHELMResults(string sectionTitle,
+            IEnumerable<HELMList> helmedItems, int helmedBreaks, int helmedFailures,
+            StringBuilder sb, List<StringMods> strModList)
+        {
+            // Don't add anything if there aren't any of the provided type of results
+            if (helmedItems.Count() == 0)
+                return;
+
+            // Add the section title first.
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = sectionTitle.Length,
+                Bold = true,
+                Color = Color.Red
+            });
+            sb.AppendFormat("{0}\n", sectionTitle);
+
+            // Some local variables
             int totalItems;
             int totalCount;
             double avgResult;
-            //string lineFormat = "  {0,-34} {1,5}  [{2,8:p2}]\n";
 
-            // Harvesting results
-            if (harvestedItems.Count() > 0 || harvestingBreaks > 0)
+            totalItems = helmedItems.Sum(a => a.ItemCount);
+            totalCount = totalItems + helmedFailures;
+
+            // List out each item HELMed and give its count and percentage.
+            foreach (var item in helmedItems)
             {
-                AppendText(lsHELMHarvesting, Color.Red, true, false);
-                AppendText("\n");
+                avgResult = (double)item.ItemCount / totalCount;
 
-                totalItems = harvestedItems.Sum(a => a.ItemCount);
-                totalCount = totalItems + harvestingFailures;
-
-                foreach (var item in harvestedItems)
-                {
-                    avgResult = (double)item.ItemCount / totalCount;
-                    AppendText(string.Format(lsHELMLongLineFormat,
-                        item.ItemName, item.ItemCount, avgResult));
-                    AppendText("\n");
-                }
-
-                avgResult = (double)harvestingFailures / totalCount;
-                AppendText(string.Format(lsHELMLongLineFormat,
-                    lsHELMNothing, harvestingFailures, avgResult));
-                AppendText("\n");
-
-                if (harvestedItems.Count() > 0)
-                {
-                    AppendText("\n");
-                    AppendText(string.Format(lsHELMShortLineFormat,
-                        lsHELMTotalItems, totalItems));
-                    AppendText("\n");
-                }
-
-                AppendText(string.Format(lsHELMShortLineFormat,
-                    lsHELMTotalTries, totalCount));
-                AppendText("\n");
-
-                avgResult = (double)harvestingBreaks / totalCount;
-                AppendText("\n");
-                AppendText(string.Format(lsHELMLongLineFormat,
-                    lsHELMBreaks, harvestingBreaks, avgResult));
-                AppendText("\n");
-
-                AppendText("\n");
+                sb.AppendFormat(lsHELMLongLineFormat,
+                    item.ItemName, item.ItemCount, avgResult);
+                sb.Append("\n");
             }
 
-            // Logging results
-            if (loggedItems.Count() > 0 || loggingBreaks > 0)
+            // And then the number of times nothing was acquired (failures).
+            avgResult = (double)helmedFailures / totalCount;
+            sb.AppendFormat(lsHELMLongLineFormat,
+                lsHELMNothing, helmedFailures, avgResult);
+            sb.Append("\n\n");
+
+            // Show total number of items
+            sb.AppendFormat(lsHELMShortLineFormat,
+                lsHELMTotalItems, totalItems);
+            sb.Append("\n");
+
+            // And total number of attempts
+            sb.AppendFormat(lsHELMShortLineFormat,
+                lsHELMTotalTries, totalCount);
+            sb.Append("\n");
+
+            // And finally, the number of breaks (if applicable)
+            if (helmedBreaks >= 0)
             {
-                AppendText(lsHELMLogging, Color.Red, true, false);
-                AppendText("\n");
+                avgResult = (double)helmedBreaks / totalCount;
 
-                totalItems = loggedItems.Sum(a => a.ItemCount);
-                totalCount = totalItems + loggingFailures;
-
-                foreach (var item in loggedItems)
-                {
-                    avgResult = (double)item.ItemCount / totalCount;
-                    AppendText(string.Format(lsHELMLongLineFormat,
-                        item.ItemName, item.ItemCount, avgResult));
-                    AppendText("\n");
-                }
-
-                avgResult = (double)loggingFailures / totalCount;
-                AppendText(string.Format(lsHELMLongLineFormat,
-                    lsHELMNothing, loggingFailures, avgResult));
-                AppendText("\n");
-
-                if (loggedItems.Count() > 0)
-                {
-                    AppendText("\n");
-                    AppendText(string.Format(lsHELMShortLineFormat,
-                        lsHELMTotalItems, totalItems));
-                    AppendText("\n");
-                }
-
-                AppendText(string.Format(lsHELMShortLineFormat,
-                    lsHELMTotalTries, totalCount));
-                AppendText("\n");
-
-                avgResult = (double)loggingBreaks / totalCount;
-                AppendText("\n");
-                AppendText(string.Format(lsHELMLongLineFormat,
-                    lsHELMBreaks, loggingBreaks, avgResult));
-                AppendText("\n");
-
-                AppendText("\n");
+                sb.Append("\n");
+                sb.AppendFormat(lsHELMLongLineFormat,
+                    lsHELMBreaks, helmedBreaks, avgResult);
+                sb.Append("\n");
             }
 
-            // Mining results
-            if (minedItems.Count() > 0 || miningBreaks > 0)
-            {
-                AppendText(lsHELMMining, Color.Red, true, false);
-                AppendText("\n");
-
-                totalItems = minedItems.Sum(a => a.ItemCount);
-                totalCount = totalItems + miningFailures;
-
-                foreach (var item in minedItems)
-                {
-                    avgResult = (double)item.ItemCount / totalCount;
-                    AppendText(string.Format(lsHELMLongLineFormat,
-                        item.ItemName, item.ItemCount, avgResult));
-                    AppendText("\n");
-                }
-
-                avgResult = (double)miningFailures / totalCount;
-                AppendText(string.Format(lsHELMLongLineFormat,
-                   lsHELMNothing, miningFailures, avgResult));
-
-                if (minedItems.Count() > 0)
-                {
-                    AppendText("\n");
-                    AppendText(string.Format(lsHELMShortLineFormat,
-                        lsHELMTotalItems, totalItems));
-                    AppendText("\n");
-                }
-
-                AppendText(string.Format(lsHELMShortLineFormat,
-                    lsHELMTotalTries, totalCount));
-                AppendText("\n");
-
-                avgResult = (double)miningBreaks / totalCount;
-                AppendText("\n");
-                AppendText(string.Format(lsHELMLongLineFormat,
-                    lsHELMBreaks, miningBreaks, avgResult));
-                AppendText("\n");
-
-                AppendText("\n");
-            }
-
-            // Chocobo results
-            if (chocoboItems.Count() > 0 || chocoboDiggingFailures > 0)
-            {
-                AppendText(lsHELMDigging, Color.Red, true, false);
-                AppendText("\n");
-
-                totalCount = chocoboItems.Sum(a => a.ItemCount) + chocoboDiggingFailures;
-
-                foreach (var item in chocoboItems)
-                {
-                    avgResult = (double)item.ItemCount / totalCount;
-                    AppendText(string.Format(lsHELMLongLineFormat,
-                        item.ItemName, item.ItemCount, avgResult));
-                    AppendText("\n");
-                }
-
-                avgResult = (double)chocoboDiggingFailures / totalCount;
-                AppendText(string.Format(lsHELMLongLineFormat,
-                   lsHELMNothing, chocoboDiggingFailures, avgResult));
-                AppendText("\n");
-
-
-                if (chocoboItems.Count() > 0)
-                {
-                    AppendText("\n");
-                    AppendText(string.Format(lsHELMShortLineFormat,
-                        lsHELMTotalItems, chocoboItems.Sum(li => li.ItemCount)));
-                    AppendText("\n");
-                }
-
-                AppendText(string.Format(lsHELMShortLineFormat,
-                    lsHELMTotalTries, totalCount));
-                AppendText("\n");
-
-
-                AppendText("\n");
-            }
+            sb.Append("\n");
         }
 
         #endregion
