@@ -387,9 +387,6 @@ namespace WaywardGamers.KParser.Plugin
 
                         }
                     }
-
-
-
                 }
 
                 AppendText("\n");
