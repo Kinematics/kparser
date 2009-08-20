@@ -194,5 +194,392 @@ namespace WaywardGamers.KParser.Resources {
                 return ResourceManager.GetString("DebuffPluginTabName", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Damage Taken.
+        /// </summary>
+        internal static string DefensePluginCategoryDamageTaken {
+            get {
+                return ResourceManager.GetString("DefensePluginCategoryDamageTaken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defenses.
+        /// </summary>
+        internal static string DefensePluginCategoryDefenses {
+            get {
+                return ResourceManager.GetString("DefensePluginCategoryDefenses", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Utsusemi.
+        /// </summary>
+        internal static string DefensePluginCategoryUtsusemi {
+            get {
+                return ResourceManager.GetString("DefensePluginCategoryUtsusemi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-23}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}.
+        /// </summary>
+        internal static string DefensePluginFormatAbility {
+            get {
+                return ResourceManager.GetString("DefensePluginFormatAbility", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-18}{1,7}{2,10:p2}{3,13}{4,14:p2}{5,15}{6,15:p2}.
+        /// </summary>
+        internal static string DefensePluginFormatActiveDefense {
+            get {
+                return ResourceManager.GetString("DefensePluginFormatActiveDefense", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-18}{1,10}{2,10:p2}{3,11}{5,11}{6,9:f2}{7,7}{8,10}{9,8:f2}{10,10:p2}.
+        /// </summary>
+        internal static string DefensePluginFormatMelee {
+            get {
+                return ResourceManager.GetString("DefensePluginFormatMelee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-18}{1,9}{2,8}{3,10:f2}{4,11}{5,8}{6,10:f2}{7,10}{8,9}{9,9:f2}.
+        /// </summary>
+        internal static string DefensePluginFormatOtherMagical {
+            get {
+                return ResourceManager.GetString("DefensePluginFormatOtherMagical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-18}{1,7}{2,13}{3,11}{4,8:f2}{5,10}{6,14}{7,12}{8,9:f2}.
+        /// </summary>
+        internal static string DefensePluginFormatOtherPhysical {
+            get {
+                return ResourceManager.GetString("DefensePluginFormatOtherPhysical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-18}{1,8}{2,11:p2}{3,8}{4,9:p2}{5,10}{6,11:p2}{7,13}{8,14:p2}.
+        /// </summary>
+        internal static string DefensePluginFormatPassiveDefense {
+            get {
+                return ResourceManager.GetString("DefensePluginFormatPassiveDefense", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-18}{1,10}{2,10:p2}{3,11}{5,11}{6,9:f2}{7,7}{8,10}{9,8:f2}{10,10:p2}.
+        /// </summary>
+        internal static string DefensePluginFormatRanged {
+            get {
+                return ResourceManager.GetString("DefensePluginFormatRanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-18}{1,13}{2,16}{3,18}{4,14:p2}{5,17:p2}.
+        /// </summary>
+        internal static string DefensePluginFormatShadowUse {
+            get {
+                return ResourceManager.GetString("DefensePluginFormatShadowUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,6}{2,6}{3,11}{4,8:f2}.
+        /// </summary>
+        internal static string DefensePluginFormatSkillchain {
+            get {
+                return ResourceManager.GetString("DefensePluginFormatSkillchain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-23}{1,10}{2,10:p2}{3,9}{4,7}{5,10}{6,10:f2}{7,9}{8,11}{9,9:f2}.
+        /// </summary>
+        internal static string DefensePluginFormatSpells {
+            get {
+                return ResourceManager.GetString("DefensePluginFormatSpells", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-18}{1,10}{2,11:p2}{3,12}{4,12}{5,12}{6,12}{7,12}{8,11}.
+        /// </summary>
+        internal static string DefensePluginFormatSummary {
+            get {
+                return ResourceManager.GetString("DefensePluginFormatSummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-18}{1,11}{2,16}{3,12}{4,14}{5,22:f0}.
+        /// </summary>
+        internal static string DefensePluginFormatUtsuCasting {
+            get {
+                return ResourceManager.GetString("DefensePluginFormatUtsuCasting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-23}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}.
+        /// </summary>
+        internal static string DefensePluginFormatWeaponskill {
+            get {
+                return ResourceManager.GetString("DefensePluginFormatWeaponskill", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player                  Abil. Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg.
+        /// </summary>
+        internal static string DefensePluginHeaderAbility {
+            get {
+                return ResourceManager.GetString("DefensePluginHeaderAbility", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player             Shadow  Shadow %   Anticipate  Anticipate %   Retaliations  Retaliation %.
+        /// </summary>
+        internal static string DefensePluginHeaderActiveDefense {
+            get {
+                return ResourceManager.GetString("DefensePluginHeaderActiveDefense", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player             Melee Dmg   Melee %   Hit/Miss   M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%.
+        /// </summary>
+        internal static string DefensePluginHeaderMelee {
+            get {
+                return ResourceManager.GetString("DefensePluginHeaderMelee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player             M.AE Dmg  # M.AE  M.AE Avg   R.AE Dmg  # R.AE  R.AE Avg   Spk.Dmg  # Spike  Spk.Avg.
+        /// </summary>
+        internal static string DefensePluginHeaderOtherMagical {
+            get {
+                return ResourceManager.GetString("DefensePluginHeaderOtherMagical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player             CA.Dmg  CA.Hit/Miss  CA.Low/Hi  CA.Avg   Ret.Dmg  Ret.Hit/Miss  Ret.Low/Hi  Ret.Avg.
+        /// </summary>
+        internal static string DefensePluginHeaderOtherPhysical {
+            get {
+                return ResourceManager.GetString("DefensePluginHeaderOtherPhysical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player             Evasion  Evasion %   Parry  Parry %   Counter  Counter %   Intimidate  Intimidate %.
+        /// </summary>
+        internal static string DefensePluginHeaderPassiveDefense {
+            get {
+                return ResourceManager.GetString("DefensePluginHeaderPassiveDefense", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player             Range Dmg   Range %   Hit/Miss   R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%.
+        /// </summary>
+        internal static string DefensePluginHeaderRanged {
+            get {
+                return ResourceManager.GetString("DefensePluginHeaderRanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player             Shadows Used    Shadows Cast  Shadows Cast(Nin)   Efficiency  Efficiency (Nin).
+        /// </summary>
+        internal static string DefensePluginHeaderShadowUse {
+            get {
+                return ResourceManager.GetString("DefensePluginHeaderShadowUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skillchain          SC Dmg  # SC  SC.Low/Hi  SC.Avg.
+        /// </summary>
+        internal static string DefensePluginHeaderSkillchain {
+            get {
+                return ResourceManager.GetString("DefensePluginHeaderSkillchain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player                  Spell Dmg   Spell %  #Spells  #Fail  S.Low/Hi     S.Avg  #MBurst  MB.Low/Hi   MB.Avg.
+        /// </summary>
+        internal static string DefensePluginHeaderSpells {
+            get {
+                return ResourceManager.GetString("DefensePluginHeaderSpells", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player             Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg.
+        /// </summary>
+        internal static string DefensePluginHeaderSummary {
+            get {
+                return ResourceManager.GetString("DefensePluginHeaderSummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player             :Ichi Cast  :Ichi Finished    :Ni Cast  :Ni Finished    Casting Time (est.).
+        /// </summary>
+        internal static string DefensePluginHeaderUtsuCasting {
+            get {
+                return ResourceManager.GetString("DefensePluginHeaderUtsuCasting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player                  WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg.
+        /// </summary>
+        internal static string DefensePluginHeaderWeaponskill {
+            get {
+                return ResourceManager.GetString("DefensePluginHeaderWeaponskill", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defense.
+        /// </summary>
+        internal static string DefensePluginTabName {
+            get {
+                return ResourceManager.GetString("DefensePluginTabName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ability Damage Taken.
+        /// </summary>
+        internal static string DefensePluginTitleAbility {
+            get {
+                return ResourceManager.GetString("DefensePluginTitleAbility", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Active Defenses.
+        /// </summary>
+        internal static string DefensePluginTitleActiveDefenses {
+            get {
+                return ResourceManager.GetString("DefensePluginTitleActiveDefenses", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Melee Damage Taken.
+        /// </summary>
+        internal static string DefensePluginTitleMelee {
+            get {
+                return ResourceManager.GetString("DefensePluginTitleMelee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Other Magical Damage Taken  (Additional Effects and Spikes).
+        /// </summary>
+        internal static string DefensePluginTitleOtherMagical {
+            get {
+                return ResourceManager.GetString("DefensePluginTitleOtherMagical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Other Physical Damage Taken  (Counterattacks and Retaliations).
+        /// </summary>
+        internal static string DefensePluginTitleOtherPhysical {
+            get {
+                return ResourceManager.GetString("DefensePluginTitleOtherPhysical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Passive Defenses.
+        /// </summary>
+        internal static string DefensePluginTitlePassiveDefenses {
+            get {
+                return ResourceManager.GetString("DefensePluginTitlePassiveDefenses", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ranged Damage Taken.
+        /// </summary>
+        internal static string DefensePluginTitleRanged {
+            get {
+                return ResourceManager.GetString("DefensePluginTitleRanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shadow Use.
+        /// </summary>
+        internal static string DefensePluginTitleShadowUse {
+            get {
+                return ResourceManager.GetString("DefensePluginTitleShadowUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skillchain Damage Taken.
+        /// </summary>
+        internal static string DefensePluginTitleSkillchain {
+            get {
+                return ResourceManager.GetString("DefensePluginTitleSkillchain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spell Damage Taken.
+        /// </summary>
+        internal static string DefensePluginTitleSpell {
+            get {
+                return ResourceManager.GetString("DefensePluginTitleSpell", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Damage Taken Summary.
+        /// </summary>
+        internal static string DefensePluginTitleSummary {
+            get {
+                return ResourceManager.GetString("DefensePluginTitleSummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Utsusemi Casting.
+        /// </summary>
+        internal static string DefensePluginTitleUtsuCasting {
+            get {
+                return ResourceManager.GetString("DefensePluginTitleUtsuCasting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Weaponskill Damage Taken.
+        /// </summary>
+        internal static string DefensePluginTitleWeaponskill {
+            get {
+                return ResourceManager.GetString("DefensePluginTitleWeaponskill", resourceCulture);
+            }
+        }
     }
 }

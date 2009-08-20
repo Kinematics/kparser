@@ -131,5 +131,14 @@ namespace WaywardGamers.KParser.Resources {
                 return ResourceManager.GetString("Options", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total.
+        /// </summary>
+        public static string Total {
+            get {
+                return ResourceManager.GetString("Total", resourceCulture);
+            }
+        }
     }
 }

@@ -141,4 +141,7 @@
   <data name="Options" xml:space="preserve">
     <value>Options</value>
   </data>
+  <data name="Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
 </root>
