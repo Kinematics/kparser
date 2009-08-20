@@ -258,8 +258,9 @@ namespace WaywardGamers.KParser.Plugin
             catLabel.Text = Resources.NonCombat.ChatPluginCategoryLabel;
             speakerLabel.Text = Resources.NonCombat.ChatPluginSpeakerLabel;
 
+            int prevChatTypeIndex = chatTypeCombo.SelectedIndex;
             PopulateChatTypes();
-            chatTypeCombo.SelectedIndex = 0;
+            chatTypeCombo.SelectedIndex = prevChatTypeIndex;
 
             UpdateSpeakerList();
         }
