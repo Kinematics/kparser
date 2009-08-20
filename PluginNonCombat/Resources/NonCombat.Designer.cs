@@ -457,6 +457,24 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You dig and you dig, but find nothing..
+        /// </summary>
+        internal static string TreasurePluginChocoDiggingFail {
+            get {
+                return ResourceManager.GetString("TreasurePluginChocoDiggingFail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ^Obtained: {0}\\.$.
+        /// </summary>
+        internal static string TreasurePluginChocoDiggingFormat {
+            get {
+                return ResourceManager.GetString("TreasurePluginChocoDiggingFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Distribution.
         /// </summary>
         internal static string TreasurePluginDistribution {
@@ -520,11 +538,137 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You are unable to harvest anything..
+        /// </summary>
+        internal static string TreasurePluginHarvestFail {
+            get {
+                return ResourceManager.GetString("TreasurePluginHarvestFail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your sickle breaks!.
+        /// </summary>
+        internal static string TreasurePluginHarvestToolBreak {
+            get {
+                return ResourceManager.GetString("TreasurePluginHarvestToolBreak", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Breaks:.
+        /// </summary>
+        internal static string TreasurePluginHELMBreaks {
+            get {
+                return ResourceManager.GetString("TreasurePluginHELMBreaks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chocobo Digging:.
+        /// </summary>
+        internal static string TreasurePluginHELMDigging {
+            get {
+                return ResourceManager.GetString("TreasurePluginHELMDigging", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Harvesting:.
+        /// </summary>
+        internal static string TreasurePluginHELMHarvesting {
+            get {
+                return ResourceManager.GetString("TreasurePluginHELMHarvesting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logging:.
+        /// </summary>
+        internal static string TreasurePluginHELMLogging {
+            get {
+                return ResourceManager.GetString("TreasurePluginHELMLogging", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to   {0,-34} {1,5}  [{2,8:p2}].
+        /// </summary>
+        internal static string TreasurePluginHELMLongLineFormat {
+            get {
+                return ResourceManager.GetString("TreasurePluginHELMLongLineFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mining/Excavation:.
+        /// </summary>
+        internal static string TreasurePluginHELMMining {
+            get {
+                return ResourceManager.GetString("TreasurePluginHELMMining", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nothing.
+        /// </summary>
+        internal static string TreasurePluginHELMNothing {
+            get {
+                return ResourceManager.GetString("TreasurePluginHELMNothing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to   {0,-34} {1,5}.
+        /// </summary>
+        internal static string TreasurePluginHELMShortLineFormat {
+            get {
+                return ResourceManager.GetString("TreasurePluginHELMShortLineFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total Items:.
+        /// </summary>
+        internal static string TreasurePluginHELMTotalItems {
+            get {
+                return ResourceManager.GetString("TreasurePluginHELMTotalItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total Tries:.
+        /// </summary>
+        internal static string TreasurePluginHELMTotalTries {
+            get {
+                return ResourceManager.GetString("TreasurePluginHELMTotalTries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Item Drops.
         /// </summary>
         internal static string TreasurePluginItemDrops {
             get {
                 return ResourceManager.GetString("TreasurePluginItemDrops", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are unable to log anything..
+        /// </summary>
+        internal static string TreasurePluginLoggingFail {
+            get {
+                return ResourceManager.GetString("TreasurePluginLoggingFail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your hatchet breaks!.
+        /// </summary>
+        internal static string TreasurePluginLoggingToolBreak {
+            get {
+                return ResourceManager.GetString("TreasurePluginLoggingToolBreak", resourceCulture);
             }
         }
         
@@ -583,6 +727,24 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You are unable to dig up anything..
+        /// </summary>
+        internal static string TreasurePluginMiningFail {
+            get {
+                return ResourceManager.GetString("TreasurePluginMiningFail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your pickaxe breaks!.
+        /// </summary>
+        internal static string TreasurePluginMiningToolBreak {
+            get {
+                return ResourceManager.GetString("TreasurePluginMiningToolBreak", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No drops..
         /// </summary>
         internal static string TreasurePluginNoDrops {
@@ -633,6 +795,78 @@ namespace WaywardGamers.KParser.Resources {
         internal static string TreasurePluginOptionGroupMobs {
             get {
                 return ResourceManager.GetString("TreasurePluginOptionGroupMobs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to sickle breaks( in the process)?(\.|!)$.
+        /// </summary>
+        internal static string TreasurePluginRegexHarvestBreak {
+            get {
+                return ResourceManager.GetString("TreasurePluginRegexHarvestBreak", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You (successfully )?harvest {0}(, but your sickle breaks( in the process)?)?(.|!)$.
+        /// </summary>
+        internal static string TreasurePluginRegexHarvestFormat {
+            get {
+                return ResourceManager.GetString("TreasurePluginRegexHarvestFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ((a|an|the) )?(?&lt;item&gt;\w+( \w+)*).
+        /// </summary>
+        internal static string TreasurePluginRegexItem {
+            get {
+                return ResourceManager.GetString("TreasurePluginRegexItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to item.
+        /// </summary>
+        internal static string TreasurePluginRegexItemReference {
+            get {
+                return ResourceManager.GetString("TreasurePluginRegexItemReference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to hatchet breaks( in the process)?(\.|!)$.
+        /// </summary>
+        internal static string TreasurePluginRegexLoggingBreak {
+            get {
+                return ResourceManager.GetString("TreasurePluginRegexLoggingBreak", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You (successfully )?cut off {0}(, but your hatchet breaks( in the process)?)?(.|!)$.
+        /// </summary>
+        internal static string TreasurePluginRegexLoggingFormat {
+            get {
+                return ResourceManager.GetString("TreasurePluginRegexLoggingFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to pickaxe breaks( in the process)?(\.|!)$.
+        /// </summary>
+        internal static string TreasurePluginRegexMiningBreak {
+            get {
+                return ResourceManager.GetString("TreasurePluginRegexMiningBreak", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You (successfully )?dig up {0}(, but your pickaxe breaks( in the process)?)?(.|!)$.
+        /// </summary>
+        internal static string TreasurePluginRegexMiningFormat {
+            get {
+                return ResourceManager.GetString("TreasurePluginRegexMiningFormat", resourceCulture);
             }
         }
         

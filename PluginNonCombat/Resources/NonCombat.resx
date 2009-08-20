@@ -318,4 +318,82 @@
   <data name="TreasurePluginTreasureChests" xml:space="preserve">
     <value>Treasure Chests</value>
   </data>
+  <data name="TreasurePluginChocoDiggingFail" xml:space="preserve">
+    <value>You dig and you dig, but find nothing.</value>
+  </data>
+  <data name="TreasurePluginChocoDiggingFormat" xml:space="preserve">
+    <value>^Obtained: {0}\\.$</value>
+  </data>
+  <data name="TreasurePluginHarvestFail" xml:space="preserve">
+    <value>You are unable to harvest anything.</value>
+  </data>
+  <data name="TreasurePluginHarvestToolBreak" xml:space="preserve">
+    <value>Your sickle breaks!</value>
+  </data>
+  <data name="TreasurePluginHELMBreaks" xml:space="preserve">
+    <value>Breaks:</value>
+  </data>
+  <data name="TreasurePluginHELMDigging" xml:space="preserve">
+    <value>Chocobo Digging:</value>
+  </data>
+  <data name="TreasurePluginHELMHarvesting" xml:space="preserve">
+    <value>Harvesting:</value>
+  </data>
+  <data name="TreasurePluginHELMLogging" xml:space="preserve">
+    <value>Logging:</value>
+  </data>
+  <data name="TreasurePluginHELMLongLineFormat" xml:space="preserve">
+    <value>  {0,-34} {1,5}  [{2,8:p2}]</value>
+  </data>
+  <data name="TreasurePluginHELMMining" xml:space="preserve">
+    <value>Mining/Excavation:</value>
+  </data>
+  <data name="TreasurePluginHELMNothing" xml:space="preserve">
+    <value>Nothing</value>
+  </data>
+  <data name="TreasurePluginHELMShortLineFormat" xml:space="preserve">
+    <value>  {0,-34} {1,5}</value>
+  </data>
+  <data name="TreasurePluginHELMTotalItems" xml:space="preserve">
+    <value>Total Items:</value>
+  </data>
+  <data name="TreasurePluginHELMTotalTries" xml:space="preserve">
+    <value>Total Tries:</value>
+  </data>
+  <data name="TreasurePluginLoggingFail" xml:space="preserve">
+    <value>You are unable to log anything.</value>
+  </data>
+  <data name="TreasurePluginLoggingToolBreak" xml:space="preserve">
+    <value>Your hatchet breaks!</value>
+  </data>
+  <data name="TreasurePluginMiningFail" xml:space="preserve">
+    <value>You are unable to dig up anything.</value>
+  </data>
+  <data name="TreasurePluginMiningToolBreak" xml:space="preserve">
+    <value>Your pickaxe breaks!</value>
+  </data>
+  <data name="TreasurePluginRegexHarvestBreak" xml:space="preserve">
+    <value>sickle breaks( in the process)?(\.|!)$</value>
+  </data>
+  <data name="TreasurePluginRegexHarvestFormat" xml:space="preserve">
+    <value>You (successfully )?harvest {0}(, but your sickle breaks( in the process)?)?(.|!)$</value>
+  </data>
+  <data name="TreasurePluginRegexItem" xml:space="preserve">
+    <value>((a|an|the) )?(?&lt;item&gt;\w+( \w+)*)</value>
+  </data>
+  <data name="TreasurePluginRegexItemReference" xml:space="preserve">
+    <value>item</value>
+  </data>
+  <data name="TreasurePluginRegexLoggingBreak" xml:space="preserve">
+    <value>hatchet breaks( in the process)?(\.|!)$</value>
+  </data>
+  <data name="TreasurePluginRegexLoggingFormat" xml:space="preserve">
+    <value>You (successfully )?cut off {0}(, but your hatchet breaks( in the process)?)?(.|!)$</value>
+  </data>
+  <data name="TreasurePluginRegexMiningBreak" xml:space="preserve">
+    <value>pickaxe breaks( in the process)?(\.|!)$</value>
+  </data>
+  <data name="TreasurePluginRegexMiningFormat" xml:space="preserve">
+    <value>You (successfully )?dig up {0}(, but your pickaxe breaks( in the process)?)?(.|!)$</value>
+  </data>
 </root>
