@@ -162,4 +162,133 @@
   <data name="DebuffPluginTabName" xml:space="preserve">
     <value>Debuffs</value>
   </data>
+  <data name="DefensePluginCategoryDamageTaken" xml:space="preserve">
+    <value>Damage Taken</value>
+  </data>
+  <data name="DefensePluginCategoryDefenses" xml:space="preserve">
+    <value>Defenses</value>
+  </data>
+  <data name="DefensePluginCategoryUtsusemi" xml:space="preserve">
+    <value>Utsusemi</value>
+  </data>
+  <data name="DefensePluginFormatAbility" xml:space="preserve">
+    <value>{0,-23}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}</value>
+  </data>
+  <data name="DefensePluginFormatActiveDefense" xml:space="preserve">
+    <value>{0,-18}{1,7}{2,10:p2}{3,13}{4,14:p2}{5,15}{6,15:p2}</value>
+  </data>
+  <data name="DefensePluginFormatMelee" xml:space="preserve">
+    <value>{0,-18}{1,10}{2,10:p2}{3,11}{5,11}{6,9:f2}{7,7}{8,10}{9,8:f2}{10,10:p2}</value>
+  </data>
+  <data name="DefensePluginFormatOtherMagical" xml:space="preserve">
+    <value>{0,-18}{1,9}{2,8}{3,10:f2}{4,11}{5,8}{6,10:f2}{7,10}{8,9}{9,9:f2}</value>
+  </data>
+  <data name="DefensePluginFormatOtherPhysical" xml:space="preserve">
+    <value>{0,-18}{1,7}{2,13}{3,11}{4,8:f2}{5,10}{6,14}{7,12}{8,9:f2}</value>
+  </data>
+  <data name="DefensePluginFormatPassiveDefense" xml:space="preserve">
+    <value>{0,-18}{1,8}{2,11:p2}{3,8}{4,9:p2}{5,10}{6,11:p2}{7,13}{8,14:p2}</value>
+  </data>
+  <data name="DefensePluginFormatRanged" xml:space="preserve">
+    <value>{0,-18}{1,10}{2,10:p2}{3,11}{5,11}{6,9:f2}{7,7}{8,10}{9,8:f2}{10,10:p2}</value>
+  </data>
+  <data name="DefensePluginFormatShadowUse" xml:space="preserve">
+    <value>{0,-18}{1,13}{2,16}{3,18}{4,14:p2}{5,17:p2}</value>
+  </data>
+  <data name="DefensePluginFormatSkillchain" xml:space="preserve">
+    <value>{0,-20}{1,6}{2,6}{3,11}{4,8:f2}</value>
+  </data>
+  <data name="DefensePluginFormatSpells" xml:space="preserve">
+    <value>{0,-23}{1,10}{2,10:p2}{3,9}{4,7}{5,10}{6,10:f2}{7,9}{8,11}{9,9:f2}</value>
+  </data>
+  <data name="DefensePluginFormatSummary" xml:space="preserve">
+    <value>{0,-18}{1,10}{2,11:p2}{3,12}{4,12}{5,12}{6,12}{7,12}{8,11}</value>
+  </data>
+  <data name="DefensePluginFormatUtsuCasting" xml:space="preserve">
+    <value>{0,-18}{1,11}{2,16}{3,12}{4,14}{5,22:f0}</value>
+  </data>
+  <data name="DefensePluginFormatWeaponskill" xml:space="preserve">
+    <value>{0,-23}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}</value>
+  </data>
+  <data name="DefensePluginHeaderAbility" xml:space="preserve">
+    <value>Player                  Abil. Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg</value>
+  </data>
+  <data name="DefensePluginHeaderActiveDefense" xml:space="preserve">
+    <value>Player             Shadow  Shadow %   Anticipate  Anticipate %   Retaliations  Retaliation %</value>
+  </data>
+  <data name="DefensePluginHeaderMelee" xml:space="preserve">
+    <value>Player             Melee Dmg   Melee %   Hit/Miss   M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%</value>
+  </data>
+  <data name="DefensePluginHeaderOtherMagical" xml:space="preserve">
+    <value>Player             M.AE Dmg  # M.AE  M.AE Avg   R.AE Dmg  # R.AE  R.AE Avg   Spk.Dmg  # Spike  Spk.Avg</value>
+  </data>
+  <data name="DefensePluginHeaderOtherPhysical" xml:space="preserve">
+    <value>Player             CA.Dmg  CA.Hit/Miss  CA.Low/Hi  CA.Avg   Ret.Dmg  Ret.Hit/Miss  Ret.Low/Hi  Ret.Avg</value>
+  </data>
+  <data name="DefensePluginHeaderPassiveDefense" xml:space="preserve">
+    <value>Player             Evasion  Evasion %   Parry  Parry %   Counter  Counter %   Intimidate  Intimidate %</value>
+  </data>
+  <data name="DefensePluginHeaderRanged" xml:space="preserve">
+    <value>Player             Range Dmg   Range %   Hit/Miss   R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%</value>
+  </data>
+  <data name="DefensePluginHeaderShadowUse" xml:space="preserve">
+    <value>Player             Shadows Used    Shadows Cast  Shadows Cast(Nin)   Efficiency  Efficiency (Nin)</value>
+  </data>
+  <data name="DefensePluginHeaderSkillchain" xml:space="preserve">
+    <value>Skillchain          SC Dmg  # SC  SC.Low/Hi  SC.Avg</value>
+  </data>
+  <data name="DefensePluginHeaderSpells" xml:space="preserve">
+    <value>Player                  Spell Dmg   Spell %  #Spells  #Fail  S.Low/Hi     S.Avg  #MBurst  MB.Low/Hi   MB.Avg</value>
+  </data>
+  <data name="DefensePluginHeaderSummary" xml:space="preserve">
+    <value>Player             Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg</value>
+  </data>
+  <data name="DefensePluginHeaderUtsuCasting" xml:space="preserve">
+    <value>Player             :Ichi Cast  :Ichi Finished    :Ni Cast  :Ni Finished    Casting Time (est.)</value>
+  </data>
+  <data name="DefensePluginHeaderWeaponskill" xml:space="preserve">
+    <value>Player                  WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg</value>
+  </data>
+  <data name="DefensePluginTabName" xml:space="preserve">
+    <value>Defense</value>
+  </data>
+  <data name="DefensePluginTitleAbility" xml:space="preserve">
+    <value>Ability Damage Taken</value>
+  </data>
+  <data name="DefensePluginTitleActiveDefenses" xml:space="preserve">
+    <value>Active Defenses</value>
+  </data>
+  <data name="DefensePluginTitleMelee" xml:space="preserve">
+    <value>Melee Damage Taken</value>
+  </data>
+  <data name="DefensePluginTitleOtherMagical" xml:space="preserve">
+    <value>Other Magical Damage Taken  (Additional Effects and Spikes)</value>
+  </data>
+  <data name="DefensePluginTitleOtherPhysical" xml:space="preserve">
+    <value>Other Physical Damage Taken  (Counterattacks and Retaliations)</value>
+  </data>
+  <data name="DefensePluginTitlePassiveDefenses" xml:space="preserve">
+    <value>Passive Defenses</value>
+  </data>
+  <data name="DefensePluginTitleRanged" xml:space="preserve">
+    <value>Ranged Damage Taken</value>
+  </data>
+  <data name="DefensePluginTitleShadowUse" xml:space="preserve">
+    <value>Shadow Use</value>
+  </data>
+  <data name="DefensePluginTitleSkillchain" xml:space="preserve">
+    <value>Skillchain Damage Taken</value>
+  </data>
+  <data name="DefensePluginTitleSpell" xml:space="preserve">
+    <value>Spell Damage Taken</value>
+  </data>
+  <data name="DefensePluginTitleSummary" xml:space="preserve">
+    <value>Damage Taken Summary</value>
+  </data>
+  <data name="DefensePluginTitleUtsuCasting" xml:space="preserve">
+    <value>Utsusemi Casting</value>
+  </data>
+  <data name="DefensePluginTitleWeaponskill" xml:space="preserve">
+    <value>Weaponskill Damage Taken</value>
+  </data>
 </root>
