@@ -689,5 +689,41 @@ namespace WaywardGamers.KParser.Resources {
                 return ResourceManager.GetString("DefensePluginTitleWeaponskill", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-10}{1,-24}{2,-10}{3,-20}{4,10}{5,11}{6,15}{7,6}{8,8}.
+        /// </summary>
+        internal static string FightsPluginFightFormat {
+            get {
+                return ResourceManager.GetString("FightsPluginFightFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fight #   Enemy                   Killed?   Killed By           Start Time   End Time   Fight Length   Exp   Chain.
+        /// </summary>
+        internal static string FightsPluginFightHeader {
+            get {
+                return ResourceManager.GetString("FightsPluginFightHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fights.
+        /// </summary>
+        internal static string FightsPluginTabName {
+            get {
+                return ResourceManager.GetString("FightsPluginTabName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string FightsPluginUnknownEnemy {
+            get {
+                return ResourceManager.GetString("FightsPluginUnknownEnemy", resourceCulture);
+            }
+        }
     }
 }
