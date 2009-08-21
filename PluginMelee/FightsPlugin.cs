@@ -9,9 +9,23 @@ namespace WaywardGamers.KParser.Plugin
 {
     public class FightsPlugin : BasePluginControl
     {
+        #region Member Variables
+
+        // Localized strings
+
+        string lsFightHeader;
+        string lsFightFormat;
+
+        string lsDays;
+        string lsUnknown;
+
+        #endregion
+
         #region Constructor
         public FightsPlugin()
         {
+            LoadLocalizedUI();
+
             toolStrip.Enabled = false;
             toolStrip.Visible = false;
 
@@ -28,11 +42,6 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region IPlugin Overrides
-        public override string TabName
-        {
-            get { return "Fights"; }
-        }
-
         public override void Reset()
         {
             ResetTextBox();
@@ -66,16 +75,14 @@ namespace WaywardGamers.KParser.Plugin
             if (fights.Count() == 0)
                 return;
 
-            string fightHeader = "Fight #   Enemy                   Killed?   Killed By           Start Time   End Time   Fight Length   Exp   Chain\n";
-
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
-                Length = fightHeader.Length,
+                Length = lsFightHeader.Length,
                 Bold = true,
                 Color = Color.Black
             });
-            sb.Append(fightHeader);
+            sb.Append(lsFightHeader + "\n");
 
 
             int fightNum = 0;
@@ -95,8 +102,8 @@ namespace WaywardGamers.KParser.Plugin
 
                 if ((fightLength.Days > 0) || (fightLength.TotalDays < 0))
                 {
-                    fightLengthString = string.Format("{0:f2} days",
-                        fightLength.TotalDays);
+                    fightLengthString = string.Format("{0:f2} ",
+                        fightLength.TotalDays) + lsDays;
                 }
                 else
                 {
@@ -105,22 +112,41 @@ namespace WaywardGamers.KParser.Plugin
                 }
 
                 if (fight.IsEnemyIDNull())
-                    enemy = "-Unknown-";
+                    enemy = lsUnknown;
                 else
                     enemy = fight.CombatantsRowByEnemyCombatantRelation.CombatantName;
                 
-                sb.AppendFormat("{0,-10}{1,-24}{2,-10}{3,-20}{4,10}{5,11}{6,15}{7,6}{8,8}\n",
+                sb.AppendFormat(lsFightFormat,
                     fightNum, enemy,
                     fight.Killed, killer,
                     fight.StartTime.ToLocalTime().ToShortTimeString(),
                     fight.EndTime.ToLocalTime().ToShortTimeString(),
                     fightLengthString,
                     fight.ExperiencePoints, fight.ExperienceChain);
-
+                sb.Append("\n");
             }
 
             PushStrings(sb, strModList);
         }
         #endregion
+
+        #region Localization Overrides
+        protected override void LoadLocalizedUI()
+        {
+            // No UI to localize in this plugin.
+        }
+
+        protected override void LoadResources()
+        {
+            this.tabName = Resources.Combat.FightsPluginTabName;
+
+            lsFightHeader = Resources.Combat.FightsPluginFightHeader;
+            lsFightFormat = Resources.Combat.FightsPluginFightFormat;
+
+            lsDays = Resources.PublicResources.Days;
+            lsUnknown = Resources.Combat.FightsPluginUnknownEnemy;
+        }
+        #endregion
+
     }
 }

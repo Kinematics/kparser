@@ -327,4 +327,16 @@
   <data name="DefensePluginTitleWeaponskill" xml:space="preserve">
     <value>Weaponskill Damage Taken</value>
   </data>
+  <data name="FightsPluginFightFormat" xml:space="preserve">
+    <value>{0,-10}{1,-24}{2,-10}{3,-20}{4,10}{5,11}{6,15}{7,6}{8,8}</value>
+  </data>
+  <data name="FightsPluginFightHeader" xml:space="preserve">
+    <value>Fight #   Enemy                   Killed?   Killed By           Start Time   End Time   Fight Length   Exp   Chain</value>
+  </data>
+  <data name="FightsPluginTabName" xml:space="preserve">
+    <value>Fights</value>
+  </data>
+  <data name="FightsPluginUnknownEnemy" xml:space="preserve">
+    <value />
+  </data>
 </root>
