@@ -196,6 +196,114 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to   Ability.
+        /// </summary>
+        internal static string DefenseFreqPluginAbility {
+            get {
+                return ResourceManager.GetString("DefenseFreqPluginAbility", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to   Magic Bursts.
+        /// </summary>
+        internal static string DefenseFreqPluginMagicBursts {
+            get {
+                return ResourceManager.GetString("DefenseFreqPluginMagicBursts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to   Melee.
+        /// </summary>
+        internal static string DefenseFreqPluginMelee {
+            get {
+                return ResourceManager.GetString("DefenseFreqPluginMelee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to   Melee Additional Effects.
+        /// </summary>
+        internal static string DefenseFreqPluginMeleeAE {
+            get {
+                return ResourceManager.GetString("DefenseFreqPluginMeleeAE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to   Melee Crits.
+        /// </summary>
+        internal static string DefenseFreqPluginMeleeCrits {
+            get {
+                return ResourceManager.GetString("DefenseFreqPluginMeleeCrits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to   Range.
+        /// </summary>
+        internal static string DefenseFreqPluginRange {
+            get {
+                return ResourceManager.GetString("DefenseFreqPluginRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to   Range Additional Effects.
+        /// </summary>
+        internal static string DefenseFreqPluginRangeAE {
+            get {
+                return ResourceManager.GetString("DefenseFreqPluginRangeAE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to   Range Crits.
+        /// </summary>
+        internal static string DefenseFreqPluginRangeCrits {
+            get {
+                return ResourceManager.GetString("DefenseFreqPluginRangeCrits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to   Spells.
+        /// </summary>
+        internal static string DefenseFreqPluginSpells {
+            get {
+                return ResourceManager.GetString("DefenseFreqPluginSpells", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to   Spikes.
+        /// </summary>
+        internal static string DefenseFreqPluginSpikes {
+            get {
+                return ResourceManager.GetString("DefenseFreqPluginSpikes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defense Details.
+        /// </summary>
+        internal static string DefenseFreqPluginTabName {
+            get {
+                return ResourceManager.GetString("DefenseFreqPluginTabName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to   Weaponskills.
+        /// </summary>
+        internal static string DefenseFreqPluginWeaponskill {
+            get {
+                return ResourceManager.GetString("DefenseFreqPluginWeaponskill", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Damage Taken.
         /// </summary>
         internal static string DefensePluginCategoryDamageTaken {
