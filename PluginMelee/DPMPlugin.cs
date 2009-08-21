@@ -54,17 +54,13 @@ namespace WaywardGamers.KParser.Plugin
             mobsCombo.DropDownStyle = ComboBoxStyle.DropDownList;
             mobsCombo.AutoSize = false;
             mobsCombo.Width = 175;
-            mobsCombo.Items.Add("None");
             mobsCombo.MaxDropDownItems = 10;
-            mobsCombo.SelectedIndex = 0;
             mobsCombo.SelectedIndexChanged += new EventHandler(this.mobsCombo_SelectedIndexChanged);
-
 
             toolStrip.Items.Add(playersLabel);
             toolStrip.Items.Add(playersCombo);
             toolStrip.Items.Add(mobsLabel);
             toolStrip.Items.Add(mobsCombo);
-
         }
         #endregion
 
@@ -364,7 +360,7 @@ namespace WaywardGamers.KParser.Plugin
             if (battle.EndTime > battle.StartTime)
                 endTimeFilter = battle.EndTime.AddMinutes(-1);
             else
-                endTimeFilter = DateTime.Now.ToUniversalTime().AddMinutes(-1);
+                endTimeFilter = DateTime.Now.AddMinutes(-1);
 
             startTimeFilter = endTimeFilter.AddMinutes(-1);
 
@@ -385,7 +381,8 @@ namespace WaywardGamers.KParser.Plugin
 
             endTimeFilter = startTimeFilter.AddMinutes(1);
 
-            if ((battle.EndTime > battle.StartTime) && (endTimeFilter > battle.EndTime))
+            if ((battle.EndTime > battle.StartTime)
+                && (endTimeFilter > battle.EndTime))
                 endTimeFilter = battle.EndTime;
 
             CreateOuput(lsDamageInFirstMinute,
@@ -535,7 +532,7 @@ namespace WaywardGamers.KParser.Plugin
 
                         sb.AppendFormat(lsDataFormat,
                             attacker.Name,
-                            playerStart.ToShortTimeString(),
+                            playerStart.ToLocalTime().ToShortTimeString(),
                             meleeDPM,
                             rangeDPM,
                             magicDPM,
@@ -552,7 +549,7 @@ namespace WaywardGamers.KParser.Plugin
             {
                 totalsLine = string.Format(lsDataFormat,
                     lsTotal,
-                    firstStart.ToShortTimeString(),
+                    firstStart.ToLocalTime().ToShortTimeString(),
                     meleeDPMTotal,
                     rangeDPMTotal,
                     magicDPMTotal,
