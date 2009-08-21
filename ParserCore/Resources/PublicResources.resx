@@ -141,6 +141,12 @@
   <data name="Options" xml:space="preserve">
     <value>Options</value>
   </data>
+  <data name="PlayersLabel" xml:space="preserve">
+    <value>Players:</value>
+  </data>
+  <data name="ShowDetail" xml:space="preserve">
+    <value>Show Detail</value>
+  </data>
   <data name="Total" xml:space="preserve">
     <value>Total</value>
   </data>

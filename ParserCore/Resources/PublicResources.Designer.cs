@@ -133,6 +133,24 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Players:.
+        /// </summary>
+        public static string PlayersLabel {
+            get {
+                return ResourceManager.GetString("PlayersLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Detail.
+        /// </summary>
+        public static string ShowDetail {
+            get {
+                return ResourceManager.GetString("ShowDetail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Total.
         /// </summary>
         public static string Total {

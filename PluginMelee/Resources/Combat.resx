@@ -162,6 +162,42 @@
   <data name="DebuffPluginTabName" xml:space="preserve">
     <value>Debuffs</value>
   </data>
+  <data name="DefenseFreqPluginAbility" xml:space="preserve">
+    <value>  Ability</value>
+  </data>
+  <data name="DefenseFreqPluginMagicBursts" xml:space="preserve">
+    <value>  Magic Bursts</value>
+  </data>
+  <data name="DefenseFreqPluginMelee" xml:space="preserve">
+    <value>  Melee</value>
+  </data>
+  <data name="DefenseFreqPluginMeleeAE" xml:space="preserve">
+    <value>  Melee Additional Effects</value>
+  </data>
+  <data name="DefenseFreqPluginMeleeCrits" xml:space="preserve">
+    <value>  Melee Crits</value>
+  </data>
+  <data name="DefenseFreqPluginRange" xml:space="preserve">
+    <value>  Range</value>
+  </data>
+  <data name="DefenseFreqPluginRangeAE" xml:space="preserve">
+    <value>  Range Additional Effects</value>
+  </data>
+  <data name="DefenseFreqPluginRangeCrits" xml:space="preserve">
+    <value>  Range Crits</value>
+  </data>
+  <data name="DefenseFreqPluginSpells" xml:space="preserve">
+    <value>  Spells</value>
+  </data>
+  <data name="DefenseFreqPluginSpikes" xml:space="preserve">
+    <value>  Spikes</value>
+  </data>
+  <data name="DefenseFreqPluginTabName" xml:space="preserve">
+    <value>Defense Details</value>
+  </data>
+  <data name="DefenseFreqPluginWeaponskill" xml:space="preserve">
+    <value>  Weaponskills</value>
+  </data>
   <data name="DefensePluginCategoryDamageTaken" xml:space="preserve">
     <value>Damage Taken</value>
   </data>
