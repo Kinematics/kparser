@@ -327,6 +327,39 @@
   <data name="DefensePluginTitleWeaponskill" xml:space="preserve">
     <value>Weaponskill Damage Taken</value>
   </data>
+  <data name="DPMPluginBattleFormat" xml:space="preserve">
+    <value>{0,-20}{1,12}{2,12}{3,11}</value>
+  </data>
+  <data name="DPMPluginBattleHeader" xml:space="preserve">
+    <value>Mob                  Fight Start   Fight End   Duration</value>
+  </data>
+  <data name="DPMPluginCumulatePerMinute" xml:space="preserve">
+    <value>Cumulative Damage Per Minute</value>
+  </data>
+  <data name="DPMPluginDamageInFirstMinute" xml:space="preserve">
+    <value>Damage in the first minute</value>
+  </data>
+  <data name="DPMPluginDamageInLastMinute" xml:space="preserve">
+    <value>Damage in the last minute</value>
+  </data>
+  <data name="DPMPluginDamageInPrevMinute" xml:space="preserve">
+    <value>Damage in the previous minute</value>
+  </data>
+  <data name="DPMPluginDataFormat" xml:space="preserve">
+    <value>{0,-20}{1,11}{2,12:f2}{3,12:f2}{4,12:f2}{5,11:f2}{6,9:f2}{7,12:f2}{8,12:f2}</value>
+  </data>
+  <data name="DPMPluginDataHeader" xml:space="preserve">
+    <value>Player               Start Time   Melee DPM   Range DPM   Magic DPM   Abil DPM   WS DPM   Other DPM   Total DPM</value>
+  </data>
+  <data name="DPMPluginOnlySingleMobs" xml:space="preserve">
+    <value>Can only process single mobs at this time.</value>
+  </data>
+  <data name="DPMPluginSummaryTitle" xml:space="preserve">
+    <value>Fight Summary</value>
+  </data>
+  <data name="DPMPluginTabName" xml:space="preserve">
+    <value>Damage/Minute</value>
+  </data>
   <data name="FightsPluginFightFormat" xml:space="preserve">
     <value>{0,-10}{1,-24}{2,-10}{3,-20}{4,10}{5,11}{6,15}{7,6}{8,8}</value>
   </data>

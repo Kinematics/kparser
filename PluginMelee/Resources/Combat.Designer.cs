@@ -691,6 +691,105 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,12}{2,12}{3,11}.
+        /// </summary>
+        internal static string DPMPluginBattleFormat {
+            get {
+                return ResourceManager.GetString("DPMPluginBattleFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mob                  Fight Start   Fight End   Duration.
+        /// </summary>
+        internal static string DPMPluginBattleHeader {
+            get {
+                return ResourceManager.GetString("DPMPluginBattleHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cumulative Damage Per Minute.
+        /// </summary>
+        internal static string DPMPluginCumulatePerMinute {
+            get {
+                return ResourceManager.GetString("DPMPluginCumulatePerMinute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Damage in the first minute.
+        /// </summary>
+        internal static string DPMPluginDamageInFirstMinute {
+            get {
+                return ResourceManager.GetString("DPMPluginDamageInFirstMinute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Damage in the last minute.
+        /// </summary>
+        internal static string DPMPluginDamageInLastMinute {
+            get {
+                return ResourceManager.GetString("DPMPluginDamageInLastMinute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Damage in the previous minute.
+        /// </summary>
+        internal static string DPMPluginDamageInPrevMinute {
+            get {
+                return ResourceManager.GetString("DPMPluginDamageInPrevMinute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,11}{2,12:f2}{3,12:f2}{4,12:f2}{5,11:f2}{6,9:f2}{7,12:f2}{8,12:f2}.
+        /// </summary>
+        internal static string DPMPluginDataFormat {
+            get {
+                return ResourceManager.GetString("DPMPluginDataFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player               Start Time   Melee DPM   Range DPM   Magic DPM   Abil DPM   WS DPM   Other DPM   Total DPM.
+        /// </summary>
+        internal static string DPMPluginDataHeader {
+            get {
+                return ResourceManager.GetString("DPMPluginDataHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can only process single mobs at this time..
+        /// </summary>
+        internal static string DPMPluginOnlySingleMobs {
+            get {
+                return ResourceManager.GetString("DPMPluginOnlySingleMobs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fight Summary.
+        /// </summary>
+        internal static string DPMPluginSummaryTitle {
+            get {
+                return ResourceManager.GetString("DPMPluginSummaryTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Damage/Minute.
+        /// </summary>
+        internal static string DPMPluginTabName {
+            get {
+                return ResourceManager.GetString("DPMPluginTabName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0,-10}{1,-24}{2,-10}{3,-20}{4,10}{5,11}{6,15}{7,6}{8,8}.
         /// </summary>
         internal static string FightsPluginFightFormat {
