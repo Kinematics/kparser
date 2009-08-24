@@ -375,4 +375,112 @@
   <data name="OffenseFreqTabName" xml:space="preserve">
     <value>Offense Detail</value>
   </data>
+  <data name="OffensePluginCategoryAbility" xml:space="preserve">
+    <value>Abilities</value>
+  </data>
+  <data name="OffensePluginCategoryMelee" xml:space="preserve">
+    <value>Melee</value>
+  </data>
+  <data name="OffensePluginCategoryOther" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="OffensePluginCategoryRanged" xml:space="preserve">
+    <value>Ranged</value>
+  </data>
+  <data name="OffensePluginCategorySkillchain" xml:space="preserve">
+    <value>Skillchains</value>
+  </data>
+  <data name="OffensePluginCategorySpell" xml:space="preserve">
+    <value>Spells</value>
+  </data>
+  <data name="OffensePluginCategorySummary" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="OffensePluginCategoryWeaponskill" xml:space="preserve">
+    <value>Weaponskills</value>
+  </data>
+  <data name="OffensePluginFormatAbility" xml:space="preserve">
+    <value>{0,-23}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}</value>
+  </data>
+  <data name="OffensePluginFormatMelee" xml:space="preserve">
+    <value>{0,-17}{1,10}{2,10:p2}{3,11}{4,10:p2}{5,10}{6,9:f2}{7,7}{8,10}{9,8:f2}{10,10:p2}</value>
+  </data>
+  <data name="OffensePluginFormatOtherMagical" xml:space="preserve">
+    <value>{0,-17}{1,9}{2,8}{3,10:f2}{4,11}{5,8}{6,10:f2}{7,10}{8,9}{9,9:f2}</value>
+  </data>
+  <data name="OffensePluginFormatOtherPhysical" xml:space="preserve">
+    <value>{0,-17}{1,7}{2,13}{3,11}{4,8:f2}{5,10}{6,14}{7,12}{8,9:f2}</value>
+  </data>
+  <data name="OffensePluginFormatRanged" xml:space="preserve">
+    <value>{0,-17}{1,10}{2,10:p2}{3,11}{4,10:p2}{5,10}{6,9:f2}{7,7}{8,10}{9,8:f2}{10,10:p2}</value>
+  </data>
+  <data name="OffensePluginFormatSkillchain" xml:space="preserve">
+    <value>{0,-20}{1,6}{2,6}{3,11}{4,8:f2}</value>
+  </data>
+  <data name="OffensePluginFormatSpell" xml:space="preserve">
+    <value>{0,-23}{1,10}{2,10:p2}{3,9}{4,7}{5,10}{6,10:f2}{7,9}{8,11}{9,9:f2}</value>
+  </data>
+  <data name="OffensePluginFormatSummary" xml:space="preserve">
+    <value>{0,-20}{1,10}{2,11:p2}{3,12}{4,12}{5,12}{6,12}{7,12}{8,11}</value>
+  </data>
+  <data name="OffensePluginFormatWeaponskill" xml:space="preserve">
+    <value>{0,-23}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}</value>
+  </data>
+  <data name="OffensePluginHeaderAbility" xml:space="preserve">
+    <value>Player                  Abil. Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg</value>
+  </data>
+  <data name="OffensePluginHeaderMelee" xml:space="preserve">
+    <value>Player            Melee Dmg   Melee %   Hit/Miss   M.Acc %  M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%</value>
+  </data>
+  <data name="OffensePluginHeaderOtherMagical" xml:space="preserve">
+    <value>Player            M.AE Dmg  # M.AE  M.AE Avg   R.AE Dmg  # R.AE  R.AE Avg   Spk.Dmg  # Spike  Spk.Avg</value>
+  </data>
+  <data name="OffensePluginHeaderOtherPhysical" xml:space="preserve">
+    <value>Player            CA.Dmg  CA.Hit/Miss  CA.Low/Hi  CA.Avg   Ret.Dmg  Ret.Hit/Miss  Ret.Low/Hi  Ret.Avg</value>
+  </data>
+  <data name="OffensePluginHeaderRanged" xml:space="preserve">
+    <value>Player            Range Dmg   Range %   Hit/Miss   R.Acc %  R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%</value>
+  </data>
+  <data name="OffensePluginHeaderSkillchain" xml:space="preserve">
+    <value>Skillchain          SC Dmg  # SC  SC.Low/Hi  SC.Avg</value>
+  </data>
+  <data name="OffensePluginHeaderSpell" xml:space="preserve">
+    <value>Player                  Spell Dmg   Spell %  #Spells  #Fail  S.Low/Hi     S.Avg  #MBurst  MB.Low/Hi   MB.Avg</value>
+  </data>
+  <data name="OffensePluginHeaderSummary" xml:space="preserve">
+    <value>Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg</value>
+  </data>
+  <data name="OffensePluginHeaderWeaponskill" xml:space="preserve">
+    <value>Player                 WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg</value>
+  </data>
+  <data name="OffensePluginTabName" xml:space="preserve">
+    <value>Offense</value>
+  </data>
+  <data name="OffensePluginTitleAbility" xml:space="preserve">
+    <value>Ability Damage</value>
+  </data>
+  <data name="OffensePluginTitleMelee" xml:space="preserve">
+    <value>Melee Damage</value>
+  </data>
+  <data name="OffensePluginTitleOtherMagical" xml:space="preserve">
+    <value>Other Magical Damage  (Additional Effects and Spikes)</value>
+  </data>
+  <data name="OffensePluginTitleOtherPhysical" xml:space="preserve">
+    <value>Other Physical Damage  (Counterattacks and Retaliations)</value>
+  </data>
+  <data name="OffensePluginTitleRanged" xml:space="preserve">
+    <value>Ranged Damage</value>
+  </data>
+  <data name="OffensePluginTitleSkillchain" xml:space="preserve">
+    <value>Skillchain Damage</value>
+  </data>
+  <data name="OffensePluginTitleSpell" xml:space="preserve">
+    <value>Spell Damage</value>
+  </data>
+  <data name="OffensePluginTitleSummary" xml:space="preserve">
+    <value>Damage Summary</value>
+  </data>
+  <data name="OffensePluginTitleWeaponskill" xml:space="preserve">
+    <value>Weaponskill Damage</value>
+  </data>
 </root>
