@@ -198,6 +198,12 @@
   <data name="TrickAttack" xml:space="preserve">
     <value>Trick Attack</value>
   </data>
+  <data name="UtsuIchi" xml:space="preserve">
+    <value>Utsusemi: Ichi</value>
+  </data>
+  <data name="UtsuNi" xml:space="preserve">
+    <value>Utsusemi: Ni</value>
+  </data>
   <data name="WildCarrot" xml:space="preserve">
     <value>Wild Carrot</value>
   </data>

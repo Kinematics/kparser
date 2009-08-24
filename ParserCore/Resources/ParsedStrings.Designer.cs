@@ -304,6 +304,24 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Utsusemi: Ichi.
+        /// </summary>
+        public static string UtsuIchi {
+            get {
+                return ResourceManager.GetString("UtsuIchi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Utsusemi: Ni.
+        /// </summary>
+        public static string UtsuNi {
+            get {
+                return ResourceManager.GetString("UtsuNi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Wild Carrot.
         /// </summary>
         public static string WildCarrot {
