@@ -483,4 +483,73 @@
   <data name="OffensePluginTitleWeaponskill" xml:space="preserve">
     <value>Weaponskill Damage</value>
   </data>
+  <data name="ThiefPluginAndHide" xml:space="preserve">
+    <value>+Hide</value>
+  </data>
+  <data name="ThiefPluginEventTypeFailed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="ThiefPluginEventTypeWeaponskill" xml:space="preserve">
+    <value>Weaponskill</value>
+  </data>
+  <data name="ThiefPluginFormatDataLineLong" xml:space="preserve">
+    <value>    {0,-15}{1,15}{2,10}{3,10}</value>
+  </data>
+  <data name="ThiefPluginFormatDataLineShort" xml:space="preserve">
+    <value>    {0,-15}</value>
+  </data>
+  <data name="ThiefPluginFormatSummary1" xml:space="preserve">
+    <value>    {0,-20}{1,10}{2,20}</value>
+  </data>
+  <data name="ThiefPluginFormatSummary2" xml:space="preserve">
+    <value>    {0,-20}{1,30}</value>
+  </data>
+  <data name="ThiefPluginFormatSummary3" xml:space="preserve">
+    <value>    {0,30}{1,20}</value>
+  </data>
+  <data name="ThiefPluginFormatSummaryP" xml:space="preserve">
+    <value>    {0,-20}{1,10}{2,20:f2}</value>
+  </data>
+  <data name="ThiefPluginLabelAverage" xml:space="preserve">
+    <value>Average</value>
+  </data>
+  <data name="ThiefPluginLabelCount" xml:space="preserve">
+    <value>Count</value>
+  </data>
+  <data name="ThiefPluginLabelMelee" xml:space="preserve">
+    <value>Melee:</value>
+  </data>
+  <data name="ThiefPluginLabelSuccessCount" xml:space="preserve">
+    <value>Success Count:</value>
+  </data>
+  <data name="ThiefPluginLabelSuccessfulMelee" xml:space="preserve">
+    <value>Successful Melee:</value>
+  </data>
+  <data name="ThiefPluginLabelSuccessfulTotal" xml:space="preserve">
+    <value>Successful Total:</value>
+  </data>
+  <data name="ThiefPluginLabelTotal" xml:space="preserve">
+    <value>Total:</value>
+  </data>
+  <data name="ThiefPluginLabelWeaponskills" xml:space="preserve">
+    <value>Weaponskills:</value>
+  </data>
+  <data name="ThiefPluginMiss" xml:space="preserve">
+    <value>Miss</value>
+  </data>
+  <data name="ThiefPluginSneakAndTrick" xml:space="preserve">
+    <value>Sneak Attack &amp; Trick Attack</value>
+  </data>
+  <data name="ThiefPluginSneakAttack" xml:space="preserve">
+    <value>Sneak Attack</value>
+  </data>
+  <data name="ThiefPluginSoloWS" xml:space="preserve">
+    <value>Solo Weaponskills</value>
+  </data>
+  <data name="ThiefPluginTabName" xml:space="preserve">
+    <value>Thief</value>
+  </data>
+  <data name="ThiefPluginTrickAttack" xml:space="preserve">
+    <value>Trick Attack</value>
+  </data>
 </root>

@@ -177,6 +177,10 @@ namespace WaywardGamers.KParser
                 Properties.Settings.Default.Properties["KPDatabaseConnectionString"].DefaultValue = databaseConnectionString;
 
                 CreateConnections();
+
+                // Hard coded at the moment; will adjust later to adjust it based
+                // on info in the database when the database is loaded/initialized.
+                Resources.ParsedStrings.Culture = new System.Globalization.CultureInfo("en-US");
             }
             catch (Exception)
             {
