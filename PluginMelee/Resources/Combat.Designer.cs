@@ -817,11 +817,20 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to -Uknown-.
         /// </summary>
         internal static string FightsPluginUnknownEnemy {
             get {
                 return ResourceManager.GetString("FightsPluginUnknownEnemy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Offense Detail.
+        /// </summary>
+        internal static string OffenseFreqTabName {
+            get {
+                return ResourceManager.GetString("OffenseFreqTabName", resourceCulture);
             }
         }
     }
