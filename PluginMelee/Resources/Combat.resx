@@ -483,6 +483,45 @@
   <data name="OffensePluginTitleWeaponskill" xml:space="preserve">
     <value>Weaponskill Damage</value>
   </data>
+  <data name="RecoveryPluginCategoryAvgCuring" xml:space="preserve">
+    <value>Average Curing</value>
+  </data>
+  <data name="RecoveryPluginCategoryCuring" xml:space="preserve">
+    <value>Curing</value>
+  </data>
+  <data name="RecoveryPluginCategoryRecovery" xml:space="preserve">
+    <value>Recovery</value>
+  </data>
+  <data name="RecoveryPluginFormatAvgCuring" xml:space="preserve">
+    <value>{0,-17}{1,10:f2}{2,13:f2}{3,13:f2}{4,13:f2}{5,13:f2}{6,13:f2}{7,14:f2}</value>
+  </data>
+  <data name="RecoveryPluginFormatCuring" xml:space="preserve">
+    <value>{0,-17}{1,9}{2,12}{3,7}{4,6}{5,6}{6,6}{7,6}{8,9}{9,7}{10,7}{11,7}</value>
+  </data>
+  <data name="RecoveryPluginFormatRecovery" xml:space="preserve">
+    <value>{0,-17}{1,9}{2,13}{3,11}{4,9}{5,11}{6,11}</value>
+  </data>
+  <data name="RecoveryPluginHeaderAvgCuring" xml:space="preserve">
+    <value>Player           Avg Cure 1   Avg Cure 2   Avg Cure 3   Avg Cure 4   Avg Cure 5   Avg Curaga   Avg Ability</value>
+  </data>
+  <data name="RecoveryPluginHeaderCuring" xml:space="preserve">
+    <value>Player           Cured (Sp)  Cured (Ab)  C.1s  C.2s  C.3s  C.4s  C.5s  Curagas  Rg.1s  Rg.2s  Rg.3s</value>
+  </data>
+  <data name="RecoveryPluginHeaderRecovery" xml:space="preserve">
+    <value>Player           Dmg Taken   HP Drained   HP Cured   #Regen   #Regen 2   #Regen 3</value>
+  </data>
+  <data name="RecoveryPluginTabName" xml:space="preserve">
+    <value>Recovery</value>
+  </data>
+  <data name="RecoveryPluginTitleAvgCuring" xml:space="preserve">
+    <value>Average Curing (Whm spells or equivalent)</value>
+  </data>
+  <data name="RecoveryPluginTitleCuring" xml:space="preserve">
+    <value>Curing (Whm spells or equivalent)</value>
+  </data>
+  <data name="RecoveryPluginTitleRecovery" xml:space="preserve">
+    <value>Damage Recovery</value>
+  </data>
   <data name="ThiefPluginAndHide" xml:space="preserve">
     <value>+Hide</value>
   </data>

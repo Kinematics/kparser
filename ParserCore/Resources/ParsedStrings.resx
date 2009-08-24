@@ -117,14 +117,77 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Chakra" xml:space="preserve">
+    <value>Chakra</value>
+  </data>
   <data name="CrystalsAndSealsRegex" xml:space="preserve">
     <value>Gil|beastmen's seal|Kindred's seal|fire crystal|earth crystal|water crystal|wind crystal|ice crystal|thunder crystal|light crystal|dark crystal</value>
+  </data>
+  <data name="CuragaRegex" xml:space="preserve">
+    <value>Curaga( [IV]+)?</value>
+  </data>
+  <data name="Cure1" xml:space="preserve">
+    <value>Cure</value>
+  </data>
+  <data name="Cure2" xml:space="preserve">
+    <value>Cure II</value>
+  </data>
+  <data name="Cure3" xml:space="preserve">
+    <value>Cure III</value>
+  </data>
+  <data name="Cure4" xml:space="preserve">
+    <value>Cure IV</value>
+  </data>
+  <data name="Cure5" xml:space="preserve">
+    <value>Cure V</value>
+  </data>
+  <data name="CuringWaltz1" xml:space="preserve">
+    <value>Curing Waltz</value>
+  </data>
+  <data name="CuringWaltz2" xml:space="preserve">
+    <value>Curing Waltz II</value>
+  </data>
+  <data name="CuringWaltz3" xml:space="preserve">
+    <value>Curing Waltz III</value>
+  </data>
+  <data name="CuringWaltz4" xml:space="preserve">
+    <value>Curing Waltz IV</value>
+  </data>
+  <data name="DivineWaltz" xml:space="preserve">
+    <value>Divine Waltz</value>
   </data>
   <data name="Gil" xml:space="preserve">
     <value>Gil</value>
   </data>
+  <data name="HealingBreath1" xml:space="preserve">
+    <value>Healing Breath</value>
+  </data>
+  <data name="HealingBreath2" xml:space="preserve">
+    <value>Healing Breath II</value>
+  </data>
+  <data name="HealingBreath3" xml:space="preserve">
+    <value>Healing Breath III</value>
+  </data>
+  <data name="HealingBreeze" xml:space="preserve">
+    <value>Healing Breeze</value>
+  </data>
   <data name="Hide" xml:space="preserve">
     <value>Hide</value>
+  </data>
+  <data name="MagicFruit" xml:space="preserve">
+    <value>Magic Fruit</value>
+  </data>
+  <data name="Pollen" xml:space="preserve">
+    <value>Pollen</value>
+  </data>
+  <data name="Regen1" xml:space="preserve">
+    <value>Regen</value>
+  </data>
+  <data name="Regen2" xml:space="preserve">
+    <value>Regen II</value>
+  </data>
+  <data name="Regen3" xml:space="preserve">
+    <value>Regen III</value>
   </data>
   <data name="SalvageCellRegex" xml:space="preserve">
     <value>([a-z]+) cell</value>
@@ -134,5 +197,8 @@
   </data>
   <data name="TrickAttack" xml:space="preserve">
     <value>Trick Attack</value>
+  </data>
+  <data name="WildCarrot" xml:space="preserve">
+    <value>Wild Carrot</value>
   </data>
 </root>
