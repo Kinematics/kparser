@@ -1159,6 +1159,123 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Average Curing.
+        /// </summary>
+        internal static string RecoveryPluginCategoryAvgCuring {
+            get {
+                return ResourceManager.GetString("RecoveryPluginCategoryAvgCuring", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Curing.
+        /// </summary>
+        internal static string RecoveryPluginCategoryCuring {
+            get {
+                return ResourceManager.GetString("RecoveryPluginCategoryCuring", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recovery.
+        /// </summary>
+        internal static string RecoveryPluginCategoryRecovery {
+            get {
+                return ResourceManager.GetString("RecoveryPluginCategoryRecovery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-17}{1,10:f2}{2,13:f2}{3,13:f2}{4,13:f2}{5,13:f2}{6,13:f2}{7,14:f2}.
+        /// </summary>
+        internal static string RecoveryPluginFormatAvgCuring {
+            get {
+                return ResourceManager.GetString("RecoveryPluginFormatAvgCuring", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-17}{1,9}{2,12}{3,7}{4,6}{5,6}{6,6}{7,6}{8,9}{9,7}{10,7}{11,7}.
+        /// </summary>
+        internal static string RecoveryPluginFormatCuring {
+            get {
+                return ResourceManager.GetString("RecoveryPluginFormatCuring", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-17}{1,9}{2,13}{3,11}{4,9}{5,11}{6,11}.
+        /// </summary>
+        internal static string RecoveryPluginFormatRecovery {
+            get {
+                return ResourceManager.GetString("RecoveryPluginFormatRecovery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player           Avg Cure 1   Avg Cure 2   Avg Cure 3   Avg Cure 4   Avg Cure 5   Avg Curaga   Avg Ability.
+        /// </summary>
+        internal static string RecoveryPluginHeaderAvgCuring {
+            get {
+                return ResourceManager.GetString("RecoveryPluginHeaderAvgCuring", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player           Cured (Sp)  Cured (Ab)  C.1s  C.2s  C.3s  C.4s  C.5s  Curagas  Rg.1s  Rg.2s  Rg.3s.
+        /// </summary>
+        internal static string RecoveryPluginHeaderCuring {
+            get {
+                return ResourceManager.GetString("RecoveryPluginHeaderCuring", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player           Dmg Taken   HP Drained   HP Cured   #Regen   #Regen 2   #Regen 3.
+        /// </summary>
+        internal static string RecoveryPluginHeaderRecovery {
+            get {
+                return ResourceManager.GetString("RecoveryPluginHeaderRecovery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recovery.
+        /// </summary>
+        internal static string RecoveryPluginTabName {
+            get {
+                return ResourceManager.GetString("RecoveryPluginTabName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Average Curing (Whm spells or equivalent).
+        /// </summary>
+        internal static string RecoveryPluginTitleAvgCuring {
+            get {
+                return ResourceManager.GetString("RecoveryPluginTitleAvgCuring", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Curing (Whm spells or equivalent).
+        /// </summary>
+        internal static string RecoveryPluginTitleCuring {
+            get {
+                return ResourceManager.GetString("RecoveryPluginTitleCuring", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Damage Recovery.
+        /// </summary>
+        internal static string RecoveryPluginTitleRecovery {
+            get {
+                return ResourceManager.GetString("RecoveryPluginTitleRecovery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to +Hide.
         /// </summary>
         internal static string ThiefPluginAndHide {
