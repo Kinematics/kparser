@@ -372,6 +372,78 @@
   <data name="FightsPluginUnknownEnemy" xml:space="preserve">
     <value>-Uknown-</value>
   </data>
+  <data name="ExtraAttPluginBaseAttNumLabel" xml:space="preserve">
+    <value>Base # of Attacks:</value>
+  </data>
+  <data name="ExtraAttPluginCategory1" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="ExtraAttPluginCategory2" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="ExtraAttPluginCategoryAuto" xml:space="preserve">
+    <value>Auto</value>
+  </data>
+  <data name="ExtraAttPluginFormatMain1" xml:space="preserve">
+    <value>{0,-20}{1,16}{2,18}{3,17}{4,19}</value>
+  </data>
+  <data name="ExtraAttPluginFormatMain2" xml:space="preserve">
+    <value>{0,-20}{2,12}{3,14}{4,14}{5,14}{6,16}</value>
+  </data>
+  <data name="ExtraAttPluginFormatMain3" xml:space="preserve">
+    <value>{0,-20}{1,21}{2,17:p2}{3,24}{4,24}</value>
+  </data>
+  <data name="ExtraAttPluginHeaderMain1" xml:space="preserve">
+    <value>Player               # Melee Attacks    # Melee Rounds    Attacks/Round    # Extra Attacks</value>
+  </data>
+  <data name="ExtraAttPluginHeaderMain2" xml:space="preserve">
+    <value>Player               # +1 Rounds   # +2 Rounds   # +3 Rounds   # +4 Rounds    # &gt;+4 Rounds</value>
+  </data>
+  <data name="ExtraAttPluginHeaderMain3" xml:space="preserve">
+    <value>Player               # MultiAttack Rounds    MultiAttack %     Kills w/Min Attacks    Kills w/&lt;Min Attacks</value>
+  </data>
+  <data name="ExtraAttPluginMainSectionTitle" xml:space="preserve">
+    <value>Basic Data</value>
+  </data>
+  <data name="ExtraAttPluginRestrictedWarning" xml:space="preserve">
+    <value>Restricted while a parse is running.</value>
+  </data>
+  <data name="ExtraAttPluginSectionKicksFormat" xml:space="preserve">
+    <value>{0,-20}{1,10}{2,20}{3,20:p2}</value>
+  </data>
+  <data name="ExtraAttPluginSectionKicksHeader" xml:space="preserve">
+    <value>Player               Footwork?    # Rounds w/Kicks    Kick Attack Rate</value>
+  </data>
+  <data name="ExtraAttPluginSectionKicksTitle" xml:space="preserve">
+    <value>Multi-attacks per round (Kicks):</value>
+  </data>
+  <data name="ExtraAttPluginSectionMultiAttacksFormat" xml:space="preserve">
+    <value>{0,-20}{1,17}{2,11:p2}{3,12:p2}{4,21}{5,11:p2}{6,12:p2}</value>
+  </data>
+  <data name="ExtraAttPluginSectionMultiAttacksHeader" xml:space="preserve">
+    <value>Player               # Double Attacks    DA Rate    Perc. DA     # Triple Attacks    TA Rate    Perc. TA</value>
+  </data>
+  <data name="ExtraAttPluginSectionMultiAttacksTitle" xml:space="preserve">
+    <value>Multi-attacks per attack (2x/3x):</value>
+  </data>
+  <data name="ExtraAttPluginSectionTreatAs" xml:space="preserve">
+    <value>Treat As:</value>
+  </data>
+  <data name="ExtraAttPluginSectionZanshinFormat" xml:space="preserve">
+    <value>{0,-20}{1,23}{2,23}{3,21:p2}</value>
+  </data>
+  <data name="ExtraAttPluginSectionZanshinHeader" xml:space="preserve">
+    <value>Player               # Missed First Attacks    # DA w/Missed First   Possible Zanshin %</value>
+  </data>
+  <data name="ExtraAttPluginSectionZanshinTitle" xml:space="preserve">
+    <value>Multi-attacks per attack (Zanshin):</value>
+  </data>
+  <data name="ExtraAttPluginTabName" xml:space="preserve">
+    <value>Extra Attacks</value>
+  </data>
+  <data name="ExtraAttPluginUncorrectedDetails" xml:space="preserve">
+    <value>Uncorrected Details</value>
+  </data>
   <data name="OffenseFreqTabName" xml:space="preserve">
     <value>Offense Detail</value>
   </data>
