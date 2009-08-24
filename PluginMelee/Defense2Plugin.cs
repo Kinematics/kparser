@@ -13,13 +13,6 @@ namespace WaywardGamers.KParser.Plugin
 {
     public class DefensePlugin : BasePluginControl
     {
-        private class SpellNames
-        {
-            internal static readonly string UtsuIchi = "Utsusemi: Ichi";
-            internal static readonly string UtsuNi = "Utsusemi: Ni";
-        }
-
-
         #region Member Variables
         List<MainAccumulator> dataAccum = new List<MainAccumulator>();
         IEnumerable<DefenseGroup> defenseSet = null;
@@ -107,6 +100,9 @@ namespace WaywardGamers.KParser.Plugin
         string lsDamageTaken;
         string lsDefenses;
         string lsUtsusemi;
+
+        string lsUtsuIchi;
+        string lsUtsuNi;
 
         #endregion
 
@@ -344,28 +340,28 @@ namespace WaywardGamers.KParser.Plugin
                                              where ((ActionType)s.ActionType == ActionType.Spell &&
                                                     s.Preparing == true &&
                                                     s.IsActionIDNull() == false &&
-                                                    s.ActionsRow.ActionName == SpellNames.UtsuIchi &&
+                                                    s.ActionsRow.ActionName == lsUtsuIchi &&
                                                     mobFilter.CheckFilterMobBattle(s) == true)
                                              select s,
                               UtsuIchiFinish = from s in c.GetInteractionsRowsByActorCombatantRelation()
                                              where ((ActionType)s.ActionType == ActionType.Spell &&
                                                     s.Preparing == false &&
                                                     s.IsActionIDNull() == false &&
-                                                    s.ActionsRow.ActionName == SpellNames.UtsuIchi &&
+                                                    s.ActionsRow.ActionName == lsUtsuIchi &&
                                                     mobFilter.CheckFilterMobBattle(s) == true)
                                              select s,
                               UtsuNiCast = from s in c.GetInteractionsRowsByActorCombatantRelation()
                                              where ((ActionType)s.ActionType == ActionType.Spell &&
                                                     s.Preparing == true &&
                                                     s.IsActionIDNull() == false &&
-                                                    s.ActionsRow.ActionName == SpellNames.UtsuNi &&
+                                                    s.ActionsRow.ActionName == lsUtsuNi &&
                                                     mobFilter.CheckFilterMobBattle(s) == true)
                                              select s,
                               UtsuNiFinish = from s in c.GetInteractionsRowsByActorCombatantRelation()
                                              where ((ActionType)s.ActionType == ActionType.Spell &&
                                                     s.Preparing == false &&
                                                     s.IsActionIDNull() == false &&
-                                                    s.ActionsRow.ActionName == SpellNames.UtsuNi &&
+                                                    s.ActionsRow.ActionName == lsUtsuNi &&
                                                     mobFilter.CheckFilterMobBattle(s) == true)
                                              select s,
 
@@ -926,25 +922,25 @@ namespace WaywardGamers.KParser.Plugin
                                              where ((ActionType)s.ActionType == ActionType.Spell &&
                                                     s.Preparing == true &&
                                                     s.IsActionIDNull() == false &&
-                                                    s.ActionsRow.ActionName == SpellNames.UtsuIchi)
+                                                    s.ActionsRow.ActionName == lsUtsuIchi)
                                              select s,
                               UtsuIchiFinish = from s in ca
                                                where ((ActionType)s.ActionType == ActionType.Spell &&
                                                       s.Preparing == false &&
                                                       s.IsActionIDNull() == false &&
-                                                      s.ActionsRow.ActionName == SpellNames.UtsuIchi)
+                                                      s.ActionsRow.ActionName == lsUtsuIchi)
                                                select s,
                               UtsuNiCast = from s in ca
                                            where ((ActionType)s.ActionType == ActionType.Spell &&
                                                   s.Preparing == true &&
                                                   s.IsActionIDNull() == false &&
-                                                  s.ActionsRow.ActionName == SpellNames.UtsuNi)
+                                                  s.ActionsRow.ActionName == lsUtsuNi)
                                            select s,
                               UtsuNiFinish = from s in ca
                                              where ((ActionType)s.ActionType == ActionType.Spell &&
                                                     s.Preparing == false &&
                                                     s.IsActionIDNull() == false &&
-                                                    s.ActionsRow.ActionName == SpellNames.UtsuNi)
+                                                    s.ActionsRow.ActionName == lsUtsuNi)
                                              select s,
                           };
             }
@@ -1060,28 +1056,28 @@ namespace WaywardGamers.KParser.Plugin
                                              where ((ActionType)s.ActionType == ActionType.Spell &&
                                                     s.Preparing == true &&
                                                     s.IsActionIDNull() == false &&
-                                                    s.ActionsRow.ActionName == SpellNames.UtsuIchi)
+                                                    s.ActionsRow.ActionName == lsUtsuIchi)
                                              select s,
                               UtsuIchiFinish = from s in c.GetInteractionsRowsByActorCombatantRelation()
                                                           .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                                where ((ActionType)s.ActionType == ActionType.Spell &&
                                                       s.Preparing == false &&
                                                       s.IsActionIDNull() == false &&
-                                                      s.ActionsRow.ActionName == SpellNames.UtsuIchi)
+                                                      s.ActionsRow.ActionName == lsUtsuIchi)
                                                select s,
                               UtsuNiCast = from s in c.GetInteractionsRowsByActorCombatantRelation()
                                                       .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                            where ((ActionType)s.ActionType == ActionType.Spell &&
                                                   s.Preparing == true &&
                                                   s.IsActionIDNull() == false &&
-                                                  s.ActionsRow.ActionName == SpellNames.UtsuNi)
+                                                  s.ActionsRow.ActionName == lsUtsuNi)
                                            select s,
                               UtsuNiFinish = from s in c.GetInteractionsRowsByActorCombatantRelation()
                                                         .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                              where ((ActionType)s.ActionType == ActionType.Spell &&
                                                     s.Preparing == false &&
                                                     s.IsActionIDNull() == false &&
-                                                    s.ActionsRow.ActionName == SpellNames.UtsuNi)
+                                                    s.ActionsRow.ActionName == lsUtsuNi)
                                              select s,
 
                           };
@@ -2501,6 +2497,10 @@ namespace WaywardGamers.KParser.Plugin
             lsDamageTaken = Resources.Combat.DefensePluginCategoryDamageTaken;
             lsDefenses = Resources.Combat.DefensePluginCategoryDefenses;
             lsUtsusemi = Resources.Combat.DefensePluginCategoryUtsusemi;
+
+            // Spell names
+            lsUtsuIchi = Resources.ParsedStrings.UtsuIchi;
+            lsUtsuNi = Resources.ParsedStrings.UtsuNi;
         }
         #endregion
 
