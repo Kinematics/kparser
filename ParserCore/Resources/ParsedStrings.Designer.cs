@@ -79,11 +79,38 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hide.
+        /// </summary>
+        public static string Hide {
+            get {
+                return ResourceManager.GetString("Hide", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ([a-z]+) cell.
         /// </summary>
         public static string SalvageCellRegex {
             get {
                 return ResourceManager.GetString("SalvageCellRegex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sneak Attack.
+        /// </summary>
+        public static string SneakAttack {
+            get {
+                return ResourceManager.GetString("SneakAttack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trick Attack.
+        /// </summary>
+        public static string TrickAttack {
+            get {
+                return ResourceManager.GetString("TrickAttack", resourceCulture);
             }
         }
     }

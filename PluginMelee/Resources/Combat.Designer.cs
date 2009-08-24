@@ -1157,5 +1157,212 @@ namespace WaywardGamers.KParser.Resources {
                 return ResourceManager.GetString("OffensePluginTitleWeaponskill", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to +Hide.
+        /// </summary>
+        internal static string ThiefPluginAndHide {
+            get {
+                return ResourceManager.GetString("ThiefPluginAndHide", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed.
+        /// </summary>
+        internal static string ThiefPluginEventTypeFailed {
+            get {
+                return ResourceManager.GetString("ThiefPluginEventTypeFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Weaponskill.
+        /// </summary>
+        internal static string ThiefPluginEventTypeWeaponskill {
+            get {
+                return ResourceManager.GetString("ThiefPluginEventTypeWeaponskill", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to     {0,-15}{1,15}{2,10}{3,10}.
+        /// </summary>
+        internal static string ThiefPluginFormatDataLineLong {
+            get {
+                return ResourceManager.GetString("ThiefPluginFormatDataLineLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to     {0,-15}.
+        /// </summary>
+        internal static string ThiefPluginFormatDataLineShort {
+            get {
+                return ResourceManager.GetString("ThiefPluginFormatDataLineShort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to     {0,-20}{1,10}{2,20}.
+        /// </summary>
+        internal static string ThiefPluginFormatSummary1 {
+            get {
+                return ResourceManager.GetString("ThiefPluginFormatSummary1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to     {0,-20}{1,30}.
+        /// </summary>
+        internal static string ThiefPluginFormatSummary2 {
+            get {
+                return ResourceManager.GetString("ThiefPluginFormatSummary2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to     {0,30}{1,20}.
+        /// </summary>
+        internal static string ThiefPluginFormatSummary3 {
+            get {
+                return ResourceManager.GetString("ThiefPluginFormatSummary3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to     {0,-20}{1,10}{2,20:f2}.
+        /// </summary>
+        internal static string ThiefPluginFormatSummaryP {
+            get {
+                return ResourceManager.GetString("ThiefPluginFormatSummaryP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Average.
+        /// </summary>
+        internal static string ThiefPluginLabelAverage {
+            get {
+                return ResourceManager.GetString("ThiefPluginLabelAverage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Count.
+        /// </summary>
+        internal static string ThiefPluginLabelCount {
+            get {
+                return ResourceManager.GetString("ThiefPluginLabelCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Melee:.
+        /// </summary>
+        internal static string ThiefPluginLabelMelee {
+            get {
+                return ResourceManager.GetString("ThiefPluginLabelMelee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Success Count:.
+        /// </summary>
+        internal static string ThiefPluginLabelSuccessCount {
+            get {
+                return ResourceManager.GetString("ThiefPluginLabelSuccessCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successful Melee:.
+        /// </summary>
+        internal static string ThiefPluginLabelSuccessfulMelee {
+            get {
+                return ResourceManager.GetString("ThiefPluginLabelSuccessfulMelee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successful Total:.
+        /// </summary>
+        internal static string ThiefPluginLabelSuccessfulTotal {
+            get {
+                return ResourceManager.GetString("ThiefPluginLabelSuccessfulTotal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total:.
+        /// </summary>
+        internal static string ThiefPluginLabelTotal {
+            get {
+                return ResourceManager.GetString("ThiefPluginLabelTotal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Weaponskills:.
+        /// </summary>
+        internal static string ThiefPluginLabelWeaponskills {
+            get {
+                return ResourceManager.GetString("ThiefPluginLabelWeaponskills", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Miss.
+        /// </summary>
+        internal static string ThiefPluginMiss {
+            get {
+                return ResourceManager.GetString("ThiefPluginMiss", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sneak Attack &amp; Trick Attack.
+        /// </summary>
+        internal static string ThiefPluginSneakAndTrick {
+            get {
+                return ResourceManager.GetString("ThiefPluginSneakAndTrick", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sneak Attack.
+        /// </summary>
+        internal static string ThiefPluginSneakAttack {
+            get {
+                return ResourceManager.GetString("ThiefPluginSneakAttack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Solo Weaponskills.
+        /// </summary>
+        internal static string ThiefPluginSoloWS {
+            get {
+                return ResourceManager.GetString("ThiefPluginSoloWS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Thief.
+        /// </summary>
+        internal static string ThiefPluginTabName {
+            get {
+                return ResourceManager.GetString("ThiefPluginTabName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trick Attack.
+        /// </summary>
+        internal static string ThiefPluginTrickAttack {
+            get {
+                return ResourceManager.GetString("ThiefPluginTrickAttack", resourceCulture);
+            }
+        }
     }
 }

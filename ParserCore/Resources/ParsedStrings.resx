@@ -123,7 +123,16 @@
   <data name="Gil" xml:space="preserve">
     <value>Gil</value>
   </data>
+  <data name="Hide" xml:space="preserve">
+    <value>Hide</value>
+  </data>
   <data name="SalvageCellRegex" xml:space="preserve">
     <value>([a-z]+) cell</value>
+  </data>
+  <data name="SneakAttack" xml:space="preserve">
+    <value>Sneak Attack</value>
+  </data>
+  <data name="TrickAttack" xml:space="preserve">
+    <value>Trick Attack</value>
   </data>
 </root>
