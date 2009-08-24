@@ -370,6 +370,9 @@
     <value>Fights</value>
   </data>
   <data name="FightsPluginUnknownEnemy" xml:space="preserve">
-    <value />
+    <value>-Uknown-</value>
+  </data>
+  <data name="OffenseFreqTabName" xml:space="preserve">
+    <value>Offense Detail</value>
   </data>
 </root>
