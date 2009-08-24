@@ -141,6 +141,9 @@
   <data name="MobsLabel" xml:space="preserve">
     <value>Mobs:</value>
   </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
   <data name="None" xml:space="preserve">
     <value>None</value>
   </data>
@@ -155,5 +158,8 @@
   </data>
   <data name="Total" xml:space="preserve">
     <value>Total</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
   </data>
 </root>

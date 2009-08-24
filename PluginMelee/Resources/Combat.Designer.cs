@@ -790,6 +790,222 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Base # of Attacks:.
+        /// </summary>
+        internal static string ExtraAttPluginBaseAttNumLabel {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginBaseAttNumLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1.
+        /// </summary>
+        internal static string ExtraAttPluginCategory1 {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginCategory1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 2.
+        /// </summary>
+        internal static string ExtraAttPluginCategory2 {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginCategory2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Auto.
+        /// </summary>
+        internal static string ExtraAttPluginCategoryAuto {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginCategoryAuto", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,16}{2,18}{3,17}{4,19}.
+        /// </summary>
+        internal static string ExtraAttPluginFormatMain1 {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginFormatMain1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{2,12}{3,14}{4,14}{5,14}{6,16}.
+        /// </summary>
+        internal static string ExtraAttPluginFormatMain2 {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginFormatMain2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,21}{2,17:p2}{3,24}{4,24}.
+        /// </summary>
+        internal static string ExtraAttPluginFormatMain3 {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginFormatMain3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player               # Melee Attacks    # Melee Rounds    Attacks/Round    # Extra Attacks.
+        /// </summary>
+        internal static string ExtraAttPluginHeaderMain1 {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginHeaderMain1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player               # +1 Rounds   # +2 Rounds   # +3 Rounds   # +4 Rounds    # &gt;+4 Rounds.
+        /// </summary>
+        internal static string ExtraAttPluginHeaderMain2 {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginHeaderMain2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player               # MultiAttack Rounds    MultiAttack %     Kills w/Min Attacks    Kills w/&lt;Min Attacks.
+        /// </summary>
+        internal static string ExtraAttPluginHeaderMain3 {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginHeaderMain3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Basic Data.
+        /// </summary>
+        internal static string ExtraAttPluginMainSectionTitle {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginMainSectionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restricted while a parse is running..
+        /// </summary>
+        internal static string ExtraAttPluginRestrictedWarning {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginRestrictedWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,10}{2,20}{3,20:p2}.
+        /// </summary>
+        internal static string ExtraAttPluginSectionKicksFormat {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginSectionKicksFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player               Footwork?    # Rounds w/Kicks    Kick Attack Rate.
+        /// </summary>
+        internal static string ExtraAttPluginSectionKicksHeader {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginSectionKicksHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Multi-attacks per round (Kicks):.
+        /// </summary>
+        internal static string ExtraAttPluginSectionKicksTitle {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginSectionKicksTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,17}{2,11:p2}{3,12:p2}{4,21}{5,11:p2}{6,12:p2}.
+        /// </summary>
+        internal static string ExtraAttPluginSectionMultiAttacksFormat {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginSectionMultiAttacksFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player               # Double Attacks    DA Rate    Perc. DA     # Triple Attacks    TA Rate    Perc. TA.
+        /// </summary>
+        internal static string ExtraAttPluginSectionMultiAttacksHeader {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginSectionMultiAttacksHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Multi-attacks per attack (2x/3x):.
+        /// </summary>
+        internal static string ExtraAttPluginSectionMultiAttacksTitle {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginSectionMultiAttacksTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Treat As:.
+        /// </summary>
+        internal static string ExtraAttPluginSectionTreatAs {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginSectionTreatAs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,23}{2,23}{3,21:p2}.
+        /// </summary>
+        internal static string ExtraAttPluginSectionZanshinFormat {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginSectionZanshinFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player               # Missed First Attacks    # DA w/Missed First   Possible Zanshin %.
+        /// </summary>
+        internal static string ExtraAttPluginSectionZanshinHeader {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginSectionZanshinHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Multi-attacks per attack (Zanshin):.
+        /// </summary>
+        internal static string ExtraAttPluginSectionZanshinTitle {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginSectionZanshinTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Extra Attacks.
+        /// </summary>
+        internal static string ExtraAttPluginTabName {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginTabName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uncorrected Details.
+        /// </summary>
+        internal static string ExtraAttPluginUncorrectedDetails {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginUncorrectedDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0,-10}{1,-24}{2,-10}{3,-20}{4,10}{5,11}{6,15}{7,6}{8,8}.
         /// </summary>
         internal static string FightsPluginFightFormat {
