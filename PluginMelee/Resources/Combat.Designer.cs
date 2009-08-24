@@ -833,5 +833,329 @@ namespace WaywardGamers.KParser.Resources {
                 return ResourceManager.GetString("OffenseFreqTabName", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Abilities.
+        /// </summary>
+        internal static string OffensePluginCategoryAbility {
+            get {
+                return ResourceManager.GetString("OffensePluginCategoryAbility", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Melee.
+        /// </summary>
+        internal static string OffensePluginCategoryMelee {
+            get {
+                return ResourceManager.GetString("OffensePluginCategoryMelee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Other.
+        /// </summary>
+        internal static string OffensePluginCategoryOther {
+            get {
+                return ResourceManager.GetString("OffensePluginCategoryOther", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ranged.
+        /// </summary>
+        internal static string OffensePluginCategoryRanged {
+            get {
+                return ResourceManager.GetString("OffensePluginCategoryRanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skillchains.
+        /// </summary>
+        internal static string OffensePluginCategorySkillchain {
+            get {
+                return ResourceManager.GetString("OffensePluginCategorySkillchain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spells.
+        /// </summary>
+        internal static string OffensePluginCategorySpell {
+            get {
+                return ResourceManager.GetString("OffensePluginCategorySpell", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Summary.
+        /// </summary>
+        internal static string OffensePluginCategorySummary {
+            get {
+                return ResourceManager.GetString("OffensePluginCategorySummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Weaponskills.
+        /// </summary>
+        internal static string OffensePluginCategoryWeaponskill {
+            get {
+                return ResourceManager.GetString("OffensePluginCategoryWeaponskill", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-23}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}.
+        /// </summary>
+        internal static string OffensePluginFormatAbility {
+            get {
+                return ResourceManager.GetString("OffensePluginFormatAbility", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-17}{1,10}{2,10:p2}{3,11}{4,10:p2}{5,10}{6,9:f2}{7,7}{8,10}{9,8:f2}{10,10:p2}.
+        /// </summary>
+        internal static string OffensePluginFormatMelee {
+            get {
+                return ResourceManager.GetString("OffensePluginFormatMelee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-17}{1,9}{2,8}{3,10:f2}{4,11}{5,8}{6,10:f2}{7,10}{8,9}{9,9:f2}.
+        /// </summary>
+        internal static string OffensePluginFormatOtherMagical {
+            get {
+                return ResourceManager.GetString("OffensePluginFormatOtherMagical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-17}{1,7}{2,13}{3,11}{4,8:f2}{5,10}{6,14}{7,12}{8,9:f2}.
+        /// </summary>
+        internal static string OffensePluginFormatOtherPhysical {
+            get {
+                return ResourceManager.GetString("OffensePluginFormatOtherPhysical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-17}{1,10}{2,10:p2}{3,11}{4,10:p2}{5,10}{6,9:f2}{7,7}{8,10}{9,8:f2}{10,10:p2}.
+        /// </summary>
+        internal static string OffensePluginFormatRanged {
+            get {
+                return ResourceManager.GetString("OffensePluginFormatRanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,6}{2,6}{3,11}{4,8:f2}.
+        /// </summary>
+        internal static string OffensePluginFormatSkillchain {
+            get {
+                return ResourceManager.GetString("OffensePluginFormatSkillchain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-23}{1,10}{2,10:p2}{3,9}{4,7}{5,10}{6,10:f2}{7,9}{8,11}{9,9:f2}.
+        /// </summary>
+        internal static string OffensePluginFormatSpell {
+            get {
+                return ResourceManager.GetString("OffensePluginFormatSpell", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,10}{2,11:p2}{3,12}{4,12}{5,12}{6,12}{7,12}{8,11}.
+        /// </summary>
+        internal static string OffensePluginFormatSummary {
+            get {
+                return ResourceManager.GetString("OffensePluginFormatSummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-23}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}.
+        /// </summary>
+        internal static string OffensePluginFormatWeaponskill {
+            get {
+                return ResourceManager.GetString("OffensePluginFormatWeaponskill", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player                  Abil. Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg.
+        /// </summary>
+        internal static string OffensePluginHeaderAbility {
+            get {
+                return ResourceManager.GetString("OffensePluginHeaderAbility", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player            Melee Dmg   Melee %   Hit/Miss   M.Acc %  M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%.
+        /// </summary>
+        internal static string OffensePluginHeaderMelee {
+            get {
+                return ResourceManager.GetString("OffensePluginHeaderMelee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player            M.AE Dmg  # M.AE  M.AE Avg   R.AE Dmg  # R.AE  R.AE Avg   Spk.Dmg  # Spike  Spk.Avg.
+        /// </summary>
+        internal static string OffensePluginHeaderOtherMagical {
+            get {
+                return ResourceManager.GetString("OffensePluginHeaderOtherMagical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player            CA.Dmg  CA.Hit/Miss  CA.Low/Hi  CA.Avg   Ret.Dmg  Ret.Hit/Miss  Ret.Low/Hi  Ret.Avg.
+        /// </summary>
+        internal static string OffensePluginHeaderOtherPhysical {
+            get {
+                return ResourceManager.GetString("OffensePluginHeaderOtherPhysical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player            Range Dmg   Range %   Hit/Miss   R.Acc %  R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%.
+        /// </summary>
+        internal static string OffensePluginHeaderRanged {
+            get {
+                return ResourceManager.GetString("OffensePluginHeaderRanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skillchain          SC Dmg  # SC  SC.Low/Hi  SC.Avg.
+        /// </summary>
+        internal static string OffensePluginHeaderSkillchain {
+            get {
+                return ResourceManager.GetString("OffensePluginHeaderSkillchain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player                  Spell Dmg   Spell %  #Spells  #Fail  S.Low/Hi     S.Avg  #MBurst  MB.Low/Hi   MB.Avg.
+        /// </summary>
+        internal static string OffensePluginHeaderSpell {
+            get {
+                return ResourceManager.GetString("OffensePluginHeaderSpell", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg.
+        /// </summary>
+        internal static string OffensePluginHeaderSummary {
+            get {
+                return ResourceManager.GetString("OffensePluginHeaderSummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player                 WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg.
+        /// </summary>
+        internal static string OffensePluginHeaderWeaponskill {
+            get {
+                return ResourceManager.GetString("OffensePluginHeaderWeaponskill", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Offense.
+        /// </summary>
+        internal static string OffensePluginTabName {
+            get {
+                return ResourceManager.GetString("OffensePluginTabName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ability Damage.
+        /// </summary>
+        internal static string OffensePluginTitleAbility {
+            get {
+                return ResourceManager.GetString("OffensePluginTitleAbility", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Melee Damage.
+        /// </summary>
+        internal static string OffensePluginTitleMelee {
+            get {
+                return ResourceManager.GetString("OffensePluginTitleMelee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Other Magical Damage  (Additional Effects and Spikes).
+        /// </summary>
+        internal static string OffensePluginTitleOtherMagical {
+            get {
+                return ResourceManager.GetString("OffensePluginTitleOtherMagical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Other Physical Damage  (Counterattacks and Retaliations).
+        /// </summary>
+        internal static string OffensePluginTitleOtherPhysical {
+            get {
+                return ResourceManager.GetString("OffensePluginTitleOtherPhysical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ranged Damage.
+        /// </summary>
+        internal static string OffensePluginTitleRanged {
+            get {
+                return ResourceManager.GetString("OffensePluginTitleRanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skillchain Damage.
+        /// </summary>
+        internal static string OffensePluginTitleSkillchain {
+            get {
+                return ResourceManager.GetString("OffensePluginTitleSkillchain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spell Damage.
+        /// </summary>
+        internal static string OffensePluginTitleSpell {
+            get {
+                return ResourceManager.GetString("OffensePluginTitleSpell", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Damage Summary.
+        /// </summary>
+        internal static string OffensePluginTitleSummary {
+            get {
+                return ResourceManager.GetString("OffensePluginTitleSummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Weaponskill Damage.
+        /// </summary>
+        internal static string OffensePluginTitleWeaponskill {
+            get {
+                return ResourceManager.GetString("OffensePluginTitleWeaponskill", resourceCulture);
+            }
+        }
     }
 }
