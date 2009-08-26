@@ -29,10 +29,13 @@ namespace WaywardGamers.KParser
 		#endregion
 
 		#region Member Variables
-		private string logFileName;
-		private string breakString;
+		string logFileName;
+		string breakString;
 
-        private Properties.Settings programSettings;
+        Properties.Settings programSettings;
+
+        Exception lastException = null;
+        int duplicateCount = 0;
 		#endregion
 
 		#region Constructor
@@ -167,6 +170,19 @@ namespace WaywardGamers.KParser
 		/// in at the time the exception is caught.</param>
 		public void Log(Exception e, string message)
 		{
+            if (IsDuplicate(e))
+            {
+                using (StreamWriter sw = File.AppendText(logFileName))
+                {
+                    sw.WriteLine(string.Format("Duplicate: {0}", ++duplicateCount));
+                }
+                return;
+            }
+            else
+            {
+                duplicateCount = 0;
+            }
+
 			try
 			{
                 using (StreamWriter sw = File.AppendText(logFileName))
@@ -192,6 +208,31 @@ namespace WaywardGamers.KParser
 				MessageBox.Show("Error writing log.");
 			}
 		}
+
+        /// <summary>
+        /// Check to see whether the specified exception is a duplicate
+        /// of the most recent exception.  If so, we'll want to suppress
+        /// the full log output.
+        /// </summary>
+        /// <param name="e">The exception to check against.</param>
+        /// <returns>True if it's a duplicate of the last recorded exception.  Otherwise false.</returns>
+        private bool IsDuplicate(Exception e)
+        {
+            if (lastException == null)
+            {
+                lastException = e;
+                return false;
+            }
+
+            if (e.GetType() == lastException.GetType())
+            {
+                if (e.Equals(lastException))
+                    return true;
+            }
+
+            lastException = e;
+            return false;
+        }
 
 		/// <summary>
 		/// Log any exceptions that cause the program to terminate.
