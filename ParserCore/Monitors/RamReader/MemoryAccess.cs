@@ -195,12 +195,28 @@ namespace WaywardGamers.KParser.Monitoring.Memory
 
         internal ProcessMemoryReading(IntPtr processHandle, IntPtr address, uint nBytesToRead)
         {
-            pointerToMemoryBuffer = ReadProcessMemory(processHandle, address, 0, nBytesToRead);
+            try
+            {
+                pointerToMemoryBuffer = ReadProcessMemory(processHandle, address, 0, nBytesToRead);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Log(e);
+                pointerToMemoryBuffer = IntPtr.Zero;
+            }
         }
 
         internal ProcessMemoryReading(IntPtr processHandle, IntPtr address, uint startingOffset, uint nBytesToRead)
         {
-            pointerToMemoryBuffer = ReadProcessMemory(processHandle, address, startingOffset, nBytesToRead);
+            try
+            {
+                pointerToMemoryBuffer = ReadProcessMemory(processHandle, address, startingOffset, nBytesToRead);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Log(e);
+                pointerToMemoryBuffer = IntPtr.Zero;
+            }
         }
 
         ~ProcessMemoryReading()
