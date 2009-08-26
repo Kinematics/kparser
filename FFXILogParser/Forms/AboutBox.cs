@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -11,6 +13,12 @@ namespace WaywardGamers.KParser.Forms
 {
     partial class AboutBox : Form
     {
+        #region Member variables
+        string readmePath;
+        string changeLogPath;
+        string errorLogPath;
+        #endregion
+
         public AboutBox()
         {
             InitializeComponent();
@@ -24,6 +32,13 @@ namespace WaywardGamers.KParser.Forms
             this.textBoxDescription.Text += DatabaseDescription;
             this.textBoxDescription.Text += OpenDatabaseDescription;
 
+
+            string applicationDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            readmePath = Path.Combine(applicationDirectory, "readme.txt");
+            changeLogPath = Path.Combine(applicationDirectory, "changelog.txt");
+            errorLogPath = Path.Combine(applicationDirectory, "error.log");
+
+            errorLog.Enabled = File.Exists(errorLogPath);
         }
 
         #region Assembly Attribute Accessors
@@ -140,6 +155,40 @@ namespace WaywardGamers.KParser.Forms
                 }
 
                 return string.Empty;
+            }
+        }
+        #endregion
+
+        #region Open various text files
+        private void readme_Click(object sender, EventArgs e)
+        {
+            if (File.Exists(readmePath))
+            {
+                Process.Start(readmePath);
+            }
+            else
+            {
+                MessageBox.Show("Unable to locate readme.txt file.");
+            }
+        }
+
+        private void releaseNotes_Click(object sender, EventArgs e)
+        {
+            if (File.Exists(changeLogPath))
+            {
+                Process.Start(changeLogPath);
+            }
+            else
+            {
+                MessageBox.Show("Unable to locate changelog.txt file.");
+            }
+        }
+
+        private void errorLog_Click(object sender, EventArgs e)
+        {
+            if (File.Exists(errorLogPath))
+            {
+                Process.Start(errorLogPath);
             }
         }
         #endregion
