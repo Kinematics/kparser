@@ -1363,17 +1363,17 @@ namespace WaywardGamers.KParser.Plugin
                     if (player.TDmg > 0)
                     {
                         sb.AppendFormat(lsSummaryFormat,
-                        player.Name,
-                        player.TDmg,
-                        (double)player.TDmg / totalDamage,
-                        player.TMDmg,
-                        player.TRDmg,
-                        player.TADmg,
-                        player.TWDmg,
-                        player.TSDmg,
-                        player.TODmg);
+                            player.Name,
+                            player.TDmg,
+                            (double)player.TDmg / totalDamage,
+                            player.TMDmg,
+                            player.TRDmg,
+                            player.TADmg,
+                            player.TWDmg,
+                            player.TSDmg,
+                            player.TODmg);
+                        sb.Append("\n");
                     }
-                    sb.Append("\n");
                 }
 
                 string strTotal =
