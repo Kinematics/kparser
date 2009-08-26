@@ -495,7 +495,10 @@ namespace WaywardGamers.KParser.Monitoring
 
             using (ProcessMemoryReading pmr = new ProcessMemoryReading(pol.Process.Handle, chatLogInfoAddress, sizeOfChatLogInfoStruct))
             {
-                return (ChatLogInfoStruct)Marshal.PtrToStructure(pmr.ReadBufferPtr, typeof(ChatLogInfoStruct));
+                if (pmr.ReadBufferPtr != null)
+                    return (ChatLogInfoStruct)Marshal.PtrToStructure(pmr.ReadBufferPtr, typeof(ChatLogInfoStruct));
+                else
+                    throw new ArgumentNullException("pmr.ReadBufferPtr");
 
                 //if (pmr.ReadBufferPtr == IntPtr.Zero)
                 //    return null;
@@ -646,12 +649,20 @@ namespace WaywardGamers.KParser.Monitoring
             // Ok, all substrings should be in their own byte arrays in arrayOfArraysOfChatLineBytes.
             // We now need to convert them to strings with appropriate encoding.
 
-            string[] chatLineArray = new string[maxLinesToRead];
+            // --
+            // All character encoding adjustments are now done at the ChatLine level
+            // --
+            //string[] chatLineArray = new string[maxLinesToRead];
+            //int chatLineArrayIndex = 0;
 
-            for (int i = 0; i < maxLinesToRead; i++)
-            {
-                chatLineArray[i] = System.Text.Encoding.GetEncoding("Shift-JIS").GetString(arrayOfArraysOfChatLineBytes[i]);
-            }
+            //for (int i = 0; i < maxLinesToRead; i++)
+            //{
+            //    if (arrayOfArraysOfChatLineBytes[i] != null)
+            //    {
+            //        chatLineArray[chatLineArrayIndex++] =
+            //            System.Text.Encoding.GetEncoding("Shift-JIS").GetString(arrayOfArraysOfChatLineBytes[i]);
+            //    }
+            //}
 
             return arrayOfArraysOfChatLineBytes;
         }
