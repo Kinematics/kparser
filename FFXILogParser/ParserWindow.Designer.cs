@@ -50,6 +50,9 @@ namespace WaywardGamers.KParser
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.recentFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.noneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyasTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -150,7 +153,6 @@ namespace WaywardGamers.KParser
             this.mainMenuStrip.AccessibleName = null;
             resources.ApplyResources(this.mainMenuStrip, "mainMenuStrip");
             this.mainMenuStrip.BackgroundImage = null;
-            this.mainMenuStrip.Font = null;
             this.mainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileMenu,
             this.editToolStripMenuItem,
@@ -176,6 +178,8 @@ namespace WaywardGamers.KParser
             this.toolStripSeparator2,
             this.importToolStripMenuItem,
             this.toolStripSeparator4,
+            this.recentFilesToolStripMenuItem,
+            this.toolStripSeparator7,
             this.exitMenuItem});
             this.fileMenu.Name = "fileMenu";
             this.fileMenu.ShortcutKeyDisplayString = null;
@@ -281,6 +285,34 @@ namespace WaywardGamers.KParser
             this.toolStripSeparator4.AccessibleName = null;
             resources.ApplyResources(this.toolStripSeparator4, "toolStripSeparator4");
             this.toolStripSeparator4.Name = "toolStripSeparator4";
+            // 
+            // recentFilesToolStripMenuItem
+            // 
+            this.recentFilesToolStripMenuItem.AccessibleDescription = null;
+            this.recentFilesToolStripMenuItem.AccessibleName = null;
+            resources.ApplyResources(this.recentFilesToolStripMenuItem, "recentFilesToolStripMenuItem");
+            this.recentFilesToolStripMenuItem.BackgroundImage = null;
+            this.recentFilesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.noneToolStripMenuItem});
+            this.recentFilesToolStripMenuItem.Name = "recentFilesToolStripMenuItem";
+            this.recentFilesToolStripMenuItem.ShortcutKeyDisplayString = null;
+            this.recentFilesToolStripMenuItem.DropDownOpening += new System.EventHandler(this.recentFilesToolStripMenuItem_DropDownOpening);
+            // 
+            // noneToolStripMenuItem
+            // 
+            this.noneToolStripMenuItem.AccessibleDescription = null;
+            this.noneToolStripMenuItem.AccessibleName = null;
+            resources.ApplyResources(this.noneToolStripMenuItem, "noneToolStripMenuItem");
+            this.noneToolStripMenuItem.BackgroundImage = null;
+            this.noneToolStripMenuItem.Name = "noneToolStripMenuItem";
+            this.noneToolStripMenuItem.ShortcutKeyDisplayString = null;
+            // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.AccessibleDescription = null;
+            this.toolStripSeparator7.AccessibleName = null;
+            resources.ApplyResources(this.toolStripSeparator7, "toolStripSeparator7");
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
             // 
             // exitMenuItem
             // 
@@ -543,7 +575,6 @@ namespace WaywardGamers.KParser
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.mainMenuStrip);
             this.Controls.Add(this.pluginTabs);
-            this.Font = null;
             this.MainMenuStrip = this.mainMenuStrip;
             this.Name = "ParserWindow";
             this.Load += new System.EventHandler(this.ParserWindow_Load);
@@ -603,5 +634,8 @@ namespace WaywardGamers.KParser
         private System.Windows.Forms.ToolStripMenuItem frenchToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem germanToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem japaneseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem recentFilesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem noneToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
     }
 }

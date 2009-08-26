@@ -118,6 +118,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="tabContextMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>214, 48</value>
+  </data>
   <data name="closeTabToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>213, 22</value>
   </data>
@@ -130,8 +133,11 @@
   <data name="closeOtherTabsToolStripMenuItem.Text" xml:space="preserve">
     <value>Schließen Sie andere Tabs </value>
   </data>
-  <data name="tabContextMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>214, 48</value>
+  <data name="fileMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>44, 20</value>
+  </data>
+  <data name="fileMenu.Text" xml:space="preserve">
+    <value>Datei</value>
   </data>
   <data name="beginParseAndSaveDataMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>341, 22</value>
@@ -187,17 +193,26 @@
   <data name="toolStripSeparator4.Size" type="System.Drawing.Size, System.Drawing">
     <value>338, 6</value>
   </data>
+  <data name="recentFilesToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>341, 22</value>
+  </data>
+  <data name="recentFilesToolStripMenuItem.Text" xml:space="preserve">
+    <value>Neueste Dateien</value>
+  </data>
+  <data name="toolStripSeparator7.Size" type="System.Drawing.Size, System.Drawing">
+    <value>338, 6</value>
+  </data>
   <data name="exitMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>341, 22</value>
   </data>
   <data name="exitMenuItem.Text" xml:space="preserve">
     <value>Beenden</value>
   </data>
-  <data name="fileMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>44, 20</value>
+  <data name="editToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>71, 20</value>
   </data>
-  <data name="fileMenu.Text" xml:space="preserve">
-    <value>Datei</value>
+  <data name="editToolStripMenuItem.Text" xml:space="preserve">
+    <value>Bearbeiten</value>
   </data>
   <data name="copyasTextToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>224, 22</value>
@@ -232,11 +247,11 @@
   <data name="playerInformationToolStripMenuItem.Text" xml:space="preserve">
     <value>Spieler &amp;Informationen</value>
   </data>
-  <data name="editToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>71, 20</value>
+  <data name="toolsMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>73, 20</value>
   </data>
-  <data name="editToolStripMenuItem.Text" xml:space="preserve">
-    <value>Bearbeiten</value>
+  <data name="toolsMenu.Text" xml:space="preserve">
+    <value>Werkzeuge</value>
   </data>
   <data name="toolsTestFunctionMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>288, 22</value>
@@ -255,6 +270,12 @@
   </data>
   <data name="toolStripSeparator6.Size" type="System.Drawing.Size, System.Drawing">
     <value>285, 6</value>
+  </data>
+  <data name="languageToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>288, 22</value>
+  </data>
+  <data name="languageToolStripMenuItem.Text" xml:space="preserve">
+    <value>Sprache </value>
   </data>
   <data name="englishToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>141, 22</value>
@@ -280,12 +301,6 @@
   <data name="japaneseToolStripMenuItem.Text" xml:space="preserve">
     <value>Japonese</value>
   </data>
-  <data name="languageToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>288, 22</value>
-  </data>
-  <data name="languageToolStripMenuItem.Text" xml:space="preserve">
-    <value>Sprache </value>
-  </data>
   <data name="toolStripSeparator3.Size" type="System.Drawing.Size, System.Drawing">
     <value>285, 6</value>
   </data>
@@ -295,11 +310,11 @@
   <data name="optionsToolStripMenuItem.Text" xml:space="preserve">
     <value>Optionen...</value>
   </data>
-  <data name="toolsMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>73, 20</value>
+  <data name="windowsMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>56, 20</value>
   </data>
-  <data name="toolsMenu.Text" xml:space="preserve">
-    <value>Werkzeuge</value>
+  <data name="windowsMenu.Text" xml:space="preserve">
+    <value>Fenster</value>
   </data>
   <data name="aboutToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>240, 22</value>
@@ -315,12 +330,6 @@
   </data>
   <data name="closeAllTabsToolStripMenuItem.Text" xml:space="preserve">
     <value>Schließen Sie alle Registerkarten</value>
-  </data>
-  <data name="windowsMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>56, 20</value>
-  </data>
-  <data name="windowsMenu.Text" xml:space="preserve">
-    <value>Fenster</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

@@ -119,7 +119,16 @@
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="statusStrip.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 505</value>
+    <value>0, 586</value>
+  </data>
+  <data name="tabContextMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>174, 48</value>
+  </data>
+  <data name="pluginTabs.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 32</value>
+  </data>
+  <data name="pluginTabs.Size" type="System.Drawing.Size, System.Drawing">
+    <value>994, 548</value>
   </data>
   <data name="closeTabToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>173, 22</value>
@@ -133,17 +142,14 @@
   <data name="closeOtherTabsToolStripMenuItem.Text" xml:space="preserve">
     <value>他のタブを閉じる</value>
   </data>
-  <data name="tabContextMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>174, 48</value>
-  </data>
-  <data name="pluginTabs.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 28</value>
-  </data>
-  <data name="pluginTabs.Size" type="System.Drawing.Size, System.Drawing">
-    <value>994, 475</value>
-  </data>
   <data name="mainMenuStrip.Font" type="System.Drawing.Font, System.Drawing">
     <value>Arial Unicode MS, 8.25pt</value>
+  </data>
+  <data name="fileMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>63, 20</value>
+  </data>
+  <data name="fileMenu.Text" xml:space="preserve">
+    <value>ファイル</value>
   </data>
   <data name="beginParseAndSaveDataMenuItem.Text" xml:space="preserve">
     <value>解析、データの保存を開始...</value>
@@ -169,14 +175,17 @@
   <data name="importToolStripMenuItem.Text" xml:space="preserve">
     <value>インポート...</value>
   </data>
+  <data name="recentFilesToolStripMenuItem.Text" xml:space="preserve">
+    <value>最近使用したファイル</value>
+  </data>
   <data name="exitMenuItem.Text" xml:space="preserve">
     <value>終了</value>
   </data>
-  <data name="fileMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>63, 20</value>
+  <data name="editToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>74, 20</value>
   </data>
-  <data name="fileMenu.Text" xml:space="preserve">
-    <value>ファイル</value>
+  <data name="editToolStripMenuItem.Text" xml:space="preserve">
+    <value>エディット</value>
   </data>
   <data name="copyasTextToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>294, 22</value>
@@ -211,11 +220,11 @@
   <data name="playerInformationToolStripMenuItem.Text" xml:space="preserve">
     <value>選手情報</value>
   </data>
-  <data name="editToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>74, 20</value>
+  <data name="toolsMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>41, 20</value>
   </data>
-  <data name="editToolStripMenuItem.Text" xml:space="preserve">
-    <value>エディット</value>
+  <data name="toolsMenu.Text" xml:space="preserve">
+    <value>道具</value>
   </data>
   <data name="toolsTestFunctionMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>217, 22</value>
@@ -234,6 +243,12 @@
   </data>
   <data name="toolStripSeparator6.Size" type="System.Drawing.Size, System.Drawing">
     <value>214, 6</value>
+  </data>
+  <data name="languageToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>217, 22</value>
+  </data>
+  <data name="languageToolStripMenuItem.Text" xml:space="preserve">
+    <value>言語</value>
   </data>
   <data name="englishToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>140, 22</value>
@@ -259,12 +274,6 @@
   <data name="japaneseToolStripMenuItem.Text" xml:space="preserve">
     <value>日本語</value>
   </data>
-  <data name="languageToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>217, 22</value>
-  </data>
-  <data name="languageToolStripMenuItem.Text" xml:space="preserve">
-    <value>言語</value>
-  </data>
   <data name="toolStripSeparator3.Size" type="System.Drawing.Size, System.Drawing">
     <value>214, 6</value>
   </data>
@@ -274,11 +283,11 @@
   <data name="optionsToolStripMenuItem.Text" xml:space="preserve">
     <value>オプション...</value>
   </data>
-  <data name="toolsMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>41, 20</value>
+  <data name="windowsMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>30, 20</value>
   </data>
-  <data name="toolsMenu.Text" xml:space="preserve">
-    <value>道具</value>
+  <data name="windowsMenu.Text" xml:space="preserve">
+    <value>窓</value>
   </data>
   <data name="aboutToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>195, 22</value>
@@ -295,14 +304,14 @@
   <data name="closeAllTabsToolStripMenuItem.Text" xml:space="preserve">
     <value>すべてのタブを閉じる</value>
   </data>
-  <data name="windowsMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>30, 20</value>
-  </data>
-  <data name="windowsMenu.Text" xml:space="preserve">
-    <value>窓</value>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>6, 15</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>992, 527</value>
+    <value>992, 608</value>
+  </data>
+  <data name="$this.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Arial Unicode MS, 8.25pt</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

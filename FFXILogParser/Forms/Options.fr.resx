@@ -181,6 +181,12 @@
   <data name="debugMode.Text" xml:space="preserve">
     <value>Mode de débogage</value>
   </data>
+  <data name="label1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>177, 13</value>
+  </data>
+  <data name="label1.Text" xml:space="preserve">
+    <value>Nombre de fichiers récents à la liste:</value>
+  </data>
   <data name="saveDirectoryLabel.Size" type="System.Drawing.Size, System.Drawing">
     <value>146, 13</value>
   </data>
