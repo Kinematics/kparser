@@ -181,6 +181,12 @@
   <data name="debugMode.Text" xml:space="preserve">
     <value>Debug-Modus</value>
   </data>
+  <data name="label1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>183, 13</value>
+  </data>
+  <data name="label1.Text" xml:space="preserve">
+    <value>Anzahl der neueste Dateien zur Liste:</value>
+  </data>
   <data name="saveDirectoryLabel.Size" type="System.Drawing.Size, System.Drawing">
     <value>158, 13</value>
   </data>

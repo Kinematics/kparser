@@ -104,5 +104,28 @@ namespace WaywardGamers.KParser.Properties {
                 this["UpgradeRequired"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection RecentFiles {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["RecentFiles"]));
+            }
+            set {
+                this["RecentFiles"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("4")]
+        public int NumberOfRecentFilesToDisplay {
+            get {
+                return ((int)(this["NumberOfRecentFilesToDisplay"]));
+            }
+            set {
+                this["NumberOfRecentFilesToDisplay"] = value;
+            }
+        }
     }
 }
