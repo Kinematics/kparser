@@ -1,10 +1,11 @@
-KParser Change Log
+KParser Change Log/Revision History
 
 
-1.4.1 (August 22, 2009)
+1.4.1 (August 26, 2009)
 + Added an installer project for KParser.  Zip file now contains the installer.
 * Converted all string literals in the program UI to resource elements, and set up the basis for allowing localization of the program into French, German and Japanese.
 *** This is NOT an enablement of parsing foreign language versions of FFXI.  This is for the UI ONLY.  Parsing will be added at a future date.  The UI can be updated progressively with translations; parsing needs to be pretty much complete from the start to be useful.
++ Added a recent files menu.  Default is 4 items listed.  Can adjust options to list up to 10.
 
 
 1.4.0 (August 08, 2009)
