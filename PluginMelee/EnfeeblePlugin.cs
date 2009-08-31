@@ -21,102 +21,109 @@ namespace WaywardGamers.KParser.Plugin
         bool customMobSelection = false;
         bool showDetails = false;
 
+        ToolStripLabel catLabel = new ToolStripLabel();
         ToolStripComboBox categoryCombo = new ToolStripComboBox();
+        ToolStripLabel mobsLabel = new ToolStripLabel();
         ToolStripComboBox mobsCombo = new ToolStripComboBox();
 
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
         ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
         ToolStripMenuItem exclude0XPOption = new ToolStripMenuItem();
+        ToolStripMenuItem showDetailOption = new ToolStripMenuItem();
         ToolStripMenuItem customMobSelectionOption = new ToolStripMenuItem();
 
         ToolStripButton editCustomMobFilter = new ToolStripButton();
+
+        // Localized Strings
+
+        string lsAll;
+        string lsDetails;
+
+        string lsDurationsTitle;
+        string lsParalyzeTitle;
+        string lsTPMovesTitle;
+        string lsSpeedTitle;
+
+        string lsDurationsHeader;
+        string lsParalyzeHeader;
+        string lsTPMovesHeader;
+        string lsSpeedHeader1;
+        string lsSpeedHeader2;
+
+        string lsDurationsFormat;
+        string lsParalyzeFormat;
+        string lsTPMovesFormat;
+        string lsSpeedFormat;
+        
+
+        // Localized regexes
+        Regex diaRegex;
+        Regex bioRegex;
+        Regex paralyzeRegex;
+        Regex jubakuRegex;
+        Regex slowRegex;
+        Regex hojoRegex;
+        Regex elegyRegex;
         #endregion
 
         #region Constructor
         public EnfeeblePlugin()
         {
-            ToolStripLabel catLabel = new ToolStripLabel();
-            catLabel.Text = "Category:";
-            toolStrip.Items.Add(catLabel);
+            LoadLocalizedUI();
 
             categoryCombo.DropDownStyle = ComboBoxStyle.DropDownList;
-            categoryCombo.Items.Add("All");
-            categoryCombo.Items.Add("Enfeeble Durations");
-            categoryCombo.Items.Add("Paralyze");
-            //categoryCombo.Items.Add("Attack Speed");
-            categoryCombo.Items.Add("TP Moves");
-            categoryCombo.SelectedIndex = 0;
             categoryCombo.SelectedIndexChanged += new EventHandler(this.categoryCombo_SelectedIndexChanged);
-            toolStrip.Items.Add(categoryCombo);
-
-
-            ToolStripLabel mobLabel = new ToolStripLabel();
-            mobLabel.Text = "Mobs:";
-            toolStrip.Items.Add(mobLabel);
 
             mobsCombo.DropDownStyle = ComboBoxStyle.DropDownList;
             mobsCombo.MaxDropDownItems = 10;
             mobsCombo.AutoSize = false;
             mobsCombo.Width = 175;
-            mobsCombo.Items.Add("All");
-            mobsCombo.SelectedIndex = 0;
             mobsCombo.SelectedIndexChanged += new EventHandler(this.mobsCombo_SelectedIndexChanged);
-            toolStrip.Items.Add(mobsCombo);
 
-            optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            optionsMenu.Text = "Options";
 
-            groupMobsOption.Text = "Group Mobs";
             groupMobsOption.CheckOnClick = true;
             groupMobsOption.Checked = true;
             groupMobsOption.Click += new EventHandler(groupMobs_Click);
-            optionsMenu.DropDownItems.Add(groupMobsOption);
 
-            exclude0XPOption.Text = "Exclude 0 XP Mobs";
             exclude0XPOption.CheckOnClick = true;
             exclude0XPOption.Checked = false;
             exclude0XPOption.Click += new EventHandler(exclude0XPMobs_Click);
-            optionsMenu.DropDownItems.Add(exclude0XPOption);
 
-            customMobSelectionOption.Text = "Custom Mob Selection";
             customMobSelectionOption.CheckOnClick = true;
             customMobSelectionOption.Checked = false;
             customMobSelectionOption.Click += new EventHandler(customMobSelection_Click);
-            optionsMenu.DropDownItems.Add(customMobSelectionOption);
 
-            ToolStripSeparator bSeparator = new ToolStripSeparator();
-            optionsMenu.DropDownItems.Add(bSeparator);
-
-            ToolStripMenuItem showDetailOption = new ToolStripMenuItem();
-            showDetailOption.Text = "Show Detail";
             showDetailOption.CheckOnClick = true;
             showDetailOption.Checked = false;
             showDetailOption.Click += new EventHandler(showDetailOption_Click);
+
+            ToolStripSeparator bSeparator = new ToolStripSeparator();
+
+            optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            optionsMenu.DropDownItems.Add(groupMobsOption);
+            optionsMenu.DropDownItems.Add(exclude0XPOption);
+            optionsMenu.DropDownItems.Add(customMobSelectionOption);
+            optionsMenu.DropDownItems.Add(bSeparator);
             optionsMenu.DropDownItems.Add(showDetailOption);
 
 
-            toolStrip.Items.Add(optionsMenu);
-
-            ToolStripSeparator aSeparator = new ToolStripSeparator();
-            toolStrip.Items.Add(aSeparator);
-
-            editCustomMobFilter.Text = "Edit Mob Filter";
             editCustomMobFilter.Enabled = false;
             editCustomMobFilter.Click += new EventHandler(editCustomMobFilter_Click);
 
+            ToolStripSeparator aSeparator = new ToolStripSeparator();
+
+            toolStrip.Items.Add(catLabel);
+            toolStrip.Items.Add(categoryCombo);
+            toolStrip.Items.Add(mobsLabel);
+            toolStrip.Items.Add(mobsCombo);
+            toolStrip.Items.Add(optionsMenu);
+            toolStrip.Items.Add(aSeparator);
             toolStrip.Items.Add(editCustomMobFilter);
 
         }
         #endregion
 
-
-
         #region IPlugin Overrides
-        public override string TabName
-        {
-            get { return "Enfeebling"; }
-        }
-
         public override void Reset()
         {
             ResetTextBox();
@@ -164,7 +171,7 @@ namespace WaywardGamers.KParser.Plugin
             if (e.DatasetChanges.Interactions.Count != 0)
             {
                 var enfeebles = from i in e.DatasetChanges.Interactions
-                                where i.HarmType == (byte)HarmType.Enfeeble
+                                where (HarmType)i.HarmType == HarmType.Enfeeble
                                 select i;
 
                 if (enfeebles.Count() > 0)
@@ -224,8 +231,8 @@ namespace WaywardGamers.KParser.Plugin
                                                ||
                                                (b.Preparing == false &&
                                                 b.IsActionIDNull() == false &&
-                                                (b.ActionsRow.ActionName.StartsWith("Dia") ||
-                                                  b.ActionsRow.ActionName.StartsWith("Bio")))
+                                                (diaRegex.Match(b.ActionsRow.ActionName).Success ||
+                                                 bioRegex.Match(b.ActionsRow.ActionName).Success))
                                                ||
                                                (b.Preparing == false && b.IsActionIDNull() == false &&
                                                 b.ActionsRow.GetInteractionsRows()
@@ -283,8 +290,8 @@ namespace WaywardGamers.KParser.Plugin
                                           where i.IsActionIDNull() == false &&
                                                 i.IsTargetIDNull() == false &&
                                                 i.TargetID == b.EnemyID &&
-                                                (i.ActionsRow.ActionName.StartsWith(SpellNames.Paralyze) ||
-                                                 i.ActionsRow.ActionName.StartsWith(SpellNames.Jubaku)) &&
+                                                (paralyzeRegex.Match(i.ActionsRow.ActionName).Success ||
+                                                 jubakuRegex.Match(i.ActionsRow.ActionName).Success) &&
                                                 i.Preparing == false &&
                                                 (DefenseType)i.DefenseType == DefenseType.None
                                           select i,
@@ -315,9 +322,9 @@ namespace WaywardGamers.KParser.Plugin
                                           where i.IsActionIDNull() == false &&
                                                 i.IsTargetIDNull() == false &&
                                                 i.TargetID == b.EnemyID &&
-                                                (i.ActionsRow.ActionName.StartsWith(SpellNames.Slow) ||
-                                                 i.ActionsRow.ActionName.StartsWith(SpellNames.Hojo) ||
-                                                 i.ActionsRow.ActionName.EndsWith(SpellNames.Elegy)) &&
+                                                (slowRegex.Match(i.ActionsRow.ActionName).Success ||
+                                                 hojoRegex.Match(i.ActionsRow.ActionName).Success ||
+                                                 elegyRegex.Match(i.ActionsRow.ActionName).Success) &&
                                                 i.Preparing == false &&
                                                 (DefenseType)i.DefenseType == DefenseType.None
                                           select i,
@@ -335,33 +342,39 @@ namespace WaywardGamers.KParser.Plugin
             #endregion
 
 
-            string analysisType = categoryCombo.CBSelectedItem();
+            List<StringMods> strModList = new List<StringMods>();
+            StringBuilder sb = new StringBuilder();
 
-            switch (analysisType)
+            int analysisTypeIndex = categoryCombo.CBSelectedIndex();
+
+            switch (analysisTypeIndex)
             {
-                case "Enfeeble Durations":
-                    ProcessDurations(durationSet);
+                case 1: // "Enfeeble Durations"
+                    ProcessDurations(durationSet, ref sb, ref strModList);
                     break;
-                case "Paralyze":
-                    ProcessParalyze(paralyzeSet);
+                case 2: // "Paralyze"
+                    ProcessParalyze(paralyzeSet, ref sb, ref strModList);
                     break;
-                case "TP Moves":
-                    ProcessTPMoves(tpMoveSet);
+                case 3: // "TP Moves"
+                    ProcessTPMoves(tpMoveSet, ref sb, ref strModList);
                     break;
-                case "Attack Speed":
-                    ProcessAttackSpeed(slowSet);
+                case 4: // "Attack Speed"
+                    ProcessAttackSpeed(slowSet, ref sb, ref strModList);
                     break;
-                case "All":
+                case 0: // "All"
                 default:
-                    ProcessDurations(durationSet);
-                    ProcessParalyze(paralyzeSet);
-                    //ProcessAttackSpeed(slowSet);
-                    ProcessTPMoves(tpMoveSet);
+                    ProcessDurations(durationSet, ref sb, ref strModList);
+                    ProcessParalyze(paralyzeSet, ref sb, ref strModList);
+                    ProcessTPMoves(tpMoveSet, ref sb, ref strModList);
+                    //ProcessAttackSpeed(slowSet, ref sb, ref strModList);
                     break;
             }
+
+            PushStrings(sb, strModList);
         }
 
-        private void ProcessDurations(IEnumerable<DebuffGroup> debuffSet)
+        private void ProcessDurations(IEnumerable<DebuffGroup> debuffSet,
+            ref StringBuilder sb, ref List<StringMods> strModList)
         {
             int used;
             int count;
@@ -370,7 +383,14 @@ namespace WaywardGamers.KParser.Plugin
             string totalDurationString, avgDurationString;
             bool playerHeader;
 
-            AppendText("Enfeeble Durations\n\n", Color.Red, true, false);
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = lsDurationsTitle.Length,
+                Bold = true,
+                Color = Color.Red
+            });
+            sb.Append(lsDurationsTitle + "\n\n");
 
             foreach (var player in debuffSet)
             {
@@ -401,8 +421,9 @@ namespace WaywardGamers.KParser.Plugin
                                 (((HarmType)d.HarmType == HarmType.Dispel ||
                                  (HarmType)d.HarmType == HarmType.Enfeeble ||
                                  (HarmType)d.HarmType == HarmType.Unknown ||
-                                 (d.IsActionIDNull() == false && (d.ActionsRow.ActionName.StartsWith("Dia") ||
-                                 d.ActionsRow.ActionName.StartsWith("Bio")))) &&
+                                 (d.IsActionIDNull() == false &&
+                                    (diaRegex.Match(d.ActionsRow.ActionName).Success ||
+                                     bioRegex.Match(d.ActionsRow.ActionName).Success))) &&
                                  ((DefenseType)d.DefenseType == DefenseType.None &&
                                  (FailedActionType)d.FailedActionType == FailedActionType.None)) ||
                                 ((HarmType)d.SecondHarmType == HarmType.Dispel ||
@@ -427,12 +448,29 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         if (playerHeader == false)
                         {
-                            AppendText(string.Format("{0}\n", player.DebufferName), Color.Blue, true, false);
-                            AppendText("Debuff               #Successful     Total Duration     Avg Duration\n", Color.Black, true, true);
+                            strModList.Add(new StringMods
+                            {
+                                Start = sb.Length,
+                                Length = player.DebufferName.Length,
+                                Bold = true,
+                                Color = Color.Blue
+                            });
+                            sb.Append(player.DebufferName + "\n");
+
+                            strModList.Add(new StringMods
+                            {
+                                Start = sb.Length,
+                                Length = lsDurationsHeader.Length,
+                                Bold = true,
+                                Underline = true,
+                                Color = Color.Black
+                            });
+                            sb.Append(lsDurationsHeader + "\n");
+
                             playerHeader = true;
                         }
 
-                        AppendText(debuffName.PadRight(20));
+                        sb.AppendFormat("{0,-20}", debuffName);
 
                         avgRemainingFight = TimeSpan.FromMilliseconds(
                             totalRemainingFight.TotalMilliseconds / count);
@@ -441,22 +479,42 @@ namespace WaywardGamers.KParser.Plugin
 
                         avgDurationString = avgRemainingFight.FormattedString(false);
 
-                        AppendText(string.Format("{0,12:d}{1,19}{2,17}\n",
-                            count, totalDurationString, avgDurationString));
+                        sb.AppendFormat(lsDurationsFormat,
+                            count,
+                            totalDurationString,
+                            avgDurationString);
+                        sb.Append("\n");
                     }
                 }
             
                 if (playerHeader == true)
-                    AppendText("\n");
+                    sb.Append("\n");
             }
 
-            AppendText("\n");
+            sb.Append("\n");
         }
 
-        private void ProcessParalyze(EnumerableRowCollection<EnfeebleGroup> paralyzeSet)
+        private void ProcessParalyze(EnumerableRowCollection<EnfeebleGroup> paralyzeSet,
+            ref StringBuilder sb, ref List<StringMods> strModList)
         {
-            AppendText("Paralyzed Actions\n\n", Color.Red, true, false);
-            AppendText("# Fights      # Paralyze Cast    # Times Paralyzed    Max # Paralyzable Actions    Paralyze Rate\n", Color.Black, true, true);
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = lsParalyzeTitle.Length,
+                Bold = true,
+                Color = Color.Red
+            });
+            sb.Append(lsParalyzeTitle + "\n\n");
+
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = lsParalyzeHeader.Length,
+                Bold = true,
+                Underline = true,
+                Color = Color.Black
+            });
+            sb.Append(lsParalyzeHeader + "\n");
 
             int totalFights = paralyzeSet.Count();
             int totalParaCast = paralyzeSet.Sum(a => a.Enfeebled.Count());
@@ -515,16 +573,47 @@ namespace WaywardGamers.KParser.Plugin
                 paralyzeRate = (double)totalParalyzed / totalActions;
             }
 
-            AppendText(string.Format("{0,8:d}{1,21}{2,21}{3,29}{4,17:p2}\n\n\n",
-                totalFights, totalMobsParalyzed, totalParalyzed, totalActions, paralyzeRate));
+            sb.AppendFormat(lsParalyzeFormat,
+                totalFights,
+                totalMobsParalyzed,
+                totalParalyzed,
+                totalActions,
+                paralyzeRate);
+            sb.Append("\n\n\n");
 
         }
 
-        private void ProcessAttackSpeed(EnumerableRowCollection<EnfeebleGroup> slowSet)
+        private void ProcessAttackSpeed(EnumerableRowCollection<EnfeebleGroup> slowSet,
+            ref StringBuilder sb, ref List<StringMods> strModList)
         {
-            AppendText("Slowed Actions\n", Color.Red, true, false);
-            AppendText("                                              (Slow)       (Slow)            (Normal)     (Normal)\n", Color.Black, true, false);
-            AppendText("# Fights    # Slows Cast     # Mobs Slowed    # Actions    Attacks/Minute    # Actions    Attacks/Minute\n", Color.Black, true, true);
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = lsSpeedTitle.Length,
+                Bold = true,
+                Color = Color.Red
+            });
+            sb.Append(lsSpeedTitle + "\n");
+
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = lsSpeedHeader1.Length,
+                Bold = true,
+                Color = Color.Black
+            });
+            sb.Append(lsSpeedHeader1 + "\n");
+
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = lsSpeedHeader2.Length,
+                Bold = true,
+                Underline = true,
+                Color = Color.Black
+            });
+            sb.Append(lsSpeedHeader2 + "\n");
+
 
             int totalFights = slowSet.Count();
             int totalSlowCast = slowSet.Sum(a => a.Enfeebled.Count());
@@ -604,15 +693,34 @@ namespace WaywardGamers.KParser.Plugin
                 normalAttackRate = ((double)normalActions / unslowedTime.TotalSeconds) * 60;
             }
 
-            AppendText(string.Format("{0,8:d}{1,16}{2,18}{3,13}{4,18:f2}{5,13}{6,18:f2}\n\n\n",
+
+            sb.AppendFormat(lsSpeedFormat,
                 totalFights, totalSlowCast, totalMobsSlowed, slowedActions, slowedAttackRate,
-                normalActions, normalAttackRate));
+                normalActions, normalAttackRate);
+            sb.Append("\n\n\n");
         }
 
-        private void ProcessTPMoves(EnumerableRowCollection<TPMovesGroup> tpMoveSet)
+        private void ProcessTPMoves(EnumerableRowCollection<TPMovesGroup> tpMoveSet,
+            ref StringBuilder sb, ref List<StringMods> strModList)
         {
-            AppendText("TP Moves\n\n", Color.Red, true, false);
-            AppendText("# Moves      Total Time      # Fights    Avg Time/TP Move      Avg TP Moves/Minute\n", Color.Black, true, true);
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = lsTPMovesTitle.Length,
+                Bold = true,
+                Color = Color.Red
+            });
+            sb.Append(lsTPMovesTitle + "\n\n");
+
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = lsTPMovesHeader.Length,
+                Bold = true,
+                Underline = true,
+                Color = Color.Black
+            });
+            sb.Append(lsTPMovesHeader + "\n");
 
             TimeSpan sumFightLengths = TimeSpan.Zero;
             int countMoves = 0;
@@ -642,13 +750,22 @@ namespace WaywardGamers.KParser.Plugin
 
             if (countMoves > 0)
             {
-                AppendText(string.Format("{0,7:d}{1,16}{2,14}{3,20}{4,25:f1}\n",
-                    countMoves, subFightsLengthString, numFights, timePerTPMoveString, avgTPMovesPerMinute));
+                sb.AppendFormat(lsTPMovesFormat,
+                    countMoves, subFightsLengthString, numFights, timePerTPMoveString, avgTPMovesPerMinute);
+                sb.Append("\n");
             }
 
             if (showDetails == true)
             {
-                AppendText("\nDetails:\n", Color.Blue, true, false);
+                sb.Append("\n");
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = lsDetails.Length,
+                    Bold = true,
+                    Color = Color.Blue
+                });
+                sb.Append(lsDetails + "\n");
 
                 foreach (var tpUser in tpMoveSet)
                 {
@@ -656,13 +773,14 @@ namespace WaywardGamers.KParser.Plugin
 
                     foreach (var move in groupedMoves)
                     {
-                        AppendText(string.Format("  {0} - {1}\n", move.Key.ToLocalTime().ToLongTimeString(),
-                            move.First().ActionsRow.ActionName));
+                        sb.AppendFormat("  {0} - {1}\n",
+                            move.Key.ToLocalTime().ToLongTimeString(),
+                            move.First().ActionsRow.ActionName);
                     }
                 }
             }
 
-            AppendText("\n");
+            sb.Append("\n");
         }
 
         #endregion
@@ -796,6 +914,66 @@ namespace WaywardGamers.KParser.Plugin
 
         #endregion
 
+        #region Localization Overrides
+        protected override void LoadLocalizedUI()
+        {
+            catLabel.Text = Resources.PublicResources.CategoryLabel;
+            mobsLabel.Text = Resources.PublicResources.MobsLabel;
+
+            optionsMenu.Text = Resources.PublicResources.Options;
+            groupMobsOption.Text = Resources.PublicResources.GroupMobs;
+            exclude0XPOption.Text = Resources.PublicResources.Exclude0XPMobs;
+            customMobSelectionOption.Text = Resources.PublicResources.CustomMobSelection;
+            showDetailOption.Text = Resources.PublicResources.ShowDetail;
+            editCustomMobFilter.Text = Resources.PublicResources.EditMobFilter;
+
+            categoryCombo.Items.Clear();
+            categoryCombo.Items.Add(Resources.PublicResources.All);
+            categoryCombo.Items.Add(Resources.Combat.EnfeeblePluginCategoryDurations);
+            categoryCombo.Items.Add(Resources.Combat.EnfeeblePluginCategoryParalyze);
+            categoryCombo.Items.Add(Resources.Combat.EnfeeblePluginCategoryTPMoves);
+            //categoryCombo.Items.Add(Resources.Combat.EnfeeblePluginCategoryAttackSpeed);
+            categoryCombo.SelectedIndex = 0;
+
+
+            UpdateMobList();
+            mobsCombo.SelectedIndex = 0;
+        }
+
+        protected override void LoadResources()
+        {
+            this.tabName = Resources.Combat.EnfeeblePluginTabName;
+
+            lsAll = Resources.PublicResources.All;
+            lsDetails = Resources.PublicResources.DetailsLabel;
+
+            diaRegex = new Regex(Resources.ParsedStrings.DiaRegex);
+            bioRegex = new Regex(Resources.ParsedStrings.BioRegex);
+            paralyzeRegex = new Regex(Resources.ParsedStrings.ParalyzeRegex);
+            jubakuRegex = new Regex(Resources.ParsedStrings.JubakuRegex);
+            slowRegex = new Regex(Resources.ParsedStrings.SlowRegex);
+            hojoRegex = new Regex(Resources.ParsedStrings.HojoRegex);
+            elegyRegex = new Regex(Resources.ParsedStrings.ElegyRegex);
+
+
+            lsDurationsTitle = Resources.Combat.EnfeeblePluginTitleDurations;
+            lsParalyzeTitle = Resources.Combat.EnfeeblePluginTitleParalyze;
+            lsTPMovesTitle = Resources.Combat.EnfeeblePluginTitleTPMoves;
+            lsSpeedTitle = Resources.Combat.EnfeeblePluginTitleSpeed;
+
+            lsDurationsHeader = Resources.Combat.EnfeeblePluginHeaderDurations;
+            lsParalyzeHeader = Resources.Combat.EnfeeblePluginHeaderParalyze;
+            lsTPMovesHeader = Resources.Combat.EnfeeblePluginHeaderTPMoves;
+            lsSpeedHeader1 = Resources.Combat.EnfeeblePluginHeaderSpeed1;
+            lsSpeedHeader2 = Resources.Combat.EnfeeblePluginHeaderSpeed2;
+
+            lsDurationsFormat = Resources.Combat.EnfeeblePluginFormatDurations;
+            lsParalyzeFormat = Resources.Combat.EnfeeblePluginFormatParalyze;
+            lsTPMovesFormat = Resources.Combat.EnfeeblePluginFormatTPMoves;
+            lsSpeedFormat = Resources.Combat.EnfeeblePluginFormatSpeed;
+
+        }
+        #endregion
 
     }
 }

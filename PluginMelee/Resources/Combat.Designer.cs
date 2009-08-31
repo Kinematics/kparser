@@ -790,6 +790,168 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Attack Speed.
+        /// </summary>
+        internal static string EnfeeblePluginCategoryAttackSpeed {
+            get {
+                return ResourceManager.GetString("EnfeeblePluginCategoryAttackSpeed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enfeeble Durations.
+        /// </summary>
+        internal static string EnfeeblePluginCategoryDurations {
+            get {
+                return ResourceManager.GetString("EnfeeblePluginCategoryDurations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paralyze.
+        /// </summary>
+        internal static string EnfeeblePluginCategoryParalyze {
+            get {
+                return ResourceManager.GetString("EnfeeblePluginCategoryParalyze", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TP Moves.
+        /// </summary>
+        internal static string EnfeeblePluginCategoryTPMoves {
+            get {
+                return ResourceManager.GetString("EnfeeblePluginCategoryTPMoves", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,12:d}{1,19}{2,17}.
+        /// </summary>
+        internal static string EnfeeblePluginFormatDurations {
+            get {
+                return ResourceManager.GetString("EnfeeblePluginFormatDurations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,8:d}{1,21}{2,21}{3,29}{4,17:p2}.
+        /// </summary>
+        internal static string EnfeeblePluginFormatParalyze {
+            get {
+                return ResourceManager.GetString("EnfeeblePluginFormatParalyze", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,8:d}{1,16}{2,18}{3,13}{4,18:f2}{5,13}{6,18:f2}.
+        /// </summary>
+        internal static string EnfeeblePluginFormatSpeed {
+            get {
+                return ResourceManager.GetString("EnfeeblePluginFormatSpeed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,7:d}{1,16}{2,14}{3,20}{4,25:f1}.
+        /// </summary>
+        internal static string EnfeeblePluginFormatTPMoves {
+            get {
+                return ResourceManager.GetString("EnfeeblePluginFormatTPMoves", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Debuff               #Successful     Total Duration     Avg Duration.
+        /// </summary>
+        internal static string EnfeeblePluginHeaderDurations {
+            get {
+                return ResourceManager.GetString("EnfeeblePluginHeaderDurations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to # Fights      # Paralyze Cast    # Times Paralyzed    Max # Paralyzable Actions    Paralyze Rate.
+        /// </summary>
+        internal static string EnfeeblePluginHeaderParalyze {
+            get {
+                return ResourceManager.GetString("EnfeeblePluginHeaderParalyze", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to                                               (Slow)       (Slow)            (Normal)     (Normal).
+        /// </summary>
+        internal static string EnfeeblePluginHeaderSpeed1 {
+            get {
+                return ResourceManager.GetString("EnfeeblePluginHeaderSpeed1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to # Fights    # Slows Cast     # Mobs Slowed    # Actions    Attacks/Minute    # Actions    Attacks/Minute.
+        /// </summary>
+        internal static string EnfeeblePluginHeaderSpeed2 {
+            get {
+                return ResourceManager.GetString("EnfeeblePluginHeaderSpeed2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to # Moves      Total Time      # Fights    Avg Time/TP Move      Avg TP Moves/Minute.
+        /// </summary>
+        internal static string EnfeeblePluginHeaderTPMoves {
+            get {
+                return ResourceManager.GetString("EnfeeblePluginHeaderTPMoves", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enfeebling.
+        /// </summary>
+        internal static string EnfeeblePluginTabName {
+            get {
+                return ResourceManager.GetString("EnfeeblePluginTabName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enfeeble Durations.
+        /// </summary>
+        internal static string EnfeeblePluginTitleDurations {
+            get {
+                return ResourceManager.GetString("EnfeeblePluginTitleDurations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paralyzed Actions.
+        /// </summary>
+        internal static string EnfeeblePluginTitleParalyze {
+            get {
+                return ResourceManager.GetString("EnfeeblePluginTitleParalyze", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Slowed Actions.
+        /// </summary>
+        internal static string EnfeeblePluginTitleSpeed {
+            get {
+                return ResourceManager.GetString("EnfeeblePluginTitleSpeed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TP Moves.
+        /// </summary>
+        internal static string EnfeeblePluginTitleTPMoves {
+            get {
+                return ResourceManager.GetString("EnfeeblePluginTitleTPMoves", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Base # of Attacks:.
         /// </summary>
         internal static string ExtraAttPluginBaseAttNumLabel {

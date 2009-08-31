@@ -663,4 +663,58 @@
   <data name="ThiefPluginTrickAttack" xml:space="preserve">
     <value>Trick Attack</value>
   </data>
+  <data name="EnfeeblePluginCategoryAttackSpeed" xml:space="preserve">
+    <value>Attack Speed</value>
+  </data>
+  <data name="EnfeeblePluginCategoryDurations" xml:space="preserve">
+    <value>Enfeeble Durations</value>
+  </data>
+  <data name="EnfeeblePluginCategoryParalyze" xml:space="preserve">
+    <value>Paralyze</value>
+  </data>
+  <data name="EnfeeblePluginCategoryTPMoves" xml:space="preserve">
+    <value>TP Moves</value>
+  </data>
+  <data name="EnfeeblePluginFormatDurations" xml:space="preserve">
+    <value>{0,12:d}{1,19}{2,17}</value>
+  </data>
+  <data name="EnfeeblePluginFormatParalyze" xml:space="preserve">
+    <value>{0,8:d}{1,21}{2,21}{3,29}{4,17:p2}</value>
+  </data>
+  <data name="EnfeeblePluginFormatSpeed" xml:space="preserve">
+    <value>{0,8:d}{1,16}{2,18}{3,13}{4,18:f2}{5,13}{6,18:f2}</value>
+  </data>
+  <data name="EnfeeblePluginFormatTPMoves" xml:space="preserve">
+    <value>{0,7:d}{1,16}{2,14}{3,20}{4,25:f1}</value>
+  </data>
+  <data name="EnfeeblePluginHeaderDurations" xml:space="preserve">
+    <value>Debuff               #Successful     Total Duration     Avg Duration</value>
+  </data>
+  <data name="EnfeeblePluginHeaderParalyze" xml:space="preserve">
+    <value># Fights      # Paralyze Cast    # Times Paralyzed    Max # Paralyzable Actions    Paralyze Rate</value>
+  </data>
+  <data name="EnfeeblePluginHeaderSpeed1" xml:space="preserve">
+    <value>                                              (Slow)       (Slow)            (Normal)     (Normal)</value>
+  </data>
+  <data name="EnfeeblePluginHeaderSpeed2" xml:space="preserve">
+    <value># Fights    # Slows Cast     # Mobs Slowed    # Actions    Attacks/Minute    # Actions    Attacks/Minute</value>
+  </data>
+  <data name="EnfeeblePluginHeaderTPMoves" xml:space="preserve">
+    <value># Moves      Total Time      # Fights    Avg Time/TP Move      Avg TP Moves/Minute</value>
+  </data>
+  <data name="EnfeeblePluginTabName" xml:space="preserve">
+    <value>Enfeebling</value>
+  </data>
+  <data name="EnfeeblePluginTitleDurations" xml:space="preserve">
+    <value>Enfeeble Durations</value>
+  </data>
+  <data name="EnfeeblePluginTitleParalyze" xml:space="preserve">
+    <value>Paralyzed Actions</value>
+  </data>
+  <data name="EnfeeblePluginTitleSpeed" xml:space="preserve">
+    <value>Slowed Actions</value>
+  </data>
+  <data name="EnfeeblePluginTitleTPMoves" xml:space="preserve">
+    <value>TP Moves</value>
+  </data>
 </root>
