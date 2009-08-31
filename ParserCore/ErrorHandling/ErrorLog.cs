@@ -253,11 +253,11 @@ namespace WaywardGamers.KParser
 			{
                 using (StreamWriter sw = File.AppendText(logFileName))
                 {
+                    WriteSeparator(sw);
                     sw.WriteLine("******* FATAL EXCEPTION !!!! *********\n");
                     WriteHeader(sw, e.GetType().ToString(), "", ErrorLevel.Error);
                     sw.Write(e.ToString());
                     sw.WriteLine();
-                    WriteSeparator(sw);
                 }
 			}
 			catch (Exception)
