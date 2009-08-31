@@ -119,16 +119,16 @@
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="statusStrip.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 586</value>
+    <value>0, 680</value>
   </data>
   <data name="tabContextMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
     <value>174, 48</value>
   </data>
   <data name="pluginTabs.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 32</value>
+    <value>0, 37</value>
   </data>
   <data name="pluginTabs.Size" type="System.Drawing.Size, System.Drawing">
-    <value>994, 548</value>
+    <value>994, 632</value>
   </data>
   <data name="closeTabToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>173, 22</value>
@@ -177,6 +177,9 @@
   </data>
   <data name="recentFilesToolStripMenuItem.Text" xml:space="preserve">
     <value>最近使用したファイル</value>
+  </data>
+  <data name="noneToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>111, 22</value>
   </data>
   <data name="exitMenuItem.Text" xml:space="preserve">
     <value>終了</value>
@@ -248,28 +251,16 @@
     <value>217, 22</value>
   </data>
   <data name="languageToolStripMenuItem.Text" xml:space="preserve">
-    <value>言語</value>
-  </data>
-  <data name="englishToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>140, 22</value>
+    <value>インターフェイス言語</value>
   </data>
   <data name="englishToolStripMenuItem.Text" xml:space="preserve">
     <value>英語</value>
   </data>
-  <data name="frenchToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>140, 22</value>
-  </data>
   <data name="frenchToolStripMenuItem.Text" xml:space="preserve">
     <value>フランス語</value>
   </data>
-  <data name="germanToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>140, 22</value>
-  </data>
   <data name="germanToolStripMenuItem.Text" xml:space="preserve">
     <value>ドイツ語</value>
-  </data>
-  <data name="japaneseToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>140, 22</value>
   </data>
   <data name="japaneseToolStripMenuItem.Text" xml:space="preserve">
     <value>日本語</value>
@@ -308,7 +299,7 @@
     <value>6, 15</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>992, 608</value>
+    <value>992, 702</value>
   </data>
   <data name="$this.Font" type="System.Drawing.Font, System.Drawing">
     <value>Arial Unicode MS, 8.25pt</value>
