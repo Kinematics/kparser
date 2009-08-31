@@ -71,21 +71,18 @@ namespace WaywardGamers.KParser
             this.dataSourceGroup.Controls.Add(this.dataSourceLogs);
             this.dataSourceGroup.Name = "dataSourceGroup";
             this.dataSourceGroup.TabStop = false;
-            this.dataSourceGroup.UseWaitCursor = true;
             // 
             // specifyPID
             // 
             resources.ApplyResources(this.specifyPID, "specifyPID");
             this.specifyPID.Name = "specifyPID";
             this.specifyPID.UseVisualStyleBackColor = true;
-            this.specifyPID.UseWaitCursor = true;
             // 
             // editMemoryAddress
             // 
             resources.ApplyResources(this.editMemoryAddress, "editMemoryAddress");
             this.editMemoryAddress.Name = "editMemoryAddress";
             this.editMemoryAddress.UseVisualStyleBackColor = true;
-            this.editMemoryAddress.UseWaitCursor = true;
             this.editMemoryAddress.CheckedChanged += new System.EventHandler(this.editMemoryAddress_CheckedChanged);
             // 
             // readExistingLogs
@@ -93,14 +90,12 @@ namespace WaywardGamers.KParser
             resources.ApplyResources(this.readExistingLogs, "readExistingLogs");
             this.readExistingLogs.Name = "readExistingLogs";
             this.readExistingLogs.UseVisualStyleBackColor = true;
-            this.readExistingLogs.UseWaitCursor = true;
             // 
             // memoryOffsetAddress
             // 
             resources.ApplyResources(this.memoryOffsetAddress, "memoryOffsetAddress");
             this.memoryOffsetAddress.Name = "memoryOffsetAddress";
             this.memoryOffsetAddress.ReadOnly = true;
-            this.memoryOffsetAddress.UseWaitCursor = true;
             this.memoryOffsetAddress.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.memoryOffsetAddress_KeyPress);
             // 
             // logDirectory
@@ -108,26 +103,22 @@ namespace WaywardGamers.KParser
             resources.ApplyResources(this.logDirectory, "logDirectory");
             this.logDirectory.Name = "logDirectory";
             this.logDirectory.ReadOnly = true;
-            this.logDirectory.UseWaitCursor = true;
             // 
             // memoryLabel
             // 
             resources.ApplyResources(this.memoryLabel, "memoryLabel");
             this.memoryLabel.Name = "memoryLabel";
-            this.memoryLabel.UseWaitCursor = true;
             // 
             // directoryLabel
             // 
             resources.ApplyResources(this.directoryLabel, "directoryLabel");
             this.directoryLabel.Name = "directoryLabel";
-            this.directoryLabel.UseWaitCursor = true;
             // 
             // getLogDirectory
             // 
             resources.ApplyResources(this.getLogDirectory, "getLogDirectory");
             this.getLogDirectory.Name = "getLogDirectory";
             this.getLogDirectory.UseVisualStyleBackColor = true;
-            this.getLogDirectory.UseWaitCursor = true;
             this.getLogDirectory.Click += new System.EventHandler(this.getLogDirectory_Click);
             // 
             // dataSourceRam
@@ -136,7 +127,6 @@ namespace WaywardGamers.KParser
             this.dataSourceRam.Name = "dataSourceRam";
             this.dataSourceRam.TabStop = true;
             this.dataSourceRam.UseVisualStyleBackColor = true;
-            this.dataSourceRam.UseWaitCursor = true;
             // 
             // dataSourceLogs
             // 
@@ -144,7 +134,6 @@ namespace WaywardGamers.KParser
             this.dataSourceLogs.Name = "dataSourceLogs";
             this.dataSourceLogs.TabStop = true;
             this.dataSourceLogs.UseVisualStyleBackColor = true;
-            this.dataSourceLogs.UseWaitCursor = true;
             this.dataSourceLogs.CheckedChanged += new System.EventHandler(this.dataSourceLogs_CheckedChanged);
             // 
             // ok
