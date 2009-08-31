@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="BioRegex" xml:space="preserve">
+    <value>Bio( I+)?</value>
+  </data>
   <data name="Chakra" xml:space="preserve">
     <value>Chakra</value>
   </data>
@@ -153,8 +156,14 @@
   <data name="CuringWaltz4" xml:space="preserve">
     <value>Curing Waltz IV</value>
   </data>
+  <data name="DiaRegex" xml:space="preserve">
+    <value>Dia( I+)?</value>
+  </data>
   <data name="DivineWaltz" xml:space="preserve">
     <value>Divine Waltz</value>
+  </data>
+  <data name="ElegyRegex" xml:space="preserve">
+    <value>(Battlefield|Carnage|Massacre) Elegy</value>
   </data>
   <data name="Gil" xml:space="preserve">
     <value>Gil</value>
@@ -174,8 +183,17 @@
   <data name="Hide" xml:space="preserve">
     <value>Hide</value>
   </data>
+  <data name="HojoRegex" xml:space="preserve">
+    <value>Hojo: (Ichi|Ni)</value>
+  </data>
+  <data name="JubakuRegex" xml:space="preserve">
+    <value>Jubaku: (Ichi|Ni)</value>
+  </data>
   <data name="MagicFruit" xml:space="preserve">
     <value>Magic Fruit</value>
+  </data>
+  <data name="ParalyzeRegex" xml:space="preserve">
+    <value>Paralyze( I+)?</value>
   </data>
   <data name="Pollen" xml:space="preserve">
     <value>Pollen</value>
@@ -191,6 +209,9 @@
   </data>
   <data name="SalvageCellRegex" xml:space="preserve">
     <value>([a-z]+) cell</value>
+  </data>
+  <data name="SlowRegex" xml:space="preserve">
+    <value>Slow( I+)?</value>
   </data>
   <data name="SneakAttack" xml:space="preserve">
     <value>Sneak Attack</value>

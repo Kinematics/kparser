@@ -61,6 +61,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Bio( I+)?.
+        /// </summary>
+        public static string BioRegex {
+            get {
+                return ResourceManager.GetString("BioRegex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Chakra.
         /// </summary>
         public static string Chakra {
@@ -169,11 +178,29 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dia( I+)?.
+        /// </summary>
+        public static string DiaRegex {
+            get {
+                return ResourceManager.GetString("DiaRegex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Divine Waltz.
         /// </summary>
         public static string DivineWaltz {
             get {
                 return ResourceManager.GetString("DivineWaltz", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (Battlefield|Carnage|Massacre) Elegy.
+        /// </summary>
+        public static string ElegyRegex {
+            get {
+                return ResourceManager.GetString("ElegyRegex", resourceCulture);
             }
         }
         
@@ -232,11 +259,38 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hojo: (Ichi|Ni).
+        /// </summary>
+        public static string HojoRegex {
+            get {
+                return ResourceManager.GetString("HojoRegex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jubaku: (Ichi|Ni).
+        /// </summary>
+        public static string JubakuRegex {
+            get {
+                return ResourceManager.GetString("JubakuRegex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Magic Fruit.
         /// </summary>
         public static string MagicFruit {
             get {
                 return ResourceManager.GetString("MagicFruit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paralyze( I+)?.
+        /// </summary>
+        public static string ParalyzeRegex {
+            get {
+                return ResourceManager.GetString("ParalyzeRegex", resourceCulture);
             }
         }
         
@@ -282,6 +336,15 @@ namespace WaywardGamers.KParser.Resources {
         public static string SalvageCellRegex {
             get {
                 return ResourceManager.GetString("SalvageCellRegex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Slow( I+)?.
+        /// </summary>
+        public static string SlowRegex {
+            get {
+                return ResourceManager.GetString("SlowRegex", resourceCulture);
             }
         }
         
