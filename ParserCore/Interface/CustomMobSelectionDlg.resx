@@ -121,56 +121,53 @@
     <value>17, 17</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>335, 22</value>
-  </data>
-  <data name="checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Text" xml:space="preserve">
-    <value>Check All Mobs of Currently Selected Type</value>
-  </data>
-  <data name="uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>335, 22</value>
-  </data>
-  <data name="uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Text" xml:space="preserve">
-    <value>Uncheck All Mobs of Currently Selected Type</value>
-  </data>
-  <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>332, 6</value>
-  </data>
-  <data name="checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>335, 22</value>
-  </data>
-  <data name="checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Text" xml:space="preserve">
-    <value>Check All Mobs of Currently Selected Type and XP</value>
-  </data>
-  <data name="uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>335, 22</value>
-  </data>
-  <data name="uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Text" xml:space="preserve">
-    <value>Uncheck All Mobs of Currently Selected Type and XP</value>
-  </data>
-  <data name="toolStripSeparator1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>332, 6</value>
-  </data>
-  <data name="checkAllMobsBelowCurrentSelectionToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>335, 22</value>
-  </data>
-  <data name="checkAllMobsBelowCurrentSelectionToolStripMenuItem.Text" xml:space="preserve">
-    <value>Check All Mobs Below Current Selection</value>
-  </data>
-  <data name="uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>335, 22</value>
-  </data>
-  <data name="uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Text" xml:space="preserve">
-    <value>Uncheck All Mobs Below Current Selection</value>
-  </data>
   <data name="mobListContextMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>336, 148</value>
+    <value>229, 142</value>
   </data>
   <data name="&gt;&gt;mobListContextMenuStrip.Name" xml:space="preserve">
     <value>mobListContextMenuStrip</value>
   </data>
   <data name="&gt;&gt;mobListContextMenuStrip.Type" xml:space="preserve">
     <value>System.Windows.Forms.ContextMenuStrip, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>228, 22</value>
+  </data>
+  <data name="checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Text" xml:space="preserve">
+    <value>Select All Mobs of Type:</value>
+  </data>
+  <data name="uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>228, 22</value>
+  </data>
+  <data name="uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Text" xml:space="preserve">
+    <value>Unselect All Mobs of Type:</value>
+  </data>
+  <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>225, 6</value>
+  </data>
+  <data name="checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>228, 22</value>
+  </data>
+  <data name="checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Text" xml:space="preserve">
+    <value>Select All Mobs of Type/XP:</value>
+  </data>
+  <data name="uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>228, 22</value>
+  </data>
+  <data name="uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Text" xml:space="preserve">
+    <value>Unselect All Mobs of Type/XP:</value>
+  </data>
+  <data name="checkAllMobsBelowCurrentSelectionToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>228, 22</value>
+  </data>
+  <data name="checkAllMobsBelowCurrentSelectionToolStripMenuItem.Text" xml:space="preserve">
+    <value>Select All Mobs Below:</value>
+  </data>
+  <data name="uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>228, 22</value>
+  </data>
+  <data name="uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Text" xml:space="preserve">
+    <value>Unselect All Mobs Below:</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="selectAllButton.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
@@ -199,7 +196,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;selectAllButton.ZOrder" xml:space="preserve">
-    <value>8</value>
+    <value>7</value>
   </data>
   <data name="selectNoneButton.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Bottom</value>
@@ -226,7 +223,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;selectNoneButton.ZOrder" xml:space="preserve">
-    <value>7</value>
+    <value>6</value>
   </data>
   <data name="closeButton.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Bottom</value>
@@ -253,7 +250,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;closeButton.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>4</value>
   </data>
   <data name="invertSelectionButton.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Bottom</value>
@@ -280,7 +277,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;invertSelectionButton.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>2</value>
   </data>
   <data name="uncheck0XPMobs.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Bottom</value>
@@ -307,64 +304,10 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;uncheck0XPMobs.ZOrder" xml:space="preserve">
-    <value>4</value>
+    <value>3</value>
   </data>
   <data name="mobList.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Bottom, Left, Right</value>
-  </data>
-  <metadata name="mobList2ContextMenuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>196, 17</value>
-  </metadata>
-  <data name="checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>335, 22</value>
-  </data>
-  <data name="checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem1.Text" xml:space="preserve">
-    <value>Check All Mobs of Currently Selected Type</value>
-  </data>
-  <data name="uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>335, 22</value>
-  </data>
-  <data name="uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem1.Text" xml:space="preserve">
-    <value>Uncheck All Mobs of Currently Selected Type</value>
-  </data>
-  <data name="toolStripSeparator3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>332, 6</value>
-  </data>
-  <data name="checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>335, 22</value>
-  </data>
-  <data name="checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem1.Text" xml:space="preserve">
-    <value>Check All Mobs of Currently Selected Type and XP</value>
-  </data>
-  <data name="uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>335, 22</value>
-  </data>
-  <data name="uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem1.Text" xml:space="preserve">
-    <value>Uncheck All Mobs of Currently Selected Type and XP</value>
-  </data>
-  <data name="toolStripSeparator4.Size" type="System.Drawing.Size, System.Drawing">
-    <value>332, 6</value>
-  </data>
-  <data name="checkAllMobsBelowCurrentSelectionToolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>335, 22</value>
-  </data>
-  <data name="checkAllMobsBelowCurrentSelectionToolStripMenuItem1.Text" xml:space="preserve">
-    <value>Check All Mobs Below Current Selection</value>
-  </data>
-  <data name="uncheckAllMobsBelowCurrentSelectionToolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>335, 22</value>
-  </data>
-  <data name="uncheckAllMobsBelowCurrentSelectionToolStripMenuItem1.Text" xml:space="preserve">
-    <value>Uncheck All Mobs Below Current Selection</value>
-  </data>
-  <data name="mobList2ContextMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
-    <value>336, 148</value>
-  </data>
-  <data name="&gt;&gt;mobList2ContextMenuStrip.Name" xml:space="preserve">
-    <value>mobList2ContextMenuStrip</value>
-  </data>
-  <data name="&gt;&gt;mobList2ContextMenuStrip.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ContextMenuStrip, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="mobList.Location" type="System.Drawing.Point, System.Drawing">
     <value>12, 12</value>
@@ -385,7 +328,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;mobList.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>1</value>
   </data>
   <data name="label1.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Bottom</value>
@@ -415,7 +358,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;label1.ZOrder" xml:space="preserve">
-    <value>9</value>
+    <value>8</value>
   </data>
   <data name="numMobsSelected.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Bottom</value>
@@ -445,7 +388,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;numMobsSelected.ZOrder" xml:space="preserve">
-    <value>6</value>
+    <value>5</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -492,12 +435,6 @@
   <data name="&gt;&gt;uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;toolStripSeparator1.Name" xml:space="preserve">
-    <value>toolStripSeparator1</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="&gt;&gt;checkAllMobsBelowCurrentSelectionToolStripMenuItem.Name" xml:space="preserve">
     <value>checkAllMobsBelowCurrentSelectionToolStripMenuItem</value>
   </data>
@@ -508,54 +445,6 @@
     <value>uncheckAllMobsBelowCurrentSelectionToolStripMenuItem</value>
   </data>
   <data name="&gt;&gt;uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem1.Name" xml:space="preserve">
-    <value>checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem1</value>
-  </data>
-  <data name="&gt;&gt;checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem1.Name" xml:space="preserve">
-    <value>uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem1</value>
-  </data>
-  <data name="&gt;&gt;uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator3.Name" xml:space="preserve">
-    <value>toolStripSeparator3</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator3.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem1.Name" xml:space="preserve">
-    <value>checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem1</value>
-  </data>
-  <data name="&gt;&gt;checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem1.Name" xml:space="preserve">
-    <value>uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem1</value>
-  </data>
-  <data name="&gt;&gt;uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator4.Name" xml:space="preserve">
-    <value>toolStripSeparator4</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator4.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;checkAllMobsBelowCurrentSelectionToolStripMenuItem1.Name" xml:space="preserve">
-    <value>checkAllMobsBelowCurrentSelectionToolStripMenuItem1</value>
-  </data>
-  <data name="&gt;&gt;checkAllMobsBelowCurrentSelectionToolStripMenuItem1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;uncheckAllMobsBelowCurrentSelectionToolStripMenuItem1.Name" xml:space="preserve">
-    <value>uncheckAllMobsBelowCurrentSelectionToolStripMenuItem1</value>
-  </data>
-  <data name="&gt;&gt;uncheckAllMobsBelowCurrentSelectionToolStripMenuItem1.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
