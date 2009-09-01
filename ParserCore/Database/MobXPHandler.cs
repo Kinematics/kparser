@@ -314,6 +314,11 @@ namespace WaywardGamers.KParser.Database
                 return completeMobFightList.Values;
             }
         }
+
+        public void NotifyOfCultureChange()
+        {
+            customMobFilterDlg.NotifyOfCultureChange();
+        }
         #endregion
 
         #region Private helper functions

@@ -416,6 +416,11 @@ namespace WaywardGamers.KParser.Plugin
         {
             mobList.Items.Clear();
         }
+
+        internal void NotifyOfCultureChange()
+        {
+            UpdateUI();
+        }
         #endregion
 
         #region Utility Functions
@@ -503,7 +508,30 @@ namespace WaywardGamers.KParser.Plugin
                 return string.Empty;
             }
         }
-        #endregion
 
+        private void UpdateUI()
+        {
+            System.ComponentModel.ComponentResourceManager resources =
+                new System.ComponentModel.ComponentResourceManager(typeof(CustomMobSelectionDlg));
+
+            resources.ApplyResources(this.mobListContextMenuStrip, "mobListContextMenuStrip");
+            resources.ApplyResources(this.checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem, "checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem");
+            resources.ApplyResources(this.checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem, "checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem");
+            resources.ApplyResources(this.checkAllMobsBelowCurrentSelectionToolStripMenuItem, "checkAllMobsBelowCurrentSelectionToolStripMenuItem");
+            resources.ApplyResources(this.toolStripSeparator2, "toolStripSeparator2");
+            resources.ApplyResources(this.uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem, "uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem");
+            resources.ApplyResources(this.uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem, "uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem");
+            resources.ApplyResources(this.uncheckAllMobsBelowCurrentSelectionToolStripMenuItem, "uncheckAllMobsBelowCurrentSelectionToolStripMenuItem");
+            resources.ApplyResources(this.selectAllButton, "selectAllButton");
+            resources.ApplyResources(this.selectNoneButton, "selectNoneButton");
+            resources.ApplyResources(this.closeButton, "closeButton");
+            resources.ApplyResources(this.invertSelectionButton, "invertSelectionButton");
+            resources.ApplyResources(this.uncheck0XPMobs, "uncheck0XPMobs");
+            resources.ApplyResources(this.mobList, "mobList");
+            resources.ApplyResources(this.label1, "label1");
+            resources.ApplyResources(this.numMobsSelected, "numMobsSelected");
+            resources.ApplyResources(this, "$this");
+        }
+        #endregion
     }
 }

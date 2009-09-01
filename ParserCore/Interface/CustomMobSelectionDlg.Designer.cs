@@ -232,12 +232,12 @@ namespace WaywardGamers.KParser.Plugin
             this.BackgroundImage = null;
             this.Controls.Add(this.mobList);
             this.Controls.Add(this.uncheck0XPMobs);
-            this.Controls.Add(this.numMobsSelected);
             this.Controls.Add(this.invertSelectionButton);
+            this.Controls.Add(this.numMobsSelected);
             this.Controls.Add(this.closeButton);
             this.Controls.Add(this.selectNoneButton);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.selectAllButton);
+            this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = null;
             this.MaximizeBox = false;
