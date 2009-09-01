@@ -266,6 +266,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="KPDatabase.sdf">
     </EmbeddedResource>
+    <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.de.resx">
+      <DependentUpon>SelectPOLProcess.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.fr.resx">
+      <DependentUpon>SelectPOLProcess.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.ja.resx">
+      <DependentUpon>SelectPOLProcess.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.resx">
       <DependentUpon>SelectPOLProcess.cs</DependentUpon>
       <SubType>Designer</SubType>
