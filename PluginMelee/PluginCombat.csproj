@@ -106,6 +106,9 @@
     <Compile Include="ThiefPlugin.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="WSRatePlugin.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ParserCore\ParserCore.csproj">
