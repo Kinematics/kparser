@@ -1859,5 +1859,59 @@ namespace WaywardGamers.KParser.Resources {
                 return ResourceManager.GetString("ThiefPluginTrickAttack", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,10}  :  {1,10}.
+        /// </summary>
+        internal static string WSRatePluginDetailsFormat {
+            get {
+                return ResourceManager.GetString("WSRatePluginDetailsFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to       Hits      Frequency.
+        /// </summary>
+        internal static string WSRatePluginDetailsHeader {
+            get {
+                return ResourceManager.GetString("WSRatePluginDetailsHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,13}{2,10}{3,13}{4,11}{5,11}{6,9:f2}{7,9:f2}{8,9}{9,7}.
+        /// </summary>
+        internal static string WSRatePluginMainFormat {
+            get {
+                return ResourceManager.GetString("WSRatePluginMainFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player               # Melee Hits   # Retal.   # WSkills   Min Hits   Max Hits   A.Mean   H.Mean   Median   Mode.
+        /// </summary>
+        internal static string WSRatePluginMainHeader {
+            get {
+                return ResourceManager.GetString("WSRatePluginMainHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WS Rates.
+        /// </summary>
+        internal static string WSRatePluginTabName {
+            get {
+                return ResourceManager.GetString("WSRatePluginTabName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Weaponskill/TP Rates.
+        /// </summary>
+        internal static string WSRatePluginTitle {
+            get {
+                return ResourceManager.GetString("WSRatePluginTitle", resourceCulture);
+            }
+        }
     }
 }
