@@ -261,6 +261,15 @@
       <DependentUpon>BasePluginControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Interface\CustomMobSelectionDlg.de.resx">
+      <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interface\CustomMobSelectionDlg.fr.resx">
+      <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interface\CustomMobSelectionDlg.ja.resx">
+      <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Interface\CustomMobSelectionDlg.resx">
       <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
     </EmbeddedResource>
