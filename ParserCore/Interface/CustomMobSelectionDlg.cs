@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using WaywardGamers.KParser.Database;
 using WaywardGamers.KParser.Plugin;
@@ -13,7 +14,7 @@ namespace WaywardGamers.KParser.Plugin
 {
     public partial class CustomMobSelectionDlg : Form
     {
-        #region Constructor
+        #region Member Variables
         bool checkingMobList = false;
         List<int> oldIndices = new List<int>();
 
@@ -22,9 +23,16 @@ namespace WaywardGamers.KParser.Plugin
         // local variable.
         int rightClickIndex = -1;
 
+        readonly string contextMenuRegexFormat = "(?<prefix>[^:]+):.*";
+        Regex contextMenuRegex;
+        #endregion
+
+        #region Constructor
         public CustomMobSelectionDlg()
         {
             InitializeComponent();
+
+            contextMenuRegex = new Regex(contextMenuRegexFormat);
         }
         #endregion
 
@@ -72,6 +80,12 @@ namespace WaywardGamers.KParser.Plugin
             oldIndices.Sort();
 
             UpdateFilter();
+        }
+
+        private void mobList_MouseHover(object sender, EventArgs e)
+        {
+            // Give the list focus on hover so that the mouse wheel works.
+            mobList.Focus();
         }
 
         // Button event handlers
@@ -170,16 +184,18 @@ namespace WaywardGamers.KParser.Plugin
             {
                 rightClickIndex = mobList.IndexFromPoint(e.X, e.Y);
 
-                if (rightClickIndex >= 0)
-                {
-                    mobList.SetSelected(rightClickIndex, true);
-                }
+                //if (rightClickIndex >= 0)
+                //{
+                //    mobList.SetSelected(rightClickIndex, true);
+                //}
             }
         }
 
         private void mobListContextMenuStrip_Opening(object sender, CancelEventArgs e)
         {
-            if ((mobList.Items.Count == 0) || (mobList.SelectedIndex < 0))
+            MobXPValues mob = GetRCSelectedMob();
+
+            if ((mob == null) || (mobList.Items.Count == 0))
             {
                 checkAllMobsBelowCurrentSelectionToolStripMenuItem.Enabled = false;
                 uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Enabled = false;
@@ -187,16 +203,41 @@ namespace WaywardGamers.KParser.Plugin
                 uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Enabled = false;
                 checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Enabled = false;
                 uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Enabled = false;
+                return;
             }
-            else
-            {
-                checkAllMobsBelowCurrentSelectionToolStripMenuItem.Enabled = true;
-                uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Enabled = true;
-                checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Enabled = true;
-                uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Enabled = true;
-                checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Enabled = true;
-                uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Enabled = true;
-            }
+
+            checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Text =
+                string.Format("{0}:  {1}",
+                GetBaseToolStripContextMenuString(checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem),
+                mob.Name);
+            checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Text =
+                string.Format("{0}:  {1} ({2})",
+                GetBaseToolStripContextMenuString(checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem),
+                mob.Name, mob.BaseXP);
+            checkAllMobsBelowCurrentSelectionToolStripMenuItem.Text =
+                string.Format("{0}:  {1} (#{2})",
+                GetBaseToolStripContextMenuString(checkAllMobsBelowCurrentSelectionToolStripMenuItem),
+                mob.Name, mob.BattleID);
+            uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Text =
+                string.Format("{0}:  {1}",
+                GetBaseToolStripContextMenuString(uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem),
+                mob.Name);
+            uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Text =
+                string.Format("{0}:  {1} ({2})",
+                GetBaseToolStripContextMenuString(uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem),
+                mob.Name, mob.BaseXP);
+            uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Text =
+                string.Format("{0}:  {1} (#{2})",
+                GetBaseToolStripContextMenuString(uncheckAllMobsBelowCurrentSelectionToolStripMenuItem),
+                mob.Name, mob.BattleID);
+
+
+            checkAllMobsBelowCurrentSelectionToolStripMenuItem.Enabled = true;
+            uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Enabled = true;
+            checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Enabled = true;
+            uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Enabled = true;
+            checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Enabled = true;
+            uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Enabled = true;
         }
 
         private void checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -406,13 +447,19 @@ namespace WaywardGamers.KParser.Plugin
         {
             // Can't depend on mobList.SelectedIndex to be accurate to the
             // item selected with a right-click, so storing in a local class
-            // local variable.
+            // variable.
 
             MobXPValues mob = null;
 
-            if (rightClickIndex >= 0)
+            try
             {
-                mob = MobXPHandler.Instance.CompleteMobList.ElementAt(rightClickIndex);
+                if (rightClickIndex >= 0)
+                {
+                    mob = MobXPHandler.Instance.CompleteMobList.ElementAt(rightClickIndex);
+                }
+            }
+            catch (Exception)
+            {
             }
 
             return mob;
@@ -440,9 +487,22 @@ namespace WaywardGamers.KParser.Plugin
             MobXPHandler.Instance.OnCustomMobFilterWasChanged();
         }
 
-        #endregion
+        private string GetBaseToolStripContextMenuString(ToolStripMenuItem menuItem)
+        {
+            if (menuItem == null)
+                throw new ArgumentNullException();
 
-        #region List Box Handlers
+            Match contextMenuMatch = contextMenuRegex.Match(menuItem.Text);
+
+            if (contextMenuMatch.Success)
+            {
+                return contextMenuMatch.Groups["prefix"].ToString();
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
         #endregion
 
     }

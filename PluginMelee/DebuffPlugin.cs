@@ -15,15 +15,14 @@ namespace WaywardGamers.KParser.Plugin
     public class DebuffPlugin : BasePluginControl
     {
         #region Member Variables
-        string debuffHeader = "Debuff                # Times   # Successful   # No Effect   % Successful\n";
-        string debuffHeaderWithTargets = "Debuff              Target              # Times   # Successful   # No Effect   % Successful\n";
-
         bool flagNoUpdate = false;
         bool groupMobs = true;
         bool exclude0XPMobs = false;
         bool customMobSelection = false;
 
+        ToolStripLabel catLabel = new ToolStripLabel();
         ToolStripComboBox categoryCombo = new ToolStripComboBox();
+        ToolStripLabel mobLabel = new ToolStripLabel();
         ToolStripComboBox mobsCombo = new ToolStripComboBox();
 
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
@@ -32,77 +31,63 @@ namespace WaywardGamers.KParser.Plugin
         ToolStripMenuItem customMobSelectionOption = new ToolStripMenuItem();
 
         ToolStripButton editCustomMobFilter = new ToolStripButton();
+
+        string lsDebuffHeader;
+        string lsDebuffHeaderWithTargets;
+        string lsPlayerDebuffFormat;
+        string lsMobDebuffFormat;
         #endregion
 
         #region Constructor
         public DebuffPlugin()
         {
-            ToolStripLabel catLabel = new ToolStripLabel();
-            catLabel.Text = "Category:";
-            toolStrip.Items.Add(catLabel);
+            LoadLocalizedUI();
 
             categoryCombo.DropDownStyle = ComboBoxStyle.DropDownList;
-            categoryCombo.Items.Add("Debuff Mobs");
-            categoryCombo.Items.Add("Debuff Players");
             categoryCombo.SelectedIndex = 0;
             categoryCombo.SelectedIndexChanged += new EventHandler(this.categoryCombo_SelectedIndexChanged);
-            toolStrip.Items.Add(categoryCombo);
-
-
-            ToolStripLabel mobLabel = new ToolStripLabel();
-            mobLabel.Text = "Mobs:";
-            toolStrip.Items.Add(mobLabel);
 
             mobsCombo.DropDownStyle = ComboBoxStyle.DropDownList;
             mobsCombo.MaxDropDownItems = 10;
             mobsCombo.AutoSize = false;
             mobsCombo.Width = 175;
-            mobsCombo.Items.Add("All");
             mobsCombo.SelectedIndex = 0;
             mobsCombo.SelectedIndexChanged += new EventHandler(this.mobsCombo_SelectedIndexChanged);
-            toolStrip.Items.Add(mobsCombo);
 
             optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            optionsMenu.Text = "Options";
 
-            groupMobsOption.Text = "Group Mobs";
             groupMobsOption.CheckOnClick = true;
             groupMobsOption.Checked = true;
             groupMobsOption.Click += new EventHandler(groupMobs_Click);
             optionsMenu.DropDownItems.Add(groupMobsOption);
 
-            exclude0XPOption.Text = "Exclude 0 XP Mobs";
             exclude0XPOption.CheckOnClick = true;
             exclude0XPOption.Checked = false;
             exclude0XPOption.Click += new EventHandler(exclude0XPMobs_Click);
             optionsMenu.DropDownItems.Add(exclude0XPOption);
 
-            customMobSelectionOption.Text = "Custom Mob Selection";
             customMobSelectionOption.CheckOnClick = true;
             customMobSelectionOption.Checked = false;
             customMobSelectionOption.Click += new EventHandler(customMobSelection_Click);
             optionsMenu.DropDownItems.Add(customMobSelectionOption);
 
-            toolStrip.Items.Add(optionsMenu);
-
-            ToolStripSeparator aSeparator = new ToolStripSeparator();
-            toolStrip.Items.Add(aSeparator);
-
-            editCustomMobFilter.Text = "Edit Mob Filter";
             editCustomMobFilter.Enabled = false;
             editCustomMobFilter.Click += new EventHandler(editCustomMobFilter_Click);
 
+            ToolStripSeparator aSeparator = new ToolStripSeparator();
+
+            toolStrip.Items.Add(catLabel);
+            toolStrip.Items.Add(categoryCombo);
+            toolStrip.Items.Add(mobLabel);
+            toolStrip.Items.Add(mobsCombo);
+            toolStrip.Items.Add(optionsMenu);
+            toolStrip.Items.Add(aSeparator);
             toolStrip.Items.Add(editCustomMobFilter);
 
         }
         #endregion
 
         #region IPlugin Overrides
-        public override string TabName
-        {
-            get { return "Debuffs"; }
-        }
-
         public override void Reset()
         {
             ResetTextBox();
@@ -285,7 +270,8 @@ namespace WaywardGamers.KParser.Plugin
                     continue;
 
                 AppendText(string.Format("{0}\n", player.DebufferName), Color.Blue, true, false);
-                AppendText(debuffHeader, Color.Black, true, true);
+                AppendText(lsDebuffHeader, Color.Black, true, true);
+                AppendText("\n");
 
                 foreach (var debuff in player.Debuffs)
                 {
@@ -321,9 +307,9 @@ namespace WaywardGamers.KParser.Plugin
 
                         percSuccess = (double)successfulCount / usedCount;
 
-                        AppendText(string.Format("{0,9:d}{1,15:d}{2,14:d}{3,15:p2}\n",
+                        AppendText(string.Format(lsPlayerDebuffFormat,
                             usedCount, successfulCount, noEffectCount, percSuccess));
-
+                        AppendText("\n");
                     }
                 }
 
@@ -349,7 +335,8 @@ namespace WaywardGamers.KParser.Plugin
                     continue;
 
                 AppendText(string.Format("{0}\n", mob.DebufferName), Color.Blue, true, false);
-                AppendText(debuffHeaderWithTargets, Color.Black, true, true);
+                AppendText(lsDebuffHeaderWithTargets, Color.Black, true, true);
+                AppendText("\n");
 
                 foreach (var debuff in mob.Debuffs)
                 {
@@ -394,14 +381,12 @@ namespace WaywardGamers.KParser.Plugin
 
                             percSuccess = (double)successfulCount / usedCount;
 
-                            AppendText(string.Format("{0,7:d}{1,15:d}{2,14:d}{3,15:p2}\n",
+                            AppendText(string.Format(lsMobDebuffFormat,
                                 usedCount, successfulCount, noEffectCount, percSuccess));
+                            AppendText("\n");
 
                         }
                     }
-
-
-
                 }
 
                 AppendText("\n");
@@ -497,5 +482,35 @@ namespace WaywardGamers.KParser.Plugin
         }
 
         #endregion
+
+        #region Localization Overrides
+        protected override void LoadLocalizedUI()
+        {
+            catLabel.Text = Resources.PublicResources.CategoryLabel;
+            mobLabel.Text = Resources.PublicResources.MobsLabel;
+            optionsMenu.Text = Resources.PublicResources.Options;
+            groupMobsOption.Text = Resources.PublicResources.GroupMobs;
+            exclude0XPOption.Text = Resources.PublicResources.Exclude0XPMobs;
+            customMobSelectionOption.Text = Resources.PublicResources.CustomMobSelection;
+            editCustomMobFilter.Text = Resources.PublicResources.EditMobFilter;
+
+            categoryCombo.Items.Clear();
+            categoryCombo.Items.Add(Resources.Combat.DebuffPluginDebuffMobsCategory);
+            categoryCombo.Items.Add(Resources.Combat.DebuffPluginDebuffPlayersCategory);
+
+            UpdateMobList();
+        }
+
+        protected override void LoadResources()
+        {
+            this.tabName = Resources.Combat.DebuffPluginTabName;
+
+            lsDebuffHeader = Resources.Combat.DebuffPluginDebuffHeader;
+            lsDebuffHeaderWithTargets = Resources.Combat.DebuffPluginDebuffWithTargetsHeader;
+            lsPlayerDebuffFormat = Resources.Combat.DebuffPluginPlayerDebuffFormat;
+            lsMobDebuffFormat = Resources.Combat.DebuffPluginMobDebuffFormat;
+        }
+        #endregion
+
     }
 }

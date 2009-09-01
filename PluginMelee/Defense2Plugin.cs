@@ -13,13 +13,6 @@ namespace WaywardGamers.KParser.Plugin
 {
     public class DefensePlugin : BasePluginControl
     {
-        private class SpellNames
-        {
-            internal static readonly string UtsuIchi = "Utsusemi: Ichi";
-            internal static readonly string UtsuNi = "Utsusemi: Ni";
-        }
-
-
         #region Member Variables
         List<MainAccumulator> dataAccum = new List<MainAccumulator>();
         IEnumerable<DefenseGroup> defenseSet = null;
@@ -30,32 +23,14 @@ namespace WaywardGamers.KParser.Plugin
         List<string> playerList = new List<string>();
         Dictionary<string, int> playerDamage = new Dictionary<string, int>();
 
-        //string incAttacksHeader = "Player           Melee   Range   Abil/Ws   Spells   Unknown   Total   Attack# %   Avoided   Avoid %\n";
-
-        //--
-        
-        string summaryHeader = "Player             Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg\n";
-        string meleeHeader   = "Player             Melee Dmg   Melee %   Hit/Miss   M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
-        string rangeHeader   = "Player             Range Dmg   Range %   Hit/Miss   R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%\n";
-        string spellHeader   = "Player                  Spell Dmg   Spell %  #Spells  #Fail  S.Low/Hi     S.Avg  #MBurst  MB.Low/Hi   MB.Avg\n";
-        string abilHeader    = "Player                  Abil. Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg\n";
-        string wskillHeader  = "Player                  WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg\n";
-        string skillchainHeader = "Skillchain          SC Dmg  # SC  SC.Low/Hi  SC.Avg\n";
-        string otherMHeader  = "Player             M.AE Dmg  # M.AE  M.AE Avg   R.AE Dmg  # R.AE  R.AE Avg   Spk.Dmg  # Spike  Spk.Avg\n";
-        string otherPHeader  = "Player             CA.Dmg  CA.Hit/Miss  CA.Low/Hi  CA.Avg   Ret.Dmg  Ret.Hit/Miss  Ret.Low/Hi  Ret.Avg\n";
-
-        string passiveDefHeader = "Player             Evasion  Evasion %   Parry  Parry %   Counter  Counter %   Intimidate  Intimidate %\n";
-        string activeDefHeader  = "Player             Shadow  Shadow %   Anticipate  Anticipate %   Retaliations  Retaliation %\n";
-        string utsuCastingheader = "Player             :Ichi Cast  :Ichi Finished    :Ni Cast  :Ni Finished    Casting Time (est.)\n";
-        string shadowUseHeader   = "Player             Shadows Used    Shadows Cast  Shadows Cast(Nin)   Efficiency  Efficiency (Nin)\n";
-
-
         bool flagNoUpdate;
         bool groupMobs = true;
         bool exclude0XPMobs = false;
         bool customMobSelection = false;
 
+        ToolStripLabel catLabel = new ToolStripLabel();
         ToolStripComboBox categoryCombo = new ToolStripComboBox();
+        ToolStripLabel mobsLabel = new ToolStripLabel();
         ToolStripComboBox mobsCombo = new ToolStripComboBox();
 
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
@@ -65,79 +40,123 @@ namespace WaywardGamers.KParser.Plugin
 
         ToolStripButton editCustomMobFilter = new ToolStripButton();
 
+
+        // Localized strings
+
+        // Titles
+
+        string lsSummaryTitle;
+        string lsMeleeTitle;
+        string lsRangeTitle;
+        string lsSpellTitle;
+        string lsAbilityTitle;
+        string lsWeaponskillTitle;
+        string lsSkillchainTitle;
+        string lsOtherPhysicalTitle;
+        string lsOtherMagicalTitle;
+
+        string lsPassiveDefensesTitle;
+        string lsActiveDefensesTitle;
+        string lsUtsuCastingTitle;
+        string lsShadowUseTitle;
+
+        // Headers
+
+        string lsSummaryHeader;
+        string lsMeleeHeader;
+        string lsRangeHeader;
+        string lsSpellHeader;
+        string lsAbilityHeader;
+        string lsWeaponskillHeader;
+        string lsSkillchainHeader;
+        string lsOtherPhysicalHeader;
+        string lsOtherMagicalHeader;
+
+        string lsPassiveDefensesHeader;
+        string lsActiveDefensesHeader;
+        string lsUtsuCastingHeader;
+        string lsShadowUseHeader;
+
+        // Formatters
+
+        string lsSummaryFormat;
+        string lsMeleeFormat;
+        string lsRangeFormat;
+        string lsSpellFormat;
+        string lsAbilityFormat;
+        string lsWeaponskillFormat;
+        string lsSkillchainFormat;
+        string lsOtherPhysicalFormat;
+        string lsOtherMagicalFormat;
+
+        string lsPassiveDefensesFormat;
+        string lsActiveDefensesFormat;
+        string lsUtsuCastingFormat;
+        string lsShadowUseFormat;
+
+        // Misc
+
+        string lsTotal;
+        string lsDamageTaken;
+        string lsDefenses;
+        string lsUtsusemi;
+
+        string lsUtsuIchi;
+        string lsUtsuNi;
+
         #endregion
 
         #region Constructor
         public DefensePlugin()
         {
-            ToolStripLabel catLabel = new ToolStripLabel();
-            catLabel.Text = "Category:";
-            toolStrip.Items.Add(catLabel);
+            LoadLocalizedUI();
 
             categoryCombo.DropDownStyle = ComboBoxStyle.DropDownList;
-            categoryCombo.Items.Add("All");
-            categoryCombo.Items.Add("Damage Taken");
-            categoryCombo.Items.Add("Defenses");
-            categoryCombo.Items.Add("Utsusemi");
-            categoryCombo.SelectedIndex = 0;
             categoryCombo.SelectedIndexChanged += new EventHandler(this.categoryCombo_SelectedIndexChanged);
-            toolStrip.Items.Add(categoryCombo);
-
-
-            ToolStripLabel mobsLabel = new ToolStripLabel();
-            mobsLabel.Text = "Mobs:";
-            toolStrip.Items.Add(mobsLabel);
 
             mobsCombo.DropDownStyle = ComboBoxStyle.DropDownList;
             mobsCombo.AutoSize = false;
             mobsCombo.Width = 175;
-            mobsCombo.Items.Add("All");
             mobsCombo.MaxDropDownItems = 10;
-            mobsCombo.SelectedIndex = 0;
             mobsCombo.SelectedIndexChanged += new EventHandler(this.mobsCombo_SelectedIndexChanged);
-            toolStrip.Items.Add(mobsCombo);
 
 
-            optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            optionsMenu.Text = "Options";
-
-            groupMobsOption.Text = "Group Mobs";
             groupMobsOption.CheckOnClick = true;
             groupMobsOption.Checked = true;
             groupMobsOption.Click += new EventHandler(groupMobs_Click);
-            optionsMenu.DropDownItems.Add(groupMobsOption);
 
-            exclude0XPOption.Text = "Exclude 0 XP Mobs";
             exclude0XPOption.CheckOnClick = true;
             exclude0XPOption.Checked = false;
             exclude0XPOption.Click += new EventHandler(exclude0XPMobs_Click);
-            optionsMenu.DropDownItems.Add(exclude0XPOption);
 
-            customMobSelectionOption.Text = "Custom Mob Selection";
             customMobSelectionOption.CheckOnClick = true;
             customMobSelectionOption.Checked = false;
             customMobSelectionOption.Click += new EventHandler(customMobSelection_Click);
+
+            optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
+
+            optionsMenu.DropDownItems.Add(groupMobsOption);
+            optionsMenu.DropDownItems.Add(exclude0XPOption);
             optionsMenu.DropDownItems.Add(customMobSelectionOption);
 
-            toolStrip.Items.Add(optionsMenu);
 
-            ToolStripSeparator aSeparator = new ToolStripSeparator();
-            toolStrip.Items.Add(aSeparator);
-
-            editCustomMobFilter.Text = "Edit Mob Filter";
             editCustomMobFilter.Enabled = false;
             editCustomMobFilter.Click += new EventHandler(editCustomMobFilter_Click);
 
+
+            ToolStripSeparator aSeparator = new ToolStripSeparator();
+
+            toolStrip.Items.Add(catLabel);
+            toolStrip.Items.Add(categoryCombo);
+            toolStrip.Items.Add(mobsLabel);
+            toolStrip.Items.Add(mobsCombo);
+            toolStrip.Items.Add(optionsMenu);
+            toolStrip.Items.Add(aSeparator);
             toolStrip.Items.Add(editCustomMobFilter);
         }
         #endregion
 
         #region IPlugin Overrides
-        public override string TabName
-        {
-            get { return "Defense"; }
-        }
-
         public override void Reset()
         {
             ResetTextBox();
@@ -321,28 +340,28 @@ namespace WaywardGamers.KParser.Plugin
                                              where ((ActionType)s.ActionType == ActionType.Spell &&
                                                     s.Preparing == true &&
                                                     s.IsActionIDNull() == false &&
-                                                    s.ActionsRow.ActionName == SpellNames.UtsuIchi &&
+                                                    s.ActionsRow.ActionName == lsUtsuIchi &&
                                                     mobFilter.CheckFilterMobBattle(s) == true)
                                              select s,
                               UtsuIchiFinish = from s in c.GetInteractionsRowsByActorCombatantRelation()
                                              where ((ActionType)s.ActionType == ActionType.Spell &&
                                                     s.Preparing == false &&
                                                     s.IsActionIDNull() == false &&
-                                                    s.ActionsRow.ActionName == SpellNames.UtsuIchi &&
+                                                    s.ActionsRow.ActionName == lsUtsuIchi &&
                                                     mobFilter.CheckFilterMobBattle(s) == true)
                                              select s,
                               UtsuNiCast = from s in c.GetInteractionsRowsByActorCombatantRelation()
                                              where ((ActionType)s.ActionType == ActionType.Spell &&
                                                     s.Preparing == true &&
                                                     s.IsActionIDNull() == false &&
-                                                    s.ActionsRow.ActionName == SpellNames.UtsuNi &&
+                                                    s.ActionsRow.ActionName == lsUtsuNi &&
                                                     mobFilter.CheckFilterMobBattle(s) == true)
                                              select s,
                               UtsuNiFinish = from s in c.GetInteractionsRowsByActorCombatantRelation()
                                              where ((ActionType)s.ActionType == ActionType.Spell &&
                                                     s.Preparing == false &&
                                                     s.IsActionIDNull() == false &&
-                                                    s.ActionsRow.ActionName == SpellNames.UtsuNi &&
+                                                    s.ActionsRow.ActionName == lsUtsuNi &&
                                                     mobFilter.CheckFilterMobBattle(s) == true)
                                              select s,
 
@@ -771,7 +790,6 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
-
         private void UpdateAccumulationB(KPDatabaseDataSet dataSet, bool newRowsOnly)
         {
             if (dataSet == null)
@@ -904,25 +922,25 @@ namespace WaywardGamers.KParser.Plugin
                                              where ((ActionType)s.ActionType == ActionType.Spell &&
                                                     s.Preparing == true &&
                                                     s.IsActionIDNull() == false &&
-                                                    s.ActionsRow.ActionName == SpellNames.UtsuIchi)
+                                                    s.ActionsRow.ActionName == lsUtsuIchi)
                                              select s,
                               UtsuIchiFinish = from s in ca
                                                where ((ActionType)s.ActionType == ActionType.Spell &&
                                                       s.Preparing == false &&
                                                       s.IsActionIDNull() == false &&
-                                                      s.ActionsRow.ActionName == SpellNames.UtsuIchi)
+                                                      s.ActionsRow.ActionName == lsUtsuIchi)
                                                select s,
                               UtsuNiCast = from s in ca
                                            where ((ActionType)s.ActionType == ActionType.Spell &&
                                                   s.Preparing == true &&
                                                   s.IsActionIDNull() == false &&
-                                                  s.ActionsRow.ActionName == SpellNames.UtsuNi)
+                                                  s.ActionsRow.ActionName == lsUtsuNi)
                                            select s,
                               UtsuNiFinish = from s in ca
                                              where ((ActionType)s.ActionType == ActionType.Spell &&
                                                     s.Preparing == false &&
                                                     s.IsActionIDNull() == false &&
-                                                    s.ActionsRow.ActionName == SpellNames.UtsuNi)
+                                                    s.ActionsRow.ActionName == lsUtsuNi)
                                              select s,
                           };
             }
@@ -1038,28 +1056,28 @@ namespace WaywardGamers.KParser.Plugin
                                              where ((ActionType)s.ActionType == ActionType.Spell &&
                                                     s.Preparing == true &&
                                                     s.IsActionIDNull() == false &&
-                                                    s.ActionsRow.ActionName == SpellNames.UtsuIchi)
+                                                    s.ActionsRow.ActionName == lsUtsuIchi)
                                              select s,
                               UtsuIchiFinish = from s in c.GetInteractionsRowsByActorCombatantRelation()
                                                           .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                                where ((ActionType)s.ActionType == ActionType.Spell &&
                                                       s.Preparing == false &&
                                                       s.IsActionIDNull() == false &&
-                                                      s.ActionsRow.ActionName == SpellNames.UtsuIchi)
+                                                      s.ActionsRow.ActionName == lsUtsuIchi)
                                                select s,
                               UtsuNiCast = from s in c.GetInteractionsRowsByActorCombatantRelation()
                                                       .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                            where ((ActionType)s.ActionType == ActionType.Spell &&
                                                   s.Preparing == true &&
                                                   s.IsActionIDNull() == false &&
-                                                  s.ActionsRow.ActionName == SpellNames.UtsuNi)
+                                                  s.ActionsRow.ActionName == lsUtsuNi)
                                            select s,
                               UtsuNiFinish = from s in c.GetInteractionsRowsByActorCombatantRelation()
                                                         .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                              where ((ActionType)s.ActionType == ActionType.Spell &&
                                                     s.Preparing == false &&
                                                     s.IsActionIDNull() == false &&
-                                                    s.ActionsRow.ActionName == SpellNames.UtsuNi)
+                                                    s.ActionsRow.ActionName == lsUtsuNi)
                                              select s,
 
                           };
@@ -1501,25 +1519,25 @@ namespace WaywardGamers.KParser.Plugin
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
             ResetTextBox();
-            string actionSourceFilter = categoryCombo.CBSelectedItem();
+            int actionSourceFilterIndex = categoryCombo.CBSelectedIndex();
 
             List<StringMods> strModList = new List<StringMods>();
             StringBuilder sb = new StringBuilder();
 
-            switch (actionSourceFilter)
+            switch (actionSourceFilterIndex)
             {
-                case "All":
+                case 0: // All
                     ProcessDamageTaken(ref sb, ref strModList);
                     ProcessDefenses(ref sb, ref strModList);
                     ProcessUtsusemi(ref sb, ref strModList);
                     break;
-                case "Damage Taken":
+                case 1: // Damage Taken
                     ProcessDamageTaken(ref sb, ref strModList);
                     break;
-                case "Defenses":
+                case 2: // Defenses
                     ProcessDefenses(ref sb, ref strModList);
                     break;
-                case "Utsusemi":
+                case 3: // Utsusemi
                     ProcessUtsusemi(ref sb, ref strModList);
                     break;
             }
@@ -1530,15 +1548,14 @@ namespace WaywardGamers.KParser.Plugin
         #region Damage Taken
         private void ProcessDamageTaken(ref StringBuilder sb, ref List<StringMods> strModList)
         {
-            string tmpText = "Damage Taken\n\n";
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
-                Length = tmpText.Length,
+                Length = lsDamageTaken.Length,
                 Bold = true,
                 Color = Color.Red
             });
-            sb.Append(tmpText);
+            sb.Append(lsDamageTaken + "\n\n");
 
             ProcessDTAttackSummary(ref sb, ref strModList);
             ProcessDTMeleeAttacks(ref sb, ref strModList);
@@ -1557,32 +1574,31 @@ namespace WaywardGamers.KParser.Plugin
 
             if (totalDamage > 0)
             {
-                string tmpText = "Damage Taken Summary\n";
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = tmpText.Length,
+                    Length = lsSummaryTitle.Length,
                     Bold = true,
                     Color = Color.Blue
                 });
-                sb.Append(tmpText);
+                sb.Append(lsSummaryTitle + "\n");
 
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = summaryHeader.Length,
+                    Length = lsSummaryHeader.Length,
                     Bold = true,
                     Underline = true,
                     Color = Color.Black
                 });
-                sb.Append(summaryHeader);
+                sb.Append(lsSummaryHeader + "\n");
 
 
                 foreach (var player in dataAccum.OrderBy(p => p.CType).ThenBy(p => p.Name))
                 {
                     if (player.TDmg > 0)
                     {
-                        sb.AppendFormat("{0,-18}{1,10}{2,11:p2}{3,12}{4,12}{5,12}{6,12}{7,12}{8,11}\n",
+                        sb.AppendFormat(lsSummaryFormat,
                         player.Name,
                         player.TDmg,
                         (double)player.TDmg / totalDamage,
@@ -1592,12 +1608,14 @@ namespace WaywardGamers.KParser.Plugin
                         player.TWDmg,
                         player.TSDmg,
                         player.TODmg);
+
+                        sb.Append("\n");
                     }
                 }
 
                 string strTotal =
-                    string.Format("{0,-18}{1,10}{2,11:p2}{3,12}{4,12}{5,12}{6,12}{7,12}{8,11}\n",
-                        "Total",
+                    string.Format(lsSummaryFormat,
+                        lsTotal,
                         dataAccum.Sum(p => p.TDmg),
                         1,
                         dataAccum.Sum(p => p.TMDmg),
@@ -1614,7 +1632,7 @@ namespace WaywardGamers.KParser.Plugin
                     Bold = true,
                     Color = Color.Black
                 });
-                sb.Append(strTotal.ToString());
+                sb.Append(strTotal.ToString() + "\n");
 
             }
 
@@ -1627,32 +1645,31 @@ namespace WaywardGamers.KParser.Plugin
             if (dataAccum.Any(p => p.MHits > 0) ||
                 dataAccum.Any(p => p.MMiss > 0))
             {
-                string tmpText = "Melee Damage Taken\n";
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = tmpText.Length,
+                    Length = lsMeleeTitle.Length,
                     Bold = true,
                     Color = Color.Blue
                 });
-                sb.Append(tmpText);
+                sb.Append(lsMeleeTitle + "\n");
 
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = meleeHeader.Length,
+                    Length = lsMeleeHeader.Length,
                     Bold = true,
                     Underline = true,
                     Color = Color.Black
                 });
-                sb.Append(meleeHeader);
+                sb.Append(lsMeleeHeader + "\n");
 
 
                 foreach (var player in dataAccum.OrderBy(p => p.CType).ThenBy(p => p.Name))
                 {
                     if ((player.MHits + player.MMiss) > 0)
                     {
-                        sb.AppendFormat("{0,-18}{1,10}{2,10:p2}{3,11}{5,11}{6,9:f2}{7,7}{8,10}{9,8:f2}{10,10:p2}\n",
+                        sb.AppendFormat(lsMeleeFormat,
                           player.Name,
                           player.TMDmg,
                           (player.TDmg > 0) ? (double)player.TMDmg / player.TDmg : 0,
@@ -1665,6 +1682,7 @@ namespace WaywardGamers.KParser.Plugin
                           (player.MCritHits > 0) ? (double)player.MCritDmg / player.MCritHits : 0,
                           (player.MHits > 0) ? (double)player.MCritHits / player.MHits : 0);
 
+                        sb.Append("\n");
                     }
                 }
 
@@ -1678,32 +1696,31 @@ namespace WaywardGamers.KParser.Plugin
             if (dataAccum.Any(p => p.RHits > 0) ||
                 dataAccum.Any(p => p.RMiss > 0))
             {
-                string tmpText = "Range Damage Taken\n";
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = tmpText.Length,
+                    Length = lsRangeTitle.Length,
                     Bold = true,
                     Color = Color.Blue
                 });
-                sb.Append(tmpText);
+                sb.Append(lsRangeTitle + "\n");
 
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = meleeHeader.Length,
+                    Length = lsRangeHeader.Length,
                     Bold = true,
                     Underline = true,
                     Color = Color.Black
                 });
-                sb.Append(rangeHeader);
+                sb.Append(lsRangeHeader + "\n");
 
 
                 foreach (var player in dataAccum.OrderBy(p => p.CType).ThenBy(p => p.Name))
                 {
                     if ((player.RHits + player.RMiss) > 0)
                     {
-                        sb.AppendFormat("{0,-18}{1,10}{2,10:p2}{3,11}{5,11}{6,9:f2}{7,7}{8,10}{9,8:f2}{10,10:p2}\n",
+                        sb.AppendFormat(lsRangeFormat,
                           player.Name,
                           player.TRDmg,
                           (player.TDmg > 0) ? (double)player.TRDmg / player.TDmg : 0,
@@ -1716,6 +1733,7 @@ namespace WaywardGamers.KParser.Plugin
                           (player.RCritHits > 0) ? (double)player.RCritDmg / player.RCritHits : 0,
                           (player.RHits > 0) ? (double)player.RCritHits / player.RHits : 0);
 
+                        sb.Append("\n");
                     }
                 }
 
@@ -1728,32 +1746,31 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (dataAccum.Any(p => p.Weaponskills.Count > 0))
             {
-                string tmpText = "Weaponskill Damage Taken\n";
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = tmpText.Length,
+                    Length = lsWeaponskillTitle.Length,
                     Bold = true,
                     Color = Color.Blue
                 });
-                sb.Append(tmpText);
+                sb.Append(lsWeaponskillTitle + "\n");
 
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = wskillHeader.Length,
+                    Length = lsWeaponskillHeader.Length,
                     Bold = true,
                     Underline = true,
                     Color = Color.Black
                 });
-                sb.Append(wskillHeader);
+                sb.Append(lsWeaponskillHeader + "\n");
 
 
                 foreach (var player in dataAccum.OrderBy(p => p.CType).ThenBy(p => p.Name))
                 {
                     if (player.Weaponskills.Count > 0)
                     {
-                        sb.AppendFormat("{0,-23}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}\n",
+                        sb.AppendFormat(lsWeaponskillFormat,
                              player.Name,
                              player.TWDmg,
                              (player.TDmg > 0) ? (double)player.TWDmg / player.TDmg : 0,
@@ -1761,11 +1778,12 @@ namespace WaywardGamers.KParser.Plugin
                              (double)player.Weaponskills.Sum(w => w.WHit) / player.Weaponskills.Sum(w => w.WHit + w.WMiss),
                              string.Format("{0}/{1}", player.Weaponskills.Min(w => w.WLow), player.Weaponskills.Max(w => w.WHi)),
                              player.Weaponskills.Any(w => w.WHit > 0) ? (double)player.TWDmg / player.Weaponskills.Sum(w => w.WHit) : 0);
+                        sb.Append("\n");
 
 
                         foreach (var wskill in player.Weaponskills.OrderBy(w => w.WName))
                         {
-                            sb.AppendFormat("{0,-23}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}\n",
+                            sb.AppendFormat(lsWeaponskillFormat,
                                  string.Concat(" - ", wskill.WName),
                                  wskill.WDmg,
                                  (player.TWDmg > 0) ? (double)wskill.WDmg / player.TWDmg : 0,
@@ -1773,9 +1791,9 @@ namespace WaywardGamers.KParser.Plugin
                                  (wskill.WHit + wskill.WMiss) > 0 ? (double)wskill.WHit / (wskill.WHit + wskill.WMiss) : 0,
                                  string.Format("{0}/{1}", wskill.WLow, wskill.WHi),
                                  wskill.WHit > 0 ? (double)wskill.WDmg / wskill.WHit : 0);
+                            sb.Append("\n");
                         }
                     }
-
                 }
 
                 sb.Append("\n\n");
@@ -1787,32 +1805,31 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (dataAccum.Any(p => p.Abilities.Count > 0))
             {
-                string tmpText = "Ability Damage Taken\n";
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = tmpText.Length,
+                    Length = lsAbilityTitle.Length,
                     Bold = true,
                     Color = Color.Blue
                 });
-                sb.Append(tmpText);
+                sb.Append(lsAbilityTitle + "\n");
 
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = abilHeader.Length,
+                    Length = lsAbilityHeader.Length,
                     Bold = true,
                     Underline = true,
                     Color = Color.Black
                 });
-                sb.Append(abilHeader);
+                sb.Append(lsAbilityHeader + "\n");
 
 
                 foreach (var player in dataAccum.OrderBy(p => p.CType).ThenBy(p => p.Name))
                 {
                     if (player.Abilities.Count > 0)
                     {
-                        sb.AppendFormat("{0,-23}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}\n",
+                        sb.AppendFormat(lsAbilityFormat,
                              player.Name,
                              player.TADmg,
                              (player.TDmg > 0) ? (double)player.TADmg / player.TDmg : 0,
@@ -1823,10 +1840,11 @@ namespace WaywardGamers.KParser.Plugin
                                 string.Format("{0}/{1}", 0, 0),
                              player.Abilities.Any(w => w.AHit > 0) ? (double)player.TADmg / player.Abilities.Sum(w => w.AHit) : 0);
 
+                        sb.Append("\n");
 
                         foreach (var abil in player.Abilities.OrderBy(w => w.AName))
                         {
-                            sb.AppendFormat("{0,-23}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}\n",
+                            sb.AppendFormat(lsAbilityFormat,
                                  string.Concat(" - ", abil.AName),
                                  abil.ADmg,
                                  (player.TADmg > 0) ? (double)abil.ADmg / player.TADmg : 0,
@@ -1834,9 +1852,9 @@ namespace WaywardGamers.KParser.Plugin
                                  (abil.AHit + abil.AMiss) > 0 ? (double)abil.AHit / (abil.AHit + abil.AMiss) : 0,
                                  string.Format("{0}/{1}", abil.ALow, abil.AHi),
                                  abil.AHit > 0 ? (double)abil.ADmg / abil.AHit : 0);
+                            sb.Append("\n");
                         }
                     }
-
                 }
 
                 sb.Append("\n\n");
@@ -1849,32 +1867,31 @@ namespace WaywardGamers.KParser.Plugin
 
             if (dataAccum.Any(p => p.Spells.Count > 0))
             {
-                string tmpText = "Spell Damage Taken\n";
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = tmpText.Length,
+                    Length = lsSpellTitle.Length,
                     Bold = true,
                     Color = Color.Blue
                 });
-                sb.Append(tmpText);
+                sb.Append(lsSpellTitle + "\n");
 
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = spellHeader.Length,
+                    Length = lsSpellHeader.Length,
                     Bold = true,
                     Underline = true,
                     Color = Color.Black
                 });
-                sb.Append(spellHeader);
+                sb.Append(lsSpellHeader + "\n");
 
 
                 foreach (var player in dataAccum.OrderBy(p => p.CType).ThenBy(p => p.Name))
                 {
                     if (player.Spells.Count > 0)
                     {
-                        sb.AppendFormat("{0,-23}{1,10}{2,10:p2}{3,9}{4,7}{5,10}{6,10:f2}{7,9}{8,11}{9,9:f2}\n",
+                        sb.AppendFormat(lsSpellFormat,
                              player.Name,
                              player.TSDmg,
                              (player.TDmg > 0) ? (double)player.TSDmg / player.TDmg : 0,
@@ -1889,11 +1906,12 @@ namespace WaywardGamers.KParser.Plugin
                                 string.Format("{0}/{1}", player.Spells.Where(s => s.SNumMB > 0).Min(w => w.SMBLow), player.Spells.Max(w => w.SMBHi)) :
                                 string.Format("{0}/{1}", 0, 0),
                              player.Spells.Any(w => w.SNumMB > 0) ? (double)player.Spells.Sum(s => s.SMBDmg) / player.Spells.Sum(w => w.SNumMB) : 0);
+                        sb.Append("\n");
 
 
                         foreach (var spell in player.Spells.OrderBy(w => w.SName))
                         {
-                            sb.AppendFormat("{0,-23}{1,10}{2,10:p2}{3,9}{4,7}{5,10}{6,10:f2}{7,9}{8,11}{9,9:f2}\n",
+                            sb.AppendFormat(lsSpellFormat,
                                  string.Concat(" - ", spell.SName),
                                  spell.SDmg,
                                  (player.TSDmg > 0) ? (double)spell.SDmg / player.TSDmg : 0,
@@ -1905,6 +1923,7 @@ namespace WaywardGamers.KParser.Plugin
                                  spell.SNumMB,
                                  string.Format("{0}/{1}", spell.SMBLow, spell.SMBHi),
                                  spell.SNumMB > 0 ? (double)spell.SMBDmg / spell.SNumMB : 0);
+                            sb.Append("\n");
                         }
                     }
                 }
@@ -1918,38 +1937,37 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (dataAccum.Any(p => (p.CType == EntityType.Skillchain) && (p.SCNum > 0)))
             {
-                string tmpText = "Skillchain Damage Taken\n";
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = tmpText.Length,
+                    Length = lsSkillchainTitle.Length,
                     Bold = true,
                     Color = Color.Blue
                 });
-                sb.Append(tmpText);
+                sb.Append(lsSkillchainTitle + "\n");
 
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = skillchainHeader.Length,
+                    Length = lsSkillchainHeader.Length,
                     Bold = true,
                     Underline = true,
                     Color = Color.Black
                 });
-                sb.Append(skillchainHeader);
+                sb.Append(lsSkillchainHeader + "\n");
 
 
                 foreach (var player in dataAccum.Where(p => p.CType == EntityType.Skillchain).OrderBy(p => p.Name))
                 {
                     if (player.SCNum > 0)
                     {
-                        sb.AppendFormat("{0,-20}{1,6}{2,6}{3,11}{4,8:f2}\n",
+                        sb.AppendFormat(lsSkillchainFormat,
                              player.Name,
                              player.TSCDmg,
                              player.SCNum,
                              string.Format("{0}/{1}", player.SCLow, player.SCHi),
                              (player.SCNum > 0) ? (double)player.TSCDmg / player.SCNum : 0);
-
+                        sb.Append("\n");
                     }
                 }
 
@@ -1962,32 +1980,31 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (dataAccum.Any(p => p.MAENum > 0 || p.RAENum > 0 || p.SpkNum > 0))
             {
-                string tmpText = "Other Magical Damage Taken  (Additional Effects and Spikes)\n";
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = tmpText.Length,
+                    Length = lsOtherMagicalTitle.Length,
                     Bold = true,
                     Color = Color.Blue
                 });
-                sb.Append(tmpText);
+                sb.Append(lsOtherMagicalTitle + "\n");
 
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = otherMHeader.Length,
+                    Length = lsOtherMagicalHeader.Length,
                     Bold = true,
                     Underline = true,
                     Color = Color.Black
                 });
-                sb.Append(otherMHeader);
+                sb.Append(lsOtherMagicalHeader + "\n");
 
 
                 foreach (var player in dataAccum.OrderBy(p => p.CType).ThenBy(p => p.Name))
                 {
                     if ((player.MAENum + player.RAENum + player.SpkNum) > 0)
                     {
-                        sb.AppendFormat("{0,-18}{1,9}{2,8}{3,10:f2}{4,11}{5,8}{6,10:f2}{7,10}{8,9}{9,9:f2}\n",
+                        sb.AppendFormat(lsOtherMagicalFormat,
                             player.Name,
                             player.MAEDmg,
                             player.MAENum,
@@ -1998,7 +2015,7 @@ namespace WaywardGamers.KParser.Plugin
                             player.SpkDmg,
                             player.SpkNum,
                             player.SpkNum > 0 ? (double)player.SpkDmg / player.SpkNum : 0);
-
+                        sb.Append("\n");
                     }
                 }
 
@@ -2008,32 +2025,31 @@ namespace WaywardGamers.KParser.Plugin
 
             if (dataAccum.Any(p => (p.CAHits + p.CAMiss + p.RTHits + p.RTMiss) > 0))
             {
-                string tmpText = "Other Physical Damage Taken  (Counterattacks and Retaliations)\n";
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = tmpText.Length,
+                    Length = lsOtherPhysicalTitle.Length,
                     Bold = true,
                     Color = Color.Blue
                 });
-                sb.Append(tmpText);
+                sb.Append(lsOtherPhysicalTitle + "\n");
 
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = otherPHeader.Length,
+                    Length = lsOtherPhysicalHeader.Length,
                     Bold = true,
                     Underline = true,
                     Color = Color.Black
                 });
-                sb.Append(otherPHeader);
+                sb.Append(lsOtherPhysicalHeader + "\n");
 
 
                 foreach (var player in dataAccum.OrderBy(p => p.CType).ThenBy(p => p.Name))
                 {
                     if ((player.CAHits + player.CAMiss + player.RTHits + player.RTMiss) > 0)
                     {
-                        sb.AppendFormat("{0,-18}{1,7}{2,13}{3,11}{4,8:f2}{5,10}{6,14}{7,12}{8,9:f2}\n",
+                        sb.AppendFormat(lsOtherPhysicalFormat,
                             player.Name,
                             player.CADmg,
                             string.Concat(player.CAHits, "/", player.CAMiss),
@@ -2043,7 +2059,7 @@ namespace WaywardGamers.KParser.Plugin
                             string.Concat(player.RTHits, "/", player.RTMiss),
                             string.Concat(player.RTLow, "/", player.RTHi),
                             player.RTHits > 0 ? (double)player.RTDmg / player.RTHits : 0);
-
+                        sb.Append("\n");
                     }
                 }
 
@@ -2055,15 +2071,14 @@ namespace WaywardGamers.KParser.Plugin
         #region Defenses
         private void ProcessDefenses(ref StringBuilder sb, ref List<StringMods> strModList)
         {
-            string tmpText = "Defenses\n\n";
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
-                Length = tmpText.Length,
+                Length = lsDefenses.Length,
                 Bold = true,
                 Color = Color.Red
             });
-            sb.Append(tmpText);
+            sb.Append(lsDefenses + "\n\n");
 
             ProcessPassiveDefenses(ref sb, ref strModList);
             ProcessActiveDefenses(ref sb, ref strModList);
@@ -2075,25 +2090,24 @@ namespace WaywardGamers.KParser.Plugin
             if (dataAccum.Any(p => p.DefEvasion > 0 || p.DefParry > 0 || p.DefIntimidate > 0 ||
                 (p.CAHits + p.CAMiss) > 0))
             {
-                string tmpText = "Passive Defenses\n";
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = tmpText.Length,
+                    Length = lsPassiveDefensesTitle.Length,
                     Bold = true,
                     Color = Color.Blue
                 });
-                sb.Append(tmpText);
+                sb.Append(lsPassiveDefensesTitle + "\n");
 
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = passiveDefHeader.Length,
+                    Length = lsPassiveDefensesHeader.Length,
                     Bold = true,
                     Underline = true,
                     Color = Color.Black
                 });
-                sb.Append(passiveDefHeader);
+                sb.Append(lsPassiveDefensesHeader + "\n");
 
                 int evaPool = 0;
                 int parrPool = 0;
@@ -2116,7 +2130,7 @@ namespace WaywardGamers.KParser.Plugin
 
                     intimPool = (evaPool - player.RHits) + player.Spells.Sum(s => s.SNum);
 
-                    sb.AppendFormat("{0,-18}{1,8}{2,11:p2}{3,8}{4,9:p2}{5,10}{6,11:p2}{7,13}{8,14:p2}\n",
+                    sb.AppendFormat(lsPassiveDefensesFormat,
                          player.Name,
                          player.DefEvasion,
                          evaPool > 0 ? (double)player.DefEvasion / evaPool : 0,
@@ -2126,7 +2140,7 @@ namespace WaywardGamers.KParser.Plugin
                          countPool > 0 ? (double)player.DefCounter / countPool : 0,
                          player.DefIntimidate,
                          intimPool > 0 ? (double)player.DefIntimidate / intimPool : 0);
-
+                    sb.Append("\n");
                 }
 
                 sb.Append("\n\n");
@@ -2139,25 +2153,24 @@ namespace WaywardGamers.KParser.Plugin
             if (dataAccum.Any(p => p.DefShadow > 0 || p.DefAnticipate > 0 ||
                 (p.RTHits + p.RTMiss) > 0))
             {
-                string tmpText = "Active Defenses\n";
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = tmpText.Length,
+                    Length = lsActiveDefensesTitle.Length,
                     Bold = true,
                     Color = Color.Blue
                 });
-                sb.Append(tmpText);
+                sb.Append(lsActiveDefensesTitle + "\n");
 
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = activeDefHeader.Length,
+                    Length = lsActiveDefensesHeader.Length,
                     Bold = true,
                     Underline = true,
                     Color = Color.Black
                 });
-                sb.Append(activeDefHeader);
+                sb.Append(lsActiveDefensesHeader + "\n");
 
                 int shadowPool = 0;
                 int anticPool = 0;
@@ -2176,7 +2189,7 @@ namespace WaywardGamers.KParser.Plugin
 
                     retalPool = player.MHits + player.DefCounter;
 
-                    sb.AppendFormat("{0,-18}{1,7}{2,10:p2}{3,13}{4,14:p2}{5,15}{6,15:p2}\n",
+                    sb.AppendFormat(lsActiveDefensesFormat,
                          player.Name,
                          player.DefShadow,
                          shadowPool > 0 ? (double)player.DefShadow / shadowPool : 0,
@@ -2184,6 +2197,7 @@ namespace WaywardGamers.KParser.Plugin
                          anticPool > 0 ? (double)player.DefAnticipate / anticPool : 0,
                          player.DefRetaliate,
                          retalPool > 0 ? (double)player.DefRetaliate / retalPool : 0);
+                    sb.Append("\n");
 
                 }
 
@@ -2198,35 +2212,33 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (dataAccum.Any(p => p.UtsuICast > 0 || p.UtsuNCast > 0 || p.UtsuUsed > 0))
             {
-                string tmpText = "Utsusemi\n\n";
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = tmpText.Length,
+                    Length = lsUtsusemi.Length,
                     Bold = true,
                     Color = Color.Red
                 });
-                sb.Append(tmpText);
+                sb.Append(lsUtsusemi + "\n\n");
 
-                tmpText = "Utsusemi Casting\n";
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = tmpText.Length,
+                    Length = lsUtsuCastingTitle.Length,
                     Bold = true,
                     Color = Color.Blue
                 });
-                sb.Append(tmpText);
+                sb.Append(lsUtsuCastingTitle + "\n");
 
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = utsuCastingheader.Length,
+                    Length = lsUtsuCastingHeader.Length,
                     Bold = true,
                     Underline = true,
                     Color = Color.Black
                 });
-                sb.Append(utsuCastingheader);
+                sb.Append(lsUtsuCastingHeader + "\n");
 
                 TimeSpan totalCastTime = TimeSpan.MinValue;
                 string totalCastTimeStr;
@@ -2245,37 +2257,37 @@ namespace WaywardGamers.KParser.Plugin
                             totalCastTime.Minutes, totalCastTime.Seconds);
 
 
-                    sb.AppendFormat("{0,-18}{1,11}{2,16}{3,12}{4,14}{5,22:f0}\n",
+                    sb.AppendFormat(lsUtsuCastingFormat,
                          player.Name,
                          player.UtsuICast,
                          player.UtsuIFin,
                          player.UtsuNCast,
                          player.UtsuNFin,
                          totalCastTimeStr);
+                    sb.Append("\n");
                 }
 
                 sb.Append("\n\n");
 
 
-                tmpText = "Shadow Use\n";
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = tmpText.Length,
+                    Length = lsShadowUseTitle.Length,
                     Bold = true,
                     Color = Color.Blue
                 });
-                sb.Append(tmpText);
+                sb.Append(lsShadowUseTitle + "\n");
 
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = shadowUseHeader.Length,
+                    Length = lsShadowUseHeader.Length,
                     Bold = true,
                     Underline = true,
                     Color = Color.Black
                 });
-                sb.Append(shadowUseHeader);
+                sb.Append(lsShadowUseHeader + "\n");
 
                 int utsuCast = 0;
                 int utsuCastNin = 0;
@@ -2287,13 +2299,14 @@ namespace WaywardGamers.KParser.Plugin
                     utsuCast = player.UtsuIFin * 3 + player.UtsuNFin * 3;
                     utsuCastNin = player.UtsuIFin * 3 + player.UtsuNFin * 4;
 
-                    sb.AppendFormat("{0,-18}{1,13}{2,16}{3,18}{4,14:p2}{5,17:p2}\n",
+                    sb.AppendFormat(lsShadowUseFormat,
                          player.Name,
                          player.UtsuUsed,
                          utsuCast,
                          utsuCastNin,
                          utsuCast > 0 ? (double)player.UtsuUsed / utsuCast : 0,
                          utsuCastNin > 0 ? (double)player.UtsuUsed / utsuCastNin : 0);
+                    sb.Append("\n");
                 }
 
             }
@@ -2396,6 +2409,98 @@ namespace WaywardGamers.KParser.Plugin
         {
             ResetAndUpdateAccumulation();
             HandleDataset(null);
+        }
+        #endregion
+
+        #region Localization Overrides
+        protected override void LoadLocalizedUI()
+        {
+            catLabel.Text = Resources.PublicResources.CategoryLabel;
+            mobsLabel.Text = Resources.PublicResources.MobsLabel;
+
+            categoryCombo.Items.Clear();
+            categoryCombo.Items.Add(Resources.PublicResources.All);
+            categoryCombo.Items.Add(Resources.Combat.DefensePluginCategoryDamageTaken);
+            categoryCombo.Items.Add(Resources.Combat.DefensePluginCategoryDefenses);
+            categoryCombo.Items.Add(Resources.Combat.DefensePluginCategoryUtsusemi);
+            categoryCombo.SelectedIndex = 0;
+
+            UpdateMobList();
+            mobsCombo.SelectedIndex = 0;
+
+            optionsMenu.Text = Resources.PublicResources.Options;
+            groupMobsOption.Text = Resources.PublicResources.GroupMobs;
+            exclude0XPOption.Text = Resources.PublicResources.Exclude0XPMobs;
+            customMobSelectionOption.Text = Resources.PublicResources.CustomMobSelection;
+            editCustomMobFilter.Text = Resources.PublicResources.EditMobFilter;
+
+        }
+
+        protected override void LoadResources()
+        {
+            this.tabName = Resources.Combat.DefensePluginTabName;
+
+            // Titles
+
+            lsSummaryTitle = Resources.Combat.DefensePluginTitleSummary;
+            lsMeleeTitle = Resources.Combat.DefensePluginTitleMelee;
+            lsRangeTitle = Resources.Combat.DefensePluginTitleRanged;
+            lsSpellTitle = Resources.Combat.DefensePluginTitleSpell;
+            lsAbilityTitle = Resources.Combat.DefensePluginTitleAbility;
+            lsWeaponskillTitle = Resources.Combat.DefensePluginTitleWeaponskill;
+            lsSkillchainTitle = Resources.Combat.DefensePluginTitleSkillchain;
+            lsOtherPhysicalTitle = Resources.Combat.DefensePluginTitleOtherPhysical;
+            lsOtherMagicalTitle = Resources.Combat.DefensePluginTitleOtherMagical;
+
+            lsPassiveDefensesTitle = Resources.Combat.DefensePluginTitlePassiveDefenses;
+            lsActiveDefensesTitle = Resources.Combat.DefensePluginTitleActiveDefenses;
+            lsUtsuCastingTitle = Resources.Combat.DefensePluginTitleUtsuCasting;
+            lsShadowUseTitle = Resources.Combat.DefensePluginTitleShadowUse;
+
+            // Headers
+
+            lsSummaryHeader = Resources.Combat.DefensePluginHeaderSummary;
+            lsMeleeHeader = Resources.Combat.DefensePluginHeaderMelee;
+            lsRangeHeader = Resources.Combat.DefensePluginHeaderRanged;
+            lsSpellHeader = Resources.Combat.DefensePluginHeaderSpells;
+            lsAbilityHeader = Resources.Combat.DefensePluginHeaderAbility;
+            lsWeaponskillHeader = Resources.Combat.DefensePluginHeaderWeaponskill;
+            lsSkillchainHeader = Resources.Combat.DefensePluginHeaderSkillchain;
+            lsOtherPhysicalHeader = Resources.Combat.DefensePluginHeaderOtherPhysical;
+            lsOtherMagicalHeader = Resources.Combat.DefensePluginHeaderOtherMagical;
+
+            lsPassiveDefensesHeader = Resources.Combat.DefensePluginHeaderPassiveDefense;
+            lsActiveDefensesHeader = Resources.Combat.DefensePluginHeaderActiveDefense;
+            lsUtsuCastingHeader = Resources.Combat.DefensePluginHeaderUtsuCasting;
+            lsShadowUseHeader = Resources.Combat.DefensePluginHeaderShadowUse;
+
+            // Formatters
+
+            lsSummaryFormat = Resources.Combat.DefensePluginFormatSummary;
+            lsMeleeFormat = Resources.Combat.DefensePluginFormatMelee;
+            lsRangeFormat = Resources.Combat.DefensePluginFormatRanged;
+            lsSpellFormat = Resources.Combat.DefensePluginFormatSpells;
+            lsAbilityFormat = Resources.Combat.DefensePluginFormatAbility;
+            lsWeaponskillFormat = Resources.Combat.DefensePluginFormatWeaponskill;
+            lsSkillchainFormat = Resources.Combat.DefensePluginFormatSkillchain;
+            lsOtherPhysicalFormat = Resources.Combat.DefensePluginFormatOtherPhysical;
+            lsOtherMagicalFormat = Resources.Combat.DefensePluginFormatOtherMagical;
+
+            lsPassiveDefensesFormat = Resources.Combat.DefensePluginFormatPassiveDefense;
+            lsActiveDefensesFormat = Resources.Combat.DefensePluginFormatActiveDefense;
+            lsUtsuCastingFormat = Resources.Combat.DefensePluginFormatUtsuCasting;
+            lsShadowUseFormat = Resources.Combat.DefensePluginFormatShadowUse;
+
+            // Misc
+
+            lsTotal = Resources.PublicResources.Total;
+            lsDamageTaken = Resources.Combat.DefensePluginCategoryDamageTaken;
+            lsDefenses = Resources.Combat.DefensePluginCategoryDefenses;
+            lsUtsusemi = Resources.Combat.DefensePluginCategoryUtsusemi;
+
+            // Spell names
+            lsUtsuIchi = Resources.ParsedStrings.UtsuIchi;
+            lsUtsuNi = Resources.ParsedStrings.UtsuNi;
         }
         #endregion
 

@@ -50,6 +50,9 @@ namespace WaywardGamers.KParser
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.recentFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.noneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyasTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -57,6 +60,12 @@ namespace WaywardGamers.KParser
             this.copyTabInfoAsBBCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyTabasRTFToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+            this.languageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.englishToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.frenchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.germanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.japaneseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.playerInformationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsTestFunctionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,31 +86,22 @@ namespace WaywardGamers.KParser
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel});
-            this.statusStrip.Location = new System.Drawing.Point(0, 435);
+            resources.ApplyResources(this.statusStrip, "statusStrip");
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(992, 22);
-            this.statusStrip.TabIndex = 2;
-            this.statusStrip.Text = "statusStrip";
             // 
             // toolStripStatusLabel
             // 
             this.toolStripStatusLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripStatusLabel.Name = "toolStripStatusLabel";
-            this.toolStripStatusLabel.Size = new System.Drawing.Size(0, 17);
+            resources.ApplyResources(this.toolStripStatusLabel, "toolStripStatusLabel");
             // 
             // pluginTabs
             // 
-            this.pluginTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            resources.ApplyResources(this.pluginTabs, "pluginTabs");
             this.pluginTabs.ContextMenuStrip = this.tabContextMenuStrip;
-            this.pluginTabs.ItemSize = new System.Drawing.Size(80, 21);
-            this.pluginTabs.Location = new System.Drawing.Point(0, 24);
             this.pluginTabs.Name = "pluginTabs";
             this.pluginTabs.SelectedIndex = 0;
-            this.pluginTabs.Size = new System.Drawing.Size(994, 412);
             this.pluginTabs.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
-            this.pluginTabs.TabIndex = 3;
             this.pluginTabs.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pluginTabs_MouseMove);
             // 
             // tabContextMenuStrip
@@ -110,20 +110,18 @@ namespace WaywardGamers.KParser
             this.closeTabToolStripMenuItem,
             this.closeOtherTabsToolStripMenuItem});
             this.tabContextMenuStrip.Name = "tabContextMenuStrip";
-            this.tabContextMenuStrip.Size = new System.Drawing.Size(169, 48);
+            resources.ApplyResources(this.tabContextMenuStrip, "tabContextMenuStrip");
             // 
             // closeTabToolStripMenuItem
             // 
             this.closeTabToolStripMenuItem.Name = "closeTabToolStripMenuItem";
-            this.closeTabToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.closeTabToolStripMenuItem.Text = "Close Tab";
+            resources.ApplyResources(this.closeTabToolStripMenuItem, "closeTabToolStripMenuItem");
             this.closeTabToolStripMenuItem.Click += new System.EventHandler(this.closeTabToolStripMenuItem_Click);
             // 
             // closeOtherTabsToolStripMenuItem
             // 
             this.closeOtherTabsToolStripMenuItem.Name = "closeOtherTabsToolStripMenuItem";
-            this.closeOtherTabsToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.closeOtherTabsToolStripMenuItem.Text = "Close Other Tabs";
+            resources.ApplyResources(this.closeOtherTabsToolStripMenuItem, "closeOtherTabsToolStripMenuItem");
             this.closeOtherTabsToolStripMenuItem.Click += new System.EventHandler(this.closeOtherTabsToolStripMenuItem_Click);
             // 
             // mainMenuStrip
@@ -133,11 +131,8 @@ namespace WaywardGamers.KParser
             this.editToolStripMenuItem,
             this.toolsMenu,
             this.windowsMenu});
-            this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
+            resources.ApplyResources(this.mainMenuStrip, "mainMenuStrip");
             this.mainMenuStrip.Name = "mainMenuStrip";
-            this.mainMenuStrip.Size = new System.Drawing.Size(992, 24);
-            this.mainMenuStrip.TabIndex = 5;
-            this.mainMenuStrip.Text = "Main Menu Strip";
             // 
             // fileMenu
             // 
@@ -153,94 +148,98 @@ namespace WaywardGamers.KParser
             this.toolStripSeparator2,
             this.importToolStripMenuItem,
             this.toolStripSeparator4,
+            this.recentFilesToolStripMenuItem,
+            this.toolStripSeparator7,
             this.exitMenuItem});
             this.fileMenu.Name = "fileMenu";
-            this.fileMenu.Size = new System.Drawing.Size(35, 20);
-            this.fileMenu.Text = "File";
+            resources.ApplyResources(this.fileMenu, "fileMenu");
             this.fileMenu.DropDownOpening += new System.EventHandler(this.fileMenu_Popup);
             // 
             // beginParseAndSaveDataMenuItem
             // 
             this.beginParseAndSaveDataMenuItem.Name = "beginParseAndSaveDataMenuItem";
-            this.beginParseAndSaveDataMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
-            this.beginParseAndSaveDataMenuItem.Size = new System.Drawing.Size(265, 22);
-            this.beginParseAndSaveDataMenuItem.Text = "Begin &Parse and Save Data...";
+            resources.ApplyResources(this.beginParseAndSaveDataMenuItem, "beginParseAndSaveDataMenuItem");
             this.beginParseAndSaveDataMenuItem.Click += new System.EventHandler(this.menuBeginParseWithSave_Click);
             // 
             // beginDefaultParseMenuItem
             // 
             this.beginDefaultParseMenuItem.Name = "beginDefaultParseMenuItem";
-            this.beginDefaultParseMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.beginDefaultParseMenuItem.Size = new System.Drawing.Size(265, 22);
-            this.beginDefaultParseMenuItem.Text = "Begin &Default Parse";
+            resources.ApplyResources(this.beginDefaultParseMenuItem, "beginDefaultParseMenuItem");
             this.beginDefaultParseMenuItem.Click += new System.EventHandler(this.menuBeginDefaultParse_Click);
             // 
             // quitParsingMenuItem
             // 
             this.quitParsingMenuItem.Name = "quitParsingMenuItem";
-            this.quitParsingMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
-            this.quitParsingMenuItem.Size = new System.Drawing.Size(265, 22);
-            this.quitParsingMenuItem.Text = "&Quit Parsing";
+            resources.ApplyResources(this.quitParsingMenuItem, "quitParsingMenuItem");
             this.quitParsingMenuItem.Click += new System.EventHandler(this.menuStopParse_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(262, 6);
+            resources.ApplyResources(this.toolStripSeparator1, "toolStripSeparator1");
             // 
             // openSavedDataMenuItem
             // 
             this.openSavedDataMenuItem.Name = "openSavedDataMenuItem";
-            this.openSavedDataMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openSavedDataMenuItem.Size = new System.Drawing.Size(265, 22);
-            this.openSavedDataMenuItem.Text = "&Open Saved Data";
+            resources.ApplyResources(this.openSavedDataMenuItem, "openSavedDataMenuItem");
             this.openSavedDataMenuItem.Click += new System.EventHandler(this.menuOpenSavedData_Click);
             // 
             // continueParsingMenuItem
             // 
             this.continueParsingMenuItem.Name = "continueParsingMenuItem";
-            this.continueParsingMenuItem.Size = new System.Drawing.Size(265, 22);
-            this.continueParsingMenuItem.Text = "Continue Parsing";
+            resources.ApplyResources(this.continueParsingMenuItem, "continueParsingMenuItem");
             this.continueParsingMenuItem.Click += new System.EventHandler(this.menuContinueParse_Click);
             // 
             // saveCurrentDataAsMenuItem
             // 
             this.saveCurrentDataAsMenuItem.Name = "saveCurrentDataAsMenuItem";
-            this.saveCurrentDataAsMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveCurrentDataAsMenuItem.Size = new System.Drawing.Size(265, 22);
-            this.saveCurrentDataAsMenuItem.Text = "&Save Parse Data As...";
+            resources.ApplyResources(this.saveCurrentDataAsMenuItem, "saveCurrentDataAsMenuItem");
             this.saveCurrentDataAsMenuItem.Click += new System.EventHandler(this.menuSaveDataAs_Click);
             // 
             // saveReportMenuItem
             // 
             this.saveReportMenuItem.Name = "saveReportMenuItem";
-            this.saveReportMenuItem.Size = new System.Drawing.Size(265, 22);
-            this.saveReportMenuItem.Text = "Save Report...";
+            resources.ApplyResources(this.saveReportMenuItem, "saveReportMenuItem");
             this.saveReportMenuItem.Click += new System.EventHandler(this.menuSaveReport_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(262, 6);
+            resources.ApplyResources(this.toolStripSeparator2, "toolStripSeparator2");
             // 
             // importToolStripMenuItem
             // 
             this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            this.importToolStripMenuItem.Size = new System.Drawing.Size(265, 22);
-            this.importToolStripMenuItem.Text = "Import...";
+            resources.ApplyResources(this.importToolStripMenuItem, "importToolStripMenuItem");
             this.importToolStripMenuItem.Click += new System.EventHandler(this.importDatabaseToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(262, 6);
+            resources.ApplyResources(this.toolStripSeparator4, "toolStripSeparator4");
+            // 
+            // recentFilesToolStripMenuItem
+            // 
+            this.recentFilesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.noneToolStripMenuItem});
+            this.recentFilesToolStripMenuItem.Name = "recentFilesToolStripMenuItem";
+            resources.ApplyResources(this.recentFilesToolStripMenuItem, "recentFilesToolStripMenuItem");
+            this.recentFilesToolStripMenuItem.DropDownOpening += new System.EventHandler(this.recentFilesToolStripMenuItem_DropDownOpening);
+            // 
+            // noneToolStripMenuItem
+            // 
+            resources.ApplyResources(this.noneToolStripMenuItem, "noneToolStripMenuItem");
+            this.noneToolStripMenuItem.Name = "noneToolStripMenuItem";
+            // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            resources.ApplyResources(this.toolStripSeparator7, "toolStripSeparator7");
             // 
             // exitMenuItem
             // 
             this.exitMenuItem.Name = "exitMenuItem";
-            this.exitMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.exitMenuItem.Size = new System.Drawing.Size(265, 22);
-            this.exitMenuItem.Text = "E&xit";
+            resources.ApplyResources(this.exitMenuItem, "exitMenuItem");
             this.exitMenuItem.Click += new System.EventHandler(this.menuExit_Click);
             // 
             // editToolStripMenuItem
@@ -251,50 +250,84 @@ namespace WaywardGamers.KParser
             this.copyTabInfoAsBBCodeToolStripMenuItem,
             this.copyTabasRTFToolStripMenuItem,
             this.toolStripSeparator5,
+            this.languageToolStripMenuItem,
+            this.toolStripSeparator6,
             this.playerInformationToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.editToolStripMenuItem.Text = "Edit";
+            resources.ApplyResources(this.editToolStripMenuItem, "editToolStripMenuItem");
             // 
             // copyasTextToolStripMenuItem
             // 
             this.copyasTextToolStripMenuItem.Name = "copyasTextToolStripMenuItem";
-            this.copyasTextToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
-            this.copyasTextToolStripMenuItem.Text = "Copy Tab Info as Text";
+            resources.ApplyResources(this.copyasTextToolStripMenuItem, "copyasTextToolStripMenuItem");
             this.copyasTextToolStripMenuItem.Click += new System.EventHandler(this.copyTabInfoAsTextToolStripMenuItem_Click);
             // 
             // copyasHTMLToolStripMenuItem
             // 
             this.copyasHTMLToolStripMenuItem.Name = "copyasHTMLToolStripMenuItem";
-            this.copyasHTMLToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
-            this.copyasHTMLToolStripMenuItem.Text = "Copy Tab Info as HTML";
+            resources.ApplyResources(this.copyasHTMLToolStripMenuItem, "copyasHTMLToolStripMenuItem");
             this.copyasHTMLToolStripMenuItem.Click += new System.EventHandler(this.copyTabInfoAsHTMLToolStripMenuItem_Click);
             // 
             // copyTabInfoAsBBCodeToolStripMenuItem
             // 
             this.copyTabInfoAsBBCodeToolStripMenuItem.Name = "copyTabInfoAsBBCodeToolStripMenuItem";
-            this.copyTabInfoAsBBCodeToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
-            this.copyTabInfoAsBBCodeToolStripMenuItem.Text = "Copy Tab Info as BBCode";
+            resources.ApplyResources(this.copyTabInfoAsBBCodeToolStripMenuItem, "copyTabInfoAsBBCodeToolStripMenuItem");
             this.copyTabInfoAsBBCodeToolStripMenuItem.Click += new System.EventHandler(this.copyTabInfoAsBBCodeToolStripMenuItem_Click);
             // 
             // copyTabasRTFToolStripMenuItem
             // 
             this.copyTabasRTFToolStripMenuItem.Name = "copyTabasRTFToolStripMenuItem";
-            this.copyTabasRTFToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
-            this.copyTabasRTFToolStripMenuItem.Text = "Copy Tab Info as RTF";
+            resources.ApplyResources(this.copyTabasRTFToolStripMenuItem, "copyTabasRTFToolStripMenuItem");
             this.copyTabasRTFToolStripMenuItem.Click += new System.EventHandler(this.copyTabInfoAsRTFToolStripMenuItem_Click);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(207, 6);
+            resources.ApplyResources(this.toolStripSeparator5, "toolStripSeparator5");
+            // 
+            // languageToolStripMenuItem
+            // 
+            this.languageToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.englishToolStripMenuItem,
+            this.frenchToolStripMenuItem,
+            this.germanToolStripMenuItem,
+            this.japaneseToolStripMenuItem});
+            this.languageToolStripMenuItem.Name = "languageToolStripMenuItem";
+            resources.ApplyResources(this.languageToolStripMenuItem, "languageToolStripMenuItem");
+            // 
+            // englishToolStripMenuItem
+            // 
+            this.englishToolStripMenuItem.Name = "englishToolStripMenuItem";
+            resources.ApplyResources(this.englishToolStripMenuItem, "englishToolStripMenuItem");
+            this.englishToolStripMenuItem.Click += new System.EventHandler(this.englishToolStripMenuItem_Click);
+            // 
+            // frenchToolStripMenuItem
+            // 
+            this.frenchToolStripMenuItem.Name = "frenchToolStripMenuItem";
+            resources.ApplyResources(this.frenchToolStripMenuItem, "frenchToolStripMenuItem");
+            this.frenchToolStripMenuItem.Click += new System.EventHandler(this.frenchToolStripMenuItem_Click);
+            // 
+            // germanToolStripMenuItem
+            // 
+            this.germanToolStripMenuItem.Name = "germanToolStripMenuItem";
+            resources.ApplyResources(this.germanToolStripMenuItem, "germanToolStripMenuItem");
+            this.germanToolStripMenuItem.Click += new System.EventHandler(this.germanToolStripMenuItem_Click);
+            // 
+            // japaneseToolStripMenuItem
+            // 
+            this.japaneseToolStripMenuItem.Name = "japaneseToolStripMenuItem";
+            resources.ApplyResources(this.japaneseToolStripMenuItem, "japaneseToolStripMenuItem");
+            this.japaneseToolStripMenuItem.Click += new System.EventHandler(this.japaneseToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            resources.ApplyResources(this.toolStripSeparator6, "toolStripSeparator6");
             // 
             // playerInformationToolStripMenuItem
             // 
             this.playerInformationToolStripMenuItem.Name = "playerInformationToolStripMenuItem";
-            this.playerInformationToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
-            this.playerInformationToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
-            this.playerInformationToolStripMenuItem.Text = "Player &Information";
+            resources.ApplyResources(this.playerInformationToolStripMenuItem, "playerInformationToolStripMenuItem");
             this.playerInformationToolStripMenuItem.Click += new System.EventHandler(this.playerInformationToolStripMenuItem_Click);
             // 
             // toolsMenu
@@ -306,43 +339,36 @@ namespace WaywardGamers.KParser
             this.toolStripSeparator3,
             this.optionsToolStripMenuItem});
             this.toolsMenu.Name = "toolsMenu";
-            this.toolsMenu.Size = new System.Drawing.Size(44, 20);
-            this.toolsMenu.Text = "Tools";
+            resources.ApplyResources(this.toolsMenu, "toolsMenu");
             this.toolsMenu.DropDownOpening += new System.EventHandler(this.toolsMenu_Popup);
             // 
             // toolsTestFunctionMenuItem
             // 
             this.toolsTestFunctionMenuItem.Name = "toolsTestFunctionMenuItem";
-            this.toolsTestFunctionMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.T)));
-            this.toolsTestFunctionMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.toolsTestFunctionMenuItem.Text = "&Test Function";
+            resources.ApplyResources(this.toolsTestFunctionMenuItem, "toolsTestFunctionMenuItem");
             this.toolsTestFunctionMenuItem.Click += new System.EventHandler(this.menuTestItem_Click);
             // 
             // toolsReparseMenuItem
             // 
             this.toolsReparseMenuItem.Name = "toolsReparseMenuItem";
-            this.toolsReparseMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.toolsReparseMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.toolsReparseMenuItem.Text = "&Reparse";
+            resources.ApplyResources(this.toolsReparseMenuItem, "toolsReparseMenuItem");
             this.toolsReparseMenuItem.Click += new System.EventHandler(this.reparseDatabaseToolStripMenuItem_Click);
             // 
             // upgradeDatabaseTimestampToolStripMenuItem
             // 
             this.upgradeDatabaseTimestampToolStripMenuItem.Name = "upgradeDatabaseTimestampToolStripMenuItem";
-            this.upgradeDatabaseTimestampToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.upgradeDatabaseTimestampToolStripMenuItem.Text = "Reparse w/Timestamp Upgrade";
+            resources.ApplyResources(this.upgradeDatabaseTimestampToolStripMenuItem, "upgradeDatabaseTimestampToolStripMenuItem");
             this.upgradeDatabaseTimestampToolStripMenuItem.Click += new System.EventHandler(this.upgradeDatabaseTimestampToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(232, 6);
+            resources.ApplyResources(this.toolStripSeparator3, "toolStripSeparator3");
             // 
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.optionsToolStripMenuItem.Text = "Options...";
+            resources.ApplyResources(this.optionsToolStripMenuItem, "optionsToolStripMenuItem");
             this.optionsToolStripMenuItem.Click += new System.EventHandler(this.menuOptions_Click);
             // 
             // windowsMenu
@@ -352,43 +378,36 @@ namespace WaywardGamers.KParser
             this.windowsToolStripSeparator,
             this.closeAllTabsToolStripMenuItem});
             this.windowsMenu.Name = "windowsMenu";
-            this.windowsMenu.Size = new System.Drawing.Size(62, 20);
-            this.windowsMenu.Text = "Windows";
+            resources.ApplyResources(this.windowsMenu, "windowsMenu");
             this.windowsMenu.DropDownOpening += new System.EventHandler(this.windowsMenu_Popup);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.aboutToolStripMenuItem.Text = "About";
+            resources.ApplyResources(this.aboutToolStripMenuItem, "aboutToolStripMenuItem");
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.menuAbout_Click);
             // 
             // windowsToolStripSeparator
             // 
             this.windowsToolStripSeparator.Name = "windowsToolStripSeparator";
-            this.windowsToolStripSeparator.Size = new System.Drawing.Size(149, 6);
+            resources.ApplyResources(this.windowsToolStripSeparator, "windowsToolStripSeparator");
             // 
             // closeAllTabsToolStripMenuItem
             // 
             this.closeAllTabsToolStripMenuItem.Name = "closeAllTabsToolStripMenuItem";
-            this.closeAllTabsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.closeAllTabsToolStripMenuItem.Text = "Close All Tabs";
+            resources.ApplyResources(this.closeAllTabsToolStripMenuItem, "closeAllTabsToolStripMenuItem");
             this.closeAllTabsToolStripMenuItem.Click += new System.EventHandler(this.closeAllTabsToolStripMenuItem_Click);
             // 
             // ParserWindow
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(992, 457);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.mainMenuStrip);
             this.Controls.Add(this.pluginTabs);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.mainMenuStrip;
             this.Name = "ParserWindow";
-            this.Text = "K-Parser";
             this.Load += new System.EventHandler(this.ParserWindow_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ParserWindow_FormClosing);
             this.statusStrip.ResumeLayout(false);
@@ -440,5 +459,14 @@ namespace WaywardGamers.KParser
         private System.Windows.Forms.ToolStripMenuItem copyTabInfoAsBBCodeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem upgradeDatabaseTimestampToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeAllTabsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem recentFilesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem noneToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+        private System.Windows.Forms.ToolStripMenuItem languageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem englishToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem frenchToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem germanToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem japaneseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
     }
 }

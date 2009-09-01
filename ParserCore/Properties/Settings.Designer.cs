@@ -183,5 +183,17 @@ namespace WaywardGamers.KParser.Properties {
                 this["UpgradeRequired"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string InterfaceCulture {
+            get {
+                return ((string)(this["InterfaceCulture"]));
+            }
+            set {
+                this["InterfaceCulture"] = value;
+            }
+        }
     }
 }
