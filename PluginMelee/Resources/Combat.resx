@@ -717,4 +717,22 @@
   <data name="EnfeeblePluginTitleTPMoves" xml:space="preserve">
     <value>TP Moves</value>
   </data>
+  <data name="WSRatePluginDetailsFormat" xml:space="preserve">
+    <value>{0,10}  :  {1,10}</value>
+  </data>
+  <data name="WSRatePluginDetailsHeader" xml:space="preserve">
+    <value>      Hits      Frequency</value>
+  </data>
+  <data name="WSRatePluginMainFormat" xml:space="preserve">
+    <value>{0,-20}{1,13}{2,10}{3,13}{4,11}{5,11}{6,9:f2}{7,9:f2}{8,9}{9,7}</value>
+  </data>
+  <data name="WSRatePluginMainHeader" xml:space="preserve">
+    <value>Player               # Melee Hits   # Retal.   # WSkills   Min Hits   Max Hits   A.Mean   H.Mean   Median   Mode</value>
+  </data>
+  <data name="WSRatePluginTabName" xml:space="preserve">
+    <value>WS Rates</value>
+  </data>
+  <data name="WSRatePluginTitle" xml:space="preserve">
+    <value>Weaponskill/TP Rates</value>
+  </data>
 </root>

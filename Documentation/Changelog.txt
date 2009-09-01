@@ -1,5 +1,8 @@
 KParser Change Log
 
+1.4.2 (September 1, 2009)
++ Added Weaponskill/TP Rate plugin.
+
 
 1.4.1 (August 31, 2009)
 + Added an installer project for KParser.  Zip file now contains the installer.

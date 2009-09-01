@@ -21,26 +21,8 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_1DE8F73BFA1BADCF014EA7B38388558F"
+        "MsmKey" = "8:_1CA808D30B5481A3C93DC5DFF9643FA7"
         "OwnerKey" = "8:_5B7CCE6409194E2D84B873BEF488EF17"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_1DE8F73BFA1BADCF014EA7B38388558F"
-        "OwnerKey" = "8:_BAEDC17EB8A36429B3D8CDD7E10EE939"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_1DE8F73BFA1BADCF014EA7B38388558F"
-        "OwnerKey" = "8:_6862E1F4C52DC04EE7F3B715595E993F"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_1DE8F73BFA1BADCF014EA7B38388558F"
-        "OwnerKey" = "8:_DB332C2A0F2ED8E8ED793C705834B6D5"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -51,20 +33,44 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_5AB2297D23EC28E44E00ED7F5C494FAE"
+        "OwnerKey" = "8:_5B7CCE6409194E2D84B873BEF488EF17"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_5B7CCE6409194E2D84B873BEF488EF17"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_6862E1F4C52DC04EE7F3B715595E993F"
+        "MsmKey" = "8:_6A2644E544742D3694F388BB47B52BBE"
         "OwnerKey" = "8:_5B7CCE6409194E2D84B873BEF488EF17"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
+        "MsmKey" = "8:_6A2644E544742D3694F388BB47B52BBE"
+        "OwnerKey" = "8:_A5B89350C07625531D0FCDD6B165EB6E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6A2644E544742D3694F388BB47B52BBE"
+        "OwnerKey" = "8:_1CA808D30B5481A3C93DC5DFF9643FA7"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6A2644E544742D3694F388BB47B52BBE"
+        "OwnerKey" = "8:_5AB2297D23EC28E44E00ED7F5C494FAE"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_95846965E8459BF3EFE7172E8CE757A3"
-        "OwnerKey" = "8:_1DE8F73BFA1BADCF014EA7B38388558F"
+        "OwnerKey" = "8:_6A2644E544742D3694F388BB47B52BBE"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -75,7 +81,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_BAEDC17EB8A36429B3D8CDD7E10EE939"
+        "MsmKey" = "8:_A5B89350C07625531D0FCDD6B165EB6E"
         "OwnerKey" = "8:_5B7CCE6409194E2D84B873BEF488EF17"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -87,12 +93,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_DB332C2A0F2ED8E8ED793C705834B6D5"
-        "OwnerKey" = "8:_5B7CCE6409194E2D84B873BEF488EF17"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_5B7CCE6409194E2D84B873BEF488EF17"
         "MsmSig" = "8:_UNDEFINED"
@@ -100,25 +100,25 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_BAEDC17EB8A36429B3D8CDD7E10EE939"
+        "OwnerKey" = "8:_A5B89350C07625531D0FCDD6B165EB6E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_6862E1F4C52DC04EE7F3B715595E993F"
+        "OwnerKey" = "8:_1CA808D30B5481A3C93DC5DFF9643FA7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_DB332C2A0F2ED8E8ED793C705834B6D5"
+        "OwnerKey" = "8:_5AB2297D23EC28E44E00ED7F5C494FAE"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1DE8F73BFA1BADCF014EA7B38388558F"
+        "OwnerKey" = "8:_6A2644E544742D3694F388BB47B52BBE"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -262,20 +262,20 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_1DE8F73BFA1BADCF014EA7B38388558F"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_1CA808D30B5481A3C93DC5DFF9643FA7"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.ParserCore, Version=1.4.0.0, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.NonCombat, Version=1.4.1.0, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
-                    "_1DE8F73BFA1BADCF014EA7B38388558F"
+                    "_1CA808D30B5481A3C93DC5DFF9643FA7"
                     {
-                    "Name" = "8:WaywardGamers.KParser.ParserCore.dll"
+                    "Name" = "8:WaywardGamers.KParser.Plugin.NonCombat.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:WaywardGamers.KParser.ParserCore.dll"
+            "SourcePath" = "8:WaywardGamers.KParser.Plugin.NonCombat.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_906983A9B8BD4D8295A82843DB1B6CE6"
@@ -313,20 +313,51 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_6862E1F4C52DC04EE7F3B715595E993F"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_5AB2297D23EC28E44E00ED7F5C494FAE"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.NonCombat, Version=1.4.0.0, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.Combat, Version=1.4.1.0, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
-                    "_6862E1F4C52DC04EE7F3B715595E993F"
+                    "_5AB2297D23EC28E44E00ED7F5C494FAE"
                     {
-                    "Name" = "8:WaywardGamers.KParser.Plugin.NonCombat.dll"
+                    "Name" = "8:WaywardGamers.KParser.Plugin.Combat.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:WaywardGamers.KParser.Plugin.NonCombat.dll"
+            "SourcePath" = "8:WaywardGamers.KParser.Plugin.Combat.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_906983A9B8BD4D8295A82843DB1B6CE6"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_6A2644E544742D3694F388BB47B52BBE"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.ParserCore, Version=1.4.1.0, Culture=neutral, processorArchitecture=x86"
+                "ScatterAssemblies"
+                {
+                    "_6A2644E544742D3694F388BB47B52BBE"
+                    {
+                    "Name" = "8:WaywardGamers.KParser.ParserCore.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:WaywardGamers.KParser.ParserCore.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_906983A9B8BD4D8295A82843DB1B6CE6"
@@ -375,14 +406,14 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_BAEDC17EB8A36429B3D8CDD7E10EE939"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A5B89350C07625531D0FCDD6B165EB6E"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.Debugging, Version=1.4.0.0, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.Debugging, Version=1.4.1.0, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
-                    "_BAEDC17EB8A36429B3D8CDD7E10EE939"
+                    "_A5B89350C07625531D0FCDD6B165EB6E"
                     {
                     "Name" = "8:WaywardGamers.KParser.Plugin.Debugging.dll"
                     "Attributes" = "3:512"
@@ -424,37 +455,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_DB332C2A0F2ED8E8ED793C705834B6D5"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.Combat, Version=1.4.0.0, Culture=neutral, processorArchitecture=x86"
-                "ScatterAssemblies"
-                {
-                    "_DB332C2A0F2ED8E8ED793C705834B6D5"
-                    {
-                    "Name" = "8:WaywardGamers.KParser.Plugin.Combat.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:WaywardGamers.KParser.Plugin.Combat.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_906983A9B8BD4D8295A82843DB1B6CE6"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
         }
@@ -524,14 +524,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:KParser"
-        "ProductCode" = "8:{11A77068-5B77-4D57-AC64-DDB018187EA2}"
-        "PackageCode" = "8:{9214FCB0-EBA7-46A3-9C3A-8E6B0A665DAC}"
+        "ProductCode" = "8:{48CEFEBC-A476-4A45-B5E2-96FA57B5F25B}"
+        "PackageCode" = "8:{F1E23325-7BC4-4759-9430-B667F7AEFD08}"
         "UpgradeCode" = "8:{BE6F6D70-234C-4B71-96CD-D020C6872A1D}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.4.1"
+        "ProductVersion" = "8:1.4.2"
         "Manufacturer" = "8:Wayward Gamers"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://code.google.com/p/kparser"
@@ -1199,7 +1199,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_5B7CCE6409194E2D84B873BEF488EF17"
             {
-            "SourcePath" = "8:..\\FFXILogParser\\obj\\x86\\Debug\\KParser.exe"
+            "SourcePath" = "8:..\\FFXILogParser\\obj\\x86\\Release\\KParser.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_906983A9B8BD4D8295A82843DB1B6CE6"
