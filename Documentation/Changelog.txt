@@ -1,6 +1,15 @@
 KParser Change Log
 
 
+1.4.1 (August 31, 2009)
++ Added an installer project for KParser.  Zip file now contains the installer.
+>> Installer will attempt to download and install prerequisites for you if they are not already instead (IE: .NET 3.5 and SQLCE 3.5).
+* Converted all string literals in the program UI to resource elements, and set up the basis for allowing localization of the program into French, German and Japanese.
+*** This is NOT an enablement of parsing foreign language versions of FFXI.  This is for the UI ONLY.  Parsing will be added at a future date.  The UI can be updated progressively with translations; parsing needs to be pretty much complete from the start to be useful.
++ Added a recent files menu.  Default is 4 items listed.  Can adjust options to list up to 10.
++ Added access to certain files from the About window.
+
+
 1.4.0 (August 08, 2009)
 * Update default memloc to 0x0057DA98.
 * Changed SQLCE reference to explicitly use/require SQLCE 3.5/SP1.  Check the readme.txt file for where to find the intallation version if you need it.

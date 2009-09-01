@@ -12,51 +12,41 @@ namespace WaywardGamers.KParser.Plugin
 {
     public class ItemsPlugin : BasePluginControl
     {
-        #region Constructor
+        #region Member Variables
         bool flagNoUpdate = false;
         bool showDetails = false;
         ToolStripComboBox playersCombo = new ToolStripComboBox();
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
+        ToolStripLabel playerLabel = new ToolStripLabel();
+        ToolStripMenuItem showDetailOption = new ToolStripMenuItem();
 
-        string generalHeader = "Item                                  Used\n";
-        //string detailsHeader = "Item                 Time Used\n";
+        string generalHeader;
+        #endregion
 
-
+        #region Constructor
         public ItemsPlugin()
         {
-            ToolStripLabel playerLabel = new ToolStripLabel();
-            playerLabel.Text = "Players:";
-            toolStrip.Items.Add(playerLabel);
+            LoadLocalizedUI();
 
             playersCombo.DropDownStyle = ComboBoxStyle.DropDownList;
-            playersCombo.Items.Add("All");
             playersCombo.MaxDropDownItems = 10;
             playersCombo.SelectedIndex = 0;
             playersCombo.SelectedIndexChanged += new EventHandler(this.playersCombo_SelectedIndexChanged);
-            toolStrip.Items.Add(playersCombo);
-
-
 
             optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            optionsMenu.Text = "Options";
-
-            ToolStripMenuItem showDetailOption = new ToolStripMenuItem();
-            showDetailOption.Text = "Show Detail";
+            
             showDetailOption.CheckOnClick = true;
             showDetailOption.Checked = false;
             showDetailOption.Click += new EventHandler(showDetailOption_Click);
             optionsMenu.DropDownItems.Add(showDetailOption);
 
+            toolStrip.Items.Add(playerLabel);
+            toolStrip.Items.Add(playersCombo);
             toolStrip.Items.Add(optionsMenu);
         }
         #endregion
 
         #region IPlugin Overrides
-        public override string TabName
-        {
-            get { return "Items"; }
-        }
-
         public override void Reset()
         {
             ResetTextBox();
@@ -74,7 +64,7 @@ namespace WaywardGamers.KParser.Plugin
         public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
             bool changesFound = false;
-            string currentlySelectedPlayer = "All";
+            string currentlySelectedPlayer = Resources.PublicResources.All;
 
             if (playersCombo.CBSelectedIndex() > 0)
                 currentlySelectedPlayer = playersCombo.CBSelectedItem();
@@ -101,7 +91,6 @@ namespace WaywardGamers.KParser.Plugin
                 HandleDataset(null);
             }
         }
-
         #endregion
 
         #region Private functions
@@ -128,11 +117,11 @@ namespace WaywardGamers.KParser.Plugin
             string selectedPlayer = playersCombo.CBSelectedItem();
             List<string> playerList = new List<string>();
 
-            if (selectedPlayer == "All")
+            if (selectedPlayer == Resources.PublicResources.All)
             {
                 foreach (string player in playersCombo.CBGetStrings())
                 {
-                    if (player != "All")
+                    if (player != Resources.PublicResources.All)
                         playerList.Add(player.ToString());
                 }
             }
@@ -193,7 +182,7 @@ namespace WaywardGamers.KParser.Plugin
                         Underline = true,
                         Color = Color.Black
                     });
-                    sb.Append(generalHeader);
+                    sb.Append(generalHeader + "\n");
 
 
                     foreach (var item in player.Items)
@@ -244,5 +233,23 @@ namespace WaywardGamers.KParser.Plugin
             flagNoUpdate = false;
         }
         #endregion
+
+        #region Localization Overrides
+        protected override void LoadLocalizedUI()
+        {
+            playerLabel.Text = Resources.NonCombat.ItemsPluginPlayerLabel;
+            optionsMenu.Text = Resources.PublicResources.Options;
+            showDetailOption.Text = Resources.NonCombat.ItemsPluginShowDetail;
+
+            UpdatePlayerList();
+        }
+
+        protected override void LoadResources()
+        {
+            this.tabName = Resources.NonCombat.ItemsPluginTabName;
+            generalHeader = Resources.NonCombat.ItemsPluginGeneralHeader;
+        }
+        #endregion
+
     }
 }

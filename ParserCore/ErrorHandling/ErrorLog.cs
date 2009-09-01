@@ -29,10 +29,13 @@ namespace WaywardGamers.KParser
 		#endregion
 
 		#region Member Variables
-		private string logFileName;
-		private string breakString;
+		string logFileName;
+		string breakString;
 
-        private Properties.Settings programSettings;
+        Properties.Settings programSettings;
+
+        Exception lastException = null;
+        int duplicateCount = 0;
 		#endregion
 
 		#region Constructor
@@ -100,7 +103,7 @@ namespace WaywardGamers.KParser
                     using (StreamWriter sw = File.AppendText(logFileName))
                     {
                         WriteHeader(sw, label, message, severity);
-                        WriteFooter(sw);
+                        WriteSeparator(sw);
                     }
                 }
 				catch (Exception)
@@ -128,7 +131,7 @@ namespace WaywardGamers.KParser
                 using (StreamWriter sw = File.AppendText(logFileName))
                 {
                     WriteHeader(sw, label, message.ToString(), ErrorLevel.Debug);
-                    WriteFooter(sw);
+                    WriteSeparator(sw);
                 }
             }
             catch (Exception)
@@ -167,10 +170,28 @@ namespace WaywardGamers.KParser
 		/// in at the time the exception is caught.</param>
 		public void Log(Exception e, string message)
 		{
+            if (IsDuplicate(e))
+            {
+                using (StreamWriter sw = File.AppendText(logFileName))
+                {
+                    if (duplicateCount == 0)
+                        sw.WriteLine();
+
+                    sw.WriteLine(string.Format("Duplicate: {0} @ {1:f}", ++duplicateCount, DateTime.Now));
+                }
+                return;
+            }
+            else
+            {
+                duplicateCount = 0;
+            }
+
 			try
 			{
                 using (StreamWriter sw = File.AppendText(logFileName))
                 {
+                    WriteSeparator(sw);
+
                     WriteHeader(sw, e.GetType().ToString(), message, ErrorLevel.Error);
                     sw.Write(e.ToString());
                     sw.WriteLine();
@@ -183,8 +204,6 @@ namespace WaywardGamers.KParser
                         sw.WriteLine();
                         subException = e.InnerException;
                     }
-
-                    WriteFooter(sw);
                 }
 			}
 			catch (Exception)
@@ -192,6 +211,37 @@ namespace WaywardGamers.KParser
 				MessageBox.Show("Error writing log.");
 			}
 		}
+
+        /// <summary>
+        /// Check to see whether the specified exception is a duplicate
+        /// of the most recent exception.  If so, we'll want to suppress
+        /// the full log output.
+        /// </summary>
+        /// <param name="e">The exception to check against.</param>
+        /// <returns>True if it's a duplicate of the last recorded exception.  Otherwise false.</returns>
+        private bool IsDuplicate(Exception e)
+        {
+            if (lastException == null)
+            {
+                lastException = e;
+                return false;
+            }
+
+            if (e.GetType() == lastException.GetType())
+            {
+                if ((e.Message == lastException.Message) &&
+                    (e.StackTrace == lastException.StackTrace))
+                {
+                    if (!((e.InnerException == null) ^ (lastException.InnerException == null)))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            lastException = e;
+            return false;
+        }
 
 		/// <summary>
 		/// Log any exceptions that cause the program to terminate.
@@ -203,11 +253,11 @@ namespace WaywardGamers.KParser
 			{
                 using (StreamWriter sw = File.AppendText(logFileName))
                 {
+                    WriteSeparator(sw);
                     sw.WriteLine("******* FATAL EXCEPTION !!!! *********\n");
                     WriteHeader(sw, e.GetType().ToString(), "", ErrorLevel.Error);
                     sw.Write(e.ToString());
                     sw.WriteLine();
-                    WriteFooter(sw);
                 }
 			}
 			catch (Exception)
@@ -335,10 +385,10 @@ namespace WaywardGamers.KParser
         /// Write the footer for the log to divide log entries.
         /// </summary>
         /// <param name="sw">The stream to write the log to.</param>
-        private void WriteFooter(StreamWriter sw)
+        private void WriteSeparator(StreamWriter sw)
         {
-            sw.WriteLine(breakString);
             sw.WriteLine();
+            sw.WriteLine(breakString);
         }
 		#endregion
 	}

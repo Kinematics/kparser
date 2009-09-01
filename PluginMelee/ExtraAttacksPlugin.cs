@@ -12,64 +12,78 @@ namespace WaywardGamers.KParser.Plugin
 {
     public class ExtraAttacksPlugin : BasePluginControl
     {
-        #region Constructor
-        string header1 = "Player               # Melee Attacks    # Melee Rounds    Attacks/Round    # Extra Attacks\n";
-        string header2 = "Player               # +1 Rounds   # +2 Rounds   # +3 Rounds   # +4 Rounds    # >+4 Rounds\n";
-        string header3 = "Player               # MultiAttack Rounds    MultiAttack %     Kills w/Min Attacks    Kills w/<Min Attacks\n";
-
+        #region Member Variables
         bool flagNoUpdate;
         bool showDetails = false;
+        ToolStripLabel playersLabel = new ToolStripLabel();
         ToolStripComboBox playersCombo = new ToolStripComboBox();
+        ToolStripLabel attLabel = new ToolStripLabel();
         ToolStripComboBox attacksCombo = new ToolStripComboBox();
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
         ToolStripMenuItem showDetailOption = new ToolStripMenuItem();
 
+        // Localized strings
+
+        string lsRestrictedWarning;
+
+        string lsAll;
+        string lsYes;
+        string lsNo;
+
+        string lsMainSectionTitle;
+        string lsMainHeader1;
+        string lsMainHeader2;
+        string lsMainHeader3;
+        string lsMainFormat1;
+        string lsMainFormat2;
+        string lsMainFormat3;
+
+        string lsSectionTreatAs;
+
+        string lsSectionMultiAttacksTitle;
+        string lsSectionMultiAttacksHeader;
+        string lsSectionMultiAttacksFormat;
+
+        string lsSectionKicksTitle;
+        string lsSectionKicksHeader;
+        string lsSectionKicksFormat;
+
+        string lsSectionZanshinTitle;
+        string lsSectionZanshinHeader;
+        string lsSectionZanshinFormat;
+
+        string lsSectionUncorrectedDetails;
+        #endregion
+
+        #region Constructor
         public ExtraAttacksPlugin()
         {
-            ToolStripLabel catLabel = new ToolStripLabel();
-            catLabel.Text = "Players:";
-            toolStrip.Items.Add(catLabel);
+            LoadLocalizedUI();
 
             playersCombo.DropDownStyle = ComboBoxStyle.DropDownList;
-            playersCombo.Items.Add("All");
             playersCombo.MaxDropDownItems = 10;
-            playersCombo.SelectedIndex = 0;
             playersCombo.SelectedIndexChanged += new EventHandler(this.playersCombo_SelectedIndexChanged);
-            toolStrip.Items.Add(playersCombo);
-
-
-            ToolStripLabel attLabel = new ToolStripLabel();
-            attLabel.Text = "Base # of Attacks:";
-            toolStrip.Items.Add(attLabel);
 
             attacksCombo.DropDownStyle = ComboBoxStyle.DropDownList;
-            attacksCombo.Items.Add("Auto");
-            attacksCombo.Items.Add("1");
-            attacksCombo.Items.Add("2");
-            attacksCombo.SelectedIndex = 0;
             attacksCombo.SelectedIndexChanged += new EventHandler(this.attacksCombo_SelectedIndexChanged);
-            toolStrip.Items.Add(attacksCombo);
 
-            optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            optionsMenu.Text = "Options";
-
-            showDetailOption.Text = "Show Detail";
             showDetailOption.CheckOnClick = true;
             showDetailOption.Checked = false;
             showDetailOption.Click += new EventHandler(showDetailOption_Click);
+
+            optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
             optionsMenu.DropDownItems.Add(showDetailOption);
 
+            toolStrip.Items.Add(playersLabel);
+            toolStrip.Items.Add(playersCombo);
+            toolStrip.Items.Add(attLabel);
+            toolStrip.Items.Add(attacksCombo);
             toolStrip.Items.Add(optionsMenu);
 
         }
         #endregion
 
         #region IPlugin Overrides
-        public override string TabName
-        {
-            get { return "Extra Attacks"; }
-        }
-
         public override void Reset()
         {
             ResetTextBox();
@@ -89,9 +103,9 @@ namespace WaywardGamers.KParser.Plugin
         public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
             ResetTextBox();
-            AppendText("Restricted while parse is running.", Color.Black, true, false);
+            AppendText(lsRestrictedWarning, Color.Black, true, false);
 
-            //string currentlySelectedPlayer = "All";
+            //string currentlySelectedPlayer = lsAll;
 
             //if (playersCombo.CBSelectedIndex() > 0)
             //    currentlySelectedPlayer = playersCombo.CBSelectedItem();
@@ -243,13 +257,13 @@ namespace WaywardGamers.KParser.Plugin
             string playerFilter = playersCombo.CBSelectedItem();
             List<string> playersList = new List<string>();
 
-            if (playerFilter == "All")
+            if (playerFilter == lsAll)
             {
                 string[] players = playersCombo.CBGetStrings();
 
                 foreach (string player in players)
                 {
-                    if (player != "All")
+                    if (player != lsAll)
                     {
                         playersList.Add(player);
                     }
@@ -614,7 +628,9 @@ namespace WaywardGamers.KParser.Plugin
             if (showDetails == true)
             {
                 StringBuilder sb = new StringBuilder();
-                sb.Append("\n\n\nUncorrected Details\n\n");
+                sb.Append("\n\n\n");
+                sb.Append(lsSectionUncorrectedDetails);
+                sb.Append("\n\n");
                 foreach (var attacker in attacksMade.Where(a => a.MeleeRounds.Count() > 0))
                 {
                     sb.AppendLine(attacker.Name);
@@ -639,40 +655,38 @@ namespace WaywardGamers.KParser.Plugin
 
             StringBuilder sb = new StringBuilder();
             List<StringMods> strModList = new List<StringMods>();
-            string sectionLabel;
-            string localHeader;
 
             #region Basic Data
 
-            sectionLabel = "Basic Data\n\n";
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
-                Length = sectionLabel.Length,
+                Length = lsMainSectionTitle.Length,
                 Bold = true,
                 Color = Color.Red
             });
-            sb.Append(sectionLabel);
+            sb.Append(lsMainSectionTitle + "\n\n");
 
 
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
-                Length = header1.Length,
+                Length = lsMainHeader1.Length,
                 Bold = true,
                 Underline = true,
                 Color = Color.Black
             });
-            sb.Append(header1);
+            sb.Append(lsMainHeader1 + "\n");
 
             foreach (var attacker in attackCalcs)
             {
-                sb.AppendFormat("{0,-20}{1,16}{2,18}{3,17}{4,19}\n",
+                sb.AppendFormat(lsMainFormat1,
                     attacker.Name,
                     attacker.Attacks,
                     attacker.Rounds,
                     attacker.AttacksPerRound,
                     attacker.ExtraAttacks);
+                sb.Append("\n");
             }
             sb.Append("\n");
 
@@ -680,16 +694,16 @@ namespace WaywardGamers.KParser.Plugin
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
-                Length = header2.Length,
+                Length = lsMainHeader2.Length,
                 Bold = true,
                 Underline = true,
                 Color = Color.Black
             });
-            sb.Append(header2);
+            sb.Append(lsMainHeader2 + "\n");
 
             foreach (var attacker in attackCalcs)
             {
-                sb.AppendFormat("{0,-20}{2,12}{3,14}{4,14}{5,14}{6,16}\n",
+                sb.AppendFormat(lsMainFormat2,
                     attacker.Name,
                     attacker.Minus1Rounds,
                     attacker.Plus1Rounds,
@@ -697,6 +711,7 @@ namespace WaywardGamers.KParser.Plugin
                     attacker.Plus3Rounds,
                     attacker.Plus4Rounds,
                     attacker.PlusNRounds);
+                sb.Append("\n");
             }
             sb.Append("\n");
 
@@ -704,21 +719,22 @@ namespace WaywardGamers.KParser.Plugin
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
-                Length = header3.Length,
+                Length = lsMainHeader3.Length,
                 Bold = true,
                 Underline = true,
                 Color = Color.Black
             });
-            sb.Append(header3);
+            sb.Append(lsMainHeader3 + "\n");
 
             foreach (var attacker in attackCalcs)
             {
-                sb.AppendFormat("{0,-20}{1,21}{2,17:p2}{3,24}{4,24}\n",
+                sb.AppendFormat(lsMainFormat3,
                     attacker.Name,
                     attacker.TotalMultiRounds,
                     attacker.AttackRoundsNonKill > 0 ? (double)attacker.TotalMultiRounds / attacker.AttackRoundsNonKill : 0,
                     attacker.AttackRoundCountKills,
                     attacker.AttackRoundUnderCountKills);
+                sb.Append("\n");
             }
             sb.Append("\n\n");
 
@@ -727,41 +743,36 @@ namespace WaywardGamers.KParser.Plugin
 
             ///////////////////////////////////////////////////////////////
 
-            sectionLabel = "Treat As:\n";
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
-                Length = sectionLabel.Length,
+                Length = lsSectionTreatAs.Length,
                 Bold = true,
                 Color = Color.Red
             });
-            sb.Append(sectionLabel);
-            sb.Append("\n");
+            sb.Append(lsSectionTreatAs + "\n\n");
 
 
             #region Double/Triple Attacks
 
-            sectionLabel = "Multi-attacks per attack (2x/3x):\n";
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
-                Length = sectionLabel.Length,
+                Length = lsSectionMultiAttacksTitle.Length,
                 Bold = true,
                 Color = Color.Blue
             });
-            sb.Append(sectionLabel);
-            sb.Append("\n");
+            sb.Append(lsSectionMultiAttacksTitle + "\n\n");
 
-            localHeader = "Player               # Double Attacks    DA Rate    Perc. DA     # Triple Attacks    TA Rate    Perc. TA\n";
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
-                Length = localHeader.Length,
+                Length = lsSectionMultiAttacksHeader.Length,
                 Bold = true,
                 Underline = true,
                 Color = Color.Black
             });
-            sb.Append(localHeader);
+            sb.Append(lsSectionMultiAttacksHeader + "\n");
 
             foreach (var attacker in attackCalcs.Where(a => a.RoundsWithExtraAttacks > 0))
             {
@@ -789,7 +800,7 @@ namespace WaywardGamers.KParser.Plugin
                     }
                 }
 
-                sb.AppendFormat("{0,-20}{1,17}{2,11:p2}{3,12:p2}{4,21}{5,11:p2}{6,12:p2}\n",
+                sb.AppendFormat(lsSectionMultiAttacksFormat,
                     attacker.Name,
                     doubleAttacks,
                     (double)doubleAttacks / (attacker.AttackRoundsNonKill * attacker.AttacksPerRound),
@@ -797,6 +808,7 @@ namespace WaywardGamers.KParser.Plugin
                     tripleAttacks,
                     (double)tripleAttacks / (attacker.AttackRoundsNonKill * attacker.AttacksPerRound),
                     doubleAttacks + tripleAttacks > 0 ? (double)tripleAttacks / (doubleAttacks + tripleAttacks) : 0);
+                sb.Append("\n");
             }
             sb.Append("\n");
 
@@ -804,27 +816,24 @@ namespace WaywardGamers.KParser.Plugin
 
             #region Kicks
 
-            sectionLabel = "Multi-attacks per round (Kicks):\n";
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
-                Length = sectionLabel.Length,
+                Length = lsSectionKicksTitle.Length,
                 Bold = true,
                 Color = Color.Blue
             });
-            sb.Append(sectionLabel);
-            sb.Append("\n");
+            sb.Append(lsSectionKicksTitle + "\n\n");
 
-            localHeader = "Player               Footwork?    # Rounds w/Kicks    Kick Attack Rate\n";
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
-                Length = localHeader.Length,
+                Length = lsSectionKicksHeader.Length,
                 Bold = true,
                 Underline = true,
                 Color = Color.Black
             });
-            sb.Append(localHeader);
+            sb.Append(lsSectionKicksHeader + "\n");
 
             foreach (var attacker in attackCalcs.Where(a => a.RoundsWithExtraAttacks > 0))
             {
@@ -834,11 +843,12 @@ namespace WaywardGamers.KParser.Plugin
                     attacker.Plus4Rounds -
                     attacker.PlusNRounds;
 
-                sb.AppendFormat("{0,-20}{1,10}{2,20}{3,20:p2}\n",
+                sb.AppendFormat(lsSectionKicksFormat,
                     attacker.Name,
-                    attacker.AttacksPerRound == 1 ? "Yes" : "No",
+                    attacker.AttacksPerRound == 1 ? lsYes : lsNo,
                     attacker.Plus1Rounds,
                     baseDen > 0 ? (double)attacker.Plus1Rounds / baseDen : 0);
+                sb.Append("\n");
             }
             sb.Append("\n");
 
@@ -848,36 +858,34 @@ namespace WaywardGamers.KParser.Plugin
 
             if (attackCalcs.Any(a => a.AttacksPerRound == 1 && a.RoundsWithExtraAttacks > 0) == true)
             {
-                sectionLabel = "Multi-attacks per attack (Zanshin):\n";
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = sectionLabel.Length,
+                    Length = lsSectionZanshinTitle.Length,
                     Bold = true,
                     Color = Color.Blue
                 });
-                sb.Append(sectionLabel);
-                sb.Append("\n");
+                sb.Append(lsSectionZanshinTitle + "\n\n");
 
-                localHeader = "Player               # Missed First Attacks    # DA w/Missed First   Possible Zanshin %\n";
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = localHeader.Length,
+                    Length = lsSectionZanshinHeader.Length,
                     Bold = true,
                     Underline = true,
                     Color = Color.Black
                 });
-                sb.Append(localHeader);
+                sb.Append(lsSectionZanshinHeader + "\n");
 
                 foreach (var attacker in attackCalcs.Where(a => a.RoundsWithExtraAttacks > 0
                     && a.AttacksPerRound == 1))
                 {
-                    sb.AppendFormat("{0,-20}{1,23}{2,23}{3,21:p2}\n",
+                    sb.AppendFormat(lsSectionZanshinFormat,
                         attacker.Name,
                         attacker.MissedFirstAttacks,
                         attacker.PossibleZanshin,
                         attacker.MissedFirstAttacks > 0 ? (double)attacker.PossibleZanshin / attacker.MissedFirstAttacks : 0);
+                    sb.Append("\n");
                 }
                 sb.Append("\n");
             }
@@ -916,6 +924,62 @@ namespace WaywardGamers.KParser.Plugin
                 HandleDataset(null);
 
             flagNoUpdate = false;
+        }
+        #endregion
+
+        #region Localization Overrides
+        protected override void LoadLocalizedUI()
+        {
+            playersLabel.Text = Resources.PublicResources.PlayersLabel;
+
+            attLabel.Text = Resources.Combat.ExtraAttPluginBaseAttNumLabel;
+
+            attacksCombo.Items.Clear();
+            attacksCombo.Items.Add(Resources.Combat.ExtraAttPluginCategoryAuto);
+            attacksCombo.Items.Add(Resources.Combat.ExtraAttPluginCategory1);
+            attacksCombo.Items.Add(Resources.Combat.ExtraAttPluginCategory2);
+            attacksCombo.SelectedIndex = 0;
+
+            optionsMenu.Text = Resources.PublicResources.Options;
+            showDetailOption.Text = Resources.PublicResources.ShowDetail;
+
+            UpdatePlayerList();
+            playersCombo.SelectedIndex = 0;
+
+        }
+
+        protected override void LoadResources()
+        {
+            this.tabName = Resources.Combat.ExtraAttPluginTabName;
+
+            lsRestrictedWarning = Resources.Combat.ExtraAttPluginRestrictedWarning;
+            lsAll = Resources.PublicResources.All;
+            lsYes = Resources.PublicResources.Yes;
+            lsNo = Resources.PublicResources.No;
+
+            lsMainSectionTitle = Resources.Combat.ExtraAttPluginMainSectionTitle;
+            lsMainHeader1 = Resources.Combat.ExtraAttPluginHeaderMain1;
+            lsMainHeader2 = Resources.Combat.ExtraAttPluginHeaderMain2;
+            lsMainHeader3 = Resources.Combat.ExtraAttPluginHeaderMain3;
+            lsMainFormat1 = Resources.Combat.ExtraAttPluginFormatMain1;
+            lsMainFormat2 = Resources.Combat.ExtraAttPluginFormatMain2;
+            lsMainFormat3 = Resources.Combat.ExtraAttPluginFormatMain3;
+
+            lsSectionTreatAs = Resources.Combat.ExtraAttPluginSectionTreatAs;
+
+            lsSectionMultiAttacksTitle = Resources.Combat.ExtraAttPluginSectionMultiAttacksTitle;
+            lsSectionMultiAttacksHeader = Resources.Combat.ExtraAttPluginSectionMultiAttacksHeader;
+            lsSectionMultiAttacksFormat = Resources.Combat.ExtraAttPluginSectionMultiAttacksFormat;
+
+            lsSectionKicksTitle = Resources.Combat.ExtraAttPluginSectionKicksTitle;
+            lsSectionKicksHeader = Resources.Combat.ExtraAttPluginSectionKicksHeader;
+            lsSectionKicksFormat = Resources.Combat.ExtraAttPluginSectionKicksFormat;
+
+            lsSectionZanshinTitle = Resources.Combat.ExtraAttPluginSectionZanshinTitle;
+            lsSectionZanshinHeader = Resources.Combat.ExtraAttPluginSectionZanshinHeader;
+            lsSectionZanshinFormat = Resources.Combat.ExtraAttPluginSectionZanshinFormat;
+
+            lsSectionUncorrectedDetails = Resources.Combat.ExtraAttPluginUncorrectedDetails;
         }
         #endregion
 

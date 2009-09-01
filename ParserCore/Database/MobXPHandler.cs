@@ -83,6 +83,8 @@ namespace WaywardGamers.KParser.Database
                 using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
                 {
                     // If we don't have any data, or nothing has changed, short-circuit and leave
+                    if (dbAccess.Database == null)
+                        return;
 
                     if (dbAccess.Database.Battles.Count == 0)
                         return;

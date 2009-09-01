@@ -65,9 +65,8 @@ namespace WaywardGamers.KParser.Plugin
         HashSet<SATATypes> SATASet = new HashSet<SATATypes> { SATATypes.SneakAttack, SATATypes.TrickAttack };
 
         List<SATAEvent> SATAEvents = new List<SATAEvent>();
-        #endregion
 
-        #region Constructor
+        // UI controls
         ToolStripLabel playersLabel = new ToolStripLabel();
         ToolStripComboBox playersCombo = new ToolStripComboBox();
 
@@ -81,83 +80,105 @@ namespace WaywardGamers.KParser.Plugin
 
         ToolStripButton editCustomMobFilter = new ToolStripButton();
 
+        // Localized strings
+
+        string lsAll;
+
+        string lsParsedSneakAttack;
+        string lsParsedTrickAttack;
+        string lsParsedHide;
+
+        string lsSneakAttack;
+        string lsTrickAttack;
+        string lsSneakAndTrick;
+        string lsSoloWS;
+
+        string lsWeaponskill;
+        string lsFailed;
+        string lsMiss;
+        string lsAndHide;
+
+        string lsFormatDataLineShort;
+        string lsFormatDataLineLong;
+
+        string lsLabelTotal;
+        string lsLabelSuccessTotal;
+        string lsLabelSuccessCount;
+        string lsLabelMelee;
+        string lsLabelSuccessMelee;
+        string lsLabelWeaponskill;
+        string lsLabelCount;
+        string lsLabelAverage;
+
+        string lsFormatSummaryP;
+        string lsFormatSummary1;
+        string lsFormatSummary2;
+        string lsFormatSummary3;
+        #endregion
+
+        #region Constructor
         public ThiefPlugin()
         {
-            playersLabel.Text = "Players:";
-            toolStrip.Items.Add(playersLabel);
+            LoadLocalizedUI();
 
             playersCombo.DropDownStyle = ComboBoxStyle.DropDownList;
-            playersCombo.Items.Add("All");
             playersCombo.MaxDropDownItems = 10;
-            playersCombo.SelectedIndex = 0;
             playersCombo.SelectedIndexChanged += new EventHandler(this.playersCombo_SelectedIndexChanged);
-            toolStrip.Items.Add(playersCombo);
-
-
-            mobsLabel.Text = "Mobs:";
-            toolStrip.Items.Add(mobsLabel);
 
             mobsCombo.DropDownStyle = ComboBoxStyle.DropDownList;
             mobsCombo.AutoSize = false;
             mobsCombo.Width = 175;
-            mobsCombo.Items.Add("All");
             mobsCombo.MaxDropDownItems = 10;
-            mobsCombo.SelectedIndex = 0;
             mobsCombo.SelectedIndexChanged += new EventHandler(this.mobsCombo_SelectedIndexChanged);
-            toolStrip.Items.Add(mobsCombo);
 
 
-            optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            optionsMenu.Text = "Options";
-
-            groupMobsOption.Text = "Group Mobs";
             groupMobsOption.CheckOnClick = true;
             groupMobsOption.Checked = false;
             groupMobsOption.Click += new EventHandler(groupMobs_Click);
-            optionsMenu.DropDownItems.Add(groupMobsOption);
 
-            exclude0XPOption.Text = "Exclude 0 XP Mobs";
             exclude0XPOption.CheckOnClick = true;
             exclude0XPOption.Checked = false;
             exclude0XPOption.Click += new EventHandler(exclude0XPMobs_Click);
-            optionsMenu.DropDownItems.Add(exclude0XPOption);
 
-            customMobSelectionOption.Text = "Custom Mob Selection";
             customMobSelectionOption.CheckOnClick = true;
             customMobSelectionOption.Checked = false;
             customMobSelectionOption.Click += new EventHandler(customMobSelection_Click);
+
+
+            optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            optionsMenu.DropDownItems.Add(groupMobsOption);
+            optionsMenu.DropDownItems.Add(exclude0XPOption);
             optionsMenu.DropDownItems.Add(customMobSelectionOption);
 
-            toolStrip.Items.Add(optionsMenu);
 
-            ToolStripSeparator aSeparator = new ToolStripSeparator();
-            toolStrip.Items.Add(aSeparator);
-
-            editCustomMobFilter.Text = "Edit Mob Filter";
             editCustomMobFilter.Enabled = false;
             editCustomMobFilter.Click += new EventHandler(editCustomMobFilter_Click);
 
+
+            ToolStripSeparator aSeparator = new ToolStripSeparator();
+
+            toolStrip.Items.Add(playersLabel);
+            toolStrip.Items.Add(playersCombo);
+            toolStrip.Items.Add(mobsLabel);
+            toolStrip.Items.Add(mobsCombo);
+            toolStrip.Items.Add(optionsMenu);
+            toolStrip.Items.Add(aSeparator);
             toolStrip.Items.Add(editCustomMobFilter);
         }
         #endregion
 
         #region IPlugin Overrides
-        public override string TabName
-        {
-            get { return "Thief"; }
-        }
-
         public override void Reset()
         {
             ResetTextBox();
 
             playersCombo.Items.Clear();
-            playersCombo.Items.Add("All");
+            playersCombo.Items.Add(lsAll);
             flagNoUpdate = true;
             playersCombo.SelectedIndex = 0;
 
             mobsCombo.Items.Clear();
-            mobsCombo.Items.Add("All");
+            mobsCombo.Items.Add(lsAll);
             flagNoUpdate = true;
             mobsCombo.SelectedIndex = 0;
         }
@@ -180,7 +201,7 @@ namespace WaywardGamers.KParser.Plugin
         public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
             bool changesFound = false;
-            string currentlySelectedPlayer = "All";
+            string currentlySelectedPlayer = lsAll;
 
             if (playersCombo.CBSelectedIndex() > 0)
                 currentlySelectedPlayer = playersCombo.CBSelectedItem();
@@ -267,11 +288,11 @@ namespace WaywardGamers.KParser.Plugin
 
             List<string> playerList = new List<string>();
 
-            if (selectedPlayer == "All")
+            if (selectedPlayer == lsAll)
             {
                 foreach (var player in playersCombo.CBGetStrings())
                 {
-                    if (player != "All")
+                    if (player != lsAll)
                         playerList.Add(player.ToString());
                 }
             }
@@ -401,9 +422,9 @@ namespace WaywardGamers.KParser.Plugin
             {
                 var sataActions = player.Ability.Where(
                         a => a.IsActionIDNull() == false &&
-                        (a.ActionsRow.ActionName == "Sneak Attack" ||
-                         a.ActionsRow.ActionName == "Trick Attack" ||
-                         a.ActionsRow.ActionName == "Hide"));
+                        (a.ActionsRow.ActionName == lsParsedSneakAttack ||
+                         a.ActionsRow.ActionName == lsParsedTrickAttack||
+                         a.ActionsRow.ActionName == lsParsedHide));
 
                 if (sataActions.Count() > 0)
                 {
@@ -583,7 +604,7 @@ namespace WaywardGamers.KParser.Plugin
                         {
                             sataEvent.SATASuccess = false;
                             sataEvent.ActionType = ActionType.Unknown;
-                            sataEvent.ActionName = "Failed";
+                            sataEvent.ActionName = lsFailed;
                         }
                         else
                         {
@@ -611,7 +632,7 @@ namespace WaywardGamers.KParser.Plugin
                                 {
                                     sataActions = sataActions.Skip(1);
 
-                                    if ((nextAction.ActionsRow.ActionName == "Hide") &&
+                                    if ((nextAction.ActionsRow.ActionName == lsParsedHide) &&
                                         (FailedActionType)nextAction.FailedActionType == FailedActionType.Discovered)
                                         continue;
 
@@ -652,20 +673,20 @@ namespace WaywardGamers.KParser.Plugin
                     var TAList = SATAEvents.Where(s =>
                          s.SATAActions.IsSupersetOf(TASet)).Except(SATAList);
 
-                    PrintOutput("Sneak Attack + Trick Attack", SATAList);
-                    PrintOutput("Sneak Attack", SAList);
-                    PrintOutput("Trick Attack", TAList);
+                    PrintOutput(lsSneakAndTrick, SATAList);
+                    PrintOutput(lsSneakAttack, SAList);
+                    PrintOutput(lsTrickAttack, TAList);
 
                     var soloWeaponskills = from w in player.WSkill.Except(sataWeaponskills)
                                            select new SATAEvent
                                            {
-                                               ActionName = "Weaponskill",
+                                               ActionName = lsWeaponskill,
                                                DamageAmount = w.Amount,
                                                ActionType = ActionType.Weaponskill,
                                                WeaponskillName = w.ActionsRow.ActionName
                                            };
 
-                    PrintOutput("Solo Weaponskills", soloWeaponskills);
+                    PrintOutput(lsSoloWS, soloWeaponskills);
 
                 }
             }
@@ -684,20 +705,20 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     if (sEvent.ActionType == ActionType.Unknown)
                     {
-                        dataLine = string.Format("    {0,-15}\n",
+                        dataLine = string.Format(lsFormatDataLineShort,
                             sEvent.ActionName);
                     }
                     else
                     {
-                        dataLine = string.Format("    {0,-15}{1,15}{2,10}{3,10}\n",
+                        dataLine = string.Format(lsFormatDataLineLong,
                             sEvent.ActionName,
                             sEvent.ActionType == ActionType.Weaponskill ? sEvent.WeaponskillName
-                            : (sEvent.SATASuccess == true ? sEvent.DamageModifier.ToString() : "Miss"),
-                            sEvent.UsedHide ? "+Hide" : "",
+                            : (sEvent.SATASuccess == true ? sEvent.DamageModifier.ToString() : lsMiss),
+                            sEvent.UsedHide ? lsAndHide : string.Empty,
                             sEvent.DamageAmount);
                     }
 
-                    AppendText(dataLine);
+                    AppendText(dataLine + "\n");
                 }
 
                 // All
@@ -728,31 +749,55 @@ namespace WaywardGamers.KParser.Plugin
                     (double)totalSMeleeDmg / smeleeDmgList.Count() : 0;
 
 
-                AppendText(string.Format("\n    {0,-20}{1,10}{2,20}\n",
-                    "Total:",
-                    SATAList.Count(),
-                    totalDmg));
-                AppendText(string.Format("    {0,-20}{1,30}\n",
-                    "Successful Total:",
-                    totalSDmg));
-                AppendText(string.Format("    {0,-20}{1,10}{2,20:p2}\n\n",
-                    "Success Count:",
-                     successCount,
-                     (double)successCount / SATAList.Count()));
+                /////////////////////////////
 
-                AppendText(string.Format("    {0,30}{1,20}\n", "Count", "Average"));
-                AppendText(string.Format("    {0,-20}{1,10}{2,20:f2}\n",
-                    "Melee:",
+                StringBuilder sb = new StringBuilder();
+
+                sb.Append("\n");
+                sb.AppendFormat(lsFormatSummary1,
+                    lsLabelTotal,
+                    SATAList.Count(),
+                    totalDmg);
+                sb.Append("\n");
+
+                sb.AppendFormat(lsFormatSummary2,
+                    lsLabelSuccessTotal,
+                    totalSDmg);
+                sb.Append("\n");
+
+                sb.AppendFormat(lsFormatSummaryP,
+                    lsLabelSuccessCount,
+                     successCount,
+                     (double)successCount / SATAList.Count());
+                sb.Append("\n\n");
+
+                sb.AppendFormat(lsFormatSummary3,
+                    lsLabelCount,
+                    lsLabelAverage);
+                sb.Append("\n");
+
+                sb.AppendFormat(lsFormatSummaryP,
+                    lsLabelMelee,
                     meleeDmgList.Count(),
-                    avgMeleeDmg));
-                AppendText(string.Format("    {0,-20}{1,10}{2,20:f2}\n",
-                    "Successful Melee:",
+                    avgMeleeDmg);
+                sb.Append("\n");
+
+                sb.AppendFormat(lsFormatSummaryP,
+                    lsLabelSuccessMelee,
                     smeleeDmgList.Count(),
-                    avgSMeleeDmg));
-                AppendText(string.Format("    {0,-20}{1,10}{2,20:f2}\n\n\n",
-                    "Weaponskill:",
+                    avgSMeleeDmg);
+                sb.Append("\n");
+
+                sb.AppendFormat(lsFormatSummaryP,
+                    lsLabelWeaponskill,
                      wsDmgList.Count(),
-                    avgWSDmg));
+                    avgWSDmg);
+                sb.Append("\n");
+
+                sb.Append("\n\n");
+
+
+                AppendText(sb.ToString());
             }
         }
 
@@ -846,5 +891,64 @@ namespace WaywardGamers.KParser.Plugin
         }
 
         #endregion
+
+        #region Localization Overrides
+        protected override void LoadLocalizedUI()
+        {
+            playersLabel.Text = Resources.PublicResources.PlayersLabel;
+            mobsLabel.Text = Resources.PublicResources.MobsLabel;
+
+            optionsMenu.Text = Resources.PublicResources.Options;
+            groupMobsOption.Text = Resources.PublicResources.GroupMobs;
+            exclude0XPOption.Text = Resources.PublicResources.Exclude0XPMobs;
+            customMobSelectionOption.Text = Resources.PublicResources.CustomMobSelection;
+            editCustomMobFilter.Text = Resources.PublicResources.EditMobFilter;
+
+            UpdatePlayerList();
+            playersCombo.SelectedIndex = 0;
+
+            UpdateMobList();
+            mobsCombo.SelectedIndex = 0;
+        }
+
+        protected override void LoadResources()
+        {
+            this.tabName = Resources.Combat.ThiefPluginTabName;
+
+            lsAll = Resources.PublicResources.All;
+
+            lsParsedSneakAttack = Resources.ParsedStrings.SneakAttack;
+            lsParsedTrickAttack = Resources.ParsedStrings.TrickAttack;
+            lsParsedHide = Resources.ParsedStrings.Hide;
+
+            lsSneakAttack = Resources.Combat.ThiefPluginSneakAttack;
+            lsTrickAttack = Resources.Combat.ThiefPluginTrickAttack;
+            lsSneakAndTrick = Resources.Combat.ThiefPluginSneakAndTrick;
+            lsSoloWS = Resources.Combat.ThiefPluginSoloWS;
+
+            lsWeaponskill = Resources.Combat.ThiefPluginEventTypeWeaponskill;
+            lsFailed = Resources.Combat.ThiefPluginEventTypeFailed;
+            lsMiss = Resources.Combat.ThiefPluginMiss;
+            lsAndHide = Resources.Combat.ThiefPluginAndHide;
+
+            lsFormatDataLineShort = Resources.Combat.ThiefPluginFormatDataLineShort;
+            lsFormatDataLineLong = Resources.Combat.ThiefPluginFormatDataLineLong;
+
+            lsLabelTotal = Resources.Combat.ThiefPluginLabelTotal;
+            lsLabelSuccessTotal = Resources.Combat.ThiefPluginLabelSuccessfulTotal;
+            lsLabelSuccessCount = Resources.Combat.ThiefPluginLabelSuccessCount;
+            lsLabelMelee = Resources.Combat.ThiefPluginLabelMelee;
+            lsLabelSuccessMelee = Resources.Combat.ThiefPluginLabelSuccessfulMelee;
+            lsLabelWeaponskill = Resources.Combat.ThiefPluginLabelWeaponskills;
+            lsLabelCount = Resources.Combat.ThiefPluginLabelCount;
+            lsLabelAverage = Resources.Combat.ThiefPluginLabelAverage;
+
+            lsFormatSummaryP = Resources.Combat.ThiefPluginFormatSummaryP;
+            lsFormatSummary1 = Resources.Combat.ThiefPluginFormatSummary1;
+            lsFormatSummary2 = Resources.Combat.ThiefPluginFormatSummary2;
+            lsFormatSummary3 = Resources.Combat.ThiefPluginFormatSummary3;
+        }
+        #endregion
+
     }
 }

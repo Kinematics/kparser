@@ -21,29 +21,121 @@ namespace WaywardGamers.KParser.Plugin
             Salvage
         }
 
-        #region Constructor
+        internal class HELMList
+        {
+            internal string ItemName { get; set; }
+            internal int ItemCount { get; set; }
+        }
+
+        #region Member Variables
         ToolStripDropDownButton lootTypeMenu = new ToolStripDropDownButton();
-        LootType currentLootType = LootType.Summary;
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
+        LootType currentLootType = LootType.Summary;
+
+        ToolStripMenuItem summaryOption = new ToolStripMenuItem();
+        ToolStripMenuItem dropRatesOption = new ToolStripMenuItem();
+        ToolStripMenuItem stealingOption = new ToolStripMenuItem();
+        ToolStripMenuItem helmOption = new ToolStripMenuItem();
+        ToolStripMenuItem salvageOption = new ToolStripMenuItem();
+
+        ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
+        ToolStripMenuItem excludeCrystalsOption = new ToolStripMenuItem();
+        ToolStripMenuItem excludedPlayerInfoOption = new ToolStripMenuItem();
+
         bool showGroupDetails = false;
         bool excludeCrystalsAndSeals = false;
         bool excludedPlayerInfo = true;
 
+
+        // Localizable strings
+
+        // Display strings
+        string lsGil;
+        string lsItemDrops;
+        string lsDistribution;
+        string lsCellDrops;
+        string lsDropRates;
+        string lsNoDrops;
+        string lsTreasureChests;
+        string lsNumberOfTimesDropped;
+        string lsNothing;
+
+        // Format strings
+        string lsDropItemFormat;
+        string lsDropGilFormat;
+        string lsTimesKilledFormat;
+        string lsDroppedItemNTimesFormat;
+        string lsOpenedNTimesFormat;
+        string lsDropRateFormat;
+
+        // Parse strings
+        string lsParsedGil;
+        string lsSalvageCell;
+        string lsCrystalsAndSealsRegex;
+
+        #endregion
+
+        #region HELM strings
+
+        // HELM parsing strings
+
+        string lsItemRegex;
+        string lsItemRegexReference;
+
+        string lsHarvestFormat;
+        string lsLoggingFormat;
+        string lsMiningFormat;
+
+        string lsHarvestFail;
+        string lsLoggingFail;
+        string lsMiningFail;
+
+        string lsHarvestToolBreak;
+        string lsLoggingToolBreak;
+        string lsMiningToolBreak;
+
+        string lsHarvestBreakRegex;
+        string lsLoggingBreakRegex;
+        string lsMiningBreakRegex;
+
+        string lsChocoDiggingFail;
+        string lsChocoDiggingFormat;
+
+        Regex Harvest;
+        Regex Logging;
+        Regex Mining;
+
+        Regex HarvestBreak;
+        Regex LoggingBreak;
+        Regex MiningBreak;
+
+        Regex ChocoDigging;
+
+        // HELM display strings
+
+        string lsHELMHarvesting;
+        string lsHELMLogging;
+        string lsHELMMining;
+        string lsHELMDigging;
+
+        string lsHELMTotalItems;
+        string lsHELMTotalTries;
+        string lsHELMBreaks;
+        string lsHELMNothing;
+
+        string lsHELMShortLineFormat;
+        string lsHELMLongLineFormat;
+
+
+        #endregion
+
+        #region Constructor
         public TreasurePlugin()
         {
-            lootTypeMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            lootTypeMenu.Text = "Loot Type";
+            LoadLocalizedUI();
 
-            ToolStripMenuItem summaryOption = new ToolStripMenuItem();
-            ToolStripMenuItem dropRatesOption = new ToolStripMenuItem();
-            ToolStripMenuItem stealingOption = new ToolStripMenuItem();
-            ToolStripMenuItem helmOption = new ToolStripMenuItem();
-            ToolStripMenuItem salvageOption = new ToolStripMenuItem();
-            summaryOption.Text = "Summary";
-            dropRatesOption.Text = "Drop Rates";
-            stealingOption.Text = "Stealing";
-            helmOption.Text = "HELM/Chocobo";
-            salvageOption.Text = "Salvage";
+
+            lootTypeMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
 
             summaryOption.Click += new EventHandler(summaryOption_Click);
             dropRatesOption.Click += new EventHandler(dropRatesOption_Click);
@@ -58,44 +150,33 @@ namespace WaywardGamers.KParser.Plugin
             lootTypeMenu.DropDownItems.Add(helmOption);
             lootTypeMenu.DropDownItems.Add(salvageOption);
 
-            toolStrip.Items.Add(lootTypeMenu);
 
             optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            optionsMenu.Text = "Options";
 
-            ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
-            groupMobsOption.Text = "Show Group Details";
             groupMobsOption.CheckOnClick = true;
             groupMobsOption.Checked = false;
             groupMobsOption.Click += new EventHandler(groupDetails_Click);
-            optionsMenu.DropDownItems.Add(groupMobsOption);
 
-            ToolStripMenuItem excludeCrystalsOption = new ToolStripMenuItem();
-            excludeCrystalsOption.Text = "Exclude Crystals and Seals";
             excludeCrystalsOption.CheckOnClick = true;
             excludeCrystalsOption.Checked = false;
             excludeCrystalsOption.Click += new EventHandler(excludeCrystalsOption_Click);
-            optionsMenu.DropDownItems.Add(excludeCrystalsOption);
 
-            ToolStripMenuItem excludedPlayerInfoOption = new ToolStripMenuItem();
-            excludedPlayerInfoOption.Text = "Don't Count 'exclude'd Player Kills";
             excludedPlayerInfoOption.CheckOnClick = true;
             excludedPlayerInfoOption.Checked = true;
             excludedPlayerInfoOption.Click += new EventHandler(excludedPlayerInfoOption_Click);
+
+            optionsMenu.DropDownItems.Add(groupMobsOption);
+            optionsMenu.DropDownItems.Add(excludeCrystalsOption);
             optionsMenu.DropDownItems.Add(excludedPlayerInfoOption);
 
             optionsMenu.Enabled = false;
 
+            toolStrip.Items.Add(lootTypeMenu);
             toolStrip.Items.Add(optionsMenu);
         }
         #endregion
 
         #region IPlugin overrides
-        public override string TabName
-        {
-            get { return "Loot"; }
-        }
-
         public override void Reset()
         {
             ResetTextBox();
@@ -296,13 +377,15 @@ namespace WaywardGamers.KParser.Plugin
         private void ProcessSummary(KPDatabaseDataSet dataSet)
         {
             // All items
-            AppendText("Item Drops\n", Color.Red, true, false);
+            AppendText(lsItemDrops, Color.Red, true, false);
+            AppendText("\n");
+
             string dropListFormat = "{0,9} {1}\n";
 
             int totalGil = 0;
             string gilPlayerName = string.Empty;
 
-            var gilItem = dataSet.Items.SingleOrDefault(i => i.ItemName == "Gil");
+            var gilItem = dataSet.Items.SingleOrDefault(i => i.ItemName == lsParsedGil);
             if (gilItem != null)
             {
                 gilPlayerName = gilItem.GetLootRows().First().CombatantsRow.CombatantName;
@@ -311,13 +394,13 @@ namespace WaywardGamers.KParser.Plugin
 
             if (totalGil > 0)
             {
-                AppendText(string.Format(dropListFormat, totalGil, "Gil"));
+                AppendText(string.Format(dropListFormat, totalGil, lsGil));
             }
 
             foreach (var item in dataSet.Items)
             {
                 if ((item.GetLootRows().Count() > 0) &&
-                    (item.ItemName != "Gil"))
+                    (item.ItemName != lsParsedGil))
                 {
                     AppendText(string.Format(dropListFormat,
                         item.GetLootRows().Count(), item.ItemName));
@@ -341,7 +424,9 @@ namespace WaywardGamers.KParser.Plugin
 
             if (lootByPlayer.Count() > 0)
             {
-                AppendText("\n\nDistribution\n", Color.Red, true, false);
+                AppendText("\n\n");
+                AppendText(lsDistribution, Color.Red, true, false);
+                AppendText("\n");
 
                 foreach (var loot in lootByPlayer)
                 {
@@ -350,12 +435,12 @@ namespace WaywardGamers.KParser.Plugin
                     if (totalGil > 0)
                     {
                         if (gilPlayerName == loot.Name)
-                            AppendText(string.Format(dropListFormat, totalGil, "Gil"));
+                            AppendText(string.Format(dropListFormat, totalGil, lsGil));
                     }
 
                     foreach (var lootItem in loot.LootItems)
                     {
-                        if (lootItem.Key != "Gil")
+                        if (lootItem.Key != lsParsedGil)
                         {
                             AppendText(string.Format(dropListFormat,
                                 lootItem.Count(), lootItem.Key));
@@ -367,10 +452,13 @@ namespace WaywardGamers.KParser.Plugin
 
         private void ProcessSalvage(KPDatabaseDataSet dataSet)
         {
-            AppendText("Cell Drops\n", Color.Red, true, false);
+            AppendText(lsCellDrops, Color.Red, true, false);
+            AppendText("\n");
+
+            Regex reSalvageCell = new Regex(lsSalvageCell);
 
             var cells = from c in dataSet.Items
-                        where c.ItemName.Contains("cell")
+                        where reSalvageCell.Match(c.ItemName).Success
                         orderby c.ItemName
                         select new
                         {
@@ -385,7 +473,7 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var item in cells)
             {
-                Match m = Regex.Match(item.Name, @"([a-z]+) cell");
+                Match m = reSalvageCell.Match(item.Name);
                 AppendText(string.Format("\n{0,13}({1:00}): ", m.Groups[1].Value, item.Count), Color.Black, true, false);
 
                 foreach (var drop in item.Drops)
@@ -401,33 +489,27 @@ namespace WaywardGamers.KParser.Plugin
             StringBuilder sb = new StringBuilder();
 
             // Drop rate section
-            string tmpString = "Drop Rates\n";
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
-                Length = tmpString.Length,
+                Length = lsDropRates.Length,
                 Bold = true,
                 Color = Color.Red
             });
-            sb.Append(tmpString);
+            sb.Append(lsDropRates);
 
-            string dropItemFormat = "{0,9} {1,-28} [Max #: {2}]  [Items/Kill: {3,6:f3}]  [Drop Rate: {4,8:p2}]  [% of Drops: {5,8:p2}]\n";
-            string dropGilFormat = "{0,9} {1,-28} [Average:   {2,8:f2}]\n";
+            sb.Append("\n");
 
-            
-            string excludeString;
+            Regex excludeItemsRegex;
 
             if (excludeCrystalsAndSeals == true)
             {
-                excludeString = "Gil|beastmen's seal|Kindred's seal|fire crystal|earth crystal|" +
-                    "water crystal|wind crystal|ice crystal|thunder crystal|light crystal|dark crystal";
+                excludeItemsRegex = new Regex(lsCrystalsAndSealsRegex);
             }
             else
             {
-                excludeString = "Gil";
+                excludeItemsRegex = new Regex(lsParsedGil);
             }
-
-            Regex excludeItemsRegex = new Regex(excludeString);
 
             #region LINQ
             var lootByMob = from c in dataSet.Combatants
@@ -508,12 +590,14 @@ namespace WaywardGamers.KParser.Plugin
             double percentDrop;
             int maxDrops;
 
+            string tmpString;
 
             foreach (var mob in lootByMob)
             {
                 int mobKillCount = mob.Battles.Count();
 
-                tmpString = string.Format("\n{0} (Killed {1} times)\n", mob.Name, mobKillCount);
+                sb.Append("\n");
+                tmpString = string.Format(lsTimesKilledFormat, mob.Name, mobKillCount);
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
@@ -522,6 +606,7 @@ namespace WaywardGamers.KParser.Plugin
                     Color = Color.Black
                 });
                 sb.Append(tmpString);
+                sb.Append("\n");
 
                 totalGil = 0;
                 avgGil = 0;
@@ -536,13 +621,14 @@ namespace WaywardGamers.KParser.Plugin
                         if (mobKillCount > 0)
                             avgGil = (double)totalGil / mobKillCount;
 
-                        sb.AppendFormat(dropGilFormat,
-                            totalGil, "Gil", avgGil);
+                        sb.AppendFormat(lsDropGilFormat,
+                            totalGil, lsGil, avgGil);
+                        sb.Append("\n");
                     }
 
                     if (mob.Loot.Count() == 0)
                     {
-                        sb.Append("       No drops.\n");
+                        sb.Append("       " + lsNoDrops + "\n");
                     }
                     else
                     {
@@ -570,13 +656,14 @@ namespace WaywardGamers.KParser.Plugin
 
                             percentDrop = totalDrops > 0 ? (double)lootDropCount / totalDrops : 0;
 
-                            sb.AppendFormat(dropItemFormat,
+                            sb.AppendFormat(lsDropItemFormat,
                                 loot.LootDrops.Count(),
                                 loot.LootName,
                                 maxDrops,
                                 avgLoot,
                                 dropRate,
                                 percentDrop);
+                            sb.Append("\n");
                         }
                     }
                 }
@@ -602,8 +689,10 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         for (int i = 0; i <= maxDropCount; i++)
                         {
-                            sb.AppendFormat("       Dropped {0,2} items {1,5} times ({2,8:p2})\n",
+                            sb.Append("       ");
+                            sb.AppendFormat(lsDroppedItemNTimesFormat,
                                 i, dropCount[i], (double)dropCount[i] / totalDropCount);
+                            sb.Append("\n");
                         }
                     }
                     #endregion
@@ -641,15 +730,16 @@ namespace WaywardGamers.KParser.Plugin
 
                     if (strDict.Count > 0)
                     {
-                        tmpString = "\n    Number of times each group of items dropped.\n\n";
+                        sb.Append("\n    ");
                         strModList.Add(new StringMods
                         {
                             Start = sb.Length,
-                            Length = tmpString.Length,
+                            Length = lsNumberOfTimesDropped.Length,
                             Bold = true,
                             Color = Color.Black
                         });
-                        sb.Append(tmpString);
+                        sb.Append(lsNumberOfTimesDropped);
+                        sb.Append("\n\n");
 
                         var sortedStrDict = strDict.OrderByDescending(a => a.Value);
                         int denominator = strDict.Sum(a => a.Value);
@@ -660,17 +750,18 @@ namespace WaywardGamers.KParser.Plugin
                         {
                             if (listSet.Key == string.Empty)
                             {
-                                setString = "Nothing";
+                                setString = lsNothing;
                             }
                             else
                             {
                                 setString = listSet.Key;
                             }
 
-                            sb.AppendFormat("{0,9} [{1,8:p2}] -- {2}\n",
+                            sb.AppendFormat(lsDropRateFormat,
                                 listSet.Value,
                                 (double)listSet.Value / denominator,
                                 setString);
+                            sb.Append("\n");
                         }
                     }
                     #endregion
@@ -679,22 +770,24 @@ namespace WaywardGamers.KParser.Plugin
 
             if (lootByChest.Count() > 0)
             {
-                tmpString = "\n\nTreasure Chests\n";
+                sb.Append("\n\n");
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
-                    Length = tmpString.Length,
+                    Length = lsTreasureChests.Length,
                     Bold = true,
                     Color = Color.Red
                 });
-                sb.Append(tmpString);
+                sb.Append(lsTreasureChests);
+                sb.Append("\n");
             }
 
             foreach (var chest in lootByChest)
             {
                 int chestsOpened = chest.Battles.Count();
-                
-                tmpString = string.Format("\n{0} (Opened {1} times)\n", chest.Name, chestsOpened);
+
+                sb.Append("\n");
+                tmpString = string.Format(lsOpenedNTimesFormat, chest.Name, chestsOpened);
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
@@ -703,6 +796,7 @@ namespace WaywardGamers.KParser.Plugin
                     Color = Color.Black
                 });
                 sb.Append(tmpString);
+                sb.Append("\n");
 
                 totalGil = 0;
                 avgGil = 0;
@@ -717,13 +811,14 @@ namespace WaywardGamers.KParser.Plugin
                         if (chestsOpened > 0)
                             avgGil = (double)totalGil / chestsOpened;
 
-                        sb.AppendFormat(dropGilFormat,
-                            totalGil, "Gil", avgGil);
+                        sb.AppendFormat(lsDropGilFormat,
+                            totalGil, lsGil, avgGil);
+                        sb.Append("\n");
                     }
 
                     if (chest.Loot.Count() == 0)
                     {
-                        sb.Append("       No drops.\n");
+                        sb.Append("       " + lsNoDrops + "\n");
                     }
                     else
                     {
@@ -751,13 +846,14 @@ namespace WaywardGamers.KParser.Plugin
 
                             percentDrop = totalDrops > 0 ? (double)lootDropCount / totalDrops : 0;
 
-                            sb.AppendFormat(dropItemFormat,
+                            sb.AppendFormat(lsDropItemFormat,
                                 loot.LootDrops.Count(),
                                 loot.LootName,
                                 maxDrops,
                                 avgLoot,
                                 dropRate,
                                 percentDrop);
+                            sb.Append("\n");
                         }
                     }
                 }
@@ -846,41 +942,6 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
-        #region HELM strings
-        private static readonly string item = @"((a|an|the) )?(?<item>\w+( \w+)*)";
-
-        // HELM messages:
-        // You successfully harvest a clump of red moko grass!
-        // You are unable to harvest anything.
-        // You harvest a bunch of gysahl greens, but your sickle breaks.
-        // Your sickle breaks!
-
-        private static readonly Regex Harvest = new Regex(string.Format("You (successfully )?harvest {0}(, but your sickle breaks( in the process)?)?(.|!)$", item));
-        private static readonly Regex Log = new Regex(string.Format("You (successfully )?cut off {0}(, but your hatchet breaks( in the process)?)?(.|!)$", item));
-        private static readonly Regex Mine = new Regex(string.Format("You (successfully )?dig up {0}(, but your pickaxe breaks( in the process)?)?(.|!)$", item));
-
-        private static readonly string harvestFail = "You are unable to harvest anything.";
-        private static readonly string loggingFail = "You are unable to log anything.";
-        private static readonly string exMineFail = "You are unable to dig up anything.";
-
-        private static readonly string harvestToolBreak = "Your sickle breaks!";
-        private static readonly string loggingToolBreak = "Your hatchet breaks!";
-        private static readonly string exMineToolBreak = "Your pickaxe breaks!";
-
-        private static readonly Regex harvestBreak = new Regex(@"sickle breaks( in the process)?(\.|!)$");
-        private static readonly Regex loggingBreak = new Regex(@"hatchet breaks( in the process)?(\.|!)$");
-        private static readonly Regex exMineBreak = new Regex(@"pickaxe breaks( in the process)?(\.|!)$");
-
-        // Chocobo digging messages:
-        // You dig and you dig, but find nothing.
-        // Obtained: Lauan log.
-        // Obtained: Pebble.
-
-        string chocoDigFail = "You dig and you dig, but find nothing.";
-        private static readonly Regex Dig = new Regex(string.Format("^Obtained: {0}{1}$", item, @"\."));
-
-        #endregion
-
         private void ProcessHELM(KPDatabaseDataSet dataSet)
         {
             richTextBox.Clear();
@@ -890,200 +951,261 @@ namespace WaywardGamers.KParser.Plugin
 
             var harvestedItems = from ac in arenaChat
                                  where Harvest.Match(ac.Message).Success == true
-                                 group ac by Harvest.Match(ac.Message).Groups["item"].Value into acn
+                                 group ac by Harvest.Match(ac.Message).Groups[lsItemRegexReference].Value into acn
                                  orderby acn.Key
-                                 select new
+                                 select new HELMList
                                  {
-                                     Item = acn.Key,
-                                     Count = acn.Count()
+                                     ItemName = acn.Key,
+                                     ItemCount = acn.Count()
                                  };
 
-            int harvestingBreaks = arenaChat.Count(ac => harvestBreak.Match(ac.Message).Success == true);
+            int harvestingBreaks = arenaChat.Count(ac => HarvestBreak.Match(ac.Message).Success == true);
 
-            int harvestingFailures = arenaChat.Count(a => a.Message == harvestFail ||
-                a.Message == harvestToolBreak);
+            int harvestingFailures = arenaChat.Count(a => a.Message == lsHarvestFail ||
+                a.Message == lsHarvestToolBreak);
 
 
             var loggedItems = from ac in arenaChat
-                              where Log.Match(ac.Message).Success == true
-                              group ac by Log.Match(ac.Message).Groups["item"].Value into acn
+                              where Logging.Match(ac.Message).Success == true
+                              group ac by Logging.Match(ac.Message).Groups[lsItemRegexReference].Value into acn
                               orderby acn.Key
-                              select new
+                              select new HELMList
                               {
-                                  Item = acn.Key,
-                                  Count = acn.Count()
+                                  ItemName = acn.Key,
+                                  ItemCount = acn.Count()
                               };
 
-            int loggingBreaks = arenaChat.Count(ac => loggingBreak.Match(ac.Message).Success == true);
+            int loggingBreaks = arenaChat.Count(ac => LoggingBreak.Match(ac.Message).Success == true);
 
-            int loggingFailures = arenaChat.Count(a => a.Message == loggingFail ||
-                a.Message == loggingToolBreak);
+            int loggingFailures = arenaChat.Count(a => a.Message == lsLoggingFail ||
+                a.Message == lsLoggingToolBreak);
 
 
             var minedItems = from ac in arenaChat
-                             where Mine.Match(ac.Message).Success == true
-                             group ac by Mine.Match(ac.Message).Groups["item"].Value into acn
+                             where Mining.Match(ac.Message).Success == true
+                             group ac by Mining.Match(ac.Message).Groups[lsItemRegexReference].Value into acn
                              orderby acn.Key
-                             select new
+                             select new HELMList
                              {
-                                 Item = acn.Key,
-                                 Count = acn.Count()
+                                 ItemName = acn.Key,
+                                 ItemCount = acn.Count()
                              };
 
 
-            int miningBreaks = arenaChat.Count(ac => exMineBreak.Match(ac.Message).Success == true);
+            int miningBreaks = arenaChat.Count(ac => MiningBreak.Match(ac.Message).Success == true);
 
-            int miningFailures = arenaChat.Count(a => a.Message == exMineFail ||
-                a.Message == exMineToolBreak);
+            int miningFailures = arenaChat.Count(a => a.Message == lsMiningFail ||
+                a.Message == lsMiningToolBreak);
 
 
             var chocoboItems = from ac in arenaChat
-                               where Dig.Match(ac.Message).Success == true
-                               group ac by Dig.Match(ac.Message).Groups["item"].Value into acn
+                               where ChocoDigging.Match(ac.Message).Success == true
+                               group ac by ChocoDigging.Match(ac.Message).Groups[lsItemRegexReference].Value into acn
                                orderby acn.Key
-                               select new
+                               select new HELMList
                                {
-                                   Item = acn.Key,
-                                   Count = acn.Count()
+                                   ItemName = acn.Key,
+                                   ItemCount = acn.Count()
                                };
 
-            int chocoboDiggingFailures = arenaChat.Count(ac => ac.Message == chocoDigFail);
+
+            int chocoboDiggingFailures = arenaChat.Count(ac => ac.Message == lsChocoDiggingFail);
             #endregion
 
+            // Consolidated build
+            StringBuilder sb = new StringBuilder();
+            List<StringMods> strModList = new List<StringMods>();
+
+            // Build the full set of strings for all types of HELM
+            BuildHELMResults(lsHELMHarvesting, harvestedItems, harvestingBreaks, harvestingFailures, sb, strModList);
+            BuildHELMResults(lsHELMLogging, loggedItems, loggingBreaks, loggingFailures, sb, strModList);
+            BuildHELMResults(lsHELMMining, minedItems, miningBreaks, miningFailures, sb, strModList);
+            BuildHELMResults(lsHELMDigging, chocoboItems, -1, chocoboDiggingFailures, sb, strModList);
+
+            // Then display them
+            PushStrings(sb, strModList);
+        }
+
+        /// <summary>
+        /// Function to add on to the string builder with a constructed display
+        /// for each section of HELM results.
+        /// </summary>
+        /// <param name="sectionTitle">The title of this section.</param>
+        /// <param name="helmedItems">The IEnumerable HELMList of HELMed items.</param>
+        /// <param name="helmedBreaks">A count of breaks for this HELM type.  -1 if not applicable (IE: Choco digging)</param>
+        /// <param name="helmedFailures">A count of the number of failures for this HELM type.</param>
+        /// <param name="sb">The StringBuilder that's being added to.</param>
+        /// <param name="strModList">The list of string mods for color/bold/etc.</param>
+        private void BuildHELMResults(string sectionTitle,
+            IEnumerable<HELMList> helmedItems, int helmedBreaks, int helmedFailures,
+            StringBuilder sb, List<StringMods> strModList)
+        {
+            // Don't add anything if there aren't any of the provided type of results
+            if (helmedItems.Count() == 0)
+                return;
+
+            // Add the section title first.
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = sectionTitle.Length,
+                Bold = true,
+                Color = Color.Red
+            });
+            sb.AppendFormat("{0}\n", sectionTitle);
+
+            // Some local variables
             int totalItems;
             int totalCount;
             double avgResult;
-            string lineFormat = "  {0,-34} {1,5}  [{2,8:p2}]\n";
 
-            // Harvesting results
-            if (harvestedItems.Count() > 0 || harvestingBreaks > 0)
+            totalItems = helmedItems.Sum(a => a.ItemCount);
+            totalCount = totalItems + helmedFailures;
+
+            // List out each item HELMed and give its count and percentage.
+            foreach (var item in helmedItems)
             {
-                AppendText("Harvesting:\n", Color.Red, true, false);
+                avgResult = (double)item.ItemCount / totalCount;
 
-                totalItems = harvestedItems.Sum(a => a.Count);
-                totalCount = totalItems + harvestingFailures;
-
-                foreach (var item in harvestedItems)
-                {
-                    avgResult = (double)item.Count / totalCount;
-                    AppendText(string.Format(lineFormat,
-                        item.Item, item.Count, avgResult));
-                }
-
-                avgResult = (double)harvestingFailures / totalCount;
-                AppendText(string.Format(lineFormat,
-                    "Nothing", harvestingFailures, avgResult));
-
-                if (harvestedItems.Count() > 0)
-                    AppendText(string.Format("\n  {0,-34} {1,5}\n",
-                        "Total Items:", totalItems));
-
-                AppendText(string.Format("  {0,-34} {1,5}\n",
-                    "Total Tries:", totalCount));
-
-                avgResult = (double)harvestingBreaks / totalCount;
-                AppendText(string.Format("\n  {0,-34} {1,5}  [{2,8:p2}]\n",
-                    "Breaks:", harvestingBreaks, avgResult));
-
-                AppendText("\n");
+                sb.AppendFormat(lsHELMLongLineFormat,
+                    item.ItemName, item.ItemCount, avgResult);
+                sb.Append("\n");
             }
 
-            // Logging results
-            if (loggedItems.Count() > 0 || loggingBreaks > 0)
+            // And then the number of times nothing was acquired (failures).
+            avgResult = (double)helmedFailures / totalCount;
+            sb.AppendFormat(lsHELMLongLineFormat,
+                lsHELMNothing, helmedFailures, avgResult);
+            sb.Append("\n\n");
+
+            // Show total number of items
+            sb.AppendFormat(lsHELMShortLineFormat,
+                lsHELMTotalItems, totalItems);
+            sb.Append("\n");
+
+            // And total number of attempts
+            sb.AppendFormat(lsHELMShortLineFormat,
+                lsHELMTotalTries, totalCount);
+            sb.Append("\n");
+
+            // And finally, the number of breaks (if applicable)
+            if (helmedBreaks >= 0)
             {
-                AppendText("Logging:\n", Color.Red, true, false);
+                avgResult = (double)helmedBreaks / totalCount;
 
-                totalItems = loggedItems.Sum(a => a.Count);
-                totalCount = totalItems + loggingFailures;
-
-                foreach (var item in loggedItems)
-                {
-                    avgResult = (double)item.Count / totalCount;
-                    AppendText(string.Format(lineFormat,
-                        item.Item, item.Count, avgResult));
-                }
-
-                avgResult = (double)loggingFailures / totalCount;
-                AppendText(string.Format(lineFormat,
-                    "Nothing", loggingFailures, avgResult));
-
-                if (loggedItems.Count() > 0)
-                    AppendText(string.Format("\n  {0,-34} {1,5}\n",
-                        "Total Items:", totalItems));
-
-                AppendText(string.Format("  {0,-34} {1,5}\n",
-                    "Total Tries:", totalCount));
-
-                avgResult = (double)loggingBreaks / totalCount;
-                AppendText(string.Format("\n  {0,-34} {1,5}  [{2,8:p2}]\n",
-                    "Breaks:", loggingBreaks, avgResult));
-
-                AppendText("\n");
+                sb.Append("\n");
+                sb.AppendFormat(lsHELMLongLineFormat,
+                    lsHELMBreaks, helmedBreaks, avgResult);
+                sb.Append("\n");
             }
 
-            // Mining results
-            if (minedItems.Count() > 0 || miningBreaks > 0)
-            {
-                AppendText("Mining/Excavation:\n", Color.Red, true, false);
-
-                totalItems = minedItems.Sum(a => a.Count);
-                totalCount = totalItems + miningFailures;
-
-                foreach (var item in minedItems)
-                {
-                    avgResult = (double)item.Count / totalCount;
-                    AppendText(string.Format(lineFormat,
-                        item.Item, item.Count, avgResult));
-                }
-
-                avgResult = (double)miningFailures / totalCount;
-                AppendText(string.Format(lineFormat,
-                   "Nothing", miningFailures, avgResult));
-
-                if (minedItems.Count() > 0)
-                    AppendText(string.Format("\n  {0,-34} {1,5}\n",
-                        "Total Items:", totalItems));
-
-                AppendText(string.Format("  {0,-34} {1,5}\n",
-                    "Total Tries:", totalCount));
-
-                avgResult = (double)miningBreaks / totalCount;
-                AppendText(string.Format("\n  {0,-34} {1,5}  [{2,8:p2}]\n",
-                    "Breaks:", miningBreaks, avgResult));
-
-                AppendText("\n");
-            }
-
-            // Chocobo results
-            if (chocoboItems.Count() > 0 || chocoboDiggingFailures > 0)
-            {
-                AppendText("Chocobo Digging:\n", Color.Red, true, false);
-
-                totalCount = chocoboItems.Sum(a => a.Count) + chocoboDiggingFailures;
-
-                foreach (var item in chocoboItems)
-                {
-                    avgResult = (double)item.Count / totalCount;
-                    AppendText(string.Format(lineFormat,
-                        item.Item, item.Count, avgResult));
-                }
-
-                avgResult = (double)chocoboDiggingFailures / totalCount;
-                AppendText(string.Format(lineFormat,
-                   "Nothing", chocoboDiggingFailures, avgResult));
-
-                if (chocoboItems.Count() > 0)
-                    AppendText(string.Format("\n  {0,-34} {1,5}\n",
-                        "Total Items:", chocoboItems.Sum(li => li.Count)));
-
-                AppendText(string.Format("  {0,-34} {1,5}\n",
-                    "Total Tries:", totalCount));
-
-                AppendText("\n");
-            }
-
+            sb.Append("\n");
         }
 
+        #endregion
+
+        #region Localization Overrides
+        protected override void LoadLocalizedUI()
+        {
+            lootTypeMenu.Text = Resources.NonCombat.TreasurePluginLootTypeMenu;
+            summaryOption.Text = Resources.NonCombat.TreasurePluginLootTypeSummary;
+            dropRatesOption.Text = Resources.NonCombat.TreasurePluginLootTypeDropRates;
+            stealingOption.Text = Resources.NonCombat.TreasurePluginLootTypeStealing;
+            helmOption.Text = Resources.NonCombat.TreasurePluginLootTypeHELM;
+            salvageOption.Text = Resources.NonCombat.TreasurePluginLootTypeSalvage;
+
+            optionsMenu.Text = Resources.PublicResources.Options;
+            groupMobsOption.Text = Resources.NonCombat.TreasurePluginOptionGroupMobs;
+            excludeCrystalsOption.Text = Resources.NonCombat.TreasurePluginOptionExcludeCrystals;
+            excludedPlayerInfoOption.Text = Resources.NonCombat.ExcludedPlayerOption;
+        }
+
+        protected override void LoadResources()
+        {
+            this.tabName = Resources.NonCombat.TreasurePluginTabName;
+
+            lsGil = Resources.NonCombat.TreasurePluginGil;
+            lsParsedGil = Resources.ParsedStrings.Gil;
+            lsItemDrops = Resources.NonCombat.TreasurePluginItemDrops;
+            lsDistribution = Resources.NonCombat.TreasurePluginDistribution;
+            lsNoDrops = Resources.NonCombat.TreasurePluginNoDrops;
+            lsTreasureChests = Resources.NonCombat.TreasurePluginTreasureChests;
+            lsNumberOfTimesDropped = Resources.NonCombat.TreasurePluginNumberOfTimesDropped;
+            lsNothing = Resources.NonCombat.TreasurePluginNothing;
+
+            lsCellDrops = Resources.NonCombat.TreasurePluginCellDrops;
+            lsSalvageCell = Resources.ParsedStrings.SalvageCellRegex;
+
+            lsDropRates = Resources.NonCombat.TreasurePluginDropRates;
+            lsDropItemFormat = Resources.NonCombat.TreasurePluginDropItemFormat;
+            lsDropGilFormat = Resources.NonCombat.TreasurePluginDropGilFormat;
+            lsCrystalsAndSealsRegex = Resources.ParsedStrings.CrystalsAndSealsRegex;
+            lsTimesKilledFormat = Resources.NonCombat.TreasurePluginTimesKilledFormat;
+            lsDroppedItemNTimesFormat = Resources.NonCombat.TreasurePluginDroppedItemNTimesFormat;
+            lsOpenedNTimesFormat = Resources.NonCombat.TreasurePluginOpenedNTimesFormat;
+            lsDropRateFormat = Resources.NonCombat.TreasurePluginDropRateFormat;
+
+            // HELM strings
+
+            // HELM messages:
+            // You successfully harvest a clump of red moko grass!
+            // You are unable to harvest anything.
+            // You harvest a bunch of gysahl greens, but your sickle breaks.
+            // Your sickle breaks!
+
+            lsItemRegex = Resources.NonCombat.TreasurePluginRegexItem;
+            lsItemRegexReference = Resources.NonCombat.TreasurePluginRegexItemReference;
+
+            lsHarvestFormat = Resources.NonCombat.TreasurePluginRegexHarvestFormat;
+            lsLoggingFormat = Resources.NonCombat.TreasurePluginRegexLoggingFormat;
+            lsMiningFormat = Resources.NonCombat.TreasurePluginRegexMiningFormat;
+
+            Harvest = new Regex(string.Format(lsHarvestFormat, lsItemRegex));
+            Logging = new Regex(string.Format(lsLoggingFormat, lsItemRegex));
+            Mining = new Regex(string.Format(lsMiningFormat, lsItemRegex));
+
+            lsHarvestFail = Resources.NonCombat.TreasurePluginHarvestFail;
+            lsLoggingFail = Resources.NonCombat.TreasurePluginLoggingFail;
+            lsMiningFail = Resources.NonCombat.TreasurePluginMiningFail;
+
+            lsHarvestToolBreak = Resources.NonCombat.TreasurePluginHarvestToolBreak;
+            lsLoggingToolBreak = Resources.NonCombat.TreasurePluginLoggingToolBreak;
+            lsMiningToolBreak = Resources.NonCombat.TreasurePluginMiningToolBreak;
+
+            lsHarvestBreakRegex = Resources.NonCombat.TreasurePluginRegexHarvestBreak;
+            lsLoggingBreakRegex = Resources.NonCombat.TreasurePluginRegexLoggingBreak;
+            lsMiningBreakRegex = Resources.NonCombat.TreasurePluginRegexMiningBreak;
+
+            HarvestBreak = new Regex(lsHarvestBreakRegex);
+            LoggingBreak = new Regex(lsLoggingBreakRegex);
+            MiningBreak = new Regex(lsMiningBreakRegex);
+
+            // Chocobo digging messages:
+            // You dig and you dig, but find nothing.
+            // Obtained: Lauan log.
+            // Obtained: Pebble.
+
+            lsChocoDiggingFail = Resources.NonCombat.TreasurePluginChocoDiggingFail;
+            lsChocoDiggingFormat = Resources.NonCombat.TreasurePluginChocoDiggingFormat;
+
+            ChocoDigging = new Regex(string.Format(lsChocoDiggingFormat, lsItemRegex));
+
+            // Display strings
+
+            lsHELMHarvesting = Resources.NonCombat.TreasurePluginHELMHarvesting;
+            lsHELMLogging = Resources.NonCombat.TreasurePluginHELMLogging;
+            lsHELMMining = Resources.NonCombat.TreasurePluginHELMMining;
+            lsHELMDigging = Resources.NonCombat.TreasurePluginHELMDigging;
+
+            lsHELMTotalItems = Resources.NonCombat.TreasurePluginHELMTotalItems;
+            lsHELMTotalTries = Resources.NonCombat.TreasurePluginHELMTotalTries;
+            lsHELMBreaks = Resources.NonCombat.TreasurePluginHELMBreaks;
+            lsHELMNothing = Resources.NonCombat.TreasurePluginHELMNothing;
+
+            lsHELMShortLineFormat = Resources.NonCombat.TreasurePluginHELMShortLineFormat;
+            lsHELMLongLineFormat = Resources.NonCombat.TreasurePluginHELMLongLineFormat;
+
+        }
         #endregion
 
     }

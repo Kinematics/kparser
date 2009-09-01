@@ -13,102 +13,106 @@ namespace WaywardGamers.KParser.Plugin
 {
     public class DefenseFrequencyDataPlugin : BasePluginControl
     {
-        #region Constructor
+        #region Member Variables
         bool flagNoUpdate;
         bool groupMobs = false;
         bool exclude0XPMobs = false;
         bool customMobSelection = false;
         bool showDetails = false;
 
+        ToolStripLabel playersLabel = new ToolStripLabel();
         ToolStripComboBox playersCombo = new ToolStripComboBox();
+        ToolStripLabel mobsLabel = new ToolStripLabel();
         ToolStripComboBox mobsCombo = new ToolStripComboBox();
 
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
         ToolStripMenuItem groupMobsOption = new ToolStripMenuItem();
         ToolStripMenuItem exclude0XPOption = new ToolStripMenuItem();
         ToolStripMenuItem customMobSelectionOption = new ToolStripMenuItem();
+        ToolStripMenuItem showDetailOption = new ToolStripMenuItem();
 
         ToolStripButton editCustomMobFilter = new ToolStripButton();
 
+        // Localized strings
+
+        string lsAll;
+
+        string lsMelee;
+        string lsMeleeCrits;
+        string lsMeleeAE;
+        string lsRanged;
+        string lsRangedCrits;
+        string lsRangedAE;
+        string lsSpells;
+        string lsMagicBursts;
+        string lsAbility;
+        string lsWeaponskills;
+        string lsSpikes;
+
+        #endregion
+
+        #region Constructor
         public DefenseFrequencyDataPlugin()
         {
-            ToolStripLabel catLabel = new ToolStripLabel();
-            catLabel.Text = "Players:";
-            toolStrip.Items.Add(catLabel);
+            LoadLocalizedUI();
 
             playersCombo.DropDownStyle = ComboBoxStyle.DropDownList;
-            playersCombo.Items.Add("All");
             playersCombo.MaxDropDownItems = 10;
-            playersCombo.SelectedIndex = 0;
             playersCombo.SelectedIndexChanged += new EventHandler(this.playersCombo_SelectedIndexChanged);
-            toolStrip.Items.Add(playersCombo);
-
-
-            ToolStripLabel mobsLabel = new ToolStripLabel();
-            mobsLabel.Text = "Mobs:";
-            toolStrip.Items.Add(mobsLabel);
 
             mobsCombo.DropDownStyle = ComboBoxStyle.DropDownList;
             mobsCombo.AutoSize = false;
             mobsCombo.Width = 175;
-            mobsCombo.Items.Add("All");
             mobsCombo.MaxDropDownItems = 10;
-            mobsCombo.SelectedIndex = 0;
             mobsCombo.SelectedIndexChanged += new EventHandler(this.mobsCombo_SelectedIndexChanged);
-            toolStrip.Items.Add(mobsCombo);
 
 
             optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            optionsMenu.Text = "Options";
             optionsMenu.DropDownOpening += new EventHandler(optionsMenu_DropDownOpening);
 
-            groupMobsOption.Text = "Group Mobs";
             groupMobsOption.CheckOnClick = true;
             groupMobsOption.Checked = false;
             groupMobsOption.Click += new EventHandler(groupMobs_Click);
-            optionsMenu.DropDownItems.Add(groupMobsOption);
 
-            exclude0XPOption.Text = "Exclude 0 XP Mobs";
             exclude0XPOption.CheckOnClick = true;
             exclude0XPOption.Checked = false;
             exclude0XPOption.Click += new EventHandler(exclude0XPMobs_Click);
-            optionsMenu.DropDownItems.Add(exclude0XPOption);
 
-            customMobSelectionOption.Text = "Custom Mob Selection";
             customMobSelectionOption.CheckOnClick = true;
             customMobSelectionOption.Checked = false;
             customMobSelectionOption.Click += new EventHandler(customMobSelection_Click);
-            optionsMenu.DropDownItems.Add(customMobSelectionOption);
 
-            ToolStripSeparator bSeparator = new ToolStripSeparator();
-            optionsMenu.DropDownItems.Add(bSeparator);
-
-            ToolStripMenuItem showDetailOption = new ToolStripMenuItem();
-            showDetailOption.Text = "Show Detail";
             showDetailOption.CheckOnClick = true;
             showDetailOption.Checked = false;
             showDetailOption.Click += new EventHandler(showDetailOption_Click);
+
+
+            ToolStripSeparator bSeparator = new ToolStripSeparator();
+
+            optionsMenu.DropDownItems.Add(groupMobsOption);
+            optionsMenu.DropDownItems.Add(exclude0XPOption);
+            optionsMenu.DropDownItems.Add(customMobSelectionOption);
+            optionsMenu.DropDownItems.Add(bSeparator);
             optionsMenu.DropDownItems.Add(showDetailOption);
 
-            toolStrip.Items.Add(optionsMenu);
 
-            ToolStripSeparator aSeparator = new ToolStripSeparator();
-            toolStrip.Items.Add(aSeparator);
-
-            editCustomMobFilter.Text = "Edit Mob Filter";
             editCustomMobFilter.Enabled = false;
             editCustomMobFilter.Click += new EventHandler(editCustomMobFilter_Click);
 
+
+            ToolStripSeparator aSeparator = new ToolStripSeparator();
+
+            toolStrip.Items.Add(playersLabel);
+            toolStrip.Items.Add(playersCombo);
+            toolStrip.Items.Add(mobsLabel);
+            toolStrip.Items.Add(mobsCombo);
+            toolStrip.Items.Add(optionsMenu);
+            toolStrip.Items.Add(aSeparator);
             toolStrip.Items.Add(editCustomMobFilter);
         }
         #endregion
 
         #region IPlugin Overrides
-        public override string TabName
-        {
-            get { return "Defense Detail"; }
-        }
-
         public override void Reset()
         {
             ResetTextBox();
@@ -132,7 +136,7 @@ namespace WaywardGamers.KParser.Plugin
         public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
         {
             bool changesFound = false;
-            string currentlySelectedPlayer = "All";
+            string currentlySelectedPlayer = lsAll;
 
             if (playersCombo.CBSelectedIndex() > 0)
                 currentlySelectedPlayer = playersCombo.CBSelectedItem();
@@ -217,11 +221,11 @@ namespace WaywardGamers.KParser.Plugin
 
             List<string> playerList = new List<string>();
 
-            if (selectedPlayer == "All")
+            if (selectedPlayer == lsAll)
             {
                 foreach (string player in playersCombo.CBGetStrings())
                 {
-                    if (player != "All")
+                    if (player != lsAll)
                         playerList.Add(player.ToString());
                 }
             }
@@ -309,7 +313,6 @@ namespace WaywardGamers.KParser.Plugin
             ProcessAttackSet(attackSet);
         }
 
-
         /// <summary>
         /// Process the attack set generated by the mob collection functions
         /// </summary>
@@ -336,7 +339,7 @@ namespace WaywardGamers.KParser.Plugin
                     if ((player.Melee.Count() > 0) &&
                         (player.Melee.Any(n => (DamageModifier)n.DamageModifier != DamageModifier.Critical)))
                     {
-                        AppendText("  Melee\n", Color.Blue, true, false);
+                        AppendText(lsMelee + "\n", Color.Blue, true, false);
                         if (showDetails == true)
                             ShowDetailedDamage(player.Melee.Where(m => (DamageModifier)m.DamageModifier != DamageModifier.Critical));
 
@@ -349,7 +352,7 @@ namespace WaywardGamers.KParser.Plugin
                     if ((player.Melee.Count() > 0) &&
                         (player.Melee.Any(n => (DamageModifier)n.DamageModifier == DamageModifier.Critical)))
                     {
-                        AppendText("  Melee Crits\n", Color.Blue, true, false);
+                        AppendText(lsMeleeCrits + "\n", Color.Blue, true, false);
                         if (showDetails == true)
                             ShowDetailedDamage(player.Melee.Where(m => (DamageModifier)m.DamageModifier == DamageModifier.Critical));
 
@@ -363,7 +366,7 @@ namespace WaywardGamers.KParser.Plugin
                         (player.Melee.Any(n => (HarmType)n.SecondHarmType == HarmType.Damage ||
                             (HarmType)n.SecondHarmType == HarmType.Drain)))
                     {
-                        AppendText("  Melee Additional Effects\n", Color.Blue, true, false);
+                        AppendText(lsMeleeAE + "\n", Color.Blue, true, false);
                         if (showDetails == true)
                             ShowDetailedSecondaryDamage(player.Melee.Where(n => (HarmType)n.SecondHarmType == HarmType.Damage ||
                             (HarmType)n.SecondHarmType == HarmType.Drain));
@@ -378,7 +381,7 @@ namespace WaywardGamers.KParser.Plugin
                     if ((player.Range.Count() > 0) &&
                         (player.Range.Any(n => (DamageModifier)n.DamageModifier != DamageModifier.Critical)))
                     {
-                        AppendText("  Range\n", Color.Blue, true, false);
+                        AppendText(lsRanged + "\n", Color.Blue, true, false);
                         if (showDetails == true)
                             ShowDetailedDamage(player.Range.Where(m => (DamageModifier)m.DamageModifier != DamageModifier.Critical));
 
@@ -391,7 +394,7 @@ namespace WaywardGamers.KParser.Plugin
                     if ((player.Range.Count() > 0) &&
                         (player.Range.Any(n => (DamageModifier)n.DamageModifier == DamageModifier.Critical)))
                     {
-                        AppendText("  Range Crits\n", Color.Blue, true, false);
+                        AppendText(lsRangedCrits + "\n", Color.Blue, true, false);
                         if (showDetails == true)
                             ShowDetailedDamage(player.Range.Where(m => (DamageModifier)m.DamageModifier == DamageModifier.Critical));
 
@@ -405,7 +408,7 @@ namespace WaywardGamers.KParser.Plugin
                         (player.Range.Any(n => (HarmType)n.SecondHarmType == HarmType.Damage ||
                             (HarmType)n.SecondHarmType == HarmType.Drain)))
                     {
-                        AppendText("  Range Additional Effects\n", Color.Blue, true, false);
+                        AppendText(lsRangedAE + "\n", Color.Blue, true, false);
                         if (showDetails == true)
                             ShowDetailedSecondaryDamage(player.Range.Where(n => (HarmType)n.SecondHarmType == HarmType.Damage ||
                             (HarmType)n.SecondHarmType == HarmType.Drain));
@@ -420,7 +423,7 @@ namespace WaywardGamers.KParser.Plugin
                     if ((player.Spell.Count() > 0) &&
                         (player.Spell.Any(n => (DamageModifier)n.DamageModifier != DamageModifier.MagicBurst)))
                     {
-                        AppendText("  Spells\n", Color.Blue, true, false);
+                        AppendText(lsSpells + "\n", Color.Blue, true, false);
 
                         var spellGroups = player.Spell.GroupBy(s => s.ActionsRow.ActionName)
                             .OrderBy(s => s.Key);
@@ -442,7 +445,7 @@ namespace WaywardGamers.KParser.Plugin
                     if ((player.Spell.Count() > 0) &&
                         (player.Spell.Any(n => (DamageModifier)n.DamageModifier == DamageModifier.MagicBurst)))
                     {
-                        AppendText("  Magic Bursts\n", Color.Blue, true, false);
+                        AppendText(lsMagicBursts + "\n", Color.Blue, true, false);
 
                         var spellGroups = player.Spell.GroupBy(s => s.ActionsRow.ActionName)
                             .OrderBy(s => s.Key);
@@ -463,7 +466,7 @@ namespace WaywardGamers.KParser.Plugin
 
                     if (player.Ability.Count() > 0)
                     {
-                        AppendText("  Ability\n", Color.Blue, true, false);
+                        AppendText(lsAbility + "\n", Color.Blue, true, false);
 
                         var abilityGroups = player.Ability.GroupBy(s => s.ActionsRow.ActionName)
                             .OrderBy(s => s.Key);
@@ -483,7 +486,7 @@ namespace WaywardGamers.KParser.Plugin
 
                     if (player.WSkill.Count() > 0)
                     {
-                        AppendText("  Weaponskill\n", Color.Blue, true, false);
+                        AppendText(lsWeaponskills + "\n", Color.Blue, true, false);
 
                         var wsGroups = player.WSkill.GroupBy(s => s.ActionsRow.ActionName)
                             .OrderBy(s => s.Key);
@@ -503,7 +506,7 @@ namespace WaywardGamers.KParser.Plugin
 
                     if (player.Spikes.Count() > 0)
                     {
-                        AppendText("  Spikes\n", Color.Blue, true, false);
+                        AppendText(lsSpikes + "\n", Color.Blue, true, false);
                         if (showDetails == true)
                             ShowDetailedDamage(player.Spikes);
 
@@ -718,5 +721,47 @@ namespace WaywardGamers.KParser.Plugin
         }
 
         #endregion
+
+        #region Localization Overrides
+        protected override void LoadLocalizedUI()
+        {
+            playersLabel.Text = Resources.PublicResources.PlayersLabel;
+            mobsLabel.Text = Resources.PublicResources.MobsLabel;
+
+            optionsMenu.Text = Resources.PublicResources.Options;
+            groupMobsOption.Text = Resources.PublicResources.GroupMobs;
+            exclude0XPOption.Text = Resources.PublicResources.Exclude0XPMobs;
+            customMobSelectionOption.Text = Resources.PublicResources.CustomMobSelection;
+            showDetailOption.Text = Resources.PublicResources.ShowDetail;
+            editCustomMobFilter.Text = Resources.PublicResources.EditMobFilter;
+
+            UpdatePlayerList();
+            playersCombo.SelectedIndex = 0;
+
+            UpdateMobList();
+            mobsCombo.SelectedIndex = 0;
+        }
+
+        protected override void LoadResources()
+        {
+            this.tabName = Resources.Combat.DefenseFreqPluginTabName;
+
+            lsAll = Resources.PublicResources.All;
+
+            lsMelee = Resources.Combat.DefenseFreqPluginMelee;
+            lsMeleeCrits = Resources.Combat.DefenseFreqPluginMeleeCrits;
+            lsMeleeAE = Resources.Combat.DefenseFreqPluginMeleeAE;
+            lsRanged = Resources.Combat.DefenseFreqPluginRange;
+            lsRangedCrits = Resources.Combat.DefenseFreqPluginRangeCrits;
+            lsRangedAE = Resources.Combat.DefenseFreqPluginRangeAE;
+            lsSpells = Resources.Combat.DefenseFreqPluginSpells;
+            lsMagicBursts = Resources.Combat.DefenseFreqPluginMagicBursts;
+            lsAbility = Resources.Combat.DefenseFreqPluginAbility;
+            lsWeaponskills = Resources.Combat.DefenseFreqPluginWeaponskill;
+            lsSpikes = Resources.Combat.DefenseFreqPluginSpikes;
+
+        }
+        #endregion
+
     }
 }

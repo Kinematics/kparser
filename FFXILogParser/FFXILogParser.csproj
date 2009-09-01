@@ -192,17 +192,53 @@
       <DependentUpon>AboutBox.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ImportType.de.resx">
+      <DependentUpon>ImportType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ImportType.fr.resx">
+      <DependentUpon>ImportType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ImportType.ja.resx">
+      <DependentUpon>ImportType.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ImportType.resx">
       <DependentUpon>ImportType.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Options.de.resx">
+      <DependentUpon>Options.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Options.fr.resx">
+      <DependentUpon>Options.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Options.ja.resx">
+      <DependentUpon>Options.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Options.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Options.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PlayerInfo.de.resx">
+      <DependentUpon>PlayerInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PlayerInfo.fr.resx">
+      <DependentUpon>PlayerInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PlayerInfo.ja.resx">
+      <DependentUpon>PlayerInfo.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\PlayerInfo.resx">
       <DependentUpon>PlayerInfo.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ParserWindow.de.resx">
+      <DependentUpon>ParserWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ParserWindow.fr.resx">
+      <DependentUpon>ParserWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ParserWindow.ja.resx">
+      <DependentUpon>ParserWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ParserWindow.resx">
       <SubType>Designer</SubType>

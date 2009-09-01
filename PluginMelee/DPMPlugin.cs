@@ -12,51 +12,59 @@ namespace WaywardGamers.KParser.Plugin
 {
     public class DPMPlugin : BasePluginControl
     {
-        #region Constructor
-        string header1 = "Mob                  Fight Start   Fight End   Duration\n";
-        string header2 = "Player               Start Time   Melee DPM   Range DPM   Magic DPM   Abil DPM   WS DPM   Other DPM   Total DPM\n";
+        #region Member Variables
 
-        bool flagNoUpdate;
+        ToolStripLabel playersLabel = new ToolStripLabel();
         ToolStripComboBox playersCombo = new ToolStripComboBox();
+        ToolStripLabel mobsLabel = new ToolStripLabel();
         ToolStripComboBox mobsCombo = new ToolStripComboBox();
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
 
+        bool flagNoUpdate;
+
+        // Localized strings
+
+        string lsAll;
+        string lsNone;
+        string lsTotal;
+
+        string lsOnlySingleMobsWarning;
+
+        string lsSummaryTitle;
+        string lsBattleHeader;
+        string lsBattleFormat;
+        string lsDataHeader;
+        string lsDataFormat;
+
+        string lsCumulativeDamage;
+        string lsDamageInLastMinute;
+        string lsDamageInPrevMinute;
+        string lsDamageInFirstMinute;
+        #endregion
+
+        #region Constructor
         public DPMPlugin()
         {
-            ToolStripLabel playerLabel = new ToolStripLabel();
-            playerLabel.Text = "Players:";
-            toolStrip.Items.Add(playerLabel);
+            LoadLocalizedUI();
 
             playersCombo.DropDownStyle = ComboBoxStyle.DropDownList;
-            playersCombo.Items.Add("All");
             playersCombo.MaxDropDownItems = 10;
-            playersCombo.SelectedIndex = 0;
             playersCombo.SelectedIndexChanged += new EventHandler(this.playersCombo_SelectedIndexChanged);
-            toolStrip.Items.Add(playersCombo);
-
-            
-            ToolStripLabel mobsLabel = new ToolStripLabel();
-            mobsLabel.Text = "Mobs:";
-            toolStrip.Items.Add(mobsLabel);
 
             mobsCombo.DropDownStyle = ComboBoxStyle.DropDownList;
             mobsCombo.AutoSize = false;
             mobsCombo.Width = 175;
-            mobsCombo.Items.Add("None");
             mobsCombo.MaxDropDownItems = 10;
-            mobsCombo.SelectedIndex = 0;
             mobsCombo.SelectedIndexChanged += new EventHandler(this.mobsCombo_SelectedIndexChanged);
-            toolStrip.Items.Add(mobsCombo);
 
+            toolStrip.Items.Add(playersLabel);
+            toolStrip.Items.Add(playersCombo);
+            toolStrip.Items.Add(mobsLabel);
+            toolStrip.Items.Add(mobsCombo);
         }
         #endregion
 
         #region IPlugin Overrides
-        public override string TabName
-        {
-            get { return "Damage/Minute"; }
-        }
-
         public override void Reset()
         {
             ResetTextBox();
@@ -128,11 +136,6 @@ namespace WaywardGamers.KParser.Plugin
 
         private void UpdateMobList()
         {
-            //if (tmpList[0] == "All")
-            //{
-            //    tmpList[0] = "None";
-            //}
-            
             mobsCombo.UpdateWithMobList(false, false);
         }
         #endregion
@@ -153,11 +156,11 @@ namespace WaywardGamers.KParser.Plugin
 
             List<string> playerList = new List<string>();
 
-            if (selectedPlayer == "All")
+            if (selectedPlayer == lsAll)
             {
                 foreach (string player in playersCombo.CBGetStrings())
                 {
-                    if (player != "All")
+                    if (player != lsAll)
                         playerList.Add(player.ToString());
                 }
             }
@@ -178,7 +181,7 @@ namespace WaywardGamers.KParser.Plugin
         private void ProcessAllMobs(KPDatabaseDataSet dataSet, List<string> playerList)
         {
             ResetTextBox();
-            AppendText("Can only process single mobs at this time.\n", Color.Red, true, false);
+            AppendText(lsOnlySingleMobsWarning + "\n", Color.Red, true, false);
         }
 
         private void ProcessFilteredMobs(KPDatabaseDataSet dataSet, string[] selectedPlayers, MobFilter mobFilter)
@@ -187,7 +190,7 @@ namespace WaywardGamers.KParser.Plugin
                 (mobFilter.GroupMobs == true))
             {
                 ResetTextBox();
-                AppendText("Can only process single mobs at this time.\n", Color.Red, true, false);
+                AppendText(lsOnlySingleMobsWarning + "\n", Color.Red, true, false);
                 return;
             }
 
@@ -279,37 +282,35 @@ namespace WaywardGamers.KParser.Plugin
 
             StringBuilder sb = new StringBuilder();
             List<StringMods> strModList = new List<StringMods>();
-            string headerTitle;
 
             DateTime startTimeFilter;
             DateTime endTimeFilter;
 
             ///////////////////////////////////////////////////////////////////
 
-            headerTitle = "Fight Summary\n";
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
-                Length = headerTitle.Length,
+                Length = lsSummaryTitle.Length,
                 Bold = true,
                 Color = Color.Blue
             });
-            sb.Append(headerTitle);
+            sb.Append(lsSummaryTitle + "\n");
 
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
-                Length = header1.Length,
+                Length = lsBattleHeader.Length,
                 Bold = true,
                 Underline = true,
                 Color = Color.Black
             });
-            sb.Append(header1);
+            sb.Append(lsBattleHeader + "\n");
 
             TimeSpan fightLength = battle.FightLength();
             double fightMinutes = fightLength.TotalMinutes;
 
-            sb.AppendFormat("{0,-20}{1,12}{2,12}{3,11}",
+            sb.AppendFormat(lsBattleFormat,
                 battle.CombatantsRowByEnemyCombatantRelation.CombatantName,
                 battle.StartTime.ToLocalTime().ToShortTimeString(),
                 battle.EndTime > battle.StartTime ? battle.EndTime.ToLocalTime().ToShortTimeString() : "--:--:--",
@@ -330,7 +331,7 @@ namespace WaywardGamers.KParser.Plugin
             else
                 endTimeFilter = DateTime.Now.ToUniversalTime();
 
-            CreateOuput("Cumulative Damage Per Minute\n",
+            CreateOuput(lsCumulativeDamage,
                 attackSet, battle, startTimeFilter, endTimeFilter, ref sb, ref strModList);
 
 
@@ -347,7 +348,7 @@ namespace WaywardGamers.KParser.Plugin
             if (startTimeFilter < battle.StartTime)
                 startTimeFilter = battle.StartTime;
 
-            CreateOuput("Damage in the last minute\n",
+            CreateOuput(lsDamageInLastMinute,
                 attackSet, battle, startTimeFilter, endTimeFilter, ref sb, ref strModList);
 
 
@@ -359,7 +360,7 @@ namespace WaywardGamers.KParser.Plugin
             if (battle.EndTime > battle.StartTime)
                 endTimeFilter = battle.EndTime.AddMinutes(-1);
             else
-                endTimeFilter = DateTime.Now.ToUniversalTime().AddMinutes(-1);
+                endTimeFilter = DateTime.Now.AddMinutes(-1);
 
             startTimeFilter = endTimeFilter.AddMinutes(-1);
 
@@ -369,7 +370,7 @@ namespace WaywardGamers.KParser.Plugin
             if (startTimeFilter < battle.StartTime)
                 startTimeFilter = battle.StartTime;
 
-            CreateOuput("Damage in the previous minute\n",
+            CreateOuput(lsDamageInPrevMinute,
                 attackSet, battle, startTimeFilter, endTimeFilter, ref sb, ref strModList);
 
 
@@ -380,10 +381,11 @@ namespace WaywardGamers.KParser.Plugin
 
             endTimeFilter = startTimeFilter.AddMinutes(1);
 
-            if ((battle.EndTime > battle.StartTime) && (endTimeFilter > battle.EndTime))
+            if ((battle.EndTime > battle.StartTime)
+                && (endTimeFilter > battle.EndTime))
                 endTimeFilter = battle.EndTime;
 
-            CreateOuput("Damage in the first minute\n",
+            CreateOuput(lsDamageInFirstMinute,
                 attackSet, battle, startTimeFilter, endTimeFilter, ref sb, ref strModList);
 
 
@@ -429,17 +431,17 @@ namespace WaywardGamers.KParser.Plugin
                 Bold = true,
                 Color = Color.Blue
             });
-            sb.Append(headerTitle);
+            sb.Append(headerTitle + "\n");
 
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
-                Length = header2.Length,
+                Length = lsDataHeader.Length,
                 Bold = true,
                 Underline = true,
                 Color = Color.Black
             });
-            sb.Append(header2);
+            sb.Append(lsDataHeader + "\n");
 
             meleeDPMTotal = 0;
             rangeDPMTotal = 0;
@@ -528,9 +530,9 @@ namespace WaywardGamers.KParser.Plugin
                         otherDPMTotal += otherDPM;
                         totalDPMTotal += totalDPM;
 
-                        sb.AppendFormat("{0,-20}{1,11}{2,12:f2}{3,12:f2}{4,12:f2}{5,11:f2}{6,9:f2}{7,12:f2}{8,12:f2}\n",
+                        sb.AppendFormat(lsDataFormat,
                             attacker.Name,
-                            playerStart.ToShortTimeString(),
+                            playerStart.ToLocalTime().ToShortTimeString(),
                             meleeDPM,
                             rangeDPM,
                             magicDPM,
@@ -538,15 +540,16 @@ namespace WaywardGamers.KParser.Plugin
                             wsDPM,
                             otherDPM,
                             totalDPM);
+                        sb.Append("\n");
                     }
                 }
             }
 
             if (firstStart != DateTime.MaxValue)
             {
-                totalsLine = string.Format("{0,-20}{1,11}{2,12:f2}{3,12:f2}{4,12:f2}{5,11:f2}{6,9:f2}{7,12:f2}{8,12:f2}\n",
-                    "Totals",
-                    firstStart.ToShortTimeString(),
+                totalsLine = string.Format(lsDataFormat,
+                    lsTotal,
+                    firstStart.ToLocalTime().ToShortTimeString(),
                     meleeDPMTotal,
                     rangeDPMTotal,
                     magicDPMTotal,
@@ -562,7 +565,7 @@ namespace WaywardGamers.KParser.Plugin
                     Bold = true,
                     Color = Color.Black
                 });
-                sb.Append(totalsLine);
+                sb.Append(totalsLine + "\n");
             }
 
             sb.Append("\n\n");
@@ -584,6 +587,48 @@ namespace WaywardGamers.KParser.Plugin
                 HandleDataset(null);
 
             flagNoUpdate = false;
+        }
+        #endregion
+
+        #region Localization Overrides
+        protected override void LoadLocalizedUI()
+        {
+            playersLabel.Text = Resources.PublicResources.PlayersLabel;
+            mobsLabel.Text = Resources.PublicResources.MobsLabel;
+
+            optionsMenu.Text = Resources.PublicResources.Options;
+
+            UpdatePlayerList();
+            playersCombo.CBSelectIndex(0);
+
+            UpdateMobList();
+            //if (mobsCombo.Items[0] == Resources.PublicResources.All)
+            //    mobsCombo.Items[0] = Resources.PublicResources.None;
+
+            mobsCombo.CBSelectIndex(0);
+        }
+
+        protected override void LoadResources()
+        {
+            this.tabName = Resources.Combat.DPMPluginTabName;
+
+            lsAll = Resources.PublicResources.All;
+            lsNone = Resources.PublicResources.None;
+            lsTotal = Resources.PublicResources.Total;
+
+            lsOnlySingleMobsWarning = Resources.Combat.DPMPluginOnlySingleMobs;
+
+            lsSummaryTitle = Resources.Combat.DPMPluginSummaryTitle;
+            lsBattleHeader = Resources.Combat.DPMPluginBattleHeader;
+            lsBattleFormat = Resources.Combat.DPMPluginBattleFormat;
+            lsDataHeader = Resources.Combat.DPMPluginDataHeader;
+            lsDataFormat = Resources.Combat.DPMPluginDataFormat;
+
+            lsCumulativeDamage = Resources.Combat.DPMPluginCumulatePerMinute;
+            lsDamageInLastMinute = Resources.Combat.DPMPluginDamageInLastMinute;
+            lsDamageInPrevMinute = Resources.Combat.DPMPluginDamageInPrevMinute;
+            lsDamageInFirstMinute = Resources.Combat.DPMPluginDamageInFirstMinute;
+
         }
         #endregion
 

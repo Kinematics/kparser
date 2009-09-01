@@ -114,6 +114,21 @@
     <Compile Include="Monitors\LogReader\LogReaderWorker.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Resources\CoreResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CoreResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\ParsedStrings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ParsedStrings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\PublicResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PublicResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Utility\PluginUtilities.cs" />
     <Compile Include="Utility\RTFStringMods.cs" />
     <Compile Include="KPDatabaseDataSet.cs">
@@ -246,14 +261,53 @@
       <DependentUpon>BasePluginControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Interface\CustomMobSelectionDlg.de.resx">
+      <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interface\CustomMobSelectionDlg.fr.resx">
+      <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interface\CustomMobSelectionDlg.ja.resx">
+      <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Interface\CustomMobSelectionDlg.resx">
       <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="KPDatabase.sdf">
     </EmbeddedResource>
+    <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.de.resx">
+      <DependentUpon>SelectPOLProcess.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.fr.resx">
+      <DependentUpon>SelectPOLProcess.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.ja.resx">
+      <DependentUpon>SelectPOLProcess.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.resx">
       <DependentUpon>SelectPOLProcess.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\CoreResources.de.resx" />
+    <EmbeddedResource Include="Resources\CoreResources.fr.resx" />
+    <EmbeddedResource Include="Resources\CoreResources.ja.resx" />
+    <EmbeddedResource Include="Resources\CoreResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CoreResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\ParsedStrings.de.resx" />
+    <EmbeddedResource Include="Resources\ParsedStrings.fr.resx" />
+    <EmbeddedResource Include="Resources\ParsedStrings.ja.resx" />
+    <EmbeddedResource Include="Resources\ParsedStrings.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ParsedStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\PublicResources.de.resx" />
+    <EmbeddedResource Include="Resources\PublicResources.fr.resx" />
+    <EmbeddedResource Include="Resources\PublicResources.ja.resx" />
+    <EmbeddedResource Include="Resources\PublicResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>PublicResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

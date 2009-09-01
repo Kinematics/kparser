@@ -13,47 +13,59 @@ namespace WaywardGamers.KParser.Plugin
 {
     public class ExperiencePlugin : BasePluginControl
     {
-        #region Constructor
+        #region Member Variables
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
+        ToolStripMenuItem excludedPlayerInfoOption = new ToolStripMenuItem();
+
         bool excludedPlayerInfo = true;
 
+        // Localized strings
+
+        // For formatting
+        string lsXPListFormatNum;
+        string lsXPListFormatTime;
+        string lsXPListFormatSec;
+        string lsXPListFormatDec;
+        string lsChainFormat;
+
+        // For text
+        string lsMobListing;
+        string lsMobListingHeader;
+        string lsTotalExperience;
+        string lsNumberOfFights;
+        string lsDate;
+        string lsStartTime;
+        string lsEndTime;
+        string lsPartyDuration;
+        string lsTotalFightTime;
+        string lsAverageTimePerFight;
+        string lsAverageFightLength;
+        string lsXPPerFight;
+        string lsXPPerMinute;
+        string lsXPPerHour;
+        string lsChainHeader;
+        string lsHighestChain;
+        string lsExperienceRates;
+        string lsExperienceChains;
+        #endregion
+
+        #region Constructor
         public ExperiencePlugin()
         {
-            optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            optionsMenu.Text = "Options";
+            LoadLocalizedUI();
 
-            ToolStripMenuItem excludedPlayerInfoOption = new ToolStripMenuItem();
-            excludedPlayerInfoOption.Text = "Don't Count 'exclude'd Player Kills";
             excludedPlayerInfoOption.CheckOnClick = true;
             excludedPlayerInfoOption.Checked = true;
             excludedPlayerInfoOption.Click += new EventHandler(excludedPlayerInfoOption_Click);
+
+            optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
             optionsMenu.DropDownItems.Add(excludedPlayerInfoOption);
 
             toolStrip.Items.Add(optionsMenu);
-
-
-
-            //toolStrip.Enabled = false;
-            //toolStrip.Visible = false;
-
-            //richTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left |
-            //    System.Windows.Forms.AnchorStyles.Right |
-            //    System.Windows.Forms.AnchorStyles.Bottom;
-            //richTextBox.Top -= toolStrip.Height;
-            //richTextBox.Height += toolStrip.Height;
-            //richTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top |
-            //    System.Windows.Forms.AnchorStyles.Left |
-            //    System.Windows.Forms.AnchorStyles.Right |
-            //    System.Windows.Forms.AnchorStyles.Bottom;
         }
         #endregion
 
         #region IPlugin Overrides
-        public override string TabName
-        {
-            get { return "Experience"; }
-        }
-
         public override void Reset()
         {
             ResetTextBox();
@@ -162,49 +174,48 @@ namespace WaywardGamers.KParser.Plugin
                 avgFightLength = totalFightsLength.TotalSeconds / totalFights;
                 timePerFight = partyDuration.TotalSeconds / totalFights;
 
-
-
-                sb1.AppendFormat("Total Experience : {0}\n", totalXP);
-                sb1.AppendFormat("Number of Fights : {0}\n", totalFights);
-                sb1.AppendFormat("Date             : {0}\n", startTime.ToLocalTime().ToShortDateString());
-                sb1.AppendFormat("Start Time       : {0}\n", startTime.ToLocalTime().ToLongTimeString());
-                sb1.AppendFormat("End Time         : {0}\n", endTime.ToLocalTime().ToLongTimeString());
-                sb1.AppendFormat("Party Duration   : {0:d}:{1:d2}:{2:d2}\n",
-                    partyDuration.Hours, partyDuration.Minutes, partyDuration.Seconds);
-                sb1.AppendFormat("Total Fight Time : {0:d}:{1:d2}:{2:d2}\n",
-                    totalFightsLength.Hours, totalFightsLength.Minutes, totalFightsLength.Seconds);
-                sb1.AppendFormat("Avg Time/Fight   : {0:F2} seconds\n", timePerFight);
-                sb1.AppendFormat("Avg Fight Length : {0:F2} seconds\n", avgFightLength);
-                sb1.AppendFormat("XP/Fight         : {0:F2}\n", xpPerFight);
-                sb1.AppendFormat("XP/Minute        : {0:F2}\n", xpPerMinute);
-                sb1.AppendFormat("XP/Hour          : {0:F2}\n", xpPerHour);
+                sb1.AppendFormat(lsXPListFormatNum + "\n", lsTotalExperience, totalXP);
+                sb1.AppendFormat(lsXPListFormatNum + "\n", lsNumberOfFights, totalFights);
+                sb1.AppendFormat(lsXPListFormatNum + "\n", lsDate, startTime.ToLocalTime().ToShortDateString());
+                sb1.AppendFormat(lsXPListFormatNum + "\n", lsStartTime, startTime.ToLocalTime().ToLongTimeString());
+                sb1.AppendFormat(lsXPListFormatNum + "\n", lsEndTime, endTime.ToLocalTime().ToLongTimeString());
+                sb1.AppendFormat(lsXPListFormatTime + "\n",
+                    lsPartyDuration, partyDuration.Hours, partyDuration.Minutes, partyDuration.Seconds);
+                sb1.AppendFormat(lsXPListFormatTime + "\n",
+                    lsTotalFightTime, totalFightsLength.Hours, totalFightsLength.Minutes, totalFightsLength.Seconds);
+                sb1.AppendFormat(lsXPListFormatSec + "\n", lsAverageTimePerFight, timePerFight);
+                sb1.AppendFormat(lsXPListFormatSec + "\n", lsAverageFightLength, avgFightLength);
+                sb1.AppendFormat(lsXPListFormatDec + "\n", lsXPPerFight, xpPerFight);
+                sb1.AppendFormat(lsXPListFormatDec + "\n", lsXPPerMinute, xpPerMinute);
+                sb1.AppendFormat(lsXPListFormatDec + "\n", lsXPPerHour, xpPerHour);
                 sb1.Append("\n\n");
 
 
-                sb2.Append("Chain   Count   Total XP   Avg XP\n");
+                sb2.Append(lsChainHeader);
+                sb2.Append("\n");
 
                 for (int i = 0; i < 10; i++)
                 {
                     if (chainCounts[i] > 0)
-                        sb2.AppendFormat("{0,-5}{1,8}{2,11}{3,9:F2}\n", i, chainCounts[i], chainXPTotals[i],
+                        sb2.AppendFormat(lsChainFormat + "\n", i, chainCounts[i], chainXPTotals[i],
                             (double)chainXPTotals[i] / chainCounts[i]);
                 }
 
                 if (chainCounts[10] > 0)
                 {
-                    sb2.AppendFormat("{0,-5}{1,8}{2,11}{3,9:F2}\n", "10+", chainCounts[10], chainXPTotals[10],
+                    sb2.AppendFormat(lsChainFormat + "\n", "10+", chainCounts[10], chainXPTotals[10],
                         (double)chainXPTotals[10] / chainCounts[10]);
                 }
 
                 sb2.Append("\n");
-                sb2.AppendFormat("Highest Chain:  {0}\n\n\n", maxChain);
+                sb2.AppendFormat("{0}:  {1}\n\n\n", lsHighestChain, maxChain);
 
 
                 // Dump all the constructed text above into the window.
-                AppendText("Experience Rates\n", Color.Black, true, false);
+                AppendText(lsExperienceRates + "\n", Color.Black, true, false);
                 AppendText(sb1.ToString());
 
-                AppendText("Experience Chains\n", Color.Black, true, false);
+                AppendText(lsExperienceChains +"\n", Color.Black, true, false);
                 AppendText(sb2.ToString());
             }
         }
@@ -231,8 +242,6 @@ namespace WaywardGamers.KParser.Plugin
             if ((mobSet == null) || (mobSet.Count() == 0))
                 return;
 
-            string mobSetHeader = "Mob                        Base XP   Number   Avg Fight Time\n";
-
             StringBuilder sb = new StringBuilder();
             bool headerDisplayed = false;
 
@@ -253,8 +262,8 @@ namespace WaywardGamers.KParser.Plugin
                         {
                             if (headerDisplayed == false)
                             {
-                                AppendText("Mob Listing\n", Color.Blue, true, false);
-                                AppendText(mobSetHeader, Color.Black, true, true);
+                                AppendText(lsMobListing + "\n", Color.Blue, true, false);
+                                AppendText(lsMobListingHeader + "\n", Color.Black, true, true);
 
                                 headerDisplayed = true;
                             }
@@ -324,6 +333,47 @@ namespace WaywardGamers.KParser.Plugin
             excludedPlayerInfo = sentBy.Checked;
 
             HandleDataset(null);
+        }
+        #endregion
+
+        #region Localization Overrides
+        protected override void LoadLocalizedUI()
+        {
+            optionsMenu.Text = Resources.PublicResources.Options;
+            excludedPlayerInfoOption.Text = Resources.NonCombat.ExcludedPlayerOption;
+        }
+
+        protected override void LoadResources()
+        {
+            base.LoadResources();
+
+            this.tabName = Resources.NonCombat.ExperiencePluginTabName;
+
+            lsMobListing = Resources.NonCombat.ExperiencePluginMobListing;
+            lsMobListingHeader = Resources.NonCombat.ExperiencePluginMobListingHeader;
+            lsTotalExperience = Resources.NonCombat.ExperiencePluginTotalExperience;
+            lsNumberOfFights = Resources.NonCombat.ExperiencePluginNumberOfFights;
+            lsDate = Resources.NonCombat.ExperiencePluginDate;
+            lsStartTime = Resources.NonCombat.ExperiencePluginStartTime;
+            lsEndTime = Resources.NonCombat.ExperiencePluginEndTime;
+            lsPartyDuration = Resources.NonCombat.ExperiencePluginPartyDuration;
+            lsTotalFightTime = Resources.NonCombat.ExperiencePluginTotalFightTime;
+            lsAverageTimePerFight = Resources.NonCombat.ExperiencePluginAverageTimePerFight;
+            lsAverageFightLength = Resources.NonCombat.ExperiencePluginAverageFightLength;
+            lsXPPerFight = Resources.NonCombat.ExperiencePluginXPPerFight;
+            lsXPPerMinute = Resources.NonCombat.ExperiencePluginXPPerMinute;
+            lsXPPerHour = Resources.NonCombat.ExperiencePluginXPPerHour;
+            lsChainHeader = Resources.NonCombat.ExperiencePluginChainHeader;
+            lsHighestChain = Resources.NonCombat.ExperiencePluginHighestChain;
+            lsExperienceRates = Resources.NonCombat.ExperiencePluginExperienceRates;
+            lsExperienceChains = Resources.NonCombat.ExperiencePluginExperienceChains;
+
+            lsChainFormat = Resources.NonCombat.ExperiencePluginChainFormat;
+            lsXPListFormatNum = Resources.NonCombat.ExperiencePluginXPListFormatNum;
+            lsXPListFormatTime = Resources.NonCombat.ExperiencePluginXPListFormatTime;
+            lsXPListFormatSec = Resources.NonCombat.ExperiencePluginXPListFormatSec;
+            lsXPListFormatDec = Resources.NonCombat.ExperiencePluginXPListFormatDec;
+
         }
         #endregion
 

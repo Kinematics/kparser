@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ImportType));
             this.ok = new System.Windows.Forms.Button();
             this.cancel = new System.Windows.Forms.Button();
             this.optionDVSParse = new System.Windows.Forms.RadioButton();
@@ -37,67 +38,68 @@
             // 
             // ok
             // 
-            this.ok.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ok.AccessibleDescription = null;
+            this.ok.AccessibleName = null;
+            resources.ApplyResources(this.ok, "ok");
+            this.ok.BackgroundImage = null;
             this.ok.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.ok.Location = new System.Drawing.Point(76, 80);
+            this.ok.Font = null;
             this.ok.Name = "ok";
-            this.ok.Size = new System.Drawing.Size(75, 23);
-            this.ok.TabIndex = 0;
-            this.ok.Text = "OK";
             this.ok.UseVisualStyleBackColor = true;
             // 
             // cancel
             // 
-            this.cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cancel.AccessibleDescription = null;
+            this.cancel.AccessibleName = null;
+            resources.ApplyResources(this.cancel, "cancel");
+            this.cancel.BackgroundImage = null;
             this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancel.Location = new System.Drawing.Point(157, 80);
+            this.cancel.Font = null;
             this.cancel.Name = "cancel";
-            this.cancel.Size = new System.Drawing.Size(75, 23);
-            this.cancel.TabIndex = 1;
-            this.cancel.Text = "Cancel";
             this.cancel.UseVisualStyleBackColor = true;
             // 
             // optionDVSParse
             // 
-            this.optionDVSParse.AutoSize = true;
-            this.optionDVSParse.Location = new System.Drawing.Point(19, 19);
+            this.optionDVSParse.AccessibleDescription = null;
+            this.optionDVSParse.AccessibleName = null;
+            resources.ApplyResources(this.optionDVSParse, "optionDVSParse");
+            this.optionDVSParse.BackgroundImage = null;
+            this.optionDVSParse.Font = null;
             this.optionDVSParse.Name = "optionDVSParse";
-            this.optionDVSParse.Size = new System.Drawing.Size(146, 17);
-            this.optionDVSParse.TabIndex = 2;
             this.optionDVSParse.TabStop = true;
-            this.optionDVSParse.Text = "DVS Parse / Direct Parse";
             this.optionDVSParse.UseVisualStyleBackColor = true;
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.AccessibleDescription = null;
+            this.groupBox1.AccessibleName = null;
+            resources.ApplyResources(this.groupBox1, "groupBox1");
+            this.groupBox1.BackgroundImage = null;
             this.groupBox1.Controls.Add(this.optionDVSParse);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
+            this.groupBox1.Font = null;
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(220, 53);
-            this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Type of database to import";
             // 
             // ImportType
             // 
             this.AcceptButton = this.ok;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AccessibleDescription = null;
+            this.AccessibleName = null;
+            resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackgroundImage = null;
             this.CancelButton = this.cancel;
-            this.ClientSize = new System.Drawing.Size(244, 115);
             this.ControlBox = false;
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.ok);
+            this.Font = null;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = null;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ImportType";
             this.ShowInTaskbar = false;
-            this.Text = "Import";
             this.Load += new System.EventHandler(this.ImportType_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

@@ -239,6 +239,8 @@ namespace WaywardGamers.KParser
                     coreSettings.DebugMode = this.debugMode.Checked;
 
                     coreSettings.DefaultParseSaveDirectory = defaultSaveDirectory.Text;
+
+                    windowSettings.NumberOfRecentFilesToDisplay = (int)numberOfRecentFilesUpDown.Value;
                 }
             }
         }
@@ -268,6 +270,7 @@ namespace WaywardGamers.KParser
 
             readExistingLogs.Checked = coreSettings.ParseExistingLogs;
             specifyPID.Checked = coreSettings.SpecifyPID;
+            numberOfRecentFilesUpDown.Value = windowSettings.NumberOfRecentFilesToDisplay;
 
             debugMode.Checked = coreSettings.DebugMode;
 

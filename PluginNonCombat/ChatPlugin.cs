@@ -10,58 +10,46 @@ namespace WaywardGamers.KParser.Plugin
 {
     public class ChatPlugin : BasePluginControl
     {
-        #region Constructor
+        #region Member Variables
         ToolStripComboBox chatTypeCombo = new ToolStripComboBox();
         ToolStripComboBox speakerCombo = new ToolStripComboBox();
-        bool flagNoUpdate = false;
+        ToolStripLabel catLabel = new ToolStripLabel();
+        ToolStripLabel speakerLabel = new ToolStripLabel();
 
+        bool flagNoUpdate = false;
+        #endregion
+
+        #region Constructor
         public ChatPlugin()
         {
             richTextBox.WordWrap = true;
 
-            ToolStripLabel catLabel = new ToolStripLabel();
-            catLabel.Text = "Chat Type:";
-            toolStrip.Items.Add(catLabel);
+            LoadLocalizedUI();
 
             chatTypeCombo.DropDownStyle = ComboBoxStyle.DropDownList;
             chatTypeCombo.MaxDropDownItems = 10;
-            chatTypeCombo.Items.Add("All");
-            for (var chat = ChatMessageType.Say; chat <= ChatMessageType.Arena; chat++)
-            {
-                chatTypeCombo.Items.Add(chat.ToString());
-            }
-
-            chatTypeCombo.SelectedIndex = 0;
             chatTypeCombo.SelectedIndexChanged += new EventHandler(this.chatTypeCombo_SelectedIndexChanged);
-            toolStrip.Items.Add(chatTypeCombo);
-
-
-            ToolStripLabel speakerLabel = new ToolStripLabel();
-            speakerLabel.Text = "Speaker:";
-            toolStrip.Items.Add(speakerLabel);
 
             speakerCombo.DropDownStyle = ComboBoxStyle.DropDownList;
             speakerCombo.MaxDropDownItems = 10;
-            speakerCombo.Items.Add("All");
             speakerCombo.SelectedIndex = 0;
             speakerCombo.SelectedIndexChanged += new EventHandler(this.speakerCombo_SelectedIndexChanged);
+
+            toolStrip.Items.Add(catLabel);
+            toolStrip.Items.Add(chatTypeCombo);
+            toolStrip.Items.Add(speakerLabel);
             toolStrip.Items.Add(speakerCombo);
         }
         #endregion
 
         #region IPlugin members
-        public override string TabName
-        {
-            get { return "Chat"; }
-        }
-
         public override void Reset()
         {
             ResetTextBox();
 
             flagNoUpdate = true;
             speakerCombo.CBReset();
-            speakerCombo.CBAddStrings(new string[1] { "All" });
+            speakerCombo.CBAddStrings(new string[1] { Resources.PublicResources.All });
 
             speakerCombo.CBSelectIndex(0);
         }
@@ -71,7 +59,7 @@ namespace WaywardGamers.KParser.Plugin
             ResetTextBox();
             UpdateSpeakerList();
             flagNoUpdate = true;
-            speakerCombo.CBSelectItem("All");
+            speakerCombo.CBSelectItem(Resources.PublicResources.All);
 
             HandleDataset(null);
         }
@@ -109,7 +97,7 @@ namespace WaywardGamers.KParser.Plugin
             var filteredChat = dataSet.ChatMessages.Where(m =>
                 chatFilter == ChatMessageType.Unknown || chatFilter == (ChatMessageType)m.ChatType);
 
-            if (player != "All")
+            if (player != Resources.PublicResources.All)
             {
                 filteredChat = filteredChat.Where(m =>
                     player == m.ChatSpeakersRow.SpeakerName);
@@ -183,10 +171,60 @@ namespace WaywardGamers.KParser.Plugin
         /// Update the drop-down combo box with the currently known list of speaker
         /// names.
         /// </summary>
-        /// <param name="dataSet">Dataset with possibly new speakers to add to the list.</param>
         private void UpdateSpeakerList()
         {
             speakerCombo.UpdateWithSpeakerList();
+        }
+
+        /// <summary>
+        /// Update the drop-down combo box with localized names of the different chat types.
+        /// </summary>
+        private void PopulateChatTypes()
+        {
+            if (this.InvokeRequired)
+            {
+                Action thisFunc = PopulateChatTypes;
+                this.Invoke(thisFunc);
+                return;
+            }
+
+            chatTypeCombo.Items.Clear();
+
+            chatTypeCombo.Items.Add(Resources.PublicResources.All);
+
+            for (var chatType = ChatMessageType.Say; chatType <= ChatMessageType.Arena; chatType++)
+            {
+                switch (chatType)
+                {
+                    case ChatMessageType.Arena:
+                        chatTypeCombo.Items.Add(Resources.NonCombat.ChatPluginChatTypeArena);
+                        break;
+                    case ChatMessageType.Echo:
+                        chatTypeCombo.Items.Add(Resources.NonCombat.ChatPluginChatTypeEcho);
+                        break;
+                    case ChatMessageType.Emote:
+                        chatTypeCombo.Items.Add(Resources.NonCombat.ChatPluginChatTypeEmote);
+                        break;
+                    case ChatMessageType.Linkshell:
+                        chatTypeCombo.Items.Add(Resources.NonCombat.ChatPluginChatTypeLinkshell);
+                        break;
+                    case ChatMessageType.NPC:
+                        chatTypeCombo.Items.Add(Resources.NonCombat.ChatPluginChatTypeNPC);
+                        break;
+                    case ChatMessageType.Party:
+                        chatTypeCombo.Items.Add(Resources.NonCombat.ChatPluginChatTypeParty);
+                        break;
+                    case ChatMessageType.Say:
+                        chatTypeCombo.Items.Add(Resources.NonCombat.ChatPluginChatTypeSay);
+                        break;
+                    case ChatMessageType.Shout:
+                        chatTypeCombo.Items.Add(Resources.NonCombat.ChatPluginChatTypeShout);
+                        break;
+                    case ChatMessageType.Tell:
+                        chatTypeCombo.Items.Add(Resources.NonCombat.ChatPluginChatTypeTell);
+                        break;
+                }
+            }
         }
         #endregion
 
@@ -213,5 +251,25 @@ namespace WaywardGamers.KParser.Plugin
             flagNoUpdate = false;
         }
         #endregion
+
+        #region Localization Overrides
+        protected override void LoadLocalizedUI()
+        {
+            catLabel.Text = Resources.NonCombat.ChatPluginCategoryLabel;
+            speakerLabel.Text = Resources.NonCombat.ChatPluginSpeakerLabel;
+
+            int prevChatTypeIndex = chatTypeCombo.SelectedIndex;
+            PopulateChatTypes();
+            chatTypeCombo.SelectedIndex = prevChatTypeIndex;
+
+            UpdateSpeakerList();
+        }
+
+        protected override void LoadResources()
+        {
+            this.tabName = Resources.NonCombat.ChatPluginTabName;
+        }
+        #endregion
+
     }
 }

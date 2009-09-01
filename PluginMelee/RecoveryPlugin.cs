@@ -13,13 +13,17 @@ namespace WaywardGamers.KParser.Plugin
 {
     public class RecoveryPlugin : BasePluginControl
     {
-        #region Constructor
+        #region Member Variables
+        Dictionary<string, int> playerDamage = new Dictionary<string, int>();
+
         bool flagNoUpdate;
         bool groupMobs = true;
         bool exclude0XPMobs = false;
         bool customMobSelection = false;
 
+        ToolStripLabel catLabel = new ToolStripLabel();
         ToolStripComboBox categoryCombo = new ToolStripComboBox();
+        ToolStripLabel mobsLabel = new ToolStripLabel();
         ToolStripComboBox mobsCombo = new ToolStripComboBox();
 
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
@@ -29,75 +33,102 @@ namespace WaywardGamers.KParser.Plugin
 
         ToolStripButton editCustomMobFilter = new ToolStripButton();
 
+        // Localized strings
+
+        string lsTitleRecovery;
+        string lsTitleCuring;
+        string lsTitleAvgCuring;
+
+        string lsHeaderRecovery;
+        string lsHeaderCuring;
+        string lsHeaderAvgCuring;
+
+        string lsFormatRecovery;
+        string lsFormatCuring;
+        string lsFormatAvgCuring;
+
+        string lsTotal;
+
+        // Spell names
+
+        string lsRegen1;
+        string lsRegen2;
+        string lsRegen3;
+        string lsCure1;
+        string lsCure2;
+        string lsCure3;
+        string lsCure4;
+        string lsCure5;
+        string lsCWaltz1;
+        string lsCWaltz2;
+        string lsCWaltz3;
+        string lsCWaltz4;
+        string lsHealingBreath1;
+        string lsHealingBreath2;
+        string lsHealingBreath3;
+        string lsPollen;
+        string lsWildCarrot;
+        string lsMagicFruit;
+        string lsDivineWaltz;
+        string lsHealingBreeze;
+        string lsChakra;
+
+        string lsCuragaREString;
+        Regex lsCuragaRegex;
+        #endregion
+
+
+        #region Constructor
         public RecoveryPlugin()
         {
-            ToolStripLabel catLabel = new ToolStripLabel();
-            catLabel.Text = "Category:";
-            toolStrip.Items.Add(catLabel);
+            LoadLocalizedUI();
 
             categoryCombo.DropDownStyle = ComboBoxStyle.DropDownList;
-            categoryCombo.Items.Add("All");
-            categoryCombo.Items.Add("Recovery");
-            categoryCombo.Items.Add("Curing");
-            categoryCombo.Items.Add("Average Curing");
             categoryCombo.SelectedIndex = 0;
             categoryCombo.SelectedIndexChanged += new EventHandler(this.categoryCombo_SelectedIndexChanged);
-            toolStrip.Items.Add(categoryCombo);
-
-            ToolStripLabel mobsLabel = new ToolStripLabel();
-            mobsLabel.Text = "Mobs:";
-            toolStrip.Items.Add(mobsLabel);
 
             mobsCombo.DropDownStyle = ComboBoxStyle.DropDownList;
             mobsCombo.AutoSize = false;
             mobsCombo.Width = 175;
-            mobsCombo.Items.Add("All");
             mobsCombo.MaxDropDownItems = 10;
-            mobsCombo.SelectedIndex = 0;
             mobsCombo.SelectedIndexChanged += new EventHandler(this.mobsCombo_SelectedIndexChanged);
-            toolStrip.Items.Add(mobsCombo);
 
 
-            optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            optionsMenu.Text = "Options";
-
-            groupMobsOption.Text = "Group Mobs";
             groupMobsOption.CheckOnClick = true;
             groupMobsOption.Checked = true;
             groupMobsOption.Click += new EventHandler(groupMobs_Click);
-            optionsMenu.DropDownItems.Add(groupMobsOption);
 
-            exclude0XPOption.Text = "Exclude 0 XP Mobs";
             exclude0XPOption.CheckOnClick = true;
             exclude0XPOption.Checked = false;
             exclude0XPOption.Click += new EventHandler(exclude0XPMobs_Click);
-            optionsMenu.DropDownItems.Add(exclude0XPOption);
 
-            customMobSelectionOption.Text = "Custom Mob Selection";
             customMobSelectionOption.CheckOnClick = true;
             customMobSelectionOption.Checked = false;
             customMobSelectionOption.Click += new EventHandler(customMobSelection_Click);
+
+            optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            optionsMenu.DropDownItems.Add(groupMobsOption);
+            optionsMenu.DropDownItems.Add(exclude0XPOption);
             optionsMenu.DropDownItems.Add(customMobSelectionOption);
 
-            toolStrip.Items.Add(optionsMenu);
 
-            ToolStripSeparator aSeparator = new ToolStripSeparator();
-            toolStrip.Items.Add(aSeparator);
-
-            editCustomMobFilter.Text = "Edit Mob Filter";
             editCustomMobFilter.Enabled = false;
             editCustomMobFilter.Click += new EventHandler(editCustomMobFilter_Click);
 
+
+            ToolStripSeparator aSeparator = new ToolStripSeparator();
+
+            toolStrip.Items.Add(catLabel);
+            toolStrip.Items.Add(categoryCombo);
+            toolStrip.Items.Add(mobsLabel);
+            toolStrip.Items.Add(mobsCombo);
+            toolStrip.Items.Add(optionsMenu);
+            toolStrip.Items.Add(aSeparator);
             toolStrip.Items.Add(editCustomMobFilter);
         }
         #endregion
 
         #region IPlugin Overrides
-        public override string TabName
-        {
-            get { return "Recovery"; }
-        }
-
         public override void Reset()
         {
             ResetTextBox();
@@ -129,14 +160,6 @@ namespace WaywardGamers.KParser.Plugin
         }
         #endregion
 
-        #region Member Variables
-        Dictionary<string, int> playerDamage = new Dictionary<string, int>();
-
-        string dmgRecoveryHeader = "Player           Dmg Taken   HP Drained   HP Cured   #Regen   #Regen 2   #Regen 3\n";
-        string cureHeader = "Player           Cured (Sp)  Cured (Ab)  C.1s  C.2s  C.3s  C.4s  C.5s  Curagas  Rg.1s  Rg.2s  Rg.3s\n";
-        string avgCureHeader = "Player           Avg Cure 1   Avg Cure 2   Avg Cure 3   Avg Cure 4   Avg Cure 5   Avg Curaga   Avg Ability\n";
-        #endregion
-
         #region Private Methods
         private void UpdateMobList()
         {
@@ -154,7 +177,6 @@ namespace WaywardGamers.KParser.Plugin
         {
             if (dataSet == null)
                 return;
-
 
             ResetTextBox();
 
@@ -185,9 +207,7 @@ namespace WaywardGamers.KParser.Plugin
                     break;
             }
         }
-        #endregion
 
-        #region Recovery
         private void ProcessDamage(KPDatabaseDataSet dataSet, MobFilter mobFilter)
         {
             var playerData = from c in dataSet.Combatants
@@ -226,19 +246,19 @@ namespace WaywardGamers.KParser.Plugin
                                  Regen1 = from cr in c.GetInteractionsRowsByTargetCombatantRelation()
                                           where ((cr.AidType == (byte)AidType.Enhance) &&
                                                  (cr.IsActionIDNull() == false) &&
-                                                 (cr.ActionsRow.ActionName == "Regen")) &&
+                                                 (cr.ActionsRow.ActionName == lsRegen1)) &&
                                                  mobFilter.CheckFilterMobBattle(cr)
                                           select cr,
                                  Regen2 = from cr in c.GetInteractionsRowsByTargetCombatantRelation()
                                           where ((cr.AidType == (byte)AidType.Enhance) &&
                                                  (cr.IsActionIDNull() == false) &&
-                                                 (cr.ActionsRow.ActionName == "Regen II")) &&
+                                                 (cr.ActionsRow.ActionName == lsRegen2)) &&
                                                  mobFilter.CheckFilterMobBattle(cr)
                                           select cr,
                                  Regen3 = from cr in c.GetInteractionsRowsByTargetCombatantRelation()
                                           where ((cr.AidType == (byte)AidType.Enhance) &&
                                                  (cr.IsActionIDNull() == false) &&
-                                                 (cr.ActionsRow.ActionName == "Regen III")) &&
+                                                 (cr.ActionsRow.ActionName == lsRegen3)) &&
                                                  mobFilter.CheckFilterMobBattle(cr)
                                           select cr,
                              };
@@ -276,8 +296,10 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         if (placeHeader == false)
                         {
-                            AppendText("Damage Recovery\n", Color.Blue, true, false);
-                            AppendText(dmgRecoveryHeader, Color.Black, true, true);
+                            AppendText(lsTitleRecovery, Color.Blue, true, false);
+                            AppendText("\n");
+                            AppendText(lsHeaderRecovery, Color.Black, true, true);
+                            AppendText("\n");
 
                             placeHeader = true;
                         }
@@ -289,16 +311,14 @@ namespace WaywardGamers.KParser.Plugin
                         ttlNumR2 += numR2;
                         ttlNumR3 += numR3;
 
-                        sb.Append(player.Player.PadRight(16));
-                        sb.Append(" ");
-
-                        sb.Append(dmgTaken.ToString().PadLeft(9));
-                        sb.Append(drainAmt.ToString().PadLeft(13));
-                        sb.Append(healAmt.ToString().PadLeft(11));
-
-                        sb.Append(numR1.ToString().PadLeft(9));
-                        sb.Append(numR2.ToString().PadLeft(11));
-                        sb.Append(numR3.ToString().PadLeft(11));
+                        sb.AppendFormat(lsFormatRecovery,
+                            player.Player,
+                            dmgTaken,
+                            drainAmt,
+                            healAmt,
+                            numR1,
+                            numR2,
+                            numR3);
 
                         sb.Append("\n");
                     }
@@ -307,12 +327,19 @@ namespace WaywardGamers.KParser.Plugin
                 if (placeHeader == true)
                 {
                     AppendText(sb.ToString());
-                    string totalString = string.Format(
-                        "{0,-17}{1,9}{2,13}{3,11}{4,9}{5,11}{6,11}\n\n\n", "Total",
-                        ttlDmgTaken, ttlDrainAmt, ttlHealAmt, ttlNumR1, ttlNumR2, ttlNumR3);
-                    AppendText(totalString, Color.Black, true, false);
-                }
 
+                    string totalString = string.Format(lsFormatRecovery,
+                        lsTotal,
+                        ttlDmgTaken,
+                        ttlDrainAmt,
+                        ttlHealAmt,
+                        ttlNumR1,
+                        ttlNumR2,
+                        ttlNumR3);
+
+                    AppendText(totalString, Color.Black, true, false);
+                    AppendText("\n\n\n");
+                }
             }
         }
 
@@ -331,74 +358,74 @@ namespace WaywardGamers.KParser.Plugin
                                   Cure1s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
                                            where (((AidType)cr.AidType == AidType.Recovery) &&
                                                   (cr.IsActionIDNull() == false) &&
-                                                  ((cr.ActionsRow.ActionName == "Cure") ||
-                                                   (cr.ActionsRow.ActionName == "Pollen") ||
-                                                   (cr.ActionsRow.ActionName == "Healing Breath"))) &&
+                                                  ((cr.ActionsRow.ActionName == lsCure1) ||
+                                                   (cr.ActionsRow.ActionName == lsPollen) ||
+                                                   (cr.ActionsRow.ActionName == lsHealingBreath1))) &&
                                                   mobFilter.CheckFilterMobBattle(cr)
                                            select cr.Amount,
                                   Cure2s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
                                            where (((AidType)cr.AidType == AidType.Recovery) &&
                                                   (cr.IsActionIDNull() == false) &&
-                                                  ((cr.ActionsRow.ActionName == "Cure II") ||
-                                                   (cr.ActionsRow.ActionName == "Curing Waltz") ||
-                                                   (cr.ActionsRow.ActionName == "Healing Breath II"))) &&
+                                                  ((cr.ActionsRow.ActionName == lsCure2) ||
+                                                   (cr.ActionsRow.ActionName == lsCWaltz1) ||
+                                                   (cr.ActionsRow.ActionName == lsHealingBreath2))) &&
                                                   mobFilter.CheckFilterMobBattle(cr)
                                            select cr.Amount,
                                   Cure3s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
                                            where (((AidType)cr.AidType == AidType.Recovery) &&
                                                   (cr.IsActionIDNull() == false) &&
-                                                  ((cr.ActionsRow.ActionName == "Cure III") ||
-                                                   (cr.ActionsRow.ActionName == "Curing Waltz II") ||
-                                                   (cr.ActionsRow.ActionName == "Wild Carrot") ||
-                                                   (cr.ActionsRow.ActionName == "Healing Breath III"))) &&
+                                                  ((cr.ActionsRow.ActionName == lsCure3) ||
+                                                   (cr.ActionsRow.ActionName == lsCWaltz2) ||
+                                                   (cr.ActionsRow.ActionName == lsWildCarrot) ||
+                                                   (cr.ActionsRow.ActionName == lsHealingBreath3))) &&
                                                   mobFilter.CheckFilterMobBattle(cr)
                                            select cr.Amount,
                                   Cure4s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
                                            where (((AidType)cr.AidType == AidType.Recovery) &&
                                                   (cr.IsActionIDNull() == false) &&
-                                                  ((cr.ActionsRow.ActionName == "Cure IV") ||
-                                                   (cr.ActionsRow.ActionName == "Curing Waltz III") ||
-                                                   (cr.ActionsRow.ActionName == "Magic Fruit"))) &&
+                                                  ((cr.ActionsRow.ActionName == lsCure4) ||
+                                                   (cr.ActionsRow.ActionName == lsCWaltz3) ||
+                                                   (cr.ActionsRow.ActionName == lsMagicFruit))) &&
                                                   mobFilter.CheckFilterMobBattle(cr)
                                            select cr.Amount,
                                   Cure5s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
                                            where (((AidType)cr.AidType == AidType.Recovery) &&
                                                   (cr.IsActionIDNull() == false) &&
-                                                  ((cr.ActionsRow.ActionName == "Cure V") ||
-                                                  (cr.ActionsRow.ActionName == "Curing Waltz IV"))) &&
+                                                  ((cr.ActionsRow.ActionName == lsCure5) ||
+                                                  (cr.ActionsRow.ActionName == lsCWaltz4))) &&
                                                   mobFilter.CheckFilterMobBattle(cr)
                                            select cr.Amount,
                                   Curagas = from cr in c.GetInteractionsRowsByActorCombatantRelation()
                                             where (((AidType)cr.AidType == AidType.Recovery) &&
                                                    (cr.IsActionIDNull() == false) &&
-                                                   ((cr.ActionsRow.ActionName.StartsWith("Curaga")) ||
-                                                    (cr.ActionsRow.ActionName == "Healing Breeze") ||
-                                                    (cr.ActionsRow.ActionName == "Divine Waltz"))) &&
+                                                   ((lsCuragaRegex.Match(cr.ActionsRow.ActionName).Success) ||
+                                                    (cr.ActionsRow.ActionName == lsHealingBreeze) ||
+                                                    (cr.ActionsRow.ActionName == lsDivineWaltz))) &&
                                                   mobFilter.CheckFilterMobBattle(cr)
                                             group cr by cr.Timestamp into crt
                                             select crt,
                                   OtherCures = from cr in c.GetInteractionsRowsByActorCombatantRelation()
                                                where (((AidType)cr.AidType == AidType.Recovery) &&
                                                       (cr.IsActionIDNull() == false) &&
-                                                      (cr.ActionsRow.ActionName == "Chakra")) &&
+                                                      (cr.ActionsRow.ActionName == lsChakra)) &&
                                                   mobFilter.CheckFilterMobBattle(cr)
                                                select cr.Amount,
                                   Reg1s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
                                           where (((AidType)cr.AidType == AidType.Enhance) &&
                                                  (cr.IsActionIDNull() == false) &&
-                                                 (cr.ActionsRow.ActionName == "Regen")) &&
+                                                 (cr.ActionsRow.ActionName == lsRegen1)) &&
                                                   mobFilter.CheckFilterMobBattle(cr)
                                           select cr,
                                   Reg2s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
                                           where (((AidType)cr.AidType == AidType.Enhance) &&
                                                  (cr.IsActionIDNull() == false) &&
-                                                 (cr.ActionsRow.ActionName == "Regen II")) &&
+                                                 (cr.ActionsRow.ActionName == lsRegen2)) &&
                                                   mobFilter.CheckFilterMobBattle(cr)
                                           select cr,
                                   Reg3s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
                                           where (((AidType)cr.AidType == AidType.Enhance) &&
                                                  (cr.IsActionIDNull() == false) &&
-                                                 (cr.ActionsRow.ActionName == "Regen III")) &&
+                                                 (cr.ActionsRow.ActionName == lsRegen3)) &&
                                                   mobFilter.CheckFilterMobBattle(cr)
                                           select cr,
                                   Spells = from cr in c.GetInteractionsRowsByActorCombatantRelation()
@@ -465,29 +492,27 @@ namespace WaywardGamers.KParser.Plugin
                         {
                             if (placeHeader == false)
                             {
-                                AppendText("Curing (Whm spells or equivalent)\n", Color.Blue, true, false);
-                                AppendText(cureHeader, Color.Black, true, true);
+                                AppendText(lsTitleCuring, Color.Blue, true, false);
+                                AppendText("\n");
+                                AppendText(lsHeaderCuring, Color.Black, true, true);
+                                AppendText("\n");
 
                                 placeHeader = true;
                             }
 
-                            sb.Append(healer.Player.PadRight(16));
-                            sb.Append(" ");
-
-                            sb.Append(cureSpell.ToString().PadLeft(9));
-                            sb.Append(cureAbil.ToString().PadLeft(12));
-
-                            sb.Append(numCure1.ToString().PadLeft(7));
-                            sb.Append(numCure2.ToString().PadLeft(6));
-                            sb.Append(numCure3.ToString().PadLeft(6));
-                            sb.Append(numCure4.ToString().PadLeft(6));
-                            sb.Append(numCure5.ToString().PadLeft(6));
-
-                            sb.Append(numCuraga.ToString().PadLeft(9));
-
-                            sb.Append(numRegen1.ToString().PadLeft(7));
-                            sb.Append(numRegen2.ToString().PadLeft(7));
-                            sb.Append(numRegen3.ToString().PadLeft(7));
+                            sb.AppendFormat(lsFormatCuring,
+                                healer.Player,
+                                cureSpell,
+                                cureAbil,
+                                numCure1,
+                                numCure2,
+                                numCure3,
+                                numCure4,
+                                numCure5,
+                                numCuraga,
+                                numRegen1,
+                                numRegen2,
+                                numRegen3);
 
                             sb.Append("\n");
                         }
@@ -537,22 +562,24 @@ namespace WaywardGamers.KParser.Plugin
                         {
                             if (placeHeader == false)
                             {
-                                AppendText("Average Curing (Whm spells or equivalent)\n", Color.Blue, true, false);
-                                AppendText(avgCureHeader, Color.Black, true, true);
+                                AppendText(lsTitleAvgCuring, Color.Blue, true, false);
+                                AppendText("\n");
+                                AppendText(lsHeaderAvgCuring, Color.Black, true, true);
+                                AppendText("\n");
 
                                 placeHeader = true;
                             }
 
-                            sb.Append(healer.Player.PadRight(16));
-                            sb.Append(" ");
 
-                            sb.Append(avgC1.ToString("F2").PadLeft(10));
-                            sb.Append(avgC2.ToString("F2").PadLeft(13));
-                            sb.Append(avgC3.ToString("F2").PadLeft(13));
-                            sb.Append(avgC4.ToString("F2").PadLeft(13));
-                            sb.Append(avgC5.ToString("F2").PadLeft(13));
-                            sb.Append(avgCg.ToString("F2").PadLeft(13));
-                            sb.Append(avgAb.ToString("F2").PadLeft(14));
+                            sb.AppendFormat(lsFormatAvgCuring,
+                                healer.Player,
+                                avgC1,
+                                avgC2,
+                                avgC3,
+                                avgC4,
+                                avgC5,
+                                avgCg,
+                                avgAb);
 
                             sb.Append("\n");
                         }
@@ -657,5 +684,84 @@ namespace WaywardGamers.KParser.Plugin
 
         #endregion
 
+        #region Localization Overrides
+        protected override void LoadLocalizedUI()
+        {
+            catLabel.Text = Resources.PublicResources.CategoryLabel;
+            mobsLabel.Text = Resources.PublicResources.MobsLabel;
+
+            categoryCombo.Items.Clear();
+            categoryCombo.Items.Add(Resources.PublicResources.All);
+            categoryCombo.Items.Add(Resources.Combat.RecoveryPluginCategoryRecovery);
+            categoryCombo.Items.Add(Resources.Combat.RecoveryPluginCategoryCuring);
+            categoryCombo.Items.Add(Resources.Combat.RecoveryPluginCategoryAvgCuring);
+            categoryCombo.SelectedIndex = 0;
+
+            UpdateMobList();
+            mobsCombo.SelectedIndex = 0;
+
+            optionsMenu.Text = Resources.PublicResources.Options;
+            groupMobsOption.Text = Resources.PublicResources.GroupMobs;
+            exclude0XPOption.Text = Resources.PublicResources.Exclude0XPMobs;
+            customMobSelectionOption.Text = Resources.PublicResources.CustomMobSelection;
+            editCustomMobFilter.Text = Resources.PublicResources.EditMobFilter;
+
+        }
+
+        protected override void LoadResources()
+        {
+            this.tabName = Resources.Combat.RecoveryPluginTabName;
+
+            // Titles
+
+            lsTitleRecovery = Resources.Combat.RecoveryPluginTitleRecovery;
+            lsTitleCuring = Resources.Combat.RecoveryPluginTitleCuring;
+            lsTitleAvgCuring = Resources.Combat.RecoveryPluginTitleAvgCuring;
+
+
+            // Headers
+
+            lsHeaderRecovery = Resources.Combat.RecoveryPluginHeaderRecovery;
+            lsHeaderCuring = Resources.Combat.RecoveryPluginHeaderCuring;
+            lsHeaderAvgCuring = Resources.Combat.RecoveryPluginHeaderAvgCuring;
+
+            // Formatters
+
+            lsFormatRecovery = Resources.Combat.RecoveryPluginFormatRecovery;
+            lsFormatCuring = Resources.Combat.RecoveryPluginFormatCuring;
+            lsFormatAvgCuring = Resources.Combat.RecoveryPluginFormatAvgCuring;
+
+            // Misc
+
+            lsTotal = Resources.PublicResources.Total;
+
+            // Spell names
+
+            lsRegen1 = Resources.ParsedStrings.Regen1;
+            lsRegen2 = Resources.ParsedStrings.Regen2;
+            lsRegen3 = Resources.ParsedStrings.Regen3;
+            lsCure1 = Resources.ParsedStrings.Cure1;
+            lsCure2 = Resources.ParsedStrings.Cure2;
+            lsCure3 = Resources.ParsedStrings.Cure3;
+            lsCure4 = Resources.ParsedStrings.Cure4;
+            lsCure5 = Resources.ParsedStrings.Cure5;
+            lsCWaltz1 = Resources.ParsedStrings.CuringWaltz1;
+            lsCWaltz2 = Resources.ParsedStrings.CuringWaltz2;
+            lsCWaltz3 = Resources.ParsedStrings.CuringWaltz3;
+            lsCWaltz4 = Resources.ParsedStrings.CuringWaltz4;
+            lsHealingBreath1 = Resources.ParsedStrings.HealingBreath1;
+            lsHealingBreath2 = Resources.ParsedStrings.HealingBreath2;
+            lsHealingBreath3 = Resources.ParsedStrings.HealingBreath3;
+            lsPollen = Resources.ParsedStrings.Pollen;
+            lsWildCarrot = Resources.ParsedStrings.WildCarrot;
+            lsMagicFruit = Resources.ParsedStrings.MagicFruit;
+            lsDivineWaltz = Resources.ParsedStrings.DivineWaltz;
+            lsHealingBreeze = Resources.ParsedStrings.HealingBreeze;
+            lsCuragaREString = Resources.ParsedStrings.CuragaRegex;
+            lsChakra = Resources.ParsedStrings.Chakra;
+
+            lsCuragaRegex = new Regex(lsCuragaREString);
+        }
+        #endregion
     }
 }
