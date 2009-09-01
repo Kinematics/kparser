@@ -260,7 +260,10 @@ namespace WaywardGamers.KParser.Plugin
 
             int prevChatTypeIndex = chatTypeCombo.SelectedIndex;
             PopulateChatTypes();
-            chatTypeCombo.SelectedIndex = prevChatTypeIndex;
+            if (prevChatTypeIndex >= 0)
+                chatTypeCombo.SelectedIndex = prevChatTypeIndex;
+            else
+                chatTypeCombo.SelectedIndex = 0;
 
             UpdateSpeakerList();
         }
