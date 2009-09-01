@@ -117,6 +117,49 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>283, 22</value>
+  </data>
+  <data name="checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Text" xml:space="preserve">
+    <value>Sélectionnez toutes les mobs de type:</value>
+  </data>
+  <data name="checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>283, 22</value>
+  </data>
+  <data name="checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Text" xml:space="preserve">
+    <value>Sélectionnez toutes les mobs de type/XP:</value>
+  </data>
+  <data name="checkAllMobsBelowCurrentSelectionToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>283, 22</value>
+  </data>
+  <data name="checkAllMobsBelowCurrentSelectionToolStripMenuItem.Text" xml:space="preserve">
+    <value>Choisissez ci-dessous toutes les:</value>
+  </data>
+  <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>280, 6</value>
+  </data>
+  <data name="uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>283, 22</value>
+  </data>
+  <data name="uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Text" xml:space="preserve">
+    <value>Décocher tout mobs de type:</value>
+  </data>
+  <data name="uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>283, 22</value>
+  </data>
+  <data name="uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Text" xml:space="preserve">
+    <value>Décocher tout mobs de type/XP:</value>
+  </data>
+  <data name="uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>283, 22</value>
+  </data>
+  <data name="uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Text" xml:space="preserve">
+    <value>Tout désélectionner Mobs ci-dessous:</value>
+  </data>
+  <data name="mobListContextMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>284, 142</value>
+  </data>
   <data name="selectAllButton.Text" xml:space="preserve">
     <value>Tous</value>
   </data>
@@ -126,10 +169,6 @@
   <data name="invertSelectionButton.Text" xml:space="preserve">
     <value>Inverser</value>
   </data>
-  <data name="uncheck0XPMobs.Text" xml:space="preserve">
-    <value>Unselect 0 XP Mobs</value>
-  </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="label1.Location" type="System.Drawing.Point, System.Drawing">
     <value>29, 305</value>
   </data>
