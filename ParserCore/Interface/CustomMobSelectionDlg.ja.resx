@@ -118,8 +118,56 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="mobListContextMenuStrip.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Arial Unicode MS, 8.25pt</value>
+  </data>
+  <data name="checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>237, 22</value>
+  </data>
+  <data name="checkAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Text" xml:space="preserve">
+    <value>[すべて選択]モブタイプ:</value>
+  </data>
+  <data name="checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Arial Unicode MS, 8.25pt</value>
+  </data>
+  <data name="checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>237, 22</value>
+  </data>
+  <data name="checkAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Text" xml:space="preserve">
+    <value>[すべて選択]モブタイプ/XP:</value>
+  </data>
+  <data name="checkAllMobsBelowCurrentSelectionToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>237, 22</value>
+  </data>
+  <data name="checkAllMobsBelowCurrentSelectionToolStripMenuItem.Text" xml:space="preserve">
+    <value>[すべて選択]モブ以下:</value>
+  </data>
+  <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>234, 6</value>
+  </data>
+  <data name="uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>237, 22</value>
+  </data>
+  <data name="uncheckAllMobsOfCurrentlySelectedTypeToolStripMenuItem.Text" xml:space="preserve">
+    <value>選択解除全てのモブタイプ:</value>
+  </data>
+  <data name="uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>237, 22</value>
+  </data>
+  <data name="uncheckAllMobsOfCurrentlySelectedTypeAndXPToolStripMenuItem.Text" xml:space="preserve">
+    <value>選択解除全てのモブタイプ/XP:</value>
+  </data>
+  <data name="uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>237, 22</value>
+  </data>
+  <data name="uncheckAllMobsBelowCurrentSelectionToolStripMenuItem.Text" xml:space="preserve">
+    <value>選択解除全てのモブ以下:</value>
+  </data>
+  <data name="mobListContextMenuStrip.Size" type="System.Drawing.Size, System.Drawing">
+    <value>238, 142</value>
+  </data>
   <data name="selectAllButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>28, 376</value>
+    <value>27, 368</value>
   </data>
   <data name="selectAllButton.Size" type="System.Drawing.Size, System.Drawing">
     <value>75, 27</value>
@@ -128,7 +176,7 @@
     <value>すべての</value>
   </data>
   <data name="selectNoneButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>189, 376</value>
+    <value>188, 368</value>
   </data>
   <data name="selectNoneButton.Size" type="System.Drawing.Size, System.Drawing">
     <value>75, 27</value>
@@ -137,7 +185,7 @@
     <value>何もない</value>
   </data>
   <data name="closeButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>189, 411</value>
+    <value>188, 402</value>
   </data>
   <data name="closeButton.Size" type="System.Drawing.Size, System.Drawing">
     <value>75, 27</value>
@@ -146,7 +194,7 @@
     <value>閉じる</value>
   </data>
   <data name="invertSelectionButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>109, 376</value>
+    <value>108, 368</value>
   </data>
   <data name="invertSelectionButton.Size" type="System.Drawing.Size, System.Drawing">
     <value>75, 27</value>
@@ -155,7 +203,7 @@
     <value>反転</value>
   </data>
   <data name="uncheck0XPMobs.Location" type="System.Drawing.Point, System.Drawing">
-    <value>28, 410</value>
+    <value>27, 402</value>
   </data>
   <data name="uncheck0XPMobs.Size" type="System.Drawing.Size, System.Drawing">
     <value>121, 27</value>
@@ -168,13 +216,13 @@
     <value>15</value>
   </data>
   <data name="mobList.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 14</value>
+    <value>12, 21</value>
   </data>
   <data name="mobList.Size" type="System.Drawing.Size, System.Drawing">
-    <value>268, 334</value>
+    <value>268, 304</value>
   </data>
   <data name="label1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>43, 352</value>
+    <value>41, 335</value>
   </data>
   <data name="label1.Size" type="System.Drawing.Size, System.Drawing">
     <value>142, 15</value>
@@ -183,7 +231,7 @@
     <value>選択されたモブの現在の数:</value>
   </data>
   <data name="numMobsSelected.Location" type="System.Drawing.Point, System.Drawing">
-    <value>219, 352</value>
+    <value>217, 335</value>
   </data>
   <data name="numMobsSelected.Size" type="System.Drawing.Size, System.Drawing">
     <value>13, 15</value>
