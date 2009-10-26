@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{3EEB8410-FE5C-49D2-BFB9-5F4A8B5AD995}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -78,12 +78,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Debugging.de.resx" />
-    <EmbeddedResource Include="Resources\Debugging.fr.resx" />
-    <EmbeddedResource Include="Resources\Debugging.ja.resx" />
+    <EmbeddedResource Include="Resources\Debugging.de.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Debugging.fr.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Debugging.ja.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\Debugging.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Debugging.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

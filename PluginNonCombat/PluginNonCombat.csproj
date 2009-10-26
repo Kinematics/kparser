@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{29B154A9-81AE-4220-A4A8-27F1779409B1}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -93,12 +93,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\NonCombat.de.resx" />
-    <EmbeddedResource Include="Resources\NonCombat.fr.resx" />
-    <EmbeddedResource Include="Resources\NonCombat.ja.resx" />
+    <EmbeddedResource Include="Resources\NonCombat.de.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\NonCombat.fr.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\NonCombat.ja.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\NonCombat.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>NonCombat.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
