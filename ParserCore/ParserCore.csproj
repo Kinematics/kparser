@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{626318E4-447D-4BD7-BC3A-294A8E37B07F}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -263,51 +263,79 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Interface\CustomMobSelectionDlg.de.resx">
       <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Interface\CustomMobSelectionDlg.fr.resx">
       <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Interface\CustomMobSelectionDlg.ja.resx">
       <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Interface\CustomMobSelectionDlg.resx">
       <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="KPDatabase.sdf">
     </EmbeddedResource>
     <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.de.resx">
       <DependentUpon>SelectPOLProcess.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.fr.resx">
       <DependentUpon>SelectPOLProcess.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.ja.resx">
       <DependentUpon>SelectPOLProcess.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.resx">
       <DependentUpon>SelectPOLProcess.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\CoreResources.de.resx" />
-    <EmbeddedResource Include="Resources\CoreResources.fr.resx" />
-    <EmbeddedResource Include="Resources\CoreResources.ja.resx" />
+    <EmbeddedResource Include="Resources\CoreResources.de.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\CoreResources.fr.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\CoreResources.ja.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\CoreResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CoreResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\ParsedStrings.de.resx" />
-    <EmbeddedResource Include="Resources\ParsedStrings.fr.resx" />
-    <EmbeddedResource Include="Resources\ParsedStrings.ja.resx" />
+    <EmbeddedResource Include="Resources\ParsedStrings.de.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\ParsedStrings.fr.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\ParsedStrings.ja.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\ParsedStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ParsedStrings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\PublicResources.de.resx" />
-    <EmbeddedResource Include="Resources\PublicResources.fr.resx" />
-    <EmbeddedResource Include="Resources\PublicResources.ja.resx" />
+    <EmbeddedResource Include="Resources\PublicResources.de.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\PublicResources.fr.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\PublicResources.ja.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\PublicResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>PublicResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
