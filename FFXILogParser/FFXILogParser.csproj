@@ -25,13 +25,15 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <TargetZone>LocalIntranet</TargetZone>
-    <GenerateManifests>true</GenerateManifests>
+    <GenerateManifests>false</GenerateManifests>
     <OldToolsVersion>2.0</OldToolsVersion>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <ManifestCertificateThumbprint>6B41E0C347FDF6A2E86089DF26084CE02604E272</ManifestCertificateThumbprint>
     <ManifestKeyFile>FFXILogParser_TemporaryKey.pfx</ManifestKeyFile>
     <SignManifests>true</SignManifests>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
     <PublishUrl>D:\Apache\Apache2\htdocs\FFXI\KParser\ClickOnce\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -50,7 +52,6 @@
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.4.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
-    <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -149,6 +150,26 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\..\..\..\..\..\..\Program Files %28x86%29\Microsoft SQL Server Compact Edition\v3.5\sqlcecompact35.dll">
+      <Link>X86\sqlcecompact35.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\..\..\..\..\..\Program Files %28x86%29\Microsoft SQL Server Compact Edition\v3.5\sqlceme35.dll">
+      <Link>X86\sqlceme35.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\..\..\..\..\..\Program Files %28x86%29\Microsoft SQL Server Compact Edition\v3.5\sqlceoledb35.dll">
+      <Link>X86\sqlceoledb35.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\..\..\..\..\..\Program Files %28x86%29\Microsoft SQL Server Compact Edition\v3.5\sqlceqp35.dll">
+      <Link>X86\sqlceqp35.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\..\..\..\..\..\Program Files %28x86%29\Microsoft SQL Server Compact Edition\v3.5\sqlcese35.dll">
+      <Link>X86\sqlcese35.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Gobby.ico" />
     <Content Include="Resources\Gobby.ico" />
     <Compile Include="Forms\AboutBox.cs">
@@ -261,11 +282,6 @@
     <BaseApplicationManifest Include="Properties\app.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
       <Visible>False</Visible>
       <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
@@ -286,11 +302,6 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.SQL.Server.Compact.3.5">
-      <Visible>False</Visible>
-      <ProductName>SQL Server Compact 3.5</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
       <Visible>False</Visible>
       <ProductName>Windows Installer 3.1</ProductName>
@@ -299,6 +310,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="app.manifest" />
     <None Include="FFXILogParser_TemporaryKey.pfx" />
     <None Include="Properties\WindowSettings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
