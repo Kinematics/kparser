@@ -142,7 +142,7 @@ namespace WaywardGamers.KParser
         internal static readonly Regex RemoveStatus = new Regex(string.Format("^{0} successfully removes {1}'s {2}$", name, target, effect));
         internal static readonly Regex ItemBuff    = new Regex(string.Format("^{0} receive(s)? the effect of {1}\\.$", target, effect));
         internal static readonly Regex ItemCleanse = new Regex(string.Format("^{0} is no longer {1}\\.$", target, effect));
-        internal static readonly Regex ItemReduceTP = new Regex(string.Format("^{0}'s TP is reduced\\.$", target));
+        internal static readonly Regex ReduceTP    = new Regex(string.Format("^{0}'s? TP is reduced( to 0)?\\.$", target));
         internal static readonly Regex Hide        = new Regex(string.Format("^{0} hides!$", name));
         #endregion
 
@@ -222,7 +222,6 @@ namespace WaywardGamers.KParser
         #region Drains
         internal static readonly Regex Drain = new Regex(string.Format("^{0} {1} drained from {2}\\.$", damage, drainType, target));
         internal static readonly Regex AbsorbStat = new Regex(string.Format("^{0}'(s)? {1} is drained\\.$", target, drainStat));
-        internal static readonly Regex ReduceTP = new Regex(string.Format("^{0}'(s)? TP is reduced to 0\\.$", target));
         #endregion
 
         #region Defeated

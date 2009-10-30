@@ -1096,7 +1096,7 @@ namespace WaywardGamers.KParser.Parsing
                                 return;
                             }
                             // Uses demoralizer
-                            combatMatch = ParseExpressions.ItemReduceTP.Match(currentMessageText);
+                            combatMatch = ParseExpressions.ReduceTP.Match(currentMessageText);
                             if (combatMatch.Success == true)
                             {
                                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
