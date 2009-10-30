@@ -2339,6 +2339,21 @@ namespace WaywardGamers.KParser.Parsing
                     return;
                 }
 
+                combatMatch = ParseExpressions.NoEffect.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.ActionType = ActionType.Spell;
+                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
+                    msgCombatDetails.SuccessLevel = SuccessType.Failed;
+                    msgCombatDetails.FailedActionType = FailedActionType.NoEffect;
+                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.FailedActionType = FailedActionType.NoEffect;
+                    target.HarmType = msgCombatDetails.HarmType;
+                    message.SetParseSuccess(true);
+                    return;
+                }
+
                 combatMatch = ParseExpressions.NoEffect2.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
