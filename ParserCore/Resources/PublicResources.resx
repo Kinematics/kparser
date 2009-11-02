@@ -144,6 +144,9 @@
   <data name="Exclude0XPMobs" xml:space="preserve">
     <value>Exclude 0 XP Mobs</value>
   </data>
+  <data name="FileDoesNotExist" xml:space="preserve">
+    <value>The requested file does not exist.</value>
+  </data>
   <data name="GroupMobs" xml:space="preserve">
     <value>Group Mobs</value>
   </data>
