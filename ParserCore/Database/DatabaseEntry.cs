@@ -5,18 +5,22 @@ using System.Text;
 
 namespace WaywardGamers.KParser.Database
 {
+    /// <summary>
+    /// This class is designed to handle the entry of data into the database
+    /// using passed in Messages.
+    /// </summary>
     internal class DatabaseEntry
     {
         #region Member Variables
-        private KPDatabaseDataSet.BattlesRow lastFinishedBattle;
-        private DateTime mostRecentTimestamp = MagicNumbers.MinSQLDateTime;
+        private KPDatabaseDataSet localDB = null;
 
         private Dictionary<KPDatabaseDataSet.BattlesRow, DateTime> activeBattleList;
         private Dictionary<string, KPDatabaseDataSet.BattlesRow> activeMobBattleList;
 
-        private List<KPDatabaseDataSet.InteractionsRow> deferredInteractions = new List<KPDatabaseDataSet.InteractionsRow>();
+        private List<KPDatabaseDataSet.InteractionsRow> deferredInteractions;
 
-        private KPDatabaseDataSet localDB;
+        private KPDatabaseDataSet.BattlesRow lastFinishedBattle;
+        private DateTime mostRecentTimestamp = MagicNumbers.MinSQLDateTime;
         #endregion
 
         #region Constructor
@@ -25,21 +29,44 @@ namespace WaywardGamers.KParser.Database
             // Initialize record-keeping variables
             activeBattleList = new Dictionary<KPDatabaseDataSet.BattlesRow, DateTime>();
             activeMobBattleList = new Dictionary<string, KPDatabaseDataSet.BattlesRow>();
+            deferredInteractions = new List<KPDatabaseDataSet.InteractionsRow>();
         }
-        #endregion
 
-        #region Public Methods
         /// <summary>
         /// Reset this class to empty tracking values.
         /// </summary>
         internal void Reset()
         {
+            UpdateActiveBattleList(true);
+            
             activeBattleList.Clear();
             activeMobBattleList.Clear();
-        }
+            deferredInteractions.Clear();
 
-        internal void AddMessageToDatabase(KPDatabaseDataSet localDB, Message message)
+            lastFinishedBattle = null;
+            localDB = null;
+            mostRecentTimestamp = MagicNumbers.MinSQLDateTime;
+        }
+        #endregion
+
+
+        #region Callable methods to request modifications to a given database.
+        /// <summary>
+        /// Add a new message to the supplied database.
+        /// </summary>
+        /// <param name="db">The database to insert the message into.</param>
+        /// <param name="message">The message to be inserted.</param>
+        internal void AddMessageToDatabase(KPDatabaseDataSet db, Message message)
         {
+            if (db == null)
+                throw new ArgumentNullException("db");
+
+            if (message == null)
+                throw new ArgumentNullException("message");
+
+            if (message.Timestamp > mostRecentTimestamp)
+                mostRecentTimestamp = message.Timestamp;
+
             // Don't try to insert data from unsuccessful parses.
             // Record log already defaults to false on ParseSuccessful, so don't have to update.
             if (message.IsParseSuccessful == false)
@@ -49,7 +76,7 @@ namespace WaywardGamers.KParser.Database
 
             try
             {
-                this.localDB = localDB;
+                this.localDB = db;
 
                 // For successful parses, update the RecordLog table entries for each messageline in the
                 // message.
@@ -111,14 +138,32 @@ namespace WaywardGamers.KParser.Database
             }
         }
 
-        internal void UpdatePlayerInfo(KPDatabaseDataSet localDB, List<PlayerInfo> playerInfoList)
+        /// <summary>
+        /// Call this when each batch of messages is processed, to allow updating
+        /// of the battle list.
+        /// </summary>
+        internal void MessageBatchSent()
         {
+            UpdateActiveBattleList(false);
+        }
+
+        /// <summary>
+        /// Update the provided database with the info supplied in the
+        /// player info list.
+        /// </summary>
+        /// <param name="db">The database to insert the info into.</param>
+        /// <param name="playerInfoList">The list of player information to update.</param>
+        internal void UpdatePlayerInfo(KPDatabaseDataSet db, List<PlayerInfo> playerInfoList)
+        {
+            if (db == null)
+                throw new ArgumentNullException("db");
+
             if (playerInfoList == null)
                 return;
 
             foreach (var player in playerInfoList)
             {
-                var combatantLine = localDB.Combatants.FirstOrDefault(c => c.CombatantName == player.Name &&
+                var combatantLine = db.Combatants.FirstOrDefault(c => c.CombatantName == player.Name &&
                     (EntityType)c.CombatantType == player.CombatantType);
 
                 if (combatantLine != null)
@@ -126,6 +171,43 @@ namespace WaywardGamers.KParser.Database
             }
         }
 
+        /// <summary>
+        /// Call this function to purge all (potentially sensitive) chat
+        /// info from the supplied database.
+        /// </summary>
+        /// <param name="db">The database to purge chat info from.</param>
+        internal void PurgeChatInfo(KPDatabaseDataSet db)
+        {
+            if (db == null)
+                throw new ArgumentNullException("db");
+
+            // First delete all non-Arena rows in the message table.
+            foreach (KPDatabaseDataSet.ChatMessagesRow row in db.ChatMessages)
+            {
+                if (((ChatMessageType)row.ChatType != ChatMessageType.Arena) &&
+                    ((ChatMessageType)row.ChatType != ChatMessageType.Echo))
+                    row.Delete();
+            }
+
+            // Then all the speakers (parent row to messages).
+            foreach (KPDatabaseDataSet.ChatSpeakersRow row in db.ChatSpeakers)
+            {
+                if (row.GetChatMessagesRows().Count() == 0)
+                    row.Delete();
+            }
+
+            // Then all chat messages from the original parse log.
+            string[] chatCode = new string[] { "01", "02", "03", "04", "05", "06", "07",
+                "09", "0a", "0b", "0c", "0d", "0e", "0f", "8e", "90", "98"};
+            string rowChatValue;
+
+            foreach (KPDatabaseDataSet.RecordLogRow row in db.RecordLog.Rows)
+            {
+                rowChatValue = row.MessageText.Substring(0, 2);
+                if (chatCode.Contains(rowChatValue) == true)
+                    row.Delete();
+            }
+        }
         #endregion
 
         #region Private Methods
