@@ -312,7 +312,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.Combat, Version=1.4.2.0, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.Combat, Version=1.4.3.0, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_6BA8DE60499B63FD65E10FB34C909D5F"
@@ -425,7 +425,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.ParserCore, Version=1.4.1.0, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.ParserCore, Version=1.4.3.0, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_CC50CF8B8B603576C057ED6CBB50FDA1"
@@ -542,14 +542,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:KParser"
-        "ProductCode" = "8:{48CEFEBC-A476-4A45-B5E2-96FA57B5F25B}"
-        "PackageCode" = "8:{F1E23325-7BC4-4759-9430-B667F7AEFD08}"
+        "ProductCode" = "8:{7452C81A-02CC-40CF-B2A7-82380934CD06}"
+        "PackageCode" = "8:{1A3400E6-A451-4DB4-90CD-CA57E4AF5307}"
         "UpgradeCode" = "8:{BE6F6D70-234C-4B71-96CD-D020C6872A1D}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.4.2"
+        "ProductVersion" = "8:1.4.3"
         "Manufacturer" = "8:Wayward Gamers"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://code.google.com/p/kparser"
@@ -1217,7 +1217,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_5B7CCE6409194E2D84B873BEF488EF17"
             {
-            "SourcePath" = "8:..\\FFXILogParser\\obj\\x86\\Debug\\KParser.exe"
+            "SourcePath" = "8:..\\FFXILogParser\\obj\\x86\\Release\\KParser.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_906983A9B8BD4D8295A82843DB1B6CE6"
