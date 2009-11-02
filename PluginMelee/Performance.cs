@@ -394,6 +394,7 @@ namespace WaywardGamers.KParser.Plugin
             });
             sb.Append(lsParticipateFightsHeader + "\n");
 
+            Dictionary<string, int> playerFightCounts = new Dictionary<string, int>();
 
             foreach (var player in attackSet)
             {
@@ -409,6 +410,8 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (playerFightCount > 0)
                 {
+                    playerFightCounts[player.Name] = playerFightCount;
+
                     sb.AppendFormat(lsParticipateFightsFormat, player.Name,
                         playerFightCount, participatingFights);
                     sb.Append("\n");
@@ -463,9 +466,18 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (playerTimeFighting.TotalSeconds > 0)
                 {
+                    double avgCombatTimePerFight = 0;
+
+                    int fights = 0;
+                    if (playerFightCounts.TryGetValue(player.Name, out fights))
+                    {
+                        if (fights > 0)
+                            avgCombatTimePerFight = playerTimeFighting.TotalSeconds / fights;
+                    }
+
                     sb.AppendFormat(lsParticipateTimeFormat, player.Name,
                         FormatTimeSpan(playerTimeFighting), FormatTimeSpan(playerFightLengths),
-                        percentFightsLength, percentOverallTime);
+                        FormatSeconds(avgCombatTimePerFight), percentFightsLength, percentOverallTime);
                     sb.Append("\n");
                 }
             }
@@ -551,6 +563,11 @@ namespace WaywardGamers.KParser.Plugin
         {
             return string.Format("{0,3}:{1:d2}:{2:d2}",
                 (int)timeSpan.TotalHours, timeSpan.Minutes, timeSpan.Seconds);
+        }
+
+        private string FormatSeconds(double seconds)
+        {
+            return string.Format("{0:f2} s", seconds);
         }
         #endregion
 

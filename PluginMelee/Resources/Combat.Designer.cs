@@ -1609,7 +1609,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0,-17}{1,19}{2,22:p2}{3,17:p2}{4,17:p2}.
+        ///   Looks up a localized string similar to {0,-17}{1,19}{2,22:p2}{3,17}{4,17:p2}{5,17:p2}.
         /// </summary>
         internal static string PerformancePluginParticipateTimeFormat {
             get {
@@ -1618,7 +1618,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Player           Total time fighting   Total fight lengths   % Fights&apos; Time   % Overall Time.
+        ///   Looks up a localized string similar to Player           Total time fighting   Total fight lengths   Avg Time/Fight   % Fights&apos; Time   % Overall Time.
         /// </summary>
         internal static string PerformancePluginParticipateTimeHeader {
             get {

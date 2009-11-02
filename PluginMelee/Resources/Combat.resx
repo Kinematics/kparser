@@ -760,10 +760,10 @@
     <value>Player           Number of fights   % Participation</value>
   </data>
   <data name="PerformancePluginParticipateTimeFormat" xml:space="preserve">
-    <value>{0,-17}{1,19}{2,22:p2}{3,17:p2}{4,17:p2}</value>
+    <value>{0,-17}{1,19}{2,22:p2}{3,17}{4,17:p2}{5,17:p2}</value>
   </data>
   <data name="PerformancePluginParticipateTimeHeader" xml:space="preserve">
-    <value>Player           Total time fighting   Total fight lengths   % Fights' Time   % Overall Time</value>
+    <value>Player           Total time fighting   Total fight lengths   Avg Time/Fight   % Fights' Time   % Overall Time</value>
   </data>
   <data name="PerformancePluginParticipateTitle" xml:space="preserve">
     <value>Player Participation (Offensive)</value>
