@@ -143,19 +143,19 @@ namespace WaywardGamers.KParser.Plugin
             {
                 if (e.DatasetChanges.Battles.Any(b => b.RowState == DataRowState.Added))
                 {
-                    int selectedIndex = mobsCombo.CBSelectedIndex();
+                    string currentSelection = mobsCombo.CBSelectedItem();
 
-                    var mobBattleNumber = e.DatasetChanges.Battles.Last().BattleID;
+                    UpdateMobList();
 
-                    if (mobBattleNumber > (mobsCombo.Items.Count + 1))
+                    if (groupMobs == false)
                     {
-                        UpdateMobList();
+                        mobsCombo.CBSelectIndex(-1);
                     }
-
-                    if (selectedIndex < 1)
+                    else
                     {
-                        flagNoUpdate = true;
-                        mobsCombo.CBSelectIndex(mobBattleNumber - 1);
+                        // Selected index will only get reset to -1 if the mob list changed.
+                        if (mobsCombo.CBSelectedIndex() < 0)
+                            mobsCombo.CBSelectItem(currentSelection);
                     }
                 }
             }
@@ -174,9 +174,14 @@ namespace WaywardGamers.KParser.Plugin
             playersCombo.CBAddStrings(GetPlayerListing());
         }
 
-        private void UpdateMobList()
+        private void UpdateLockedMobList()
         {
             mobsCombo.UpdateWithMobList(false, false);
+        }
+
+        private void UpdateMobList()
+        {
+            mobsCombo.UpdateWithMobList(groupMobs, exclude0XPMobs);
         }
         #endregion
 
