@@ -735,4 +735,40 @@
   <data name="WSRatePluginTitle" xml:space="preserve">
     <value>Weaponskill/TP Rates</value>
   </data>
+  <data name="PerformancePluginDPSFormat" xml:space="preserve">
+    <value>{0,-17}{1,12:f2}{2,13:f2}{3,11:f2}{4,13:f2}{5,13:f2}{6,13:f2}</value>
+  </data>
+  <data name="PerformancePluginDPSHeader" xml:space="preserve">
+    <value>Player              Melee DPS   Ranged DPS     WS DPS    Magic DPS    Other DPS    Total DPS</value>
+  </data>
+  <data name="PerformancePluginDPSTitle" xml:space="preserve">
+    <value>Damage Per Second</value>
+  </data>
+  <data name="PerformancePluginOverallFormat" xml:space="preserve">
+    <value>{0,-18}{1,21}</value>
+  </data>
+  <data name="PerformancePluginOverallHeader" xml:space="preserve">
+    <value>Total # Fights      Total Fights Length</value>
+  </data>
+  <data name="PerformancePluginOverallTitle" xml:space="preserve">
+    <value>Overall</value>
+  </data>
+  <data name="PerformancePluginParticipateFightsFormat" xml:space="preserve">
+    <value>{0,-17}{1,16}{2,18:p2}</value>
+  </data>
+  <data name="PerformancePluginParticipateFightsHeader" xml:space="preserve">
+    <value>Player           Number of fights   % Participation</value>
+  </data>
+  <data name="PerformancePluginParticipateTimeFormat" xml:space="preserve">
+    <value>{0,-17}{1,19}{2,22:p2}{3,17:p2}{4,17:p2}</value>
+  </data>
+  <data name="PerformancePluginParticipateTimeHeader" xml:space="preserve">
+    <value>Player           Total time fighting   Total fight lengths   % Fights' Time   % Overall Time</value>
+  </data>
+  <data name="PerformancePluginParticipateTitle" xml:space="preserve">
+    <value>Player Participation (Offensive)</value>
+  </data>
+  <data name="PerformancePluginTabName" xml:space="preserve">
+    <value>Performance</value>
+  </data>
 </root>
