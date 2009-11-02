@@ -184,11 +184,11 @@
     <Compile Include="Forms\ImportType.Designer.cs">
       <DependentUpon>ImportType.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\PlayerInfo.cs">
+    <Compile Include="Forms\PlayerInfoDlg.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\PlayerInfo.Designer.cs">
-      <DependentUpon>PlayerInfo.cs</DependentUpon>
+    <Compile Include="Forms\PlayerInfoDlg.Designer.cs">
+      <DependentUpon>PlayerInfoDlg.cs</DependentUpon>
     </Compile>
     <Compile Include="ParserWindow.cs">
       <SubType>Form</SubType>
@@ -245,20 +245,20 @@
       <SubType>Designer</SubType>
       <DependentUpon>Options.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\PlayerInfo.de.resx">
-      <DependentUpon>PlayerInfo.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\PlayerInfoDlg.de.resx">
+      <DependentUpon>PlayerInfoDlg.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\PlayerInfo.fr.resx">
-      <DependentUpon>PlayerInfo.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\PlayerInfoDlg.fr.resx">
+      <DependentUpon>PlayerInfoDlg.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\PlayerInfo.ja.resx">
-      <DependentUpon>PlayerInfo.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\PlayerInfoDlg.ja.resx">
+      <DependentUpon>PlayerInfoDlg.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\PlayerInfo.resx">
-      <DependentUpon>PlayerInfo.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\PlayerInfoDlg.resx">
+      <DependentUpon>PlayerInfoDlg.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ParserWindow.de.resx">

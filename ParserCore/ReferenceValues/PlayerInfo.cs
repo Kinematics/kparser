@@ -5,7 +5,7 @@ using System.Text;
 
 namespace WaywardGamers.KParser
 {
-    internal class PlayerInfo
+    public class PlayerInfo
     {
         public string Name { get; set; }
         public EntityType CombatantType { get; set; }
