@@ -322,8 +322,9 @@ namespace WaywardGamers.KParser
 
             // If we requested the database for reading, don't
             // allow any changes to be made.
-            if (localDB.HasChanges())
-                localDB.RejectChanges();
+            // Note- causes major bug in invocation code. Leaving out for now.
+            //if (localDB.HasChanges())
+            //    localDB.RejectChanges();
         }
         #endregion
 
