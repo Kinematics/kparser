@@ -24,6 +24,58 @@ namespace WaywardGamers.KParser.Plugin
 
         public bool CustomSelection { get; set; }
         public HashSet<int> CustomBattleIDs { get; set; }
+
+        public int Count
+        {
+            get
+            {
+                return SelectedBattles.Count;
+            }
+        }
+
+        public HashSet<int> SelectedBattles
+        {
+            get
+            {
+                HashSet<int> selectedBattles = new HashSet<int>();
+
+                if (AllMobs)
+                {
+                    foreach (var mobEntry in MobXPHandler.Instance.CompleteMobList)
+                    {
+                        selectedBattles.Add(mobEntry.BattleID);
+                    }
+                }
+                else if (GroupMobs)
+                {
+                    if (MobXP < 0)
+                    {
+                        foreach (var mobEntry in MobXPHandler.Instance.CompleteMobList.Where(m => m.Name == MobName))
+                        {
+                            selectedBattles.Add(mobEntry.BattleID);
+                        }
+                    }
+                    else
+                    {
+                        foreach (var mobEntry in MobXPHandler.Instance.CompleteMobList.Where(m => m.Name == MobName && m.XP == MobXP))
+                        {
+                            selectedBattles.Add(mobEntry.BattleID);
+                        }
+                    }
+                }
+                else if (CustomSelection)
+                {
+                    selectedBattles = CustomBattleIDs;
+                }
+                else
+                {
+                    if (FightNumber > 0)
+                        selectedBattles.Add(FightNumber);
+                }
+
+                return selectedBattles;
+            }
+        }
     }
 
     /// <summary>
