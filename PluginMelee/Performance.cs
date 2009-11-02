@@ -240,6 +240,7 @@ namespace WaywardGamers.KParser.Plugin
                             {
                                 Name = c.CombatantName,
                                 AnyAction = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                                       .Where(a => a.IsBattleIDNull() == false)
                                             where ((HarmType)n.HarmType == HarmType.Damage ||
                                                     (HarmType)n.HarmType == HarmType.Drain) &&
                                                    mobFilter.CheckFilterMobTarget(n) == true
