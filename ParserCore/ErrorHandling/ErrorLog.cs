@@ -197,12 +197,19 @@ namespace WaywardGamers.KParser
                     sw.WriteLine();
 
                     Exception subException = e.InnerException;
-                    while (subException != null)
+                    int innerLoopCheck = 0;
+                    while ((subException != null) && (innerLoopCheck < 5))
                     {
                         sw.WriteLine("Contained Exception:");
                         sw.Write(subException.ToString());
                         sw.WriteLine();
-                        subException = e.InnerException;
+                        subException = subException.InnerException;
+                        innerLoopCheck++;
+                    }
+
+                    if (innerLoopCheck >= 5)
+                    {
+                        sw.WriteLine("--Interrupt possible infinite loop--");
                     }
                 }
 			}
