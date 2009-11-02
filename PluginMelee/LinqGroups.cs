@@ -26,6 +26,7 @@ namespace WaywardGamers.KParser.Plugin
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Counter { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Retaliate { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Spikes { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> AnyAction { get; set; }
 
         internal int TotalActions
         {
@@ -60,6 +61,14 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
+        internal int MeleeEffectDmg
+        {
+            get
+            {
+                return MeleeEffect.Sum(d => d.Amount);
+            }
+        }
+
         internal int RangeDmg
         {
             get
@@ -75,6 +84,14 @@ namespace WaywardGamers.KParser.Plugin
                 return Range.Where(s =>
                            s.SecondHarmType == (byte)HarmType.Damage ||
                            s.SecondHarmType == (byte)HarmType.Drain);
+            }
+        }
+
+        internal int RangeEffectDmg
+        {
+            get
+            {
+                return RangeEffect.Sum(d => d.Amount);
             }
         }
 
