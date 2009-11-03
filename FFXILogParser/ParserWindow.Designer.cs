@@ -139,10 +139,10 @@ namespace WaywardGamers.KParser
             this.fileMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.beginParseAndSaveDataMenuItem,
             this.beginDefaultParseMenuItem,
+            this.continueParsingMenuItem,
             this.quitParsingMenuItem,
             this.toolStripSeparator1,
             this.openSavedDataMenuItem,
-            this.continueParsingMenuItem,
             this.saveCurrentDataAsMenuItem,
             this.saveReportMenuItem,
             this.toolStripSeparator2,
