@@ -1328,8 +1328,11 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.ActionType = ActionType.Spell;
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
+                msgCombatDetails.FailedActionType = FailedActionType.NoEffect;
+
                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                 target.FailedActionType = FailedActionType.NoEffect;
+
                 if (msgCombatDetails.ActorEntityType == target.EntityType)
                 {
                     msgCombatDetails.InteractionType = InteractionType.Aid;
@@ -1341,6 +1344,7 @@ namespace WaywardGamers.KParser.Parsing
                     else
                         target.AidType = AidType.Enhance;
 
+                    msgCombatDetails.AidType = target.AidType;
                     target.HarmType = HarmType.None;
                 }
                 else
@@ -1353,6 +1357,7 @@ namespace WaywardGamers.KParser.Parsing
                     else
                         target.HarmType = HarmType.Enfeeble;
 
+                    msgCombatDetails.HarmType = target.HarmType;
                     target.AidType = AidType.None;
                 }
 

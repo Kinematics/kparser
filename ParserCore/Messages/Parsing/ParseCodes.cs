@@ -109,7 +109,7 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0x41] = InteractionType.Harm; // enfeeble target (any)
             interactionTypeLookup[0x42] = InteractionType.Unknown; //
             interactionTypeLookup[0x43] = InteractionType.Harm; // enfeeble, no effect (any target?)
-            interactionTypeLookup[0x44] = InteractionType.Harm; // enfeeble, resisted (any target?)
+            interactionTypeLookup[0x44] = InteractionType.Unknown; // enfeeble, resisted (any target?)
             interactionTypeLookup[0x45] = InteractionType.Harm; // no effect or resisted
             interactionTypeLookup[0x46] = InteractionType.Unknown; //
             interactionTypeLookup[0x47] = InteractionType.Unknown; //
@@ -286,7 +286,7 @@ namespace WaywardGamers.KParser
             aidTypeLookup[0x41] = AidType.None; // enfeeble target (any)
             aidTypeLookup[0x42] = AidType.None; //
             aidTypeLookup[0x43] = AidType.None; // enfeeble, no effect (any target?)
-            aidTypeLookup[0x44] = AidType.None; // enfeeble, resisted (any target?)
+            aidTypeLookup[0x44] = AidType.Enhance; // enfeeble, resisted (any target?)
             aidTypeLookup[0x45] = AidType.None; // no effect or resisted
             aidTypeLookup[0x46] = AidType.None; //
             aidTypeLookup[0x47] = AidType.None; //
