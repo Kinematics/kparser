@@ -1390,7 +1390,6 @@ namespace WaywardGamers.KParser
             Assert.That(msg.EventDetails, Is.Not.Null);
             Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
             Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
-            Assert.That(msg.EventDetails.CombatDetails.ActionType, Is.EqualTo(ActionType.Spell));
             Assert.That(msg.EventDetails.CombatDetails.InteractionType, Is.EqualTo(InteractionType.Aid));
             Assert.That(msg.EventDetails.CombatDetails.AidType, Is.EqualTo(AidType.Enhance));
             Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
@@ -1430,7 +1429,6 @@ namespace WaywardGamers.KParser
             Assert.That(msg.EventDetails, Is.Not.Null);
             Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
             Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
-            Assert.That(msg.EventDetails.CombatDetails.ActionType, Is.EqualTo(ActionType.Spell));
             Assert.That(msg.EventDetails.CombatDetails.InteractionType, Is.EqualTo(InteractionType.Aid));
             Assert.That((msg.EventDetails.CombatDetails.AidType & (AidType.Enhance | AidType.RemoveStatus)), Is.Not.EqualTo(AidType.None));
             Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
@@ -1454,7 +1452,71 @@ namespace WaywardGamers.KParser
             Assert.That(target.DamageModifier, Is.EqualTo(DamageModifier.None));
             Assert.That(target.ShadowsUsed, Is.EqualTo(0));
         }
-        
+
+        [Test]
+        public void FailDebuff()
+        {
+            string chatText1 = "3b,ee,d0,80808050,000011db,000014f1,0022,00,01,02,00,The Qiqirn Astrologer uses Faze.";
+            string chatText2 = "3b,ee,d0,80808050,000011db,000014f2,0019,00,01,02,00,No effect on Motenten.1";
+            ChatLine chatLine1 = new ChatLine(chatText1);
+            MessageLine msgLine1 = new MessageLine(chatLine1);
+            ChatLine chatLine2 = new ChatLine(chatText2);
+            MessageLine msgLine2 = new MessageLine(chatLine2);
+
+            Message msg1 = Parser.Parse(msgLine1);
+
+            Assert.That(msg1.IsParseSuccessful, Is.True);
+            Assert.That(msg1.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg1.EventDetails, Is.Not.Null);
+            Assert.That(msg1.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg1.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg1.EventDetails.CombatDetails.ActorName, Is.EqualTo("Qiqirn Astrologer"));
+            Assert.That(msg1.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(msg1.EventDetails.CombatDetails.ActionType, Is.EqualTo(ActionType.Ability));
+            Assert.That(msg1.EventDetails.CombatDetails.ActionName, Is.EqualTo("Faze"));
+
+            MsgManager.Instance.Reset();
+            EntityManager.Instance.AddEntitiesFromMessage(msg1);
+            MsgManager.Instance.AddMessageToMessageCollection(msg1);
+
+            // Save msg1 in MsgManager
+            Message msg = Parser.Parse(msgLine2);
+
+            Assert.AreEqual(msg, msg1);
+
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.InteractionType, Is.EqualTo(InteractionType.Harm));
+            Assert.That(msg.EventDetails.CombatDetails.AidType, Is.EqualTo(AidType.None));
+            Assert.That(msg.EventDetails.CombatDetails.HarmType, Is.EqualTo(HarmType.Enfeeble));
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Qiqirn Astrologer"));
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(msg.EventDetails.CombatDetails.ActionType, Is.EqualTo(ActionType.Ability));
+            Assert.That(msg.EventDetails.CombatDetails.ActionName, Is.EqualTo("Faze"));
+            Assert.That(msg.EventDetails.CombatDetails.HasAdditionalEffect, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.IsPreparing, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.SuccessLevel, Is.EqualTo(SuccessType.Failed));
+            Assert.That(msg.EventDetails.CombatDetails.FailedActionType, Is.EqualTo(FailedActionType.NoEffect));
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Empty);
+
+            TargetDetails target = msg.EventDetails.CombatDetails.Targets.First();
+            Assert.That(target.EntityType, Is.EqualTo(EntityType.Player));
+            Assert.That(target.Name, Is.EqualTo("Motenten"));
+            Assert.That(target.AidType, Is.EqualTo(AidType.None));
+            Assert.That(target.HarmType, Is.EqualTo(HarmType.Enfeeble));
+            Assert.That(target.DefenseType, Is.EqualTo(DefenseType.None));
+            Assert.That(target.FailedActionType, Is.EqualTo(FailedActionType.NoEffect));
+            Assert.That(target.Amount, Is.EqualTo(0));
+            Assert.That(target.DamageModifier, Is.EqualTo(DamageModifier.None));
+            Assert.That(target.ShadowsUsed, Is.EqualTo(0));
+
+            MsgManager.Instance.Reset();
+        }
         #endregion
 
         #region Experience

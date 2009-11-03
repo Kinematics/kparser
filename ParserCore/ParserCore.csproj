@@ -92,6 +92,7 @@
     <Compile Include="Interface\CustomMobSelectionDlg.Designer.cs">
       <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
     </Compile>
+    <Compile Include="Messages\ParsingManagers\InternalTesting.cs" />
     <Compile Include="ReferenceValues\PlayerInfo.cs" />
     <Compile Include="DPDatabaseImportV1.Designer.cs">
       <AutoGen>True</AutoGen>
