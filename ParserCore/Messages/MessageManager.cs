@@ -19,6 +19,7 @@ namespace WaywardGamers.KParser
         }
     }
 
+    [Obsolete]
     internal class MessageManager
     {
         #region Singleton Construction

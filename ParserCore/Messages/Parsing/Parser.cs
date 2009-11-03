@@ -1506,6 +1506,33 @@ namespace WaywardGamers.KParser.Parsing
                 return;
             }
 
+            combatMatch = ParseExpressions.UseAbility.Match(message.CurrentMessageText);
+            if (combatMatch.Success == true)
+            {
+                msgCombatDetails.IsPreparing = false;
+                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                msgCombatDetails.InteractionType = InteractionType.Harm;
+                msgCombatDetails.ActionType = ActionType.Ability;
+                msgCombatDetails.HarmType = HarmType.Enfeeble;
+                message.SetParseSuccess(true);
+                return;
+            }
+
+            combatMatch = ParseExpressions.NoEffect2.Match(message.CurrentMessageText);
+            if (combatMatch.Success == true)
+            {
+                msgCombatDetails.InteractionType = InteractionType.Harm;
+                msgCombatDetails.SuccessLevel = SuccessType.Failed;
+                msgCombatDetails.FailedActionType = FailedActionType.NoEffect;
+
+                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                target.FailedActionType = FailedActionType.NoEffect;
+                target.HarmType = msgCombatDetails.HarmType;
+
+                message.SetParseSuccess(true);
+                return;
+            }
         }
         #endregion
 

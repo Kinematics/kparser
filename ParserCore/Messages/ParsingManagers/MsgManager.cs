@@ -123,7 +123,7 @@ namespace WaywardGamers.KParser.Parsing
         /// <summary>
         /// Have the MsgManager reset its internal state.
         /// </summary>
-        private void Reset()
+        internal void Reset()
         {
             // Clear the message collections
             lock (currentMessageCollection)
@@ -184,20 +184,26 @@ namespace WaywardGamers.KParser.Parsing
                     // Do processing on any messages in the PendingDeaths queue.
                     ProcessWithPendingDeaths(msg);
 
-                    // Add processed messages to the collection that periodically
-                    // gets sent to the database manager.
-                    lock (currentMessageCollection)
-                    {
-                        if (currentMessageCollection.Contains(msg) == false)
-                        {
-                            currentMessageCollection.Add(msg);
-                            LastMessageEventNumber = msg.MessageID;
-                        }
-                    }
+                    // Add to the collection
+                    AddMessageToMessageCollection(msg);
                 }
                 catch (Exception ex)
                 {
                     Logger.Instance.Log(ex, messageLine);
+                }
+            }
+        }
+
+        internal void AddMessageToMessageCollection(Message msg)
+        {
+            // Add processed messages to the collection that periodically
+            // gets sent to the database manager.
+            lock (currentMessageCollection)
+            {
+                if (currentMessageCollection.Contains(msg) == false)
+                {
+                    currentMessageCollection.Add(msg);
+                    LastMessageEventNumber = msg.MessageID;
                 }
             }
         }
