@@ -6,6 +6,7 @@ KParser Change Log
 - Fix bug in parsing 'no effect' enfeebles.
 - Fix bug in parsing use of Feather Tickle by blue mage mobs.
 - Fix bug in parsing certain ability names.
+- Fix bug in error logging.
 - Fix bug in handling the Recent Files list.
 * Compact long file names in the Recent Files list.  Added tooltips for full path.
 + Started to revise Damage/Minute plugin, ended up creating an entirely new one: Performance.  D/M will be deprecated.
