@@ -25,8 +25,6 @@ namespace WaywardGamers.KParser.Parsing
 
             // Save msg1 in MsgManager
             Message msg = Parser.Parse(msgLine2);
-
-            int i = 0;
         }
     }
 }
