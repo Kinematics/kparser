@@ -683,14 +683,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:KParser"
-        "ProductCode" = "8:{7452C81A-02CC-40CF-B2A7-82380934CD06}"
-        "PackageCode" = "8:{C8EB84BF-E7E1-4664-990B-59DDBD98A963}"
+        "ProductCode" = "8:{499B085F-11A9-4C94-A293-DA3294DA912E}"
+        "PackageCode" = "8:{7B1A8795-D65A-4972-8F85-C2A1A20CA1DF}"
         "UpgradeCode" = "8:{BE6F6D70-234C-4B71-96CD-D020C6872A1D}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.4.3"
+        "ProductVersion" = "8:1.4.4"
         "Manufacturer" = "8:Wayward Gamers"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://code.google.com/p/kparser"
@@ -1358,7 +1358,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_5B7CCE6409194E2D84B873BEF488EF17"
             {
-            "SourcePath" = "8:..\\FFXILogParser\\obj\\x86\\Release\\KParser.exe"
+            "SourcePath" = "8:..\\FFXILogParser\\obj\\x86\\Debug\\KParser.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_906983A9B8BD4D8295A82843DB1B6CE6"
