@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace WaywardGamers.KParser
 {
@@ -311,6 +312,38 @@ namespace WaywardGamers.KParser
                 }
 
                 return combatant;
+            }
+        }
+
+        /// <summary>
+        /// Flag variable to allow choosing between showing the player name or the job name.
+        /// </summary>
+        public bool ShowJobNameOption = false;
+
+        /// <summary>
+        /// Extensions for the Combatants rows.
+        /// </summary>
+        public partial class CombatantsRow
+        {
+            static Regex playerJob = new Regex(@"^\[(?<job>[^]]{3,15})[^]]*]");
+            static Properties.Settings settings = new WaywardGamers.KParser.Properties.Settings();
+
+            public string CombatantNameOrJobName
+            {
+                get
+                {
+                    settings.Reload();
+
+                    if ((settings.ShowCombatantJobNameIfPresent) && (IsPlayerInfoNull() == false))
+                    {
+                        Match playerJobMatch = playerJob.Match(this.PlayerInfo);
+                        if (playerJobMatch.Success)
+                            return "*" + playerJobMatch.Groups["job"].Value;
+                    }
+
+                    // default 
+                    return this.CombatantName;
+                }
             }
         }
 
