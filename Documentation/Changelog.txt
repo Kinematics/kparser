@@ -1,5 +1,16 @@
 KParser Change Log
 
+1.4.4 (November 4, 2009)
+- Fix minor threading bug in Performance plugin.
++ Added ability set a display name for players.  With this, photoshopping screenshots should no longer be necessary.
+~~ Usage: If player info text starts with text enclosed in square brackets (eg: [war/nin]), then that string will be used in place of the player's name if the option to do so is set in the Edit menu (and can thus be quickly toggled on and off).  An asterisk will be prepended to the text to indicate that it is user-defined.  Text more than 15 characters long will be truncated to avoid spacing issues compared to real names.
+~~ Examples:  The war/nin (as used above) would thus have the name of "*war/nin".  Other players might be shown as "*Relic sam" or "*Spoony bard".
+~~ This does not change the names listed in the player selection drop-downs on various tabs.  This also does not change the names listed in the Salvage subsection of the Loot tab.
+~~ When the database structure is upgraded, this feature will move to its own field instead of being a fudge in part of the player info field.
+* Changed Unparsed Data plugin to Raw Data plugin, with the option to either show only unparsed lines (what was shown before), or all lines logged.
+~~  NOTE: Be aware that loading all raw data can take a long time for a large parse.  You should generally Not change the type while in the middle of a parse.
+
+
 1.4.3 (November 2, 2009)
 - Fix (?) issue regarding presence of SQLCE.
 - Fix issue with needing administrative rights to run in Vista and Windows 7.
@@ -10,7 +21,7 @@ KParser Change Log
 - Fix bug in handling the Recent Files list.
 * Compact long file names in the Recent Files list.  Added tooltips for full path.
 + Started to revise Damage/Minute plugin, ended up creating an entirely new one: Performance.  D/M will be deprecated.
--- Note: the calculations to reach DPM (or DPS) are done differently in the two plugins, and probably will not match.  I believe the new version is more accurate.
+~~ Note: the calculations to reach DPM (or DPS) are done differently in the two plugins, and probably will not match.  I believe the new version is more accurate.
 
 
 1.4.2 (September 1, 2009)
