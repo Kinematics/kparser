@@ -41,10 +41,10 @@ namespace WaywardGamers.KParser
             this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.beginParseAndSaveDataMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.beginDefaultParseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.continueParsingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitParsingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.openSavedDataMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.continueParsingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveCurrentDataAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveReportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -77,6 +77,7 @@ namespace WaywardGamers.KParser
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.closeAllTabsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showJobInsteadOfNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip.SuspendLayout();
             this.tabContextMenuStrip.SuspendLayout();
             this.mainMenuStrip.SuspendLayout();
@@ -167,6 +168,12 @@ namespace WaywardGamers.KParser
             resources.ApplyResources(this.beginDefaultParseMenuItem, "beginDefaultParseMenuItem");
             this.beginDefaultParseMenuItem.Click += new System.EventHandler(this.menuBeginDefaultParse_Click);
             // 
+            // continueParsingMenuItem
+            // 
+            this.continueParsingMenuItem.Name = "continueParsingMenuItem";
+            resources.ApplyResources(this.continueParsingMenuItem, "continueParsingMenuItem");
+            this.continueParsingMenuItem.Click += new System.EventHandler(this.menuContinueParse_Click);
+            // 
             // quitParsingMenuItem
             // 
             this.quitParsingMenuItem.Name = "quitParsingMenuItem";
@@ -183,12 +190,6 @@ namespace WaywardGamers.KParser
             this.openSavedDataMenuItem.Name = "openSavedDataMenuItem";
             resources.ApplyResources(this.openSavedDataMenuItem, "openSavedDataMenuItem");
             this.openSavedDataMenuItem.Click += new System.EventHandler(this.menuOpenSavedData_Click);
-            // 
-            // continueParsingMenuItem
-            // 
-            this.continueParsingMenuItem.Name = "continueParsingMenuItem";
-            resources.ApplyResources(this.continueParsingMenuItem, "continueParsingMenuItem");
-            this.continueParsingMenuItem.Click += new System.EventHandler(this.menuContinueParse_Click);
             // 
             // saveCurrentDataAsMenuItem
             // 
@@ -252,9 +253,11 @@ namespace WaywardGamers.KParser
             this.toolStripSeparator5,
             this.languageToolStripMenuItem,
             this.toolStripSeparator6,
-            this.playerInformationToolStripMenuItem});
+            this.playerInformationToolStripMenuItem,
+            this.showJobInsteadOfNameToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             resources.ApplyResources(this.editToolStripMenuItem, "editToolStripMenuItem");
+            this.editToolStripMenuItem.DropDownOpening += new System.EventHandler(this.editToolStripMenuItem_DropDownOpening);
             // 
             // copyasTextToolStripMenuItem
             // 
@@ -398,6 +401,13 @@ namespace WaywardGamers.KParser
             resources.ApplyResources(this.closeAllTabsToolStripMenuItem, "closeAllTabsToolStripMenuItem");
             this.closeAllTabsToolStripMenuItem.Click += new System.EventHandler(this.closeAllTabsToolStripMenuItem_Click);
             // 
+            // showJobInsteadOfNameToolStripMenuItem
+            // 
+            this.showJobInsteadOfNameToolStripMenuItem.CheckOnClick = true;
+            this.showJobInsteadOfNameToolStripMenuItem.Name = "showJobInsteadOfNameToolStripMenuItem";
+            resources.ApplyResources(this.showJobInsteadOfNameToolStripMenuItem, "showJobInsteadOfNameToolStripMenuItem");
+            this.showJobInsteadOfNameToolStripMenuItem.CheckedChanged += new System.EventHandler(this.showJobInsteadOfNameToolStripMenuItem_CheckedChanged);
+            // 
             // ParserWindow
             // 
             resources.ApplyResources(this, "$this");
@@ -468,5 +478,6 @@ namespace WaywardGamers.KParser
         private System.Windows.Forms.ToolStripMenuItem germanToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem japaneseToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+        private System.Windows.Forms.ToolStripMenuItem showJobInsteadOfNameToolStripMenuItem;
     }
 }
