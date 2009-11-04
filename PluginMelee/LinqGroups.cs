@@ -15,6 +15,7 @@ namespace WaywardGamers.KParser.Plugin
     internal class AttackGroup
     {
         internal string Name { get; set; }
+        internal string DisplayName { get; set; }
         internal EntityType ComType { get; set; }
         internal int BaseXP { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Melee { get; set; }
@@ -164,6 +165,7 @@ namespace WaywardGamers.KParser.Plugin
     internal class DefenseGroup
     {
         internal string Name { get; set; }
+        internal string DisplayName { get; set; }
         internal EntityType ComType { get; set; }
         internal int BaseXP { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Melee { get; set; }
@@ -310,6 +312,7 @@ namespace WaywardGamers.KParser.Plugin
     internal class DebuffGroup
     {
         internal string DebufferName { get; set; }
+        internal string DisplayName { get; set; }
         internal IEnumerable<Debuffs> Debuffs { get; set; }
 
         public DebuffGroup()
@@ -330,6 +333,7 @@ namespace WaywardGamers.KParser.Plugin
     internal class DebuffTargets
     {
         internal string TargetName { get; set; }
+        internal string DisplayName { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> DebuffData { get; set; }
 
         public DebuffTargets()
@@ -367,6 +371,7 @@ namespace WaywardGamers.KParser.Plugin
         internal List<SpellAccum> Spells { get; private set; }
 
         internal string Name { get; set; }
+        internal string DisplayName { get; set; }
         internal EntityType CType { get; set; }
 
         internal int TDmg { get; set; }
