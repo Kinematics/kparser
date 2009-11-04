@@ -91,6 +91,9 @@ namespace WaywardGamers.KParser
 
         public event ReaderStatusHandler ReparseProgressChanged;
 
+        // Allow global access to the value set in the main window.
+        bool showJobInsteadOfName;
+
         private bool disposed = false;
 
         private Mutex databaseAccessMutex = new Mutex();
@@ -291,6 +294,12 @@ namespace WaywardGamers.KParser
         public string DatabaseFilename
         {
             get { return databaseFilename; }
+        }
+
+        public bool ShowJobInsteadOfName
+        {
+            get { return showJobInsteadOfName; }
+            set { showJobInsteadOfName = value; }
         }
         #endregion
 

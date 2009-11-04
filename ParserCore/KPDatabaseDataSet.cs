@@ -326,15 +326,12 @@ namespace WaywardGamers.KParser
         public partial class CombatantsRow
         {
             static Regex playerJob = new Regex(@"^\[(?<job>[^]]{3,15})[^]]*]");
-            static Properties.Settings settings = new WaywardGamers.KParser.Properties.Settings();
 
             public string CombatantNameOrJobName
             {
                 get
                 {
-                    settings.Reload();
-
-                    if ((settings.ShowCombatantJobNameIfPresent) && (IsPlayerInfoNull() == false))
+                    if ((DatabaseManager.Instance.ShowJobInsteadOfName) && (IsPlayerInfoNull() == false))
                     {
                         Match playerJobMatch = playerJob.Match(this.PlayerInfo);
                         if (playerJobMatch.Success)
