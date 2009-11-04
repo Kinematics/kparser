@@ -284,7 +284,7 @@ namespace WaywardGamers.KParser.Plugin
                             orderby ca.Key.CombatantType, ca.Key.CombatantName
                             select new AttackGroup
                             {
-                                Name = ca.Key.CombatantName,
+                                Name = ca.Key.CombatantNameOrJobName,
                                 ComType = (EntityType)ca.Key.CombatantType,
                                 Melee = from q in ca
                                         where ((ActionType)q.ActionType == ActionType.Melee &&
@@ -322,7 +322,7 @@ namespace WaywardGamers.KParser.Plugin
                             where (selectedPlayers.Contains(c.CombatantName))
                             select new AttackGroup
                             {
-                                Name = c.CombatantName,
+                                Name = c.CombatantNameOrJobName,
                                 Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Melee &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||

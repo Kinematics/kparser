@@ -837,6 +837,7 @@ namespace WaywardGamers.KParser.Plugin
                              select new DefenseGroup
                             {
                                 Name = ca.Key.CombatantName,
+                                DisplayName = ca.Key.CombatantNameOrJobName,
                                 ComType = (EntityType)ca.Key.CombatantType,
                                 Melee = from q in ca
                                         where ((ActionType)q.ActionType == ActionType.Melee &&
@@ -899,6 +900,7 @@ namespace WaywardGamers.KParser.Plugin
                              select new DefenseGroup
                             {
                                 Name = ca.Key.CombatantName,
+                                DisplayName = ca.Key.CombatantNameOrJobName,
                                 ComType = (EntityType)ca.Key.CombatantType,
                                 Countered = from q in ca
                                             where (ActionType)q.ActionType == ActionType.Counterattack
@@ -917,6 +919,7 @@ namespace WaywardGamers.KParser.Plugin
                           select new DefenseGroup
                           {
                               Name = ca.Key.CombatantName,
+                              DisplayName = ca.Key.CombatantNameOrJobName,
                               ComType = (EntityType)ca.Key.CombatantType,
                               UtsuIchiCast = from s in ca
                                              where ((ActionType)s.ActionType == ActionType.Spell &&
@@ -958,6 +961,7 @@ namespace WaywardGamers.KParser.Plugin
                              select new DefenseGroup
                              {
                                  Name = c.CombatantName,
+                                 DisplayName = c.CombatantNameOrJobName,
                                  ComType = (EntityType)c.CombatantType,
                                  Melee = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                                     .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
@@ -1028,6 +1032,7 @@ namespace WaywardGamers.KParser.Plugin
                              select new DefenseGroup
                              {
                                  Name = c.CombatantName,
+                                 DisplayName = c.CombatantNameOrJobName,
                                  ComType = (EntityType)c.CombatantType,
                                  Countered = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                                         .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
@@ -1050,6 +1055,7 @@ namespace WaywardGamers.KParser.Plugin
                           select new DefenseGroup
                           {
                               Name = c.CombatantName,
+                              DisplayName = c.CombatantNameOrJobName,
                               ComType = (EntityType)c.CombatantType,
                               UtsuIchiCast = from s in c.GetInteractionsRowsByActorCombatantRelation()
                                                         .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
@@ -1095,7 +1101,7 @@ namespace WaywardGamers.KParser.Plugin
                 MainAccumulator playerAccum = dataAccum.FirstOrDefault(p => p.Name == player.Name);
                 if (playerAccum == null)
                 {
-                    playerAccum = new MainAccumulator { Name = player.Name, CType = player.ComType };
+                    playerAccum = new MainAccumulator { Name = player.Name, DisplayName = player.DisplayName, CType = player.ComType };
                     dataAccum.Add(playerAccum);
                 }
 
@@ -1599,7 +1605,7 @@ namespace WaywardGamers.KParser.Plugin
                     if (player.TDmg > 0)
                     {
                         sb.AppendFormat(lsSummaryFormat,
-                        player.Name,
+                        player.DisplayName,
                         player.TDmg,
                         (double)player.TDmg / totalDamage,
                         player.TMDmg,
@@ -1670,7 +1676,7 @@ namespace WaywardGamers.KParser.Plugin
                     if ((player.MHits + player.MMiss) > 0)
                     {
                         sb.AppendFormat(lsMeleeFormat,
-                          player.Name,
+                          player.DisplayName,
                           player.TMDmg,
                           (player.TDmg > 0) ? (double)player.TMDmg / player.TDmg : 0,
                           string.Format("{0}/{1}", player.MHits, player.MMiss),
@@ -1721,7 +1727,7 @@ namespace WaywardGamers.KParser.Plugin
                     if ((player.RHits + player.RMiss) > 0)
                     {
                         sb.AppendFormat(lsRangeFormat,
-                          player.Name,
+                          player.DisplayName,
                           player.TRDmg,
                           (player.TDmg > 0) ? (double)player.TRDmg / player.TDmg : 0,
                           string.Format("{0}/{1}", player.RHits, player.RMiss),
@@ -1771,7 +1777,7 @@ namespace WaywardGamers.KParser.Plugin
                     if (player.Weaponskills.Count > 0)
                     {
                         sb.AppendFormat(lsWeaponskillFormat,
-                             player.Name,
+                             player.DisplayName,
                              player.TWDmg,
                              (player.TDmg > 0) ? (double)player.TWDmg / player.TDmg : 0,
                              string.Format("{0}/{1}", player.Weaponskills.Sum(w => w.WHit), player.Weaponskills.Sum(w => w.WMiss)),
@@ -1830,7 +1836,7 @@ namespace WaywardGamers.KParser.Plugin
                     if (player.Abilities.Count > 0)
                     {
                         sb.AppendFormat(lsAbilityFormat,
-                             player.Name,
+                             player.DisplayName,
                              player.TADmg,
                              (player.TDmg > 0) ? (double)player.TADmg / player.TDmg : 0,
                              string.Format("{0}/{1}", player.Abilities.Sum(w => w.AHit), player.Abilities.Sum(w => w.AMiss)),
@@ -1892,7 +1898,7 @@ namespace WaywardGamers.KParser.Plugin
                     if (player.Spells.Count > 0)
                     {
                         sb.AppendFormat(lsSpellFormat,
-                             player.Name,
+                             player.DisplayName,
                              player.TSDmg,
                              (player.TDmg > 0) ? (double)player.TSDmg / player.TDmg : 0,
                              player.Spells.Sum(s => s.SNum),
@@ -2005,7 +2011,7 @@ namespace WaywardGamers.KParser.Plugin
                     if ((player.MAENum + player.RAENum + player.SpkNum) > 0)
                     {
                         sb.AppendFormat(lsOtherMagicalFormat,
-                            player.Name,
+                            player.DisplayName,
                             player.MAEDmg,
                             player.MAENum,
                             player.MAENum > 0 ? (double)player.MAEDmg / player.MAENum : 0,
@@ -2050,7 +2056,7 @@ namespace WaywardGamers.KParser.Plugin
                     if ((player.CAHits + player.CAMiss + player.RTHits + player.RTMiss) > 0)
                     {
                         sb.AppendFormat(lsOtherPhysicalFormat,
-                            player.Name,
+                            player.DisplayName,
                             player.CADmg,
                             string.Concat(player.CAHits, "/", player.CAMiss),
                             string.Concat(player.CALow, "/", player.CAHi),
@@ -2131,7 +2137,7 @@ namespace WaywardGamers.KParser.Plugin
                     intimPool = (evaPool - player.RHits) + player.Spells.Sum(s => s.SNum);
 
                     sb.AppendFormat(lsPassiveDefensesFormat,
-                         player.Name,
+                         player.DisplayName,
                          player.DefEvasion,
                          evaPool > 0 ? (double)player.DefEvasion / evaPool : 0,
                          player.DefParry,
@@ -2190,7 +2196,7 @@ namespace WaywardGamers.KParser.Plugin
                     retalPool = player.MHits + player.DefCounter;
 
                     sb.AppendFormat(lsActiveDefensesFormat,
-                         player.Name,
+                         player.DisplayName,
                          player.DefShadow,
                          shadowPool > 0 ? (double)player.DefShadow / shadowPool : 0,
                          player.DefAnticipate,
@@ -2258,7 +2264,7 @@ namespace WaywardGamers.KParser.Plugin
 
 
                     sb.AppendFormat(lsUtsuCastingFormat,
-                         player.Name,
+                         player.DisplayName,
                          player.UtsuICast,
                          player.UtsuIFin,
                          player.UtsuNCast,
@@ -2300,7 +2306,7 @@ namespace WaywardGamers.KParser.Plugin
                     utsuCastNin = player.UtsuIFin * 3 + player.UtsuNFin * 4;
 
                     sb.AppendFormat(lsShadowUseFormat,
-                         player.Name,
+                         player.DisplayName,
                          player.UtsuUsed,
                          utsuCast,
                          utsuCastNin,

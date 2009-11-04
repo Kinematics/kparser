@@ -246,7 +246,7 @@ namespace WaywardGamers.KParser.Plugin
                             where (selectedPlayers.Contains(c.CombatantName))
                             select new AttackGroup
                             {
-                                Name = c.CombatantName,
+                                Name = c.CombatantNameOrJobName,
                                 Melee = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Melee &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||

@@ -248,7 +248,7 @@ namespace WaywardGamers.KParser.Plugin
                             orderby c.CombatantType, c.CombatantName
                             select new AttackGroup
                             {
-                                Name = c.CombatantName,
+                                Name = c.CombatantNameOrJobName,
                                 Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Melee &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||

@@ -88,7 +88,7 @@ namespace WaywardGamers.KParser.Plugin
                         orderby c.CombatantType, c.CombatantName
                         select new
                         {
-                            Name = c.CombatantName,
+                            Name = c.CombatantNameOrJobName,
                             Buffs = from b in c.GetInteractionsRowsByActorCombatantRelation()
                                     where (b.AidType == (byte)AidType.Enhance ||
                                            b.AidType == (byte)AidType.RemoveStatus ||
@@ -272,7 +272,7 @@ namespace WaywardGamers.KParser.Plugin
                         orderby c.CombatantType, c.CombatantName
                         select new
                         {
-                            Name = c.CombatantName,
+                            Name = c.CombatantNameOrJobName,
                             Buffs = from b in c.GetInteractionsRowsByTargetCombatantRelation()
                                     where (b.AidType == (byte)AidType.Enhance ||
                                            b.AidType == (byte)AidType.RemoveStatus ||
@@ -291,7 +291,7 @@ namespace WaywardGamers.KParser.Plugin
                                                       orderby btn.Key
                                                       select new
                                                       {
-                                                          CasterName = btn.Key,
+                                                          CasterName = (btn.Count() > 0) ? btn.First().CombatantsRowByActorCombatantRelation.CombatantNameOrJobName : btn.Key,
                                                           Buffs = btn.OrderBy(i => i.Timestamp)
                                                       },
                                     },

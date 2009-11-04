@@ -218,7 +218,7 @@ namespace WaywardGamers.KParser.Plugin
                              orderby c.CombatantType, c.CombatantName
                              select new
                              {
-                                 Player = c.CombatantName,
+                                 Player = c.CombatantNameOrJobName,
                                  PrimeDmgTaken = from dm in c.GetInteractionsRowsByTargetCombatantRelation()
                                                  where ((dm.HarmType == (byte)HarmType.Damage) ||
                                                         (dm.HarmType == (byte)HarmType.Drain)) &&
@@ -354,7 +354,7 @@ namespace WaywardGamers.KParser.Plugin
                               orderby c.CombatantName
                               select new
                               {
-                                  Player = c.CombatantName,
+                                  Player = c.CombatantNameOrJobName,
                                   Cure1s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
                                            where (((AidType)cr.AidType == AidType.Recovery) &&
                                                   (cr.IsActionIDNull() == false) &&

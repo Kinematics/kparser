@@ -239,6 +239,7 @@ namespace WaywardGamers.KParser.Plugin
                             select new AttackGroup
                             {
                                 Name = c.CombatantName,
+                                DisplayName = c.CombatantNameOrJobName,
                                 AnyAction = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                                        .Where(a => a.IsBattleIDNull() == false)
                                             where ((HarmType)n.HarmType == HarmType.Damage ||
@@ -413,7 +414,7 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     playerFightCounts[player.Name] = playerFightCount;
 
-                    sb.AppendFormat(lsParticipateFightsFormat, player.Name,
+                    sb.AppendFormat(lsParticipateFightsFormat, player.DisplayName,
                         playerFightCount, participatingFights);
                     sb.Append("\n");
                 }
@@ -476,7 +477,7 @@ namespace WaywardGamers.KParser.Plugin
                             avgCombatTimePerFight = playerTimeFighting.TotalSeconds / fights;
                     }
 
-                    sb.AppendFormat(lsParticipateTimeFormat, player.Name,
+                    sb.AppendFormat(lsParticipateTimeFormat, player.DisplayName,
                         FormatTimeSpan(playerTimeFighting), FormatTimeSpan(playerFightLengths),
                         FormatSeconds(avgCombatTimePerFight), percentFightsLength, percentOverallTime);
                     sb.Append("\n");
@@ -545,7 +546,7 @@ namespace WaywardGamers.KParser.Plugin
                         if (totalDamage > 0)
                         {
                             sb.AppendFormat(lsDPSFormat,
-                                player.Name,
+                                player.DisplayName,
                                 meleeDPS,
                                 rangeDPS,
                                 wsDPS,

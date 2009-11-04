@@ -143,7 +143,7 @@ namespace WaywardGamers.KParser.Plugin
                             orderby c.CombatantName
                             select new
                             {
-                                Name = c.CombatantName,
+                                Name = c.CombatantNameOrJobName,
                                 Items = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                         where n.IsItemIDNull() == false &&
                                               (AidType)n.AidType == AidType.Item
