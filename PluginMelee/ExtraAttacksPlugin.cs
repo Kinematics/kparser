@@ -142,6 +142,7 @@ namespace WaywardGamers.KParser.Plugin
         private class AttackCalculations
         {
             internal string Name { get; set; }
+            internal string DisplayName { get; set; }
             internal int Attacks { get; set; }
             internal int Rounds { get; set; }
             internal int AttacksPerRound { get; set; }
@@ -291,6 +292,7 @@ namespace WaywardGamers.KParser.Plugin
                                    select new
                                    {
                                        Name = c.CombatantName,
+                                       DisplayName = c.CombatantNameOrJobName,
                                        HasMelee = actions.Any(a => (ActionType)a.ActionType == ActionType.Melee),
                                        SimpleMelee = from ma in actions
                                                      where (ActionType)ma.ActionType == ActionType.Melee
@@ -321,6 +323,7 @@ namespace WaywardGamers.KParser.Plugin
                               select new
                               {
                                   Name = c.CombatantName,
+                                  DisplayName = c.CombatantNameOrJobName,
                                   CombatantRow = c,
                                   HasMelee = actions.Any(a => (ActionType)a.ActionType == ActionType.Melee),
                                   SimpleMelee = from ma in actions
@@ -350,6 +353,7 @@ namespace WaywardGamers.KParser.Plugin
 
                 // Note the name of the player
                 attackCalc.Name = attacker.Name;
+                attackCalc.DisplayName = attacker.DisplayName;
 
                 // Quick counts to be used further
                 attackCalc.Attacks = attacker.SimpleMelee.Count();
@@ -681,7 +685,7 @@ namespace WaywardGamers.KParser.Plugin
             foreach (var attacker in attackCalcs)
             {
                 sb.AppendFormat(lsMainFormat1,
-                    attacker.Name,
+                    attacker.DisplayName,
                     attacker.Attacks,
                     attacker.Rounds,
                     attacker.AttacksPerRound,
@@ -704,7 +708,7 @@ namespace WaywardGamers.KParser.Plugin
             foreach (var attacker in attackCalcs)
             {
                 sb.AppendFormat(lsMainFormat2,
-                    attacker.Name,
+                    attacker.DisplayName,
                     attacker.Minus1Rounds,
                     attacker.Plus1Rounds,
                     attacker.Plus2Rounds,
@@ -729,7 +733,7 @@ namespace WaywardGamers.KParser.Plugin
             foreach (var attacker in attackCalcs)
             {
                 sb.AppendFormat(lsMainFormat3,
-                    attacker.Name,
+                    attacker.DisplayName,
                     attacker.TotalMultiRounds,
                     attacker.AttackRoundsNonKill > 0 ? (double)attacker.TotalMultiRounds / attacker.AttackRoundsNonKill : 0,
                     attacker.AttackRoundCountKills,
@@ -801,7 +805,7 @@ namespace WaywardGamers.KParser.Plugin
                 }
 
                 sb.AppendFormat(lsSectionMultiAttacksFormat,
-                    attacker.Name,
+                    attacker.DisplayName,
                     doubleAttacks,
                     (double)doubleAttacks / (attacker.AttackRoundsNonKill * attacker.AttacksPerRound),
                     doubleAttacks + tripleAttacks > 0 ? (double)doubleAttacks / (doubleAttacks + tripleAttacks) : 0,
@@ -844,7 +848,7 @@ namespace WaywardGamers.KParser.Plugin
                     attacker.PlusNRounds;
 
                 sb.AppendFormat(lsSectionKicksFormat,
-                    attacker.Name,
+                    attacker.DisplayName,
                     attacker.AttacksPerRound == 1 ? lsYes : lsNo,
                     attacker.Plus1Rounds,
                     baseDen > 0 ? (double)attacker.Plus1Rounds / baseDen : 0);
@@ -881,7 +885,7 @@ namespace WaywardGamers.KParser.Plugin
                     && a.AttacksPerRound == 1))
                 {
                     sb.AppendFormat(lsSectionZanshinFormat,
-                        attacker.Name,
+                        attacker.DisplayName,
                         attacker.MissedFirstAttacks,
                         attacker.PossibleZanshin,
                         attacker.MissedFirstAttacks > 0 ? (double)attacker.PossibleZanshin / attacker.MissedFirstAttacks : 0);

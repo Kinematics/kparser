@@ -94,7 +94,7 @@ namespace WaywardGamers.KParser.Plugin
 
                 string killer = string.Empty;
                 if (fight.IsKillerIDNull() == false)
-                    killer = fight.CombatantsRowByBattleKillerRelation.CombatantName;
+                    killer = fight.CombatantsRowByBattleKillerRelation.CombatantNameOrJobName;
 
                 TimeSpan fightLength = fight.FightLength();
 

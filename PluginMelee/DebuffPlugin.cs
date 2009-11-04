@@ -171,7 +171,7 @@ namespace WaywardGamers.KParser.Plugin
                             orderby c.CombatantType, c.CombatantName
                             select new DebuffGroup
                             {
-                                DebufferName = c.CombatantName,
+                                DebufferName = c.CombatantNameOrJobName,
                                 Debuffs = from b in c.GetInteractionsRowsByActorCombatantRelation()
                                           where (((HarmType)b.HarmType == HarmType.Enfeeble ||
                                                   (HarmType)b.HarmType == HarmType.Dispel ||
@@ -236,7 +236,7 @@ namespace WaywardGamers.KParser.Plugin
                                                               orderby btn.Key
                                                               select new DebuffTargets
                                                               {
-                                                                  TargetName = btn.Key,
+                                                                  TargetName = (btn.Count() > 0) ? btn.First().CombatantsRowByTargetCombatantRelation.CombatantNameOrJobName : btn.Key,
                                                                   DebuffData = btn.OrderBy(i => i.Timestamp)
                                                               }
                                           }

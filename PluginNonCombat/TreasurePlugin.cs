@@ -414,7 +414,7 @@ namespace WaywardGamers.KParser.Plugin
                                orderby c.CombatantName
                                select new
                                {
-                                   Name = c.CombatantName,
+                                   Name = c.CombatantNameOrJobName,
                                    LootItems = from l in c.GetLootRows()
                                                group l by l.ItemsRow.ItemName into li
                                                orderby li.Key
@@ -871,7 +871,7 @@ namespace WaywardGamers.KParser.Plugin
                                 orderby c.CombatantName
                                 select new
                                 {
-                                    Name = c.CombatantName,
+                                    Name = c.CombatantNameOrJobName,
                                     StolenFrom = from i in c.GetInteractionsRowsByActorCombatantRelation()
                                                  where i.ActionType == (byte)ActionType.Steal
                                                  group i by i.CombatantsRowByTargetCombatantRelation.CombatantName into ci
