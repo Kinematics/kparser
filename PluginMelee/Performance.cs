@@ -575,6 +575,15 @@ namespace WaywardGamers.KParser.Plugin
         #region Event Handlers
         private void DisableOptions(bool isParseRunning)
         {
+            if (this.InvokeRequired)
+            {
+                Action<bool> disableOptions = new Action<bool>(DisableOptions);
+                object[] boolParam = new object[1] { isParseRunning };
+
+                Invoke(disableOptions, boolParam);
+                return;
+            }
+
             if (isParseRunning)
             {
                 optionsMenu.Enabled = false;
