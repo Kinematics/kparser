@@ -97,7 +97,7 @@ namespace WaywardGamers.KParser
         /// <summary>
         /// Gets and sets the actor type (self/party/other/etc)
         /// </summary>
-        internal ActorType ActorType { get; set; }
+        internal ActorPlayerType ActorPlayerType { get; set; }
 
         /// <summary>
         /// Gets the list of targets that this interaction encompasses.
@@ -216,6 +216,7 @@ namespace WaywardGamers.KParser
             sb.AppendFormat("    Interaction Type: {0}\n", InteractionType);
             sb.AppendFormat("    Actor Name: {0}\n", ActorName);
             sb.AppendFormat("    Entity Type: {0}\n", ActorEntityType);
+            sb.AppendFormat("    Player Type: {0}\n", ActorPlayerType);
             sb.AppendFormat("    Failed Action Type: {0}\n", FailedActionType);
             sb.AppendFormat("    Aid Type: {0}\n", AidType);
             sb.AppendFormat("    Harm Type: {0}\n", HarmType);

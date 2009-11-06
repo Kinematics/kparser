@@ -1,5 +1,11 @@
 KParser Change Log
 
+1.4.5 (November ?, 2009)
+* Made changes in analyzing fight deaths.  If an 'other' entity (non-self/party/alliance) kills a mob, the program firsts checks to see if that entity had any other actions against the battle in question.  If not, then it enters it as a separate fight instead of ending the current fight.
+~~ The purpose of this is to fix the issue of someone outside your party killing a mob and it ending your current fight, showing up in the mob listings as (for example) two mobs killed, each with half the normal health, one for 0 xp and the other for normal xp.  This causes problems in segregating test data by mob level.
+~~ The requirement for the 'other' entity to have performed a visible action in the current fight is to not erronously create fake fights due to pets (avatars/puppets/etc) getting the killing blow, since all pets are classified as 'other' entities.  If your filters prevent you seeing such actions, you may end up with misleading fight data.
+
+
 1.4.4 (November 4, 2009)
 - Fix minor threading bug in Performance plugin.
 + Added ability set a display name for players.  With this, photoshopping screenshots should no longer be necessary.

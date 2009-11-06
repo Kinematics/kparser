@@ -272,7 +272,7 @@ namespace WaywardGamers.KParser.Database
                 {
                     lastFinishedBattle = localDB.Battles.AddBattlesRow(null,
                         message.Timestamp, message.Timestamp, true,
-                        null, (byte)ActorType.Unknown,
+                        null, (byte)ActorPlayerType.Unknown,
                         0, 0, // XP Points & Chain
                         (byte)MobDifficulty.Unknown, false);
                 }
@@ -313,7 +313,7 @@ namespace WaywardGamers.KParser.Database
                     if (lastBattle.EndTime < (message.Timestamp.Subtract(TimeSpan.FromSeconds(60))))
                     {
                         lastBattle = localDB.Battles.AddBattlesRow(targetCombatant, message.Timestamp,
-                            message.Timestamp, true, null, (byte)ActorType.Unknown, 0, 0,
+                            message.Timestamp, true, null, (byte)ActorPlayerType.Unknown, 0, 0,
                             (byte)MobDifficulty.Unknown, false);
                     }
                 }
@@ -338,7 +338,7 @@ namespace WaywardGamers.KParser.Database
                     {
                         // Or if we didn't find any battles for this target, create a new one.
                         lastBattle = localDB.Battles.AddBattlesRow(targetCombatant, message.Timestamp,
-                            message.Timestamp, true, null, (byte)ActorType.Unknown, 0, 0,
+                            message.Timestamp, true, null, (byte)ActorPlayerType.Unknown, 0, 0,
                             (byte)MobDifficulty.Unknown, false);
                     }
                 }
@@ -573,7 +573,7 @@ namespace WaywardGamers.KParser.Database
                     actor,
                     null, // no target
                     battle,
-                    (byte)message.EventDetails.CombatDetails.ActorType,
+                    (byte)message.EventDetails.CombatDetails.ActorPlayerType,
                     message.EventDetails.CombatDetails.IsPreparing,
                     action,
                     (byte)message.EventDetails.CombatDetails.ActionType,
@@ -603,7 +603,7 @@ namespace WaywardGamers.KParser.Database
                     actor,
                     targetRow,
                     battle,
-                    (byte)message.EventDetails.CombatDetails.ActorType,
+                    (byte)message.EventDetails.CombatDetails.ActorPlayerType,
                     message.EventDetails.CombatDetails.IsPreparing,
                     action,
                     (byte)message.EventDetails.CombatDetails.ActionType,
@@ -681,7 +681,7 @@ namespace WaywardGamers.KParser.Database
                            targetRow, // swap with actor
                            actor, // swap with target
                            battle,
-                           (byte)ActorType.Unknown,
+                           (byte)message.EventDetails.CombatDetails.ActorPlayerType,
                            message.EventDetails.CombatDetails.IsPreparing,
                            action,
                            (byte)ActionType.Melee, // original attack -must- be melee to be countered
@@ -706,7 +706,7 @@ namespace WaywardGamers.KParser.Database
                             actor,
                             targetRow,
                             battle,
-                            (byte)message.EventDetails.CombatDetails.ActorType,
+                            (byte)message.EventDetails.CombatDetails.ActorPlayerType,
                             message.EventDetails.CombatDetails.IsPreparing,
                             action,
                             (byte)message.EventDetails.CombatDetails.ActionType,
@@ -732,7 +732,7 @@ namespace WaywardGamers.KParser.Database
                             actor,
                             targetRow,
                             battle,
-                            (byte)message.EventDetails.CombatDetails.ActorType,
+                            (byte)message.EventDetails.CombatDetails.ActorPlayerType,
                             message.EventDetails.CombatDetails.IsPreparing,
                             action,
                             (byte)message.EventDetails.CombatDetails.ActionType,
@@ -786,24 +786,68 @@ namespace WaywardGamers.KParser.Database
                     (target.EntityType == EntityType.CharmedPlayer))
                 {
                     // If target is mob, pick that battle
-                    if (activeMobBattleList.TryGetValue(target.Name, out battle) == true)
-                    {
-                        // close out this battle
-                        battle.EndTime = message.Timestamp;
-                        battle.Killed = true;
-                        battle.CombatantsRowByBattleKillerRelation = actor;
-                        battle.KillerPlayerType = (byte)message.EventDetails.CombatDetails.ActorType;
 
-                        activeMobBattleList.Remove(target.Name);
-                        lock (activeBattleList)
-                            activeBattleList.Remove(battle);
-                    }
-                    else
+                    // If actorPlayerType is Other, make sure there is an Other action against it
+                    if (message.EventDetails.CombatDetails.ActorPlayerType == ActorPlayerType.Other)
                     {
-                        // Make a new one if one doesn't exist, created already killed
-                        battle = localDB.Battles.AddBattlesRow(targetRow, message.Timestamp, message.Timestamp,
-                            true, actor, (byte)message.EventDetails.CombatDetails.ActorType, 0, 0,
-                            (byte)MobDifficulty.Unknown, false);
+                        // If we find such a battle, use it.
+                        foreach (var mobBattle in activeMobBattleList.Where(b => b.Key == target.Name))
+                        {
+                            //if (mobBattle.Value.GetInteractionsRows().Any(i => (ActorPlayerType)i.ActorType == ActorPlayerType.Other))
+                            if (mobBattle.Value.GetInteractionsRows()
+                                .Any(i => i.IsActorIDNull() == false && i.CombatantsRowByActorCombatantRelation == actor))
+                            {
+                                battle = mobBattle.Value;
+
+                                battle.EndTime = message.Timestamp;
+                                battle.Killed = true;
+                                battle.CombatantsRowByBattleKillerRelation = actor;
+                                battle.KillerPlayerType = (byte)message.EventDetails.CombatDetails.ActorPlayerType;
+
+                                break;
+                            }
+                        }
+
+                        // Otherwise this is likely a death notice of a fight by someone outside the party.
+                        // Create a new entry for it.
+                        if (battle == null)
+                        {
+                            // Make a new one if one doesn't exist, created already killed
+                            battle = localDB.Battles.AddBattlesRow(targetRow, message.Timestamp, message.Timestamp,
+                                true, actor, (byte)message.EventDetails.CombatDetails.ActorPlayerType, 0, 0,
+                                (byte)MobDifficulty.Unknown, false);
+                        }
+                        else
+                        {
+                            // Don't try to modify the enumeration during the foreach loop.
+                            activeMobBattleList.Remove(target.Name);
+
+                            lock (activeBattleList)
+                                activeBattleList.Remove(battle);
+                        }
+                    }
+
+                    if (battle == null)
+                    {
+                        if (activeMobBattleList.TryGetValue(target.Name, out battle) == true)
+                        {
+                            // close out this battle
+                            battle.EndTime = message.Timestamp;
+                            battle.Killed = true;
+                            battle.CombatantsRowByBattleKillerRelation = actor;
+                            battle.KillerPlayerType = (byte)message.EventDetails.CombatDetails.ActorPlayerType;
+
+                            activeMobBattleList.Remove(target.Name);
+                            lock (activeBattleList)
+                                activeBattleList.Remove(battle);
+                        }
+                        else
+                        {
+                            // Make a new one if one doesn't exist, created already killed
+                            battle = localDB.Battles.AddBattlesRow(targetRow, message.Timestamp, message.Timestamp,
+                                true, actor, (byte)message.EventDetails.CombatDetails.ActorPlayerType, 0, 0,
+                                (byte)MobDifficulty.Unknown, false);
+                        }
                     }
 
                     lastFinishedBattle = battle;
@@ -855,7 +899,7 @@ namespace WaywardGamers.KParser.Database
                        actor,
                        targetRow,
                        battle,
-                       (byte)ActorType.Unknown,
+                       (byte)message.EventDetails.CombatDetails.ActorPlayerType,
                        message.EventDetails.CombatDetails.IsPreparing,
                        null,
                        (byte)message.EventDetails.CombatDetails.ActionType,

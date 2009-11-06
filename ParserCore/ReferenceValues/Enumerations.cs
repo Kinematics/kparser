@@ -252,9 +252,10 @@ namespace WaywardGamers.KParser
         NPC = 0x10,
     }
 
-    public enum PlayerType : byte
+    public enum ActorPlayerType : byte
     {
         None,
+        Unknown,
         Self,
         Party,
         Alliance,
