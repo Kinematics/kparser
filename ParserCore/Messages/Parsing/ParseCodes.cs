@@ -40,7 +40,7 @@ namespace WaywardGamers.KParser
         private Dictionary<uint, SuccessType> successTypeLookup;
         private Dictionary<uint, EntityType> actorEntityTypeLookup;
         private Dictionary<uint, EntityType> targetEntityTypeLookup;
-        private Dictionary<uint, PlayerType> playerTypeLookup;
+        private Dictionary<uint, ActorPlayerType> actorPlayerTypeLookup;
         #endregion
 
         #region Setup
@@ -52,7 +52,7 @@ namespace WaywardGamers.KParser
             InitSuccessTypeLookup();
             InitActorEntityTypeLookup();
             InitTargetEntityTypeLookup();
-            InitPlayerTypeLookup();
+            InitActorPlayerTypeLookup();
         }
         #endregion
 
@@ -1115,179 +1115,179 @@ namespace WaywardGamers.KParser
             targetEntityTypeLookup[0xbc] = EntityType.Player; // <am> cures
         }
 
-        private void InitPlayerTypeLookup()
+        private void InitActorPlayerTypeLookup()
         {
-            playerTypeLookup = new Dictionary<uint, PlayerType>(256);
+            actorPlayerTypeLookup = new Dictionary<uint, ActorPlayerType>(256);
 
-            playerTypeLookup[0x14] = PlayerType.Self; // <me> hits
-            playerTypeLookup[0x15] = PlayerType.Self; // <me> misses
-            playerTypeLookup[0x16] = PlayerType.Self; // <mob> drains <me>
-            playerTypeLookup[0x17] = PlayerType.Self; // <me> cures?, <mob> converts damage to healing (???)
-            playerTypeLookup[0x18] = PlayerType.Party; // <pm> cures
-            playerTypeLookup[0x19] = PlayerType.Party; // <pm> hits
-            playerTypeLookup[0x1a] = PlayerType.Party; // <pm> misses
-            playerTypeLookup[0x1b] = PlayerType.Party; // <mob> drains <pm>
-            playerTypeLookup[0x1c] = PlayerType.None; // <mob> hits <me> or <pm>
-            playerTypeLookup[0x1d] = PlayerType.None; // <mob> misses <me> or <pm>
-            playerTypeLookup[0x1e] = PlayerType.Self; // <me> drains
-            playerTypeLookup[0x1f] = PlayerType.Self; // <me> recovers/cures
-            playerTypeLookup[0x20] = PlayerType.Party; // <mob> hits <pm> ??
-            playerTypeLookup[0x21] = PlayerType.Party; // <mob> misses <pm> ??
-            playerTypeLookup[0x22] = PlayerType.Party; // <pm> Drains
-            playerTypeLookup[0x23] = PlayerType.None; // <am> cures <pm>
-            playerTypeLookup[0x24] = PlayerType.Self; // <me> kills
-            playerTypeLookup[0x25] = PlayerType.Party; // <pm> kills
-            playerTypeLookup[0x26] = PlayerType.Self; // <me> dies
-            playerTypeLookup[0x27] = PlayerType.Party; // <pm> dies
-            playerTypeLookup[0x28] = PlayerType.Other; // <other> hits <other>
-            playerTypeLookup[0x29] = PlayerType.Other; // <other> miss <other>
-            playerTypeLookup[0x2a] = PlayerType.Other; // <other> drains
-            playerTypeLookup[0x2b] = PlayerType.Other; // <other> heals <other>
-            playerTypeLookup[0x2c] = PlayerType.Other; // <other> kills
-            playerTypeLookup[0x2d] = PlayerType.None; // 
-            playerTypeLookup[0x2e] = PlayerType.None; //
-            playerTypeLookup[0x2f] = PlayerType.None; //
-            playerTypeLookup[0x30] = PlayerType.None; //
-            playerTypeLookup[0x31] = PlayerType.None; //
-            playerTypeLookup[0x32] = PlayerType.Self; // <me> prep spell/ability (None)
-            playerTypeLookup[0x33] = PlayerType.None; // prep spell/ability, target known (not me)
-            playerTypeLookup[0x34] = PlayerType.None; // prep spell/ability, target me, or None
-            playerTypeLookup[0x35] = PlayerType.None; //
-            playerTypeLookup[0x36] = PlayerType.None; //
-            playerTypeLookup[0x37] = PlayerType.None; //
-            playerTypeLookup[0x38] = PlayerType.Self; // buff <me>
-            playerTypeLookup[0x39] = PlayerType.Self; // enfeeble <me>
-            playerTypeLookup[0x3a] = PlayerType.None; //
-            playerTypeLookup[0x3b] = PlayerType.Self; // enfeeble <me>, resisted (failed enhance)
-            playerTypeLookup[0x3c] = PlayerType.Party; // buff <pm>
-            playerTypeLookup[0x3d] = PlayerType.Party; // enfeeble <pm>
-            playerTypeLookup[0x3e] = PlayerType.None; //
-            playerTypeLookup[0x3f] = PlayerType.Party; // enfeeble <pm>, resisted
-            playerTypeLookup[0x40] = PlayerType.None; // buff <pm>, other?
-            playerTypeLookup[0x41] = PlayerType.None; // enfeeble target (any)
-            playerTypeLookup[0x42] = PlayerType.None; //
-            playerTypeLookup[0x43] = PlayerType.None; // enfeeble, no effect (any target?)
-            playerTypeLookup[0x44] = PlayerType.None; // enfeeble, resisted (any target?)
-            playerTypeLookup[0x45] = PlayerType.None; // no effect or resisted
-            playerTypeLookup[0x46] = PlayerType.None; //
-            playerTypeLookup[0x47] = PlayerType.None; //
-            playerTypeLookup[0x48] = PlayerType.None; //
-            playerTypeLookup[0x49] = PlayerType.None; //
-            playerTypeLookup[0x4a] = PlayerType.None; //
-            playerTypeLookup[0x4b] = PlayerType.None; //
-            playerTypeLookup[0x4c] = PlayerType.None; //
-            playerTypeLookup[0x4d] = PlayerType.None; //
-            playerTypeLookup[0x4e] = PlayerType.None; //
-            playerTypeLookup[0x4f] = PlayerType.None; //
-            playerTypeLookup[0x50] = PlayerType.None; //
-            playerTypeLookup[0x51] = PlayerType.Self; // <me> uses item for effect
-            playerTypeLookup[0x52] = PlayerType.None; //
-            playerTypeLookup[0x53] = PlayerType.None; //
-            playerTypeLookup[0x54] = PlayerType.None; //
-            playerTypeLookup[0x55] = PlayerType.Party; // <pm> uses item
-            playerTypeLookup[0x56] = PlayerType.None; //
-            playerTypeLookup[0x57] = PlayerType.None; //
-            playerTypeLookup[0x58] = PlayerType.None; //
-            playerTypeLookup[0x59] = PlayerType.None; //
-            playerTypeLookup[0x5a] = PlayerType.Self; // <me> uses item
-            playerTypeLookup[0x5b] = PlayerType.Party; // <pl> uses item for effect
-            playerTypeLookup[0x5c] = PlayerType.None; //
-            playerTypeLookup[0x5d] = PlayerType.None; //
-            playerTypeLookup[0x5e] = PlayerType.None; //
-            playerTypeLookup[0x5f] = PlayerType.None; //
-            playerTypeLookup[0x60] = PlayerType.None; //
-            playerTypeLookup[0x61] = PlayerType.None; //
-            playerTypeLookup[0x62] = PlayerType.None; //
-            playerTypeLookup[0x63] = PlayerType.None; //
-            playerTypeLookup[0x64] = PlayerType.None; // prep ability, None target
-            playerTypeLookup[0x65] = PlayerType.Self; // <me> uses buff (self-buff?)
-            playerTypeLookup[0x66] = PlayerType.Self; // <me> is enfeebled
-            playerTypeLookup[0x67] = PlayerType.None; //
-            playerTypeLookup[0x68] = PlayerType.Self; // <mob> uses ability, misses <me>
-            playerTypeLookup[0x69] = PlayerType.None; // Move being readied for/against player
-            playerTypeLookup[0x6a] = PlayerType.Party; // <party> uses buff (self-buff?)
-            playerTypeLookup[0x6b] = PlayerType.None; // <mob> uses ability, enfeebles <pm>
-            playerTypeLookup[0x6c] = PlayerType.None; //
-            playerTypeLookup[0x6d] = PlayerType.None; //
-            playerTypeLookup[0x6e] = PlayerType.None; // Move being readied for/against mob
-            playerTypeLookup[0x6f] = PlayerType.Other; // <other> uses buff (self-buff?)
-            playerTypeLookup[0x70] = PlayerType.Self; // <me> enfeebles (ability), use buff and fail (cor bust)
-            playerTypeLookup[0x71] = PlayerType.None; //
-            playerTypeLookup[0x72] = PlayerType.Alliance; // <am> uses weaponskill (ability?), misses
-            playerTypeLookup[0x73] = PlayerType.None; //
-            playerTypeLookup[0x74] = PlayerType.None; //
-            playerTypeLookup[0x75] = PlayerType.None; //
-            playerTypeLookup[0x76] = PlayerType.None; //
-            playerTypeLookup[0x77] = PlayerType.None; //
-            playerTypeLookup[0x78] = PlayerType.None; //
-            playerTypeLookup[0x79] = PlayerType.None; // <item> fails to activate
-            playerTypeLookup[0x7a] = PlayerType.None; // Interrupted/paralyzed/etc.  Failed action
-            playerTypeLookup[0x7b] = PlayerType.None; // Red 'error' text. Ignore
-            playerTypeLookup[0x7c] = PlayerType.None; //
-            playerTypeLookup[0x7d] = PlayerType.None; //
-            playerTypeLookup[0x7e] = PlayerType.None; //
-            playerTypeLookup[0x7f] = PlayerType.None; //
-            playerTypeLookup[0x80] = PlayerType.None; //
-            playerTypeLookup[0x81] = PlayerType.None; //
-            playerTypeLookup[0x82] = PlayerType.None; //
-            playerTypeLookup[0x83] = PlayerType.None; //
-            playerTypeLookup[0x84] = PlayerType.None; //
-            playerTypeLookup[0x85] = PlayerType.None; //
-            playerTypeLookup[0x86] = PlayerType.None; //
-            playerTypeLookup[0x87] = PlayerType.None; //
-            playerTypeLookup[0x88] = PlayerType.None; //
-            playerTypeLookup[0x89] = PlayerType.None; //
-            playerTypeLookup[0x8a] = PlayerType.None; //
-            playerTypeLookup[0x8b] = PlayerType.None; //
-            playerTypeLookup[0x8c] = PlayerType.None; //
-            playerTypeLookup[0x8d] = PlayerType.None; // Cannot attack
-            playerTypeLookup[0x8e] = PlayerType.None; //
-            playerTypeLookup[0x8f] = PlayerType.None; //
-            playerTypeLookup[0x90] = PlayerType.None; //
-            playerTypeLookup[0x91] = PlayerType.None; //
-            playerTypeLookup[0x92] = PlayerType.None; //
-            playerTypeLookup[0x93] = PlayerType.None; //
-            playerTypeLookup[0x94] = PlayerType.None; //
-            playerTypeLookup[0x95] = PlayerType.None; //
-            playerTypeLookup[0x96] = PlayerType.None; //
-            playerTypeLookup[0x97] = PlayerType.None; //
-            playerTypeLookup[0x98] = PlayerType.None; //
-            playerTypeLookup[0x99] = PlayerType.None; //
-            playerTypeLookup[0x9a] = PlayerType.None; //
-            playerTypeLookup[0x9b] = PlayerType.None; //
-            playerTypeLookup[0x9c] = PlayerType.None; //
-            playerTypeLookup[0x9d] = PlayerType.None; //
-            playerTypeLookup[0x9e] = PlayerType.None; //
-            playerTypeLookup[0x9f] = PlayerType.None; //
-            playerTypeLookup[0xa0] = PlayerType.None; //
-            playerTypeLookup[0xa1] = PlayerType.None; //
-            playerTypeLookup[0xa2] = PlayerType.Alliance; // <am> cures
-            playerTypeLookup[0xa3] = PlayerType.Alliance; // <am> hits
-            playerTypeLookup[0xa4] = PlayerType.Alliance; // <am> misses
-            playerTypeLookup[0xa5] = PlayerType.Alliance; // <mob> casts on <am>
-            playerTypeLookup[0xa6] = PlayerType.Alliance; // <am> kills
-            playerTypeLookup[0xa7] = PlayerType.Alliance; // <am> dies
-            playerTypeLookup[0xa8] = PlayerType.None; //
-            playerTypeLookup[0xa9] = PlayerType.None; //
-            playerTypeLookup[0xaa] = PlayerType.Alliance; // <am> is resisted, or misses /ra
-            playerTypeLookup[0xab] = PlayerType.Alliance; // <am> uses item
-            playerTypeLookup[0xac] = PlayerType.None; //
-            playerTypeLookup[0xad] = PlayerType.None; //
-            playerTypeLookup[0xae] = PlayerType.Alliance; // <am> enfeebled
-            playerTypeLookup[0xaf] = PlayerType.Alliance; // <am> uses self-buff
-            playerTypeLookup[0xb0] = PlayerType.None; //
-            playerTypeLookup[0xb1] = PlayerType.None; //
-            playerTypeLookup[0xb2] = PlayerType.None; //
-            playerTypeLookup[0xb3] = PlayerType.None; //
-            playerTypeLookup[0xb4] = PlayerType.None; //
-            playerTypeLookup[0xb5] = PlayerType.Alliance; // <am> avoids ability
-            playerTypeLookup[0xb6] = PlayerType.Alliance; // <am> is enfeebled
-            playerTypeLookup[0xb7] = PlayerType.Alliance; // <am> gains buff
-            playerTypeLookup[0xb8] = PlayerType.None; //
-            playerTypeLookup[0xb9] = PlayerType.Alliance; // <am> takes damage
-            playerTypeLookup[0xba] = PlayerType.Alliance; // <am> avoids damage
-            playerTypeLookup[0xbb] = PlayerType.Alliance; // <am> drains
-            playerTypeLookup[0xbc] = PlayerType.Alliance; // <am> cures
+            actorPlayerTypeLookup[0x14] = ActorPlayerType.Self; // <me> hits
+            actorPlayerTypeLookup[0x15] = ActorPlayerType.Self; // <me> misses
+            actorPlayerTypeLookup[0x16] = ActorPlayerType.None; // <mob> drains <me>
+            actorPlayerTypeLookup[0x17] = ActorPlayerType.Unknown; // <me> cures?, <mob> converts damage to healing (???)
+            actorPlayerTypeLookup[0x18] = ActorPlayerType.Party; // <pm> cures
+            actorPlayerTypeLookup[0x19] = ActorPlayerType.Party; // <pm> hits
+            actorPlayerTypeLookup[0x1a] = ActorPlayerType.Party; // <pm> misses
+            actorPlayerTypeLookup[0x1b] = ActorPlayerType.None; // <mob> drains <pm>
+            actorPlayerTypeLookup[0x1c] = ActorPlayerType.None; // <mob> hits <me> or <pm>
+            actorPlayerTypeLookup[0x1d] = ActorPlayerType.None; // <mob> misses <me> or <pm>
+            actorPlayerTypeLookup[0x1e] = ActorPlayerType.Self; // <me> drains
+            actorPlayerTypeLookup[0x1f] = ActorPlayerType.Self; // <me> recovers/cures
+            actorPlayerTypeLookup[0x20] = ActorPlayerType.None; // <mob> hits <pm> ??
+            actorPlayerTypeLookup[0x21] = ActorPlayerType.None; // <mob> misses <pm> ??
+            actorPlayerTypeLookup[0x22] = ActorPlayerType.Party; // <pm> Drains
+            actorPlayerTypeLookup[0x23] = ActorPlayerType.Unknown; // <am> cures <pm>
+            actorPlayerTypeLookup[0x24] = ActorPlayerType.Self; // <me> kills
+            actorPlayerTypeLookup[0x25] = ActorPlayerType.Party; // <pm> kills
+            actorPlayerTypeLookup[0x26] = ActorPlayerType.None; // <me> dies
+            actorPlayerTypeLookup[0x27] = ActorPlayerType.None; // <pm> dies
+            actorPlayerTypeLookup[0x28] = ActorPlayerType.Other; // <other> hits <other>
+            actorPlayerTypeLookup[0x29] = ActorPlayerType.Other; // <other> miss <other>
+            actorPlayerTypeLookup[0x2a] = ActorPlayerType.Other; // <other> drains
+            actorPlayerTypeLookup[0x2b] = ActorPlayerType.Other; // <other> heals <other>
+            actorPlayerTypeLookup[0x2c] = ActorPlayerType.Other; // <other> kills
+            actorPlayerTypeLookup[0x2d] = ActorPlayerType.None; // 
+            actorPlayerTypeLookup[0x2e] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x2f] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x30] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x31] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x32] = ActorPlayerType.Self; // <me> prep spell/ability (None)
+            actorPlayerTypeLookup[0x33] = ActorPlayerType.Unknown; // prep spell/ability, target known (not me)
+            actorPlayerTypeLookup[0x34] = ActorPlayerType.Unknown; // prep spell/ability, target me, or None
+            actorPlayerTypeLookup[0x35] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x36] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x37] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x38] = ActorPlayerType.Self; // buff <me>
+            actorPlayerTypeLookup[0x39] = ActorPlayerType.Self; // enfeeble <me>
+            actorPlayerTypeLookup[0x3a] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x3b] = ActorPlayerType.None; // enfeeble <me>, resisted (failed enhance)
+            actorPlayerTypeLookup[0x3c] = ActorPlayerType.Party; // buff <pm>
+            actorPlayerTypeLookup[0x3d] = ActorPlayerType.None; // enfeeble <pm>
+            actorPlayerTypeLookup[0x3e] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x3f] = ActorPlayerType.None; // enfeeble <pm>, resisted
+            actorPlayerTypeLookup[0x40] = ActorPlayerType.Unknown; // buff <pm>, other?
+            actorPlayerTypeLookup[0x41] = ActorPlayerType.Unknown; // enfeeble target (any)
+            actorPlayerTypeLookup[0x42] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x43] = ActorPlayerType.Unknown; // enfeeble, no effect (any target?)
+            actorPlayerTypeLookup[0x44] = ActorPlayerType.Unknown; // enfeeble, resisted (any target?)
+            actorPlayerTypeLookup[0x45] = ActorPlayerType.Unknown; // no effect or resisted
+            actorPlayerTypeLookup[0x46] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x47] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x48] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x49] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x4a] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x4b] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x4c] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x4d] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x4e] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x4f] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x50] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x51] = ActorPlayerType.Self; // <me> uses item for effect
+            actorPlayerTypeLookup[0x52] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x53] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x54] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x55] = ActorPlayerType.Party; // <pm> uses item
+            actorPlayerTypeLookup[0x56] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x57] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x58] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x59] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x5a] = ActorPlayerType.Self; // <me> uses item
+            actorPlayerTypeLookup[0x5b] = ActorPlayerType.Party; // <pl> uses item for effect
+            actorPlayerTypeLookup[0x5c] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x5d] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x5e] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x5f] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x60] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x61] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x62] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x63] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x64] = ActorPlayerType.Unknown; // prep ability, None target
+            actorPlayerTypeLookup[0x65] = ActorPlayerType.Self; // <me> uses buff (self-buff?)
+            actorPlayerTypeLookup[0x66] = ActorPlayerType.None; // <me> is enfeebled
+            actorPlayerTypeLookup[0x67] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x68] = ActorPlayerType.None; // <mob> uses ability, misses <me>
+            actorPlayerTypeLookup[0x69] = ActorPlayerType.None; // Move being readied for/against player
+            actorPlayerTypeLookup[0x6a] = ActorPlayerType.Party; // <party> uses buff (self-buff?)
+            actorPlayerTypeLookup[0x6b] = ActorPlayerType.None; // <mob> uses ability, enfeebles <pm>
+            actorPlayerTypeLookup[0x6c] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x6d] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x6e] = ActorPlayerType.None; // Move being readied for/against mob
+            actorPlayerTypeLookup[0x6f] = ActorPlayerType.Other; // <other> uses buff (self-buff?)
+            actorPlayerTypeLookup[0x70] = ActorPlayerType.Self; // <me> enfeebles (ability), use buff and fail (cor bust)
+            actorPlayerTypeLookup[0x71] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x72] = ActorPlayerType.Alliance; // <am> uses weaponskill (ability?), misses
+            actorPlayerTypeLookup[0x73] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x74] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x75] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x76] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x77] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x78] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x79] = ActorPlayerType.None; // <item> fails to activate
+            actorPlayerTypeLookup[0x7a] = ActorPlayerType.None; // Interrupted/paralyzed/etc.  Failed action
+            actorPlayerTypeLookup[0x7b] = ActorPlayerType.None; // Red 'error' text. Ignore
+            actorPlayerTypeLookup[0x7c] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x7d] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x7e] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x7f] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x80] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x81] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x82] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x83] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x84] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x85] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x86] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x87] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x88] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x89] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x8a] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x8b] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x8c] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x8d] = ActorPlayerType.None; // Cannot attack
+            actorPlayerTypeLookup[0x8e] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x8f] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x90] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x91] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x92] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x93] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x94] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x95] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x96] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x97] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x98] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x99] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x9a] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x9b] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x9c] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x9d] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x9e] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0x9f] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0xa0] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0xa1] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0xa2] = ActorPlayerType.Alliance; // <am> cures
+            actorPlayerTypeLookup[0xa3] = ActorPlayerType.Alliance; // <am> hits
+            actorPlayerTypeLookup[0xa4] = ActorPlayerType.Alliance; // <am> misses
+            actorPlayerTypeLookup[0xa5] = ActorPlayerType.Alliance; // <mob> casts on <am>
+            actorPlayerTypeLookup[0xa6] = ActorPlayerType.Alliance; // <am> kills
+            actorPlayerTypeLookup[0xa7] = ActorPlayerType.None; // <am> dies
+            actorPlayerTypeLookup[0xa8] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0xa9] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0xaa] = ActorPlayerType.Alliance; // <am> is resisted, or misses /ra
+            actorPlayerTypeLookup[0xab] = ActorPlayerType.Alliance; // <am> uses item
+            actorPlayerTypeLookup[0xac] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0xad] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0xae] = ActorPlayerType.None; // <am> enfeebled
+            actorPlayerTypeLookup[0xaf] = ActorPlayerType.Alliance; // <am> uses self-buff
+            actorPlayerTypeLookup[0xb0] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0xb1] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0xb2] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0xb3] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0xb4] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0xb5] = ActorPlayerType.None; // <am> avoids ability
+            actorPlayerTypeLookup[0xb6] = ActorPlayerType.None; // <am> is enfeebled
+            actorPlayerTypeLookup[0xb7] = ActorPlayerType.Alliance; // <am> gains buff
+            actorPlayerTypeLookup[0xb8] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0xb9] = ActorPlayerType.None; // <am> takes damage
+            actorPlayerTypeLookup[0xba] = ActorPlayerType.None; // <am> avoids damage
+            actorPlayerTypeLookup[0xbb] = ActorPlayerType.Alliance; // <am> drains
+            actorPlayerTypeLookup[0xbc] = ActorPlayerType.Alliance; // <am> cures
         }
         #endregion
 
@@ -1352,14 +1352,14 @@ namespace WaywardGamers.KParser
                 return EntityType.Unknown;
         }
 
-        internal PlayerType GetPlayerType(uint messageCode)
+        internal ActorPlayerType GetActorPlayerType(uint messageCode)
         {
-            PlayerType playerType;
+            ActorPlayerType playerType;
 
-            if (playerTypeLookup.TryGetValue(messageCode, out playerType))
+            if (actorPlayerTypeLookup.TryGetValue(messageCode, out playerType))
                 return playerType;
             else
-                return PlayerType.None;
+                return ActorPlayerType.None;
         }
         #endregion
 

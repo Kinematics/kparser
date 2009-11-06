@@ -741,6 +741,8 @@ namespace WaywardGamers.KParser.Parsing
                 }
             }
 
+            msgCombatDetails.ActorPlayerType = ParseCodes.Instance.GetActorPlayerType(message.CurrentMessageCode);
+
             if (msgCombatDetails.InteractionType == InteractionType.Aid)
             {
                 msgCombatDetails.AidType = ParseCodes.Instance.GetAidType(message.CurrentMessageCode);
@@ -1272,18 +1274,18 @@ namespace WaywardGamers.KParser.Parsing
                 combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
 
-                //switch (combatDetails.ActorEntityType)
-                //{
-                //    case EntityType.Player:
-                //        combatDetails.ActorType = ActorType.Party;
-                //        break;
-                //    case EntityType.Pet:
-                //        combatDetails.ActorType = ActorType.Pet;
-                //        break;
-                //    case EntityType.Unknown:
-                //        combatDetails.ActorType = ActorType.Other;
-                //        break;
-                //}
+                switch (combatDetails.ActorEntityType)
+                {
+                    case EntityType.Player:
+                        combatDetails.ActorPlayerType = ParseCodes.Instance.GetActorPlayerType(message.CurrentMessageCode);
+                        break;
+                    case EntityType.Pet:
+                        combatDetails.ActorPlayerType = ActorPlayerType.Other;
+                        break;
+                    default:
+                        combatDetails.ActorPlayerType = ActorPlayerType.Unknown;
+                        break;
+                }
 
                 ClassifyEntity.VerifyEntities(ref message, ref target, true);
                 message.SetParseSuccess(true);
