@@ -39,9 +39,11 @@ namespace WaywardGamers.KParser.Plugin
 
         string lsMelee;
         string lsMeleeCrits;
+        string lsFullMelee;
         string lsMeleeAE;
         string lsRanged;
         string lsRangedCrits;
+        string lsFullRanged;
         string lsRangedAE;
         string lsSpells;
         string lsMagicBursts;
@@ -364,6 +366,15 @@ namespace WaywardGamers.KParser.Plugin
                         ShowFrequency(critFreq);
                     }
 
+                    if (showDetails == true)
+                    {
+                        if (player.Melee.Count() > 0)
+                        {
+                            AppendText(lsFullMelee + "\n", Color.Blue, true, false);
+                            ShowFullDetailedDamage(player.Melee);
+                        }
+                    }
+
                     if ((player.Melee.Count() > 0) &&
                         (player.Melee.Any(n => (HarmType)n.SecondHarmType == HarmType.Damage ||
                             (HarmType)n.SecondHarmType == HarmType.Drain)))
@@ -404,6 +415,15 @@ namespace WaywardGamers.KParser.Plugin
                             .GroupBy(m => m.Amount).OrderBy(m => m.Key);
 
                         ShowFrequency(critFreq);
+                    }
+
+                    if (showDetails == true)
+                    {
+                        if (player.Range.Count() > 0)
+                        {
+                            AppendText(lsFullRanged + "\n", Color.Blue, true, false);
+                            ShowFullDetailedDamage(player.Range);
+                        }
                     }
 
                     if ((player.Range.Count() > 0) &&
@@ -592,6 +612,55 @@ namespace WaywardGamers.KParser.Plugin
         }
 
         /// <summary>
+        /// Show detailed damage listing for the provided group.  This may include normal
+        /// hits, crits and misses.
+        /// </summary>
+        /// <param name="rows"></param>
+        private void ShowFullDetailedDamage(IEnumerable<KPDatabaseDataSet.InteractionsRow> rows)
+        {
+            int count = 0;
+
+            StringBuilder strBuilder = new StringBuilder();
+
+            foreach (var row in rows)
+            {
+                if (count % 10 == 0)
+                    strBuilder.Append("   ");
+
+                string strDisplay = "";
+
+                if ((DefenseType)row.DefenseType != DefenseType.None)
+                {
+                    // defended
+                    strDisplay = "---";
+                }
+                else
+                {
+                    if ((DamageModifier)row.DamageModifier == DamageModifier.Critical)
+                    {
+                        strDisplay = string.Format("{0}c", row.Amount);
+                    }
+                    else
+                    {
+                        strDisplay = string.Format("{0}", row.Amount);
+                    }
+                }
+
+                strBuilder.AppendFormat("{0,6}", strDisplay);
+
+                if (count % 10 == 9)
+                    strBuilder.Append("\n");
+
+                count++;
+            }
+
+            if (count % 10 != 0)
+                strBuilder.Append("\n");
+
+            AppendText(strBuilder.ToString());
+        }
+
+        /// <summary>
         /// Show detailed damage listing for the provided group.
         /// </summary>
         /// <param name="rows"></param>
@@ -758,9 +827,11 @@ namespace WaywardGamers.KParser.Plugin
 
             lsMelee = Resources.Combat.DefenseFreqPluginMelee;
             lsMeleeCrits = Resources.Combat.DefenseFreqPluginMeleeCrits;
+            lsFullMelee = Resources.Combat.DefenseFreqPluginFullMelee;
             lsMeleeAE = Resources.Combat.DefenseFreqPluginMeleeAE;
             lsRanged = Resources.Combat.DefenseFreqPluginRange;
             lsRangedCrits = Resources.Combat.DefenseFreqPluginRangeCrits;
+            lsFullRanged = Resources.Combat.DefenseFreqPluginFullRange;
             lsRangedAE = Resources.Combat.DefenseFreqPluginRangeAE;
             lsSpells = Resources.Combat.DefenseFreqPluginSpells;
             lsMagicBursts = Resources.Combat.DefenseFreqPluginMagicBursts;
