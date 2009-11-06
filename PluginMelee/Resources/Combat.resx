@@ -771,4 +771,10 @@
   <data name="PerformancePluginTabName" xml:space="preserve">
     <value>Performance</value>
   </data>
+  <data name="DefenseFreqPluginFullMelee" xml:space="preserve">
+    <value>Full Melee Sequence</value>
+  </data>
+  <data name="DefenseFreqPluginFullRange" xml:space="preserve">
+    <value>Full Range Sequence</value>
+  </data>
 </root>

@@ -205,6 +205,24 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Full Melee Sequence.
+        /// </summary>
+        internal static string DefenseFreqPluginFullMelee {
+            get {
+                return ResourceManager.GetString("DefenseFreqPluginFullMelee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Full Range Sequence.
+        /// </summary>
+        internal static string DefenseFreqPluginFullRange {
+            get {
+                return ResourceManager.GetString("DefenseFreqPluginFullRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to   Magic Bursts.
         /// </summary>
         internal static string DefenseFreqPluginMagicBursts {
