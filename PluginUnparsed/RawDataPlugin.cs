@@ -49,6 +49,7 @@ namespace WaywardGamers.KParser.Plugin
         public override void Reset()
         {
             ResetTextBox();
+            showAllData.Checked = false;
         }
 
         public override void WatchDatabaseChanging(object sender, DatabaseWatchEventArgs e)
@@ -124,6 +125,7 @@ namespace WaywardGamers.KParser.Plugin
                     flagNoUpdate = false;
                 }
 
+                ResetTextBox();
                 HandleDataset(null);
             }
         }
@@ -143,6 +145,7 @@ namespace WaywardGamers.KParser.Plugin
                     flagNoUpdate = false;
                 }
 
+                ResetTextBox();
                 HandleDataset(null);
             }
         }
