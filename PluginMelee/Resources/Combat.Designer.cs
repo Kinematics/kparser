@@ -1141,6 +1141,24 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0,-17}{1,30:p2}{2,31:p2}.
+        /// </summary>
+        internal static string ExtraAttPluginSectionZanshinAccFormat {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginSectionZanshinAccFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player               Acc. Rate of First Attacks    Acc. Rate of Second Attacks.
+        /// </summary>
+        internal static string ExtraAttPluginSectionZanshinAccHeader {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginSectionZanshinAccHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0,-20}{1,23}{2,23}{3,21:p2}.
         /// </summary>
         internal static string ExtraAttPluginSectionZanshinFormat {

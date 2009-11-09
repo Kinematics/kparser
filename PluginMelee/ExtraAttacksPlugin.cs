@@ -51,6 +51,8 @@ namespace WaywardGamers.KParser.Plugin
         string lsSectionZanshinTitle;
         string lsSectionZanshinHeader;
         string lsSectionZanshinFormat;
+        string lsSectionZanshinAccHeader;
+        string lsSectionZanshinAccFormat;
 
         string lsSectionUncorrectedDetails;
         #endregion
@@ -160,6 +162,8 @@ namespace WaywardGamers.KParser.Plugin
             internal int AttackRoundsNonKill { get; set; }
             internal int MissedFirstAttacks { get; set; }
             internal int PossibleZanshin { get; set; }
+            internal double FirstAttackAcc { get; set; }
+            internal double SecondAttackAcc { get; set; }
         }
 
         private DateTime ClosestTimestamp(DateTime timestamp, List<DateTime> timestampList)
@@ -430,13 +434,35 @@ namespace WaywardGamers.KParser.Plugin
                 // Put together possible Zanshin data
                 if (attackCalc.AttacksPerRound == 1)
                 {
+                    // Count possible zanshin rounds
                     var missedFirstAttacks = attacker.MeleeRounds
                         .Where(a => (DefenseType)a.First().DefenseType != DefenseType.None);
 
                     attackCalc.MissedFirstAttacks = missedFirstAttacks.Count();
 
-                    attackCalc.PossibleZanshin = missedFirstAttacks
-                        .Where(a => a.Count() == 2).Count();
+                    var possibleZanshinRounds = missedFirstAttacks.Where(a => a.Count() == 2);
+
+                    attackCalc.PossibleZanshin = possibleZanshinRounds.Count();
+
+                    // Get acc of first hits of each round (all rounds)
+                    int firstAttHit = attacker.MeleeRounds
+                        .Where(a => (DefenseType)a.First().DefenseType == DefenseType.None).Count();
+
+                    attackCalc.FirstAttackAcc = (double)firstAttHit / (firstAttHit + attackCalc.MissedFirstAttacks);
+
+                    // Get acc of second hits of each round
+
+                    if (attackCalc.PossibleZanshin > 0)
+                    {
+                        int secondAttHit = possibleZanshinRounds.Where(a => (DefenseType)a.Last().DefenseType == DefenseType.None).Count();
+                        int secondAttMiss = possibleZanshinRounds.Where(a => (DefenseType)a.Last().DefenseType != DefenseType.None).Count();
+
+                        attackCalc.SecondAttackAcc = (double)secondAttHit / (secondAttHit + secondAttMiss);
+                    }
+                    else
+                    {
+                        attackCalc.SecondAttackAcc = 0;
+                    }
                 }
 
 
@@ -892,6 +918,27 @@ namespace WaywardGamers.KParser.Plugin
                     sb.Append("\n");
                 }
                 sb.Append("\n");
+
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = lsSectionZanshinAccHeader.Length,
+                    Bold = true,
+                    Underline = true,
+                    Color = Color.Black
+                });
+                sb.Append(lsSectionZanshinAccHeader + "\n");
+
+                foreach (var attacker in attackCalcs.Where(a => a.RoundsWithExtraAttacks > 0
+                    && a.AttacksPerRound == 1))
+                {
+                    sb.AppendFormat(lsSectionZanshinAccFormat,
+                        attacker.DisplayName,
+                        attacker.FirstAttackAcc,
+                        attacker.SecondAttackAcc);
+                    sb.Append("\n");
+                }
+                sb.Append("\n");
             }
             #endregion
 
@@ -982,6 +1029,8 @@ namespace WaywardGamers.KParser.Plugin
             lsSectionZanshinTitle = Resources.Combat.ExtraAttPluginSectionZanshinTitle;
             lsSectionZanshinHeader = Resources.Combat.ExtraAttPluginSectionZanshinHeader;
             lsSectionZanshinFormat = Resources.Combat.ExtraAttPluginSectionZanshinFormat;
+            lsSectionZanshinAccHeader = Resources.Combat.ExtraAttPluginSectionZanshinAccHeader;
+            lsSectionZanshinAccFormat = Resources.Combat.ExtraAttPluginSectionZanshinAccFormat;
 
             lsSectionUncorrectedDetails = Resources.Combat.ExtraAttPluginUncorrectedDetails;
         }
