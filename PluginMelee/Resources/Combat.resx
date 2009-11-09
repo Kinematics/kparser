@@ -777,4 +777,10 @@
   <data name="DefenseFreqPluginFullRange" xml:space="preserve">
     <value>Full Range Sequence</value>
   </data>
+  <data name="ExtraAttPluginSectionZanshinAccFormat" xml:space="preserve">
+    <value>{0,-17}{1,30:p2}{2,31:p2}</value>
+  </data>
+  <data name="ExtraAttPluginSectionZanshinAccHeader" xml:space="preserve">
+    <value>Player               Acc. Rate of First Attacks    Acc. Rate of Second Attacks</value>
+  </data>
 </root>
