@@ -198,22 +198,28 @@ namespace WaywardGamers.KParser
         };
     }
 
+
     public static class JobAbilities
     {
         public static readonly List<string> CharmJAs = new List<string>()
         {
-            "Charm"
+            Resources.ParsedStrings.Charm
         };
 
         public static readonly List<string> StealJAs = new List<string>()
         {
-            "Steal", "Mug"
+            Resources.ParsedStrings.Steal,
+            Resources.ParsedStrings.Mug
         };
 
         public static readonly List<string> EnfeebleJAs = new List<string>()
         {
-            "Box Step", "Quickstep", "Violent Flourish", "Desperate Flourish",
-            "Light Shot", "Dark Shot"
+            Resources.ParsedStrings.BoxStep,
+            Resources.ParsedStrings.Quickstep,
+            Resources.ParsedStrings.ViolentFlourish,
+            Resources.ParsedStrings.DesperateFlourish,
+            Resources.ParsedStrings.LightShot,
+            Resources.ParsedStrings.DarkShot
         };
     }
 }

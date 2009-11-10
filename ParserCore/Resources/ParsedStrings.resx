@@ -120,8 +120,14 @@
   <data name="BioRegex" xml:space="preserve">
     <value>Bio( I+)?</value>
   </data>
+  <data name="BoxStep" xml:space="preserve">
+    <value>Box Step</value>
+  </data>
   <data name="Chakra" xml:space="preserve">
     <value>Chakra</value>
+  </data>
+  <data name="Charm" xml:space="preserve">
+    <value>Charm</value>
   </data>
   <data name="CrystalsAndSealsRegex" xml:space="preserve">
     <value>Gil|beastmen's seal|Kindred's seal|fire crystal|earth crystal|water crystal|wind crystal|ice crystal|thunder crystal|light crystal|dark crystal</value>
@@ -156,6 +162,12 @@
   <data name="CuringWaltz4" xml:space="preserve">
     <value>Curing Waltz IV</value>
   </data>
+  <data name="DarkShot" xml:space="preserve">
+    <value>Dark Shot</value>
+  </data>
+  <data name="DesperateFlourish" xml:space="preserve">
+    <value>Desperate Flourish</value>
+  </data>
   <data name="DiaRegex" xml:space="preserve">
     <value>Dia( I+)?</value>
   </data>
@@ -189,14 +201,23 @@
   <data name="JubakuRegex" xml:space="preserve">
     <value>Jubaku: (Ichi|Ni)</value>
   </data>
+  <data name="LightShot" xml:space="preserve">
+    <value>Light Shot</value>
+  </data>
   <data name="MagicFruit" xml:space="preserve">
     <value>Magic Fruit</value>
+  </data>
+  <data name="Mug" xml:space="preserve">
+    <value>Mug</value>
   </data>
   <data name="ParalyzeRegex" xml:space="preserve">
     <value>Paralyze( I+)?</value>
   </data>
   <data name="Pollen" xml:space="preserve">
     <value>Pollen</value>
+  </data>
+  <data name="Quickstep" xml:space="preserve">
+    <value>Quickstep</value>
   </data>
   <data name="Regen1" xml:space="preserve">
     <value>Regen</value>
@@ -216,6 +237,9 @@
   <data name="SneakAttack" xml:space="preserve">
     <value>Sneak Attack</value>
   </data>
+  <data name="Steal" xml:space="preserve">
+    <value>Steal</value>
+  </data>
   <data name="TrickAttack" xml:space="preserve">
     <value>Trick Attack</value>
   </data>
@@ -224,6 +248,9 @@
   </data>
   <data name="UtsuNi" xml:space="preserve">
     <value>Utsusemi: Ni</value>
+  </data>
+  <data name="ViolentFlourish" xml:space="preserve">
+    <value>Violent Flourish</value>
   </data>
   <data name="WildCarrot" xml:space="preserve">
     <value>Wild Carrot</value>
