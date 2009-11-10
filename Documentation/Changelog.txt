@@ -1,20 +1,24 @@
 KParser Change Log
 
-1.4.5 (November ?, 2009)
+1.4.5 (November 9, 2009)
 * Made changes in analyzing fight deaths.  If an 'other' entity (non-self/party/alliance) kills a mob, the program firsts checks to see if that entity had any other actions against the battle in question.  If not, then it enters it as a separate fight instead of ending the current fight.
-~~ The purpose of this is to fix the issue of someone outside your party killing a mob and it ending your current fight, showing up in the mob listings as (for example) two mobs killed, each with half the normal health, one for 0 xp and the other for normal xp.  This causes problems in segregating test data by mob level.
-~~ The requirement for the 'other' entity to have performed a visible action in the current fight is to not erronously create fake fights due to pets (avatars/puppets/etc) getting the killing blow, since all pets are classified as 'other' entities.  If your filters prevent you seeing such actions, you may end up with misleading fight data.
+ The purpose of this is to fix the issue of someone outside your party killing a mob and it ending your current fight, showing up in the mob listings as (for example) two mobs killed, each with half the normal health, one for 0 xp and the other for normal xp.  This causes problems in segregating test data by mob level.
+ The requirement for the 'other' entity to have performed a visible action in the current fight is to not erronously create fake fights due to pets (avatars/puppets/etc) getting the killing blow, since all pets are classified as 'other' entities.  If your filters prevent you seeing such actions, you may end up with misleading fight data.
++ Offense and Defense Details plugins now show an integrated sequence of melee and ranged hits (crits and non-crits) when Show Details is selected.
+- Fix bug in displaying Raw Data when switching between all and unparsed.
+- Improve handling of identification of Notorious Monsters as mobs rather than charmed players, and the consequant occasional mis-identification of players as charmed mobs.
++ Add parsing of new "sweet spot" message for ranged attacks.  Still missing the third possible ranged attack message.
 
 
 1.4.4 (November 4, 2009)
 - Fix minor threading bug in Performance plugin.
 + Added ability set a display name for players.  With this, photoshopping screenshots should no longer be necessary.
-~~ Usage: If player info text starts with text enclosed in square brackets (eg: [war/nin]), then that string will be used in place of the player's name if the option to do so is set in the Edit menu (and can thus be quickly toggled on and off).  An asterisk will be prepended to the text to indicate that it is user-defined.  Text more than 15 characters long will be truncated to avoid spacing issues compared to real names.
-~~ Examples:  The war/nin (as used above) would thus have the name of "*war/nin".  Other players might be shown as "*Relic sam" or "*Spoony bard".
-~~ This does not change the names listed in the player selection drop-downs on various tabs.  This also does not change the names listed in the Salvage subsection of the Loot tab.
-~~ When the database structure is upgraded, this feature will move to its own field instead of being a fudge in part of the player info field.
+ Usage: If player info text starts with text enclosed in square brackets (eg: [war/nin]), then that string will be used in place of the player's name if the option to do so is set in the Edit menu (and can thus be quickly toggled on and off).  An asterisk will be prepended to the text to indicate that it is user-defined.  Text more than 15 characters long will be truncated to avoid spacing issues compared to real names.
+ Examples:  The war/nin (as used above) would thus have the name of "*war/nin".  Other players might be shown as "*Relic sam" or "*Spoony bard".
+ This does not change the names listed in the player selection drop-downs on various tabs.  This also does not change the names listed in the Salvage subsection of the Loot tab.
+ When the database structure is upgraded, this feature will move to its own field instead of being a fudge in part of the player info field.
 * Changed Unparsed Data plugin to Raw Data plugin, with the option to either show only unparsed lines (what was shown before), or all lines logged.
-~~  NOTE: Be aware that loading all raw data can take a long time for a large parse.  You should generally Not change the type while in the middle of a parse.
+  NOTE: Be aware that loading all raw data can take a long time for a large parse.  You should generally Not change the type while in the middle of a parse.
 
 
 1.4.3 (November 2, 2009)
