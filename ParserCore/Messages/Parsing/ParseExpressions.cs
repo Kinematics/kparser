@@ -231,12 +231,6 @@ namespace WaywardGamers.KParser
         #endregion
     }
 
-    // Special spell names we want to check for, but also allow for localization
-    public class SpellNames
-    {
-        public static readonly string RemoveStatus = "na";
-    }
-
     public class RegexUtility
     {
         public static readonly Regex ExcludedPlayer = new Regex("exclude", RegexOptions.IgnoreCase);
