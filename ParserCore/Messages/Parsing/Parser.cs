@@ -1600,6 +1600,18 @@ namespace WaywardGamers.KParser.Parsing
 
             if (combatMatch.Success == false)
             {
+                combatMatch = ParseExpressions.RangedGoodSpot.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    combatDetails.ActionType = ActionType.Ranged;
+                    combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                    target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    target.Amount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
+                }
+            }
+
+            if (combatMatch.Success == false)
+            {
                 combatMatch = ParseExpressions.RangedSweetSpot.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
