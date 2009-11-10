@@ -234,33 +234,7 @@ namespace WaywardGamers.KParser
     // Special spell names we want to check for, but also allow for localization
     public class SpellNames
     {
-        public static readonly string Raise = "Raise";
-
-        public static readonly string Dispel = "Dispel";
-        public static readonly string Finale = "Magic Finale";
-
-        public static readonly string Erase = "Erase";
-        public static readonly string HealWaltz = "Healing Waltz";
-
         public static readonly string RemoveStatus = "na";
-
-        public static readonly string UtsuIchi = "Utsusemi: Ichi";
-        public static readonly string UtsuNi = "Utsusemi: Ni";
-
-        public static readonly string Paralyze = "Paralyze";
-        public static readonly string Jubaku = "Jubaku";
-
-        public static readonly string Slow = "Slow";
-        public static readonly string Elegy = "Elegy";
-        public static readonly string Hojo = "Hojo";
-
-    }
-
-    // Special other names we want to check for, but also allow for localization
-    public class EffectNames
-    {
-        public static readonly string Overloaded = "Overloaded";
-        public static readonly string Stun = "Stun";
     }
 
     public class RegexUtility

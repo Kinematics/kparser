@@ -223,6 +223,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dispel.
+        /// </summary>
+        public static string Dispel {
+            get {
+                return ResourceManager.GetString("Dispel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Divine Waltz.
         /// </summary>
         public static string DivineWaltz {
@@ -232,11 +241,29 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Elegy.
+        /// </summary>
+        public static string Elegy {
+            get {
+                return ResourceManager.GetString("Elegy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to (Battlefield|Carnage|Massacre) Elegy.
         /// </summary>
         public static string ElegyRegex {
             get {
                 return ResourceManager.GetString("ElegyRegex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Erase.
+        /// </summary>
+        public static string Erase {
+            get {
+                return ResourceManager.GetString("Erase", resourceCulture);
             }
         }
         
@@ -286,6 +313,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Healing Waltz.
+        /// </summary>
+        public static string HealingWaltz {
+            get {
+                return ResourceManager.GetString("HealingWaltz", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hide.
         /// </summary>
         public static string Hide {
@@ -322,6 +358,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Magic Finale.
+        /// </summary>
+        public static string MagicFinale {
+            get {
+                return ResourceManager.GetString("MagicFinale", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Magic Fruit.
         /// </summary>
         public static string MagicFruit {
@@ -336,6 +381,33 @@ namespace WaywardGamers.KParser.Resources {
         public static string Mug {
             get {
                 return ResourceManager.GetString("Mug", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ^\w+na$.
+        /// </summary>
+        public static string NaRegex {
+            get {
+                return ResourceManager.GetString("NaRegex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Overloaded.
+        /// </summary>
+        public static string Overloaded {
+            get {
+                return ResourceManager.GetString("Overloaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paralyze.
+        /// </summary>
+        public static string Paralyze {
+            get {
+                return ResourceManager.GetString("Paralyze", resourceCulture);
             }
         }
         
@@ -363,6 +435,15 @@ namespace WaywardGamers.KParser.Resources {
         public static string Quickstep {
             get {
                 return ResourceManager.GetString("Quickstep", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Raise.
+        /// </summary>
+        public static string Raise {
+            get {
+                return ResourceManager.GetString("Raise", resourceCulture);
             }
         }
         
@@ -403,6 +484,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Slow.
+        /// </summary>
+        public static string Slow {
+            get {
+                return ResourceManager.GetString("Slow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Slow( I+)?.
         /// </summary>
         public static string SlowRegex {
@@ -426,6 +516,15 @@ namespace WaywardGamers.KParser.Resources {
         public static string Steal {
             get {
                 return ResourceManager.GetString("Steal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stun.
+        /// </summary>
+        public static string Stun {
+            get {
+                return ResourceManager.GetString("Stun", resourceCulture);
             }
         }
         
