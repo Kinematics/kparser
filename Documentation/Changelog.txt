@@ -1,5 +1,9 @@
 KParser Change Log
 
+1.4.5.1 (November 9, 2009)
+* Updated full list of ranged attacks.
+
+
 1.4.5 (November 9, 2009)
 * Made changes in analyzing fight deaths.  If an 'other' entity (non-self/party/alliance) kills a mob, the program firsts checks to see if that entity had any other actions against the battle in question.  If not, then it enters it as a separate fight instead of ending the current fight.
  The purpose of this is to fix the issue of someone outside your party killing a mob and it ending your current fight, showing up in the mob listings as (for example) two mobs killed, each with half the normal health, one for 0 xp and the other for normal xp.  This causes problems in segregating test data by mob level.
