@@ -171,11 +171,20 @@
   <data name="DiaRegex" xml:space="preserve">
     <value>Dia( I+)?</value>
   </data>
+  <data name="Dispel" xml:space="preserve">
+    <value>Dispel</value>
+  </data>
   <data name="DivineWaltz" xml:space="preserve">
     <value>Divine Waltz</value>
   </data>
+  <data name="Elegy" xml:space="preserve">
+    <value>Elegy</value>
+  </data>
   <data name="ElegyRegex" xml:space="preserve">
     <value>(Battlefield|Carnage|Massacre) Elegy</value>
+  </data>
+  <data name="Erase" xml:space="preserve">
+    <value>Erase</value>
   </data>
   <data name="Gil" xml:space="preserve">
     <value>Gil</value>
@@ -192,6 +201,9 @@
   <data name="HealingBreeze" xml:space="preserve">
     <value>Healing Breeze</value>
   </data>
+  <data name="HealingWaltz" xml:space="preserve">
+    <value>Healing Waltz</value>
+  </data>
   <data name="Hide" xml:space="preserve">
     <value>Hide</value>
   </data>
@@ -204,11 +216,23 @@
   <data name="LightShot" xml:space="preserve">
     <value>Light Shot</value>
   </data>
+  <data name="MagicFinale" xml:space="preserve">
+    <value>Magic Finale</value>
+  </data>
   <data name="MagicFruit" xml:space="preserve">
     <value>Magic Fruit</value>
   </data>
   <data name="Mug" xml:space="preserve">
     <value>Mug</value>
+  </data>
+  <data name="NaRegex" xml:space="preserve">
+    <value>^\w+na$</value>
+  </data>
+  <data name="Overloaded" xml:space="preserve">
+    <value>Overloaded</value>
+  </data>
+  <data name="Paralyze" xml:space="preserve">
+    <value>Paralyze</value>
   </data>
   <data name="ParalyzeRegex" xml:space="preserve">
     <value>Paralyze( I+)?</value>
@@ -218,6 +242,9 @@
   </data>
   <data name="Quickstep" xml:space="preserve">
     <value>Quickstep</value>
+  </data>
+  <data name="Raise" xml:space="preserve">
+    <value>Raise</value>
   </data>
   <data name="Regen1" xml:space="preserve">
     <value>Regen</value>
@@ -231,6 +258,9 @@
   <data name="SalvageCellRegex" xml:space="preserve">
     <value>([a-z]+) cell</value>
   </data>
+  <data name="Slow" xml:space="preserve">
+    <value>Slow</value>
+  </data>
   <data name="SlowRegex" xml:space="preserve">
     <value>Slow( I+)?</value>
   </data>
@@ -239,6 +269,9 @@
   </data>
   <data name="Steal" xml:space="preserve">
     <value>Steal</value>
+  </data>
+  <data name="Stun" xml:space="preserve">
+    <value>Stun</value>
   </data>
   <data name="TrickAttack" xml:space="preserve">
     <value>Trick Attack</value>
