@@ -1267,7 +1267,7 @@ namespace WaywardGamers.KParser
             actorPlayerTypeLookup[0xa5] = ActorPlayerType.Alliance; // <mob> casts on <am>
             actorPlayerTypeLookup[0xa6] = ActorPlayerType.Alliance; // <am> kills
             actorPlayerTypeLookup[0xa7] = ActorPlayerType.None; // <am> dies
-            actorPlayerTypeLookup[0xa8] = ActorPlayerType.None; //
+            actorPlayerTypeLookup[0xa8] = ActorPlayerType.Alliance; // prep spell cast
             actorPlayerTypeLookup[0xa9] = ActorPlayerType.None; //
             actorPlayerTypeLookup[0xaa] = ActorPlayerType.Alliance; // <am> is resisted, or misses /ra
             actorPlayerTypeLookup[0xab] = ActorPlayerType.Alliance; // <am> uses item
