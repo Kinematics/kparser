@@ -19,71 +19,19 @@ namespace WaywardGamers.KParser.Parsing
         /// <returns>The determined entity type.</returns>
         internal static EntityType ClassifyByName(string entityName)
         {
-            if ((entityName == null) || (entityName == string.Empty))
-            {
-                return EntityType.Unknown;
-            }
+            // Redirect to the alternate code
+            return ClassifyByNameAndLookup(entityName);
 
-            // If the entityName starts with 'the' it's a mob, though possibly a charmed one.
-            if (entityName.StartsWith("The ", StringComparison.InvariantCultureIgnoreCase))
-            {
-                return EntityType.Mob;
-            }
-
-            // If the entityName starts with 'SC: ', it's a skillchain.  Mark it as such.
-            if (entityName.StartsWith("SC: "))
-                return EntityType.Skillchain;
-
-            // Check for characters that only show up in mob names and some sublists.
-            Match entityNameMatch = ParseExpressions.MobNameTest.Match(entityName);
-
-            if (entityNameMatch.Success == true)
-            {
-                // Probably a mob, but possibly a pet.  Check the short names lists.
-                if (Puppets.ShortNamesList.Contains(entityName))
-                    return EntityType.Pet;
-                else if (Wyverns.ShortNamesList.Contains(entityName))
-                    return EntityType.Pet;
-                else if (NPCFellows.ShortNamesList.Contains(entityName))
-                    return EntityType.Fellow;
-                else
-                    return EntityType.Mob;
-            }
-
-            // Check for the pattern of beastmaster jug pet entityNames.
-            entityNameMatch = ParseExpressions.BstJugPetName.Match(entityName);
-            if (entityNameMatch.Success == true)
-            {
-                return EntityType.Pet;
-            }
-
-            // Check known pet lists
-            if (Avatars.NamesList.Contains(entityName))
-            {
-                return EntityType.Pet;
-            }
-
-            if (Wyverns.NamesList.Contains(entityName))
-            {
-                return EntityType.Pet;
-            }
-
-            if (Puppets.NamesList.Contains(entityName))
-            {
-                return EntityType.Pet;
-            }
-
-            // Check known NPC fellows
-            if (NPCFellows.NamesList.Contains(entityName))
-            {
-                return EntityType.Fellow;
-            }
-
-
-            // Anything else must be a player.
-            return EntityType.Player;
+            //return GetNameClassification(entityName);
         }
 
+        /// <summary>
+        /// Gets the entity type of the specified name based on naming rules.
+        /// If the entity name aleady exists in the EntityManager's lists,
+        /// use that instead.
+        /// </summary>
+        /// <param name="entityName">The name of the entity to analyze.</param>
+        /// <returns>The determined entity type.</returns>
         internal static EntityType ClassifyByNameAndLookup(string entityName)
         {
             if ((entityName == null) || (entityName == string.Empty))
@@ -103,6 +51,22 @@ namespace WaywardGamers.KParser.Parsing
             // If there are multiple entries in the entity manager's list (ie: normal + charmed),
             // we cannot determine the entity type by name alone.
             if (entityTypeList.Count > 1)
+            {
+                return EntityType.Unknown;
+            }
+
+            return GetNameClassification(entityName);
+        }
+
+        /// <summary>
+        /// Extract name classification rules from above functions so that
+        /// they both can reference the same rule set.
+        /// </summary>
+        /// <param name="entityName">The name of the entity to classify.</param>
+        /// <returns>Returns the type of entity named.</returns>
+        private static EntityType GetNameClassification(string entityName)
+        {
+            if ((entityName == null) || (entityName == string.Empty))
             {
                 return EntityType.Unknown;
             }
@@ -209,6 +173,7 @@ namespace WaywardGamers.KParser.Parsing
             }
 
             // If the message is of type Harm, the entities should be of different types.
+            // Also handle unknown interaction types here.
 
             if (combatDetails.InteractionType == InteractionType.Harm)
             {
@@ -293,6 +258,40 @@ namespace WaywardGamers.KParser.Parsing
                         else if (ParseCodes.Instance.GetTargetEntityType(msgCode) == EntityType.Mob)
                         {
                             target.EntityType = EntityType.Mob;
+                            return;
+                        }
+
+                        // Check if either combatant is in the entity table already.
+                        // If not, then a player is likely initiating action against an NM.
+                        var actorEntityList = EntityManager.Instance.LookupEntity(combatDetails.ActorName);
+                        var targetEntityList = EntityManager.Instance.LookupEntity(target.Name);
+
+                        if (targetEntityList.Count == 0)
+                        {
+                            target.EntityType = EntityType.Mob;
+                            return;
+                        }
+
+                        // If we have not yet determined the entity type, it's probably an NM.
+                        if (targetEntityList.Contains(EntityType.Unknown))
+                        {
+                            target.EntityType = EntityType.Mob;
+                            return;
+                        }
+
+                        // If the target is already known (ie: they're present in the requested
+                        // entity list above) and the actor is unknown, then presumably the
+                        // NM is taking action against the player.
+                        if (actorEntityList.Count == 0)
+                        {
+                            combatDetails.ActorEntityType = EntityType.Mob;
+                            return;
+                        }
+
+                        // If we have not yet determined the entity type, it's probably an NM.
+                        if (actorEntityList.Contains(EntityType.Unknown))
+                        {
+                            combatDetails.ActorEntityType = EntityType.Mob;
                             return;
                         }
 
