@@ -473,7 +473,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.Combat, Version=1.4.5.0, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.Combat, Version=1.4.5.1, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_7D6B78DBCBE5EF3CE1B31A799AD41B34"
@@ -683,14 +683,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:KParser"
-        "ProductCode" = "8:{96594D08-18ED-4D96-8AC1-6883743F16FF}"
-        "PackageCode" = "8:{D7957027-0DF4-4562-9AEE-B93B515933A1}"
+        "ProductCode" = "8:{06729064-8D7A-4C72-962C-D771F2E5A665}"
+        "PackageCode" = "8:{F79C9C55-245C-41DA-86C5-5816FCAF93FB}"
         "UpgradeCode" = "8:{BE6F6D70-234C-4B71-96CD-D020C6872A1D}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.4.5.1"
+        "ProductVersion" = "8:1.4.51"
         "Manufacturer" = "8:Wayward Gamers"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://code.google.com/p/kparser"
@@ -1358,7 +1358,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_5B7CCE6409194E2D84B873BEF488EF17"
             {
-            "SourcePath" = "8:..\\FFXILogParser\\obj\\x86\\Debug\\KParser.exe"
+            "SourcePath" = "8:..\\FFXILogParser\\obj\\x86\\Release\\KParser.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_906983A9B8BD4D8295A82843DB1B6CE6"
