@@ -8,6 +8,7 @@ KParser Change Log
 - Fix bug in displaying Raw Data when switching between all and unparsed.
 - Improve handling of identification of Notorious Monsters as mobs rather than charmed players, and the consequant occasional mis-identification of players as charmed mobs.
 + Add parsing of new "sweet spot" message for ranged attacks.  Still missing the third possible ranged attack message.
+* Updated default memloc to new value: 0x005801d8
 
 
 1.4.4 (November 4, 2009)
