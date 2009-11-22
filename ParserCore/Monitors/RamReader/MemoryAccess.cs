@@ -129,6 +129,9 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         /// Returns IntPtr.Zero (null pointer) if we are unable to read the memory address.</returns>
         internal static IntPtr FollowPointer(IntPtr processHandle, IntPtr pointerToFollow)
         {
+            if (processHandle == IntPtr.Zero)
+                throw new ArgumentOutOfRangeException("processHandle", "No process handle provided.");
+
             if (pointerToFollow == IntPtr.Zero)
                 throw new ArgumentOutOfRangeException("pointerToFollow", "Cannot dereference a null pointer.");
 
@@ -289,6 +292,8 @@ namespace WaywardGamers.KParser.Monitoring.Memory
                     {
                         Logger.Instance.Log(e);
                     }
+
+                    pointerToMemoryBuffer = IntPtr.Zero;
                 }
 
                 disposed = true;
