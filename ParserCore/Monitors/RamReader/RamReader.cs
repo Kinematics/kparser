@@ -716,60 +716,60 @@ namespace WaywardGamers.KParser.Monitoring
                 {
                     Trace.WriteLine(Thread.CurrentThread.Name + ": Attempting to connect to Final Fantasy.");
 
+                    Process[] polProcesses;
+
+                    // If we're given a specific process to connect to, try for that.
                     if (polPID != 0)
                     {
-                        Process processByID = Process.GetProcessById(polPID);
+                        polProcesses = new Process[1];
+                        polProcesses[0] = Process.GetProcessById(polPID);
+                    }
+                    else
+                    {
+                        // If we're not given a specific process, scan all processes for POL.
+                        polProcesses = Process.GetProcessesByName("pol");
+                    }
 
-                        if (string.Compare(processByID.ProcessName, "pol", true) == 0)
+
+                    // If we've found any POL processes, examine them for the proper module.
+                    if (polProcesses != null)
+                    {
+                        foreach (Process process in polProcesses)
                         {
-                            foreach (ProcessModule module in processByID.Modules)
+                            foreach (ProcessModule module in process.Modules)
                             {
                                 if (string.Compare(module.ModuleName, "ffximain.dll", true) == 0)
                                 {
-                                    Trace.WriteLine(string.Format("Module: {0}  Base Address: {1:X8}", module.ModuleName, module.BaseAddress));
-                                    pol = new POL(processByID, module.BaseAddress);
-                                    processByID.Exited += new EventHandler(PolExited);
-                                    // Turn this off if scanning ram:
+                                    Trace.WriteLine(string.Format("Module: {0}  Base Address: 0x{1:X8}", module.ModuleName, (uint)module.BaseAddress));
+
+                                    pol = new POL(process, module.BaseAddress);
+                                    process.Exited += new EventHandler(PolExited);
+
+                                    // Only try to locate the chat log if we're not in scanning mode.
+                                    // If we're scanning, then we're trying to manually redetermine
+                                    // the chat log's location.
                                     if (scanning == false)
                                         LocateChatLog();
+
+                                    // And end the search since we found what we wanted.
                                     return true;
                                 }
                             }
                         }
 
-                        System.Windows.Forms.MessageBox.Show(
-                            string.Format("Specified process ID ({0}) is not a POL process.",
-                              polPID),
-                            "Process not found", System.Windows.Forms.MessageBoxButtons.OK);
-                    }
-                    else
-                    {
-                        Process[] polProcesses = Process.GetProcessesByName("pol");
-
-                        if (polProcesses != null)
-                        {
-                            foreach (Process process in polProcesses)
-                            {
-                                foreach (ProcessModule module in process.Modules)
-                                {
-                                    if (string.Compare(module.ModuleName, "ffximain.dll", true) == 0)
-                                    {
-                                        Trace.WriteLine(string.Format("Module: {0}  Base Address: 0x{1:X8}", module.ModuleName, (uint)module.BaseAddress));
-                                        pol = new POL(process, module.BaseAddress);
-                                        process.Exited += new EventHandler(PolExited);
-                                        // Turn this off if scanning ram:
-                                        if (scanning == false)
-                                            LocateChatLog();
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
+                        if (polPID != 0)
+                            throw new InvalidOperationException("Specified process ID is not a POL process.");
                     }
                 }
                 catch (ArgumentException e)
                 {
-                    System.Windows.Forms.MessageBox.Show(e.Message, "Process not found", System.Windows.Forms.MessageBoxButtons.OK);
+                    System.Windows.Forms.MessageBox.Show(e.Message,
+                        "Process not found", System.Windows.Forms.MessageBoxButtons.OK);
+                }
+                catch (InvalidOperationException e)
+                {
+                    System.Windows.Forms.MessageBox.Show(e.Message,
+                        "Process not found", System.Windows.Forms.MessageBoxButtons.OK);
                 }
                 catch (Exception e)
                 {
