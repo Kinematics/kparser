@@ -769,7 +769,7 @@ namespace WaywardGamers.KParser.Monitoring
                 catch (InvalidOperationException e)
                 {
                     System.Windows.Forms.MessageBox.Show(e.Message,
-                        "Process not found", System.Windows.Forms.MessageBoxButtons.OK);
+                        Resources.PublicResources.Error, System.Windows.Forms.MessageBoxButtons.OK);
                 }
                 catch (Exception e)
                 {
