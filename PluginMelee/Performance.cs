@@ -204,7 +204,7 @@ namespace WaywardGamers.KParser.Plugin
             if (customMobSelection)
                 mobFilter = MobXPHandler.Instance.CustomMobFilter;
             else
-                mobFilter = mobsCombo.CBGetMobFilter();
+                mobFilter = mobsCombo.CBGetMobFilter(exclude0XPMobs);
 
 
             string selectedPlayer = playersCombo.CBSelectedItem();
@@ -234,7 +234,8 @@ namespace WaywardGamers.KParser.Plugin
 
             #region LINQ
             var attackSet = from c in dataSet.Combatants
-                            where (playerList.Contains(c.CombatantName))
+                            where (playerList.Contains(c.CombatantName) &&
+                                   RegexUtility.ExcludedPlayer.Match(c.PlayerInfo).Success == false)
                             orderby c.CombatantType, c.CombatantName
                             select new AttackGroup
                             {
@@ -628,6 +629,7 @@ namespace WaywardGamers.KParser.Plugin
                     UpdateMobList();
                     flagNoUpdate = true;
                     mobsCombo.CBSelectIndex(0);
+                    HandleDataset(null);
                 }
                 catch (Exception ex)
                 {

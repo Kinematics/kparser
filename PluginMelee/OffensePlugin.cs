@@ -222,7 +222,7 @@ namespace WaywardGamers.KParser.Plugin
 
         private void UpdateAccumulationA(KPDatabaseDataSet dataSet)
         {
-            MobFilter mobFilter = mobsCombo.CBGetMobFilter();
+            MobFilter mobFilter = mobsCombo.CBGetMobFilter(exclude0XPMobs);
 
             #region LINQ query
 
@@ -710,7 +710,7 @@ namespace WaywardGamers.KParser.Plugin
             if (customMobSelection)
                 mobFilter = MobXPHandler.Instance.CustomMobFilter;
             else
-                mobFilter = mobsCombo.CBGetMobFilter();
+                mobFilter = mobsCombo.CBGetMobFilter(exclude0XPMobs);
 
             #region LINQ query
 

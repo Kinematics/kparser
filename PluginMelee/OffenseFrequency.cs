@@ -220,7 +220,7 @@ namespace WaywardGamers.KParser.Plugin
             if ((customMobSelection == true) && (Monitoring.Monitor.Instance.IsRunning == false))
                 mobFilter = MobXPHandler.Instance.CustomMobFilter;
             else
-                mobFilter = mobsCombo.CBGetMobFilter();
+                mobFilter = mobsCombo.CBGetMobFilter(exclude0XPMobs);
 
             List<string> playerList = new List<string>();
 
