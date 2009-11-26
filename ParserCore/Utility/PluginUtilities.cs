@@ -60,7 +60,7 @@ namespace WaywardGamers.KParser.Plugin
                     }
                     else
                     {
-                        foreach (var mobEntry in MobXPHandler.Instance.CompleteMobList.Where(m => m.Name == MobName && m.XP == MobXP))
+                        foreach (var mobEntry in MobXPHandler.Instance.CompleteMobList.Where(m => m.Name == MobName && m.BaseXP == MobXP))
                         {
                             selectedBattles.Add(mobEntry.BattleID);
                         }
