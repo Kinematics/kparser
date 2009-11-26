@@ -184,7 +184,7 @@ namespace WaywardGamers.KParser.Plugin
             if (customMobSelection)
                 mobFilter = MobXPHandler.Instance.CustomMobFilter;
             else
-                mobFilter = mobsCombo.CBGetMobFilter();
+                mobFilter = mobsCombo.CBGetMobFilter(exclude0XPMobs);
 
             switch (categoryCombo.CBSelectedIndex())
             {

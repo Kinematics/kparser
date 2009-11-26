@@ -19,6 +19,8 @@ namespace WaywardGamers.KParser.Plugin
         
         public int FightNumber { get; set; }
 
+        public bool Exclude0XPMobs { get; set; }
+
         public string MobName { get; set; }
         public int MobXP { get; set; }
 
@@ -43,7 +45,8 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     foreach (var mobEntry in MobXPHandler.Instance.CompleteMobList)
                     {
-                        selectedBattles.Add(mobEntry.BattleID);
+                        if (!Exclude0XPMobs || mobEntry.XP > 0)
+                            selectedBattles.Add(mobEntry.BattleID);
                     }
                 }
                 else if (GroupMobs)
@@ -230,13 +233,19 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Specialist functions for dealing with Mob lists
+        public static MobFilter CBGetMobFilter(this ToolStripComboBox combo)
+        {
+            return combo.CBGetMobFilter(false);
+        }
+
         /// <summary>
         /// Extension function to extract out formatted mob list info from a
         /// drop-down combo box.
         /// </summary>
         /// <param name="combo">The combo box with formatted mob names in it.</param>
+        /// <param name="include0XPMobs">Flag to tell whether 0 XP mobs should be included (only relevent to All).</param>
         /// <returns>Returns a MobFilter object containing the relevant filter information.</returns>
-        public static MobFilter CBGetMobFilter(this ToolStripComboBox combo)
+        public static MobFilter CBGetMobFilter(this ToolStripComboBox combo, bool exclude0XPMobs)
         {
             if (combo.ComboBox.InvokeRequired)
             {
@@ -244,7 +253,13 @@ namespace WaywardGamers.KParser.Plugin
                 return (MobFilter)combo.ComboBox.Invoke(thisFunc, new object[] { combo });
             }
 
-            MobFilter filter = new MobFilter { AllMobs = true, GroupMobs = false, FightNumber = 0, MobName = "", MobXP = -1 };
+            MobFilter filter = new MobFilter { AllMobs = true, GroupMobs = false, FightNumber = 0,
+                                               MobName = "",
+                                               MobXP = -1,
+                                               Exclude0XPMobs = exclude0XPMobs,
+                                               CustomSelection = false
+            };
+
 
             if (combo.SelectedIndex >= 0)
             {
@@ -301,7 +316,16 @@ namespace WaywardGamers.KParser.Plugin
         public static bool CheckFilterMobActor(this MobFilter mobFilter, KPDatabaseDataSet.InteractionsRow rowToCheck)
         {
             if (mobFilter.AllMobs == true)
-                return true;
+            {
+                // If no battle attached, include it as "between battles" actions; valid
+                if (rowToCheck.IsBattleIDNull() == true)
+                    return true;
+
+                if (mobFilter.Exclude0XPMobs)
+                    return (rowToCheck.BattlesRow.ExperiencePoints > 0);
+                else
+                    return true;
+            }
 
             if (mobFilter.CustomSelection == true)
             {
@@ -358,7 +382,16 @@ namespace WaywardGamers.KParser.Plugin
         public static bool CheckFilterMobTarget(this MobFilter mobFilter, KPDatabaseDataSet.InteractionsRow rowToCheck)
         {
             if (mobFilter.AllMobs == true)
-                return true;
+            {
+                // If no battle attached, include it as "between battles" actions; valid
+                if (rowToCheck.IsBattleIDNull() == true)
+                    return true;
+
+                if (mobFilter.Exclude0XPMobs)
+                    return (rowToCheck.BattlesRow.ExperiencePoints > 0);
+                else
+                    return true;
+            }
 
             if (mobFilter.CustomSelection == true)
             {
@@ -415,7 +448,16 @@ namespace WaywardGamers.KParser.Plugin
         public static bool CheckFilterMobBattle(this MobFilter mobFilter, KPDatabaseDataSet.InteractionsRow rowToCheck)
         {
             if (mobFilter.AllMobs == true)
-                return true;
+            {
+                // If no battle attached, include it as "between battles" actions; valid
+                if (rowToCheck.IsBattleIDNull() == true)
+                    return true;
+
+                if (mobFilter.Exclude0XPMobs)
+                    return (rowToCheck.BattlesRow.ExperiencePoints > 0);
+                else
+                    return true;
+            }
 
             if (mobFilter.CustomSelection == true)
             {
@@ -466,7 +508,12 @@ namespace WaywardGamers.KParser.Plugin
         public static bool CheckFilterBattle(this MobFilter mobFilter, KPDatabaseDataSet.BattlesRow rowToCheck)
         {
             if (mobFilter.AllMobs == true)
-                return true;
+            {
+                if (mobFilter.Exclude0XPMobs)
+                    return (rowToCheck.ExperiencePoints > 0);
+                else
+                    return true;
+            }
 
             if (rowToCheck.DefaultBattle == true)
                 return false;
