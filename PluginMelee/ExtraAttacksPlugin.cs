@@ -22,6 +22,9 @@ namespace WaywardGamers.KParser.Plugin
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
         ToolStripMenuItem showDetailOption = new ToolStripMenuItem();
 
+        ToolStripMenuItem alternateProcessOption = new ToolStripMenuItem();
+        bool alternateProcessMode = true;
+
         // Localized strings
 
         string lsRestrictedWarning;
@@ -73,8 +76,13 @@ namespace WaywardGamers.KParser.Plugin
             showDetailOption.Checked = false;
             showDetailOption.Click += new EventHandler(showDetailOption_Click);
 
+            alternateProcessOption.CheckOnClick = true;
+            alternateProcessOption.Checked = true;
+            alternateProcessOption.Click += new EventHandler(alternateProcessOption_Click);
+
             optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
             optionsMenu.DropDownItems.Add(showDetailOption);
+            optionsMenu.DropDownItems.Add(alternateProcessOption);
 
             toolStrip.Items.Add(playersLabel);
             toolStrip.Items.Add(playersCombo);
@@ -144,7 +152,6 @@ namespace WaywardGamers.KParser.Plugin
         private class AttackCalculations
         {
             internal string Name { get; set; }
-            internal string DisplayName { get; set; }
             internal int Attacks { get; set; }
             internal int Rounds { get; set; }
             internal int AttacksPerRound { get; set; }
@@ -258,7 +265,14 @@ namespace WaywardGamers.KParser.Plugin
 
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
+            if (alternateProcessMode)
+            {
+                ProcessDataAlternateMode(dataSet);
+                return;
+            }
+
             ResetTextBox();
+
             string playerFilter = playersCombo.CBSelectedItem();
             List<string> playersList = new List<string>();
 
@@ -356,8 +370,7 @@ namespace WaywardGamers.KParser.Plugin
                 attackCalc = new AttackCalculations();
 
                 // Note the name of the player
-                attackCalc.Name = attacker.Name;
-                attackCalc.DisplayName = attacker.DisplayName;
+                attackCalc.Name = attacker.DisplayName;
 
                 // Quick counts to be used further
                 attackCalc.Attacks = attacker.SimpleMelee.Count();
@@ -711,7 +724,7 @@ namespace WaywardGamers.KParser.Plugin
             foreach (var attacker in attackCalcs)
             {
                 sb.AppendFormat(lsMainFormat1,
-                    attacker.DisplayName,
+                    attacker.Name,
                     attacker.Attacks,
                     attacker.Rounds,
                     attacker.AttacksPerRound,
@@ -734,7 +747,7 @@ namespace WaywardGamers.KParser.Plugin
             foreach (var attacker in attackCalcs)
             {
                 sb.AppendFormat(lsMainFormat2,
-                    attacker.DisplayName,
+                    attacker.Name,
                     attacker.Minus1Rounds,
                     attacker.Plus1Rounds,
                     attacker.Plus2Rounds,
@@ -759,7 +772,7 @@ namespace WaywardGamers.KParser.Plugin
             foreach (var attacker in attackCalcs)
             {
                 sb.AppendFormat(lsMainFormat3,
-                    attacker.DisplayName,
+                    attacker.Name,
                     attacker.TotalMultiRounds,
                     attacker.AttackRoundsNonKill > 0 ? (double)attacker.TotalMultiRounds / attacker.AttackRoundsNonKill : 0,
                     attacker.AttackRoundCountKills,
@@ -831,7 +844,7 @@ namespace WaywardGamers.KParser.Plugin
                 }
 
                 sb.AppendFormat(lsSectionMultiAttacksFormat,
-                    attacker.DisplayName,
+                    attacker.Name,
                     doubleAttacks,
                     (double)doubleAttacks / (attacker.AttackRoundsNonKill * attacker.AttacksPerRound),
                     doubleAttacks + tripleAttacks > 0 ? (double)doubleAttacks / (doubleAttacks + tripleAttacks) : 0,
@@ -874,7 +887,7 @@ namespace WaywardGamers.KParser.Plugin
                     attacker.PlusNRounds;
 
                 sb.AppendFormat(lsSectionKicksFormat,
-                    attacker.DisplayName,
+                    attacker.Name,
                     attacker.AttacksPerRound == 1 ? lsYes : lsNo,
                     attacker.Plus1Rounds,
                     baseDen > 0 ? (double)attacker.Plus1Rounds / baseDen : 0);
@@ -911,7 +924,7 @@ namespace WaywardGamers.KParser.Plugin
                     && a.AttacksPerRound == 1))
                 {
                     sb.AppendFormat(lsSectionZanshinFormat,
-                        attacker.DisplayName,
+                        attacker.Name,
                         attacker.MissedFirstAttacks,
                         attacker.PossibleZanshin,
                         attacker.MissedFirstAttacks > 0 ? (double)attacker.PossibleZanshin / attacker.MissedFirstAttacks : 0);
@@ -933,7 +946,7 @@ namespace WaywardGamers.KParser.Plugin
                     && a.AttacksPerRound == 1))
                 {
                     sb.AppendFormat(lsSectionZanshinAccFormat,
-                        attacker.DisplayName,
+                        attacker.Name,
                         attacker.FirstAttackAcc,
                         attacker.SecondAttackAcc);
                     sb.Append("\n");
@@ -944,6 +957,408 @@ namespace WaywardGamers.KParser.Plugin
 
             PushStrings(sb, strModList);
         }
+
+        #endregion
+
+        #region Alternate processing
+        private void ProcessDataAlternateMode(KPDatabaseDataSet dataSet)
+        {
+            ResetTextBox();
+
+            string playerFilter = playersCombo.CBSelectedItem();
+            List<string> playersList = new List<string>();
+
+            StringBuilder sbDetails = new StringBuilder();
+            if (showDetails)
+                AddHeaderForDetailsOutput(ref sbDetails);
+
+
+            if (playerFilter == lsAll)
+            {
+                string[] players = playersCombo.CBGetStrings();
+
+                foreach (string player in players)
+                {
+                    if (player != lsAll)
+                    {
+                        playersList.Add(player);
+                    }
+                }
+            }
+            else
+            {
+                playersList.Add(playerFilter);
+            }
+
+            int defaultAttacksPerRound = attacksCombo.CBSelectedIndex();
+
+            // Setup work for calculating attack round timing
+            var simpleAttackList = from c in dataSet.Combatants
+                                   where (((EntityType)c.CombatantType == EntityType.Player) ||
+                                         ((EntityType)c.CombatantType == EntityType.Pet) ||
+                                         ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
+                                         ((EntityType)c.CombatantType == EntityType.Fellow)) &&
+                                         (playersList.Contains(c.CombatantName))
+                                   orderby c.CombatantType, c.CombatantName
+                                   let actions = c.GetInteractionsRowsByActorCombatantRelation()
+                                   select new
+                                   {
+                                       Combatant = c,
+                                       Name = c.CombatantName,
+                                       DisplayName = c.CombatantNameOrJobName,
+                                       SimpleMelee = from ma in actions
+                                                     where (ActionType)ma.ActionType == ActionType.Melee
+                                                     select ma,
+                                   };
+
+
+            int attacksPerRound;
+            IEnumerable<IGrouping<DateTime, KPDatabaseDataSet.InteractionsRow>> timestampedAttackGroups;
+            List<AttackCalculations> attackCalcs = new List<AttackCalculations>();
+
+            // Fill in the timestamp lists at the start.
+            foreach (var combatant in simpleAttackList)
+            {
+                if (combatant.SimpleMelee.Count() > 0)
+                {
+                    // fill in buckets of count of .5 second intervals in the timespan list.
+                    int[] bucketCounts = FillBuckets(GetAltTimespanList(combatant.SimpleMelee));
+
+                    // determine the timespans that indicate a division between rounds vs
+                    // double attacks
+                    List<TimeSpan> valleyTimepoints = AnalyzeBuckets(bucketCounts);
+
+                    // As long as we get any distinctive valley profile, use the first one as
+                    // the separator between non-DA and DA attacks.
+                    if ((valleyTimepoints.Count > 0))
+                    {
+                        // Lazy grouping for attacks within the timespan
+                        // specified by the first valley marker.
+                        timestampedAttackGroups = combatant.SimpleMelee.
+                            GroupAdjacentByTimeLimit<KPDatabaseDataSet.InteractionsRow, DateTime>(
+                            i => i.Timestamp, valleyTimepoints.First());
+
+                        // auto-determine # of attacks per round?
+                        if (defaultAttacksPerRound == 0)
+                        {
+                            // At least 20% of attacks must be 1 per round to consider 1/round as the base
+                            int threshhold = timestampedAttackGroups.Count() / 5;
+
+                            if (timestampedAttackGroups.Count(t => t.Count() == 1) > threshhold)
+                                attacksPerRound = 1;
+                            else
+                                attacksPerRound = 2;
+                        }
+                        else
+                        {
+                            attacksPerRound = defaultAttacksPerRound;
+                        }
+
+                        var playerKills = from b in dataSet.Battles
+                                          where b.IsKillerIDNull() == false &&
+                                                b.CombatantsRowByBattleKillerRelation == combatant.Combatant
+                                          select b;
+
+
+                        // Run the calculations for this combatant and add it to the list.
+                        attackCalcs.Add(RunCalculations(combatant.DisplayName, timestampedAttackGroups, attacksPerRound, playerKills));
+
+                        if (showDetails)
+                            AddDetailsForOutput(ref sbDetails, combatant.DisplayName, timestampedAttackGroups);
+                    }
+                }
+            }
+
+            PrintOutput(attackCalcs);
+
+            if (showDetails)
+                PushStrings(sbDetails, null);
+
+        }
+
+        private List<TimeSpan> GetAltTimespanList(IEnumerable<KPDatabaseDataSet.InteractionsRow> simpleMelee)
+        {
+            List<TimeSpan> tsList = new List<TimeSpan>();
+
+            DateTime prev = simpleMelee.First().Timestamp;
+
+            var skipFirst = simpleMelee.Skip(1);
+
+            foreach (var meleeAction in skipFirst)
+            {
+                tsList.Add(meleeAction.Timestamp - prev);
+                prev = meleeAction.Timestamp;
+            }
+
+            return tsList;
+        }
+
+        private int[] FillBuckets(List<TimeSpan> attackIntervals)
+        {
+            // fill buckets in 1/2 second intervals
+            // initialize at 4 buckets, for up to 2 seconds
+            int[] bucketList = new int[4];
+
+            int bucket = 0;
+
+            foreach (var interval in attackIntervals)
+            {
+                bucket = (int)Math.Floor(interval.TotalSeconds * 2);
+
+                // resize if needed, to a max of 50 (25 seconds)
+                if ((bucket > bucketList.Length) && (bucket <= 50))
+                {
+                    Array.Resize<int>(ref bucketList, bucket + 1);
+                }
+
+                if (bucket < bucketList.Length)
+                    bucketList[bucket]++;
+            }
+
+            return bucketList;
+        }
+
+        private List<TimeSpan> AnalyzeBuckets(int[] bucketCounts)
+        {
+            List<int> peaks = new List<int>();
+            List<int> valleys = new List<int>();
+            List<TimeSpan> valleyTimepoints = new List<TimeSpan>();
+
+            int totalCount = bucketCounts.Sum();
+
+            if (totalCount == 0)
+                return valleyTimepoints;
+
+            double threshhold = 0.04;  // 4% of all attacks to lift a bucket above valley status
+            double prevRatio = 0;
+            double nextRatio = 0;
+            double currRatio = (double)bucketCounts[0] / totalCount;
+
+            for (int i = 0; i < bucketCounts.Length; i++)
+            {
+                if (i < bucketCounts.Length - 1)
+                    nextRatio = (double)bucketCounts[i + 1] / totalCount;
+
+                if (currRatio > threshhold)
+                    peaks.Add(i);
+                else if ((prevRatio > threshhold) || (nextRatio > threshhold))
+                    valleys.Add(i);
+
+                prevRatio = currRatio;
+                currRatio = nextRatio;
+            }
+
+            foreach (int peak in peaks)
+            {
+                foreach (int otherPeak in peaks)
+                {
+                    if (otherPeak != peak)
+                    {
+                        for (int i = peak; i < otherPeak; i++)
+                        {
+                            if ((peaks.Contains(i) == false) && (valleys.Contains(i) == false))
+                                valleys.Add(i);
+                        }
+                    }
+                }
+            }
+
+            // If we have no peaks, we can't filter anything
+            if (peaks.Count == 0)
+                return valleyTimepoints;
+
+            // ignore low points before initial peak
+            int firstPeak = peaks.First();
+
+            var laterValleys = from v in valleys
+                               where v > firstPeak
+                               orderby v
+                               select v;
+
+
+            // if there are any 
+            if ((laterValleys.Count() > 0) && (peaks.Count > 0))
+            {
+                // Find center point of each valley
+                int start;
+                int end;
+                double center;
+
+                List<double> valleyCenters = new List<double>();
+                List<int> valleySubset = laterValleys.ToList<int>();
+
+                start = valleySubset.First();
+                end = start;
+                valleySubset = valleySubset.Skip(1).ToList<int>();
+
+                while (valleySubset.Count > 0)
+                {
+                    if (valleySubset.First() == (end + 1))
+                    {
+                        end++;
+                    }
+                    else
+                    {
+                        center = ((double)end - start) / 2 + start;
+                        valleyCenters.Add(center);
+
+                        start = valleySubset.First();
+                        end = start;
+                    }
+
+                    valleySubset = valleySubset.Skip(1).ToList<int>();
+                }
+
+                center = ((double)end - start) / 2 + start;
+                valleyCenters.Add(center);
+
+
+                foreach (var valley in valleyCenters)
+                {
+                    double seconds = valley * 0.5 + 0.25;
+                    valleyTimepoints.Add(TimeSpan.FromSeconds(seconds));
+                }
+            }
+
+            return valleyTimepoints;
+        }
+
+        private AttackCalculations RunCalculations(string name,
+            IEnumerable<IGrouping<DateTime, KPDatabaseDataSet.InteractionsRow>> timestampedAttackGroups,
+            int attacksPerRound, EnumerableRowCollection<KPDatabaseDataSet.BattlesRow> playerKills)
+        {
+            // Put the results of all the calculations in an AttackCalculations object to return.
+            AttackCalculations attackCalc = new AttackCalculations();
+
+            // Summary of basic data
+
+            attackCalc.AttacksPerRound = attacksPerRound;
+
+            attackCalc.Name = name;
+
+            attackCalc.Attacks = timestampedAttackGroups.Sum(a => a.Count());
+            attackCalc.Rounds = timestampedAttackGroups.Count();
+
+            var roundsWithExtraAttacks = timestampedAttackGroups.Where(r => r.Count() > attacksPerRound);
+
+            attackCalc.Plus1Rounds = roundsWithExtraAttacks.Count(r => r.Count() == (attacksPerRound + 1));
+            attackCalc.Plus2Rounds = roundsWithExtraAttacks.Count(r => r.Count() == (attacksPerRound + 2));
+            attackCalc.Plus3Rounds = roundsWithExtraAttacks.Count(r => r.Count() == (attacksPerRound + 3));
+            attackCalc.Plus4Rounds = roundsWithExtraAttacks.Count(r => r.Count() == (attacksPerRound + 4));
+            attackCalc.PlusNRounds = roundsWithExtraAttacks.Count(r => r.Count() > (attacksPerRound + 4));
+
+            attackCalc.ExtraAttacks = roundsWithExtraAttacks.Sum(r => r.Count() - attacksPerRound);
+            attackCalc.RoundsWithExtraAttacks = roundsWithExtraAttacks.Count();
+            attackCalc.TotalMultiRounds = roundsWithExtraAttacks.Count();
+
+            if (attacksPerRound > 1)
+                attackCalc.Minus1Rounds = timestampedAttackGroups.Count(r => r.Count() < attacksPerRound);
+            else
+                attackCalc.Minus1Rounds = 0;
+
+            attackCalc.AttackRoundsNonKill = attackCalc.Rounds;
+            attackCalc.AttackRoundUnderCountKills = 0;
+            attackCalc.AttackRoundCountKills = 0;
+
+            // Correct for melee rounds that kill the mob
+            foreach (var battle in playerKills)
+            {
+                var actions = battle.GetInteractionsRows().Where(i => i.IsActorIDNull() == false &&
+                    i.CombatantsRowByActorCombatantRelation == battle.CombatantsRowByBattleKillerRelation &&
+                    (HarmType)i.HarmType == HarmType.Damage);
+
+                if (actions.Count() > 0)
+                {
+                    var finalAction = actions.Last();
+
+                    if ((ActionType)finalAction.ActionType == ActionType.Melee)
+                    {
+                        // get melee round that this belongs to
+                        var killRound = timestampedAttackGroups.LastOrDefault(a =>
+                            Math.Abs((finalAction.Timestamp - a.Key).TotalSeconds) < 2.0);
+
+                        if (killRound != null)
+                        {
+                            if (killRound.Count() < attacksPerRound)
+                            {
+                                attackCalc.AttackRoundUnderCountKills++;
+                                attackCalc.AttackRoundsNonKill--;
+                            }
+                            else if (killRound.Count() == attacksPerRound)
+                            {
+                                attackCalc.AttackRoundCountKills++;
+                                attackCalc.AttackRoundsNonKill--;
+                            }
+                        }
+                    }
+                }
+            }
+
+
+
+            // End summary section
+
+            // Calculate Zanshin stuff
+            if (attacksPerRound == 1)
+            {
+                var missedFirstAttacks = timestampedAttackGroups.Where(r =>
+                    (DefenseType)r.First().DefenseType != DefenseType.None);
+
+                attackCalc.MissedFirstAttacks = missedFirstAttacks.Count();
+
+                var possibleZanshinRounds = missedFirstAttacks.Where(a => a.Count() == 2);
+
+                attackCalc.PossibleZanshin = possibleZanshinRounds.Count();
+
+                // Get acc of first hits of each round (all rounds)
+                int firstAttHit = timestampedAttackGroups
+                    .Where(a => (DefenseType)a.First().DefenseType == DefenseType.None).Count();
+
+                attackCalc.FirstAttackAcc = (double)firstAttHit / (firstAttHit + attackCalc.MissedFirstAttacks);
+
+                // Get acc of second hits of each round
+
+                if (attackCalc.PossibleZanshin > 0)
+                {
+                    int secondAttHit = possibleZanshinRounds.Where(a => (DefenseType)a.Last().DefenseType == DefenseType.None).Count();
+                    int secondAttMiss = possibleZanshinRounds.Where(a => (DefenseType)a.Last().DefenseType != DefenseType.None).Count();
+
+                    attackCalc.SecondAttackAcc = (double)secondAttHit / (secondAttHit + secondAttMiss);
+                }
+                else
+                {
+                    attackCalc.SecondAttackAcc = 0;
+                }
+            }
+
+            return attackCalc;
+        }
+
+        private void AddHeaderForDetailsOutput(ref StringBuilder sbDetails)
+        {
+            sbDetails.Append("\n\n\n");
+            sbDetails.Append(lsSectionUncorrectedDetails);
+            sbDetails.Append("\n\n");
+        }
+
+        private void AddDetailsForOutput(ref StringBuilder sbDetails,
+            string name,
+            IEnumerable<IGrouping<DateTime, KPDatabaseDataSet.InteractionsRow>> timestampedAttackGroups)
+        {
+            sbDetails.Append("\n");
+            sbDetails.AppendLine(name);
+
+            int count;
+
+            foreach (var round in timestampedAttackGroups)
+            {
+                count = round.Count();
+
+                sbDetails.Append(string.Format("  {0}  -- {1} {2}\n", round.Key.ToLocalTime(), count,
+                    count > 1 ? "attacks" : "attack"));
+            }
+        }
+
         #endregion
 
         #region Event Handlers
@@ -976,6 +1391,20 @@ namespace WaywardGamers.KParser.Plugin
 
             flagNoUpdate = false;
         }
+
+        protected void alternateProcessOption_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            alternateProcessMode = sentBy.Checked;
+
+            if (flagNoUpdate == false)
+                HandleDataset(null);
+
+            flagNoUpdate = false;
+        }
         #endregion
 
         #region Localization Overrides
@@ -993,6 +1422,7 @@ namespace WaywardGamers.KParser.Plugin
 
             optionsMenu.Text = Resources.PublicResources.Options;
             showDetailOption.Text = Resources.PublicResources.ShowDetail;
+            alternateProcessOption.Text = "Alternate Calculation Mode";
 
             UpdatePlayerList();
             playersCombo.SelectedIndex = 0;
