@@ -168,7 +168,7 @@ namespace WaywardGamers.KParser
                 {
                     if (!((k - first) <= adjacentTime))
                     {
-                        yield return (IGrouping<TKey, TSource>) (new GroupOfAdjacent<TSource, DateTime>(list, last));
+                        yield return (IGrouping<TKey, TSource>)(new GroupOfAdjacent<TSource, DateTime>(list, first));
                         list = new List<TSource>();
                         list.Add(s);
                         first = k;
