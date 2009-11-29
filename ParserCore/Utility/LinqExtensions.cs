@@ -93,6 +93,8 @@ namespace WaywardGamers.KParser
         }
     }
 
+
+
     public static class StringExtensions
     {
         public static string FormattedString(this TimeSpan timeSpan, bool forceIncludeHours)
@@ -120,6 +122,74 @@ namespace WaywardGamers.KParser
 
 
             return formattedTimeSpan;
+        }
+    }
+
+
+    public class GroupOfAdjacent<TSource, TKey> : IEnumerable<TSource>, IGrouping<TKey, TSource>
+    {
+        public TKey Key { get; set; }
+        private List<TSource> GroupList { get; set; }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return ((System.Collections.Generic.IEnumerable<TSource>)this).GetEnumerator();
+        }
+
+        System.Collections.Generic.IEnumerator<TSource> System.Collections.Generic.IEnumerable<TSource>.GetEnumerator()
+        {
+            foreach (var s in GroupList)
+                yield return s;
+        }
+
+        public GroupOfAdjacent(List<TSource> source, TKey key)
+        {
+            GroupList = source;
+            Key = key;
+        }
+    }
+
+    public static class LinqTimeExtensions
+    {
+        public static IEnumerable<IGrouping<TKey, TSource>> GroupAdjacentByTimeLimit<TSource, TKey>(
+            this IEnumerable<TSource> source,
+            Func<TSource, DateTime> keySelector,
+            TimeSpan adjacentTime) where TKey : IComparable<DateTime>
+        {
+            DateTime last = default(DateTime);
+            DateTime first = default(DateTime);
+            bool haveLast = false;
+            List<TSource> list = new List<TSource>();
+
+            foreach (TSource s in source)
+            {
+                DateTime k = keySelector(s);
+                if (haveLast)
+                {
+                    if (!((k - first) <= adjacentTime))
+                    {
+                        yield return (IGrouping<TKey, TSource>) (new GroupOfAdjacent<TSource, DateTime>(list, last));
+                        list = new List<TSource>();
+                        list.Add(s);
+                        first = k;
+                        last = k;
+                    }
+                    else
+                    {
+                        list.Add(s);
+                        last = k;
+                    }
+                }
+                else
+                {
+                    list.Add(s);
+                    first = k;
+                    last = k;
+                    haveLast = true;
+                }
+            }
+            if (haveLast)
+                yield return (IGrouping<TKey, TSource>)(new GroupOfAdjacent<TSource, DateTime>(list, last));
         }
     }
 
