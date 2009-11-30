@@ -82,7 +82,11 @@ namespace WaywardGamers.KParser.Plugin
 
             optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
             optionsMenu.DropDownItems.Add(showDetailOption);
+
+            // Only add the option to turn off the new method in Debug mode, for comparative purposes.
+#if DEBUG
             optionsMenu.DropDownItems.Add(alternateProcessOption);
+#endif
 
             toolStrip.Items.Add(playersLabel);
             toolStrip.Items.Add(playersCombo);
