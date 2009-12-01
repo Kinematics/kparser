@@ -375,11 +375,12 @@ namespace WaywardGamers.KParser
             /// <returns>The ItemsRow containing the specified item name.</returns>
             public ItemsRow GetItem(string itemName)
             {
-                if (itemName == null)
+                if (string.IsNullOrEmpty(itemName))
                     throw new ArgumentNullException("itemName");
 
-                if (itemName == string.Empty)
-                    throw new ArgumentOutOfRangeException("itemName", "Name cannot be empty.");
+                // Max length of items allowed in database.
+                if (itemName.Length > 32)
+                    itemName = itemName.Substring(0, 32);
 
                 ItemsRow item = null;
 
