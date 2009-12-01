@@ -141,6 +141,34 @@ namespace WaywardGamers.KParser
         }
 
         /// <summary>
+        /// Log a parsed Message to the error log.
+        /// </summary>
+        /// <param name="label">Label for the logged error/message.</param>
+        /// <param name="message">Message to be written to the log.</param>
+        internal void Log(Exception e, Message message)
+        {
+            programSettings.Reload();
+
+            // If error logging is turned off, just return.
+            if (programSettings.ErrorLoggingLevel == ErrorLevel.None)
+                return;
+
+            try
+            {
+                using (StreamWriter sw = File.AppendText(logFileName))
+                {
+                    Log(e);
+                    WriteHeader(sw, "Error generated with message:", message.ToString(), ErrorLevel.Debug);
+                    WriteSeparator(sw);
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Error writing log.");
+            }
+        }
+
+        /// <summary>
         /// Log a parsed MesssageLine to the error log with an exception.
         /// </summary>
         /// <param name="e">Exception that was thrown.</param>
