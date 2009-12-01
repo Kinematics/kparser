@@ -783,4 +783,13 @@
   <data name="ExtraAttPluginSectionZanshinAccHeader" xml:space="preserve">
     <value>Player               Acc. Rate of First Attacks    Acc. Rate of Second Attacks</value>
   </data>
+  <data name="ExtraAttPluginAttack" xml:space="preserve">
+    <value>Attack</value>
+  </data>
+  <data name="ExtraAttPluginAttacks" xml:space="preserve">
+    <value>Attacks</value>
+  </data>
+  <data name="ExtraAttPluginBucketsHeader" xml:space="preserve">
+    <value>Buckets (Attack intervals at 0.5 sec resolution):</value>
+  </data>
 </root>

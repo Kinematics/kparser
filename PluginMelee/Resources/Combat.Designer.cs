@@ -970,11 +970,38 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Attack.
+        /// </summary>
+        internal static string ExtraAttPluginAttack {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginAttack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attacks.
+        /// </summary>
+        internal static string ExtraAttPluginAttacks {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginAttacks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Base # of Attacks:.
         /// </summary>
         internal static string ExtraAttPluginBaseAttNumLabel {
             get {
                 return ResourceManager.GetString("ExtraAttPluginBaseAttNumLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buckets (Attack intervals at 0.5 sec resolution):.
+        /// </summary>
+        internal static string ExtraAttPluginBucketsHeader {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginBucketsHeader", resourceCulture);
             }
         }
         
