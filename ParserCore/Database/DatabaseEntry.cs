@@ -49,7 +49,6 @@ namespace WaywardGamers.KParser.Database
         }
         #endregion
 
-
         #region Callable methods to request modifications to a given database.
         /// <summary>
         /// Add a new message to the supplied database.
@@ -131,6 +130,10 @@ namespace WaywardGamers.KParser.Database
                         // Ignore system messages
                         break;
                 }
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Log(e, message);
             }
             finally
             {
