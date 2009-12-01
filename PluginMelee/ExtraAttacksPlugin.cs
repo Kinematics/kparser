@@ -58,6 +58,9 @@ namespace WaywardGamers.KParser.Plugin
         string lsSectionZanshinAccFormat;
 
         string lsSectionUncorrectedDetails;
+        string lsSectionDetailsBucketHeader;
+        string lsAttack;
+        string lsAttacks;
         #endregion
 
         #region Constructor
@@ -1068,7 +1071,7 @@ namespace WaywardGamers.KParser.Plugin
                         attackCalcs.Add(RunCalculations(combatant.DisplayName, timestampedAttackGroups, attacksPerRound, playerKills));
 
                         if (showDetails)
-                            AddDetailsForOutput(ref sbDetails, combatant.DisplayName, timestampedAttackGroups);
+                            AddDetailsForOutput(ref sbDetails, combatant.DisplayName, bucketCounts, timestampedAttackGroups);
                     }
                 }
             }
@@ -1100,8 +1103,8 @@ namespace WaywardGamers.KParser.Plugin
         private int[] FillBuckets(List<TimeSpan> attackIntervals)
         {
             // fill buckets in 1/2 second intervals
-            // initialize at 4 buckets, for up to 2 seconds
-            int[] bucketList = new int[4];
+            // initialize at 16 buckets, for up to 8 seconds
+            int[] bucketList = new int[8];
 
             int bucket = 0;
 
@@ -1126,9 +1129,14 @@ namespace WaywardGamers.KParser.Plugin
         {
             List<int> peaks = new List<int>();
             List<int> valleys = new List<int>();
+            List<int> walls = new List<int>();
+            List<int> tails = new List<int>();
             List<TimeSpan> valleyTimepoints = new List<TimeSpan>();
+            List<TimeSpan> wallTimepoints = new List<TimeSpan>();
 
             int totalCount = bucketCounts.Sum();
+            int countLimit = totalCount * 98 / 100;
+            int onePercent = totalCount / 100;
 
             if (totalCount == 0)
                 return valleyTimepoints;
@@ -1137,6 +1145,51 @@ namespace WaywardGamers.KParser.Plugin
             double prevRatio = 0;
             double nextRatio = 0;
             double currRatio = (double)bucketCounts[0] / totalCount;
+
+            int currCount = 0;
+            int lastCount = bucketCounts[0];
+            int cumulativeSum = bucketCounts[0];
+
+            for (int i = 1; i < bucketCounts.Length; i++)
+            {
+                currCount = bucketCounts[i];
+                cumulativeSum += currCount;
+
+                // If we've already checked 98%+ of the data and we're
+                // hitting 0's in the buckets, don't worry about the rest
+                if ((cumulativeSum > countLimit) && (currCount == 0))
+                    break;
+
+                // Older parses captured at 1 second intervals; they won't
+                // have any data every other bucket.
+                if (currCount == 0)
+                    continue;
+
+                // If we're sitting on a new wall (increase of 50% over previous bucket,
+                // and a count of at least 1% of the total sum of all buckets), add it to the list.
+                if ((currCount > onePercent) && (currCount > (lastCount * 3 / 2)))
+                    walls.Add(i);
+
+                if ((lastCount > onePercent) && (currCount < (lastCount / 2)))
+                    tails.Add(i);
+
+                lastCount = currCount;
+            }
+
+            if (walls.Count > 0)
+            {
+                foreach (var wall in walls)
+                {
+                    if (wall > tails.FirstOrDefault())
+                        wallTimepoints.Add(TimeSpan.FromSeconds(wall / 2.0));
+                }
+
+                if (wallTimepoints.Count == 0)
+                    wallTimepoints.Add(TimeSpan.FromSeconds(tails.FirstOrDefault() / 2.0));
+
+                return wallTimepoints;
+            }
+
 
             for (int i = 0; i < bucketCounts.Length; i++)
             {
@@ -1345,12 +1398,23 @@ namespace WaywardGamers.KParser.Plugin
             sbDetails.Append("\n\n");
         }
 
-        private void AddDetailsForOutput(ref StringBuilder sbDetails,
-            string name,
+        private void AddDetailsForOutput(ref StringBuilder sbDetails, string name, int[] bucketCounts,
             IEnumerable<IGrouping<DateTime, KPDatabaseDataSet.InteractionsRow>> timestampedAttackGroups)
         {
             sbDetails.Append("\n");
             sbDetails.AppendLine(name);
+
+            sbDetails.Append("  ");
+            sbDetails.Append(lsSectionDetailsBucketHeader);
+            for (int i = 0; i < bucketCounts.Length; i++)
+            {
+                if ((i % 10) == 0)
+                    sbDetails.Append("\n");
+
+                sbDetails.Append("  ");
+                sbDetails.Append(string.Format("{0,6:d}", bucketCounts[i]));
+            }
+            sbDetails.Append("\n");
 
             int count;
 
@@ -1358,8 +1422,8 @@ namespace WaywardGamers.KParser.Plugin
             {
                 count = round.Count();
 
-                sbDetails.Append(string.Format("  {0}  -- {1} {2}\n", round.Key.ToLocalTime(), count,
-                    count > 1 ? "attacks" : "attack"));
+                sbDetails.Append(string.Format("  {0} -- {1} {2}\n", round.Key.ToLocalTime(), count,
+                    count > 1 ? lsAttacks : lsAttack));
             }
         }
 
@@ -1467,6 +1531,10 @@ namespace WaywardGamers.KParser.Plugin
             lsSectionZanshinAccFormat = Resources.Combat.ExtraAttPluginSectionZanshinAccFormat;
 
             lsSectionUncorrectedDetails = Resources.Combat.ExtraAttPluginUncorrectedDetails;
+
+            lsSectionDetailsBucketHeader = Resources.Combat.ExtraAttPluginBucketsHeader;
+            lsAttack = Resources.Combat.ExtraAttPluginAttack;
+            lsAttacks = Resources.Combat.ExtraAttPluginAttacks;
         }
         #endregion
 
