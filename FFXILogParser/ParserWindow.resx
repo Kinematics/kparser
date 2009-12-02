@@ -129,10 +129,7 @@
     <value>100, 16</value>
   </data>
   <data name="programStatusLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>32, 17</value>
-  </data>
-  <data name="programStatusLabel.Text" xml:space="preserve">
-    <value>label</value>
+    <value>0, 17</value>
   </data>
   <data name="statusBarBufferSpace.Size" type="System.Drawing.Size, System.Drawing">
     <value>13, 17</value>
@@ -141,10 +138,7 @@
     <value>  </value>
   </data>
   <data name="reparseProgressNumbers.Size" type="System.Drawing.Size, System.Drawing">
-    <value>32, 17</value>
-  </data>
-  <data name="reparseProgressNumbers.Text" xml:space="preserve">
-    <value>state</value>
+    <value>0, 17</value>
   </data>
   <data name="statusStrip.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 435</value>
