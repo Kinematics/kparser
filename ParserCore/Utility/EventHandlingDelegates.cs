@@ -21,17 +21,28 @@ namespace WaywardGamers.KParser
 
     public class ReaderStatusEventArgs : EventArgs
     {
-        public int ProcessedItems { get; private set; }
-        public int TotalItems { get; private set; }
-        public bool Completed { get; private set; }
-        public bool Failed { get; private set; }
+        public DataSource DataSourceType { get; set; }
+        public string StatusMessage { get; set; }
 
-        internal ReaderStatusEventArgs(int processed, int totalItems, bool completed, bool failed)
+        public int ProcessedItems { get; set; }
+        public int TotalItems { get; set; }
+
+        public bool Active { get; set; }
+        public bool Completed { get; set; }
+        public bool Failed { get; set; }
+
+        public ReaderStatusEventArgs()
+        {
+        }
+
+        public ReaderStatusEventArgs(int processed, int totalItems, bool completed, bool failed)
         {
             ProcessedItems = processed;
             TotalItems = totalItems;
             Completed = completed;
             Failed = failed;
+            Active = true;
+            DataSourceType = DataSource.Database;
         }
     }
 
