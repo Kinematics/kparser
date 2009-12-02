@@ -120,25 +120,31 @@
   <metadata name="statusStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>0, 435</value>
   </metadata>
-  <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="toolStripProgressBar.Enabled" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="toolStripProgressBar.Size" type="System.Drawing.Size, System.Drawing">
-    <value>100, 16</value>
-  </data>
   <data name="programStatusLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>0, 17</value>
+    <value>742, 17</value>
   </data>
-  <data name="statusBarBufferSpace.Size" type="System.Drawing.Size, System.Drawing">
-    <value>13, 17</value>
-  </data>
-  <data name="statusBarBufferSpace.Text" xml:space="preserve">
-    <value>  </value>
+  <data name="programStatusLabel.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleLeft</value>
   </data>
   <data name="secondaryStatusLabel.Size" type="System.Drawing.Size, System.Drawing">
     <value>0, 17</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="reparseProgressBar.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="reparseProgressBar.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 16</value>
+  </data>
+  <data name="reparseProgressBar.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="savingProgressBar.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 16</value>
+  </data>
+  <data name="savingProgressBar.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
   </data>
   <data name="statusStrip.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 435</value>
@@ -526,10 +532,10 @@
   <data name="$this.Text" xml:space="preserve">
     <value>K-Parser</value>
   </data>
-  <data name="&gt;&gt;toolStripProgressBar.Name" xml:space="preserve">
-    <value>toolStripProgressBar</value>
+  <data name="&gt;&gt;reparseProgressBar.Name" xml:space="preserve">
+    <value>reparseProgressBar</value>
   </data>
-  <data name="&gt;&gt;toolStripProgressBar.Type" xml:space="preserve">
+  <data name="&gt;&gt;reparseProgressBar.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripProgressBar, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;programStatusLabel.Name" xml:space="preserve">
@@ -796,11 +802,11 @@
   <data name="&gt;&gt;closeAllTabsToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;statusBarBufferSpace.Name" xml:space="preserve">
-    <value>statusBarBufferSpace</value>
+  <data name="&gt;&gt;savingProgressBar.Name" xml:space="preserve">
+    <value>savingProgressBar</value>
   </data>
-  <data name="&gt;&gt;statusBarBufferSpace.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="&gt;&gt;savingProgressBar.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripProgressBar, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>ParserWindow</value>
