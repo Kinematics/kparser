@@ -404,8 +404,8 @@ namespace WaywardGamers.KParser
             }
             finally
             {
-                OnMessageProcessed(new ReaderStatusEventArgs(++messageNumber, totalMessageCount, true, false));
                 databaseAccessMutex.ReleaseMutex();
+                OnMessageProcessed(new ReaderStatusEventArgs(++messageNumber, totalMessageCount, true, false));
             }
 
             databaseEntry.MessageBatchSent();
