@@ -88,18 +88,18 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         internal short FinalOffset;
     }
 
-    internal class ChatLogInfoClass
+    internal class ChatLogDetails
     {
         readonly internal ChatLogInfoStruct ChatLogInfo;
 
-        public ChatLogInfoClass(ChatLogInfoStruct chatLogInfo)
+        public ChatLogDetails(ChatLogInfoStruct chatLogInfo)
         {
             ChatLogInfo = chatLogInfo;
         }
 
         public override bool Equals(object obj)
         {
-            ChatLogInfoClass rhs = obj as ChatLogInfoClass;
+            ChatLogDetails rhs = obj as ChatLogDetails;
             if (rhs == null)
                 return false;
             if (ChatLogInfo.NumberOfLines != rhs.ChatLogInfo.NumberOfLines)

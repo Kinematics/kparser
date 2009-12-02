@@ -200,8 +200,8 @@ namespace WaywardGamers.KParser.Monitoring
                     StatusMessage = "Found FFXI"
                 });
 
-                ChatLogInfoClass previousDetails = null;
-                ChatLogInfoClass currentDetails;
+                ChatLogDetails previousDetails = null;
+                ChatLogDetails currentDetails;
                 int highestLineProcessed = 0;
                 
                 int numberOfNewLines;
@@ -433,7 +433,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// <param name="chatLogLocation"></param>
         /// <returns>Returns a completed ChatLogDetails object if successful.
         /// If unsuccessful, returns null.</returns>
-        private ChatLogInfoClass ReadChatLogDetails(IntPtr chatLogInfoAddress)
+        private ChatLogDetails ReadChatLogDetails(IntPtr chatLogInfoAddress)
         {
             IntPtr lineOffsetsBuffer = IntPtr.Zero;
 
@@ -446,7 +446,7 @@ namespace WaywardGamers.KParser.Monitoring
                 else
                     throw new ArgumentNullException("pmr.ReadBufferPtr");
 
-                return new ChatLogInfoClass(chatLogInfoStruct);
+                return new ChatLogDetails(chatLogInfoStruct);
             }
         }
 
@@ -986,7 +986,7 @@ namespace WaywardGamers.KParser.Monitoring
                 //Dereference that pointer to get our next address.
                 IntPtr dataStructurePointer = new IntPtr(checkAddress);
 
-                ChatLogInfoClass examineDetails = ReadChatLogDetails(dataStructurePointer);
+                ChatLogDetails examineDetails = ReadChatLogDetails(dataStructurePointer);
 
                 byte[][] scanChatLines = ReadChatLinesAsByteArrays(examineDetails.ChatLogInfo.PtrToCurrentChatLog,
                         examineDetails.ChatLogInfo.FinalOffset, examineDetails.ChatLogInfo.NumberOfLines);
