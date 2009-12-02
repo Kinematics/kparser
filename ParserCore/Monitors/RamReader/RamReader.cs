@@ -181,7 +181,7 @@ namespace WaywardGamers.KParser.Monitoring
                 abortMonitorThread = false;
                 bool freshLogin = true;
 
-                if (FindFFXIProcess(false) == false)
+                if (FindFFXIProcess() == false)
                 {
                     OnReaderStatusChanged(new ReaderStatusEventArgs()
                     {
@@ -231,7 +231,7 @@ namespace WaywardGamers.KParser.Monitoring
                     // If polProcess is ever lost (player disconnects), block on trying to reacquire it.
                     if (pol == null)
                     {
-                        if (FindFFXIProcess(false) == false)
+                        if (FindFFXIProcess() == false)
                         {
                             // End here if the FindFFXIProcess returns false,
                             // as that means the monitor thread has been aborted.
@@ -771,7 +771,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// </summary>
         /// <returns>Returns true if process was found,
         /// false if monitoring was aborted before it was found.</returns>
-        private bool FindFFXIProcess(bool scanning)
+        private bool FindFFXIProcess()
         {
             // Keep going as long as we're still attempting to monitor
             while (abortMonitorThread == false)
@@ -808,12 +808,6 @@ namespace WaywardGamers.KParser.Monitoring
 
                                     pol = new POL(process, module.BaseAddress);
                                     process.Exited += new EventHandler(PolExited);
-
-                                    // Only try to locate the chat log if we're not in scanning mode.
-                                    // If we're scanning, then we're trying to manually redetermine
-                                    // the chat log's location.
-                                    //if (scanning == false)
-                                    //    LocateChatLog();
 
                                     // And end the search since we found what we wanted.
                                     return true;
@@ -913,7 +907,7 @@ namespace WaywardGamers.KParser.Monitoring
 
                 // Note: Automatically disables LocateChatLog in FindFFXIProcess().
 
-                if (FindFFXIProcess(true) == false)
+                if (FindFFXIProcess() == false)
                     return;
 
                 // Section 1
