@@ -179,9 +179,26 @@ namespace WaywardGamers.KParser.Monitoring
             try
             {
                 abortMonitorThread = false;
+                bool freshLogin = true;
 
                 if (FindFFXIProcess(false) == false)
+                {
+                    OnReaderStatusChanged(new ReaderStatusEventArgs()
+                    {
+                        Active = true,
+                        DataSourceType = DataSource.Ram,
+                        StatusMessage = "Failed to find FFXI"
+                    });
+
                     return;
+                }
+
+                OnReaderStatusChanged(new ReaderStatusEventArgs()
+                {
+                    Active = true,
+                    DataSourceType = DataSource.Ram,
+                    StatusMessage = "Found FFXI"
+                });
 
                 ChatLogInfoClass oldDetails = null;
                 ChatLogInfoClass currentDetails;
@@ -220,6 +237,8 @@ namespace WaywardGamers.KParser.Monitoring
                             // as that means the monitor thread has been aborted.
                             return;
                         }
+
+                        freshLogin = true;
                     }
 
                     try
@@ -332,6 +351,11 @@ namespace WaywardGamers.KParser.Monitoring
                         }
                         */
 
+                        if (freshLogin)
+                        {
+                            LocateChatLog();
+                            freshLogin = false;
+                        }
                         
                         //Fetch details such as how many lines are in the chat log, pointers to
                         //the memory containing the actual text, etc.
@@ -340,18 +364,43 @@ namespace WaywardGamers.KParser.Monitoring
 
                         // If read failed, it will return null.
                         if (currentDetails == null)
+                        {
+                            OnReaderStatusChanged(new ReaderStatusEventArgs()
+                            {
+                                Active = true,
+                                DataSourceType = DataSource.Ram,
+                                StatusMessage = "No details available."
+                            });
                             continue;
+                        }
 
                         // If every single field is the same as it was the last time we checked,
                         // assume that the chat log hasn't changed and continue on.
                         if (currentDetails.Equals(oldDetails))
+                        {
+                            OnReaderStatusChanged(new ReaderStatusEventArgs()
+                            {
+                                Active = true,
+                                DataSourceType = DataSource.Ram,
+                                StatusMessage = "No new chat data."
+                            });
+
                             continue;
+                        }
 
                         // If there are zero lines in the NEW chat log, they are not logged into
                         // the game (e.g. at the character selection screen).  Loop in a holding
                         // pattern.
                         if ((currentDetails.ChatLogInfo.NumberOfLines <= 0) || (currentDetails.ChatLogInfo.NumberOfLines > 50))
                         {
+                            OnReaderStatusChanged(new ReaderStatusEventArgs()
+                            {
+                                Active = true,
+                                DataSourceType = DataSource.Ram,
+                                StatusMessage = "Not logged in."
+                            });
+
+                            freshLogin = true;
                             highestLineProcessed = 0;
                             oldDetails = null;
                             continue;
@@ -385,6 +434,13 @@ namespace WaywardGamers.KParser.Monitoring
 
                         if (numberOfLinesMissed > 0)
                         {
+                            OnReaderStatusChanged(new ReaderStatusEventArgs()
+                            {
+                                Active = true,
+                                DataSourceType = DataSource.Ram,
+                                StatusMessage = string.Format("Missed {0} lines.", numberOfLinesMissed)
+                            });
+
                             // However we can't deal with more than 50 missed lines. That's as
                             // many as the old log holds.
                             if (numberOfLinesMissed > 50)
@@ -432,6 +488,14 @@ namespace WaywardGamers.KParser.Monitoring
                             // with a line number higher that the highest line number we've seen.
                             int indexOfFirstLineToProcess = (highestLineProcessed + 1) - firstLineNumber;
                             numberOfNewLines = currentDetails.ChatLogInfo.NumberOfLines - indexOfFirstLineToProcess;
+
+                            OnReaderStatusChanged(new ReaderStatusEventArgs()
+                            {
+                                Active = true,
+                                DataSourceType = DataSource.Ram,
+                                StatusMessage = string.Format("Reading {0} line{1}.", numberOfNewLines,
+                                    (numberOfNewLines == 1 ? "" : "s"))
+                            });
 
                             linesToProcessBytes = new byte[numberOfNewLines][];
                             Array.ConstrainedCopy(newChatLinesBytes, (int)indexOfFirstLineToProcess, linesToProcessBytes, 0, (int)numberOfNewLines);
@@ -748,8 +812,8 @@ namespace WaywardGamers.KParser.Monitoring
                                     // Only try to locate the chat log if we're not in scanning mode.
                                     // If we're scanning, then we're trying to manually redetermine
                                     // the chat log's location.
-                                    if (scanning == false)
-                                        LocateChatLog();
+                                    //if (scanning == false)
+                                    //    LocateChatLog();
 
                                     // And end the search since we found what we wanted.
                                     return true;
