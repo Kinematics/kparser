@@ -32,7 +32,9 @@ namespace WaywardGamers.KParser
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ParserWindow));
             this.statusStrip = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.programStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.reparseProgressNumbers = new System.Windows.Forms.ToolStripStatusLabel();
             this.pluginTabs = new System.Windows.Forms.TabControl();
             this.tabContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.closeTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -67,6 +69,7 @@ namespace WaywardGamers.KParser
             this.japaneseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.playerInformationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showJobInsteadOfNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsTestFunctionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsReparseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,7 +80,7 @@ namespace WaywardGamers.KParser
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.closeAllTabsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showJobInsteadOfNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.statusBarBufferSpace = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStrip.SuspendLayout();
             this.tabContextMenuStrip.SuspendLayout();
             this.mainMenuStrip.SuspendLayout();
@@ -86,15 +89,30 @@ namespace WaywardGamers.KParser
             // statusStrip
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel});
+            this.toolStripProgressBar,
+            this.programStatusLabel,
+            this.statusBarBufferSpace,
+            this.reparseProgressNumbers});
             resources.ApplyResources(this.statusStrip, "statusStrip");
             this.statusStrip.Name = "statusStrip";
             // 
-            // toolStripStatusLabel
+            // toolStripProgressBar
             // 
-            this.toolStripStatusLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripStatusLabel.Name = "toolStripStatusLabel";
-            resources.ApplyResources(this.toolStripStatusLabel, "toolStripStatusLabel");
+            resources.ApplyResources(this.toolStripProgressBar, "toolStripProgressBar");
+            this.toolStripProgressBar.Name = "toolStripProgressBar";
+            this.toolStripProgressBar.Step = 1;
+            this.toolStripProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            // 
+            // programStatusLabel
+            // 
+            this.programStatusLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.programStatusLabel.Name = "programStatusLabel";
+            resources.ApplyResources(this.programStatusLabel, "programStatusLabel");
+            // 
+            // reparseProgressNumbers
+            // 
+            this.reparseProgressNumbers.Name = "reparseProgressNumbers";
+            resources.ApplyResources(this.reparseProgressNumbers, "reparseProgressNumbers");
             // 
             // pluginTabs
             // 
@@ -333,6 +351,13 @@ namespace WaywardGamers.KParser
             resources.ApplyResources(this.playerInformationToolStripMenuItem, "playerInformationToolStripMenuItem");
             this.playerInformationToolStripMenuItem.Click += new System.EventHandler(this.playerInformationToolStripMenuItem_Click);
             // 
+            // showJobInsteadOfNameToolStripMenuItem
+            // 
+            this.showJobInsteadOfNameToolStripMenuItem.CheckOnClick = true;
+            this.showJobInsteadOfNameToolStripMenuItem.Name = "showJobInsteadOfNameToolStripMenuItem";
+            resources.ApplyResources(this.showJobInsteadOfNameToolStripMenuItem, "showJobInsteadOfNameToolStripMenuItem");
+            this.showJobInsteadOfNameToolStripMenuItem.CheckedChanged += new System.EventHandler(this.showJobInsteadOfNameToolStripMenuItem_CheckedChanged);
+            // 
             // toolsMenu
             // 
             this.toolsMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -401,12 +426,10 @@ namespace WaywardGamers.KParser
             resources.ApplyResources(this.closeAllTabsToolStripMenuItem, "closeAllTabsToolStripMenuItem");
             this.closeAllTabsToolStripMenuItem.Click += new System.EventHandler(this.closeAllTabsToolStripMenuItem_Click);
             // 
-            // showJobInsteadOfNameToolStripMenuItem
+            // statusBarBufferSpace
             // 
-            this.showJobInsteadOfNameToolStripMenuItem.CheckOnClick = true;
-            this.showJobInsteadOfNameToolStripMenuItem.Name = "showJobInsteadOfNameToolStripMenuItem";
-            resources.ApplyResources(this.showJobInsteadOfNameToolStripMenuItem, "showJobInsteadOfNameToolStripMenuItem");
-            this.showJobInsteadOfNameToolStripMenuItem.CheckedChanged += new System.EventHandler(this.showJobInsteadOfNameToolStripMenuItem_CheckedChanged);
+            this.statusBarBufferSpace.Name = "statusBarBufferSpace";
+            resources.ApplyResources(this.statusBarBufferSpace, "statusBarBufferSpace");
             // 
             // ParserWindow
             // 
@@ -434,7 +457,7 @@ namespace WaywardGamers.KParser
 
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.TabControl pluginTabs;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
+        private System.Windows.Forms.ToolStripStatusLabel programStatusLabel;
         private System.Windows.Forms.ContextMenuStrip tabContextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem closeTabToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeOtherTabsToolStripMenuItem;
@@ -479,5 +502,8 @@ namespace WaywardGamers.KParser
         private System.Windows.Forms.ToolStripMenuItem japaneseToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripMenuItem showJobInsteadOfNameToolStripMenuItem;
+        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar;
+        private System.Windows.Forms.ToolStripStatusLabel reparseProgressNumbers;
+        private System.Windows.Forms.ToolStripStatusLabel statusBarBufferSpace;
     }
 }
