@@ -1,7 +1,18 @@
 KParser Change Log
 
+1.4.6 (December 2, 2009)
+- Fix issue with filtering out 0 XP mobs when 'All' mobs were selected.
+- Fix issue in selecting certain subsets of mob groups.
+* Rewrote backend code for Extra Attacks plugin.  Now *much* faster (30k attack test parse for Zanshin took 75 seconds before; now takes 370 ms), and I believe more accurate in determining the separation between multiattack rounds.
+- Fix display bug in Performance tab that was the result of improper rounding of time values.
+- Check for item names that exceed the database size limit.
+- Fix potential deadlock in database code.
++ Provided more status feedback if Debug Mode is on.
+- Fix problem of losing track of chat log in RAM if player changes characters.
+
+
 1.4.5.1 (November 9, 2009)
-* Updated full list of ranged attacks.
+* Updated full list of new ranged attack messages.
 
 
 1.4.5 (November 9, 2009)
