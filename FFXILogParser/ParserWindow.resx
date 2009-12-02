@@ -137,7 +137,7 @@
   <data name="statusBarBufferSpace.Text" xml:space="preserve">
     <value>  </value>
   </data>
-  <data name="reparseProgressNumbers.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="secondaryStatusLabel.Size" type="System.Drawing.Size, System.Drawing">
     <value>0, 17</value>
   </data>
   <data name="statusStrip.Location" type="System.Drawing.Point, System.Drawing">
@@ -538,10 +538,10 @@
   <data name="&gt;&gt;programStatusLabel.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;reparseProgressNumbers.Name" xml:space="preserve">
-    <value>reparseProgressNumbers</value>
+  <data name="&gt;&gt;secondaryStatusLabel.Name" xml:space="preserve">
+    <value>secondaryStatusLabel</value>
   </data>
-  <data name="&gt;&gt;reparseProgressNumbers.Type" xml:space="preserve">
+  <data name="&gt;&gt;secondaryStatusLabel.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;closeTabToolStripMenuItem.Name" xml:space="preserve">

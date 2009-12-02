@@ -34,7 +34,7 @@ namespace WaywardGamers.KParser
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.programStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.reparseProgressNumbers = new System.Windows.Forms.ToolStripStatusLabel();
+            this.secondaryStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.pluginTabs = new System.Windows.Forms.TabControl();
             this.tabContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.closeTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -92,7 +92,7 @@ namespace WaywardGamers.KParser
             this.toolStripProgressBar,
             this.programStatusLabel,
             this.statusBarBufferSpace,
-            this.reparseProgressNumbers});
+            this.secondaryStatusLabel});
             resources.ApplyResources(this.statusStrip, "statusStrip");
             this.statusStrip.Name = "statusStrip";
             // 
@@ -109,10 +109,10 @@ namespace WaywardGamers.KParser
             this.programStatusLabel.Name = "programStatusLabel";
             resources.ApplyResources(this.programStatusLabel, "programStatusLabel");
             // 
-            // reparseProgressNumbers
+            // secondaryStatusLabel
             // 
-            this.reparseProgressNumbers.Name = "reparseProgressNumbers";
-            resources.ApplyResources(this.reparseProgressNumbers, "reparseProgressNumbers");
+            this.secondaryStatusLabel.Name = "secondaryStatusLabel";
+            resources.ApplyResources(this.secondaryStatusLabel, "secondaryStatusLabel");
             // 
             // pluginTabs
             // 
@@ -503,7 +503,7 @@ namespace WaywardGamers.KParser
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripMenuItem showJobInsteadOfNameToolStripMenuItem;
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar;
-        private System.Windows.Forms.ToolStripStatusLabel reparseProgressNumbers;
+        private System.Windows.Forms.ToolStripStatusLabel secondaryStatusLabel;
         private System.Windows.Forms.ToolStripStatusLabel statusBarBufferSpace;
     }
 }
