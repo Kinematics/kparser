@@ -272,7 +272,7 @@ namespace WaywardGamers.KParser.Monitoring
             if (File.Exists(fileName) == false)
                 throw new ArgumentException(string.Format("File: {0}\ndoes not exist.", fileName));
             
-            DateTime fileTimeStamp = File.GetLastWriteTime(fileName);
+            DateTime fileTimeStamp = File.GetLastWriteTime(fileName).ToUniversalTime();;
 
             string fileText = string.Empty;
             bool finishedReading = false;
@@ -330,7 +330,7 @@ namespace WaywardGamers.KParser.Monitoring
                 fileText = sr.ReadToEnd();
             }
 
-            ProcessRawLogText(fileText, File.GetLastWriteTime(fileName));
+            ProcessRawLogText(fileText, File.GetLastWriteTime(fileName).ToUniversalTime());
         }
 
         /// <summary>
