@@ -311,7 +311,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.NonCombat, Version=1.4.5.0, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.NonCombat, Version=1.4.6.0, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_04B1E5EF542129D53CADE3D700108D4C"
@@ -442,7 +442,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.Combat, Version=1.4.5.1, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.Combat, Version=1.4.6.0, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_6BA8DE60499B63FD65E10FB34C909D5F"
@@ -473,7 +473,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.Debugging, Version=1.4.5.0, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.Debugging, Version=1.4.6.0, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_91EEB530BB46D37C6A71096DDBD75C6A"
@@ -555,7 +555,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.ParserCore, Version=1.4.5.0, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.ParserCore, Version=1.4.7.0, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_CC50CF8B8B603576C057ED6CBB50FDA1"
@@ -683,14 +683,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:KParser"
-        "ProductCode" = "8:{BF1044D6-8BCD-4C03-8DA9-FC20FB1F6FDA}"
-        "PackageCode" = "8:{31323D5C-4B89-4365-A559-74FF10D4039A}"
+        "ProductCode" = "8:{2FB0A955-0CDD-4E6E-A996-128AB661D8A5}"
+        "PackageCode" = "8:{9E7FBC01-2410-45DB-B3E7-066ED3468789}"
         "UpgradeCode" = "8:{BE6F6D70-234C-4B71-96CD-D020C6872A1D}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.4.6"
+        "ProductVersion" = "8:1.4.7"
         "Manufacturer" = "8:Wayward Gamers"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://code.google.com/p/kparser"

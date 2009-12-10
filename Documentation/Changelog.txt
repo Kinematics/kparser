@@ -1,5 +1,10 @@
 KParser Change Log
 
+1.4.7
+- Fixed incorrect timestamps when parsing from log files.
+* Changed line count check from int to byte.  Should fix problem of failure to parse.
+
+
 1.4.6 (December 2, 2009)
 - Fix issue with filtering out 0 XP mobs when 'All' mobs were selected.
 - Fix issue in selecting certain subsets of mob groups.
