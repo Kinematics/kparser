@@ -67,7 +67,13 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         internal short[] prevLogOffsets;
 
         // Number of lines currently stored in the new log offsets list
-        internal int NumberOfLines;
+        internal byte NumberOfLines;
+        // Number appears to be an int most of the time, but apparently
+        // other data is stored in the following bytes.  Probably
+        // 2 shorts, but safer this way.
+        internal byte dummy1;
+        internal byte dummy2;
+        internal byte dummy3;
 
         // Pointer to the buffers that store the current/previous log buffers
         internal IntPtr PtrToCurrentChatLog;
