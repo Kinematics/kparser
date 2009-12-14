@@ -54,7 +54,7 @@ namespace WaywardGamers.KParser.Plugin
                 if (e.DatasetChanges.Interactions.Count != 0)
                 {
                     var enhancements = from i in e.DatasetChanges.Interactions
-                                       where i.AidType == (byte)AidType.Enhance
+                                       where (AidType)i.AidType == AidType.Enhance
                                        select i;
 
                     if (enhancements.Count() > 0)
@@ -90,9 +90,9 @@ namespace WaywardGamers.KParser.Plugin
                         {
                             Name = c.CombatantNameOrJobName,
                             Buffs = from b in c.GetInteractionsRowsByActorCombatantRelation()
-                                    where (b.AidType == (byte)AidType.Enhance ||
-                                           b.AidType == (byte)AidType.RemoveStatus ||
-                                           b.AidType == (byte)AidType.RemoveEnmity) &&
+                                    where ((AidType)b.AidType == AidType.Enhance ||
+                                           (AidType)b.AidType == AidType.RemoveStatus ||
+                                           (AidType)b.AidType == AidType.RemoveEnmity) &&
                                           b.Preparing == false &&
                                           b.IsActionIDNull() == false
                                     group b by b.ActionsRow.ActionName into ba
@@ -202,9 +202,9 @@ namespace WaywardGamers.KParser.Plugin
                             }
 
                             sb.AppendFormat(lsIntervalsFormat,
-                                TimespanString(minInterval),
-                                TimespanString(maxInterval),
-                                TimespanString(avgInterval));
+                                minInterval.FormattedShortTimeString(),
+                                maxInterval.FormattedShortTimeString(),
+                                avgInterval.FormattedShortTimeString());
                         }
 
                         sb.Append("\n");
@@ -246,9 +246,9 @@ namespace WaywardGamers.KParser.Plugin
                                 }
 
                                 sb.AppendFormat(lsIntervalsFormat,
-                                    TimespanString(minInterval),
-                                    TimespanString(maxInterval),
-                                    TimespanString(avgInterval));
+                                    minInterval.FormattedShortTimeString(),
+                                    maxInterval.FormattedShortTimeString(),
+                                    avgInterval.FormattedShortTimeString());
                             }
 
                             sb.Append("\n");
@@ -274,9 +274,9 @@ namespace WaywardGamers.KParser.Plugin
                         {
                             Name = c.CombatantNameOrJobName,
                             Buffs = from b in c.GetInteractionsRowsByTargetCombatantRelation()
-                                    where (b.AidType == (byte)AidType.Enhance ||
-                                           b.AidType == (byte)AidType.RemoveStatus ||
-                                           b.AidType == (byte)AidType.RemoveEnmity) &&
+                                    where ((AidType)b.AidType == AidType.Enhance ||
+                                           (AidType)b.AidType == AidType.RemoveStatus ||
+                                           (AidType)b.AidType == AidType.RemoveEnmity) &&
                                           b.Preparing == false &&
                                           b.IsActionIDNull() == false
                                     group b by b.ActionsRow.ActionName into ba
@@ -296,8 +296,8 @@ namespace WaywardGamers.KParser.Plugin
                                                       },
                                     },
                             SelfBuffs = from bt in c.GetInteractionsRowsByActorCombatantRelation()
-                                        where (bt.AidType == (byte)AidType.Enhance ||
-                                               bt.AidType == (byte)AidType.RemoveStatus) &&
+                                        where ((AidType)bt.AidType == AidType.Enhance ||
+                                               (AidType)bt.AidType == AidType.RemoveStatus) &&
                                               (bt.IsTargetIDNull() == true ||
                                                bt.CombatantsRowByTargetCombatantRelation.CombatantName == c.CombatantName) &&
                                               bt.Preparing == false &&
@@ -387,9 +387,9 @@ namespace WaywardGamers.KParser.Plugin
                                 }
 
                                 sb.AppendFormat(lsIntervalsFormat,
-                                    TimespanString(minInterval),
-                                    TimespanString(maxInterval),
-                                    TimespanString(avgInterval));
+                                    minInterval.FormattedShortTimeString(),
+                                    maxInterval.FormattedShortTimeString(),
+                                    avgInterval.FormattedShortTimeString());
                             }
 
                             sb.Append("\n");
@@ -433,9 +433,9 @@ namespace WaywardGamers.KParser.Plugin
                             }
 
                             sb.AppendFormat(lsIntervalsFormat,
-                                TimespanString(minInterval),
-                                TimespanString(maxInterval),
-                                TimespanString(avgInterval));
+                                minInterval.FormattedShortTimeString(),
+                                maxInterval.FormattedShortTimeString(),
+                                avgInterval.FormattedShortTimeString());
                         }
 
                         sb.Append("\n");
@@ -446,19 +446,6 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             PushStrings(sb, strModList);
-        }
-
-        private string TimespanString(TimeSpan timeSpan)
-        {
-            string tsBlock;
-
-            if (timeSpan.Hours > 0)
-                tsBlock = string.Format("{0}:{1:d2}:{2:d2}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
-            else
-                tsBlock = string.Format("{0}:{1:d2}", timeSpan.Minutes, timeSpan.Seconds);
-
-
-            return tsBlock;
         }
         #endregion
 
