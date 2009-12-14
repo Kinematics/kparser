@@ -196,6 +196,23 @@ namespace WaywardGamers.KParser
     /// </summary>
     public static class StringExtensions
     {
+        /// <summary>
+        /// Default version for formatting timespan strings.
+        /// </summary>
+        /// <param name="timeSpan"></param>
+        /// <returns></returns>
+        public static string FormattedShortTimeString(this TimeSpan timeSpan)
+        {
+            return timeSpan.FormattedShortTimeString(false);
+        }
+
+        /// <summary>
+        /// Format a timespan into a displayable string, with option to force hours to be shown.
+        /// Appropriate rounding done on seconds.
+        /// </summary>
+        /// <param name="timeSpan"></param>
+        /// <param name="forceIncludeHours"></param>
+        /// <returns></returns>
         public static string FormattedShortTimeString(this TimeSpan timeSpan, bool forceIncludeHours)
         {
             if (timeSpan == null)
