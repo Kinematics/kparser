@@ -370,7 +370,7 @@
     <value>Fights</value>
   </data>
   <data name="FightsPluginUnknownEnemy" xml:space="preserve">
-    <value>-Uknown-</value>
+    <value>-Unknown-</value>
   </data>
   <data name="ExtraAttPluginBaseAttNumLabel" xml:space="preserve">
     <value>Base # of Attacks:</value>

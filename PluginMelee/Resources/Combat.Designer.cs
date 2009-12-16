@@ -1258,7 +1258,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -Uknown-.
+        ///   Looks up a localized string similar to -Unknown-.
         /// </summary>
         internal static string FightsPluginUnknownEnemy {
             get {
