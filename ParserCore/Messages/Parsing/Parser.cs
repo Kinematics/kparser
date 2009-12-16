@@ -1524,9 +1524,9 @@ namespace WaywardGamers.KParser.Parsing
                     msgCombatDetails.IsPreparing = false;
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                    msgCombatDetails.InteractionType = InteractionType.Harm;
+                    //msgCombatDetails.InteractionType = InteractionType.Harm;
                     msgCombatDetails.ActionType = ActionType.Ability;
-                    msgCombatDetails.HarmType = HarmType.Enfeeble;
+                    //msgCombatDetails.HarmType = HarmType.Enfeeble;
                     message.SetParseSuccess(true);
                     return;
                 }
@@ -1534,13 +1534,41 @@ namespace WaywardGamers.KParser.Parsing
                 combatMatch = ParseExpressions.NoEffect2.Match(message.CurrentMessageText);
                 if (combatMatch.Success == true)
                 {
-                    msgCombatDetails.InteractionType = InteractionType.Harm;
                     msgCombatDetails.SuccessLevel = SuccessType.Failed;
                     msgCombatDetails.FailedActionType = FailedActionType.NoEffect;
 
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                     target.FailedActionType = FailedActionType.NoEffect;
+
+                    // If we know the entities involved, we can specify the type of interaction.
+                    // Do we want to do this, or leave it as unknown?
+                    if ((msgCombatDetails.ActorEntityType == EntityType.Player) &&
+                        (target.EntityType == EntityType.Player))
+                    {
+                        msgCombatDetails.InteractionType = InteractionType.Aid;
+                        msgCombatDetails.AidType = AidType.Enhance;
+                    }
+                    else if ((msgCombatDetails.ActorEntityType == EntityType.Mob) &&
+                        (target.EntityType == EntityType.Mob))
+                    {
+                        msgCombatDetails.InteractionType = InteractionType.Aid;
+                        msgCombatDetails.AidType = AidType.Enhance;
+                    }
+                    else if ((msgCombatDetails.ActorEntityType == EntityType.Player) &&
+                        (target.EntityType == EntityType.Mob))
+                    {
+                        msgCombatDetails.InteractionType = InteractionType.Harm;
+                        msgCombatDetails.HarmType = HarmType.Enfeeble;
+                    }
+                    else if ((msgCombatDetails.ActorEntityType == EntityType.Mob) &&
+                        (target.EntityType == EntityType.Player))
+                    {
+                        msgCombatDetails.InteractionType = InteractionType.Harm;
+                        msgCombatDetails.HarmType = HarmType.Enfeeble;
+                    }
+
                     target.HarmType = msgCombatDetails.HarmType;
+                    target.AidType = msgCombatDetails.AidType;
 
                     message.SetParseSuccess(true);
                     return;
