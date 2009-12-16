@@ -392,6 +392,17 @@ namespace WaywardGamers.KParser.Parsing
                 }
 
             }
+
+            if (combatDetails.InteractionType == InteractionType.Death)
+            {
+                // If a mob killed a pet, we'd know the entity type of the target.
+                // As such, if there's an unknown target entity type, it must be a player.
+                if ((combatDetails.ActorEntityType == EntityType.Mob) &&
+                    (target.EntityType == EntityType.Unknown))
+                {
+                    target.EntityType = EntityType.Player;
+                }
+            }
         }
     }
 }
