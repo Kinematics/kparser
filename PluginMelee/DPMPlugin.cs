@@ -10,7 +10,8 @@ using WaywardGamers.KParser;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    public class DPMPlugin : BasePluginControl
+    [Obsolete("Replaced by Performance plugin")]
+    class DPMPlugin : BasePluginControl
     {
         #region Member Variables
 
