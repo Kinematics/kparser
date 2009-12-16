@@ -1,6 +1,24 @@
 KParser Change Log
 
-1.4.7
+1.4.8 (December 16, 2009)
++ Buffs by Time plugin.  This plugin tracks certain particular buffs and sees how combat varies with and without the buffs.  They are divided into Accuracy-affecting buffs and Attack-affecting buffs.  Special notes:
+~ Souleater and Hasso are included in both Accuracy and Attack, since they affect both.
+~ Hasso is cancelled by Seigan; Innin and Yonin cancel each other; Dia is cancelled by equal or higher level Bio.
+~ All forms of Dia are assumed to last 1 minute.  IE: Dia III is assumed to have 2 merits.
+~ Songs and rolls are stacked/tracked 2 deep by the same brd/cor.  More than that within the duration limit push earlier ones off.
+~ Songs are assumed to last 2:24 (ie: get the bonus of a +2 instrument).
+~ Rolls are assumed to last 5:00 (ie: no consideration of Winning Streak merit is made).
+~ Sambas are assumed to last 2:00 (ie: bonus from AF head is assumed).
+~ Individual tiers of cor rolls are not accounted for.  Multiple Double-Ups to raise the value aren't separated out in reporting.
+~ Different weaponskills are not separated out in the Attack section.  There was too much information building up to fit that in.  May go back and rework that if it's really desired.
+~ Combinations of buffs are not accounted for.  The combinatorial effect of combining various mixes of Minuet + Berserk + Hasso + Warcry + etc was just too much to deal with, so each buff is simply tracked on its own.
+~ The only debuff that is tracked is Dia.  Other debuffs have to deal with partial resist issues, etc, and can't be tracked reliably.
+~ Potential additions: Various 'Break' weaponskills.
+- Fix issue of No Effect buffs causing incorrect entity determination.
+- Fix issue of players not being classified correctly in large fights, and of NMs with player-like names not being classified correctly.
+
+
+1.4.7 (December 10, 2009)
 - Fixed incorrect timestamps when parsing from log files.
 * Changed line count check from int to byte.  Should fix problem of failure to parse.
 
