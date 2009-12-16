@@ -1415,6 +1415,71 @@ namespace WaywardGamers.KParser
         }
 
         [Test]
+        public void FailSelfBuff2()
+        {
+            string chatText1 = "3b,18,2d,80808050,00001ef4,000023b8,001d,00,01,02,00,Motenten uses Spectral Jig.";
+            string chatText2 = "3b,18,2d,80808050,00001ef4,000023b9,0019,00,01,02,00,No effect on Motenten.1";
+            ChatLine chatLine1 = new ChatLine(chatText1);
+            MessageLine msgLine1 = new MessageLine(chatLine1);
+            ChatLine chatLine2 = new ChatLine(chatText2);
+            MessageLine msgLine2 = new MessageLine(chatLine2);
+
+            Message msg1 = Parser.Parse(msgLine1);
+
+            Assert.That(msg1.IsParseSuccessful, Is.True);
+            Assert.That(msg1.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg1.EventDetails, Is.Not.Null);
+            Assert.That(msg1.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg1.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg1.EventDetails.CombatDetails.ActorName, Is.EqualTo("Motenten"));
+            Assert.That(msg1.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Player));
+            Assert.That(msg1.EventDetails.CombatDetails.ActionType, Is.EqualTo(ActionType.Ability));
+            Assert.That(msg1.EventDetails.CombatDetails.ActionName, Is.EqualTo("Spectral Jig"));
+
+            MsgManager.Instance.Reset();
+            EntityManager.Instance.AddEntitiesFromMessage(msg1);
+            MsgManager.Instance.AddMessageToMessageCollection(msg1);
+
+            // Save msg1 in MsgManager
+            Message msg = Parser.Parse(msgLine2);
+
+            Assert.AreEqual(msg, msg1);
+
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.InteractionType, Is.EqualTo(InteractionType.Unknown));
+            Assert.That(msg.EventDetails.CombatDetails.AidType, Is.EqualTo(AidType.None));
+            Assert.That(msg.EventDetails.CombatDetails.HarmType, Is.EqualTo(HarmType.None));
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Motenten"));
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Player));
+            Assert.That(msg.EventDetails.CombatDetails.ActionType, Is.EqualTo(ActionType.Ability));
+            Assert.That(msg.EventDetails.CombatDetails.ActionName, Is.EqualTo("Spectral Jig"));
+            Assert.That(msg.EventDetails.CombatDetails.HasAdditionalEffect, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.IsPreparing, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.SuccessLevel, Is.EqualTo(SuccessType.Failed));
+            Assert.That(msg.EventDetails.CombatDetails.FailedActionType, Is.EqualTo(FailedActionType.NoEffect));
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Empty);
+
+            TargetDetails target = msg.EventDetails.CombatDetails.Targets.First();
+            Assert.That(target.EntityType, Is.EqualTo(EntityType.Player));
+            Assert.That(target.Name, Is.EqualTo("Motenten"));
+            Assert.That(target.AidType, Is.EqualTo(AidType.None));
+            Assert.That(target.HarmType, Is.EqualTo(HarmType.None));
+            Assert.That(target.DefenseType, Is.EqualTo(DefenseType.None));
+            Assert.That(target.FailedActionType, Is.EqualTo(FailedActionType.NoEffect));
+            Assert.That(target.Amount, Is.EqualTo(0));
+            Assert.That(target.DamageModifier, Is.EqualTo(DamageModifier.None));
+            Assert.That(target.ShadowsUsed, Is.EqualTo(0));
+
+            MsgManager.Instance.Reset();
+        }
+
+        [Test]
         public void FailRemoveStatus()
         {
             string chatText = "44,ee,e6,80a08040,00000ae0,00000cb0,002e,00,01,02,00,Starfall's Paralyna has no effect on Aurun.1";
