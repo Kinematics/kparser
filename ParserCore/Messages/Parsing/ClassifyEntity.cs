@@ -42,10 +42,10 @@ namespace WaywardGamers.KParser.Parsing
             // Check if we already have this name in the entity list.  If so, use that.
             List<EntityType> entityTypeList = EntityManager.Instance.LookupEntity(entityName);
 
+            // If we only have one entry, return that
             if (entityTypeList.Count == 1)
             {
-                if (entityTypeList[0] != EntityType.Unknown)
-                    return entityTypeList[0];
+                return entityTypeList[0];
             }
 
             // If there are multiple entries in the entity manager's list (ie: normal + charmed),
@@ -126,12 +126,37 @@ namespace WaywardGamers.KParser.Parsing
                 return EntityType.Fellow;
             }
 
+            // Technically we can't be certain at this point whether we have a player's
+            // name or a 'special' NM (eg: Genbu) that is otherwise indistinguishable
+            // from standard player names (no "the" prefix).  Return Unknown and
+            // disambiguate the name under VerifyEntities.
+            return EntityType.Unknown;
 
             // Anything else must be a player.
-            return EntityType.Player;
+            //return EntityType.Player;
         }
 
-        internal static void VerifyEntities(ref Message message, ref TargetDetails target, bool death)
+        /// <summary>
+        /// Verify all entities in the message.  Forced to do this if called from
+        /// a point where we don't know what the last target was.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="death"></param>
+        internal static void VerifyAllEntities(ref Message message, bool death)
+        {
+            foreach (var target in message.EventDetails.CombatDetails.Targets)
+            {
+                VerifyEntities(ref message, target, death);
+            }
+        }
+
+        /// <summary>
+        /// Verify a specific pair of entities involved in a message.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="target"></param>
+        /// <param name="death"></param>
+        internal static void VerifyEntities(ref Message message, TargetDetails target, bool death)
         {
             if (message == null)
                 throw new ArgumentNullException("message");
@@ -144,6 +169,21 @@ namespace WaywardGamers.KParser.Parsing
 
             uint msgCode = message.MessageCode;
             CombatDetails combatDetails = message.EventDetails.CombatDetails;
+
+            EntityType supposedActorType = ParseCodes.Instance.GetActorEntityType(message.MessageCode);
+            EntityType supposedTargetType = ParseCodes.Instance.GetTargetEntityType(message.MessageCode);
+
+            // Disambiguate Unknowns based on known message code values.
+
+            if (combatDetails.ActorEntityType == EntityType.Unknown)
+            {
+                combatDetails.ActorEntityType = supposedActorType;
+            }
+
+            if (target.EntityType == EntityType.Unknown)
+            {
+                target.EntityType = supposedTargetType;
+            }
 
 
 
@@ -168,6 +208,27 @@ namespace WaywardGamers.KParser.Parsing
                             target.EntityType = EntityType.CharmedMob;
                     }
                 }
+
+                if (combatDetails.ActorEntityType == EntityType.Unknown)
+                {
+                    if (target.EntityType == EntityType.Player)
+                    {
+                        combatDetails.ActorEntityType = EntityType.Player;
+                    }
+                    else if (target.EntityType == EntityType.Unknown)
+                    {
+                        combatDetails.ActorEntityType = EntityType.Player;
+                        target.EntityType = EntityType.Player;
+                    }
+                }
+                else if (target.EntityType == EntityType.Unknown)
+                {
+                    if (combatDetails.ActorEntityType != EntityType.Mob)
+                    {
+                        target.EntityType = EntityType.Player;
+                    }
+                }
+
 
                 return;
             }
