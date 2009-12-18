@@ -258,7 +258,8 @@ namespace WaywardGamers.KParser.Plugin
 
 
             tpMoveSet = from b in dataSet.Battles
-                        where (mobFilter.CheckFilterBattle(b) == true &&
+                        where (b.IsEnemyIDNull() == false &&
+                               mobFilter.CheckFilterBattle(b) == true &&
                                b.DefaultBattle == false) &&
                               (b.IsKillerIDNull() == true ||
                                RegexUtility.ExcludedPlayer.Match(b.CombatantsRowByBattleKillerRelation.PlayerInfo).Success == false)
@@ -279,7 +280,8 @@ namespace WaywardGamers.KParser.Plugin
                         };
 
             paralyzeSet = from b in dataSet.Battles
-                          where (mobFilter.CheckFilterBattle(b) == true &&
+                          where (b.IsEnemyIDNull() == false &&
+                                 mobFilter.CheckFilterBattle(b) == true &&
                                  b.DefaultBattle == false) &&
                                 (b.IsKillerIDNull() == true ||
                                  RegexUtility.ExcludedPlayer.Match(b.CombatantsRowByBattleKillerRelation.PlayerInfo).Success == false)
@@ -297,8 +299,8 @@ namespace WaywardGamers.KParser.Plugin
                                           select i,
                               Actions = from i in b.GetInteractionsRows()
                                         where (i.IsActorIDNull() == false &&
-                                              i.ActorID == b.EnemyID &&
-                                              ((ActionType)i.ActionType == ActionType.Melee ||
+                                               i.ActorID == b.EnemyID &&
+                                               ((ActionType)i.ActionType == ActionType.Melee ||
                                                (ActionType)i.ActionType == ActionType.Spell)) ||
                                               ((DefenseType)i.DefenseType == DefenseType.Shadow)
                                         select i,
@@ -311,10 +313,11 @@ namespace WaywardGamers.KParser.Plugin
                           };
 
             slowSet = from b in dataSet.Battles
-                          where (mobFilter.CheckFilterBattle(b) == true &&
-                                 b.DefaultBattle == false) &&
-                                (b.IsKillerIDNull() == true ||
-                                 RegexUtility.ExcludedPlayer.Match(b.CombatantsRowByBattleKillerRelation.PlayerInfo).Success == false)
+                      where (b.IsEnemyIDNull() == false &&
+                             mobFilter.CheckFilterBattle(b) == true &&
+                             b.DefaultBattle == false) &&
+                            (b.IsKillerIDNull() == true ||
+                             RegexUtility.ExcludedPlayer.Match(b.CombatantsRowByBattleKillerRelation.PlayerInfo).Success == false)
                           orderby b.BattleID
                           select new EnfeebleGroup
                           {
