@@ -1,5 +1,11 @@
 KParser Change Log
 
+
+1.4.9 (December 19, 2009)
+- Fix bug in analysis of Enfeebling tab.
+- Fix bug in parsing new ranged attack damage messages vs certain mobs.
+
+
 1.4.8 (December 16, 2009)
 + Buffs by Time plugin.  This plugin tracks certain particular buffs and sees how combat varies with and without the buffs.  They are divided into Accuracy-affecting buffs and Attack-affecting buffs.  Special notes:
 ~ Souleater and Hasso are included in both Accuracy and Attack, since they affect both.
