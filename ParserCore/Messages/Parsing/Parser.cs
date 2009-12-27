@@ -960,10 +960,6 @@ namespace WaywardGamers.KParser.Parsing
                                 target.Amount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
                                 target.HarmType = HarmType.Drain;
 
-                                target.SecondaryAidType = AidType.Recovery;
-                                target.SecondaryRecoveryType = RecoveryType.RecoverHP;
-                                target.SecondaryAmount = target.Amount;
-
                                 message.SetParseSuccess(true);
                                 return;
                             }
