@@ -942,6 +942,31 @@ namespace WaywardGamers.KParser.Parsing
                                 message.SetParseSuccess(true);
                                 return;
                             }
+                            // Check for additional effect: drain effects (eg: drain samba)
+                            combatMatch = ParseExpressions.DreadSpikes.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                target = msgCombatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
+                                if (target == null)
+                                    target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+
+                                if (string.IsNullOrEmpty(msgCombatDetails.ActorName))
+                                    msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+
+                                msgCombatDetails.InteractionType = InteractionType.Harm;
+                                msgCombatDetails.HarmType = HarmType.Drain;
+                                msgCombatDetails.ActionType = ActionType.Spikes;
+
+                                target.Amount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
+                                target.HarmType = HarmType.Drain;
+
+                                target.SecondaryAidType = AidType.Recovery;
+                                target.SecondaryRecoveryType = RecoveryType.RecoverHP;
+                                target.SecondaryAmount = target.Amount;
+
+                                message.SetParseSuccess(true);
+                                return;
+                            }
                             break;
                         case AidType.Enhance:
                             // Corsair rolls
