@@ -1381,7 +1381,8 @@ namespace WaywardGamers.KParser.Plugin
 
                         DateTime endTime = debuff.Timestamp + duration;
 
-                        var overrideDebuff = battleSet.FirstOrDefault(d => Regex.Match(d.ActionsRow.ActionName, overrideDebuffName).Success);
+                        var overrideDebuff = battleSet.FirstOrDefault(d => d.Timestamp >= debuff.Timestamp &&
+                            Regex.Match(d.ActionsRow.ActionName, overrideDebuffName).Success);
 
                         if (overrideDebuff != null)
                         {
