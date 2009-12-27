@@ -188,6 +188,30 @@ namespace WaywardGamers.KParser
             if (haveLast)
                 yield return (IGrouping<TKey, TSource>)(new GroupOfAdjacent<TSource, DateTime>(list, first));
         }
+
+        /// <summary>
+        /// Extension method to add AddRange function to ICollections.
+        /// </summary>
+        /// <typeparam name="T">The type of object held by the ICollection.</typeparam>
+        /// <param name="target">The collection to add items to.</param>
+        /// <param name="source">The collection to copy items from.</param>
+        /// <returns>Returns the target ICollection to allow continuation functions.</returns>
+        public static ICollection<T> AddRange<T>(this ICollection<T> target, IEnumerable<T> source)
+        {
+            if (target == null)
+                throw new ArgumentNullException("target");
+            if (source == null)
+                throw new ArgumentNullException("source");
+            if (target.IsReadOnly)
+                throw new ArgumentException("target is read-only");
+
+            foreach (T item in source)
+            {
+                target.Add(item);
+            }
+
+            return target;
+        }
     }
 
 
