@@ -915,7 +915,7 @@ namespace WaywardGamers.KParser
             Assert.That(msg.EventDetails.CombatDetails.HarmType, Is.EqualTo(HarmType.Damage));
             Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.False);
             Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.Empty);
-            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Unknown));
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Mob));
             Assert.That(msg.EventDetails.CombatDetails.HasAdditionalEffect, Is.False);
             Assert.That(msg.EventDetails.CombatDetails.IsPreparing, Is.False);
             Assert.That(msg.EventDetails.CombatDetails.SuccessLevel, Is.EqualTo(SuccessType.Unsuccessful));
@@ -950,7 +950,7 @@ namespace WaywardGamers.KParser
             Assert.That(msg.EventDetails.CombatDetails.HarmType, Is.EqualTo(HarmType.Damage));
             Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.False);
             Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.Empty);
-            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Unknown));
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Player));
             Assert.That(msg.EventDetails.CombatDetails.HasAdditionalEffect, Is.False);
             Assert.That(msg.EventDetails.CombatDetails.IsPreparing, Is.False);
             Assert.That(msg.EventDetails.CombatDetails.SuccessLevel, Is.EqualTo(SuccessType.Unsuccessful));
@@ -1225,7 +1225,7 @@ namespace WaywardGamers.KParser
             Assert.That(msg.EventDetails.CombatDetails.HarmType, Is.EqualTo(HarmType.Damage));
             Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.False);
             Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.Empty);
-            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Unknown));
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Mob));
             Assert.That(msg.EventDetails.CombatDetails.HasAdditionalEffect, Is.False);
             Assert.That(msg.EventDetails.CombatDetails.IsPreparing, Is.False);
             Assert.That(msg.EventDetails.CombatDetails.SuccessLevel, Is.EqualTo(SuccessType.Unsuccessful));
@@ -1432,7 +1432,7 @@ namespace WaywardGamers.KParser
             Assert.That(msg1.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
             Assert.That(msg1.EventDetails.CombatDetails.HasActor, Is.True);
             Assert.That(msg1.EventDetails.CombatDetails.ActorName, Is.EqualTo("Motenten"));
-            Assert.That(msg1.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Player));
+            Assert.That(msg1.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Unknown));
             Assert.That(msg1.EventDetails.CombatDetails.ActionType, Is.EqualTo(ActionType.Ability));
             Assert.That(msg1.EventDetails.CombatDetails.ActionName, Is.EqualTo("Spectral Jig"));
 
@@ -1450,8 +1450,8 @@ namespace WaywardGamers.KParser
             Assert.That(msg.EventDetails, Is.Not.Null);
             Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
             Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
-            Assert.That(msg.EventDetails.CombatDetails.InteractionType, Is.EqualTo(InteractionType.Unknown));
-            Assert.That(msg.EventDetails.CombatDetails.AidType, Is.EqualTo(AidType.None));
+            Assert.That(msg.EventDetails.CombatDetails.InteractionType, Is.EqualTo(InteractionType.Aid));
+            Assert.That(msg.EventDetails.CombatDetails.AidType, Is.EqualTo(AidType.Enhance));
             Assert.That(msg.EventDetails.CombatDetails.HarmType, Is.EqualTo(HarmType.None));
             Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
             Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Motenten"));
@@ -1468,7 +1468,7 @@ namespace WaywardGamers.KParser
             TargetDetails target = msg.EventDetails.CombatDetails.Targets.First();
             Assert.That(target.EntityType, Is.EqualTo(EntityType.Player));
             Assert.That(target.Name, Is.EqualTo("Motenten"));
-            Assert.That(target.AidType, Is.EqualTo(AidType.None));
+            Assert.That(target.AidType, Is.EqualTo(AidType.Enhance));
             Assert.That(target.HarmType, Is.EqualTo(HarmType.None));
             Assert.That(target.DefenseType, Is.EqualTo(DefenseType.None));
             Assert.That(target.FailedActionType, Is.EqualTo(FailedActionType.NoEffect));
