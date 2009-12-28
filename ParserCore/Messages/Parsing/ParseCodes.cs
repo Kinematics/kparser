@@ -104,7 +104,7 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0x3c] = InteractionType.Aid; // buff <pm>
             interactionTypeLookup[0x3d] = InteractionType.Harm; // enfeeble <pm>
             interactionTypeLookup[0x3e] = InteractionType.Unknown; //
-            interactionTypeLookup[0x3f] = InteractionType.Harm; // enfeeble <pm>, resisted
+            interactionTypeLookup[0x3f] = InteractionType.Unknown; // enfeeble <pm>, resisted
             interactionTypeLookup[0x40] = InteractionType.Aid; // buff <pm>, other?
             interactionTypeLookup[0x41] = InteractionType.Harm; // enfeeble target (any)
             interactionTypeLookup[0x42] = InteractionType.Unknown; //
@@ -281,7 +281,7 @@ namespace WaywardGamers.KParser
             aidTypeLookup[0x3c] = AidType.Enhance; // buff <pm>
             aidTypeLookup[0x3d] = AidType.None; // enfeeble <pm>
             aidTypeLookup[0x3e] = AidType.None; //
-            aidTypeLookup[0x3f] = AidType.None; // enfeeble <pm>, resisted
+            aidTypeLookup[0x3f] = AidType.RemoveStatus; // enfeeble <pm>, resisted
             aidTypeLookup[0x40] = AidType.Enhance; // buff <pm>, other?
             aidTypeLookup[0x41] = AidType.None; // enfeeble target (any)
             aidTypeLookup[0x42] = AidType.None; //
@@ -340,7 +340,7 @@ namespace WaywardGamers.KParser
             aidTypeLookup[0x77] = AidType.None; //
             aidTypeLookup[0x78] = AidType.None; //
             aidTypeLookup[0x79] = AidType.Item; // <item> fails to activate
-            aidTypeLookup[0x7a] = AidType.None; // Interrupted/paralyzed/etc.  Failed action
+            aidTypeLookup[0x7a] = AidType.RemoveStatus; // Cast raise/Interrupted/paralyzed/etc.  Failed action
             aidTypeLookup[0x7b] = AidType.None; // Red 'error' text. Ignore
             aidTypeLookup[0x7c] = AidType.None; //
             aidTypeLookup[0x7d] = AidType.None; //
@@ -1426,13 +1426,41 @@ namespace WaywardGamers.KParser
                 // Item use
                 case 0x5b:
                     return new List<uint>() { 0xab };
+                // Curagas
                 case 0x17:
-                    return new List<uint>() { 0x51 };
+                    return new List<uint>() { 0x51, 0x1f };
                 case 0x18:
                     return new List<uint>() { 0x55 };
+                case 0x1f:
+                    return new List<uint>() { 0x18 };
             }
 
             return null;
+        }
+
+        internal List<uint> GetAEAlternateCodes(uint messageCode)
+        {
+            switch (messageCode)
+            {
+                // Check for samba effects, which have a different code than the attack that
+                // triggered them.
+
+                // self-samba
+                case 0x1e:
+                    return new List<uint> { 0x14 };
+                // party-samba
+                case 0x22:
+                    return new List<uint> { 0x19 };
+                // ally drain effect/samba(?)
+                case 0xbb:
+                    return new List<uint> { 0xa3 };
+                // other-samba
+                case 0x2a:
+                    return new List<uint> { 0x28 };
+                // Anything else
+                default:
+                    return GetAlternateCodes(messageCode);
+            }
         }
         #endregion
 
