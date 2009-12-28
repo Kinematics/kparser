@@ -1,6 +1,12 @@
 KParser Change Log
 
 
+1.4.10 (December 27, 2009)
+- Fix bug in Buffs By Time plugin.
++ Add Dread Spikes parsing.
+* Revise handling of message linking.  Should generally be more accurate now, and fixes issue of -ga spells being improperly attributed.
+
+
 1.4.9 (December 19, 2009)
 - Fix bug in analysis of Enfeebling tab.
 - Fix bug in parsing new ranged attack damage messages vs certain mobs.
