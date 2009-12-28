@@ -643,6 +643,353 @@ namespace WaywardGamers.KParser.Parsing
             return msg;
         }
 
+        /// <summary>
+        /// Find a base spell cast or ability use or item use to match
+        /// the queried message.
+        /// </summary>
+        /// <param name="messageLine"></param>
+        /// <param name="altCodes"></param>
+        /// <param name="parsedMessage"></param>
+        /// <returns></returns>
+        internal Message FindMatchingSpellCastOrAbilityUse(MessageLine messageLine, List<uint> altCodes)
+        {
+            uint mcode = messageLine.MessageCode;
+            uint ecode1 = messageLine.ExtraCode1;
+            uint ecode2 = messageLine.ExtraCode2;
+            DateTime timestamp = messageLine.Timestamp;
+
+            if (mcode == 0)
+                throw new ArgumentOutOfRangeException("mcode", "No proper message code provided.");
+
+            if (currentMessageCollection.Count == 0)
+                return null;
+
+            // Raises or interrupted/uncompleteable actions.  No join message.
+            if (mcode == 0x7a)
+                return null;
+
+            Message msg = null;
+            // Don't attach to message that are too far back in time
+            DateTime minTimestamp = timestamp - TimeSpan.FromSeconds(10);
+
+            lock (currentMessageCollection)
+            {
+                // Search the last 50 messages of the collection (restricted in case of reparsing)
+                int startIndex = currentMessageCollection.Count - 50;
+                if (startIndex < 0)
+                    startIndex = 0;
+
+                var blockSet = currentMessageCollection.Skip(startIndex);
+                Message lastMessage = currentMessageCollection.Last();
+
+                // Check for lastTimestamp in case we're reading from logs
+                // where all messages from 50 message blocks will have the same
+                // timestamp, then an unknown interval before the next block.
+                DateTime lastTimestamp = lastMessage.Timestamp;
+
+                // Query set for everything except ecodes.  Based on main code only.
+                var eCodeBlock = blockSet.Where(m =>
+                    // Timestamp limits
+                    (m.Timestamp == lastTimestamp || m.Timestamp >= minTimestamp) &&
+                        // Code limits
+                     m.PrimaryMessageCode == mcode &&
+                        // Object existance
+                     m.EventDetails != null &&
+                     m.EventDetails.CombatDetails != null &&
+                        // Must have an Actor
+                     string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActorName) == false &&
+                        // Type of action
+                    (m.EventDetails.CombatDetails.ActionType == ActionType.Spell ||
+                     m.EventDetails.CombatDetails.ActionType == ActionType.Ability));
+
+                // If no main code sets found, try alt codes
+                if (((eCodeBlock == null) || (eCodeBlock.Count() == 0)) && (altCodes != null))
+                {
+                    eCodeBlock = blockSet.Where(m =>
+                        // Timestamp limits
+                        (m.Timestamp == lastTimestamp || m.Timestamp >= minTimestamp) &&
+                            // Code limits
+                         altCodes.Contains(m.PrimaryMessageCode) &&
+                            // Object existance
+                         m.EventDetails != null &&
+                         m.EventDetails.CombatDetails != null &&
+                            // Must have an Actor
+                         string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActorName) == false &&
+                            // Type of action
+                        (m.EventDetails.CombatDetails.ActionType == ActionType.Spell ||
+                         m.EventDetails.CombatDetails.ActionType == ActionType.Ability));
+                }
+
+                if ((eCodeBlock != null) && (eCodeBlock.Count() > 0))
+                {
+                    // Check for exact ecodes
+                    msg = eCodeBlock.LastOrDefault(m =>
+                        m.ExtraCode1 == ecode1 &&
+                        m.ExtraCode2 == ecode2);
+
+                    // Forbid 0 codes
+                    if (msg == null)
+                    {
+                        msg = eCodeBlock.LastOrDefault(m =>
+                            m.ExtraCode1 != 0 &&
+                            m.ExtraCode2 != 0);
+                    }
+
+                    // Allow any
+                    if (msg == null)
+                    {
+                        msg = eCodeBlock.LastOrDefault();
+                    }
+                }
+            }
+
+            return msg;
+        }
+
+        /// <summary>
+        /// Find a base spell cast or ability use or item use to match
+        /// the queried message.
+        /// </summary>
+        /// <param name="messageLine"></param>
+        /// <param name="altCodes"></param>
+        /// <param name="parsedMessage"></param>
+        /// <returns></returns>
+        internal Message FindMatchingSpellCastOrAbilityUseWithEffect(MessageLine messageLine,
+            List<uint> altCodes, string effect)
+        {
+            uint mcode = messageLine.MessageCode;
+            uint ecode1 = messageLine.ExtraCode1;
+            uint ecode2 = messageLine.ExtraCode2;
+            DateTime timestamp = messageLine.Timestamp;
+
+            if (mcode == 0)
+                throw new ArgumentOutOfRangeException("mcode", "No proper message code provided.");
+
+            if (string.IsNullOrEmpty(effect))
+                throw new ArgumentNullException("effect");
+
+            if (currentMessageCollection.Count == 0)
+                return null;
+
+            // Raises or interrupted/uncompleteable actions.  No join message.
+            if (mcode == 0x7a)
+                return null;
+
+            Message msg = null;
+            // Don't attach to message that are too far back in time
+            DateTime minTimestamp = timestamp - TimeSpan.FromSeconds(15);
+
+            lock (currentMessageCollection)
+            {
+                // Search the last 50 messages of the collection (restricted in case of reparsing)
+                int startIndex = currentMessageCollection.Count - 50;
+                if (startIndex < 0)
+                    startIndex = 0;
+
+                var blockSet = currentMessageCollection.Skip(startIndex);
+                Message lastMessage = currentMessageCollection.Last();
+
+                // Check for lastTimestamp in case we're reading from logs
+                // where all messages from 50 message blocks will have the same
+                // timestamp, then an unknown interval before the next block.
+                DateTime lastTimestamp = lastMessage.Timestamp;
+
+                // Query set for everything except ecodes.
+                var eCodeBlock = blockSet.Where(m =>
+                    // Timestamp limits
+                    (m.Timestamp == lastTimestamp || m.Timestamp >= minTimestamp) &&
+                        // Code limits
+                     m.PrimaryMessageCode == mcode &&
+                        // Object existance
+                     m.EventDetails != null &&
+                     m.EventDetails.CombatDetails != null &&
+                        // Must have an Actor
+                     string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActorName) == false &&
+                        // Type of action
+                    (m.EventDetails.CombatDetails.ActionType == ActionType.Spell ||
+                     m.EventDetails.CombatDetails.ActionType == ActionType.Ability) &&
+                        // Effect check
+                     m.EventDetails.CombatDetails.Targets.Any(t => t.EffectName == effect));
+
+
+                // If no main code sets found, try alt codes
+                if (((eCodeBlock == null) || (eCodeBlock.Count() == 0)) && (altCodes != null))
+                {
+                    eCodeBlock = blockSet.Where(m =>
+                        // Timestamp limits
+                        (m.Timestamp == lastTimestamp || m.Timestamp >= minTimestamp) &&
+                            // Code limits
+                         altCodes.Contains(m.PrimaryMessageCode) &&
+                            // Object existance
+                         m.EventDetails != null &&
+                         m.EventDetails.CombatDetails != null &&
+                            // Must have an Actor
+                         string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActorName) == false &&
+                            // Type of action
+                        (m.EventDetails.CombatDetails.ActionType == ActionType.Spell ||
+                         m.EventDetails.CombatDetails.ActionType == ActionType.Ability) &&
+                            // Effect check
+                         m.EventDetails.CombatDetails.Targets.Any(t => t.EffectName == effect));
+                }
+
+                // If nothing found with an existing effect name provided, check for 0-count entries.
+                // Query set for everything except ecodes.
+                if ((eCodeBlock == null) || (eCodeBlock.Count() == 0))
+                {
+                    eCodeBlock = blockSet.Where(m =>
+                        // Timestamp limits
+                        (m.Timestamp == lastTimestamp || m.Timestamp >= minTimestamp) &&
+                            // Code limits
+                         m.PrimaryMessageCode == mcode &&
+                            // Object existance
+                         m.EventDetails != null &&
+                         m.EventDetails.CombatDetails != null &&
+                            // Must have an Actor
+                         string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActorName) == false &&
+                            // Type of action
+                        (m.EventDetails.CombatDetails.ActionType == ActionType.Spell ||
+                         m.EventDetails.CombatDetails.ActionType == ActionType.Ability) &&
+                            // Effect check
+                         m.EventDetails.CombatDetails.Targets.Count == 0);
+
+                    // If no main code sets found, try alt codes
+                    if (((eCodeBlock == null) || (eCodeBlock.Count() == 0)) && (altCodes != null))
+                    {
+                        eCodeBlock = blockSet.Where(m =>
+                            // Timestamp limits
+                            (m.Timestamp == lastTimestamp || m.Timestamp >= minTimestamp) &&
+                                // Code limits
+                             altCodes.Contains(m.PrimaryMessageCode) &&
+                                // Object existance
+                             m.EventDetails != null &&
+                             m.EventDetails.CombatDetails != null &&
+                                // Must have an Actor
+                             string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActorName) == false &&
+                                // Type of action
+                            (m.EventDetails.CombatDetails.ActionType == ActionType.Spell ||
+                             m.EventDetails.CombatDetails.ActionType == ActionType.Ability) &&
+                                // Effect check
+                             m.EventDetails.CombatDetails.Targets.Count == 0);
+                    }
+                }
+
+                if ((eCodeBlock != null) && (eCodeBlock.Count() > 0))
+                {
+                    // Check for exact ecodes
+                    msg = eCodeBlock.LastOrDefault(m =>
+                        m.ExtraCode1 == ecode1 &&
+                        m.ExtraCode2 == ecode2);
+
+                    // Forbid 0 codes
+                    if (msg == null)
+                    {
+                        msg = eCodeBlock.LastOrDefault(m =>
+                            m.ExtraCode1 != 0 &&
+                            m.ExtraCode2 != 0);
+                    }
+
+                    // Allow any
+                    if (msg == null)
+                    {
+                        msg = eCodeBlock.LastOrDefault();
+                    }
+                }
+            }
+
+            return msg;
+        }
+
+        internal Message FindMatchingMeleeOrRanged(MessageLine messageLine, List<uint> altCodes)
+        {
+            uint mcode = messageLine.MessageCode;
+            uint ecode1 = messageLine.ExtraCode1;
+            uint ecode2 = messageLine.ExtraCode2;
+            DateTime timestamp = messageLine.Timestamp;
+
+            if (mcode == 0)
+                throw new ArgumentOutOfRangeException("mcode", "No proper message code provided.");
+
+            if (currentMessageCollection.Count == 0)
+                return null;
+
+            Message msg = null;
+            // Don't attach to message that are too far back in time
+            DateTime minTimestamp = timestamp - TimeSpan.FromSeconds(10);
+
+            lock (currentMessageCollection)
+            {
+                // Search the last 50 messages of the collection (restricted in case of reparsing)
+                int startIndex = currentMessageCollection.Count - 50;
+                if (startIndex < 0)
+                    startIndex = 0;
+
+                var blockSet = currentMessageCollection.Skip(startIndex);
+                Message lastMessage = currentMessageCollection.Last();
+
+                // Check for lastTimestamp in case we're reading from logs
+                // where all messages from 50 message blocks will have the same
+                // timestamp, then an unknown interval before the next block.
+                DateTime lastTimestamp = lastMessage.Timestamp;
+
+                // Query set for everything except ecodes.
+                var eCodeBlock = blockSet.Where(m =>
+                    // Timestamp limits
+                    (m.Timestamp == lastTimestamp || m.Timestamp >= minTimestamp) &&
+                        // Code limits
+                    (m.PrimaryMessageCode == mcode || (altCodes == null ? false : altCodes.Contains(m.PrimaryMessageCode))) &&
+                        // Object existance
+                     m.EventDetails != null &&
+                     m.EventDetails.CombatDetails != null &&
+                        // Must have an Actor
+                     string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActorName) == false &&
+                        // Type of action
+                    (m.EventDetails.CombatDetails.ActionType == ActionType.Melee ||
+                     m.EventDetails.CombatDetails.ActionType == ActionType.Ranged));
+
+
+                // If no main code sets found, try alt codes
+                //if (((eCodeBlock == null) || (eCodeBlock.Count() == 0)) && (altCodes != null))
+                //{
+                //    eCodeBlock = blockSet.Where(m =>
+                //        // Timestamp limits
+                //        (m.Timestamp == lastTimestamp || m.Timestamp >= minTimestamp) &&
+                //            // Code limits
+                //         altCodes.Contains(m.PrimaryMessageCode) &&
+                //            // Object existance
+                //         m.EventDetails != null &&
+                //         m.EventDetails.CombatDetails != null &&
+                //            // Must have an Actor
+                //         string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActorName) == false &&
+                //            // Type of action
+                //        (m.EventDetails.CombatDetails.ActionType == ActionType.Melee ||
+                //         m.EventDetails.CombatDetails.ActionType == ActionType.Ranged));
+                //}
+
+                if ((eCodeBlock != null) && (eCodeBlock.Count() > 0))
+                {
+                    // Check for exact ecodes
+                    msg = eCodeBlock.LastOrDefault(m =>
+                        m.ExtraCode1 == ecode1 &&
+                        m.ExtraCode2 == ecode2);
+
+                    // Forbid 0 codes
+                    if (msg == null)
+                    {
+                        msg = eCodeBlock.LastOrDefault(m =>
+                            m.ExtraCode1 != 0 &&
+                            m.ExtraCode2 != 0);
+                    }
+
+                    // Allow any
+                    if (msg == null)
+                    {
+                        msg = eCodeBlock.LastOrDefault();
+                    }
+                }
+            }
+
+            return msg;
+        }
         #endregion
 
         #region Methods to periodically push the accumulated messages to the database.
@@ -748,14 +1095,14 @@ namespace WaywardGamers.KParser.Parsing
                     break;
                 case DataSource.Database:
                     // In database reading mode, the messages are going to come very quickly
-                    // Leave the last 10 messages always.  When the re-parse ends, the
+                    // Leave the last 30 messages always.  When the re-parse ends, the
                     // ProcessRemainingMessages method will clean up the leftovers.
                     lock (currentMessageCollection)
                     {
-                        if (currentMessageCollection.Count > 10)
+                        if (currentMessageCollection.Count > 30)
                         {
-                            messagesToProcess.AddRange(currentMessageCollection.GetRange(0, currentMessageCollection.Count - 10));
-                            currentMessageCollection.RemoveRange(0, currentMessageCollection.Count - 10);
+                            messagesToProcess.AddRange(currentMessageCollection.GetRange(0, currentMessageCollection.Count - 30));
+                            currentMessageCollection.RemoveRange(0, currentMessageCollection.Count - 30);
                         }
                     }
                     break;
