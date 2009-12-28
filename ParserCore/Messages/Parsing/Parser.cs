@@ -22,7 +22,12 @@ namespace WaywardGamers.KParser.Parsing
         /// <param name="messageLine"></param>
         internal static Message Parse(MessageLine messageLine)
         {
-            Message message = GetAttachedMessage(messageLine);
+            Message message = null;// GetAttachedMessage(messageLine);
+            Message altMsg = GetBaseMessage(messageLine);
+
+            //if (message != altMsg)
+            //    Debugger.Break();
+            message = altMsg;
 
             if (message == null)
             {
@@ -128,6 +133,132 @@ namespace WaywardGamers.KParser.Parsing
             }
 
             msg = MsgManager.Instance.FindMessageWithEventNumber(messageLine.EventSequence);
+
+            return msg;
+        }
+
+        private static Message GetBaseMessage(MessageLine messageLine)
+        {
+            Message msg = null;
+
+            // Messages with the same event number are tied together.  If we've already
+            // processed a message with the same event number, get that.  This can include
+            // things like critical hits, or messages that were broken up to fit the screen
+            // width.
+            msg = MsgManager.Instance.FindMessageWithEventNumber(messageLine.EventSequence);
+
+            // If there was no prior message with the same event number, do more complicated checking.
+
+            // Additional messages can be:
+
+            // AOE Cure (Curaga/etc)
+            // Player casts spell/uses ability.
+            // PlayerX recovers Y HP.
+
+            // AOE Buff (protectra/ballad/etc)
+            // Player casts spell.
+            // PlayerX gains the effect of Protect.
+            // Player uses Ability.
+            // PlayerX receives the effect of Samurai Roll.
+
+            // Item use.
+            // Player uses Hi-Potion.
+            // Player recovers 100 HP. [possible extended delay here]
+
+            // AOE Damage (blizzaga, etc)
+            // Player casts spell.
+            // Target takes X points of damage.
+
+            // AOE Status (poisonga/graviga/etc)
+            // Player casts Poisonga.
+            // MobX receives the effect of poison.
+
+            // Additional Effect
+            // Samba: Additional effect: 11 HP drained from the Mamool Ja Mimer.
+            // Enspell: Additional effect: 11 points of damage.
+            // etc
+            // Base message can only have 1 additional effect attached.
+            // Base message must be a ranged or melee attack.
+
+            // Critical hits.
+            // Taken care of already, since they'll have the same event number
+
+
+            // Curaga
+            if (msg == null)
+            {
+                if (ParseExpressions.RecoversHP.Match(messageLine.TextOutput).Success)
+                {
+                    msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUse(messageLine,
+                        ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode));
+                }
+            }
+
+            // AOE Buff
+            if (msg == null)
+            {
+                Match buffMatch = ParseExpressions.Buff.Match(messageLine.TextOutput);
+                Match debuffMatch = ParseExpressions.Debuff.Match(messageLine.TextOutput);
+                Match resMatch = ParseExpressions.GainResistance.Match(messageLine.TextOutput);
+                Match corMatch = ParseExpressions.GainCorRoll.Match(messageLine.TextOutput);
+
+                if (buffMatch.Success ||
+                    debuffMatch.Success ||
+                    resMatch.Success ||
+                    corMatch.Success)
+                {
+                    string effect = buffMatch.Success ? buffMatch.Groups[ParseFields.Effect].Value :
+                                    debuffMatch.Success ? debuffMatch.Groups[ParseFields.Effect].Value :
+                                    resMatch.Success ? resMatch.Groups[ParseFields.Effect].Value :
+                                    corMatch.Groups[ParseFields.Ability].Value;
+
+                    msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseWithEffect(messageLine,
+                        ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), effect);
+                }
+            }
+
+            // AOE Buff (2)
+            if (msg == null)
+            {
+                if (ParseExpressions.Enhance.Match(messageLine.TextOutput).Success ||
+                    ParseExpressions.RemoveStatus.Match(messageLine.TextOutput).Success)
+                {
+                    msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUse(messageLine,
+                        ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode));
+                }
+            }
+
+            // AOE Damage
+            if (msg == null)
+            {
+                if (ParseExpressions.TargetTakesDamage.Match(messageLine.TextOutput).Success)
+                {
+                    msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUse(messageLine,
+                        ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode));
+                }
+            }
+
+            // AOE Status/Debuff
+            if (msg == null)
+            {
+                if (ParseExpressions.Dispelled.Match(messageLine.TextOutput).Success ||
+                    ParseExpressions.Debuff.Match(messageLine.TextOutput).Success ||
+                    ParseExpressions.Enfeeble.Match(messageLine.TextOutput).Success)
+                {
+                    msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUse(messageLine,
+                        ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode));
+                }
+            }
+
+            // Additional Effect
+            if (msg == null)
+            {
+                if (ParseExpressions.AdditionalEffect.Match(messageLine.TextOutput).Success)
+                {
+                    msg = MsgManager.Instance.FindMatchingMeleeOrRanged(messageLine,
+                        ParseCodes.Instance.GetAEAlternateCodes(messageLine.MessageCode));
+                }
+            }
 
             return msg;
         }
@@ -905,6 +1036,7 @@ namespace WaywardGamers.KParser.Parsing
                                 target = msgCombatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
                                 if (target != null)
                                 {
+                                    msgCombatDetails.InteractionType = InteractionType.Harm;
                                     target.SecondaryAidType = AidType.Recovery;
                                     target.SecondaryRecoveryType = RecoveryType.RecoverHP;
                                     target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
@@ -919,6 +1051,7 @@ namespace WaywardGamers.KParser.Parsing
                                 target = msgCombatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
                                 if (target != null)
                                 {
+                                    msgCombatDetails.InteractionType = InteractionType.Harm;
                                     target.SecondaryAidType = AidType.Recovery;
                                     target.SecondaryRecoveryType = RecoveryType.RecoverMP;
                                     target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
@@ -933,6 +1066,7 @@ namespace WaywardGamers.KParser.Parsing
                                 target = msgCombatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
                                 if (target != null)
                                 {
+                                    msgCombatDetails.InteractionType = InteractionType.Harm;
                                     target.SecondaryAidType = AidType.None;
                                     target.SecondaryRecoveryType = RecoveryType.RecoverHP;
                                     target.SecondaryHarmType = HarmType.Damage;
@@ -971,6 +1105,7 @@ namespace WaywardGamers.KParser.Parsing
                             {
                                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                                msgCombatDetails.ActionType = ActionType.Ability;
                                 msgCombatDetails.CorsairRoll = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
                                 message.SetParseSuccess(true);
                                 return;
@@ -979,6 +1114,7 @@ namespace WaywardGamers.KParser.Parsing
                             if (combatMatch.Success == true)
                             {
                                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                                msgCombatDetails.ActionType = ActionType.Ability;
                                 msgCombatDetails.CorsairRoll = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
                                 message.SetParseSuccess(true);
                                 return;
@@ -1586,11 +1722,24 @@ namespace WaywardGamers.KParser.Parsing
                     msgCombatDetails.InteractionType = InteractionType.Harm;
                     msgCombatDetails.HarmType = HarmType.Enfeeble;
                 }
-                else if ((msgCombatDetails.ActorEntityType == EntityType.Mob) &&
-                    (target.EntityType == EntityType.Player))
+                else if (msgCombatDetails.ActorEntityType == EntityType.Mob)
                 {
                     msgCombatDetails.InteractionType = InteractionType.Harm;
                     msgCombatDetails.HarmType = HarmType.Enfeeble;
+
+                    if (target.EntityType == EntityType.Unknown)
+                        target.EntityType = EntityType.Player;
+                }
+                else if ((msgCombatDetails.ActorEntityType == EntityType.Unknown) &&
+                    (target.EntityType == EntityType.Unknown))
+                {
+                    if (msgCombatDetails.ActorName == target.Name)
+                    {
+                        msgCombatDetails.InteractionType = InteractionType.Aid;
+                        msgCombatDetails.AidType = AidType.Enhance;
+                        msgCombatDetails.ActorEntityType = EntityType.Player;
+                        target.EntityType = EntityType.Player;
+                    }
                 }
 
                 target.HarmType = msgCombatDetails.HarmType;
