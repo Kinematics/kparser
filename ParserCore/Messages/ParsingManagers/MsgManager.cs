@@ -655,7 +655,6 @@ namespace WaywardGamers.KParser.Parsing
         /// </summary>
         /// <param name="messageLine"></param>
         /// <param name="altCodes"></param>
-        /// <param name="parsedMessage"></param>
         /// <returns></returns>
         internal Message FindMatchingSpellCastOrAbilityUse(MessageLine messageLine, List<uint> altCodes)
         {
@@ -758,7 +757,7 @@ namespace WaywardGamers.KParser.Parsing
         /// </summary>
         /// <param name="messageLine"></param>
         /// <param name="altCodes"></param>
-        /// <param name="parsedMessage"></param>
+        /// <param name="effect"></param>
         /// <returns></returns>
         internal Message FindMatchingSpellCastOrAbilityUseWithEffect(MessageLine messageLine,
             List<uint> altCodes, string effect)
@@ -905,6 +904,12 @@ namespace WaywardGamers.KParser.Parsing
             return msg;
         }
 
+        /// <summary>
+        /// Find a melee or ranged attack to match an additional effect message.
+        /// </summary>
+        /// <param name="messageLine"></param>
+        /// <param name="altCodes"></param>
+        /// <returns></returns>
         internal Message FindMatchingMeleeOrRanged(MessageLine messageLine, List<uint> altCodes)
         {
             uint mcode = messageLine.MessageCode;
@@ -1037,8 +1042,8 @@ namespace WaywardGamers.KParser.Parsing
         /// to the database based on filter conditions.</returns>
         private List<Message> GetMessagesToProcess()
         {
-            // If we're in RAM mode, take anything more than 5 seconds old.
-            DateTime shortCheckTime = DateTime.Now.ToUniversalTime() - TimeSpan.FromSeconds(5);
+            // If we're in RAM mode, take anything more than 15 seconds old.
+            DateTime shortCheckTime = DateTime.Now.ToUniversalTime() - TimeSpan.FromSeconds(15);
             // If we're in LOG mode, leave the last 10 messages with the same timestamp
             // for at least 2 minutes in case of log file cross-over.
             DateTime longCheckTime = DateTime.Now.ToUniversalTime() - TimeSpan.FromMinutes(2);
