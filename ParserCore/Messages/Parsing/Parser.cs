@@ -432,8 +432,6 @@ namespace WaywardGamers.KParser.Parsing
                     break;
                 case ChatMessageType.Emote:
                     chatName = ParseExpressions.ChatEmote.Match(message.CurrentMessageText);
-                    if (chatName.Success == false)
-                        chatName = ParseExpressions.ChatEmoteA.Match(message.CurrentMessageText);
                     break;
                 case ChatMessageType.Tell:
                     chatName = ParseExpressions.ChatTell.Match(message.CurrentMessageText);
