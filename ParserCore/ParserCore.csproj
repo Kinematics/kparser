@@ -162,7 +162,6 @@
     <Compile Include="Messages\Parsing\ClassifyEntity.cs" />
     <Compile Include="Messages\Parsing\ParseCodes.cs" />
     <Compile Include="Messages\Message.cs" />
-    <Compile Include="Messages\MessageManager.cs" />
     <Compile Include="Messages\Parsing\Parser.cs" />
     <Compile Include="Monitors\AbstractReader.cs" />
     <Compile Include="Monitors\DatabaseReader\DatabaseReader.cs" />
