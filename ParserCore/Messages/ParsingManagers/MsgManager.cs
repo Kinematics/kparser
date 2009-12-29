@@ -309,6 +309,12 @@ namespace WaywardGamers.KParser.Parsing
             {
                 // Reverse search the collection list
                 msg = currentMessageCollection.LastOrDefault(m => m.MessageID == eventNumber);
+
+                // If no primary messages are using the event number, check to see if the
+                // event number matches any sub-messages (ie: for line-wrapped additional effects, etc).
+                if (msg == null)
+                    msg = currentMessageCollection.LastOrDefault(m =>
+                        m.MessageLineCollection.Any(ml => ml.EventSequence == eventNumber));
             }
 
             return msg;
@@ -944,26 +950,14 @@ namespace WaywardGamers.KParser.Parsing
                      string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActorName) == false &&
                         // Type of action
                     (m.EventDetails.CombatDetails.ActionType == ActionType.Melee ||
-                     m.EventDetails.CombatDetails.ActionType == ActionType.Ranged));
-
-
-                // If no main code sets found, try alt codes
-                //if (((eCodeBlock == null) || (eCodeBlock.Count() == 0)) && (altCodes != null))
-                //{
-                //    eCodeBlock = blockSet.Where(m =>
-                //        // Timestamp limits
-                //        (m.Timestamp == lastTimestamp || m.Timestamp >= minTimestamp) &&
-                //            // Code limits
-                //         altCodes.Contains(m.PrimaryMessageCode) &&
-                //            // Object existance
-                //         m.EventDetails != null &&
-                //         m.EventDetails.CombatDetails != null &&
-                //            // Must have an Actor
-                //         string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActorName) == false &&
-                //            // Type of action
-                //        (m.EventDetails.CombatDetails.ActionType == ActionType.Melee ||
-                //         m.EventDetails.CombatDetails.ActionType == ActionType.Ranged));
-                //}
+                     m.EventDetails.CombatDetails.ActionType == ActionType.Ranged) &&
+                        // Can only have 1 additional effect per attack
+                     m.EventDetails.CombatDetails.HasAdditionalEffect == false &&
+                        // This function is only called for additional effects, so the
+                        // target must have already been parsed.  Needs to be a single
+                        // target, and not a miss.
+                     m.EventDetails.CombatDetails.Targets.Count == 1 &&
+                     m.EventDetails.CombatDetails.Targets[0].DefenseType == DefenseType.None);
 
                 if ((eCodeBlock != null) && (eCodeBlock.Count() > 0))
                 {
