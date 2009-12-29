@@ -11,33 +11,30 @@ namespace WaywardGamers.KParser.Parsing
     {
         #region Member Variables
         private static uint lastMessageID = 0;
-        private static Random random = new Random();
         #endregion
 
         #region Top-level category breakdown
         /// <summary>
-        /// Takes the provided Message and parses its contents, updating
+        /// Takes the provided Message Line and parses its contents, updating
         /// the internal data of the message as it goes.
         /// </summary>
-        /// <param name="messageLine"></param>
+        /// <param name="messageLine">Individual message lines passed in by the
+        /// message manager as data is accumulated by the Monitor.</param>
         internal static Message Parse(MessageLine messageLine)
         {
-            Message message = null;// GetAttachedMessage(messageLine);
-            Message altMsg = GetBaseMessage(messageLine);
-
-            //if (message != altMsg)
-            //    Debugger.Break();
-            message = altMsg;
+            Message message = GetBaseMessage(messageLine);
 
             if (message == null)
             {
-                message = new Message();
-                InitialParse(message, messageLine);
+                message = new Message(messageLine);
+
+                InitialParse(message);
                 lastMessageID = message.MessageID;
             }
             else
             {
-                ContinueParse(message, messageLine);
+                message.AddMessageLine(messageLine);
+                ContinueParse(message);
             }
 
             if (message.IsParseSuccessful == true)
@@ -60,7 +57,7 @@ namespace WaywardGamers.KParser.Parsing
                                 prevMsg.AddMessageLine(msgLine);
 
                             message = prevMsg;
-                            ContinueParse(message, null);
+                            ContinueParse(message);
                         }
                         else
                         {
@@ -73,70 +70,12 @@ namespace WaywardGamers.KParser.Parsing
             return message;
         }
 
-        private static Message GetAttachedMessage(MessageLine messageLine)
-        {
-            Message msg = null;
-
-            if (messageLine.EventSequence > lastMessageID)
-            {
-                // Check for additional effects
-
-                if (ParseExpressions.AdditionalEffect.Match(messageLine.TextOutput).Success == true)
-                {
-                    // Check for samba effects, which have a different code than the attack that
-                    // triggered them.
-                    switch (messageLine.MessageCode)
-                    {
-                        // self-samba
-                        case 0x1e:
-                            msg = MsgManager.Instance.FindLastMessageToMatch(messageLine,
-                                new List<uint> {0x14}, null);
-                            break;
-                        // party-samba
-                        case 0x22:
-                            msg = MsgManager.Instance.FindLastMessageToMatch(messageLine,
-                                new List<uint> { 0x19 }, null);
-                            break;
-                        // ally drain effect/samba(?)
-                        case 0xbb:
-                            msg = MsgManager.Instance.FindLastMessageToMatch(messageLine,
-                                new List<uint> { 0xa3 }, null);
-                            break;
-                        // other-samba
-                        case 0x2a:
-                            msg = MsgManager.Instance.FindLastMessageToMatch(messageLine,
-                                new List<uint> { 0x28 }, null);
-                            break;
-                        // Anything else
-                        default:
-                            msg = MsgManager.Instance.FindLastMessageToMatch(messageLine,
-                                ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), null);
-                            break;
-                    }
-
-                    if (msg != null)
-                        msg.EventDetails.CombatDetails.HasAdditionalEffect = true;
-                }
-                else
-                {
-                    switch (messageLine.MessageCode)
-                    {
-                        // Recovery (possible AOE)
-                        case 0x17:
-                            msg = MsgManager.Instance.FindLastMessageToMatch(messageLine,
-                                new List<uint> { 0x1f }, null);
-                            break;
-                    }
-                }
-
-                return msg;
-            }
-
-            msg = MsgManager.Instance.FindMessageWithEventNumber(messageLine.EventSequence);
-
-            return msg;
-        }
-
+        /// <summary>
+        /// Do a systematic search for past messages to find any that the current
+        /// message can be attached to before we decide to create a new message.
+        /// </summary>
+        /// <param name="messageLine">The message line to search on.</param>
+        /// <returns>Returns the message that we can attach to if found, null if none found.</returns>
         private static Message GetBaseMessage(MessageLine messageLine)
         {
             Message msg = null;
@@ -257,16 +196,22 @@ namespace WaywardGamers.KParser.Parsing
                 {
                     msg = MsgManager.Instance.FindMatchingMeleeOrRanged(messageLine,
                         ParseCodes.Instance.GetAEAlternateCodes(messageLine.MessageCode));
+
+                    // If we got a valid message, we can mark it has having an additional effect.
+                    if (msg != null)
+                        msg.EventDetails.CombatDetails.HasAdditionalEffect = true;
                 }
             }
 
             return msg;
         }
 
-        private static void InitialParse(Message message, MessageLine messageLine)
+        /// <summary>
+        /// Code branching for initial parse of a new message.
+        /// </summary>
+        /// <param name="message"></param>
+        private static void InitialParse(Message message)
         {
-            message.AddMessageLine(messageLine);
-
             switch (message.MessageCategory)
             {
                 case MessageCategoryType.Chat:
@@ -281,10 +226,13 @@ namespace WaywardGamers.KParser.Parsing
             }
         }
 
-        private static Message ContinueParse(Message message, MessageLine messageLine)
+        /// <summary>
+        /// Code branching for a continuing parse of a message that was partly parsed before.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        private static Message ContinueParse(Message message)
         {
-            message.AddMessageLine(messageLine);
-
             switch (message.MessageCategory)
             {
                 case MessageCategoryType.Chat:
@@ -336,9 +284,8 @@ namespace WaywardGamers.KParser.Parsing
                     message.ChatDetails.ChatSpeakerName = "-Linkshell-";
                     message.ChatDetails.ChatSpeakerType = SpeakerType.Unknown;
                     message.ChatDetails.FullChatText = message.CompleteMessageText;
-                    message.SetParseSuccess(true);
                     break;
-                case 0xce:
+                case 0xce: // Echo messages - Store those marked with appropriate prefix as chat messages.
                     if (message.CompleteMessageText.StartsWith("KP:", StringComparison.InvariantCultureIgnoreCase) ||
                         message.CompleteMessageText.StartsWith("KPARSER:", StringComparison.InvariantCultureIgnoreCase))
                     {
@@ -347,7 +294,6 @@ namespace WaywardGamers.KParser.Parsing
                         message.ChatDetails.ChatSpeakerName = "-Echo-";
                         message.ChatDetails.ChatSpeakerType = SpeakerType.Self;
                         message.ChatDetails.FullChatText = message.CompleteMessageText;
-                        message.SetParseSuccess(true);
                     }
                     else
                     {
@@ -372,14 +318,16 @@ namespace WaywardGamers.KParser.Parsing
                     message.ChatDetails.ChatSpeakerName = "-Arena-";
                     message.ChatDetails.ChatSpeakerType = SpeakerType.NPC;
                     message.ChatDetails.FullChatText = message.CompleteMessageText;
-                    message.SetParseSuccess(true);
                     break;
                 default:
                     message.SystemDetails.SystemMessageType = SystemMessageType.Unknown;
                     break;
             }
 
-            if (message.SystemDetails.SystemMessageType != SystemMessageType.Unknown)
+            // If we successfully determined the message type, or recategorized it as Chat,
+            // mark it as successfully parsed.
+            if ((message.SystemDetails.SystemMessageType != SystemMessageType.Unknown) ||
+                (message.MessageCategory == MessageCategoryType.Chat))
                 message.SetParseSuccess(true);
         }
 
