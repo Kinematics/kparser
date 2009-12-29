@@ -18,6 +18,17 @@ namespace WaywardGamers.KParser
         bool parseSuccessful;
         #endregion
 
+        #region Constructor
+        internal Message()
+        {
+        }
+
+        internal Message(MessageLine msgLine)
+        {
+            AddMessageLine(msgLine);
+        }
+        #endregion
+
         #region Base MessageLine Properties
         internal uint MessageID { get; private set; }
 
@@ -89,7 +100,6 @@ namespace WaywardGamers.KParser
 
         #endregion
 
-
         #region Details Properties -- only created when MessageCateogory is set.
         internal ChatDetails ChatDetails { get; private set; }
 
@@ -97,7 +107,6 @@ namespace WaywardGamers.KParser
 
         internal EventDetails EventDetails { get; private set; }
         #endregion
-
 
         #region Text Grouping
         internal string CurrentMessageText
