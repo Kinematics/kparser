@@ -76,9 +76,6 @@
     <Compile Include="DefenseFrequency.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="DPMPlugin.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="DebuffPlugin.cs">
       <SubType>UserControl</SubType>
     </Compile>
