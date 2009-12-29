@@ -92,7 +92,7 @@
     <Compile Include="Interface\CustomMobSelectionDlg.Designer.cs">
       <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
     </Compile>
-    <Compile Include="Messages\ParsingManagers\InternalTesting.cs" />
+    <Compile Include="Parsing\ParsingManagers\InternalTesting.cs" />
     <Compile Include="Monad\MonadParser.cs" />
     <Compile Include="Monad\Parser.cs" />
     <Compile Include="Monad\ParseResult.cs" />
@@ -113,8 +113,8 @@
       <DependentUpon>BasePluginControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Interface\IPlugin.cs" />
-    <Compile Include="Messages\ParsingManagers\EntityManager.cs" />
-    <Compile Include="Messages\ParsingManagers\MsgManager.cs" />
+    <Compile Include="Parsing\ParsingManagers\EntityManager.cs" />
+    <Compile Include="Parsing\ParsingManagers\MsgManager.cs" />
     <Compile Include="Monitors\LogReader\LogReaderWorker.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -150,19 +150,19 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>KPDatabaseReadOnly.xsd</DependentUpon>
     </Compile>
-    <Compile Include="Messages\ChatLine.cs" />
-    <Compile Include="Messages\MessageDetail\LootDetails.cs" />
-    <Compile Include="Messages\MessageDetail\ActionDetails.cs" />
-    <Compile Include="Messages\MessageDetail\ChatDetails.cs" />
-    <Compile Include="Messages\MessageDetail\CombatDetails.cs" />
-    <Compile Include="Messages\MessageDetail\ExperienceDetails.cs" />
-    <Compile Include="Messages\MessageDetail\SystemDetails.cs" />
-    <Compile Include="Messages\MessageDetail\TargetDetails.cs" />
-    <Compile Include="Messages\MessageLine.cs" />
-    <Compile Include="Messages\Parsing\ClassifyEntity.cs" />
-    <Compile Include="Messages\Parsing\ParseCodes.cs" />
-    <Compile Include="Messages\Message.cs" />
-    <Compile Include="Messages\Parsing\Parser.cs" />
+    <Compile Include="Parsing\ChatLine.cs" />
+    <Compile Include="Parsing\MessageDetail\LootDetails.cs" />
+    <Compile Include="Parsing\MessageDetail\ActionDetails.cs" />
+    <Compile Include="Parsing\MessageDetail\ChatDetails.cs" />
+    <Compile Include="Parsing\MessageDetail\CombatDetails.cs" />
+    <Compile Include="Parsing\MessageDetail\ExperienceDetails.cs" />
+    <Compile Include="Parsing\MessageDetail\SystemDetails.cs" />
+    <Compile Include="Parsing\MessageDetail\TargetDetails.cs" />
+    <Compile Include="Parsing\MessageLine.cs" />
+    <Compile Include="Parsing\Parsing\ClassifyEntity.cs" />
+    <Compile Include="Parsing\Parsing\ParseCodes.cs" />
+    <Compile Include="Parsing\Message.cs" />
+    <Compile Include="Parsing\Parsing\Parser.cs" />
     <Compile Include="Monitors\AbstractReader.cs" />
     <Compile Include="Monitors\DatabaseReader\DatabaseReader.cs" />
     <Compile Include="Monitors\LogReader\LogReader.cs" />
@@ -185,8 +185,8 @@
     <Compile Include="ReferenceValues\Enumerations.cs" />
     <Compile Include="Utility\LinqExtensions.cs" />
     <Compile Include="ReferenceValues\Magic.cs" />
-    <Compile Include="Messages\Parsing\Names.cs" />
-    <Compile Include="Messages\Parsing\ParseExpressions.cs" />
+    <Compile Include="Parsing\Parsing\Names.cs" />
+    <Compile Include="Parsing\Parsing\ParseExpressions.cs" />
     <Compile Include="Utility\RTFConverter.cs" />
     <Compile Include="Utility\EventHandlingDelegates.cs" />
     <Compile Include="Utility\ExcelExport.cs" />
