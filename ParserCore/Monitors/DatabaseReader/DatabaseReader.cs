@@ -52,14 +52,9 @@ namespace WaywardGamers.KParser.Monitoring
         /// </summary>
         public override DataSource ParseModeType { get { return DataSource.Database; } }
 
-        public override void Import(ImportSourceType importSource, IDBReader dbReaderManager)
+        public override void Import(ImportSourceType importSource, IDBReader dbReaderManager, bool modifyTimestamp)
         {
-            Import(importSource, dbReaderManager, false);
-        }
-
-        public void Import(ImportSourceType importSource, IDBReader dbReaderManager, bool upgradeTimestamp)
-        {
-            this.upgradeTimestamp = upgradeTimestamp;
+            this.upgradeTimestamp = modifyTimestamp;
             IsRunning = true;
 
             try
