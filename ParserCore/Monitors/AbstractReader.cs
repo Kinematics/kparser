@@ -12,7 +12,7 @@ namespace WaywardGamers.KParser.Monitoring
             throw new InvalidOperationException();
         }
 
-        public virtual void Import(ImportSourceType importSource, IDBReader dbReaderManager)
+        public virtual void Import(ImportSourceType importSource, IDBReader dbReaderManager, bool modifyTimestamp)
         {
             throw new InvalidOperationException();
         }

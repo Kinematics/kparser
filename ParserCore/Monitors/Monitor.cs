@@ -226,6 +226,7 @@ namespace WaywardGamers.KParser.Monitoring
             System.Threading.Thread.Sleep(100);
 
             IDBReader dbReader;
+            bool upgradeTimestamp = false;
 
             switch (importSource)
             {
@@ -242,58 +243,16 @@ namespace WaywardGamers.KParser.Monitoring
 
             dbReader.OpenDatabase(inFilename);
 
-            try
+            if (dbReader == KParserReadingManager.Instance)
             {
-                MsgManager.Instance.StartNewSession();
-
-                currentReader.Import(importSource, dbReader);
-            }
-            catch (Exception)
-            {
-                MsgManager.Instance.EndSession();
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Reparse the database, but also have the database reader modify
-        /// the timestamps.
-        /// </summary>
-        /// <param name="inFilename"></param>
-        /// <param name="outFilename"></param>
-        /// <param name="importSourceType"></param>
-        public void UpgradeTimestampImport(string inFilename, string outputFileName, ImportSourceType importSource)
-        {
-            if (currentReader.IsRunning == true)
-                throw new InvalidOperationException(string.Format(
-                    "{0} is already running", currentReader.GetType().Name));
-
-            currentReader = DatabaseReader.Instance;
-
-            DatabaseManager.Instance.CreateDatabase(outputFileName);
-            System.Threading.Thread.Sleep(100);
-
-            IDBReader dbReader;
-
-            switch (importSource)
-            {
-                case ImportSourceType.KParser:
-                    dbReader = KParserReadingManager.Instance;
-                    break;
-                case ImportSourceType.DirectParse:
-                case ImportSourceType.DVSParse:
-                default:
-                    throw new InvalidOperationException();
-            }
-
-            dbReader.OpenDatabase(inFilename);
-
-            if (KParserReadingManager.Instance.Database.Version.Count > 0)
-            {
-                var versionLine = KParserReadingManager.Instance.Database.Version[0];
-                if (versionLine.ParserVersion.CompareTo("1.3") >= 0)
+                // Auto-detect files needing timestamp upgrades.
+                if (KParserReadingManager.Instance.Database.Version.Count > 0)
                 {
-                    throw new InvalidOperationException("Version 1.3 and higher already use UTC timestamps");
+                    var versionLine = KParserReadingManager.Instance.Database.Version[0];
+                    if (versionLine.ParserVersion.CompareTo("1.3") < 0)
+                    {
+                        upgradeTimestamp = true;
+                    }
                 }
             }
 
@@ -301,7 +260,7 @@ namespace WaywardGamers.KParser.Monitoring
             {
                 MsgManager.Instance.StartNewSession();
 
-                DatabaseReader.Instance.Import(importSource, dbReader, true);
+                currentReader.Import(importSource, dbReader, upgradeTimestamp);
             }
             catch (Exception)
             {

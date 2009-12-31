@@ -32,9 +32,10 @@ namespace WaywardGamers.KParser
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ParserWindow));
             this.statusStrip = new System.Windows.Forms.StatusStrip();
-            this.reparseProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.programStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.secondaryStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.reparseProgressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.savingProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.pluginTabs = new System.Windows.Forms.TabControl();
             this.tabContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.closeTabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -73,14 +74,12 @@ namespace WaywardGamers.KParser
             this.toolsMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsTestFunctionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsReparseMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.upgradeDatabaseTimestampToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.closeAllTabsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.savingProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.statusStrip.SuspendLayout();
             this.tabContextMenuStrip.SuspendLayout();
             this.mainMenuStrip.SuspendLayout();
@@ -96,13 +95,6 @@ namespace WaywardGamers.KParser
             resources.ApplyResources(this.statusStrip, "statusStrip");
             this.statusStrip.Name = "statusStrip";
             // 
-            // reparseProgressBar
-            // 
-            resources.ApplyResources(this.reparseProgressBar, "reparseProgressBar");
-            this.reparseProgressBar.Name = "reparseProgressBar";
-            this.reparseProgressBar.Step = 1;
-            this.reparseProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            // 
             // programStatusLabel
             // 
             this.programStatusLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -114,6 +106,18 @@ namespace WaywardGamers.KParser
             // 
             this.secondaryStatusLabel.Name = "secondaryStatusLabel";
             resources.ApplyResources(this.secondaryStatusLabel, "secondaryStatusLabel");
+            // 
+            // reparseProgressBar
+            // 
+            resources.ApplyResources(this.reparseProgressBar, "reparseProgressBar");
+            this.reparseProgressBar.Name = "reparseProgressBar";
+            this.reparseProgressBar.Step = 1;
+            this.reparseProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            // 
+            // savingProgressBar
+            // 
+            this.savingProgressBar.Name = "savingProgressBar";
+            resources.ApplyResources(this.savingProgressBar, "savingProgressBar");
             // 
             // pluginTabs
             // 
@@ -364,7 +368,6 @@ namespace WaywardGamers.KParser
             this.toolsMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolsTestFunctionMenuItem,
             this.toolsReparseMenuItem,
-            this.upgradeDatabaseTimestampToolStripMenuItem,
             this.toolStripSeparator3,
             this.optionsToolStripMenuItem});
             this.toolsMenu.Name = "toolsMenu";
@@ -382,12 +385,6 @@ namespace WaywardGamers.KParser
             this.toolsReparseMenuItem.Name = "toolsReparseMenuItem";
             resources.ApplyResources(this.toolsReparseMenuItem, "toolsReparseMenuItem");
             this.toolsReparseMenuItem.Click += new System.EventHandler(this.reparseDatabaseToolStripMenuItem_Click);
-            // 
-            // upgradeDatabaseTimestampToolStripMenuItem
-            // 
-            this.upgradeDatabaseTimestampToolStripMenuItem.Name = "upgradeDatabaseTimestampToolStripMenuItem";
-            resources.ApplyResources(this.upgradeDatabaseTimestampToolStripMenuItem, "upgradeDatabaseTimestampToolStripMenuItem");
-            this.upgradeDatabaseTimestampToolStripMenuItem.Click += new System.EventHandler(this.upgradeDatabaseTimestampToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
@@ -426,11 +423,6 @@ namespace WaywardGamers.KParser
             this.closeAllTabsToolStripMenuItem.Name = "closeAllTabsToolStripMenuItem";
             resources.ApplyResources(this.closeAllTabsToolStripMenuItem, "closeAllTabsToolStripMenuItem");
             this.closeAllTabsToolStripMenuItem.Click += new System.EventHandler(this.closeAllTabsToolStripMenuItem_Click);
-            // 
-            // savingProgressBar
-            // 
-            this.savingProgressBar.Name = "savingProgressBar";
-            resources.ApplyResources(this.savingProgressBar, "savingProgressBar");
             // 
             // ParserWindow
             // 
@@ -491,7 +483,6 @@ namespace WaywardGamers.KParser
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripMenuItem copyTabasRTFToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyTabInfoAsBBCodeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem upgradeDatabaseTimestampToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeAllTabsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem recentFilesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem noneToolStripMenuItem;
