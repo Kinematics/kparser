@@ -327,6 +327,7 @@ namespace WaywardGamers.KParser.Parsing
         /// <param name="altCodes">A list of alternate primary codes to search for.</param>
         /// <param name="parsedMessage">The message as it was previously parsed.</param>
         /// <returns>Returns the most recent found message that matches the request.</returns>
+        [Obsolete()]
         internal Message FindLastMessageToMatch(MessageLine messageLine, List<uint> altCodes, Message parsedMessage)
         {
             uint mcode = messageLine.MessageCode;
@@ -658,6 +659,110 @@ namespace WaywardGamers.KParser.Parsing
         /// <returns></returns>
         internal Message FindMatchingSpellCastOrAbilityUse(MessageLine messageLine, List<uint> altCodes)
         {
+            // Don't allow alt codes to be null.
+            if (altCodes == null)
+                altCodes = new List<uint>();
+
+            uint mcode = messageLine.MessageCode;
+            uint ecode1 = messageLine.ExtraCode1;
+            uint ecode2 = messageLine.ExtraCode2;
+            DateTime timestamp = messageLine.Timestamp;
+
+            if (mcode == 0)
+                throw new ArgumentOutOfRangeException("mcode", "No proper message code provided.");
+
+            if (currentMessageCollection.Count == 0)
+                return null;
+
+            // Raises or interrupted/uncompleteable actions.  No join message.
+            if (mcode == 0x7a)
+                return null;
+
+            Message msg = null;
+            // Don't attach to message that are too far back in time
+            DateTime minTimestamp = timestamp - TimeSpan.FromSeconds(10);
+
+            lock (currentMessageCollection)
+            {
+                // Search the last 50 messages of the collection (restricted in case of reparsing)
+                int startIndex = currentMessageCollection.Count - 50;
+                if (startIndex < 0)
+                    startIndex = 0;
+
+                var blockSet = currentMessageCollection.Skip(startIndex);
+                Message lastMessage = currentMessageCollection.Last();
+
+                // Check for lastTimestamp in case we're reading from logs
+                // where all messages from 50 message blocks will have the same
+                // timestamp, then an unknown interval before the next block.
+                DateTime lastTimestamp = lastMessage.Timestamp;
+
+                // Query set for everything except ecodes.  Based on main code only.
+                var eCodeBlock = blockSet.Where(m =>
+                        // Timestamp limits
+                    (m.Timestamp == lastTimestamp || m.Timestamp >= minTimestamp) &&
+                        // Code limits
+                     (m.PrimaryMessageCode == mcode || altCodes.Contains(m.PrimaryMessageCode)) &&
+                        // Object existance
+                     m.EventDetails != null &&
+                     m.EventDetails.CombatDetails != null &&
+                        // Must have an Actor
+                     string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActorName) == false &&
+                        // Type of action
+                     (m.EventDetails.CombatDetails.ActionType == ActionType.Spell ||
+                        // Extra limits on JAs
+                       (m.EventDetails.CombatDetails.ActionType == ActionType.Ability &&
+                        string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActionName) == false &&
+                        JobAbilities.TwoHourJAs.Contains(m.EventDetails.CombatDetails.ActionName) == false &&
+                        JobAbilities.SelfUseJAs.Contains(m.EventDetails.CombatDetails.ActionName) == false)
+                      )
+                    );
+
+
+                if ((eCodeBlock != null) && (eCodeBlock.Count() > 0))
+                {
+                    // Check for exact (non-0) ecodes 
+                    msg = eCodeBlock.LastOrDefault(m =>
+                        m.ExtraCode1 != 0 &&
+                        m.ExtraCode2 != 0 &&
+                        m.ExtraCode1 == ecode1 &&
+                        m.ExtraCode2 == ecode2);
+
+                    // Check for any non-0 ecodes
+                    if (msg == null)
+                    {
+                        msg = eCodeBlock.LastOrDefault(m =>
+                            m.ExtraCode1 != 0 &&
+                            m.ExtraCode2 != 0);
+                    }
+
+                    // Allow any
+                    if (msg == null)
+                    {
+                        msg = eCodeBlock.LastOrDefault();
+                    }
+                }
+            }
+
+            return msg;
+        }
+
+        /// <summary>
+        /// Find a base spell cast or ability use or item use to match
+        /// the queried message.
+        /// </summary>
+        /// <param name="messageLine"></param>
+        /// <param name="altCodes"></param>
+        /// <returns></returns>
+        internal Message FindMatchingSpellCastOrAbilityUseForDamage(MessageLine messageLine, List<uint> altCodes,
+            List<EntityType> targetEntityTypes)
+        {
+            // Don't allow alt codes to be null.
+            if (altCodes == null)
+                altCodes = new List<uint>();
+
+            List<EntityType> actorEntityTypesAllowed = GetComplimentaryEntityTypes(targetEntityTypes);
+
             uint mcode = messageLine.MessageCode;
             uint ecode1 = messageLine.ExtraCode1;
             uint ecode2 = messageLine.ExtraCode2;
@@ -697,42 +802,34 @@ namespace WaywardGamers.KParser.Parsing
                     // Timestamp limits
                     (m.Timestamp == lastTimestamp || m.Timestamp >= minTimestamp) &&
                         // Code limits
-                     m.PrimaryMessageCode == mcode &&
+                     (m.PrimaryMessageCode == mcode || altCodes.Contains(m.PrimaryMessageCode)) &&
                         // Object existance
                      m.EventDetails != null &&
                      m.EventDetails.CombatDetails != null &&
                         // Must have an Actor
                      string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActorName) == false &&
+                        // Check for valid actor types
+                     actorEntityTypesAllowed.Contains(m.EventDetails.CombatDetails.ActorEntityType) &&
                         // Type of action
-                    (m.EventDetails.CombatDetails.ActionType == ActionType.Spell ||
-                     m.EventDetails.CombatDetails.ActionType == ActionType.Ability));
-
-                // If no main code sets found, try alt codes
-                if (((eCodeBlock == null) || (eCodeBlock.Count() == 0)) && (altCodes != null))
-                {
-                    eCodeBlock = blockSet.Where(m =>
-                        // Timestamp limits
-                        (m.Timestamp == lastTimestamp || m.Timestamp >= minTimestamp) &&
-                            // Code limits
-                         altCodes.Contains(m.PrimaryMessageCode) &&
-                            // Object existance
-                         m.EventDetails != null &&
-                         m.EventDetails.CombatDetails != null &&
-                            // Must have an Actor
-                         string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActorName) == false &&
-                            // Type of action
-                        (m.EventDetails.CombatDetails.ActionType == ActionType.Spell ||
-                         m.EventDetails.CombatDetails.ActionType == ActionType.Ability));
-                }
+                     (m.EventDetails.CombatDetails.ActionType == ActionType.Spell ||
+                        // Extra limits on JAs
+                       (m.EventDetails.CombatDetails.ActionType == ActionType.Ability &&
+                        string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActionName) == false &&
+                        JobAbilities.TwoHourJAs.Contains(m.EventDetails.CombatDetails.ActionName) == false &&
+                        JobAbilities.SelfUseJAs.Contains(m.EventDetails.CombatDetails.ActionName) == false)
+                      )
+                    );
 
                 if ((eCodeBlock != null) && (eCodeBlock.Count() > 0))
                 {
-                    // Check for exact ecodes
+                    // Check for exact (non-0) ecodes 
                     msg = eCodeBlock.LastOrDefault(m =>
+                        m.ExtraCode1 != 0 &&
+                        m.ExtraCode2 != 0 &&
                         m.ExtraCode1 == ecode1 &&
                         m.ExtraCode2 == ecode2);
 
-                    // Forbid 0 codes
+                    // Check for any non-0 ecodes
                     if (msg == null)
                     {
                         msg = eCodeBlock.LastOrDefault(m =>
@@ -760,8 +857,12 @@ namespace WaywardGamers.KParser.Parsing
         /// <param name="effect"></param>
         /// <returns></returns>
         internal Message FindMatchingSpellCastOrAbilityUseWithEffect(MessageLine messageLine,
-            List<uint> altCodes, string effect)
+            List<uint> altCodes, string effectName, string targetName)
         {
+            // Don't allow alt codes to be null.
+            if (altCodes == null)
+                altCodes = new List<uint>();
+
             uint mcode = messageLine.MessageCode;
             uint ecode1 = messageLine.ExtraCode1;
             uint ecode2 = messageLine.ExtraCode2;
@@ -770,7 +871,7 @@ namespace WaywardGamers.KParser.Parsing
             if (mcode == 0)
                 throw new ArgumentOutOfRangeException("mcode", "No proper message code provided.");
 
-            if (string.IsNullOrEmpty(effect))
+            if (string.IsNullOrEmpty(effectName))
                 throw new ArgumentNullException("effect");
 
             if (currentMessageCollection.Count == 0)
@@ -814,11 +915,12 @@ namespace WaywardGamers.KParser.Parsing
                     (m.EventDetails.CombatDetails.ActionType == ActionType.Spell ||
                      m.EventDetails.CombatDetails.ActionType == ActionType.Ability) &&
                         // Effect check
-                     m.EventDetails.CombatDetails.Targets.Any(t => t.EffectName == effect));
+                     m.EventDetails.CombatDetails.Targets.Any(t => t.EffectName == effectName) &&
+                     m.EventDetails.CombatDetails.Targets.Any(t => t.Name == targetName) == false);
 
 
                 // If no main code sets found, try alt codes
-                if (((eCodeBlock == null) || (eCodeBlock.Count() == 0)) && (altCodes != null))
+                if (((eCodeBlock == null) || (eCodeBlock.Count() == 0)) && (altCodes.Count > 0))
                 {
                     eCodeBlock = blockSet.Where(m =>
                         // Timestamp limits
@@ -834,7 +936,8 @@ namespace WaywardGamers.KParser.Parsing
                         (m.EventDetails.CombatDetails.ActionType == ActionType.Spell ||
                          m.EventDetails.CombatDetails.ActionType == ActionType.Ability) &&
                             // Effect check
-                         m.EventDetails.CombatDetails.Targets.Any(t => t.EffectName == effect));
+                         m.EventDetails.CombatDetails.Targets.Any(t => t.EffectName == effectName) &&
+                         m.EventDetails.CombatDetails.Targets.Any(t => t.Name == targetName) == false);
                 }
 
                 // If nothing found with an existing effect name provided, check for 0-count entries.
@@ -851,14 +954,20 @@ namespace WaywardGamers.KParser.Parsing
                          m.EventDetails.CombatDetails != null &&
                             // Must have an Actor
                          string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActorName) == false &&
-                            // Type of action
-                        (m.EventDetails.CombatDetails.ActionType == ActionType.Spell ||
-                         m.EventDetails.CombatDetails.ActionType == ActionType.Ability) &&
                             // Effect check
-                         m.EventDetails.CombatDetails.Targets.Count == 0);
+                         m.EventDetails.CombatDetails.Targets.Count == 0 &&
+                            // Type of action
+                         (m.EventDetails.CombatDetails.ActionType == ActionType.Spell ||
+                            // Extra limits on JAs
+                          (m.EventDetails.CombatDetails.ActionType == ActionType.Ability &&
+                           string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActionName) == false &&
+                           JobAbilities.TwoHourJAs.Contains(m.EventDetails.CombatDetails.ActionName) == false &&
+                           JobAbilities.SelfUseJAs.Contains(m.EventDetails.CombatDetails.ActionName) == false)
+                         )
+                     );
 
                     // If no main code sets found, try alt codes
-                    if (((eCodeBlock == null) || (eCodeBlock.Count() == 0)) && (altCodes != null))
+                    if (((eCodeBlock == null) || (eCodeBlock.Count() == 0)) && (altCodes.Count > 0))
                     {
                         eCodeBlock = blockSet.Where(m =>
                             // Timestamp limits
@@ -870,18 +979,53 @@ namespace WaywardGamers.KParser.Parsing
                              m.EventDetails.CombatDetails != null &&
                                 // Must have an Actor
                              string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActorName) == false &&
-                                // Type of action
-                            (m.EventDetails.CombatDetails.ActionType == ActionType.Spell ||
-                             m.EventDetails.CombatDetails.ActionType == ActionType.Ability) &&
                                 // Effect check
-                             m.EventDetails.CombatDetails.Targets.Count == 0);
+                             m.EventDetails.CombatDetails.Targets.Count == 0 &&
+                                    // Type of action
+                             (m.EventDetails.CombatDetails.ActionType == ActionType.Spell ||
+                                    // Extra limits on JAs
+                              (m.EventDetails.CombatDetails.ActionType == ActionType.Ability &&
+                               string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActionName) == false &&
+                               JobAbilities.TwoHourJAs.Contains(m.EventDetails.CombatDetails.ActionName) == false &&
+                               JobAbilities.SelfUseJAs.Contains(m.EventDetails.CombatDetails.ActionName) == false)
+                             )
+                         );
                     }
+                }
+
+                // If nothing found so far, check for failed/no effect actions on primary message.
+                // Alt codes -must- be supplied for this.
+                if (((eCodeBlock == null) || (eCodeBlock.Count() == 0)) && (altCodes.Count > 0))
+                {
+                    eCodeBlock = blockSet.Where(m =>
+                        // Timestamp limits
+                        (m.Timestamp == lastTimestamp || m.Timestamp >= minTimestamp) &&
+                            // Code limits
+                         altCodes.Contains(m.PrimaryMessageCode) &&
+                            // Object existance
+                         m.EventDetails != null &&
+                         m.EventDetails.CombatDetails != null &&
+                            // Must have an Actor
+                         string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActorName) == false &&
+                            // Must have single target same as actor.  Any further
+                            // messages will be able to find the effect name after the first additional
+                            // one is added.
+                         m.EventDetails.CombatDetails.Targets.Count == 1 &&
+                         m.EventDetails.CombatDetails.Targets[0].Name == m.EventDetails.CombatDetails.ActorName &&
+                            // Type of action
+                        (m.EventDetails.CombatDetails.ActionType == ActionType.Spell ||
+                         m.EventDetails.CombatDetails.ActionType == ActionType.Ability) &&
+                            // Effect check -- empty effect name because of failure.
+                         m.EventDetails.CombatDetails.FailedActionType == FailedActionType.NoEffect &&
+                         m.EventDetails.CombatDetails.Targets[0].EffectName == string.Empty);
                 }
 
                 if ((eCodeBlock != null) && (eCodeBlock.Count() > 0))
                 {
                     // Check for exact ecodes
                     msg = eCodeBlock.LastOrDefault(m =>
+                        m.ExtraCode1 != 0 &&
+                        m.ExtraCode2 != 0 &&
                         m.ExtraCode1 == ecode1 &&
                         m.ExtraCode2 == ecode2);
 
@@ -912,6 +1056,10 @@ namespace WaywardGamers.KParser.Parsing
         /// <returns></returns>
         internal Message FindMatchingMeleeOrRanged(MessageLine messageLine, List<uint> altCodes)
         {
+            // Don't allow alt codes to be null.
+            if (altCodes == null)
+                altCodes = new List<uint>();
+
             uint mcode = messageLine.MessageCode;
             uint ecode1 = messageLine.ExtraCode1;
             uint ecode2 = messageLine.ExtraCode2;
@@ -947,7 +1095,7 @@ namespace WaywardGamers.KParser.Parsing
                     // Timestamp limits
                     (m.Timestamp == lastTimestamp || m.Timestamp >= minTimestamp) &&
                         // Code limits
-                    (m.PrimaryMessageCode == mcode || (altCodes == null ? false : altCodes.Contains(m.PrimaryMessageCode))) &&
+                    (m.PrimaryMessageCode == mcode || altCodes.Contains(m.PrimaryMessageCode)) &&
                         // Object existance
                      m.EventDetails != null &&
                      m.EventDetails.CombatDetails != null &&
@@ -989,6 +1137,64 @@ namespace WaywardGamers.KParser.Parsing
 
             return msg;
         }
+
+        /// <summary>
+        /// Utility function to find allowable actor entity types for a set of target types.
+        /// </summary>
+        /// <param name="targetEntityTypes"></param>
+        /// <returns></returns>
+        private List<EntityType> GetComplimentaryEntityTypes(List<EntityType> targetEntityTypes)
+        {
+            HashSet<EntityType> complimentaryEntityTypes = new HashSet<EntityType>();
+
+            complimentaryEntityTypes.Add(EntityType.Unknown);
+
+            if (targetEntityTypes.Count > 0)
+            {
+                if (targetEntityTypes.Contains(EntityType.Player))
+                {
+                    complimentaryEntityTypes.Add(EntityType.Mob);
+                    complimentaryEntityTypes.Add(EntityType.CharmedPlayer);
+                }
+
+                if (targetEntityTypes.Contains(EntityType.Pet))
+                {
+                    complimentaryEntityTypes.Add(EntityType.Mob);
+                }
+
+                if (targetEntityTypes.Contains(EntityType.NPC))
+                {
+                    complimentaryEntityTypes.Add(EntityType.Mob);
+                }
+
+                if (targetEntityTypes.Contains(EntityType.Fellow))
+                {
+                    complimentaryEntityTypes.Add(EntityType.Mob);
+                }
+
+                if (targetEntityTypes.Contains(EntityType.CharmedMob))
+                {
+                    complimentaryEntityTypes.Add(EntityType.Mob);
+                }
+
+                if (targetEntityTypes.Contains(EntityType.Mob))
+                {
+                    complimentaryEntityTypes.Add(EntityType.Player);
+                    complimentaryEntityTypes.Add(EntityType.Pet);
+                    complimentaryEntityTypes.Add(EntityType.NPC);
+                    complimentaryEntityTypes.Add(EntityType.Fellow);
+                    complimentaryEntityTypes.Add(EntityType.CharmedMob);
+                }
+
+                if (targetEntityTypes.Contains(EntityType.CharmedPlayer))
+                {
+                    complimentaryEntityTypes.Add(EntityType.Player);
+                }
+            }
+
+            return complimentaryEntityTypes.ToList();
+        }
+
         #endregion
 
         #region Methods to periodically push the accumulated messages to the database.
