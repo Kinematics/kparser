@@ -175,9 +175,10 @@ namespace WaywardGamers.KParser
 
                 CreateConnections();
 
-                // Hard coded at the moment; will adjust later to adjust it based
+                // Hard coded at the moment; will fix later to adjust it based
                 // on info in the database when the database is loaded/initialized.
                 Resources.ParsedStrings.Culture = new System.Globalization.CultureInfo("en-US");
+                JobAbilities.Reset();
             }
             catch (Exception)
             {
