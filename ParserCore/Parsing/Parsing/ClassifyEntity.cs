@@ -217,8 +217,13 @@ namespace WaywardGamers.KParser.Parsing
                     }
                     else if (target.EntityType == EntityType.Unknown)
                     {
-                        combatDetails.ActorEntityType = EntityType.Player;
-                        target.EntityType = EntityType.Player;
+                        if ((combatDetails.ActorPlayerType == ActorPlayerType.Self) ||
+                            (combatDetails.ActorPlayerType == ActorPlayerType.Party) ||
+                            (combatDetails.ActorPlayerType == ActorPlayerType.Alliance))
+                        {
+                            combatDetails.ActorEntityType = EntityType.Player;
+                            target.EntityType = EntityType.Player;
+                        }
                     }
                 }
                 else if (target.EntityType == EntityType.Unknown)
