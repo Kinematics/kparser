@@ -322,6 +322,11 @@ namespace WaywardGamers.KParser.Parsing
                             return;
                         }
 
+                        // This could be the result of a busted Corsair roll.  If so, leave as is.
+                        if ((string.IsNullOrEmpty(target.EffectName) == false) &&
+                            (JobAbilities.CorRolls.Contains(target.EffectName) == true))
+                            return;
+
                         // Check if either combatant is in the entity table already.
                         // If not, then a player is likely initiating action against an NM.
                         var actorEntityList = EntityManager.Instance.LookupEntity(combatDetails.ActorName);
