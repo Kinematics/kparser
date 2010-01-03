@@ -37,35 +37,35 @@ namespace WaywardGamers.KParser.Parsing
                 ContinueParse(message);
             }
 
-            if (message.IsParseSuccessful == true)
-            {
-                if ((message.MessageCategory == MessageCategoryType.Event) &&
-                    (message.EventDetails.EventMessageType == EventMessageType.Interaction) &&
-                    (message.EventDetails.CombatDetails.InteractionType != InteractionType.Unknown))
-                {
-                    if ((message.EventDetails.CombatDetails.IsPreparing == false) &&
-                        (message.EventDetails.CombatDetails.ActorName == string.Empty) &&
-                        ((message.EventDetails.CombatDetails.SuccessLevel != SuccessType.Failed) ||
-                         (message.EventDetails.CombatDetails.ActionType == ActionType.Spell)))
-                    {
-                        Message prevMsg = MsgManager.Instance.FindLastMessageToMatch(messageLine,
-                            ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), message);
+            //if (message.IsParseSuccessful == true)
+            //{
+            //    if ((message.MessageCategory == MessageCategoryType.Event) &&
+            //        (message.EventDetails.EventMessageType == EventMessageType.Interaction) &&
+            //        (message.EventDetails.CombatDetails.InteractionType != InteractionType.Unknown))
+            //    {
+            //        if ((message.EventDetails.CombatDetails.IsPreparing == false) &&
+            //            (message.EventDetails.CombatDetails.ActorName == string.Empty) &&
+            //            ((message.EventDetails.CombatDetails.SuccessLevel != SuccessType.Failed) ||
+            //             (message.EventDetails.CombatDetails.ActionType == ActionType.Spell)))
+            //        {
+            //            Message prevMsg = MsgManager.Instance.FindLastMessageToMatch(messageLine,
+            //                ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), message);
 
-                        if (prevMsg != null)
-                        {
-                            foreach (var msgLine in message.MessageLineCollection)
-                                prevMsg.AddMessageLine(msgLine);
+            //            if (prevMsg != null)
+            //            {
+            //                foreach (var msgLine in message.MessageLineCollection)
+            //                    prevMsg.AddMessageLine(msgLine);
 
-                            message = prevMsg;
-                            ContinueParse(message);
-                        }
-                        else
-                        {
-                            // No previous message with same code.  Probably additional effect
-                        }
-                    }
-                }
-            }
+            //                message = prevMsg;
+            //                ContinueParse(message);
+            //            }
+            //            else
+            //            {
+            //                // No previous message with same code.  Probably additional effect
+            //            }
+            //        }
+            //    }
+            //}
 
             return message;
         }
@@ -146,13 +146,32 @@ namespace WaywardGamers.KParser.Parsing
                     resMatch.Success ||
                     corMatch.Success)
                 {
-                    string effect = buffMatch.Success ? buffMatch.Groups[ParseFields.Effect].Value :
-                                    debuffMatch.Success ? debuffMatch.Groups[ParseFields.Effect].Value :
-                                    resMatch.Success ? resMatch.Groups[ParseFields.Effect].Value :
-                                    corMatch.Groups[ParseFields.Ability].Value;
+                    string effectName = string.Empty;
+                    string targetName = string.Empty;
+
+                    if (buffMatch.Success)
+                    {
+                        effectName = buffMatch.Groups[ParseFields.Effect].Value;
+                        targetName = buffMatch.Groups[ParseFields.Target].Value;
+                    }
+                    else if (debuffMatch.Success)
+                    {
+                        effectName = debuffMatch.Groups[ParseFields.Effect].Value;
+                        targetName = debuffMatch.Groups[ParseFields.Target].Value;
+                    }
+                    else if (resMatch.Success)
+                    {
+                        effectName = resMatch.Groups[ParseFields.Effect].Value;
+                        targetName = resMatch.Groups[ParseFields.Target].Value;
+                    }
+                    else if (corMatch.Success)
+                    {
+                        effectName = corMatch.Groups[ParseFields.Ability].Value;
+                        targetName = corMatch.Groups[ParseFields.Target].Value;
+                    }
 
                     msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseWithEffect(messageLine,
-                        ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), effect);
+                        ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), effectName, targetName);
                 }
             }
 
@@ -170,10 +189,12 @@ namespace WaywardGamers.KParser.Parsing
             // AOE Damage
             if (msg == null)
             {
-                if (ParseExpressions.TargetTakesDamage.Match(messageLine.TextOutput).Success)
+                Match damageMatch = ParseExpressions.TargetTakesDamage.Match(messageLine.TextOutput);
+                if (damageMatch.Success)
                 {
-                    msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUse(messageLine,
-                        ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode));
+                    var targetEntityTypes = EntityManager.Instance.LookupEntity(damageMatch.Groups[ParseFields.Target].Value);
+                    msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseForDamage(messageLine,
+                        ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), targetEntityTypes);
                 }
             }
 
@@ -1181,6 +1202,7 @@ namespace WaywardGamers.KParser.Parsing
                             if (combatMatch.Success == true)
                             {
                                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+                                msgCombatDetails.ActorEntityType = EntityType.Player;
                                 msgCombatDetails.ItemName = combatMatch.Groups[ParseFields.Item].Value;
                                 message.SetParseSuccess(true);
                                 return;
