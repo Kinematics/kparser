@@ -6,87 +6,20 @@ using System.Text;
 namespace WaywardGamers.KParser
 {
     /// <summary>
-    /// Class for holding the names of all weaponskills to allow easy identification
-    /// vs. Abilities.
-    /// </summary>
-    public static class Weaponskills
-    {
-        public static readonly List<string> NamesList = new List<string>(168)
-        {
-            // Archery
-            "Flaming Arrow", "Piercing Arrow", "Dulling Arrow", "Sidewinder", "Blast Arrow",
-            "Arching Arrow", "Empyreal Arrow", "Namas Arrow", "Trueflight",
-            // Axes
-            "Raging Axe", "Smash Axe", "Gale Axe", "Avalanche Axe", "Spinning Axe", "Rampage",
-            "Calamity", "Mistral Axe", "Decimation", "Onslaught", "Primal Rend",
-            // Clubs
-            "Shining Strike", "Seraph Strike", "Brainshaker", "Starlight", "Moonlight", 
-            "Skullbreaker", "True Strike", "Judgment", "Hexa Strike", "Black Halo", "Randgrith",
-            "Mystic Boon",
-            // Daggers
-            "Wasp Sting", "Gust Slash", "Shadowstitch", "Viper Bite", "Cyclone", "Dancing Edge",
-            "Shark Bite", "Evisceration", "Mercy Stroke", "Mandalic Stab", "Mordant Rime",
-            "Pyrrhic Kleos",
-            // Great Axes
-            "Shield Break", "Iron Tempest", "Sturmwind", "Armor Break", "Keen Edge",
-            "Weapon Break", "Raging Rush", "Full Break", "Steel Cyclone", "Metatron Torment",
-            "King's Justice",
-            // Great Katana
-            "Tachi: Enpi", "Tachi: Hobaku", "Tachi: Goten", "Tachi: Kagero", "Tachi: Jinpu",
-            "Tachi: Koki", "Tachi: Yukikaze", "Tachi: Gekko", "Tachi: Kasha", "Tachi: Kaiten",
-            "Tachi: Rana",
-            // Great Swords
-            "Hard Slash", "Power Slash", "Frostbite", "Freezebite", "Shockwave", "Crescent Moon",
-            "Sickle Moon", "Spinning Slash", "Ground Strike", "Scourge",
-            // Hand-to-Hand
-            "Combo", "Shoulder Tackle", "One Inch Punch", "Backhand Blow", "Raging Fists",
-            "Spinning Attack", "Howling Fist", "Dragon Kick", "Asuran Fists", "Final Heaven",
-            "Ascetic's Fury", "Stringing Pummel",
-            // Katana
-            "Blade: Rin", "Blade: Retsu", "Blade: Teki", "Blade: To", "Blade: Chi", "Blade: Ei",
-            "Blade: Jin", "Blade: Ten", "Blade: Ku", "Blade: Metsu", "Blade: Kamu",
-            // Marksmanship
-            "Hot Shot", "Split Shot", "Sniper Shot", "Slug Shot", "Blast Shot", "Heavy Shot",
-            "Detonator", "Coronach", "Leaden Salute",
-            // Polearms
-            "Double Thrust", "Thunder Thrust", "Raiden Thrust", "Leg Sweep", "Penta Thrust",
-            "Vorpal Thrust", "Skewer", "Wheeling Thrust", "Impulse Drive", "Geirskogul",
-            "Drakesbane",
-            // Scythes
-            "Slice", "Dark Harvest", "Shadow of Death", "Nightmare Scythe", "Spinning Scythe",
-            "Vorpal Scythe", "Guillotine", "Cross Reaper", "Spiral Hell", "Catastrophe", "Insurgency",
-            // Staves
-            "Heavy Swing", "Rock Crusher", "Shellcrusher", "Earth Crusher", "Star Burst", "Sun Burst",
-            "Full Swing", "Spirit Taker", "Retribution", "Gate of Tartarus", "Vidohunir",
-            "Garland of Bliss", "Omniscience",
-            // Swords
-            "Fast Blade", "Flat Blade", "Burning Blade", "Red Lotus Blade", "Circle Blade",
-            "Shining Blade", "Seraph Blade", "Spirits Within", "Vorpal Blade", "Swift Blade",
-            "Savage Blade", "Knights of Round", "Death Blossom", "Atonement", "Expiacion",
-            // Automaton
-            "Slapstick", "Arcuballista", "String Clipper", "Chimera Ripper", "Knockout", "Daze",
-            "Cannibal Blade", "Armor Piercer", "Bone Crusher", "Magic Mortar"
-        };
-    }
-
-    /// <summary>
     /// Class for the names of the avatars for separation from normal mobs.
     /// </summary>
-    public static class Avatars
+    public static class GameNames
     {
-        public static readonly List<string> NamesList = new List<string>(9)
+        public static readonly HashSet<string> Avatars = new HashSet<string>()
         {
             "Carbuncle", "Fenrir", "Diabolos",
             "Ifrit", "Shiva", "Garuda", "Titan", "Ramuh", "Leviathan"
         };
-    }
 
-    /// <summary>
-    /// Class for the names of the puppets for separation from normal mobs.
-    /// </summary>
-    public static class Puppets
-    {
-        public static readonly List<string> NamesList = new List<string>(178)
+        /// <summary>
+        /// Names of the puppets for separation from normal mobs.
+        /// </summary>
+        public static readonly HashSet<string> Puppets = new HashSet<string>()
         {
             "Luron", "Drille", "Tournefoux", "Chafouin", "Plaisantin", "Loustic", 
             "Histrion", "Bobeche", "Bougrion", "Rouleteau", "Allouette", "Serenade", 
@@ -120,18 +53,15 @@ namespace WaywardGamers.KParser
         /// Short list for only those names that contain characters normally
         /// indicative of mob names.
         /// </summary>
-        public static readonly List<string> ShortNamesList = new List<string>(5)
+        public static readonly HashSet<string> SpecialPuppets = new HashSet<string>()
         {
             "X-32", "V-1000", "Purute-Porute", "Bito-Rabito", "Mk.IV"
         };
-    }
 
-    /// <summary>
-    /// Class for the names of the wyverns for separation from normal mobs.
-    /// </summary>
-    public static class Wyverns
-    {
-        public static readonly List<string> NamesList = new List<string>(119)
+        /// <summary>
+        /// Names of the wyverns for separation from normal mobs.
+        /// </summary>
+        public static readonly HashSet<string> Wyverns = new HashSet<string>()
         {
             "Azure", "Cerulean", "Rygor", "Firewing", "Delphyne", "Ember", "Rover", 
             "Max", "Buster", "Duke", "Oscar", "Maggie", "Jessie", "Lady", "Hien", 
@@ -157,18 +87,15 @@ namespace WaywardGamers.KParser
         /// Short list for only those names that contain characters normally
         /// indicative of mob names.
         /// </summary>
-        public static readonly List<string> ShortNamesList = new List<string>(5)
+        public static readonly HashSet<string> SpecialWyverns = new HashSet<string>()
         {
             "Karav-Marav", "Darug-Borug", "Koffla-Paffla", "Galja-Mogalja", "Levian-Movian"
         };
-    }
 
-    /// <summary>
-    /// Class for the names of NPC fellows for separation from normal mobs.
-    /// </summary>
-    public static class NPCFellows
-    {
-        public static readonly List<string> NamesList = new List<string>(72)
+        /// <summary>
+        /// Names of NPC fellows for separation from normal mobs.
+        /// </summary>
+        public static readonly HashSet<string> NPCFellows = new HashSet<string>()
         {
             "Feliz", "Amerita", "Chanandit", "Armittie", "Balu-Falu", "Cupapa", "Fhig Lahrv",
             "Durib", "Ferdinand", "Beatrice", "Deulmaeux", "Cadepure", "Burg-Ladarg",
@@ -189,7 +116,7 @@ namespace WaywardGamers.KParser
         /// Short list for only those names that contain characters normally
         /// indicative of mob names.
         /// </summary>
-        public static readonly List<string> ShortNamesList = new List<string>(16)
+        public static readonly HashSet<string> SpecialNPCFellows = new HashSet<string>()
         {
             "Balu-Falu", "Fhig Lahrv", "Burg-Ladarg", "Khuma Tagyawhan", "Ehgo-Ryuhgo",
             "Pimy Kettihl", "Kolui-Pelui", "Raka Maimhov", "Nokum-Akkum", "Sahyu Banjyao",
@@ -198,77 +125,118 @@ namespace WaywardGamers.KParser
         };
     }
 
-
+    /// <summary>
+    /// Class for localizable names of JAs and weaponskills.
+    /// </summary>
     public static class JobAbilities
     {
-        public static readonly List<string> CharmJAs = new List<string>()
-        {
-            Resources.ParsedStrings.Charm
-        };
+        public static List<string> CharmJAs = GetCharmJAs();
+        public static List<string> StealJAs = GetStealJAs();
+        public static HashSet<string> EnfeebleJAs = GetEnfeebleJAs();
+        public static HashSet<string> TwoHourJAs = GetTwoHourJAs();
+        public static HashSet<string> CorRolls = GetCorRolls();
+        public static HashSet<string> SelfUseJAs = GetSelfUseJAs();
+        public static HashSet<string> Weaponskills = GetWeaponskills();
 
-        public static readonly List<string> StealJAs = new List<string>()
+        /// <summary>
+        /// Call the Reset function if/when the language used for the
+        /// given parse changes.
+        /// </summary>
+        public static void Reset()
         {
-            Resources.ParsedStrings.Steal,
-            Resources.ParsedStrings.Mug
-        };
+            CharmJAs = GetCharmJAs();
+            StealJAs = GetStealJAs();
+            EnfeebleJAs = GetEnfeebleJAs();
+            TwoHourJAs = GetTwoHourJAs();
+            CorRolls = GetCorRolls();
+            SelfUseJAs = GetSelfUseJAs();
+            Weaponskills = GetWeaponskills();
+        }
 
-        public static readonly List<string> EnfeebleJAs = new List<string>()
+        #region Functions to fill the string sets
+        private static List<string> GetCharmJAs()
         {
-            Resources.ParsedStrings.BoxStep,
-            Resources.ParsedStrings.Quickstep,
-            Resources.ParsedStrings.ViolentFlourish,
-            Resources.ParsedStrings.DesperateFlourish,
-            Resources.ParsedStrings.LightShot,
-            Resources.ParsedStrings.DarkShot
-        };
+            return new List<string>()
+                {
+                    Resources.ParsedStrings.Charm
+                };
+        }
 
-        public static readonly List<string> TwoHourJAs = new List<string>(20)
+        private static List<string> GetStealJAs()
         {
-            Resources.ParsedStrings.SoulVoice,
-            Resources.ParsedStrings.Familiar,
-            Resources.ParsedStrings.Manafont,
-            Resources.ParsedStrings.AzureLore,
-            Resources.ParsedStrings.WildCard,
-            Resources.ParsedStrings.Trance,
-            Resources.ParsedStrings.BloodWeapon,
-            Resources.ParsedStrings.SpiritSurge,
-            Resources.ParsedStrings.HundredFists,
-            Resources.ParsedStrings.MijinGakure,
-            Resources.ParsedStrings.Invincible,
-            Resources.ParsedStrings.Overdrive,
-            Resources.ParsedStrings.EagleEyeShot,
-            Resources.ParsedStrings.Chainspell,
-            Resources.ParsedStrings.MeikyoShisui,
-            Resources.ParsedStrings.TabulaRasa,
-            Resources.ParsedStrings.AstralFlow,
-            Resources.ParsedStrings.PerfectDodge,
-            Resources.ParsedStrings.MightyStrikes,
-            Resources.ParsedStrings.Benediction
-        };
+            return new List<string>()
+                {
+                    Resources.ParsedStrings.Steal,
+                    Resources.ParsedStrings.Mug
+                };
+        }
 
-        public static readonly List<string> CorRolls = new List<string>(20)
+        private static HashSet<string> GetEnfeebleJAs()
         {
-            Resources.ParsedStrings.CorRoll,
-            Resources.ParsedStrings.NinRoll,
-            Resources.ParsedStrings.RngRoll,
-            Resources.ParsedStrings.DrkRoll,
-            Resources.ParsedStrings.BluRoll,
-            Resources.ParsedStrings.WhmRoll,
-            Resources.ParsedStrings.PupRoll,
-            Resources.ParsedStrings.BrdRoll,
-            Resources.ParsedStrings.MnkRoll,
-            Resources.ParsedStrings.BstRoll,
-            Resources.ParsedStrings.SamRoll,
-            Resources.ParsedStrings.SmnRoll,
-            Resources.ParsedStrings.ThfRoll,
-            Resources.ParsedStrings.RdmRoll,
-            Resources.ParsedStrings.WarRoll,
-            Resources.ParsedStrings.DrgRoll,
-            Resources.ParsedStrings.PldRoll,
-            Resources.ParsedStrings.BlmRoll,
-            Resources.ParsedStrings.DncRoll,
-            Resources.ParsedStrings.SchRoll
-        };
+            return new HashSet<string>()
+                {
+                    Resources.ParsedStrings.BoxStep,
+                    Resources.ParsedStrings.Quickstep,
+                    Resources.ParsedStrings.ViolentFlourish,
+                    Resources.ParsedStrings.DesperateFlourish,
+                    Resources.ParsedStrings.LightShot,
+                    Resources.ParsedStrings.DarkShot
+                };
+        }
+
+        private static HashSet<string> GetTwoHourJAs()
+        {
+            return new HashSet<string>()
+                {
+                    Resources.ParsedStrings.SoulVoice,
+                    Resources.ParsedStrings.Familiar,
+                    Resources.ParsedStrings.Manafont,
+                    Resources.ParsedStrings.AzureLore,
+                    Resources.ParsedStrings.WildCard,
+                    Resources.ParsedStrings.Trance,
+                    Resources.ParsedStrings.BloodWeapon,
+                    Resources.ParsedStrings.SpiritSurge,
+                    Resources.ParsedStrings.HundredFists,
+                    Resources.ParsedStrings.MijinGakure,
+                    Resources.ParsedStrings.Invincible,
+                    Resources.ParsedStrings.Overdrive,
+                    Resources.ParsedStrings.EagleEyeShot,
+                    Resources.ParsedStrings.Chainspell,
+                    Resources.ParsedStrings.MeikyoShisui,
+                    Resources.ParsedStrings.TabulaRasa,
+                    Resources.ParsedStrings.AstralFlow,
+                    Resources.ParsedStrings.PerfectDodge,
+                    Resources.ParsedStrings.MightyStrikes,
+                    Resources.ParsedStrings.Benediction
+                };
+        }
+
+        private static HashSet<string> GetCorRolls()
+        {
+            return new HashSet<string>()
+                {
+                    Resources.ParsedStrings.CorRoll,
+                    Resources.ParsedStrings.NinRoll,
+                    Resources.ParsedStrings.RngRoll,
+                    Resources.ParsedStrings.DrkRoll,
+                    Resources.ParsedStrings.BluRoll,
+                    Resources.ParsedStrings.WhmRoll,
+                    Resources.ParsedStrings.PupRoll,
+                    Resources.ParsedStrings.BrdRoll,
+                    Resources.ParsedStrings.MnkRoll,
+                    Resources.ParsedStrings.BstRoll,
+                    Resources.ParsedStrings.SamRoll,
+                    Resources.ParsedStrings.SmnRoll,
+                    Resources.ParsedStrings.ThfRoll,
+                    Resources.ParsedStrings.RdmRoll,
+                    Resources.ParsedStrings.WarRoll,
+                    Resources.ParsedStrings.DrgRoll,
+                    Resources.ParsedStrings.PldRoll,
+                    Resources.ParsedStrings.BlmRoll,
+                    Resources.ParsedStrings.DncRoll,
+                    Resources.ParsedStrings.SchRoll
+                };
+        }
 
         /// <summary>
         /// Self-Use JAs are JAs that never have any additional information about
@@ -276,15 +244,123 @@ namespace WaywardGamers.KParser
         /// These JA uses can never have additional chat text lines attached to them.
         /// Add to this list as JAs are verified.
         /// </summary>
-        public static readonly List<string> SelfUseJAs = new List<string>()
+        private static HashSet<string> GetSelfUseJAs()
         {
-            "Divine Seal",
-            "Elemental Seal",
-            "Sentinel",
-            "Hasso",
-            "Seigan",
-            "Counterstance",
-            "Footwork",
-        };
+            return new HashSet<string>()
+                {
+                    Resources.ParsedStrings.DivineSeal,
+                    Resources.ParsedStrings.ElementalSeal,
+                    Resources.ParsedStrings.Counterstance,
+                    Resources.ParsedStrings.Footwork,
+                    Resources.ParsedStrings.FormlessStrikes,
+                    Resources.ParsedStrings.AfflatusMisery,
+                    Resources.ParsedStrings.AfflatusSolace,
+                    Resources.ParsedStrings.Convert,
+                    Resources.ParsedStrings.Composure,
+                    Resources.ParsedStrings.SneakAttack,
+                    Resources.ParsedStrings.TrickAttack,
+                    Resources.ParsedStrings.Feint,
+                    Resources.ParsedStrings.Sentinel,
+                    Resources.ParsedStrings.Fealty,
+                    Resources.ParsedStrings.Souleater,
+                    Resources.ParsedStrings.Pianissimo,
+                    Resources.ParsedStrings.Camouflage,
+                    Resources.ParsedStrings.Barrage,
+                    Resources.ParsedStrings.Hasso,
+                    Resources.ParsedStrings.Seigan,
+                    Resources.ParsedStrings.ThirdEye,
+                    Resources.ParsedStrings.Meditate,
+                    Resources.ParsedStrings.Sekkanoki,
+                    Resources.ParsedStrings.Yonin,
+                    Resources.ParsedStrings.Innin,
+                    Resources.ParsedStrings.BurstAffinity,
+                    Resources.ParsedStrings.ChainAffinity,
+                    Resources.ParsedStrings.SnakeEye,
+                    Resources.ParsedStrings.Fold,
+                    Resources.ParsedStrings.LightArts,
+                    Resources.ParsedStrings.DarkArts,
+                    Resources.ParsedStrings.Sublimation,
+                    Resources.ParsedStrings.Penury,
+                    Resources.ParsedStrings.Celerity,
+                    Resources.ParsedStrings.Accession,
+                    Resources.ParsedStrings.Rapture,
+                    Resources.ParsedStrings.Altruism,
+                    Resources.ParsedStrings.Tranquility,
+                    Resources.ParsedStrings.Parsimony,
+                    Resources.ParsedStrings.Alacrity,
+                    Resources.ParsedStrings.Manifestation,
+                    Resources.ParsedStrings.Ebullience,
+                    Resources.ParsedStrings.Focalization,
+                    Resources.ParsedStrings.Equanimity
+                };
+        }
+
+        /// <summary>
+        /// Set for holding the names of all weaponskills to allow easy identification
+        /// vs. Abilities.
+        /// TODO: put these in the Resources file.
+        /// </summary>
+        private static HashSet<string> GetWeaponskills()
+        {
+            return new HashSet<string>()
+                {
+                    // Archery
+                    "Flaming Arrow", "Piercing Arrow", "Dulling Arrow", "Sidewinder", "Blast Arrow",
+                    "Arching Arrow", "Empyreal Arrow", "Namas Arrow", "Trueflight",
+                    // Axes
+                    "Raging Axe", "Smash Axe", "Gale Axe", "Avalanche Axe", "Spinning Axe", "Rampage",
+                    "Calamity", "Mistral Axe", "Decimation", "Onslaught", "Primal Rend",
+                    // Clubs
+                    "Shining Strike", "Seraph Strike", "Brainshaker", "Starlight", "Moonlight", 
+                    "Skullbreaker", "True Strike", "Judgment", "Hexa Strike", "Black Halo", "Randgrith",
+                    "Mystic Boon",
+                    // Daggers
+                    "Wasp Sting", "Gust Slash", "Shadowstitch", "Viper Bite", "Cyclone", "Dancing Edge",
+                    "Shark Bite", "Evisceration", "Mercy Stroke", "Mandalic Stab", "Mordant Rime",
+                    "Pyrrhic Kleos",
+                    // Great Axes
+                    "Shield Break", "Iron Tempest", "Sturmwind", "Armor Break", "Keen Edge",
+                    "Weapon Break", "Raging Rush", "Full Break", "Steel Cyclone", "Metatron Torment",
+                    "King's Justice",
+                    // Great Katana
+                    "Tachi: Enpi", "Tachi: Hobaku", "Tachi: Goten", "Tachi: Kagero", "Tachi: Jinpu",
+                    "Tachi: Koki", "Tachi: Yukikaze", "Tachi: Gekko", "Tachi: Kasha", "Tachi: Kaiten",
+                    "Tachi: Rana",
+                    // Great Swords
+                    "Hard Slash", "Power Slash", "Frostbite", "Freezebite", "Shockwave", "Crescent Moon",
+                    "Sickle Moon", "Spinning Slash", "Ground Strike", "Scourge",
+                    // Hand-to-Hand
+                    "Combo", "Shoulder Tackle", "One Inch Punch", "Backhand Blow", "Raging Fists",
+                    "Spinning Attack", "Howling Fist", "Dragon Kick", "Asuran Fists", "Final Heaven",
+                    "Ascetic's Fury", "Stringing Pummel",
+                    // Katana
+                    "Blade: Rin", "Blade: Retsu", "Blade: Teki", "Blade: To", "Blade: Chi", "Blade: Ei",
+                    "Blade: Jin", "Blade: Ten", "Blade: Ku", "Blade: Metsu", "Blade: Kamu",
+                    // Marksmanship
+                    "Hot Shot", "Split Shot", "Sniper Shot", "Slug Shot", "Blast Shot", "Heavy Shot",
+                    "Detonator", "Coronach", "Leaden Salute",
+                    // Polearms
+                    "Double Thrust", "Thunder Thrust", "Raiden Thrust", "Leg Sweep", "Penta Thrust",
+                    "Vorpal Thrust", "Skewer", "Wheeling Thrust", "Impulse Drive", "Geirskogul",
+                    "Drakesbane",
+                    // Scythes
+                    "Slice", "Dark Harvest", "Shadow of Death", "Nightmare Scythe", "Spinning Scythe",
+                    "Vorpal Scythe", "Guillotine", "Cross Reaper", "Spiral Hell", "Catastrophe", "Insurgency",
+                    // Staves
+                    "Heavy Swing", "Rock Crusher", "Shellcrusher", "Earth Crusher", "Star Burst", "Sun Burst",
+                    "Full Swing", "Spirit Taker", "Retribution", "Gate of Tartarus", "Vidohunir",
+                    "Garland of Bliss", "Omniscience",
+                    // Swords
+                    "Fast Blade", "Flat Blade", "Burning Blade", "Red Lotus Blade", "Circle Blade",
+                    "Shining Blade", "Seraph Blade", "Spirits Within", "Vorpal Blade", "Swift Blade",
+                    "Savage Blade", "Knights of Round", "Death Blossom", "Atonement", "Expiacion",
+                    // Automaton
+                    "Slapstick", "Arcuballista", "String Clipper", "Chimera Ripper", "Knockout", "Daze",
+                    "Cannibal Blade", "Armor Piercer", "Bone Crusher", "Magic Mortar"
+                };
+
+        }
+
+        #endregion
     }
 }

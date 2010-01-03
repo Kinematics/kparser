@@ -86,12 +86,12 @@ namespace WaywardGamers.KParser.Parsing
 
             if (entityNameMatch.Success == true)
             {
-                // Probably a mob, but possibly a pet.  Check the short names lists.
-                if (Puppets.ShortNamesList.Contains(entityName))
+                // Probably a mob, but possibly a pet.  Check the special names lists.
+                if (GameNames.SpecialPuppets.Contains(entityName))
                     return EntityType.Pet;
-                else if (Wyverns.ShortNamesList.Contains(entityName))
+                else if (GameNames.SpecialWyverns.Contains(entityName))
                     return EntityType.Pet;
-                else if (NPCFellows.ShortNamesList.Contains(entityName))
+                else if (GameNames.SpecialNPCFellows.Contains(entityName))
                     return EntityType.Fellow;
                 else
                     return EntityType.Mob;
@@ -105,23 +105,23 @@ namespace WaywardGamers.KParser.Parsing
             }
 
             // Check known pet lists
-            if (Avatars.NamesList.Contains(entityName))
+            if (GameNames.Avatars.Contains(entityName))
             {
                 return EntityType.Pet;
             }
 
-            if (Wyverns.NamesList.Contains(entityName))
+            if (GameNames.Wyverns.Contains(entityName))
             {
                 return EntityType.Pet;
             }
 
-            if (Puppets.NamesList.Contains(entityName))
+            if (GameNames.Puppets.Contains(entityName))
             {
                 return EntityType.Pet;
             }
 
             // Check known NPC fellows
-            if (NPCFellows.NamesList.Contains(entityName))
+            if (GameNames.NPCFellows.Contains(entityName))
             {
                 return EntityType.Fellow;
             }
