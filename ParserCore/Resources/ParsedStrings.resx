@@ -117,17 +117,47 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AstralFlow" xml:space="preserve">
+    <value>Astral Flow</value>
+  </data>
+  <data name="AzureLore" xml:space="preserve">
+    <value>Azure Lore</value>
+  </data>
+  <data name="Benediction" xml:space="preserve">
+    <value>Benediction</value>
+  </data>
   <data name="BioRegex" xml:space="preserve">
     <value>Bio( I+)?</value>
   </data>
+  <data name="BlmRoll" xml:space="preserve">
+    <value>Wizard's Roll</value>
+  </data>
+  <data name="BloodWeapon" xml:space="preserve">
+    <value>Blood Weapon</value>
+  </data>
+  <data name="BluRoll" xml:space="preserve">
+    <value>Magus's Roll</value>
+  </data>
   <data name="BoxStep" xml:space="preserve">
     <value>Box Step</value>
+  </data>
+  <data name="BrdRoll" xml:space="preserve">
+    <value>Choral Roll</value>
+  </data>
+  <data name="BstRoll" xml:space="preserve">
+    <value>Beast Roll</value>
+  </data>
+  <data name="Chainspell" xml:space="preserve">
+    <value>Chainspell</value>
   </data>
   <data name="Chakra" xml:space="preserve">
     <value>Chakra</value>
   </data>
   <data name="Charm" xml:space="preserve">
     <value>Charm</value>
+  </data>
+  <data name="CorRoll" xml:space="preserve">
+    <value>Corsair's Roll</value>
   </data>
   <data name="CrystalsAndSealsRegex" xml:space="preserve">
     <value>Gil|beastmen's seal|Kindred's seal|fire crystal|earth crystal|water crystal|wind crystal|ice crystal|thunder crystal|light crystal|dark crystal</value>
@@ -177,6 +207,18 @@
   <data name="DivineWaltz" xml:space="preserve">
     <value>Divine Waltz</value>
   </data>
+  <data name="DncRoll" xml:space="preserve">
+    <value>Dancer's Roll</value>
+  </data>
+  <data name="DrgRoll" xml:space="preserve">
+    <value>Drachen Roll</value>
+  </data>
+  <data name="DrkRoll" xml:space="preserve">
+    <value>Chaos Roll</value>
+  </data>
+  <data name="EagleEyeShot" xml:space="preserve">
+    <value>Eagle Eye Shot</value>
+  </data>
   <data name="Elegy" xml:space="preserve">
     <value>Elegy</value>
   </data>
@@ -185,6 +227,9 @@
   </data>
   <data name="Erase" xml:space="preserve">
     <value>Erase</value>
+  </data>
+  <data name="Familiar" xml:space="preserve">
+    <value>Familiar</value>
   </data>
   <data name="Gil" xml:space="preserve">
     <value>Gil</value>
@@ -210,6 +255,12 @@
   <data name="HojoRegex" xml:space="preserve">
     <value>Hojo: (Ichi|Ni)</value>
   </data>
+  <data name="HundredFists" xml:space="preserve">
+    <value>Hundred Fists</value>
+  </data>
+  <data name="Invincible" xml:space="preserve">
+    <value>Invincible</value>
+  </data>
   <data name="JubakuRegex" xml:space="preserve">
     <value>Jubaku: (Ichi|Ni)</value>
   </data>
@@ -222,11 +273,32 @@
   <data name="MagicFruit" xml:space="preserve">
     <value>Magic Fruit</value>
   </data>
+  <data name="Manafont" xml:space="preserve">
+    <value>Manafont</value>
+  </data>
+  <data name="MeikyoShisui" xml:space="preserve">
+    <value>Meikyo Shisui</value>
+  </data>
+  <data name="MightyStrikes" xml:space="preserve">
+    <value>Mighty Strikes</value>
+  </data>
+  <data name="MijinGakure" xml:space="preserve">
+    <value>Mijin Gakure</value>
+  </data>
+  <data name="MnkRoll" xml:space="preserve">
+    <value>Monk's Roll</value>
+  </data>
   <data name="Mug" xml:space="preserve">
     <value>Mug</value>
   </data>
   <data name="NaRegex" xml:space="preserve">
     <value>^\w+na$</value>
+  </data>
+  <data name="NinRoll" xml:space="preserve">
+    <value>Ninja Roll</value>
+  </data>
+  <data name="Overdrive" xml:space="preserve">
+    <value>Overdrive</value>
   </data>
   <data name="Overloaded" xml:space="preserve">
     <value>Overloaded</value>
@@ -237,14 +309,26 @@
   <data name="ParalyzeRegex" xml:space="preserve">
     <value>Paralyze( I+)?</value>
   </data>
+  <data name="PerfectDodge" xml:space="preserve">
+    <value>Perfect Dodge</value>
+  </data>
+  <data name="PldRoll" xml:space="preserve">
+    <value>Gallant's Roll</value>
+  </data>
   <data name="Pollen" xml:space="preserve">
     <value>Pollen</value>
+  </data>
+  <data name="PupRoll" xml:space="preserve">
+    <value>Puppet Roll</value>
   </data>
   <data name="Quickstep" xml:space="preserve">
     <value>Quickstep</value>
   </data>
   <data name="Raise" xml:space="preserve">
     <value>Raise</value>
+  </data>
+  <data name="RdmRoll" xml:space="preserve">
+    <value>Warlock's Roll</value>
   </data>
   <data name="Regen1" xml:space="preserve">
     <value>Regen</value>
@@ -255,8 +339,17 @@
   <data name="Regen3" xml:space="preserve">
     <value>Regen III</value>
   </data>
+  <data name="RngRoll" xml:space="preserve">
+    <value>Hunter's Roll</value>
+  </data>
   <data name="SalvageCellRegex" xml:space="preserve">
     <value>([a-z]+) cell</value>
+  </data>
+  <data name="SamRoll" xml:space="preserve">
+    <value>Samurai Roll</value>
+  </data>
+  <data name="SchRoll" xml:space="preserve">
+    <value>Scholar's Roll</value>
   </data>
   <data name="Slow" xml:space="preserve">
     <value>Slow</value>
@@ -264,14 +357,32 @@
   <data name="SlowRegex" xml:space="preserve">
     <value>Slow( I+)?</value>
   </data>
+  <data name="SmnRoll" xml:space="preserve">
+    <value>Evoker's Roll</value>
+  </data>
   <data name="SneakAttack" xml:space="preserve">
     <value>Sneak Attack</value>
+  </data>
+  <data name="SoulVoice" xml:space="preserve">
+    <value>Soul Voice</value>
+  </data>
+  <data name="SpiritSurge" xml:space="preserve">
+    <value>Spirit Surge</value>
   </data>
   <data name="Steal" xml:space="preserve">
     <value>Steal</value>
   </data>
   <data name="Stun" xml:space="preserve">
     <value>Stun</value>
+  </data>
+  <data name="TabulaRasa" xml:space="preserve">
+    <value>Tabula Rasa</value>
+  </data>
+  <data name="ThfRoll" xml:space="preserve">
+    <value>Rogue's Roll</value>
+  </data>
+  <data name="Trance" xml:space="preserve">
+    <value>Trance</value>
   </data>
   <data name="TrickAttack" xml:space="preserve">
     <value>Trick Attack</value>
@@ -284,6 +395,15 @@
   </data>
   <data name="ViolentFlourish" xml:space="preserve">
     <value>Violent Flourish</value>
+  </data>
+  <data name="WarRoll" xml:space="preserve">
+    <value>Fighter's Roll</value>
+  </data>
+  <data name="WhmRoll" xml:space="preserve">
+    <value>Healer's Roll</value>
+  </data>
+  <data name="WildCard" xml:space="preserve">
+    <value>Wild Card</value>
   </data>
   <data name="WildCarrot" xml:space="preserve">
     <value>Wild Carrot</value>
