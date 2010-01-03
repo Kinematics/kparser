@@ -755,12 +755,13 @@ namespace WaywardGamers.KParser.Parsing
         /// <param name="altCodes"></param>
         /// <returns></returns>
         internal Message FindMatchingSpellCastOrAbilityUseForDamage(MessageLine messageLine, List<uint> altCodes,
-            List<EntityType> targetEntityTypes)
+            string targetName)
         {
             // Don't allow alt codes to be null.
             if (altCodes == null)
                 altCodes = new List<uint>();
 
+            List<EntityType> targetEntityTypes = EntityManager.Instance.LookupEntity(targetName);
             List<EntityType> actorEntityTypesAllowed = GetComplimentaryEntityTypes(targetEntityTypes);
 
             uint mcode = messageLine.MessageCode;
