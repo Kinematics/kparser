@@ -126,10 +126,10 @@ namespace WaywardGamers.KParser.Parsing
         /// <returns>The entity type for the name provided, if available.</returns>
         internal List<EntityType> LookupEntity(string name)
         {
-            if ((name == null) || (name == string.Empty))
-                throw new ArgumentNullException("name");
-
             List<EntityType> entityList = new List<EntityType>();
+
+            if (string.IsNullOrEmpty(name))
+                return entityList;
 
             if (entityCollection.ContainsKey(name))
             {
