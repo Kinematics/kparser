@@ -192,9 +192,9 @@ namespace WaywardGamers.KParser.Parsing
                 Match damageMatch = ParseExpressions.TargetTakesDamage.Match(messageLine.TextOutput);
                 if (damageMatch.Success)
                 {
-                    var targetEntityTypes = EntityManager.Instance.LookupEntity(damageMatch.Groups[ParseFields.Target].Value);
+                    string targetName = damageMatch.Groups[ParseFields.Target].Value;
                     msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseForDamage(messageLine,
-                        ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), targetEntityTypes);
+                        ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), targetName);
                 }
             }
 
