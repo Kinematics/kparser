@@ -221,5 +221,70 @@ namespace WaywardGamers.KParser
             Resources.ParsedStrings.LightShot,
             Resources.ParsedStrings.DarkShot
         };
+
+        public static readonly List<string> TwoHourJAs = new List<string>(20)
+        {
+            Resources.ParsedStrings.SoulVoice,
+            Resources.ParsedStrings.Familiar,
+            Resources.ParsedStrings.Manafont,
+            Resources.ParsedStrings.AzureLore,
+            Resources.ParsedStrings.WildCard,
+            Resources.ParsedStrings.Trance,
+            Resources.ParsedStrings.BloodWeapon,
+            Resources.ParsedStrings.SpiritSurge,
+            Resources.ParsedStrings.HundredFists,
+            Resources.ParsedStrings.MijinGakure,
+            Resources.ParsedStrings.Invincible,
+            Resources.ParsedStrings.Overdrive,
+            Resources.ParsedStrings.EagleEyeShot,
+            Resources.ParsedStrings.Chainspell,
+            Resources.ParsedStrings.MeikyoShisui,
+            Resources.ParsedStrings.TabulaRasa,
+            Resources.ParsedStrings.AstralFlow,
+            Resources.ParsedStrings.PerfectDodge,
+            Resources.ParsedStrings.MightyStrikes,
+            Resources.ParsedStrings.Benediction
+        };
+
+        public static readonly List<string> CorRolls = new List<string>(20)
+        {
+            Resources.ParsedStrings.CorRoll,
+            Resources.ParsedStrings.NinRoll,
+            Resources.ParsedStrings.RngRoll,
+            Resources.ParsedStrings.DrkRoll,
+            Resources.ParsedStrings.BluRoll,
+            Resources.ParsedStrings.WhmRoll,
+            Resources.ParsedStrings.PupRoll,
+            Resources.ParsedStrings.BrdRoll,
+            Resources.ParsedStrings.MnkRoll,
+            Resources.ParsedStrings.BstRoll,
+            Resources.ParsedStrings.SamRoll,
+            Resources.ParsedStrings.SmnRoll,
+            Resources.ParsedStrings.ThfRoll,
+            Resources.ParsedStrings.RdmRoll,
+            Resources.ParsedStrings.WarRoll,
+            Resources.ParsedStrings.DrgRoll,
+            Resources.ParsedStrings.PldRoll,
+            Resources.ParsedStrings.BlmRoll,
+            Resources.ParsedStrings.DncRoll,
+            Resources.ParsedStrings.SchRoll
+        };
+
+        /// <summary>
+        /// Self-Use JAs are JAs that never have any additional information about
+        /// their effect after use.  EG: Paladinguy uses Sentinel.
+        /// These JA uses can never have additional chat text lines attached to them.
+        /// Add to this list as JAs are verified.
+        /// </summary>
+        public static readonly List<string> SelfUseJAs = new List<string>()
+        {
+            "Divine Seal",
+            "Elemental Seal",
+            "Sentinel",
+            "Hasso",
+            "Seigan",
+            "Counterstance",
+            "Footwork",
+        };
     }
 }
