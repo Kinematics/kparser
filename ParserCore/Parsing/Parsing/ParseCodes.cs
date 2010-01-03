@@ -110,7 +110,7 @@ namespace WaywardGamers.KParser
             interactionTypeLookup[0x42] = InteractionType.Unknown; //
             interactionTypeLookup[0x43] = InteractionType.Harm; // enfeeble, no effect (any target?)
             interactionTypeLookup[0x44] = InteractionType.Unknown; // enfeeble, resisted (any target?)
-            interactionTypeLookup[0x45] = InteractionType.Harm; // no effect or resisted
+            interactionTypeLookup[0x45] = InteractionType.Unknown; // no effect or resisted
             interactionTypeLookup[0x46] = InteractionType.Unknown; //
             interactionTypeLookup[0x47] = InteractionType.Unknown; //
             interactionTypeLookup[0x48] = InteractionType.Unknown; //
@@ -287,7 +287,7 @@ namespace WaywardGamers.KParser
             aidTypeLookup[0x42] = AidType.None; //
             aidTypeLookup[0x43] = AidType.None; // enfeeble, no effect (any target?)
             aidTypeLookup[0x44] = AidType.Enhance; // enfeeble, resisted (any target?)
-            aidTypeLookup[0x45] = AidType.None; // no effect or resisted
+            aidTypeLookup[0x45] = AidType.Enhance; // no effect or resisted
             aidTypeLookup[0x46] = AidType.None; //
             aidTypeLookup[0x47] = AidType.None; //
             aidTypeLookup[0x48] = AidType.None; //
@@ -1373,9 +1373,11 @@ namespace WaywardGamers.KParser
             {
                 // Enhancements
                 case 0x38:
-                    return new List<uint>() { 0x40, 0x6a, 0x3c };
+                    return new List<uint>() { 0x40, 0x6a, 0x3c, 0xaa, 0x45 };
+                case 0x3c:
+                    return new List<uint>() { 0x45 };
                 case 0x40:
-                    return new List<uint>() { 0x38, 0xaf, 0x6a, 0x3c };
+                    return new List<uint>() { 0x38, 0xaf, 0x6a, 0x3c, 0xaa, 0x45 };
                 case 0x6a:
                     return new List<uint>() { 0x38, 0x40, 0x3c };
                 // Corsair/etc buffs (brd songs?)
@@ -1416,6 +1418,8 @@ namespace WaywardGamers.KParser
                     return new List<uint>() { 0x6d, 0x1c, 0x20 };
                 case 0x20: // hits <pm>
                     return new List<uint>() { 0x6d, 0x1c };
+                case 0x28: // hits <other>
+                    return new List<uint>() { 0x1c, 0x20 };
                 // AOE Drain
                 case 0x16:
                     return new List<uint>() { 0x1b, 0xa5 };
