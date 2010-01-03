@@ -1377,7 +1377,7 @@ namespace WaywardGamers.KParser.Parsing
                                 msgCombatDetails.IsPreparing = true;
                                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                                if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
+                                if (JobAbilities.Weaponskills.Contains(msgCombatDetails.ActionName))
                                     msgCombatDetails.ActionType = ActionType.Weaponskill;
                                 else
                                     msgCombatDetails.ActionType = ActionType.Ability;
@@ -1628,7 +1628,7 @@ namespace WaywardGamers.KParser.Parsing
                 if (msgCombatDetails.ActorEntityType == EntityType.Player)
                 {
                     // Check for weaponskills if actor is a player
-                    if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
+                    if (JobAbilities.Weaponskills.Contains(msgCombatDetails.ActionName))
                         msgCombatDetails.ActionType = ActionType.Weaponskill;
                 }
 
@@ -1921,7 +1921,7 @@ namespace WaywardGamers.KParser.Parsing
                     combatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                     combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
 
-                    if (Weaponskills.NamesList.Contains(combatDetails.ActionName))
+                    if (JobAbilities.Weaponskills.Contains(combatDetails.ActionName))
                         combatDetails.ActionType = ActionType.Weaponskill;
                     else
                         combatDetails.ActionType = ActionType.Ability;
@@ -2136,7 +2136,7 @@ namespace WaywardGamers.KParser.Parsing
                 {
                     combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     combatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                    if (Weaponskills.NamesList.Contains(combatDetails.ActionName))
+                    if (JobAbilities.Weaponskills.Contains(combatDetails.ActionName))
                         combatDetails.ActionType = ActionType.Weaponskill;
                     else
                         combatDetails.ActionType = ActionType.Ability;
@@ -2200,7 +2200,7 @@ namespace WaywardGamers.KParser.Parsing
                 if (combatMatch.Success == true)
                 {
                     combatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                    if (Weaponskills.NamesList.Contains(combatDetails.ActionName))
+                    if (JobAbilities.Weaponskills.Contains(combatDetails.ActionName))
                     {
                         combatDetails.ActionType = ActionType.Weaponskill;
                         combatDetails.HarmType = HarmType.Damage;
@@ -2408,7 +2408,7 @@ namespace WaywardGamers.KParser.Parsing
                     msgCombatDetails.IsPreparing = true;
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                    if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
+                    if (JobAbilities.Weaponskills.Contains(msgCombatDetails.ActionName))
                         msgCombatDetails.ActionType = ActionType.Weaponskill;
                     else
                         msgCombatDetails.ActionType = ActionType.Ability;
@@ -2457,7 +2457,7 @@ namespace WaywardGamers.KParser.Parsing
                 if (combatMatch.Success == true)
                 {
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                    if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
+                    if (JobAbilities.Weaponskills.Contains(msgCombatDetails.ActionName))
                     {
                         msgCombatDetails.ActionType = ActionType.Weaponskill;
                         msgCombatDetails.HarmType = HarmType.Damage;
@@ -2726,7 +2726,7 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.IsPreparing = true;
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
+                if (JobAbilities.Weaponskills.Contains(msgCombatDetails.ActionName))
                     msgCombatDetails.ActionType = ActionType.Weaponskill;
                 else
                     msgCombatDetails.ActionType = ActionType.Ability;
@@ -3063,7 +3063,7 @@ namespace WaywardGamers.KParser.Parsing
                     msgCombatDetails.IsPreparing = true;
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                    if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
+                    if (JobAbilities.Weaponskills.Contains(msgCombatDetails.ActionName))
                         msgCombatDetails.ActionType = ActionType.Weaponskill;
                     else
                         msgCombatDetails.ActionType = ActionType.Ability;
@@ -3147,7 +3147,7 @@ namespace WaywardGamers.KParser.Parsing
                     else
                     {
                         msgCombatDetails.ActionName = possibleActionName;
-                        if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
+                        if (JobAbilities.Weaponskills.Contains(msgCombatDetails.ActionName))
                         {
                             msgCombatDetails.ActionType = ActionType.Weaponskill;
                             msgCombatDetails.HarmType = HarmType.Damage;
@@ -3176,7 +3176,7 @@ namespace WaywardGamers.KParser.Parsing
                 if (combatMatch.Success == true)
                 {
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                    if (Weaponskills.NamesList.Contains(msgCombatDetails.ActionName))
+                    if (JobAbilities.Weaponskills.Contains(msgCombatDetails.ActionName))
                         msgCombatDetails.ActionType = ActionType.Weaponskill;
                     else
                         msgCombatDetails.ActionType = ActionType.Ability;

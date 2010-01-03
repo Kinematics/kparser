@@ -117,11 +117,29 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Accession" xml:space="preserve">
+    <value>Accession</value>
+  </data>
+  <data name="AfflatusMisery" xml:space="preserve">
+    <value>Afflatus Misery</value>
+  </data>
+  <data name="AfflatusSolace" xml:space="preserve">
+    <value>Afflatus Solace</value>
+  </data>
+  <data name="Alacrity" xml:space="preserve">
+    <value>Alacrity</value>
+  </data>
+  <data name="Altruism" xml:space="preserve">
+    <value>Altruism</value>
+  </data>
   <data name="AstralFlow" xml:space="preserve">
     <value>Astral Flow</value>
   </data>
   <data name="AzureLore" xml:space="preserve">
     <value>Azure Lore</value>
+  </data>
+  <data name="Barrage" xml:space="preserve">
+    <value>Barrage</value>
   </data>
   <data name="Benediction" xml:space="preserve">
     <value>Benediction</value>
@@ -147,6 +165,18 @@
   <data name="BstRoll" xml:space="preserve">
     <value>Beast Roll</value>
   </data>
+  <data name="BurstAffinity" xml:space="preserve">
+    <value>Burst Affinity</value>
+  </data>
+  <data name="Camouflage" xml:space="preserve">
+    <value>Camouflage</value>
+  </data>
+  <data name="Celerity" xml:space="preserve">
+    <value>Celerity</value>
+  </data>
+  <data name="ChainAffinity" xml:space="preserve">
+    <value>Chain Affinity</value>
+  </data>
   <data name="Chainspell" xml:space="preserve">
     <value>Chainspell</value>
   </data>
@@ -156,8 +186,17 @@
   <data name="Charm" xml:space="preserve">
     <value>Charm</value>
   </data>
+  <data name="Composure" xml:space="preserve">
+    <value>Composure</value>
+  </data>
+  <data name="Convert" xml:space="preserve">
+    <value>Convert</value>
+  </data>
   <data name="CorRoll" xml:space="preserve">
     <value>Corsair's Roll</value>
+  </data>
+  <data name="Counterstance" xml:space="preserve">
+    <value>Counterstance</value>
   </data>
   <data name="CrystalsAndSealsRegex" xml:space="preserve">
     <value>Gil|beastmen's seal|Kindred's seal|fire crystal|earth crystal|water crystal|wind crystal|ice crystal|thunder crystal|light crystal|dark crystal</value>
@@ -192,6 +231,9 @@
   <data name="CuringWaltz4" xml:space="preserve">
     <value>Curing Waltz IV</value>
   </data>
+  <data name="DarkArts" xml:space="preserve">
+    <value>Dark Arts</value>
+  </data>
   <data name="DarkShot" xml:space="preserve">
     <value>Dark Shot</value>
   </data>
@@ -203,6 +245,9 @@
   </data>
   <data name="Dispel" xml:space="preserve">
     <value>Dispel</value>
+  </data>
+  <data name="DivineSeal" xml:space="preserve">
+    <value>Divine Seal</value>
   </data>
   <data name="DivineWaltz" xml:space="preserve">
     <value>Divine Waltz</value>
@@ -219,11 +264,20 @@
   <data name="EagleEyeShot" xml:space="preserve">
     <value>Eagle Eye Shot</value>
   </data>
+  <data name="Ebullience" xml:space="preserve">
+    <value>Ebullience</value>
+  </data>
   <data name="Elegy" xml:space="preserve">
     <value>Elegy</value>
   </data>
   <data name="ElegyRegex" xml:space="preserve">
     <value>(Battlefield|Carnage|Massacre) Elegy</value>
+  </data>
+  <data name="ElementalSeal" xml:space="preserve">
+    <value>Elemental Seal</value>
+  </data>
+  <data name="Equanimity" xml:space="preserve">
+    <value>Equanimity</value>
   </data>
   <data name="Erase" xml:space="preserve">
     <value>Erase</value>
@@ -231,8 +285,29 @@
   <data name="Familiar" xml:space="preserve">
     <value>Familiar</value>
   </data>
+  <data name="Fealty" xml:space="preserve">
+    <value>Fealty</value>
+  </data>
+  <data name="Feint" xml:space="preserve">
+    <value>Feint</value>
+  </data>
+  <data name="Focalization" xml:space="preserve">
+    <value>Focalization</value>
+  </data>
+  <data name="Fold" xml:space="preserve">
+    <value>Fold</value>
+  </data>
+  <data name="Footwork" xml:space="preserve">
+    <value>Footwork</value>
+  </data>
+  <data name="FormlessStrikes" xml:space="preserve">
+    <value>Formless Strikes</value>
+  </data>
   <data name="Gil" xml:space="preserve">
     <value>Gil</value>
+  </data>
+  <data name="Hasso" xml:space="preserve">
+    <value>Hasso</value>
   </data>
   <data name="HealingBreath1" xml:space="preserve">
     <value>Healing Breath</value>
@@ -258,11 +333,17 @@
   <data name="HundredFists" xml:space="preserve">
     <value>Hundred Fists</value>
   </data>
+  <data name="Innin" xml:space="preserve">
+    <value>Innin</value>
+  </data>
   <data name="Invincible" xml:space="preserve">
     <value>Invincible</value>
   </data>
   <data name="JubakuRegex" xml:space="preserve">
     <value>Jubaku: (Ichi|Ni)</value>
+  </data>
+  <data name="LightArts" xml:space="preserve">
+    <value>Light Arts</value>
   </data>
   <data name="LightShot" xml:space="preserve">
     <value>Light Shot</value>
@@ -275,6 +356,12 @@
   </data>
   <data name="Manafont" xml:space="preserve">
     <value>Manafont</value>
+  </data>
+  <data name="Manifestation" xml:space="preserve">
+    <value>Manifestation</value>
+  </data>
+  <data name="Meditate" xml:space="preserve">
+    <value>Meditate</value>
   </data>
   <data name="MeikyoShisui" xml:space="preserve">
     <value>Meikyo Shisui</value>
@@ -309,8 +396,17 @@
   <data name="ParalyzeRegex" xml:space="preserve">
     <value>Paralyze( I+)?</value>
   </data>
+  <data name="Parsimony" xml:space="preserve">
+    <value>Parsimony</value>
+  </data>
+  <data name="Penury" xml:space="preserve">
+    <value>Penury</value>
+  </data>
   <data name="PerfectDodge" xml:space="preserve">
     <value>Perfect Dodge</value>
+  </data>
+  <data name="Pianissimo" xml:space="preserve">
+    <value>Pianissimo</value>
   </data>
   <data name="PldRoll" xml:space="preserve">
     <value>Gallant's Roll</value>
@@ -326,6 +422,9 @@
   </data>
   <data name="Raise" xml:space="preserve">
     <value>Raise</value>
+  </data>
+  <data name="Rapture" xml:space="preserve">
+    <value>Rapture</value>
   </data>
   <data name="RdmRoll" xml:space="preserve">
     <value>Warlock's Roll</value>
@@ -351,6 +450,15 @@
   <data name="SchRoll" xml:space="preserve">
     <value>Scholar's Roll</value>
   </data>
+  <data name="Seigan" xml:space="preserve">
+    <value>Seigan</value>
+  </data>
+  <data name="Sekkanoki" xml:space="preserve">
+    <value>Sekkanoki</value>
+  </data>
+  <data name="Sentinel" xml:space="preserve">
+    <value>Sentinel</value>
+  </data>
   <data name="Slow" xml:space="preserve">
     <value>Slow</value>
   </data>
@@ -360,8 +468,14 @@
   <data name="SmnRoll" xml:space="preserve">
     <value>Evoker's Roll</value>
   </data>
+  <data name="SnakeEye" xml:space="preserve">
+    <value>Snake Eye</value>
+  </data>
   <data name="SneakAttack" xml:space="preserve">
     <value>Sneak Attack</value>
+  </data>
+  <data name="Souleater" xml:space="preserve">
+    <value>Souleater</value>
   </data>
   <data name="SoulVoice" xml:space="preserve">
     <value>Soul Voice</value>
@@ -375,14 +489,23 @@
   <data name="Stun" xml:space="preserve">
     <value>Stun</value>
   </data>
+  <data name="Sublimation" xml:space="preserve">
+    <value>Sublimation</value>
+  </data>
   <data name="TabulaRasa" xml:space="preserve">
     <value>Tabula Rasa</value>
   </data>
   <data name="ThfRoll" xml:space="preserve">
     <value>Rogue's Roll</value>
   </data>
+  <data name="ThirdEye" xml:space="preserve">
+    <value>Third Eye</value>
+  </data>
   <data name="Trance" xml:space="preserve">
     <value>Trance</value>
+  </data>
+  <data name="Tranquility" xml:space="preserve">
+    <value>Tranquility</value>
   </data>
   <data name="TrickAttack" xml:space="preserve">
     <value>Trick Attack</value>
@@ -407,5 +530,8 @@
   </data>
   <data name="WildCarrot" xml:space="preserve">
     <value>Wild Carrot</value>
+  </data>
+  <data name="Yonin" xml:space="preserve">
+    <value>Yonin</value>
   </data>
 </root>
