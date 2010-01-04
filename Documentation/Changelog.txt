@@ -1,5 +1,10 @@
 KParser Change Log
 
+1.4.11 (January 3, 2010)
+* Change reparsing to auto-detect older parses.  As such, remove extra menu command to reparse with timestamp upgrade, as that will happen automatically.
+* Misc minor code cleanup.
+- Fix a number of message association and entity management bugs, primarily for alliance and multi-alliance fights.
+
 
 1.4.10 (December 27, 2009)
 - Fix bug in Buffs By Time plugin.
