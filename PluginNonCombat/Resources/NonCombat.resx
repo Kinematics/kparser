@@ -322,7 +322,7 @@
     <value>You dig and you dig, but find nothing.</value>
   </data>
   <data name="TreasurePluginChocoDiggingFormat" xml:space="preserve">
-    <value>^Obtained: {0}\\.$</value>
+    <value>^Obtained: {0}\.$</value>
   </data>
   <data name="TreasurePluginHarvestFail" xml:space="preserve">
     <value>You are unable to harvest anything.</value>
