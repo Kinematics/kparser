@@ -761,8 +761,13 @@ namespace WaywardGamers.KParser.Parsing
             if (altCodes == null)
                 altCodes = new List<uint>();
 
+            // Get entity type of the target by checking the Entity Manager.
             List<EntityType> targetEntityTypes = EntityManager.Instance.LookupEntity(targetName);
-            List<EntityType> actorEntityTypesAllowed = GetComplimentaryEntityTypes(targetEntityTypes);
+            // If we haven't encountered this entity before, do a basic classification.
+            if (targetEntityTypes.Count == 0)
+                targetEntityTypes.Add(ClassifyEntity.ClassifyByName(targetName));
+
+            HashSet<EntityType> actorEntityTypesAllowed = GetComplimentaryEntityTypes(targetEntityTypes);
 
             uint mcode = messageLine.MessageCode;
             uint ecode1 = messageLine.ExtraCode1;
@@ -1144,13 +1149,25 @@ namespace WaywardGamers.KParser.Parsing
         /// </summary>
         /// <param name="targetEntityTypes"></param>
         /// <returns></returns>
-        private List<EntityType> GetComplimentaryEntityTypes(List<EntityType> targetEntityTypes)
+        private HashSet<EntityType> GetComplimentaryEntityTypes(List<EntityType> targetEntityTypes)
         {
             HashSet<EntityType> complimentaryEntityTypes = new HashSet<EntityType>();
 
             complimentaryEntityTypes.Add(EntityType.Unknown);
 
-            if (targetEntityTypes.Count > 0)
+            // If we have an unknown entity, pretty much anything is allowed.
+            if (((targetEntityTypes.Count == 1) && (targetEntityTypes.Contains(EntityType.Unknown))) ||
+                (targetEntityTypes.Count == 0))
+            {
+                complimentaryEntityTypes.Add(EntityType.Mob);
+                complimentaryEntityTypes.Add(EntityType.Player);
+                complimentaryEntityTypes.Add(EntityType.Pet);
+                complimentaryEntityTypes.Add(EntityType.NPC);
+                complimentaryEntityTypes.Add(EntityType.Fellow);
+                complimentaryEntityTypes.Add(EntityType.CharmedMob);
+                complimentaryEntityTypes.Add(EntityType.CharmedPlayer);
+            }
+            else
             {
                 if (targetEntityTypes.Contains(EntityType.Player))
                 {
@@ -1193,7 +1210,7 @@ namespace WaywardGamers.KParser.Parsing
                 }
             }
 
-            return complimentaryEntityTypes.ToList();
+            return complimentaryEntityTypes;
         }
 
         #endregion
