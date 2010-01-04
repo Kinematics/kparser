@@ -1048,48 +1048,52 @@ namespace WaywardGamers.KParser.Plugin
                 playerIntervals.Add(new PlayerTimeIntervalSets(player));
             }
 
-            CompileFixedLengthBuffs("Focus", TimeSpan.FromMinutes(2), playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs("Aggressor", TimeSpan.FromMinutes(3), playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs("Sharpshot", TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs("Souleater", TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs("Diabolic Eye", TimeSpan.FromMinutes(3), playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs("Berserk", TimeSpan.FromMinutes(3), playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs("Defender", TimeSpan.FromMinutes(3), playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs("Warcry", TimeSpan.FromSeconds(30), playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs("Last Resort", TimeSpan.FromSeconds(30), playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs("Haste", TimeSpan.FromMinutes(3), playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Focus, TimeSpan.FromMinutes(2), playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Aggressor, TimeSpan.FromMinutes(3), playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Sharpshot, TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Souleater, TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.DiabolicEye, TimeSpan.FromMinutes(3), playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Berserk, TimeSpan.FromMinutes(3), playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Defender, TimeSpan.FromMinutes(3), playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Warcry, TimeSpan.FromSeconds(30), playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.LastResort, TimeSpan.FromSeconds(30), playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Haste, TimeSpan.FromMinutes(3), playerList, playerIntervals, dataSet);
 
-            CompileStanceBuffs("Hasso", "Seigan", TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
-            CompileStanceBuffs("Yonin", "Innin", TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
-            CompileStanceBuffs("Innin", "Yonin", TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
+            CompileStanceBuffs(Resources.ParsedStrings.Hasso, Resources.ParsedStrings.Seigan, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
+            CompileStanceBuffs(Resources.ParsedStrings.Yonin, Resources.ParsedStrings.Innin, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
+            CompileStanceBuffs(Resources.ParsedStrings.Innin, Resources.ParsedStrings.Yonin, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
 
 
-            string altSongsRegex = "Minuet|Madrigal|March|Mambo|Prelude|Ballad";
+            string altSongsRegex = Resources.ParsedStrings.AnySong;
 
-            CompileSongBuffs("Valor Minuet", altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
-            CompileSongBuffs("Valor Minuet II", altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
-            CompileSongBuffs("Valor Minuet III", altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
-            CompileSongBuffs("Valor Minuet IV", altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
-            CompileSongBuffs("Sword Madrigal", altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
-            CompileSongBuffs("Blade Madrigal", altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
-            CompileSongBuffs("Hunter's Prelude", altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
-            CompileSongBuffs("Archer's Prelude", altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
-            CompileSongBuffs("Advancing March", altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
-            CompileSongBuffs("Victory March", altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
+            CompileSongBuffs(Resources.ParsedStrings.Minuet1, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
+            CompileSongBuffs(Resources.ParsedStrings.Minuet2, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
+            CompileSongBuffs(Resources.ParsedStrings.Minuet3, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
+            CompileSongBuffs(Resources.ParsedStrings.Minuet4, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
+            CompileSongBuffs(Resources.ParsedStrings.Madrigal1, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
+            CompileSongBuffs(Resources.ParsedStrings.Madrigal2, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
+            CompileSongBuffs(Resources.ParsedStrings.Prelude1, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
+            CompileSongBuffs(Resources.ParsedStrings.Prelude2, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
+            CompileSongBuffs(Resources.ParsedStrings.March1, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
+            CompileSongBuffs(Resources.ParsedStrings.March2, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
 
-            string altRollsRegex = "Roll";
+            string altRollsRegex = Resources.ParsedStrings.AnyRoll;
 
-            CompileRollBuffs("Hunter's Roll", altRollsRegex, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
-            CompileRollBuffs("Chaos Roll", altRollsRegex, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
+            CompileRollBuffs(Resources.ParsedStrings.RngRoll, altRollsRegex, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
+            CompileRollBuffs(Resources.ParsedStrings.DrkRoll, altRollsRegex, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
 
 
             //CompileDebuffs("Gravity", TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
 
-            CompileSambaBuffs("Haste Samba", "Samba", TimeSpan.FromMinutes(2), playerList, playerIntervals, dataSet);
+            CompileSambaBuffs(Resources.ParsedStrings.HasteSamba, Resources.ParsedStrings.AnySamba,
+                TimeSpan.FromMinutes(2), playerList, playerIntervals, dataSet);
 
-            CompileDebuffsWithOR("Dia", "Bio", TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
-            CompileDebuffsWithOR("Dia II", "Bio II", TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
-            CompileDebuffsWithOR("Dia III", "Bio III", TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
+            CompileDebuffsWithOR(Resources.ParsedStrings.Dia1, Resources.ParsedStrings.Bio1,
+                TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
+            CompileDebuffsWithOR(Resources.ParsedStrings.Dia2, Resources.ParsedStrings.Bio2,
+                TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
+            CompileDebuffsWithOR(Resources.ParsedStrings.Dia3, Resources.ParsedStrings.Bio3,
+                TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
 
 
             return playerIntervals;
