@@ -264,7 +264,9 @@ namespace WaywardGamers.KParser.Database
                             lastFinishedBattle.Killed = true;
                         }
 
-                        activeMobBattleList.Remove(lastFinishedBattle.CombatantsRowByEnemyCombatantRelation.CombatantName);
+                        if (lastFinishedBattle.IsEnemyIDNull() == false)
+                            activeMobBattleList.Remove(lastFinishedBattle.CombatantsRowByEnemyCombatantRelation.CombatantName);
+
                         lock (activeBattleList)
                             activeBattleList.Remove(lastFinishedBattle);
 
