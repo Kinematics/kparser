@@ -396,4 +396,13 @@
   <data name="TreasurePluginRegexMiningFormat" xml:space="preserve">
     <value>You (successfully )?dig up {0}(, but your pickaxe breaks( in the process)?)?(.|!)$</value>
   </data>
+  <data name="TreasurePluginChocoDiggingFWE" xml:space="preserve">
+    <value>It appears your chocobo found this item with ease.</value>
+  </data>
+  <data name="TreasurePluginHELMFoundWithEase" xml:space="preserve">
+    <value>Found With Ease:</value>
+  </data>
+  <data name="TreasurePluginHELMNormalDigs" xml:space="preserve">
+    <value>Normal Digs:</value>
+  </data>
 </root>

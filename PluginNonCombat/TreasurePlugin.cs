@@ -100,6 +100,7 @@ namespace WaywardGamers.KParser.Plugin
 
         string lsChocoDiggingFail;
         string lsChocoDiggingFormat;
+        string lsChocoDiggingFoundWithEase;
 
         Regex Harvest;
         Regex Logging;
@@ -122,6 +123,8 @@ namespace WaywardGamers.KParser.Plugin
         string lsHELMTotalTries;
         string lsHELMBreaks;
         string lsHELMNothing;
+        string lsHELMFoundWithEase;
+        string lsHELMTotalDigs;
 
         string lsHELMShortLineFormat;
         string lsHELMLongLineFormat;
@@ -1010,6 +1013,7 @@ namespace WaywardGamers.KParser.Plugin
 
 
             int chocoboDiggingFailures = arenaChat.Count(ac => ac.Message == lsChocoDiggingFail);
+            int chocoboFoundWithEase = arenaChat.Count(ac => ac.Message == lsChocoDiggingFoundWithEase);
             #endregion
 
             // Consolidated build
@@ -1017,10 +1021,14 @@ namespace WaywardGamers.KParser.Plugin
             List<StringMods> strModList = new List<StringMods>();
 
             // Build the full set of strings for all types of HELM
-            BuildHELMResults(lsHELMHarvesting, harvestedItems, harvestingBreaks, harvestingFailures, sb, strModList);
-            BuildHELMResults(lsHELMLogging, loggedItems, loggingBreaks, loggingFailures, sb, strModList);
-            BuildHELMResults(lsHELMMining, minedItems, miningBreaks, miningFailures, sb, strModList);
-            BuildHELMResults(lsHELMDigging, chocoboItems, -1, chocoboDiggingFailures, sb, strModList);
+            BuildHELMResults(lsHELMHarvesting, harvestedItems, harvestingBreaks,
+                harvestingFailures,     0, sb, strModList);
+            BuildHELMResults(lsHELMLogging,    loggedItems,    loggingBreaks,
+                loggingFailures,        0, sb, strModList);
+            BuildHELMResults(lsHELMMining,     minedItems,     miningBreaks,
+                miningFailures,         0, sb, strModList);
+            BuildHELMResults(lsHELMDigging,    chocoboItems,   -1,
+                chocoboDiggingFailures, chocoboFoundWithEase, sb, strModList);
 
             // Then display them
             PushStrings(sb, strModList);
@@ -1037,7 +1045,7 @@ namespace WaywardGamers.KParser.Plugin
         /// <param name="sb">The StringBuilder that's being added to.</param>
         /// <param name="strModList">The list of string mods for color/bold/etc.</param>
         private void BuildHELMResults(string sectionTitle,
-            IEnumerable<HELMList> helmedItems, int helmedBreaks, int helmedFailures,
+            IEnumerable<HELMList> helmedItems, int helmedBreaks, int helmedFailures, int chocoboFWE,
             StringBuilder sb, List<StringMods> strModList)
         {
             // Don't add anything if there aren't any of the provided type of results
@@ -1096,6 +1104,18 @@ namespace WaywardGamers.KParser.Plugin
                 sb.Append("\n");
                 sb.AppendFormat(lsHELMLongLineFormat,
                     lsHELMBreaks, helmedBreaks, avgResult);
+                sb.Append("\n");
+            }
+
+            // "Found with ease" messages from choco racing silks.
+            if (chocoboFWE > 0)
+            {
+                sb.AppendFormat(lsHELMShortLineFormat,
+                    lsHELMFoundWithEase, chocoboFWE);
+                sb.Append("\n");
+
+                sb.AppendFormat(lsHELMShortLineFormat,
+                    lsHELMTotalDigs, totalCount - chocoboFWE);
                 sb.Append("\n");
             }
 
@@ -1184,9 +1204,11 @@ namespace WaywardGamers.KParser.Plugin
             // You dig and you dig, but find nothing.
             // Obtained: Lauan log.
             // Obtained: Pebble.
+            // It appears your chocobo found this item with ease.
 
             lsChocoDiggingFail = Resources.NonCombat.TreasurePluginChocoDiggingFail;
             lsChocoDiggingFormat = Resources.NonCombat.TreasurePluginChocoDiggingFormat;
+            lsChocoDiggingFoundWithEase = Resources.NonCombat.TreasurePluginChocoDiggingFWE;
 
             ChocoDigging = new Regex(string.Format(lsChocoDiggingFormat, lsItemRegex));
 
@@ -1201,6 +1223,8 @@ namespace WaywardGamers.KParser.Plugin
             lsHELMTotalTries = Resources.NonCombat.TreasurePluginHELMTotalTries;
             lsHELMBreaks = Resources.NonCombat.TreasurePluginHELMBreaks;
             lsHELMNothing = Resources.NonCombat.TreasurePluginHELMNothing;
+            lsHELMFoundWithEase = Resources.NonCombat.TreasurePluginHELMFoundWithEase;
+            lsHELMTotalDigs = Resources.NonCombat.TreasurePluginHELMNormalDigs;
 
             lsHELMShortLineFormat = Resources.NonCombat.TreasurePluginHELMShortLineFormat;
             lsHELMLongLineFormat = Resources.NonCombat.TreasurePluginHELMLongLineFormat;
