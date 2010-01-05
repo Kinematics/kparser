@@ -475,6 +475,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to It appears your chocobo found this item with ease..
+        /// </summary>
+        internal static string TreasurePluginChocoDiggingFWE {
+            get {
+                return ResourceManager.GetString("TreasurePluginChocoDiggingFWE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Distribution.
         /// </summary>
         internal static string TreasurePluginDistribution {
@@ -574,6 +583,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Found With Ease:.
+        /// </summary>
+        internal static string TreasurePluginHELMFoundWithEase {
+            get {
+                return ResourceManager.GetString("TreasurePluginHELMFoundWithEase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Harvesting:.
         /// </summary>
         internal static string TreasurePluginHELMHarvesting {
@@ -606,6 +624,15 @@ namespace WaywardGamers.KParser.Resources {
         internal static string TreasurePluginHELMMining {
             get {
                 return ResourceManager.GetString("TreasurePluginHELMMining", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Normal Digs:.
+        /// </summary>
+        internal static string TreasurePluginHELMNormalDigs {
+            get {
+                return ResourceManager.GetString("TreasurePluginHELMNormalDigs", resourceCulture);
             }
         }
         
