@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Diagnostics;
 using WaywardGamers.KParser.KPDatabaseDataSetTableAdapters;
 using WaywardGamers.KParser.Database;
@@ -175,10 +176,39 @@ namespace WaywardGamers.KParser
 
                 CreateConnections();
 
-                // Hard coded at the moment; will fix later to adjust it based
-                // on info in the database when the database is loaded/initialized.
-                Resources.ParsedStrings.Culture = new System.Globalization.CultureInfo("en-US");
+                // Default parsed culture value.
+                string parsedCulture = "";
+
+                if (localDB.Version.Rows.Count > 0)
+                {
+                    // Get the parser version from the database.
+                    string parserVersion = localDB.Version[0].ParserVersion;
+
+                    if (string.IsNullOrEmpty(parserVersion) == false)
+                    {
+                        // Parser version string is assembly version number (eg: 1.4)
+                        // plus an optional culture language tag (eg: "fr", "de", "ja").
+
+                        Match parsedLangMatch = Regex.Match(parserVersion, @"(?<dbVer>\d\.\d+)(?<lang>fr-FR|de-DE|ja-JP)?");
+                        if (parsedLangMatch.Success)
+                        {
+                            DatabaseParseVersion = parsedLangMatch.Groups["dbVer"].Value;
+
+                            parsedCulture = parsedLangMatch.Groups["lang"].Value;
+
+                            if (parsedCulture == null)
+                                parsedCulture = string.Empty;
+                        }
+                    }
+                }
+
+                Resources.ParsedStrings.Culture = new System.Globalization.CultureInfo(parsedCulture);
+                DatabaseParseCulture = parsedCulture;
+
+                // Reset the static string classes to get the properly translated
+                // version of the resource strings.
                 JobAbilities.Reset();
+                ParseExpressions.Reset();
             }
             catch (Exception)
             {
@@ -245,9 +275,24 @@ namespace WaywardGamers.KParser
         /// </summary>
         private void InitializeNewDatabase()
         {
+            Properties.Settings appSettings = new WaywardGamers.KParser.Properties.Settings();
+
+            string parsedCulture = appSettings.ParsingCulture;
+            if (parsedCulture == null)
+                parsedCulture = string.Empty;
+
+            if ((parsedCulture != "fr-FR") &&
+                (parsedCulture != "de-DE") &&
+                (parsedCulture != "ja-JP"))
+            {
+                parsedCulture = string.Empty;
+            }
+
+            string parserVersionString = string.Format("{0}{1}", assemblyVersionString, parsedCulture);
+
             // Insert version information
             if (localDB.Version.Rows.Count == 0)
-                localDB.Version.AddVersionRow(databaseVersion, assemblyVersionString);
+                localDB.Version.AddVersionRow(databaseVersion, parserVersionString);
 
             // Insert default battle row
             if (localDB.Battles.Rows.Count == 0)
@@ -255,6 +300,15 @@ namespace WaywardGamers.KParser
                     DateTime.Now.ToUniversalTime(), false, null, 0, 0, 0, 0, true);
 
             UpdateDatabase();
+
+            // Make sure we're using the proper translated strings when we start parsing.
+            Resources.ParsedStrings.Culture = new System.Globalization.CultureInfo(parsedCulture);
+            DatabaseParseCulture = parsedCulture;
+
+            // Reset the static string classes to get the properly translated
+            // version of the resource strings.
+            JobAbilities.Reset();
+            ParseExpressions.Reset();
         }
 
         /// <summary>
@@ -301,6 +355,18 @@ namespace WaywardGamers.KParser
         {
             get { return showJobInsteadOfName; }
             set { showJobInsteadOfName = value; }
+        }
+
+        public string DatabaseParseVersion
+        {
+            get;
+            private set;
+        }
+
+        public string DatabaseParseCulture
+        {
+            get;
+            private set;
         }
         #endregion
 

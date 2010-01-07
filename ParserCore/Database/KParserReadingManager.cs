@@ -5,6 +5,7 @@ using System.Data;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Diagnostics;
 using WaywardGamers.KParser.Interface;
 
@@ -85,6 +86,41 @@ namespace WaywardGamers.KParser
             Properties.Settings.Default.Properties["KPDatabaseConnectionString"].DefaultValue = databaseConnectionString;
 
             CreateConnections();
+
+
+            // Default parsed culture value.
+            string parsedCulture = "";
+
+            if (localDB.Version.Rows.Count > 0)
+            {
+                // Get the parser version from the database.
+                string parserVersion = localDB.Version[0].ParserVersion;
+
+                if (string.IsNullOrEmpty(parserVersion) == false)
+                {
+                    // Parser version string is assembly version number (eg: 1.4)
+                    // plus an optional culture language tag (eg: "fr", "de", "ja").
+
+                    Match parsedLangMatch = Regex.Match(parserVersion, @"(?<dbVer>\d\.\d+)(?<lang>fr-FR|de-DE|ja-JP)?");
+                    if (parsedLangMatch.Success)
+                    {
+                        DatabaseParseVersion = parsedLangMatch.Groups["dbVer"].Value;
+
+                        parsedCulture = parsedLangMatch.Groups["lang"].Value;
+
+                        if (parsedCulture == null)
+                            parsedCulture = string.Empty;
+                    }
+                }
+            }
+
+            Resources.ParsedStrings.Culture = new System.Globalization.CultureInfo(parsedCulture);
+            DatabaseParseCulture = parsedCulture;
+
+            // Reset the static string classes to get the properly translated
+            // version of the resource strings.
+            JobAbilities.Reset();
+            ParseExpressions.Reset();
         }
 
         public KPDatabaseReadOnly Database
@@ -101,6 +137,18 @@ namespace WaywardGamers.KParser
             {
                 return databaseFilename;
             }
+        }
+
+        public string DatabaseParseVersion
+        {
+            get;
+            private set;
+        }
+
+        public string DatabaseParseCulture
+        {
+            get;
+            private set;
         }
 
         public void CloseDatabase()
