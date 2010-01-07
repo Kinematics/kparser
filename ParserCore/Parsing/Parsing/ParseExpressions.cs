@@ -27,6 +27,10 @@ namespace WaywardGamers.KParser
     // Class to store regular expressions in.
     internal class ParseExpressions
     {
+        internal static void Reset()
+        {
+        }
+
         #region Named substrings
         private static readonly string playername  = @"(?<name>\w{3,16})";
         private static readonly string npcName     = @"(?<fullname>([Tt]he )?(?<name>\w+((,)|(\.\w{0,2})|['\- ](\d|\w)+)*))";
