@@ -548,7 +548,7 @@ namespace WaywardGamers.KParser.Parsing
             if (stealMatch.Success == true)
             {
                 msgCombatDetails.ActorName = stealMatch.Groups[ParseFields.Name].Value;
-                msgCombatDetails.ActionName = "Steal";
+                msgCombatDetails.ActionName = Resources.ParsedStrings.Steal;
                 target = msgCombatDetails.AddTarget(stealMatch.Groups[ParseFields.Fulltarget].Value);
                 msgCombatDetails.ActionType = ActionType.Steal;
                 msgCombatDetails.ItemName = stealMatch.Groups[ParseFields.Item].Value;
@@ -562,7 +562,7 @@ namespace WaywardGamers.KParser.Parsing
             if (stealMatch.Success == true)
             {
                 msgCombatDetails.ActorName = stealMatch.Groups[ParseFields.Name].Value;
-                msgCombatDetails.ActionName = "Steal";
+                msgCombatDetails.ActionName = Resources.ParsedStrings.Steal;
                 target = msgCombatDetails.AddTarget(stealMatch.Groups[ParseFields.Fulltarget].Value);
                 msgCombatDetails.ActionType = ActionType.Steal;
                 msgCombatDetails.FailedActionType = FailedActionType.NoEffect;
@@ -577,7 +577,7 @@ namespace WaywardGamers.KParser.Parsing
             if (stealMatch.Success == true)
             {
                 msgCombatDetails.ActorName = stealMatch.Groups[ParseFields.Name].Value;
-                msgCombatDetails.ActionName = "Mug";
+                msgCombatDetails.ActionName = Resources.ParsedStrings.Mug;
                 target = msgCombatDetails.AddTarget(stealMatch.Groups[ParseFields.Fulltarget].Value);
                 msgCombatDetails.ActionType = ActionType.Steal;
                 target.Amount = int.Parse(stealMatch.Groups[ParseFields.Money].Value);
@@ -591,7 +591,7 @@ namespace WaywardGamers.KParser.Parsing
             if (stealMatch.Success == true)
             {
                 msgCombatDetails.ActorName = stealMatch.Groups[ParseFields.Name].Value;
-                msgCombatDetails.ActionName = "Mug";
+                msgCombatDetails.ActionName = Resources.ParsedStrings.Mug;
                 target = msgCombatDetails.AddTarget(stealMatch.Groups[ParseFields.Fulltarget].Value);
                 msgCombatDetails.ActionType = ActionType.Steal;
                 msgCombatDetails.FailedActionType = FailedActionType.NoEffect;
@@ -945,7 +945,8 @@ namespace WaywardGamers.KParser.Parsing
                             msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                             message.SetParseSuccess(true);
 
-                            if ((msgCombatDetails.ActionName == "Steal") || (msgCombatDetails.ActionName == "Mug"))
+                            if ((msgCombatDetails.ActionName == Resources.ParsedStrings.Steal) ||
+                                (msgCombatDetails.ActionName == Resources.ParsedStrings.Mug))
                                 message.EventDetails.EventMessageType = EventMessageType.Steal;
 
                             return;
@@ -2446,7 +2447,8 @@ namespace WaywardGamers.KParser.Parsing
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                     message.SetParseSuccess(true);
 
-                    if ((msgCombatDetails.ActionName == "Steal") || (msgCombatDetails.ActionName == "Mug"))
+                    if ((msgCombatDetails.ActionName == Resources.ParsedStrings.Steal) ||
+                        (msgCombatDetails.ActionName == Resources.ParsedStrings.Mug))
                         message.EventDetails.EventMessageType = EventMessageType.Steal;
 
                     return;
@@ -2742,7 +2744,7 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.ActionType = ActionType.Spell;
                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
-                if (msgCombatDetails.ActionName.StartsWith("Absorb-"))
+                if (Regex.Match(msgCombatDetails.ActionName, Resources.ParsedStrings.AbsorbRegex).Success)
                     msgCombatDetails.HarmType = HarmType.Enfeeble;
                 message.SetParseSuccess(true);
                 return;
@@ -2755,7 +2757,8 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                 message.SetParseSuccess(true);
 
-                if ((msgCombatDetails.ActionName == "Steal") || (msgCombatDetails.ActionName == "Mug"))
+                if ((msgCombatDetails.ActionName == Resources.ParsedStrings.Steal) ||
+                    (msgCombatDetails.ActionName == Resources.ParsedStrings.Mug))
                     message.EventDetails.EventMessageType = EventMessageType.Steal;
 
                 return;
