@@ -134,187 +134,229 @@
     <value>Schließen Sie andere Tabs </value>
   </data>
   <data name="fileMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>44, 20</value>
+    <value>46, 20</value>
   </data>
   <data name="fileMenu.Text" xml:space="preserve">
     <value>Datei</value>
   </data>
   <data name="beginParseAndSaveDataMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>341, 22</value>
+    <value>350, 22</value>
   </data>
   <data name="beginParseAndSaveDataMenuItem.Text" xml:space="preserve">
     <value>Zunächst Analysieren und Speichern Daten...</value>
   </data>
   <data name="beginDefaultParseMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>341, 22</value>
+    <value>350, 22</value>
   </data>
   <data name="beginDefaultParseMenuItem.Text" xml:space="preserve">
     <value>Standardmäßig Beginnen Analysieren</value>
   </data>
+  <data name="continueParsingMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>350, 22</value>
+  </data>
+  <data name="continueParsingMenuItem.Text" xml:space="preserve">
+    <value>Weiter Analysieren</value>
+  </data>
   <data name="quitParsingMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>341, 22</value>
+    <value>350, 22</value>
   </data>
   <data name="quitParsingMenuItem.Text" xml:space="preserve">
     <value>Beenden Analysieren</value>
   </data>
   <data name="toolStripSeparator1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>338, 6</value>
+    <value>347, 6</value>
   </data>
   <data name="openSavedDataMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>341, 22</value>
+    <value>350, 22</value>
   </data>
   <data name="openSavedDataMenuItem.Text" xml:space="preserve">
     <value>Öffnen...</value>
   </data>
-  <data name="continueParsingMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>341, 22</value>
-  </data>
-  <data name="continueParsingMenuItem.Text" xml:space="preserve">
-    <value>Weiter Analysieren</value>
-  </data>
   <data name="saveCurrentDataAsMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>341, 22</value>
+    <value>350, 22</value>
   </data>
   <data name="saveCurrentDataAsMenuItem.Text" xml:space="preserve">
     <value>Speichern Unter...</value>
   </data>
   <data name="saveReportMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>341, 22</value>
+    <value>350, 22</value>
   </data>
   <data name="saveReportMenuItem.Text" xml:space="preserve">
     <value>Speichern Bericht...</value>
   </data>
   <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>338, 6</value>
+    <value>347, 6</value>
   </data>
   <data name="importToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>341, 22</value>
+    <value>350, 22</value>
   </data>
   <data name="toolStripSeparator4.Size" type="System.Drawing.Size, System.Drawing">
-    <value>338, 6</value>
+    <value>347, 6</value>
   </data>
   <data name="recentFilesToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>341, 22</value>
+    <value>350, 22</value>
   </data>
   <data name="recentFilesToolStripMenuItem.Text" xml:space="preserve">
     <value>Neueste Dateien</value>
   </data>
   <data name="toolStripSeparator7.Size" type="System.Drawing.Size, System.Drawing">
-    <value>338, 6</value>
+    <value>347, 6</value>
   </data>
   <data name="exitMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>341, 22</value>
+    <value>350, 22</value>
   </data>
   <data name="exitMenuItem.Text" xml:space="preserve">
     <value>Beenden</value>
   </data>
   <data name="editToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>71, 20</value>
+    <value>75, 20</value>
   </data>
   <data name="editToolStripMenuItem.Text" xml:space="preserve">
     <value>Bearbeiten</value>
   </data>
   <data name="copyasTextToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>224, 22</value>
+    <value>255, 22</value>
   </data>
   <data name="copyasTextToolStripMenuItem.Text" xml:space="preserve">
     <value>Kopie Infos als Text</value>
   </data>
   <data name="copyasHTMLToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>224, 22</value>
+    <value>255, 22</value>
   </data>
   <data name="copyasHTMLToolStripMenuItem.Text" xml:space="preserve">
     <value>Kopie Infos als HTML</value>
   </data>
   <data name="copyTabInfoAsBBCodeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>224, 22</value>
+    <value>255, 22</value>
   </data>
   <data name="copyTabInfoAsBBCodeToolStripMenuItem.Text" xml:space="preserve">
     <value>Kopie Infos als BBCode</value>
   </data>
   <data name="copyTabasRTFToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>224, 22</value>
+    <value>255, 22</value>
   </data>
   <data name="copyTabasRTFToolStripMenuItem.Text" xml:space="preserve">
     <value>Kopie Infos als RTF</value>
   </data>
   <data name="toolStripSeparator5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>221, 6</value>
+    <value>252, 6</value>
+  </data>
+  <data name="languageToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>255, 22</value>
+  </data>
+  <data name="languageToolStripMenuItem.Text" xml:space="preserve">
+    <value>Sprache für das Interface</value>
+  </data>
+  <data name="englishToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>135, 22</value>
+  </data>
+  <data name="englishToolStripMenuItem.Text" xml:space="preserve">
+    <value>Englisch</value>
+  </data>
+  <data name="frenchToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>135, 22</value>
+  </data>
+  <data name="frenchToolStripMenuItem.Text" xml:space="preserve">
+    <value>Französisch</value>
+  </data>
+  <data name="germanToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>135, 22</value>
+  </data>
+  <data name="germanToolStripMenuItem.Text" xml:space="preserve">
+    <value>Deutsch</value>
+  </data>
+  <data name="japaneseToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>135, 22</value>
+  </data>
+  <data name="japaneseToolStripMenuItem.Text" xml:space="preserve">
+    <value>Japonese</value>
+  </data>
+  <data name="fFXILanguageToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>255, 22</value>
+  </data>
+  <data name="fFXILanguageToolStripMenuItem.Text" xml:space="preserve">
+    <value>Sprache für das FFXI</value>
+  </data>
+  <data name="englishToolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>135, 22</value>
+  </data>
+  <data name="englishToolStripMenuItem1.Text" xml:space="preserve">
+    <value>Englisch</value>
+  </data>
+  <data name="frenchToolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>135, 22</value>
+  </data>
+  <data name="frenchToolStripMenuItem1.Text" xml:space="preserve">
+    <value>Französisch</value>
+  </data>
+  <data name="germanToolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>135, 22</value>
+  </data>
+  <data name="germanToolStripMenuItem1.Text" xml:space="preserve">
+    <value>Deutsch</value>
+  </data>
+  <data name="japaneseToolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>135, 22</value>
+  </data>
+  <data name="japaneseToolStripMenuItem1.Text" xml:space="preserve">
+    <value>Japonese</value>
+  </data>
+  <data name="toolStripSeparator6.Size" type="System.Drawing.Size, System.Drawing">
+    <value>252, 6</value>
   </data>
   <data name="playerInformationToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>224, 22</value>
+    <value>255, 22</value>
   </data>
   <data name="playerInformationToolStripMenuItem.Text" xml:space="preserve">
     <value>Spieler &amp;Informationen</value>
   </data>
+  <data name="showJobInsteadOfNameToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>255, 22</value>
+  </data>
+  <data name="showJobInsteadOfNameToolStripMenuItem.Text" xml:space="preserve">
+    <value>Anzeigen Job anstelle des Namens</value>
+  </data>
   <data name="toolsMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>73, 20</value>
+    <value>77, 20</value>
   </data>
   <data name="toolsMenu.Text" xml:space="preserve">
     <value>Werkzeuge</value>
   </data>
   <data name="toolsTestFunctionMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>288, 22</value>
+    <value>216, 22</value>
   </data>
   <data name="toolsReparseMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>288, 22</value>
+    <value>216, 22</value>
   </data>
   <data name="toolsReparseMenuItem.Text" xml:space="preserve">
     <value>Analysieren Wieder</value>
   </data>
-  <data name="upgradeDatabaseTimestampToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>288, 22</value>
-  </data>
-  <data name="upgradeDatabaseTimestampToolStripMenuItem.Text" xml:space="preserve">
-    <value>Analysieren Wieder w/Timestamp Upgrade</value>
-  </data>
-  <data name="toolStripSeparator6.Size" type="System.Drawing.Size, System.Drawing">
-    <value>285, 6</value>
-  </data>
-  <data name="languageToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>288, 22</value>
-  </data>
-  <data name="languageToolStripMenuItem.Text" xml:space="preserve">
-    <value>Sprache für das Interface</value>
-  </data>
-  <data name="englishToolStripMenuItem.Text" xml:space="preserve">
-    <value>Englisch</value>
-  </data>
-  <data name="frenchToolStripMenuItem.Text" xml:space="preserve">
-    <value>Französisch</value>
-  </data>
-  <data name="germanToolStripMenuItem.Text" xml:space="preserve">
-    <value>Deutsch</value>
-  </data>
-  <data name="japaneseToolStripMenuItem.Text" xml:space="preserve">
-    <value>Japonese</value>
-  </data>
   <data name="toolStripSeparator3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>285, 6</value>
+    <value>213, 6</value>
   </data>
   <data name="optionsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>288, 22</value>
+    <value>216, 22</value>
   </data>
   <data name="optionsToolStripMenuItem.Text" xml:space="preserve">
     <value>Optionen...</value>
   </data>
   <data name="windowsMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>56, 20</value>
+    <value>57, 20</value>
   </data>
   <data name="windowsMenu.Text" xml:space="preserve">
     <value>Fenster</value>
   </data>
   <data name="aboutToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>240, 22</value>
+    <value>242, 22</value>
   </data>
   <data name="aboutToolStripMenuItem.Text" xml:space="preserve">
     <value>Über</value>
   </data>
   <data name="windowsToolStripSeparator.Size" type="System.Drawing.Size, System.Drawing">
-    <value>237, 6</value>
+    <value>239, 6</value>
   </data>
   <data name="closeAllTabsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>240, 22</value>
+    <value>242, 22</value>
   </data>
   <data name="closeAllTabsToolStripMenuItem.Text" xml:space="preserve">
     <value>Schließen Sie alle Registerkarten</value>
