@@ -61,6 +61,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ^Absorb-.
+        /// </summary>
+        public static string AbsorbRegex {
+            get {
+                return ResourceManager.GetString("AbsorbRegex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Accession.
         /// </summary>
         public static string Accession {

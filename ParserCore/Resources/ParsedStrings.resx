@@ -621,4 +621,7 @@
   <data name="Yonin" xml:space="preserve">
     <value>Yonin</value>
   </data>
+  <data name="AbsorbRegex" xml:space="preserve">
+    <value>^Absorb-</value>
+  </data>
 </root>
