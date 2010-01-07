@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <metadata name="statusStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>0, 435</value>
+    <value>0, 680</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="statusStrip.Location" type="System.Drawing.Point, System.Drawing">
@@ -225,6 +225,111 @@
   <metadata name="mainMenuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>0, 0</value>
   </metadata>
+  <data name="fileMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>37, 20</value>
+  </data>
+  <data name="fileMenu.Text" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="copyasTextToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>214, 22</value>
+  </data>
+  <data name="copyasTextToolStripMenuItem.Text" xml:space="preserve">
+    <value>Copy Tab Info as Text</value>
+  </data>
+  <data name="copyasHTMLToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>214, 22</value>
+  </data>
+  <data name="copyasHTMLToolStripMenuItem.Text" xml:space="preserve">
+    <value>Copy Tab Info as HTML</value>
+  </data>
+  <data name="copyTabInfoAsBBCodeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>214, 22</value>
+  </data>
+  <data name="copyTabInfoAsBBCodeToolStripMenuItem.Text" xml:space="preserve">
+    <value>Copy Tab Info as BBCode</value>
+  </data>
+  <data name="copyTabasRTFToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>214, 22</value>
+  </data>
+  <data name="copyTabasRTFToolStripMenuItem.Text" xml:space="preserve">
+    <value>Copy Tab Info as RTF</value>
+  </data>
+  <data name="toolStripSeparator5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>211, 6</value>
+  </data>
+  <data name="languageToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>214, 22</value>
+  </data>
+  <data name="languageToolStripMenuItem.Text" xml:space="preserve">
+    <value>Interface Language</value>
+  </data>
+  <data name="englishParsingToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>152, 22</value>
+  </data>
+  <data name="englishParsingToolStripMenuItem.Text" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="frenchParsingToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>152, 22</value>
+  </data>
+  <data name="frenchParsingToolStripMenuItem.Text" xml:space="preserve">
+    <value>French</value>
+  </data>
+  <data name="germanParsingToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>152, 22</value>
+  </data>
+  <data name="germanParsingToolStripMenuItem.Text" xml:space="preserve">
+    <value>German</value>
+  </data>
+  <data name="japaneseParsingToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>152, 22</value>
+  </data>
+  <data name="japaneseParsingToolStripMenuItem.Text" xml:space="preserve">
+    <value>Japanese</value>
+  </data>
+  <data name="fFXILanguageToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>214, 22</value>
+  </data>
+  <data name="fFXILanguageToolStripMenuItem.Text" xml:space="preserve">
+    <value>FFXI Language</value>
+  </data>
+  <data name="toolStripSeparator6.Size" type="System.Drawing.Size, System.Drawing">
+    <value>211, 6</value>
+  </data>
+  <data name="playerInformationToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Ctrl+I</value>
+  </data>
+  <data name="playerInformationToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>214, 22</value>
+  </data>
+  <data name="playerInformationToolStripMenuItem.Text" xml:space="preserve">
+    <value>Player &amp;Information</value>
+  </data>
+  <data name="showJobInsteadOfNameToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>214, 22</value>
+  </data>
+  <data name="showJobInsteadOfNameToolStripMenuItem.Text" xml:space="preserve">
+    <value>Show Job Instead of Name</value>
+  </data>
+  <data name="editToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>39, 20</value>
+  </data>
+  <data name="editToolStripMenuItem.Text" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="toolsMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>48, 20</value>
+  </data>
+  <data name="toolsMenu.Text" xml:space="preserve">
+    <value>Tools</value>
+  </data>
+  <data name="windowsMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>68, 20</value>
+  </data>
+  <data name="windowsMenu.Text" xml:space="preserve">
+    <value>Windows</value>
+  </data>
   <data name="mainMenuStrip.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
@@ -248,12 +353,6 @@
   </data>
   <data name="&gt;&gt;mainMenuStrip.ZOrder" xml:space="preserve">
     <value>2</value>
-  </data>
-  <data name="fileMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>37, 20</value>
-  </data>
-  <data name="fileMenu.Text" xml:space="preserve">
-    <value>File</value>
   </data>
   <data name="beginParseAndSaveDataMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+P</value>
@@ -354,92 +453,29 @@
   <data name="exitMenuItem.Text" xml:space="preserve">
     <value>E&amp;xit</value>
   </data>
-  <data name="editToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>39, 20</value>
-  </data>
-  <data name="editToolStripMenuItem.Text" xml:space="preserve">
-    <value>Edit</value>
-  </data>
-  <data name="copyasTextToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>214, 22</value>
-  </data>
-  <data name="copyasTextToolStripMenuItem.Text" xml:space="preserve">
-    <value>Copy Tab Info as Text</value>
-  </data>
-  <data name="copyasHTMLToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>214, 22</value>
-  </data>
-  <data name="copyasHTMLToolStripMenuItem.Text" xml:space="preserve">
-    <value>Copy Tab Info as HTML</value>
-  </data>
-  <data name="copyTabInfoAsBBCodeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>214, 22</value>
-  </data>
-  <data name="copyTabInfoAsBBCodeToolStripMenuItem.Text" xml:space="preserve">
-    <value>Copy Tab Info as BBCode</value>
-  </data>
-  <data name="copyTabasRTFToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>214, 22</value>
-  </data>
-  <data name="copyTabasRTFToolStripMenuItem.Text" xml:space="preserve">
-    <value>Copy Tab Info as RTF</value>
-  </data>
-  <data name="toolStripSeparator5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>211, 6</value>
-  </data>
-  <data name="languageToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>214, 22</value>
-  </data>
-  <data name="languageToolStripMenuItem.Text" xml:space="preserve">
-    <value>Interface Language</value>
-  </data>
   <data name="englishToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>121, 22</value>
+    <value>152, 22</value>
   </data>
   <data name="englishToolStripMenuItem.Text" xml:space="preserve">
     <value>English</value>
   </data>
   <data name="frenchToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>121, 22</value>
+    <value>152, 22</value>
   </data>
   <data name="frenchToolStripMenuItem.Text" xml:space="preserve">
     <value>French</value>
   </data>
   <data name="germanToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>121, 22</value>
+    <value>152, 22</value>
   </data>
   <data name="germanToolStripMenuItem.Text" xml:space="preserve">
     <value>German</value>
   </data>
   <data name="japaneseToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>121, 22</value>
+    <value>152, 22</value>
   </data>
   <data name="japaneseToolStripMenuItem.Text" xml:space="preserve">
     <value>Japanese</value>
-  </data>
-  <data name="toolStripSeparator6.Size" type="System.Drawing.Size, System.Drawing">
-    <value>211, 6</value>
-  </data>
-  <data name="playerInformationToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
-    <value>Ctrl+I</value>
-  </data>
-  <data name="playerInformationToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>214, 22</value>
-  </data>
-  <data name="playerInformationToolStripMenuItem.Text" xml:space="preserve">
-    <value>Player &amp;Information</value>
-  </data>
-  <data name="showJobInsteadOfNameToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>214, 22</value>
-  </data>
-  <data name="showJobInsteadOfNameToolStripMenuItem.Text" xml:space="preserve">
-    <value>Show Job Instead of Name</value>
-  </data>
-  <data name="toolsMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>48, 20</value>
-  </data>
-  <data name="toolsMenu.Text" xml:space="preserve">
-    <value>Tools</value>
   </data>
   <data name="toolsTestFunctionMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+T</value>
@@ -467,12 +503,6 @@
   </data>
   <data name="optionsToolStripMenuItem.Text" xml:space="preserve">
     <value>Options...</value>
-  </data>
-  <data name="windowsMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>68, 20</value>
-  </data>
-  <data name="windowsMenu.Text" xml:space="preserve">
-    <value>Windows</value>
   </data>
   <data name="aboutToolStripMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>F1</value>
@@ -722,6 +752,36 @@
     <value>japaneseToolStripMenuItem</value>
   </data>
   <data name="&gt;&gt;japaneseToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;fFXILanguageToolStripMenuItem.Name" xml:space="preserve">
+    <value>fFXILanguageToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;fFXILanguageToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;englishParsingToolStripMenuItem.Name" xml:space="preserve">
+    <value>englishParsingToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;englishParsingToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;frenchParsingToolStripMenuItem.Name" xml:space="preserve">
+    <value>frenchParsingToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;frenchParsingToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;germanParsingToolStripMenuItem.Name" xml:space="preserve">
+    <value>germanParsingToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;germanParsingToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;japaneseParsingToolStripMenuItem.Name" xml:space="preserve">
+    <value>japaneseParsingToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;japaneseParsingToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;toolStripSeparator6.Name" xml:space="preserve">

@@ -68,6 +68,11 @@ namespace WaywardGamers.KParser
             this.frenchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.germanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.japaneseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fFXILanguageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.englishParsingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.frenchParsingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.germanParsingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.japaneseParsingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.playerInformationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showJobInsteadOfNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -275,6 +280,7 @@ namespace WaywardGamers.KParser
             this.copyTabasRTFToolStripMenuItem,
             this.toolStripSeparator5,
             this.languageToolStripMenuItem,
+            this.fFXILanguageToolStripMenuItem,
             this.toolStripSeparator6,
             this.playerInformationToolStripMenuItem,
             this.showJobInsteadOfNameToolStripMenuItem});
@@ -344,6 +350,41 @@ namespace WaywardGamers.KParser
             this.japaneseToolStripMenuItem.Name = "japaneseToolStripMenuItem";
             resources.ApplyResources(this.japaneseToolStripMenuItem, "japaneseToolStripMenuItem");
             this.japaneseToolStripMenuItem.Click += new System.EventHandler(this.japaneseToolStripMenuItem_Click);
+            // 
+            // fFXILanguageToolStripMenuItem
+            // 
+            this.fFXILanguageToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.englishParsingToolStripMenuItem,
+            this.frenchParsingToolStripMenuItem,
+            this.germanParsingToolStripMenuItem,
+            this.japaneseParsingToolStripMenuItem});
+            this.fFXILanguageToolStripMenuItem.Name = "fFXILanguageToolStripMenuItem";
+            resources.ApplyResources(this.fFXILanguageToolStripMenuItem, "fFXILanguageToolStripMenuItem");
+            this.fFXILanguageToolStripMenuItem.DropDownOpening += new System.EventHandler(this.fFXILanguageToolStripMenuItem_DropDownOpening);
+            // 
+            // englishParsingToolStripMenuItem
+            // 
+            this.englishParsingToolStripMenuItem.Name = "englishParsingToolStripMenuItem";
+            resources.ApplyResources(this.englishParsingToolStripMenuItem, "englishParsingToolStripMenuItem");
+            this.englishParsingToolStripMenuItem.Click += new System.EventHandler(this.englishParsingToolStripMenuItem_Click);
+            // 
+            // frenchParsingToolStripMenuItem
+            // 
+            this.frenchParsingToolStripMenuItem.Name = "frenchParsingToolStripMenuItem";
+            resources.ApplyResources(this.frenchParsingToolStripMenuItem, "frenchParsingToolStripMenuItem");
+            this.frenchParsingToolStripMenuItem.Click += new System.EventHandler(this.frenchParsingToolStripMenuItem_Click);
+            // 
+            // germanParsingToolStripMenuItem
+            // 
+            this.germanParsingToolStripMenuItem.Name = "germanParsingToolStripMenuItem";
+            resources.ApplyResources(this.germanParsingToolStripMenuItem, "germanParsingToolStripMenuItem");
+            this.germanParsingToolStripMenuItem.Click += new System.EventHandler(this.germanParsingToolStripMenuItem_Click);
+            // 
+            // japaneseParsingToolStripMenuItem
+            // 
+            this.japaneseParsingToolStripMenuItem.Name = "japaneseParsingToolStripMenuItem";
+            resources.ApplyResources(this.japaneseParsingToolStripMenuItem, "japaneseParsingToolStripMenuItem");
+            this.japaneseParsingToolStripMenuItem.Click += new System.EventHandler(this.japaneseParsingToolStripMenuItem_Click);
             // 
             // toolStripSeparator6
             // 
@@ -497,5 +538,10 @@ namespace WaywardGamers.KParser
         private System.Windows.Forms.ToolStripProgressBar reparseProgressBar;
         private System.Windows.Forms.ToolStripStatusLabel secondaryStatusLabel;
         private System.Windows.Forms.ToolStripProgressBar savingProgressBar;
+        private System.Windows.Forms.ToolStripMenuItem fFXILanguageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem englishParsingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem frenchParsingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem germanParsingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem japaneseParsingToolStripMenuItem;
     }
 }
