@@ -137,21 +137,15 @@ namespace WaywardGamers.KParser.Forms
             {
                 if (DatabaseManager.Instance.IsDatabaseOpen)
                 {
-                    string dbParseVer = string.Empty;
-                    string dbName = string.Empty;
+                    string dbParseVer = DatabaseManager.Instance.DatabaseParseVersion;
+                    string dbParseLang = DatabaseManager.Instance.DatabaseParseCulture;
+                    string dbName = (new System.IO.FileInfo(DatabaseManager.Instance.DatabaseFilename)).Name;
 
-                    using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
-                    {
-                        if (dbAccess.Database.Version.Count > 0)
-                        {
-                            dbParseVer = dbAccess.Database.Version[0].ParserVersion;
-                        }
-                    }
+                    if (string.IsNullOrEmpty(dbParseLang))
+                        dbParseLang = "Default";
 
-                    dbName = (new System.IO.FileInfo(DatabaseManager.Instance.DatabaseFilename)).Name;
-
-                    return string.Format("\r\nCurrent database: {0}\r\n  Parsed using parser version {1}\r\n",
-                            dbName, dbParseVer);
+                    return string.Format("\r\nCurrent database: {0}\r\n  Parsed using parser version: {1}\r\n  Parsed using language culture: {2}\r\n",
+                            dbName, dbParseVer, dbParseLang);
                 }
 
                 return string.Empty;

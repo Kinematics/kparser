@@ -37,9 +37,9 @@ namespace WaywardGamers.KParser.Forms
             this.labelCopyright = new System.Windows.Forms.Label();
             this.labelCompanyName = new System.Windows.Forms.Label();
             this.textBoxDescription = new System.Windows.Forms.TextBox();
-            this.okButton = new System.Windows.Forms.Button();
             this.releaseNotes = new System.Windows.Forms.Button();
             this.readme = new System.Windows.Forms.Button();
+            this.okButton = new System.Windows.Forms.Button();
             this.errorLog = new System.Windows.Forms.Button();
             this.tableLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
@@ -155,16 +155,6 @@ namespace WaywardGamers.KParser.Forms
             this.textBoxDescription.TabStop = false;
             this.textBoxDescription.Text = "Description";
             // 
-            // okButton
-            // 
-            this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.okButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.okButton.Location = new System.Drawing.Point(504, 285);
-            this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(75, 23);
-            this.okButton.TabIndex = 24;
-            this.okButton.Text = "&OK";
-            // 
             // releaseNotes
             // 
             this.releaseNotes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -186,6 +176,16 @@ namespace WaywardGamers.KParser.Forms
             this.readme.Text = "Readme";
             this.readme.UseVisualStyleBackColor = true;
             this.readme.Click += new System.EventHandler(this.readme_Click);
+            // 
+            // okButton
+            // 
+            this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.okButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.okButton.Location = new System.Drawing.Point(504, 285);
+            this.okButton.Name = "okButton";
+            this.okButton.Size = new System.Drawing.Size(75, 23);
+            this.okButton.TabIndex = 24;
+            this.okButton.Text = "&OK";
             // 
             // errorLog
             // 
