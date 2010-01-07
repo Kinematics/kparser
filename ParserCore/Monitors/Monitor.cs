@@ -246,14 +246,8 @@ namespace WaywardGamers.KParser.Monitoring
             if (dbReader == KParserReadingManager.Instance)
             {
                 // Auto-detect files needing timestamp upgrades.
-                if (KParserReadingManager.Instance.Database.Version.Count > 0)
-                {
-                    var versionLine = KParserReadingManager.Instance.Database.Version[0];
-                    if (versionLine.ParserVersion.CompareTo("1.3") < 0)
-                    {
-                        upgradeTimestamp = true;
-                    }
-                }
+                if (KParserReadingManager.Instance.DatabaseParseVersion.CompareTo("1.3") < 0)
+                    upgradeTimestamp = true;
             }
 
             try
