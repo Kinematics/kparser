@@ -1177,7 +1177,7 @@ namespace WaywardGamers.KParser.Parsing
                             {
                                 // Player hides
                                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
-                                msgCombatDetails.ActionName = "Hide";
+                                msgCombatDetails.ActionName = Resources.ParsedStrings.Hide;
                                 msgCombatDetails.ActionType = ActionType.Ability;
                                 message.SetParseSuccess(true);
                                 return;
@@ -3099,7 +3099,8 @@ namespace WaywardGamers.KParser.Parsing
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                     message.SetParseSuccess(true);
 
-                    if ((msgCombatDetails.ActionName == "Steal") || (msgCombatDetails.ActionName == "Mug"))
+                    if ((msgCombatDetails.ActionName == Resources.ParsedStrings.Steal) ||
+                        (msgCombatDetails.ActionName == Resources.ParsedStrings.Mug))
                         message.EventDetails.EventMessageType = EventMessageType.Steal;
 
                     return;
