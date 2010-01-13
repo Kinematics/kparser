@@ -1267,6 +1267,24 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to   Counters.
+        /// </summary>
+        internal static string OffenseFreqPluginCounters {
+            get {
+                return ResourceManager.GetString("OffenseFreqPluginCounters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to   Retaliations.
+        /// </summary>
+        internal static string OffenseFreqPluginRetaliations {
+            get {
+                return ResourceManager.GetString("OffenseFreqPluginRetaliations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Offense Detail.
         /// </summary>
         internal static string OffenseFreqTabName {
