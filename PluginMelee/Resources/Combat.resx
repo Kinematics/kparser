@@ -792,4 +792,10 @@
   <data name="ExtraAttPluginBucketsHeader" xml:space="preserve">
     <value>Buckets (Attack intervals at 0.5 sec resolution):</value>
   </data>
+  <data name="OffenseFreqPluginCounters" xml:space="preserve">
+    <value>  Counters</value>
+  </data>
+  <data name="OffenseFreqPluginRetaliations" xml:space="preserve">
+    <value>  Retaliations</value>
+  </data>
 </root>

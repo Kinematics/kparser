@@ -50,6 +50,8 @@ namespace WaywardGamers.KParser.Plugin
         string lsAbility;
         string lsWeaponskills;
         string lsSpikes;
+        string lsCounters;
+        string lsRetaliations;
 
         #endregion
 
@@ -390,6 +392,30 @@ namespace WaywardGamers.KParser.Plugin
 
                         ShowFrequency(meleeFreq);
                     }
+
+                    if (player.Counter.Count() > 0)
+                    {
+                        AppendText(lsCounters + "\n", Color.Blue, true, false);
+                        if (showDetails == true)
+                            ShowDetailedDamage(player.Counter);
+
+                        var counterFreq = player.Counter.GroupBy(m => m.Amount).OrderBy(m => m.Key);
+
+                        ShowFrequency(counterFreq);
+                    }
+
+
+                    if (player.Retaliate.Count() > 0)
+                    {
+                        AppendText(lsRetaliations + "\n", Color.Blue, true, false);
+                        if (showDetails == true)
+                            ShowDetailedDamage(player.Retaliate);
+
+                        var retaliateFreq = player.Counter.GroupBy(m => m.Amount).OrderBy(m => m.Key);
+
+                        ShowFrequency(retaliateFreq);
+                    }
+
 
                     if ((player.Range.Count() > 0) &&
                         (player.Range.Any(n => (DamageModifier)n.DamageModifier != DamageModifier.Critical)))
@@ -838,7 +864,8 @@ namespace WaywardGamers.KParser.Plugin
             lsAbility = Resources.Combat.DefenseFreqPluginAbility;
             lsWeaponskills = Resources.Combat.DefenseFreqPluginWeaponskill;
             lsSpikes = Resources.Combat.DefenseFreqPluginSpikes;
-
+            lsCounters = Resources.Combat.OffenseFreqPluginCounters;
+            lsRetaliations = Resources.Combat.OffenseFreqPluginRetaliations;
         }
         #endregion
 
