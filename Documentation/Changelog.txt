@@ -1,5 +1,13 @@
 KParser Change Log
 
+1.4.12 (January 15, 2010)
+- Fix typo in chocobo digging string check.
++ "found with ease" messages in choco digging now counted by loot plugin.
++ Add in support code to allow switching between languages for parsing (FFXI client parsing, not UI).  Actual parsing not implemented yet.
++ Updated Offense Details tab to report counters and retaliations.
+* Update French interface text.
+
+
 1.4.11 (January 3, 2010)
 * Change reparsing to auto-detect older parses.  As such, remove extra menu command to reparse with timestamp upgrade, as that will happen automatically.
 * Misc minor code cleanup.
