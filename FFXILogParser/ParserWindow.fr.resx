@@ -140,73 +140,73 @@
     <value>Fichier</value>
   </data>
   <data name="beginParseAndSaveDataMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>314, 22</value>
+    <value>331, 22</value>
   </data>
   <data name="beginParseAndSaveDataMenuItem.Text" xml:space="preserve">
-    <value>Commencer à Analyser et Mettre en...</value>
+    <value>Commencer analyse et enregistrer sous...</value>
   </data>
   <data name="beginDefaultParseMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>314, 22</value>
+    <value>331, 22</value>
   </data>
   <data name="beginDefaultParseMenuItem.Text" xml:space="preserve">
-    <value>Commencer par &amp;Défaut d'Analyse</value>
+    <value>Commencer analyse par défaut</value>
   </data>
   <data name="continueParsingMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>314, 22</value>
+    <value>331, 22</value>
   </data>
   <data name="continueParsingMenuItem.Text" xml:space="preserve">
-    <value>Continuer à Analyser</value>
+    <value>Continuer l'analyse</value>
   </data>
   <data name="quitParsingMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>314, 22</value>
+    <value>331, 22</value>
   </data>
   <data name="quitParsingMenuItem.Text" xml:space="preserve">
-    <value>&amp;Quitter d'Analyse</value>
+    <value>Arrêter l'analyse</value>
   </data>
   <data name="toolStripSeparator1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>311, 6</value>
+    <value>328, 6</value>
   </data>
   <data name="openSavedDataMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>314, 22</value>
+    <value>331, 22</value>
   </data>
   <data name="openSavedDataMenuItem.Text" xml:space="preserve">
-    <value>Ouvrir...</value>
+    <value>Ouvrir données enregistrées</value>
   </data>
   <data name="saveCurrentDataAsMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>314, 22</value>
+    <value>331, 22</value>
   </data>
   <data name="saveCurrentDataAsMenuItem.Text" xml:space="preserve">
-    <value>Mettre en...</value>
+    <value>Enregistrer les données sous...</value>
   </data>
   <data name="saveReportMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>314, 22</value>
+    <value>331, 22</value>
   </data>
   <data name="saveReportMenuItem.Text" xml:space="preserve">
-    <value>Mettre Rapport...</value>
+    <value>Enregistrer le rapport</value>
   </data>
   <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>311, 6</value>
+    <value>328, 6</value>
   </data>
   <data name="importToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>314, 22</value>
+    <value>331, 22</value>
   </data>
   <data name="importToolStripMenuItem.Text" xml:space="preserve">
     <value>Importer...</value>
   </data>
   <data name="toolStripSeparator4.Size" type="System.Drawing.Size, System.Drawing">
-    <value>311, 6</value>
+    <value>328, 6</value>
   </data>
   <data name="recentFilesToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>314, 22</value>
+    <value>331, 22</value>
   </data>
   <data name="recentFilesToolStripMenuItem.Text" xml:space="preserve">
     <value>Fichiers Récents</value>
   </data>
   <data name="toolStripSeparator7.Size" type="System.Drawing.Size, System.Drawing">
-    <value>311, 6</value>
+    <value>328, 6</value>
   </data>
   <data name="exitMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>314, 22</value>
+    <value>331, 22</value>
   </data>
   <data name="exitMenuItem.Text" xml:space="preserve">
     <value>Quitter</value>
@@ -218,34 +218,34 @@
     <value>Editer</value>
   </data>
   <data name="copyasTextToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>289, 22</value>
+    <value>314, 22</value>
   </data>
   <data name="copyasTextToolStripMenuItem.Text" xml:space="preserve">
-    <value>Copie onglet info sous forme de texte</value>
+    <value>Copier les infos de l'onglet au format texte</value>
   </data>
   <data name="copyasHTMLToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>289, 22</value>
+    <value>314, 22</value>
   </data>
   <data name="copyasHTMLToolStripMenuItem.Text" xml:space="preserve">
-    <value>Copie onglet info sous forme de HTML</value>
+    <value>Copier les infos de l'onglet au format HTML</value>
   </data>
   <data name="copyTabInfoAsBBCodeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>289, 22</value>
+    <value>314, 22</value>
   </data>
   <data name="copyTabInfoAsBBCodeToolStripMenuItem.Text" xml:space="preserve">
-    <value>Copie onglet info sous forme de BBCode</value>
+    <value>Copier les infos de l'onglet au format BBCode</value>
   </data>
   <data name="copyTabasRTFToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>289, 22</value>
+    <value>314, 22</value>
   </data>
   <data name="copyTabasRTFToolStripMenuItem.Text" xml:space="preserve">
-    <value>Copie onglet info sous forme de RTF</value>
+    <value>Copier les infos de l'onglet au format RTF</value>
   </data>
   <data name="toolStripSeparator5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>286, 6</value>
+    <value>311, 6</value>
   </data>
   <data name="languageToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>289, 22</value>
+    <value>314, 22</value>
   </data>
   <data name="languageToolStripMenuItem.Text" xml:space="preserve">
     <value>Langue de l'interface</value>
@@ -275,49 +275,25 @@
     <value>Japonais</value>
   </data>
   <data name="fFXILanguageToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>289, 22</value>
+    <value>314, 22</value>
   </data>
   <data name="fFXILanguageToolStripMenuItem.Text" xml:space="preserve">
     <value>Langue de FFXI</value>
   </data>
-  <data name="englishToolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>125, 22</value>
-  </data>
-  <data name="englishToolStripMenuItem1.Text" xml:space="preserve">
-    <value>Anglais </value>
-  </data>
-  <data name="frenchToolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>125, 22</value>
-  </data>
-  <data name="frenchToolStripMenuItem1.Text" xml:space="preserve">
-    <value>Français </value>
-  </data>
-  <data name="germanToolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>125, 22</value>
-  </data>
-  <data name="germanToolStripMenuItem1.Text" xml:space="preserve">
-    <value>Allemand</value>
-  </data>
-  <data name="japaneseToolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>125, 22</value>
-  </data>
-  <data name="japaneseToolStripMenuItem1.Text" xml:space="preserve">
-    <value>Japonais</value>
-  </data>
   <data name="toolStripSeparator6.Size" type="System.Drawing.Size, System.Drawing">
-    <value>286, 6</value>
+    <value>311, 6</value>
   </data>
   <data name="playerInformationToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>289, 22</value>
+    <value>314, 22</value>
   </data>
   <data name="playerInformationToolStripMenuItem.Text" xml:space="preserve">
-    <value>Joueur de l'&amp;information</value>
+    <value>Informations du joueur</value>
   </data>
   <data name="showJobInsteadOfNameToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>289, 22</value>
+    <value>314, 22</value>
   </data>
   <data name="showJobInsteadOfNameToolStripMenuItem.Text" xml:space="preserve">
-    <value>Afficher les emplois au lieu du nom</value>
+    <value>Afficher le job à la place du nom</value>
   </data>
   <data name="toolsMenu.Size" type="System.Drawing.Size, System.Drawing">
     <value>45, 20</value>
@@ -348,6 +324,9 @@
   </data>
   <data name="aboutToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>201, 22</value>
+  </data>
+  <data name="aboutToolStripMenuItem.Text" xml:space="preserve">
+    <value>A propos de...</value>
   </data>
   <data name="windowsToolStripSeparator.Size" type="System.Drawing.Size, System.Drawing">
     <value>198, 6</value>
