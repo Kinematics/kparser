@@ -119,13 +119,13 @@
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="specifyPID.Size" type="System.Drawing.Size, System.Drawing">
-    <value>178, 17</value>
+    <value>194, 17</value>
   </data>
   <data name="specifyPID.Text" xml:space="preserve">
-    <value>Processus de préciser au départ</value>
+    <value>Préciser le processus au démarrage</value>
   </data>
   <data name="editMemoryAddress.Location" type="System.Drawing.Point, System.Drawing">
-    <value>304, 146</value>
+    <value>318, 146</value>
   </data>
   <data name="editMemoryAddress.Size" type="System.Drawing.Size, System.Drawing">
     <value>44, 23</value>
@@ -140,19 +140,25 @@
     <value>Lire des fichiers de log existant</value>
   </data>
   <data name="memoryOffsetAddress.Size" type="System.Drawing.Size, System.Drawing">
-    <value>270, 20</value>
+    <value>284, 20</value>
+  </data>
+  <data name="logDirectory.Size" type="System.Drawing.Size, System.Drawing">
+    <value>303, 20</value>
   </data>
   <data name="memoryLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>175, 13</value>
+    <value>155, 13</value>
   </data>
   <data name="memoryLabel.Text" xml:space="preserve">
-    <value>Compenser l'adresse (hexadécimal):</value>
+    <value>Adresse mémoire (hexadécimal)</value>
   </data>
   <data name="directoryLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>131, 13</value>
+    <value>184, 13</value>
   </data>
   <data name="directoryLabel.Text" xml:space="preserve">
-    <value>Directoire de Log de FFXI:</value>
+    <value>Répertoire des fichiers de log de FFXI</value>
+  </data>
+  <data name="getLogDirectory.Location" type="System.Drawing.Point, System.Drawing">
+    <value>337, 55</value>
   </data>
   <data name="dataSourceRam.Size" type="System.Drawing.Size, System.Drawing">
     <value>148, 17</value>
@@ -166,8 +172,17 @@
   <data name="dataSourceLogs.Text" xml:space="preserve">
     <value>Fichiers de Log</value>
   </data>
+  <data name="dataSourceGroup.Size" type="System.Drawing.Size, System.Drawing">
+    <value>372, 206</value>
+  </data>
   <data name="dataSourceGroup.Text" xml:space="preserve">
-    <value>Source de Données</value>
+    <value>Source de données (ne peut être modifiée quand l'analyse est en cours)</value>
+  </data>
+  <data name="ok.Location" type="System.Drawing.Point, System.Drawing">
+    <value>228, 375</value>
+  </data>
+  <data name="cancel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>309, 375</value>
   </data>
   <data name="cancel.Text" xml:space="preserve">
     <value>Annuler</value>
@@ -181,16 +196,28 @@
   <data name="debugMode.Text" xml:space="preserve">
     <value>Mode de débogage</value>
   </data>
+  <data name="otherGroup.Size" type="System.Drawing.Size, System.Drawing">
+    <value>372, 137</value>
+  </data>
   <data name="label1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>177, 13</value>
+    <value>166, 13</value>
   </data>
   <data name="label1.Text" xml:space="preserve">
-    <value>Nombre de fichiers récents à la liste:</value>
+    <value>Nombre de fichiers récents à lister</value>
+  </data>
+  <data name="defaultSaveDirectory.Size" type="System.Drawing.Size, System.Drawing">
+    <value>316, 20</value>
   </data>
   <data name="saveDirectoryLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>146, 13</value>
+    <value>181, 13</value>
   </data>
   <data name="saveDirectoryLabel.Text" xml:space="preserve">
-    <value>Mettre le répertoire par défaut</value>
+    <value>Répertoire de sauvegarde par défaut</value>
+  </data>
+  <data name="getSaveDirectory.Location" type="System.Drawing.Point, System.Drawing">
+    <value>337, 33</value>
+  </data>
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>396, 410</value>
   </data>
 </root>
