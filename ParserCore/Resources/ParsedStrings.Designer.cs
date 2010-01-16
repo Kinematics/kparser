@@ -2491,16 +2491,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Slow.
-        /// </summary>
-        public static string Slow {
-            get {
-                return ResourceManager.GetString("Slow", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Slow( I+)?.
+        ///   Looks up a localized string similar to Slow( II)?.
         /// </summary>
         public static string SlowRegex {
             get {
