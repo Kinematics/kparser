@@ -2383,11 +2383,11 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Shellcrusher.
+        ///   Looks up a localized string similar to Shell Crusher.
         /// </summary>
-        public static string Shellcrusher {
+        public static string ShellCrusher {
             get {
-                return ResourceManager.GetString("Shellcrusher", resourceCulture);
+                return ResourceManager.GetString("ShellCrusher", resourceCulture);
             }
         }
         
