@@ -543,11 +543,8 @@
   <data name="Sharpshot" xml:space="preserve">
     <value>Sharpshot</value>
   </data>
-  <data name="Slow" xml:space="preserve">
-    <value>Slow</value>
-  </data>
   <data name="SlowRegex" xml:space="preserve">
-    <value>Slow( I+)?</value>
+    <value>Slow( II)?</value>
   </data>
   <data name="SmnRoll" xml:space="preserve">
     <value>Evoker's Roll</value>
