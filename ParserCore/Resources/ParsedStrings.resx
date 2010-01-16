@@ -624,4 +624,508 @@
   <data name="AbsorbRegex" xml:space="preserve">
     <value>^Absorb-</value>
   </data>
+  <data name="ArchingArrow" xml:space="preserve">
+    <value>Arching Arrow</value>
+  </data>
+  <data name="Arcuballista" xml:space="preserve">
+    <value>Arcuballista</value>
+  </data>
+  <data name="ArmorBreak" xml:space="preserve">
+    <value>Armor Break</value>
+  </data>
+  <data name="ArmorPiercer" xml:space="preserve">
+    <value>Armor Piercer</value>
+  </data>
+  <data name="AsceticsFury" xml:space="preserve">
+    <value>Ascetic's Fury</value>
+  </data>
+  <data name="AsuranFists" xml:space="preserve">
+    <value>Asuran Fists</value>
+  </data>
+  <data name="Atonement" xml:space="preserve">
+    <value>Atonement</value>
+  </data>
+  <data name="AvalancheAxe" xml:space="preserve">
+    <value>Avalanche Axe</value>
+  </data>
+  <data name="BackhandBlow" xml:space="preserve">
+    <value>Backhand Blow</value>
+  </data>
+  <data name="BlackHalo" xml:space="preserve">
+    <value>Black Halo</value>
+  </data>
+  <data name="BladeChi" xml:space="preserve">
+    <value>Blade: Chi</value>
+  </data>
+  <data name="BladeEi" xml:space="preserve">
+    <value>Blade: Ei</value>
+  </data>
+  <data name="BladeJin" xml:space="preserve">
+    <value>Blade: Jin</value>
+  </data>
+  <data name="BladeKamu" xml:space="preserve">
+    <value>Blade: Kamu</value>
+  </data>
+  <data name="BladeKu" xml:space="preserve">
+    <value>Blade: Ku</value>
+  </data>
+  <data name="BladeMetsu" xml:space="preserve">
+    <value>Blade: Metsu</value>
+  </data>
+  <data name="BladeRetsu" xml:space="preserve">
+    <value>Blade: Retsu</value>
+  </data>
+  <data name="BladeRin" xml:space="preserve">
+    <value>Blade: Rin</value>
+  </data>
+  <data name="BladeTeki" xml:space="preserve">
+    <value>Blade: Teki</value>
+  </data>
+  <data name="BladeTen" xml:space="preserve">
+    <value>Blade: Ten</value>
+  </data>
+  <data name="BladeTo" xml:space="preserve">
+    <value>Blade: To</value>
+  </data>
+  <data name="BlastArrow" xml:space="preserve">
+    <value>Blast Arrow</value>
+  </data>
+  <data name="BlastShot" xml:space="preserve">
+    <value>Blast Shot</value>
+  </data>
+  <data name="BoneCrusher" xml:space="preserve">
+    <value>Bone Crusher</value>
+  </data>
+  <data name="Brainshaker" xml:space="preserve">
+    <value>Brainshaker</value>
+  </data>
+  <data name="BurningBlade" xml:space="preserve">
+    <value>Burning Blade</value>
+  </data>
+  <data name="Calamity" xml:space="preserve">
+    <value>Calamity</value>
+  </data>
+  <data name="CannibalBlade" xml:space="preserve">
+    <value>Cannibal Blade</value>
+  </data>
+  <data name="Catastrophe" xml:space="preserve">
+    <value>Catastrophe</value>
+  </data>
+  <data name="ChimeraRipper" xml:space="preserve">
+    <value>Chimera Ripper</value>
+  </data>
+  <data name="CircleBlade" xml:space="preserve">
+    <value>Circle Blade</value>
+  </data>
+  <data name="Combo" xml:space="preserve">
+    <value>Combo</value>
+  </data>
+  <data name="Coronach" xml:space="preserve">
+    <value>Coronach</value>
+  </data>
+  <data name="CrescentMoon" xml:space="preserve">
+    <value>Crescent Moon</value>
+  </data>
+  <data name="CrossReaper" xml:space="preserve">
+    <value>Cross Reaper</value>
+  </data>
+  <data name="Cyclone" xml:space="preserve">
+    <value>Cyclone</value>
+  </data>
+  <data name="DancingEdge" xml:space="preserve">
+    <value>Dancing Edge</value>
+  </data>
+  <data name="DarkHarvest" xml:space="preserve">
+    <value>Dark Harvest</value>
+  </data>
+  <data name="Daze" xml:space="preserve">
+    <value>Daze</value>
+  </data>
+  <data name="DeathBlossom" xml:space="preserve">
+    <value>Death Blossom</value>
+  </data>
+  <data name="Decimation" xml:space="preserve">
+    <value>Decimation</value>
+  </data>
+  <data name="Detonator" xml:space="preserve">
+    <value>Detonator</value>
+  </data>
+  <data name="DoubleThrust" xml:space="preserve">
+    <value>Double Thrust</value>
+  </data>
+  <data name="DragonKick" xml:space="preserve">
+    <value>Dragon Kick</value>
+  </data>
+  <data name="Drakesbane" xml:space="preserve">
+    <value>Drakesbane</value>
+  </data>
+  <data name="DullingArrow" xml:space="preserve">
+    <value>Dulling Arrow</value>
+  </data>
+  <data name="EarthCrusher" xml:space="preserve">
+    <value>Earth Crusher</value>
+  </data>
+  <data name="EmpyrealArrow" xml:space="preserve">
+    <value>Empyreal Arrow</value>
+  </data>
+  <data name="Evisceration" xml:space="preserve">
+    <value>Evisceration</value>
+  </data>
+  <data name="Expiacion" xml:space="preserve">
+    <value>Expiacion</value>
+  </data>
+  <data name="FastBlade" xml:space="preserve">
+    <value>Fast Blade</value>
+  </data>
+  <data name="FinalHeaven" xml:space="preserve">
+    <value>Final Heaven</value>
+  </data>
+  <data name="FlamingArrow" xml:space="preserve">
+    <value>Flaming Arrow</value>
+  </data>
+  <data name="FlatBlade" xml:space="preserve">
+    <value>Flat Blade</value>
+  </data>
+  <data name="Freezebite" xml:space="preserve">
+    <value>Freezebite</value>
+  </data>
+  <data name="Frostbite" xml:space="preserve">
+    <value>Frostbite</value>
+  </data>
+  <data name="FullBreak" xml:space="preserve">
+    <value>Full Break</value>
+  </data>
+  <data name="FullSwing" xml:space="preserve">
+    <value>Full Swing</value>
+  </data>
+  <data name="GaleAxe" xml:space="preserve">
+    <value>Gale Axe</value>
+  </data>
+  <data name="GarlandOfBliss" xml:space="preserve">
+    <value>Garland of Bliss</value>
+  </data>
+  <data name="GateOfTartarus" xml:space="preserve">
+    <value>Gate of Tartarus</value>
+  </data>
+  <data name="Geirskogul" xml:space="preserve">
+    <value>Geirskogul</value>
+  </data>
+  <data name="GroundStrike" xml:space="preserve">
+    <value>Ground Strike</value>
+  </data>
+  <data name="Guillotine" xml:space="preserve">
+    <value>Guillotine</value>
+  </data>
+  <data name="GustSlash" xml:space="preserve">
+    <value>Gust Slash</value>
+  </data>
+  <data name="HardSlash" xml:space="preserve">
+    <value>Hard Slash</value>
+  </data>
+  <data name="HeavyShot" xml:space="preserve">
+    <value>Heavy Shot</value>
+  </data>
+  <data name="HeavySwing" xml:space="preserve">
+    <value>Heavy Swing</value>
+  </data>
+  <data name="HexaStrike" xml:space="preserve">
+    <value>Hexa Strike</value>
+  </data>
+  <data name="HotShot" xml:space="preserve">
+    <value>Hot Shot</value>
+  </data>
+  <data name="HowlingFist" xml:space="preserve">
+    <value>Howling Fist</value>
+  </data>
+  <data name="ImpulseDrive" xml:space="preserve">
+    <value>Impulse Drive</value>
+  </data>
+  <data name="Insurgency" xml:space="preserve">
+    <value>Insurgency</value>
+  </data>
+  <data name="IronTempest" xml:space="preserve">
+    <value>Iron Tempest</value>
+  </data>
+  <data name="Judgment" xml:space="preserve">
+    <value>Judgment</value>
+  </data>
+  <data name="KeenEdge" xml:space="preserve">
+    <value>Keen Edge</value>
+  </data>
+  <data name="KingsJustice" xml:space="preserve">
+    <value>King's Justice</value>
+  </data>
+  <data name="KnightsOfRound" xml:space="preserve">
+    <value>Knights of Round</value>
+  </data>
+  <data name="Knockout" xml:space="preserve">
+    <value>Knockout</value>
+  </data>
+  <data name="LeadenSalute" xml:space="preserve">
+    <value>Leaden Salute</value>
+  </data>
+  <data name="LegSweep" xml:space="preserve">
+    <value>Leg Sweep</value>
+  </data>
+  <data name="MagicMortar" xml:space="preserve">
+    <value>Magic Mortar</value>
+  </data>
+  <data name="MandalicStab" xml:space="preserve">
+    <value>Mandalic Stab</value>
+  </data>
+  <data name="MercyStroke" xml:space="preserve">
+    <value>Mercy Stroke</value>
+  </data>
+  <data name="MetatronTorment" xml:space="preserve">
+    <value>Metatron Torment</value>
+  </data>
+  <data name="MistralAxe" xml:space="preserve">
+    <value>Mistral Axe</value>
+  </data>
+  <data name="Moonlight" xml:space="preserve">
+    <value>Moonlight</value>
+  </data>
+  <data name="MordantRime" xml:space="preserve">
+    <value>Mordant Rime</value>
+  </data>
+  <data name="MysticBoon" xml:space="preserve">
+    <value>Mystic Boon</value>
+  </data>
+  <data name="NamasArrow" xml:space="preserve">
+    <value>Namas Arrow</value>
+  </data>
+  <data name="NightmareScythe" xml:space="preserve">
+    <value>Nightmare Scythe</value>
+  </data>
+  <data name="Omniscience" xml:space="preserve">
+    <value>Omniscience</value>
+  </data>
+  <data name="OneInchPunch" xml:space="preserve">
+    <value>One Inch Punch</value>
+  </data>
+  <data name="Onslaught" xml:space="preserve">
+    <value>Onslaught</value>
+  </data>
+  <data name="PentaThrust" xml:space="preserve">
+    <value>Penta Thrust</value>
+  </data>
+  <data name="PiercingArrow" xml:space="preserve">
+    <value>Piercing Arrow</value>
+  </data>
+  <data name="PowerSlash" xml:space="preserve">
+    <value>Power Slash</value>
+  </data>
+  <data name="PrimalRend" xml:space="preserve">
+    <value>Primal Rend</value>
+  </data>
+  <data name="PyrrhicKleos" xml:space="preserve">
+    <value>Pyrrhic Kleos</value>
+  </data>
+  <data name="RagingAxe" xml:space="preserve">
+    <value>Raging Axe</value>
+  </data>
+  <data name="RagingFists" xml:space="preserve">
+    <value>Raging Fists</value>
+  </data>
+  <data name="RagingRush" xml:space="preserve">
+    <value>Raging Rush</value>
+  </data>
+  <data name="RaidenThrust" xml:space="preserve">
+    <value>Raiden Thrust</value>
+  </data>
+  <data name="Rampage" xml:space="preserve">
+    <value>Rampage</value>
+  </data>
+  <data name="Randgrith" xml:space="preserve">
+    <value>Randgrith</value>
+  </data>
+  <data name="RedLotusBlade" xml:space="preserve">
+    <value>Red Lotus Blade</value>
+  </data>
+  <data name="Retribution" xml:space="preserve">
+    <value>Retribution</value>
+  </data>
+  <data name="RockCrusher" xml:space="preserve">
+    <value>Rock Crusher</value>
+  </data>
+  <data name="SavageBlade" xml:space="preserve">
+    <value>Savage Blade</value>
+  </data>
+  <data name="Scourge" xml:space="preserve">
+    <value>Scourge</value>
+  </data>
+  <data name="SeraphBlade" xml:space="preserve">
+    <value>Seraph Blade</value>
+  </data>
+  <data name="SeraphStrike" xml:space="preserve">
+    <value>Seraph Strike</value>
+  </data>
+  <data name="ShadowOfDeath" xml:space="preserve">
+    <value>Shadow of Death</value>
+  </data>
+  <data name="Shadowstitch" xml:space="preserve">
+    <value>Shadowstitch</value>
+  </data>
+  <data name="SharkBite" xml:space="preserve">
+    <value>Shark Bite</value>
+  </data>
+  <data name="Shellcrusher" xml:space="preserve">
+    <value>Shellcrusher</value>
+  </data>
+  <data name="ShieldBreak" xml:space="preserve">
+    <value>Shield Break</value>
+  </data>
+  <data name="ShiningBlade" xml:space="preserve">
+    <value>Shining Blade</value>
+  </data>
+  <data name="ShiningStrike" xml:space="preserve">
+    <value>Shining Strike</value>
+  </data>
+  <data name="Shockwave" xml:space="preserve">
+    <value>Shockwave</value>
+  </data>
+  <data name="ShoulderTackle" xml:space="preserve">
+    <value>Shoulder Tackle</value>
+  </data>
+  <data name="SickleMoon" xml:space="preserve">
+    <value>SickleMoon</value>
+  </data>
+  <data name="Sidewinder" xml:space="preserve">
+    <value>Sidewinder</value>
+  </data>
+  <data name="Skewer" xml:space="preserve">
+    <value>Skewer</value>
+  </data>
+  <data name="Skullbreaker" xml:space="preserve">
+    <value>Skullbreaker</value>
+  </data>
+  <data name="Slapstick" xml:space="preserve">
+    <value>Slapstick</value>
+  </data>
+  <data name="Slice" xml:space="preserve">
+    <value>Slice</value>
+  </data>
+  <data name="SlugShot" xml:space="preserve">
+    <value>Slug Shot</value>
+  </data>
+  <data name="SmashAxe" xml:space="preserve">
+    <value>Smash Axe</value>
+  </data>
+  <data name="SniperShot" xml:space="preserve">
+    <value>Sniper Shot</value>
+  </data>
+  <data name="SpinningAttack" xml:space="preserve">
+    <value>Spinning Attack</value>
+  </data>
+  <data name="SpinningAxe" xml:space="preserve">
+    <value>Spinning Axe</value>
+  </data>
+  <data name="SpinningScythe" xml:space="preserve">
+    <value>Spinning Scythe</value>
+  </data>
+  <data name="SpinningSlash" xml:space="preserve">
+    <value>Spinning Slash</value>
+  </data>
+  <data name="SpiralHell" xml:space="preserve">
+    <value>Spiral Hell</value>
+  </data>
+  <data name="SpiritsWithin" xml:space="preserve">
+    <value>Spirits Within</value>
+  </data>
+  <data name="SpiritTaker" xml:space="preserve">
+    <value>Spirit Taker</value>
+  </data>
+  <data name="SplitShot" xml:space="preserve">
+    <value>Split Shot</value>
+  </data>
+  <data name="StarBurst" xml:space="preserve">
+    <value>Star Burst</value>
+  </data>
+  <data name="Starlight" xml:space="preserve">
+    <value>Starlight</value>
+  </data>
+  <data name="SteelCyclone" xml:space="preserve">
+    <value>Steel Cyclone</value>
+  </data>
+  <data name="StringClipper" xml:space="preserve">
+    <value>String Clipper</value>
+  </data>
+  <data name="StringingPummel" xml:space="preserve">
+    <value>Stringing Pummel</value>
+  </data>
+  <data name="Sturmwind" xml:space="preserve">
+    <value>Sturmwind</value>
+  </data>
+  <data name="SunBurst" xml:space="preserve">
+    <value>Sun Burst</value>
+  </data>
+  <data name="SwiftBlade" xml:space="preserve">
+    <value>Swift Blade</value>
+  </data>
+  <data name="TachiEnpi" xml:space="preserve">
+    <value>Tachi: Enpi</value>
+  </data>
+  <data name="TachiGekko" xml:space="preserve">
+    <value>Tachi: Gekko</value>
+  </data>
+  <data name="TachiGoten" xml:space="preserve">
+    <value>Tachi: Goten</value>
+  </data>
+  <data name="TachiHobaku" xml:space="preserve">
+    <value>Tachi: Hobaku</value>
+  </data>
+  <data name="TachiJinpu" xml:space="preserve">
+    <value>Tachi: Jinpu</value>
+  </data>
+  <data name="TachiKagero" xml:space="preserve">
+    <value>Tachi: Kagero</value>
+  </data>
+  <data name="TachiKaiten" xml:space="preserve">
+    <value>Tachi: Kaiten</value>
+  </data>
+  <data name="TachiKasha" xml:space="preserve">
+    <value>Tachi: Kasha</value>
+  </data>
+  <data name="TachiKoki" xml:space="preserve">
+    <value>Tachi: Koki</value>
+  </data>
+  <data name="TachiRana" xml:space="preserve">
+    <value>Tachi: Rana</value>
+  </data>
+  <data name="TachiYukikaze" xml:space="preserve">
+    <value>Tachi: Yukikaze</value>
+  </data>
+  <data name="ThunderThrust" xml:space="preserve">
+    <value>Thunder Thrust</value>
+  </data>
+  <data name="Trueflight" xml:space="preserve">
+    <value>Trueflight</value>
+  </data>
+  <data name="TrueStrike" xml:space="preserve">
+    <value>True Strike</value>
+  </data>
+  <data name="Vidohunir" xml:space="preserve">
+    <value>Vidohunir</value>
+  </data>
+  <data name="ViperBite" xml:space="preserve">
+    <value>Viper Bite</value>
+  </data>
+  <data name="VorpalBlade" xml:space="preserve">
+    <value>Vorpal Blade</value>
+  </data>
+  <data name="VorpalScythe" xml:space="preserve">
+    <value>Vorpal Scythe</value>
+  </data>
+  <data name="VorpalThrust" xml:space="preserve">
+    <value>Vorpal Thrust</value>
+  </data>
+  <data name="WaspSting" xml:space="preserve">
+    <value>Wasp Sting</value>
+  </data>
+  <data name="WeaponBreak" xml:space="preserve">
+    <value>Weapon Break</value>
+  </data>
+  <data name="WheelingThrust" xml:space="preserve">
+    <value>Wheeling Thrust</value>
+  </data>
 </root>
