@@ -449,7 +449,7 @@ namespace WaywardGamers.KParser
                     // Staves
                     Resources.ParsedStrings.HeavySwing,
                     Resources.ParsedStrings.RockCrusher,
-                    Resources.ParsedStrings.Shellcrusher,
+                    Resources.ParsedStrings.ShellCrusher,
                     Resources.ParsedStrings.EarthCrusher,
                     Resources.ParsedStrings.StarBurst,
                     Resources.ParsedStrings.SunBurst,
