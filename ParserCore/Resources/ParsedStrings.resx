@@ -226,7 +226,7 @@
     <value>Gil|beastmen's seal|Kindred's seal|fire crystal|earth crystal|water crystal|wind crystal|ice crystal|thunder crystal|light crystal|dark crystal</value>
   </data>
   <data name="CuragaRegex" xml:space="preserve">
-    <value>Curaga( [IV]+)?</value>
+    <value>(Cura|Curaga( [IV]+)?)</value>
   </data>
   <data name="Cure1" xml:space="preserve">
     <value>Cure</value>
@@ -465,11 +465,8 @@
   <data name="Overloaded" xml:space="preserve">
     <value>Overloaded</value>
   </data>
-  <data name="Paralyze" xml:space="preserve">
-    <value>Paralyze</value>
-  </data>
   <data name="ParalyzeRegex" xml:space="preserve">
-    <value>Paralyze( I+)?</value>
+    <value>Paralyze( II)?</value>
   </data>
   <data name="Parsimony" xml:space="preserve">
     <value>Parsimony</value>
