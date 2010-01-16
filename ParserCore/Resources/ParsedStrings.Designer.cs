@@ -709,7 +709,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Curaga( [IV]+)?.
+        ///   Looks up a localized string similar to (Cura|Curaga( [IV]+)?).
         /// </summary>
         public static string CuragaRegex {
             get {
@@ -1960,16 +1960,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Paralyze.
-        /// </summary>
-        public static string Paralyze {
-            get {
-                return ResourceManager.GetString("Paralyze", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Paralyze( I+)?.
+        ///   Looks up a localized string similar to Paralyze( II)?.
         /// </summary>
         public static string ParalyzeRegex {
             get {
