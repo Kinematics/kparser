@@ -1,101 +1,1074 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- 
-		Microsoft ResX Schema
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
 
-		Version 1.3
-
-		The primary goals of this format is to allow a simple XML format 
-		that is mostly human readable. The generation and parsing of the 
-		various data types are done through the TypeConverter classes 
-		associated with the data types.
-
-		Example:
-
-		... ado.net/XML headers & schema ...
-		<resheader name="resmimetype">text/microsoft-resx</resheader>
-		<resheader name="version">1.3</resheader>
-		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-		<data name="Name1">this is my long string</data>
-		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-			[base64 mime encoded serialized .NET Framework object]
-		</data>
-		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-			[base64 mime encoded string representing a byte array form of the .NET Framework object]
-		</data>
-
-		There are any number of "resheader" rows that contain simple 
-		name/value pairs.
-
-		Each data row contains a name, and value. The row also contains a 
-		type or mimetype. Type corresponds to a .NET class that support 
-		text/value conversion through the TypeConverter architecture. 
-		Classes that don't support this are serialized and stored with the 
-		mimetype set.
-
-		The mimetype is used for serialized objects, and tells the 
-		ResXResourceReader how to depersist the object. This is currently not 
-		extensible. For a given mimetype the value must be set accordingly:
-
-		Note - application/x-microsoft.net.object.binary.base64 is the format 
-		that the ResXResourceWriter will generate, however the reader can 
-		read any of the formats listed below.
-
-		mimetype: application/x-microsoft.net.object.binary.base64
-		value   : The object must be serialized with 
-			: System.Serialization.Formatters.Binary.BinaryFormatter
-			: and then encoded with base64 encoding.
-
-		mimetype: application/x-microsoft.net.object.soap.base64
-		value   : The object must be serialized with 
-			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-			: and then encoded with base64 encoding.
-
-		mimetype: application/x-microsoft.net.object.bytearray.base64
-		value   : The object must be serialized into a byte array 
-			: using a System.ComponentModel.TypeConverter
-			: and then encoded with base64 encoding.
-	-->
-	
-	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>1.3</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ArchingArrow" xml:space="preserve">
+    <value>Flèche courbante</value>
+  </data>
+  <data name="ArmorBreak" xml:space="preserve">
+    <value>Brise-armure</value>
+  </data>
+  <data name="AsuranFists" xml:space="preserve">
+    <value>Poings d'Asura</value>
+  </data>
+  <data name="AvalancheAxe" xml:space="preserve">
+    <value>Hache avalanche</value>
+  </data>
+  <data name="BackhandBlow" xml:space="preserve">
+    <value>Revers de main</value>
+  </data>
+  <data name="BlackHalo" xml:space="preserve">
+    <value>Halo noir</value>
+  </data>
+  <data name="BladeChi" xml:space="preserve">
+    <value>Lame : Chi</value>
+  </data>
+  <data name="BladeEi" xml:space="preserve">
+    <value>Lame : Ei</value>
+  </data>
+  <data name="BladeJin" xml:space="preserve">
+    <value>Lame : Jin</value>
+  </data>
+  <data name="BladeKu" xml:space="preserve">
+    <value>Lame : Ku</value>
+  </data>
+  <data name="BladeMetsu" xml:space="preserve">
+    <value>Lame : Metsu</value>
+  </data>
+  <data name="BladeRetsu" xml:space="preserve">
+    <value>Lame : Retsu</value>
+  </data>
+  <data name="BladeRin" xml:space="preserve">
+    <value>Lame : Rin</value>
+  </data>
+  <data name="BladeTeki" xml:space="preserve">
+    <value>Lame : Teki</value>
+  </data>
+  <data name="BladeTen" xml:space="preserve">
+    <value>Lame : Ten</value>
+  </data>
+  <data name="BladeTo" xml:space="preserve">
+    <value>Lame : To</value>
+  </data>
+  <data name="BlastArrow" xml:space="preserve">
+    <value>Flèche explosive</value>
+  </data>
+  <data name="BlastShot" xml:space="preserve">
+    <value>Tir explosif</value>
+  </data>
+  <data name="Brainshaker" xml:space="preserve">
+    <value>Choc cervical</value>
+  </data>
+  <data name="BurningBlade" xml:space="preserve">
+    <value>Lame ardente</value>
+  </data>
+  <data name="Calamity" xml:space="preserve">
+    <value>Calamité</value>
+  </data>
+  <data name="Catastrophe" xml:space="preserve">
+    <value>Catastrophe</value>
+  </data>
+  <data name="CircleBlade" xml:space="preserve">
+    <value>Lame circulaire</value>
+  </data>
+  <data name="Combo" xml:space="preserve">
+    <value>Combo</value>
+  </data>
+  <data name="Coronach" xml:space="preserve">
+    <value>Chant funèbre</value>
+  </data>
+  <data name="CrescentMoon" xml:space="preserve">
+    <value>Croissant lunaire</value>
+  </data>
+  <data name="CrossReaper" xml:space="preserve">
+    <value>Fauchaison</value>
+  </data>
+  <data name="Cyclone" xml:space="preserve">
+    <value>Cyclone</value>
+  </data>
+  <data name="DancingEdge" xml:space="preserve">
+    <value>Tranch. dans.</value>
+  </data>
+  <data name="DarkHarvest" xml:space="preserve">
+    <value>Récolte noire</value>
+  </data>
+  <data name="Decimation" xml:space="preserve">
+    <value>Décimation</value>
+  </data>
+  <data name="Detonator" xml:space="preserve">
+    <value>Détonateur</value>
+  </data>
+  <data name="DoubleThrust" xml:space="preserve">
+    <value>Percée double</value>
+  </data>
+  <data name="DragonKick" xml:space="preserve">
+    <value>Tacle du dragon</value>
+  </data>
+  <data name="DullingArrow" xml:space="preserve">
+    <value>Flèche émouss.</value>
+  </data>
+  <data name="EarthCrusher" xml:space="preserve">
+    <value>Broyeur terrestre</value>
+  </data>
+  <data name="EmpyrealArrow" xml:space="preserve">
+    <value>Flèche empyr.</value>
+  </data>
+  <data name="EnergyDrain" xml:space="preserve">
+    <value>Spoliat. d'énerg.</value>
+  </data>
+  <data name="EnergySteal" xml:space="preserve">
+    <value>Vol d'énergie</value>
+  </data>
+  <data name="Evisceration" xml:space="preserve">
+    <value>Eviscération</value>
+  </data>
+  <data name="FastBlade" xml:space="preserve">
+    <value>Lame rapide</value>
+  </data>
+  <data name="FinalHeaven" xml:space="preserve">
+    <value>Ciel ultime</value>
+  </data>
+  <data name="FlamingArrow" xml:space="preserve">
+    <value>Flèche enflam.</value>
+  </data>
+  <data name="FlatBlade" xml:space="preserve">
+    <value>Lame plate</value>
+  </data>
+  <data name="Freezebite" xml:space="preserve">
+    <value>Gelure</value>
+  </data>
+  <data name="Frostbite" xml:space="preserve">
+    <value>Engelure</value>
+  </data>
+  <data name="FullBreak" xml:space="preserve">
+    <value>Brise-tout</value>
+  </data>
+  <data name="FullSwing" xml:space="preserve">
+    <value>Grand swing</value>
+  </data>
+  <data name="GaleAxe" xml:space="preserve">
+    <value>Hache vigoureuse</value>
+  </data>
+  <data name="GateOfTartarus" xml:space="preserve">
+    <value>Porte de Tartarus</value>
+  </data>
+  <data name="Geirskogul" xml:space="preserve">
+    <value>Geirskogul</value>
+  </data>
+  <data name="GroundStrike" xml:space="preserve">
+    <value>Frappe terrestre</value>
+  </data>
+  <data name="Guillotine" xml:space="preserve">
+    <value>Guillotine</value>
+  </data>
+  <data name="GustSlash" xml:space="preserve">
+    <value>Coup de vent</value>
+  </data>
+  <data name="HardSlash" xml:space="preserve">
+    <value>Coup cinglant</value>
+  </data>
+  <data name="HeavyShot" xml:space="preserve">
+    <value>Tir violent</value>
+  </data>
+  <data name="HeavySwing" xml:space="preserve">
+    <value>Swing violent</value>
+  </data>
+  <data name="HexaStrike" xml:space="preserve">
+    <value>Hexa-frappe</value>
+  </data>
+  <data name="HotShot" xml:space="preserve">
+    <value>Tir brûlant</value>
+  </data>
+  <data name="HowlingFist" xml:space="preserve">
+    <value>Poing hurlant</value>
+  </data>
+  <data name="ImpulseDrive" xml:space="preserve">
+    <value>Pulsion</value>
+  </data>
+  <data name="IronTempest" xml:space="preserve">
+    <value>Tempête de fer</value>
+  </data>
+  <data name="Judgment" xml:space="preserve">
+    <value>Jugement</value>
+  </data>
+  <data name="KeenEdge" xml:space="preserve">
+    <value>Tranchant acéré</value>
+  </data>
+  <data name="KnightsOfRound" xml:space="preserve">
+    <value>La Table Ronde</value>
+  </data>
+  <data name="LegSweep" xml:space="preserve">
+    <value>Balayette</value>
+  </data>
+  <data name="MercyStroke" xml:space="preserve">
+    <value>Coup de grâce</value>
+  </data>
+  <data name="MetatronTorment" xml:space="preserve">
+    <value>Tourm. métatron</value>
+  </data>
+  <data name="MistralAxe" xml:space="preserve">
+    <value>Hache mistral</value>
+  </data>
+  <data name="Moonlight" xml:space="preserve">
+    <value>Clair de lune</value>
+  </data>
+  <data name="NamasArrow" xml:space="preserve">
+    <value>Flèche Namas</value>
+  </data>
+  <data name="NightmareScythe" xml:space="preserve">
+    <value>Faux du cauchem.</value>
+  </data>
+  <data name="OneInchPunch" xml:space="preserve">
+    <value>Poing fulgurant</value>
+  </data>
+  <data name="Onslaught" xml:space="preserve">
+    <value>Abordage</value>
+  </data>
+  <data name="PentaThrust" xml:space="preserve">
+    <value>Percée Penta</value>
+  </data>
+  <data name="PiercingArrow" xml:space="preserve">
+    <value>Flèche perçante</value>
+  </data>
+  <data name="PowerSlash" xml:space="preserve">
+    <value>Coup puissant</value>
+  </data>
+  <data name="RagingAxe" xml:space="preserve">
+    <value>Hache enragée</value>
+  </data>
+  <data name="RagingFists" xml:space="preserve">
+    <value>Poings enragés</value>
+  </data>
+  <data name="RagingRush" xml:space="preserve">
+    <value>Ruée enragée</value>
+  </data>
+  <data name="RaidenThrust" xml:space="preserve">
+    <value>Percée raiden</value>
+  </data>
+  <data name="Rampage" xml:space="preserve">
+    <value>Ravage</value>
+  </data>
+  <data name="Randgrith" xml:space="preserve">
+    <value>Randgrith</value>
+  </data>
+  <data name="RedLotusBlade" xml:space="preserve">
+    <value>Lame lotus rouge</value>
+  </data>
+  <data name="Retribution" xml:space="preserve">
+    <value>Châtiment</value>
+  </data>
+  <data name="RockCrusher" xml:space="preserve">
+    <value>Broyeur de roche</value>
+  </data>
+  <data name="SavageBlade" xml:space="preserve">
+    <value>Lame sauvage</value>
+  </data>
+  <data name="Scourge" xml:space="preserve">
+    <value>Fléau</value>
+  </data>
+  <data name="SeraphBlade" xml:space="preserve">
+    <value>Lame séraphine</value>
+  </data>
+  <data name="SeraphStrike" xml:space="preserve">
+    <value>Frappe séraphine</value>
+  </data>
+  <data name="ShadowOfDeath" xml:space="preserve">
+    <value>Ombre de la mort</value>
+  </data>
+  <data name="Shadowstitch" xml:space="preserve">
+    <value>Pointe sombre</value>
+  </data>
+  <data name="SharkBite" xml:space="preserve">
+    <value>Morsure du squale</value>
+  </data>
+  <data name="ShellCrusher" xml:space="preserve">
+    <value>Broyeur de carap.</value>
+  </data>
+  <data name="ShieldBreak" xml:space="preserve">
+    <value>Brise-bouclier</value>
+  </data>
+  <data name="ShiningBlade" xml:space="preserve">
+    <value>Lame brillante</value>
+  </data>
+  <data name="ShiningStrike" xml:space="preserve">
+    <value>Frappe brillante</value>
+  </data>
+  <data name="Shockwave" xml:space="preserve">
+    <value>Onde de choc</value>
+  </data>
+  <data name="ShoulderTackle" xml:space="preserve">
+    <value>Tacle d'épaule</value>
+  </data>
+  <data name="SickleMoon" xml:space="preserve">
+    <value>Faucille lunaire</value>
+  </data>
+  <data name="Sidewinder" xml:space="preserve">
+    <value>Missile</value>
+  </data>
+  <data name="Skewer" xml:space="preserve">
+    <value>Embrocheur</value>
+  </data>
+  <data name="Skullbreaker" xml:space="preserve">
+    <value>Brise-crâne</value>
+  </data>
+  <data name="Slice" xml:space="preserve">
+    <value>Faucheur</value>
+  </data>
+  <data name="SlugShot" xml:space="preserve">
+    <value>Tir de brute</value>
+  </data>
+  <data name="SmashAxe" xml:space="preserve">
+    <value>Hache démoliss.</value>
+  </data>
+  <data name="SniperShot" xml:space="preserve">
+    <value>Tir d'élite</value>
+  </data>
+  <data name="SpinningAttack" xml:space="preserve">
+    <value>Attq. tournante</value>
+  </data>
+  <data name="SpinningAxe" xml:space="preserve">
+    <value>Hache tournante</value>
+  </data>
+  <data name="SpinningScythe" xml:space="preserve">
+    <value>Faux tournante</value>
+  </data>
+  <data name="SpinningSlash" xml:space="preserve">
+    <value>Coup tournant</value>
+  </data>
+  <data name="SpiralHell" xml:space="preserve">
+    <value>Spirale infernale</value>
+  </data>
+  <data name="SpiritsWithin" xml:space="preserve">
+    <value>Esprits intérieurs</value>
+  </data>
+  <data name="SpiritTaker" xml:space="preserve">
+    <value>Preneur d'esprit</value>
+  </data>
+  <data name="SplitShot" xml:space="preserve">
+    <value>Tir fendant</value>
+  </data>
+  <data name="Starburst" xml:space="preserve">
+    <value>Eclat stellaire</value>
+  </data>
+  <data name="Starlight" xml:space="preserve">
+    <value>Lumière stellaire</value>
+  </data>
+  <data name="SteelCyclone" xml:space="preserve">
+    <value>Cyclone d'acier</value>
+  </data>
+  <data name="Sturmwind" xml:space="preserve">
+    <value>Ouragan</value>
+  </data>
+  <data name="Sunburst" xml:space="preserve">
+    <value>Eclat solaire</value>
+  </data>
+  <data name="SwiftBlade" xml:space="preserve">
+    <value>Lame vive</value>
+  </data>
+  <data name="TachiEnpi" xml:space="preserve">
+    <value>Tachi : Enpi</value>
+  </data>
+  <data name="TachiGekko" xml:space="preserve">
+    <value>Tachi : Gekko</value>
+  </data>
+  <data name="TachiGoten" xml:space="preserve">
+    <value>Tachi : Goten</value>
+  </data>
+  <data name="TachiHobaku" xml:space="preserve">
+    <value>Tachi : Hobaku</value>
+  </data>
+  <data name="TachiJinpu" xml:space="preserve">
+    <value>Tachi : Jinpu</value>
+  </data>
+  <data name="TachiKagero" xml:space="preserve">
+    <value>Tachi : Kagero</value>
+  </data>
+  <data name="TachiKaiten" xml:space="preserve">
+    <value>Tachi : Kaiten</value>
+  </data>
+  <data name="TachiKasha" xml:space="preserve">
+    <value>Tachi : Kasha</value>
+  </data>
+  <data name="TachiKoki" xml:space="preserve">
+    <value>Tachi : Koki</value>
+  </data>
+  <data name="TachiYukikaze" xml:space="preserve">
+    <value>Tachi : Yukikaze</value>
+  </data>
+  <data name="ThunderThrust" xml:space="preserve">
+    <value>Percée foudre</value>
+  </data>
+  <data name="TrueStrike" xml:space="preserve">
+    <value>Frappe franche</value>
+  </data>
+  <data name="ViperBite" xml:space="preserve">
+    <value>Mors. de vipère</value>
+  </data>
+  <data name="VorpalBlade" xml:space="preserve">
+    <value>Lame vorpale</value>
+  </data>
+  <data name="VorpalScythe" xml:space="preserve">
+    <value>Faux vorpale</value>
+  </data>
+  <data name="VorpalThrust" xml:space="preserve">
+    <value>Percée vorpale</value>
+  </data>
+  <data name="WaspSting" xml:space="preserve">
+    <value>Piqûre de guêpe</value>
+  </data>
+  <data name="WeaponBreak" xml:space="preserve">
+    <value>Brise-arme</value>
+  </data>
+  <data name="WheelingThrust" xml:space="preserve">
+    <value>Percée tournante</value>
+  </data>
+  <data name="Accession" xml:space="preserve">
+    <value>Avènement</value>
+  </data>
+  <data name="Aggressor" xml:space="preserve">
+    <value>Agresseur</value>
+  </data>
+  <data name="Alacrity" xml:space="preserve">
+    <value>Alacrité</value>
+  </data>
+  <data name="Berserk" xml:space="preserve">
+    <value>Berserk</value>
+  </data>
+  <data name="BlmRoll" xml:space="preserve">
+    <value>Jet du sorcier</value>
+  </data>
+  <data name="BluRoll" xml:space="preserve">
+    <value>Jet du mage</value>
+  </data>
+  <data name="BoxStep" xml:space="preserve">
+    <value>Pas croisé</value>
+  </data>
+  <data name="BrdRoll" xml:space="preserve">
+    <value>Jet du chant</value>
+  </data>
+  <data name="BstRoll" xml:space="preserve">
+    <value>Jet de la bête</value>
+  </data>
+  <data name="Celerity" xml:space="preserve">
+    <value>Célérité</value>
+  </data>
+  <data name="Chakra" xml:space="preserve">
+    <value>Chakra</value>
+  </data>
+  <data name="Charm" xml:space="preserve">
+    <value>Charme</value>
+  </data>
+  <data name="CorRoll" xml:space="preserve">
+    <value>Jet du corsaire</value>
+  </data>
+  <data name="Cover" xml:space="preserve">
+    <value>Couverture</value>
+  </data>
+  <data name="CuringWaltz1" xml:space="preserve">
+    <value>Valse Soin</value>
+  </data>
+  <data name="CuringWaltz2" xml:space="preserve">
+    <value>Valse Soin II</value>
+  </data>
+  <data name="CuringWaltz3" xml:space="preserve">
+    <value>Valse Soin III</value>
+  </data>
+  <data name="CuringWaltz4" xml:space="preserve">
+    <value>Valse Soin IV</value>
+  </data>
+  <data name="DarkArts" xml:space="preserve">
+    <value>Grimoire noir</value>
+  </data>
+  <data name="DarkShot" xml:space="preserve">
+    <value>Tir de ténèbres</value>
+  </data>
+  <data name="Defender" xml:space="preserve">
+    <value>Défenseur</value>
+  </data>
+  <data name="DiabolicEye" xml:space="preserve">
+    <value>Œil diabolique</value>
+  </data>
+  <data name="DivineWaltz" xml:space="preserve">
+    <value>Valse divine</value>
+  </data>
+  <data name="DncRoll" xml:space="preserve">
+    <value>Jet du danseur</value>
+  </data>
+  <data name="DrgRoll" xml:space="preserve">
+    <value>Jet du drachen</value>
+  </data>
+  <data name="DrkRoll" xml:space="preserve">
+    <value>Jet du chaos</value>
+  </data>
+  <data name="Ebullience" xml:space="preserve">
+    <value>Ebullition</value>
+  </data>
+  <data name="Feint" xml:space="preserve">
+    <value>Feinte</value>
+  </data>
+  <data name="Focus" xml:space="preserve">
+    <value>Précision</value>
+  </data>
+  <data name="Fold" xml:space="preserve">
+    <value>Défausse</value>
+  </data>
+  <data name="Hasso" xml:space="preserve">
+    <value>Hasso</value>
+  </data>
+  <data name="HealingWaltz" xml:space="preserve">
+    <value>Valse curative</value>
+  </data>
+  <data name="Hide" xml:space="preserve">
+    <value>Dissimulation</value>
+  </data>
+  <data name="LastResort" xml:space="preserve">
+    <value>Dernier recours</value>
+  </data>
+  <data name="LightArts" xml:space="preserve">
+    <value>Grimoire blanc</value>
+  </data>
+  <data name="LightShot" xml:space="preserve">
+    <value>Tir de lumière</value>
+  </data>
+  <data name="Manifestation" xml:space="preserve">
+    <value>Manifestation</value>
+  </data>
+  <data name="MnkRoll" xml:space="preserve">
+    <value>Jet du moine</value>
+  </data>
+  <data name="Mug" xml:space="preserve">
+    <value>Rapine</value>
+  </data>
+  <data name="NinRoll" xml:space="preserve">
+    <value>Jet du ninja</value>
+  </data>
+  <data name="Parsimony" xml:space="preserve">
+    <value>Parcimonie</value>
+  </data>
+  <data name="Penury" xml:space="preserve">
+    <value>Modestie</value>
+  </data>
+  <data name="PldRoll" xml:space="preserve">
+    <value>Jet du preux</value>
+  </data>
+  <data name="PupRoll" xml:space="preserve">
+    <value>Jet du pantin</value>
+  </data>
+  <data name="Quickstep" xml:space="preserve">
+    <value>Pas de deux</value>
+  </data>
+  <data name="Rapture" xml:space="preserve">
+    <value>Fougue</value>
+  </data>
+  <data name="RdmRoll" xml:space="preserve">
+    <value>Jet enchanteur</value>
+  </data>
+  <data name="RngRoll" xml:space="preserve">
+    <value>Jet du chasseur</value>
+  </data>
+  <data name="SamRoll" xml:space="preserve">
+    <value>Jet du samouraï</value>
+  </data>
+  <data name="SchRoll" xml:space="preserve">
+    <value>Jet de l'érudit</value>
+  </data>
+  <data name="Seigan" xml:space="preserve">
+    <value>Seigan</value>
+  </data>
+  <data name="Sharpshot" xml:space="preserve">
+    <value>Visée</value>
+  </data>
+  <data name="SmnRoll" xml:space="preserve">
+    <value>Jet adjurateur</value>
+  </data>
+  <data name="SneakAttack" xml:space="preserve">
+    <value>Attaque furtive</value>
+  </data>
+  <data name="Souleater" xml:space="preserve">
+    <value>Noirceur</value>
+  </data>
+  <data name="Steal" xml:space="preserve">
+    <value>Vol</value>
+  </data>
+  <data name="ThfRoll" xml:space="preserve">
+    <value>Jet du brigand</value>
+  </data>
+  <data name="TrickAttack" xml:space="preserve">
+    <value>Attq. sournoise</value>
+  </data>
+  <data name="ViolentFlourish" xml:space="preserve">
+    <value>Pirou. violente</value>
+  </data>
+  <data name="Warcry" xml:space="preserve">
+    <value>Cri de guerre</value>
+  </data>
+  <data name="WarRoll" xml:space="preserve">
+    <value>Jet combattant</value>
+  </data>
+  <data name="WhmRoll" xml:space="preserve">
+    <value>Jet du guérisseur</value>
+  </data>
+  <data name="AnyRoll" xml:space="preserve">
+    <value>^Jet</value>
+  </data>
+  <data name="Bio1" xml:space="preserve">
+    <value>Bactérie</value>
+  </data>
+  <data name="Bio2" xml:space="preserve">
+    <value>Bactérie II</value>
+  </data>
+  <data name="Bio3" xml:space="preserve">
+    <value>Bactérie III</value>
+  </data>
+  <data name="CuragaRegex" xml:space="preserve">
+    <value>(MultiSoin|OmniSoin( [IV]+)?)</value>
+  </data>
+  <data name="Cure1" xml:space="preserve">
+    <value>Soin</value>
+  </data>
+  <data name="Cure2" xml:space="preserve">
+    <value>Soin II</value>
+  </data>
+  <data name="Cure3" xml:space="preserve">
+    <value>Soin III</value>
+  </data>
+  <data name="Cure4" xml:space="preserve">
+    <value>Soin IV</value>
+  </data>
+  <data name="Cure5" xml:space="preserve">
+    <value>Soin V</value>
+  </data>
+  <data name="Dia1" xml:space="preserve">
+    <value>Lumen</value>
+  </data>
+  <data name="Dia2" xml:space="preserve">
+    <value>Lumen II</value>
+  </data>
+  <data name="Dia3" xml:space="preserve">
+    <value>Lumen III</value>
+  </data>
+  <data name="Dispel" xml:space="preserve">
+    <value>Dissipation</value>
+  </data>
+  <data name="Erase" xml:space="preserve">
+    <value>Gomme</value>
+  </data>
+  <data name="Haste" xml:space="preserve">
+    <value>Hâte</value>
+  </data>
+  <data name="HojoRegex" xml:space="preserve">
+    <value>Hojo : (Ichi|Ni)</value>
+  </data>
+  <data name="JubakuRegex" xml:space="preserve">
+    <value>Jubaku : (Ichi|Ni)</value>
+  </data>
+  <data name="ParalyzeRegex" xml:space="preserve">
+    <value>Paralysie( II)?</value>
+  </data>
+  <data name="Raise" xml:space="preserve">
+    <value>Vie</value>
+  </data>
+  <data name="Regen1" xml:space="preserve">
+    <value>Récup</value>
+  </data>
+  <data name="Regen2" xml:space="preserve">
+    <value>Récup II</value>
+  </data>
+  <data name="Regen3" xml:space="preserve">
+    <value>Récup III</value>
+  </data>
+  <data name="SlowRegex" xml:space="preserve">
+    <value>Lenteur( II)?</value>
+  </data>
+  <data name="UtsuIchi" xml:space="preserve">
+    <value>Utsusemi : Ichi</value>
+  </data>
+  <data name="UtsuNi" xml:space="preserve">
+    <value>Utsusemi : Ni</value>
+  </data>
+  <data name="AfflatusMisery" xml:space="preserve">
+    <value>Adversité</value>
+  </data>
+  <data name="AfflatusSolace" xml:space="preserve">
+    <value>Consolation</value>
+  </data>
+  <data name="Altruism" xml:space="preserve">
+    <value>Altruisme</value>
+  </data>
+  <data name="Enlightenment" xml:space="preserve">
+    <value>Apaisement</value>
+  </data>
+  <data name="Equanimity" xml:space="preserve">
+    <value>Ataraxie</value>
+  </data>
+  <data name="Focalization" xml:space="preserve">
+    <value>Focalisation</value>
+  </data>
+  <data name="Innin" xml:space="preserve">
+    <value>Innin</value>
+  </data>
+  <data name="Tranquility" xml:space="preserve">
+    <value>Humilité</value>
+  </data>
+  <data name="Yonin" xml:space="preserve">
+    <value>Yonin</value>
+  </data>
+  <data name="AnySamba" xml:space="preserve">
+    <value>^Samba</value>
+  </data>
+  <data name="AsceticsFury" xml:space="preserve">
+    <value>Furie de l'ascète</value>
+  </data>
+  <data name="Atonement" xml:space="preserve">
+    <value>Absolution</value>
+  </data>
+  <data name="BladeKamu" xml:space="preserve">
+    <value>Lame : Kamu</value>
+  </data>
+  <data name="DeathBlossom" xml:space="preserve">
+    <value>Roseraie fatale</value>
+  </data>
+  <data name="Drakesbane" xml:space="preserve">
+    <value>Fléau du dragon</value>
+  </data>
+  <data name="Expiacion" xml:space="preserve">
+    <value>Expiation</value>
+  </data>
+  <data name="GarlandOfBliss" xml:space="preserve">
+    <value>Suprême félicité</value>
+  </data>
+  <data name="Insurgency" xml:space="preserve">
+    <value>Insurrection</value>
+  </data>
+  <data name="KingsJustice" xml:space="preserve">
+    <value>Justice du Roi</value>
+  </data>
+  <data name="LeadenSalute" xml:space="preserve">
+    <value>Balle salvatrice</value>
+  </data>
+  <data name="MandalicStab" xml:space="preserve">
+    <value>Coup mandalique</value>
+  </data>
+  <data name="MordantRime" xml:space="preserve">
+    <value>Rime incisive</value>
+  </data>
+  <data name="MysticBoon" xml:space="preserve">
+    <value>Grâce mystique</value>
+  </data>
+  <data name="Omniscience" xml:space="preserve">
+    <value>Omniscience</value>
+  </data>
+  <data name="PrimalRend" xml:space="preserve">
+    <value>Griffade primitive</value>
+  </data>
+  <data name="PyrrhicKleos" xml:space="preserve">
+    <value>Kleos pyrrhique</value>
+  </data>
+  <data name="StringingPummel" xml:space="preserve">
+    <value>Volée de coups</value>
+  </data>
+  <data name="TachiRana" xml:space="preserve">
+    <value>Tachi : Rana</value>
+  </data>
+  <data name="Trueflight" xml:space="preserve">
+    <value>Tir infaillible</value>
+  </data>
+  <data name="Vidohunir" xml:space="preserve">
+    <value>Vidohunir</value>
+  </data>
+  <data name="AstralFlow" xml:space="preserve">
+    <value>Flux astral</value>
+  </data>
+  <data name="AzureLore" xml:space="preserve">
+    <value>Sagesse d'azur</value>
+  </data>
+  <data name="Barrage" xml:space="preserve">
+    <value>Tir en rafale</value>
+  </data>
+  <data name="Benediction" xml:space="preserve">
+    <value>Bénédiction</value>
+  </data>
+  <data name="BloodWeapon" xml:space="preserve">
+    <value>Arme sanguinaire</value>
+  </data>
+  <data name="BurstAffinity" xml:space="preserve">
+    <value>Lien d'explosions</value>
+  </data>
+  <data name="Camouflage" xml:space="preserve">
+    <value>Camouflage</value>
+  </data>
+  <data name="ChainAffinity" xml:space="preserve">
+    <value>Lien de chaînes</value>
+  </data>
+  <data name="Chainspell" xml:space="preserve">
+    <value>Chaîne de sorts</value>
+  </data>
+  <data name="Composure" xml:space="preserve">
+    <value>Aplomb</value>
+  </data>
+  <data name="Convert" xml:space="preserve">
+    <value>Conversion</value>
+  </data>
+  <data name="Counterstance" xml:space="preserve">
+    <value>Qui-vive</value>
+  </data>
+  <data name="DesperateFlourish" xml:space="preserve">
+    <value>Pirou. désespérée</value>
+  </data>
+  <data name="DivineSeal" xml:space="preserve">
+    <value>Sceau divin</value>
+  </data>
+  <data name="EagleEyeShot" xml:space="preserve">
+    <value>Œil d'aigle</value>
+  </data>
+  <data name="ElementalSeal" xml:space="preserve">
+    <value>Sceau élément.</value>
+  </data>
+  <data name="Familiar" xml:space="preserve">
+    <value>Dressage</value>
+  </data>
+  <data name="Fealty" xml:space="preserve">
+    <value>Fidélité</value>
+  </data>
+  <data name="Footwork" xml:space="preserve">
+    <value>Jeu de jambes</value>
+  </data>
+  <data name="FormlessStrikes" xml:space="preserve">
+    <value>Coups informes</value>
+  </data>
+  <data name="HundredFists" xml:space="preserve">
+    <value>Cent poings</value>
+  </data>
+  <data name="Invincible" xml:space="preserve">
+    <value>Invincible</value>
+  </data>
+  <data name="Manafont" xml:space="preserve">
+    <value>Source de Mana</value>
+  </data>
+  <data name="Meditate" xml:space="preserve">
+    <value>Méditation</value>
+  </data>
+  <data name="MeikyoShisui" xml:space="preserve">
+    <value>Meikyo Shisui</value>
+  </data>
+  <data name="MightyStrikes" xml:space="preserve">
+    <value>Destro-frappes</value>
+  </data>
+  <data name="MijinGakure" xml:space="preserve">
+    <value>Mijin Gakure</value>
+  </data>
+  <data name="Overdrive" xml:space="preserve">
+    <value>Suractivité</value>
+  </data>
+  <data name="PerfectDodge" xml:space="preserve">
+    <value>Esquive absolue</value>
+  </data>
+  <data name="Pianissimo" xml:space="preserve">
+    <value>Pianissimo</value>
+  </data>
+  <data name="Sekkanoki" xml:space="preserve">
+    <value>Sekkanoki</value>
+  </data>
+  <data name="Sentinel" xml:space="preserve">
+    <value>Sentinelle</value>
+  </data>
+  <data name="SnakeEye" xml:space="preserve">
+    <value>As</value>
+  </data>
+  <data name="SoulVoice" xml:space="preserve">
+    <value>Voix de l'âme</value>
+  </data>
+  <data name="SpiritSurge" xml:space="preserve">
+    <value>Souffle d'esprit</value>
+  </data>
+  <data name="Sublimation" xml:space="preserve">
+    <value>Révisions</value>
+  </data>
+  <data name="TabulaRasa" xml:space="preserve">
+    <value>Tabula rasa</value>
+  </data>
+  <data name="ThirdEye" xml:space="preserve">
+    <value>Troisième œil</value>
+  </data>
+  <data name="Trance" xml:space="preserve">
+    <value>Transe</value>
+  </data>
+  <data name="WildCard" xml:space="preserve">
+    <value>Joker</value>
+  </data>
+  <data name="AnySong" xml:space="preserve">
+    <value>Menuet|Madrigal|Marche|Mambo|Prélude|Ballade|Ball.|Péan|Lied|Cantique</value>
+  </data>
+  <data name="BioRegex" xml:space="preserve">
+    <value>Bactérie( II+)?</value>
+  </data>
+  <data name="DiaRegex" xml:space="preserve">
+    <value>Lumen( II+)?</value>
+  </data>
+  <data name="ElegyRegex" xml:space="preserve">
+    <value>Elégie du combat|Elégie du carnage|Elég. du massacre</value>
+  </data>
+  <data name="HealingBreath1" xml:space="preserve">
+    <value>Souffle curatif</value>
+  </data>
+  <data name="HealingBreath2" xml:space="preserve">
+    <value>Souffle curatif II</value>
+  </data>
+  <data name="HealingBreath3" xml:space="preserve">
+    <value>Souffle curatif III</value>
+  </data>
+  <data name="HealingBreeze" xml:space="preserve">
+    <value>Brise curative</value>
+  </data>
+  <data name="Madrigal1" xml:space="preserve">
+    <value>Madrigal épéiste</value>
+  </data>
+  <data name="Madrigal2" xml:space="preserve">
+    <value>Madrigal du duel</value>
+  </data>
+  <data name="MagicFinale" xml:space="preserve">
+    <value>Finale magique</value>
+  </data>
+  <data name="MagicFruit" xml:space="preserve">
+    <value>Fruit magique</value>
+  </data>
+  <data name="Minuet1" xml:space="preserve">
+    <value>Menuet vaillant</value>
+  </data>
+  <data name="Minuet2" xml:space="preserve">
+    <value>Menuet vaillant II</value>
+  </data>
+  <data name="Minuet3" xml:space="preserve">
+    <value>Menuet vaillant III</value>
+  </data>
+  <data name="Minuet4" xml:space="preserve">
+    <value>Menuet vaillant IV</value>
+  </data>
+  <data name="Pollen" xml:space="preserve">
+    <value>Pollen</value>
+  </data>
+  <data name="Prelude1" xml:space="preserve">
+    <value>Prélude chasseur</value>
+  </data>
+  <data name="Prelude2" xml:space="preserve">
+    <value>Prélude archer</value>
+  </data>
+  <data name="WildCarrot" xml:space="preserve">
+    <value>Carotte sauvage</value>
+  </data>
 </root>
