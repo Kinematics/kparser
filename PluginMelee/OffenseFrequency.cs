@@ -411,7 +411,7 @@ namespace WaywardGamers.KParser.Plugin
                         if (showDetails == true)
                             ShowDetailedDamage(player.Retaliate);
 
-                        var retaliateFreq = player.Counter.GroupBy(m => m.Amount).OrderBy(m => m.Key);
+                        var retaliateFreq = player.Retaliate.GroupBy(m => m.Amount).OrderBy(m => m.Key);
 
                         ShowFrequency(retaliateFreq);
                     }
