@@ -1,5 +1,10 @@
 KParser Change Log
 
+1.4.13 (January 27, 2010)
+* Translation work.
+- Fix bug in retaliation reporting in Offense Details.
+
+
 1.4.12 (January 15, 2010)
 - Fix typo in chocobo digging string check.
 + "found with ease" messages in choco digging now counted by loot plugin.
