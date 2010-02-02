@@ -121,7 +121,7 @@ namespace WaywardGamers.KParser.Plugin
             if (e.DatasetChanges.Interactions.Count != 0)
             {
                 var enfeebles = from i in e.DatasetChanges.Interactions
-                                where i.HarmType == (byte)HarmType.Enfeeble
+                                where (HarmType)i.HarmType == HarmType.Enfeeble
                                 select i;
 
                 if (enfeebles.Count() > 0)
@@ -206,7 +206,7 @@ namespace WaywardGamers.KParser.Plugin
                 // Process debuffs used by mobs
 
                 debuffSet = from c in dataSet.Combatants
-                            where c.CombatantType == (byte)EntityType.Mob
+                            where (EntityType)c.CombatantType == EntityType.Mob
                             orderby c.CombatantType, c.CombatantName
                             select new DebuffGroup
                             {
@@ -297,7 +297,7 @@ namespace WaywardGamers.KParser.Plugin
                                 ((HarmType)d.SecondHarmType == HarmType.Dispel ||
                                  (HarmType)d.SecondHarmType == HarmType.Enfeeble));
 
-                            noEffectCount += target.DebuffData.Count(d => d.FailedActionType == (byte)FailedActionType.NoEffect);
+                            noEffectCount += target.DebuffData.Count(d => (FailedActionType)d.FailedActionType == FailedActionType.NoEffect);
                         }
                     }
 
@@ -375,7 +375,7 @@ namespace WaywardGamers.KParser.Plugin
                             //    ((HarmType)d.SecondHarmType == HarmType.Dispel ||
                             //     (HarmType)d.SecondHarmType == HarmType.Enfeeble));
 
-                            noEffectCount += target.DebuffData.Count(d => d.FailedActionType == (byte)FailedActionType.NoEffect);
+                            noEffectCount += target.DebuffData.Count(d => (FailedActionType)d.FailedActionType == FailedActionType.NoEffect);
 
                             AppendText(target.TargetName.PadRight(20));
 
