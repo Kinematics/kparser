@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Wayward Gamers")]
 [assembly: AssemblyProduct("PluginUnparsed")]
-[assembly: AssemblyCopyright("Copyright © Wayward Gamers 2008-2009")]
+[assembly: AssemblyCopyright("Copyright © Wayward Gamers 2008-2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
