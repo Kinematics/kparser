@@ -412,6 +412,14 @@ namespace WaywardGamers.KParser.Parsing
                 {
                     target.EntityType = EntityType.Player;
                 }
+
+                // If target killed is a mob, we know the actor must be a player if
+                // they are currently unknown (can't charm player-named mobs).
+                else if ((combatDetails.ActorEntityType == EntityType.Unknown) &&
+                    (target.EntityType == EntityType.Mob))
+                {
+                    combatDetails.ActorEntityType = EntityType.Player;
+                }
             }
         }
     }
