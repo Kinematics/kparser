@@ -1416,7 +1416,10 @@ namespace WaywardGamers.KParser.Parsing
                         combatDetails.ActorPlayerType = ActorPlayerType.Other;
                         break;
                     default:
-                        combatDetails.ActorPlayerType = ActorPlayerType.Unknown;
+                        if (target.EntityType == EntityType.Mob)
+                            combatDetails.ActorPlayerType = ParseCodes.Instance.GetActorPlayerType(message.CurrentMessageCode);
+                        else
+                            combatDetails.ActorPlayerType = ActorPlayerType.Unknown;
                         break;
                 }
 
@@ -2669,9 +2672,16 @@ namespace WaywardGamers.KParser.Parsing
                     msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Spell].Value;
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+                    msgCombatDetails.FailedActionType = FailedActionType.NoEffect;
                     target.FailedActionType = FailedActionType.NoEffect;
-                    //target.HarmType = msgCombatDetails.HarmType;
-                    target.HarmType = HarmType.Damage;
+
+                    // Absorb spells and Blu spells may get this resist message.
+                    // Absorbs are enfeebles, Blu spells are damage (usually).
+                    if (Regex.Match(msgCombatDetails.ActionName, Resources.ParsedStrings.AbsorbRegex).Success)
+                        target.HarmType = HarmType.Enfeeble;
+                    else
+                        target.HarmType = HarmType.Damage;
+
                     target.DefenseType = DefenseType.Resist;
                     msgCombatDetails.SuccessLevel = SuccessType.Failed;
                     message.SetParseSuccess(true);
