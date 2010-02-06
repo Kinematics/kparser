@@ -1,5 +1,9 @@
 KParser Change Log
 
+1.4.14 (February 6, 2010)
+- Fix minor bugs in entities and outside-party kills to avoid data being incorrectly attributed.
+
+
 1.4.13 (January 27, 2010)
 * Translation work.
 - Fix bug in retaliation reporting in Offense Details.
