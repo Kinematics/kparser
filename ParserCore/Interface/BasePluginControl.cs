@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using WaywardGamers.KParser.Database;
 
@@ -14,6 +15,7 @@ namespace WaywardGamers.KParser.Plugin
     {
         #region Protected Variables
         protected string tabName;
+        protected RichTextBox dummyRichTextBox = new RichTextBox();
         #endregion
 
         #region Font Variables
@@ -278,8 +280,18 @@ namespace WaywardGamers.KParser.Plugin
             richTextBox.Select(0, 0);
         }
 
+        /// <summary>
+        /// Function to update the rich text box with the specified string, and color/adjust fonts
+        /// based on the included list of StringMods.
+        /// </summary>
+        /// <param name="sb">StringBuilder containing the string to add to the rich text box.</param>
+        /// <param name="strModList">List of adjustments to the output for setting font colors/etc.</param>
         protected void PushStrings(StringBuilder sb, List<StringMods> strModList)
         {
+            // Supplant with quick update version of this function.
+            PushStringsQ(sb, strModList);
+            return;
+
             int start = richTextBox.Text.Length;
 
             richTextBox.AppendText(sb.ToString());
@@ -316,6 +328,195 @@ namespace WaywardGamers.KParser.Plugin
 
             richTextBox.Select(0, 0);
         }
+
+        /// <summary>
+        /// A 'quick' version of the PushStrings function, this does all the updating work
+        /// on a hidden rich text box to avoid constant visible repainting.  It's quick
+        /// only in the sense that the user doesn't have to see the visible updates.  The
+        /// process of adding/coloring/etc the text takes just as long as the normal version.
+        /// Once that's complete, though, the update to the visible window is nearly instant.
+        /// </summary>
+        /// <param name="sb">StringBuilder containing the string to add to the rich text box.</param>
+        /// <param name="strModList">List of adjustments to the output for setting font colors/etc.</param>
+        protected void PushStringsQ(StringBuilder sb, List<StringMods> strModList)
+        {
+            dummyRichTextBox.Clear();
+            dummyRichTextBox.Rtf = richTextBox.Rtf;
+
+            int start = dummyRichTextBox.Text.Length;
+
+            dummyRichTextBox.AppendText(sb.ToString());
+            dummyRichTextBox.Select(start, sb.Length);
+            dummyRichTextBox.SelectionFont = normFont;
+            dummyRichTextBox.SelectionColor = Color.Black;
+
+            if (strModList != null)
+            {
+                foreach (var strMod in strModList)
+                {
+                    dummyRichTextBox.Select(strMod.Start + start, strMod.Length);
+
+                    if ((strMod.Bold == true) && (strMod.Underline == true))
+                    {
+                        dummyRichTextBox.SelectionFont = buFont;
+                    }
+                    else if (strMod.Bold == true)
+                    {
+                        dummyRichTextBox.SelectionFont = boldFont;
+                    }
+                    else if (strMod.Underline == true)
+                    {
+                        dummyRichTextBox.SelectionFont = underFont;
+                    }
+                    else
+                    {
+                        dummyRichTextBox.SelectionFont = normFont;
+                    }
+
+                    dummyRichTextBox.SelectionColor = strMod.Color;
+                }
+            }
+            
+            richTextBox.Rtf = dummyRichTextBox.Rtf;
+            richTextBox.Select(0, 0);
+        }
+
+        /// <summary>
+        /// Preliminary work on constructing the raw underlying RTF code from scratch
+        /// rather than updaing the background rich text box.  Updating manually and
+        /// then setting the text box's RTF would be vastly faster than running a loop
+        /// calling the control for each update, but will also be vastly more complicated
+        /// to implement, especially for dealing with the various fonts (mainly for
+        /// the chat window, but also for any localized version).
+        /// </summary>
+        /// <param name="sb">StringBuilder containing the string to add to the rich text box.</param>
+        /// <param name="strModList">List of adjustments to the output for setting font colors/etc.</param>
+        protected void PushStringsQM(StringBuilder sb, List<StringMods> strModList)
+        {
+            dummyRichTextBox.Clear();
+            dummyRichTextBox.Rtf = richTextBox.Rtf;
+
+            int start = dummyRichTextBox.Text.Length;
+
+            dummyRichTextBox.AppendText(sb.ToString());
+            dummyRichTextBox.Select(start, sb.Length);
+            dummyRichTextBox.SelectionFont = normFont;
+            dummyRichTextBox.SelectionColor = Color.Black;
+
+            if (strModList != null)
+            {
+                foreach (var strMod in strModList)
+                {
+                    dummyRichTextBox.Select(strMod.Start + start, strMod.Length);
+
+                    if ((strMod.Bold == true) && (strMod.Underline == true))
+                    {
+                        dummyRichTextBox.SelectionFont = buFont;
+                    }
+                    else if (strMod.Bold == true)
+                    {
+                        dummyRichTextBox.SelectionFont = boldFont;
+                    }
+                    else if (strMod.Underline == true)
+                    {
+                        dummyRichTextBox.SelectionFont = underFont;
+                    }
+                    else
+                    {
+                        dummyRichTextBox.SelectionFont = normFont;
+                    }
+
+                    dummyRichTextBox.SelectionColor = strMod.Color;
+                }
+            }
+
+            string rawRTF = dummyRichTextBox.Rtf;
+
+            List<Color> colorList = GetRTFColorTableColors(rawRTF);
+            AddModListColors(colorList, strModList);
+            string rtfColorTable = GenerateRTFColorTable(colorList);
+
+            richTextBox.Rtf = dummyRichTextBox.Rtf;
+            richTextBox.Select(0, 0);
+        }
+
+        private string GenerateRTFColorTable(List<Color> colorList)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            // {\\colortbl ;\\red128\\green0\\blue128;\\red0\\green0\\blue0;}
+
+            sb.Append("{\\colortbl ;");
+
+            foreach (var color in colorList)
+            {
+                sb.AppendFormat("\\red{0}\\green{1}\\blue{2};", color.R, color.G, color.B);
+            }
+
+            sb.Append("}");
+
+            return sb.ToString();
+        }
+
+        private List<Color> GetRTFColorTableColors(string rawRTF)
+        {
+            List<Color> colorList = new List<Color>();
+
+            // {\\colortbl ;\\red128\\green0\\blue128;\\red0\\green0\\blue0;}
+
+            Regex colorTableRegex = new Regex(@"\{\\colortbl\s?;(?<colors>(\\red\d{1,3}\\green\d{1,3}\\blue\d{1,3};)+)}");
+            Match colorTableRegexMatch = colorTableRegex.Match(rawRTF);
+
+            Regex colorEntry = new Regex(@"(?<aColor>\\red\d{1,3}\\green\d{1,3}\\blue\d{1,3};)(?<remainder>.*)");
+            Match colorEntryMatch;
+
+            Regex colorBreakdown = new Regex(@"\\red(?<red>\d{1,3})\\green(?<green>\d{1,3})\\blue(?<blue>\d{1,3});");
+
+            if (colorTableRegexMatch.Success)
+            {
+                string colorSets = colorTableRegexMatch.Groups["colors"].Value;
+
+                colorEntryMatch = colorEntry.Match(colorSets);
+                while (colorEntryMatch.Success)
+                {
+                    string aColor = colorEntryMatch.Groups["aColor"].Value;
+                    Match aColorBreakdown = colorBreakdown.Match(aColor);
+
+                    if (aColorBreakdown.Success)
+                    {
+                        int red = int.Parse(aColorBreakdown.Groups["red"].Value);
+                        int green = int.Parse(aColorBreakdown.Groups["green"].Value);
+                        int blue = int.Parse(aColorBreakdown.Groups["blue"].Value);
+
+                        Color color = Color.FromArgb(red, green, blue);
+
+                        colorList.Add(color);
+                    }
+
+                    colorSets = colorEntryMatch.Groups["remainder"].Value;
+                    colorEntryMatch = colorEntry.Match(colorSets);
+                }
+            }
+
+            return colorList;
+        }
+
+        private void AddModListColors(List<Color> colorList, List<StringMods> strModList)
+        {
+            var modListColors = from m in strModList
+                                group m by m.Color;
+
+            foreach (var q in modListColors)
+            {
+                // Any colors imported from the raw RTF don't have names, so
+                // convert named colors to raw RGB colors so that the hash
+                // set can avoid duplicates easily.
+                Color simpleColor = Color.FromArgb(q.Key.R, q.Key.G, q.Key.B);
+                
+                if (colorList.Contains(simpleColor) == false)
+                    colorList.Add(simpleColor);
+            }
+        }        
         #endregion
 
         #region General helper functions
