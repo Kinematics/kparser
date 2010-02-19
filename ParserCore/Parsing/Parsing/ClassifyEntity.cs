@@ -401,6 +401,34 @@ namespace WaywardGamers.KParser.Parsing
                     return;
                 }
 
+                // If target is a mob and actor hasn't been identified yet, actor
+                // must be a player.
+                if ((combatDetails.ActorEntityType == EntityType.Unknown) &&
+                    (target.EntityType == EntityType.Mob))
+                {
+                    combatDetails.ActorEntityType = EntityType.Player;
+                    return;
+                }
+
+                // If actor is a mob and target hasn't been identified yet, target
+                // must be a player.
+                if ((combatDetails.ActorEntityType == EntityType.Mob) &&
+                    (target.EntityType == EntityType.Unknown))
+                {
+                    target.EntityType = EntityType.Player;
+                    return;
+                }
+
+                // If actor is a player and target hasn't been identified yet, target
+                // must be a mob. (higher priority assumption than that actor is charmed
+                // by the point we need to make this distinction)
+                if ((combatDetails.ActorEntityType == EntityType.Player) &&
+                    (target.EntityType == EntityType.Unknown))
+                {
+                    target.EntityType = EntityType.Mob;
+                    return;
+                }
+
             }
 
             if (combatDetails.InteractionType == InteractionType.Death)
