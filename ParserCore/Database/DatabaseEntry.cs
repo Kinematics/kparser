@@ -798,9 +798,13 @@ namespace WaywardGamers.KParser.Database
                         // If we find such a battle, use it.
                         foreach (var mobBattle in activeMobBattleList.Where(b => b.Key == target.Name))
                         {
+                            var sameActorRows = mobBattle.Value.GetInteractionsRows()
+                                .Where(i => i.IsActorIDNull() == false &&
+                                       i.CombatantsRowByActorCombatantRelation == actor &&
+                                       (FailedActionType)i.FailedActionType == FailedActionType.None);
+
                             //if (mobBattle.Value.GetInteractionsRows().Any(i => (ActorPlayerType)i.ActorType == ActorPlayerType.Other))
-                            if (mobBattle.Value.GetInteractionsRows()
-                                .Any(i => i.IsActorIDNull() == false && i.CombatantsRowByActorCombatantRelation == actor))
+                            if (sameActorRows.Count() > 0)
                             {
                                 battle = mobBattle.Value;
 
