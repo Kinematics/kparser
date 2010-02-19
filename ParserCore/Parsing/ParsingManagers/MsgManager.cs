@@ -922,7 +922,11 @@ namespace WaywardGamers.KParser.Parsing
                      m.EventDetails.CombatDetails.ActionType == ActionType.Ability) &&
                         // Effect check
                      m.EventDetails.CombatDetails.Targets.Any(t => t.EffectName == effectName) &&
-                     m.EventDetails.CombatDetails.Targets.Any(t => t.Name == targetName) == false);
+                        // Don't allow duplicate names if players are targets, but
+                        // AOE effects can hit multiple mobs with the same name
+                      ((m.EventDetails.CombatDetails.Targets.Any(t => t.Name == targetName) == false) ||
+                       (m.EventDetails.CombatDetails.Targets.Any(t => (EntityType)t.EntityType == EntityType.Mob) == true) )
+                     );
 
 
                 // If no main code sets found, try alt codes
@@ -943,7 +947,11 @@ namespace WaywardGamers.KParser.Parsing
                          m.EventDetails.CombatDetails.ActionType == ActionType.Ability) &&
                             // Effect check
                          m.EventDetails.CombatDetails.Targets.Any(t => t.EffectName == effectName) &&
-                         m.EventDetails.CombatDetails.Targets.Any(t => t.Name == targetName) == false);
+                            // Don't allow duplicate names if players are targets, but
+                            // AOE effects can hit multiple mobs with the same name
+                          ((m.EventDetails.CombatDetails.Targets.Any(t => t.Name == targetName) == false) ||
+                           (m.EventDetails.CombatDetails.Targets.Any(t => (EntityType)t.EntityType == EntityType.Mob) == true) )
+                         );
                 }
 
                 // If nothing found with an existing effect name provided, check for 0-count entries.
