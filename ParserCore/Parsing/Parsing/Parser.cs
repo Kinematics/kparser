@@ -195,15 +195,38 @@ namespace WaywardGamers.KParser.Parsing
                 }
             }
 
-            // AOE Status/Debuff
+            // AOE Status/Debuff (essentially the same as AOE buffs)
             if (msg == null)
             {
-                if (ParseExpressions.Dispelled.Match(messageLine.TextOutput).Success ||
-                    ParseExpressions.Debuff.Match(messageLine.TextOutput).Success ||
-                    ParseExpressions.Enfeeble.Match(messageLine.TextOutput).Success)
+                Match dispMatch = ParseExpressions.Dispelled.Match(messageLine.TextOutput);
+                Match debuffMatch = ParseExpressions.Debuff.Match(messageLine.TextOutput);
+                Match enfeebMatch = ParseExpressions.Enfeeble.Match(messageLine.TextOutput);
+
+                if (dispMatch.Success ||
+                    debuffMatch.Success ||
+                    enfeebMatch.Success)
                 {
-                    msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUse(messageLine,
-                        ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode));
+                    string effectName = string.Empty;
+                    string targetName = string.Empty;
+
+                    if (dispMatch.Success)
+                    {
+                        effectName = dispMatch.Groups[ParseFields.Effect].Value;
+                        targetName = dispMatch.Groups[ParseFields.Target].Value;
+                    }
+                    else if (debuffMatch.Success)
+                    {
+                        effectName = debuffMatch.Groups[ParseFields.Effect].Value;
+                        targetName = debuffMatch.Groups[ParseFields.Target].Value;
+                    }
+                    else if (enfeebMatch.Success)
+                    {
+                        effectName = enfeebMatch.Groups[ParseFields.Effect].Value;
+                        targetName = enfeebMatch.Groups[ParseFields.Target].Value;
+                    }
+
+                    msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseWithEffect(messageLine,
+                        ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), effectName, targetName);
                 }
             }
 
