@@ -2200,6 +2200,7 @@ namespace WaywardGamers.KParser.Parsing
                 combatMatch = ParseExpressions.MissAbility.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
+                    combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                     combatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                     if (JobAbilities.Weaponskills.Contains(combatDetails.ActionName))
                     {
