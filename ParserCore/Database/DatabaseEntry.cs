@@ -390,7 +390,7 @@ namespace WaywardGamers.KParser.Database
                         // Ok, someone got the drop.  Check for WhoObtained;
                         // if it's empty, this is a bogus message (eg: warning when
                         // player isn't qualified to receive drop).
-                        if (message.EventDetails.LootDetails.WhoObtained != string.Empty)
+                        if (string.IsNullOrEmpty(message.EventDetails.LootDetails.WhoObtained) == false)
                         {
                             var player = localDB.Combatants.GetCombatant(message.EventDetails.LootDetails.WhoObtained, EntityType.Player);
 
@@ -410,7 +410,7 @@ namespace WaywardGamers.KParser.Database
                         // Get the "Gil" item from the items table (created if necessary).
                         var itemRow = localDB.Items.GetItem("Gil");
 
-                        if (message.EventDetails.LootDetails.WhoObtained != string.Empty)
+                        if (string.IsNullOrEmpty(message.EventDetails.LootDetails.WhoObtained) == false)
                         {
                             var player = localDB.Combatants.GetCombatant(message.EventDetails.LootDetails.WhoObtained, EntityType.Player);
                             localDB.Loot.AddLootRow(itemRow, lastFinishedBattle, player, message.EventDetails.LootDetails.Gil, false);
@@ -444,22 +444,22 @@ namespace WaywardGamers.KParser.Database
             KPDatabaseDataSet.ItemsRow item = null;
 
             // Get the actor combatant, if any.
-            if (message.EventDetails.CombatDetails.ActorName != string.Empty)
+            if (string.IsNullOrEmpty(message.EventDetails.CombatDetails.ActorName) == false)
                 actor = localDB.Combatants.GetCombatant(message.EventDetails.CombatDetails.ActorName,
                     message.EventDetails.CombatDetails.ActorEntityType);
 
             // Get the action row, if any is applicable to the message.
-            if (message.EventDetails.CombatDetails.ActionName != string.Empty)
+            if (string.IsNullOrEmpty(message.EventDetails.CombatDetails.ActionName) == false)
                 action = localDB.Actions.GetAction(message.EventDetails.CombatDetails.ActionName);
 
             // If an item is used, get it.
-            if (message.EventDetails.CombatDetails.ItemName != string.Empty)
+            if (string.IsNullOrEmpty(message.EventDetails.CombatDetails.ItemName) == false)
                 item = localDB.Items.GetItem(message.EventDetails.CombatDetails.ItemName);
 
             // Bogus target for passing in data on incomplete messages.
             TargetDetails bogusTarget = null;
             bogusTarget = message.EventDetails.CombatDetails
-                                 .Targets.FirstOrDefault(t => t.Name == string.Empty || t.Name == null);
+                                 .Targets.FirstOrDefault(t => string.IsNullOrEmpty(t.Name));
 
             // Get the battle (if any) this interaction is associated with.
             if ((message.EventDetails.CombatDetails.Targets.Count == 0) || (bogusTarget != null))
@@ -506,8 +506,10 @@ namespace WaywardGamers.KParser.Database
             else
             {
                 // Ok, in this case there are targets
-                if ((message.EventDetails.CombatDetails.ActorEntityType == EntityType.Mob) ||
-                    (message.EventDetails.CombatDetails.ActorEntityType == EntityType.CharmedPlayer))
+                // If we know the actor, search for battles based on that.
+                if ((actor != null) &&
+                    ((message.EventDetails.CombatDetails.ActorEntityType == EntityType.Mob) ||
+                     (message.EventDetails.CombatDetails.ActorEntityType == EntityType.CharmedPlayer)))
                 {
                     // If there is none, create a new battle.
                     // If it's one mob buffing another, assume this is a link and must be
@@ -640,7 +642,7 @@ namespace WaywardGamers.KParser.Database
                     if (target.Name != null)
                         targetRow = localDB.Combatants.GetCombatant(target.Name, target.EntityType);
 
-                    if (target.SecondaryAction != string.Empty)
+                    if (string.IsNullOrEmpty(target.SecondaryAction) == false)
                         secondAction = localDB.Actions.GetAction(target.SecondaryAction);
 
                     // Get the battle each time through the loop if the targets are mobs.
@@ -774,7 +776,7 @@ namespace WaywardGamers.KParser.Database
                 return;
 
             // If no actor name given, target just "fell to the ground".
-            if (message.EventDetails.CombatDetails.ActorName != string.Empty)
+            if (string.IsNullOrEmpty(message.EventDetails.CombatDetails.ActorName) == false)
             {
                 // Determine the acting combatant for this event
                 actor = localDB.Combatants.GetCombatant(message.EventDetails.CombatDetails.ActorName,
