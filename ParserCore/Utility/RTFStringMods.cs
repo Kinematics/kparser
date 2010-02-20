@@ -15,10 +15,23 @@ namespace WaywardGamers.KParser
     /// </summary>
     public class StringMods
     {
+        private Color underlyingColor = Color.Black;
+
         public int Start { get; set; }
         public int Length { get; set; }
         public bool Bold { get; set; }
         public bool Underline { get; set; }
-        public Color Color { get; set; }
+
+        public Color Color
+        {
+            get
+            {
+                return underlyingColor;
+            }
+            set
+            {
+                underlyingColor = Color.FromArgb(value.R, value.G, value.B);
+            }
+        }
     }
 }

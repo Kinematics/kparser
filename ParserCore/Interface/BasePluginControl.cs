@@ -511,10 +511,11 @@ namespace WaywardGamers.KParser.Plugin
                 // Any colors imported from the raw RTF don't have names, so
                 // convert named colors to raw RGB colors so that the hash
                 // set can avoid duplicates easily.
-                Color simpleColor = Color.FromArgb(q.Key.R, q.Key.G, q.Key.B);
+                // -- Now converted on creation of the StringMod object.
+                //Color simpleColor = Color.FromArgb(q.Key.R, q.Key.G, q.Key.B);
                 
-                if (colorList.Contains(simpleColor) == false)
-                    colorList.Add(simpleColor);
+                if (colorList.Contains(q.Key) == false)
+                    colorList.Add(q.Key);
             }
         }        
         #endregion
