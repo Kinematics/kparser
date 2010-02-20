@@ -70,6 +70,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Absorb-TP.
+        /// </summary>
+        public static string AbsorbTP {
+            get {
+                return ResourceManager.GetString("AbsorbTP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Accession.
         /// </summary>
         public static string Accession {

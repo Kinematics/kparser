@@ -720,14 +720,14 @@
   <data name="WSRatePluginDetailsFormat" xml:space="preserve">
     <value>{0,10}  :  {1,10}</value>
   </data>
-  <data name="WSRatePluginDetailsHeader" xml:space="preserve">
-    <value>      Hits      Frequency</value>
+  <data name="WSRatePluginDetailsMHeader" xml:space="preserve">
+    <value>     Melee      Frequency</value>
   </data>
   <data name="WSRatePluginMainFormat" xml:space="preserve">
     <value>{0,-20}{1,13}{2,10}{3,13}{4,11}{5,11}{6,9:f2}{7,9:f2}{8,9}{9,7}</value>
   </data>
   <data name="WSRatePluginMainHeader" xml:space="preserve">
-    <value>Player               # Melee Hits   # Retal.   # WSkills   Min Hits   Max Hits   A.Mean   H.Mean   Median   Mode</value>
+    <value>Player               # Melee Hits   # Retal.   # WSkills   Min Hits   Max Hits     Mean   Median   Mode</value>
   </data>
   <data name="WSRatePluginTabName" xml:space="preserve">
     <value>WS Rates</value>
@@ -839,5 +839,41 @@
   </data>
   <data name="CorsairPluginTotals" xml:space="preserve">
     <value>Totals</value>
+  </data>
+  <data name="WSRatePluginAbsorbTitle" xml:space="preserve">
+    <value>Absorb-TP</value>
+  </data>
+  <data name="WSRatePluginDetailsRHeader" xml:space="preserve">
+    <value>     Range      Frequency</value>
+  </data>
+  <data name="WSRatePluginDetailsTitle" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="WSRatePluginMeleeTitle" xml:space="preserve">
+    <value>Melee</value>
+  </data>
+  <data name="WSRatePluginPhysicalFormat" xml:space="preserve">
+    <value>{0,-20}{1,13}{2,7}{3,7}{4,9:f2}{5,10}{6,8}</value>
+  </data>
+  <data name="WSRatePluginPhysicalHeader" xml:space="preserve">
+    <value>Player                 Total Hits    Min    Max     Mean    Median    Mode</value>
+  </data>
+  <data name="WSRatePluginRangeTitle" xml:space="preserve">
+    <value>Ranged</value>
+  </data>
+  <data name="WSRatePluginSpellFormat" xml:space="preserve">
+    <value>{0,-20}{1,13}{2,11}{3,12}{4,7}{5,7}{6,9:f2}{7,19:f2}</value>
+  </data>
+  <data name="WSRatePluginSpellHeader" xml:space="preserve">
+    <value>Player                    # Casts   # Failed    Total TP    Min    Max     Mean    Mean w/Failures</value>
+  </data>
+  <data name="WSRatePluginTotalWSs" xml:space="preserve">
+    <value>Total Weaponskills</value>
+  </data>
+  <data name="WSRatePluginWSFormat" xml:space="preserve">
+    <value>{0,-20}{1,13}</value>
+  </data>
+  <data name="WSRatePluginWSHeader" xml:space="preserve">
+    <value>Player               Weaponskills</value>
   </data>
 </root>
