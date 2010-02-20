@@ -135,7 +135,7 @@
   <data name="Altruism" xml:space="preserve">
     <value>Altruism</value>
   </data>
-  <data name="AnyRoll" xml:space="preserve">
+  <data name="PhantomRoll" xml:space="preserve">
     <value>Roll</value>
   </data>
   <data name="AnySamba" xml:space="preserve">
@@ -1121,5 +1121,8 @@
   </data>
   <data name="WheelingThrust" xml:space="preserve">
     <value>Wheeling Thrust</value>
+  </data>
+  <data name="AnyRoll" xml:space="preserve">
+    <value>Roll|Double-Up</value>
   </data>
 </root>
