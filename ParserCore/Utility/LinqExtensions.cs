@@ -95,6 +95,7 @@ namespace WaywardGamers.KParser
         /// <summary>
         /// The generalized grouping extension method.  It groups lists of adjacently
         /// identical elements together.
+        /// see: http://blogs.msdn.com/ericwhite/archive/2008/04/21/the-groupadjacent-extension-method.aspx
         /// </summary>
         /// <typeparam name="TSource"></typeparam>
         /// <typeparam name="TKey"></typeparam>
@@ -140,7 +141,7 @@ namespace WaywardGamers.KParser
 
         /// <summary>
         /// A specialized version of the grouping extension that groups adjacent elements
-        /// that are within a spefified time limit of each other together.
+        /// that are within a specified time limit of each other together.
         /// </summary>
         /// <typeparam name="TSource"></typeparam>
         /// <typeparam name="TKey"></typeparam>
@@ -153,8 +154,8 @@ namespace WaywardGamers.KParser
             Func<TSource, DateTime> keySelector,
             TimeSpan adjacentTime) where TKey : IComparable<DateTime>
         {
-            DateTime last = default(DateTime);
             DateTime first = default(DateTime);
+            DateTime last = default(DateTime);
             bool haveLast = false;
             List<TSource> list = new List<TSource>();
 
@@ -188,6 +189,140 @@ namespace WaywardGamers.KParser
             if (haveLast)
                 yield return (IGrouping<TKey, TSource>)(new GroupOfAdjacent<TSource, DateTime>(list, first));
         }
+
+        /// <summary>
+        /// A specialized version of the grouping extension that groups adjacent elements
+        /// that are equal, or that match with a comparer function.
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="keySelector"></param>
+        /// <param name="adjacentTime"></param>
+        /// <returns></returns>
+        public static IEnumerable<IGrouping<TKey, TSource>> GroupAdjacentWithComparer<TSource, TKey>(
+            this IEnumerable<TSource> source,
+            Func<TSource, TKey> keySelector,
+            Func<TKey, bool> keyComparer)
+        {
+            TKey first = default(TKey);
+            TKey last = default(TKey);
+            bool haveLast = false;
+            List<TSource> list = new List<TSource>();
+
+            foreach (TSource s in source)
+            {
+                TKey k = keySelector(s);
+                if (haveLast)
+                {
+                    if (k.Equals(last) || (keyComparer(k) == true))
+                    {
+                        list.Add(s);
+                        last = k;
+                    }
+                    else
+                    {
+                        yield return new GroupOfAdjacent<TSource, TKey>(list, first);
+                        list = new List<TSource>();
+                        list.Add(s);
+                        first = k;
+                        last = k;
+                    }
+                }
+                else
+                {
+                    list.Add(s);
+                    first = k;
+                    last = k;
+                    haveLast = true;
+                }
+            }
+            if (haveLast)
+                yield return new GroupOfAdjacent<TSource, TKey>(list, first);
+        }
+
+        /// <summary>
+        /// The Zip extension method processes two sequences, matching up each item
+        /// in one sequence with a corresponding item in another sequence.
+        /// see: http://blogs.msdn.com/ericwhite/archive/2009/07/05/comparing-two-open-xml-documents-using-the-zip-extension-method.aspx
+        /// </summary>
+        /// <typeparam name="TFirst">The first sequence type</typeparam>
+        /// <typeparam name="TSecond">The second sequence type</typeparam>
+        /// <typeparam name="TResult">The result type</typeparam>
+        /// <param name="first">The first sequence</param>
+        /// <param name="second">The second sequence</param>
+        /// <param name="func">The lambda that builds the output type from the original sequences</param>
+        /// <returns></returns>
+        public static IEnumerable<TResult> Zip<TFirst, TSecond, TResult>(
+            this IEnumerable<TFirst> first,
+            IEnumerable<TSecond> second,
+            Func<TFirst, TSecond, TResult> func)
+        {
+            var ie1 = first.GetEnumerator();
+            var ie2 = second.GetEnumerator();
+
+            while (ie1.MoveNext() && ie2.MoveNext())
+                yield return func(ie1.Current, ie2.Current);
+        }
+
+        /// <summary>
+        /// see: http://blogs.msdn.com/ericwhite/archive/2010/02/15/rollup-extension-method-create-running-totals-using-linq-to-objects.aspx
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="seed"></param>
+        /// <param name="projection"></param>
+        /// <returns></returns>
+        public static IEnumerable<TResult> Rollup<TSource, TResult>(
+            this IEnumerable<TSource> source,
+            TResult seed,
+            Func<TSource, TResult, TResult> projection)
+        {
+            TResult nextSeed = seed;
+            foreach (TSource src in source)
+            {
+                TResult projectedValue = projection(src, nextSeed);
+                nextSeed = projectedValue;
+                yield return projectedValue;
+            }
+        }
+
+        /// <summary>
+        /// Variant on Rollup to separate values from past elements.
+        /// </summary>
+        /// <typeparam name="TSource"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="projection"></param>
+        /// <returns></returns>
+        public static IEnumerable<TResult> Separate<TSource, TResult>(
+            this IEnumerable<TSource> source,
+            Func<TSource, TResult> selector,
+            Func<TSource, TResult, TResult> projection)
+        {
+            bool haveLast = false;
+            TResult last = default(TResult);
+            TResult projectedValue = default(TResult);
+
+            foreach (TSource src in source)
+            {
+                if (haveLast)
+                {
+                    projectedValue = projection(src, last);
+                    last = selector(src);
+                }
+                else
+                {
+                    last = selector(src);
+                    projectedValue = last;
+                    haveLast = true;
+                }
+
+                yield return projectedValue;
+            }
+        }
+
 
         /// <summary>
         /// Extension method to add AddRange function to ICollections.
