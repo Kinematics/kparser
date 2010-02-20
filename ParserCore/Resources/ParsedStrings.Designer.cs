@@ -124,7 +124,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Roll.
+        ///   Looks up a localized string similar to Roll|Double-Up.
         /// </summary>
         public static string AnyRoll {
             get {
@@ -2001,6 +2001,15 @@ namespace WaywardGamers.KParser.Resources {
         public static string PerfectDodge {
             get {
                 return ResourceManager.GetString("PerfectDodge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Roll.
+        /// </summary>
+        public static string PhantomRoll {
+            get {
+                return ResourceManager.GetString("PhantomRoll", resourceCulture);
             }
         }
         
