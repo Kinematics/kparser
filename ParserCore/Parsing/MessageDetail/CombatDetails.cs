@@ -180,10 +180,16 @@ namespace WaywardGamers.KParser
         internal bool FlagPetDeath { get; set; }
 
         /// <summary>
+        /// Gets and sets the name of the Phantom Roll for Double-Up rerolls.
+        /// State tracking to be applied to targets.
+        /// </summary>
+        internal string CorsairRollName { get; set; }
+
+        /// <summary>
         /// Gets and sets the value rolled by a Corsair's Phantom Roll.
         /// State tracking to be applied to targets.
         /// </summary>
-        internal int CorsairRoll { get; set; }
+        internal int CorsairRollValue { get; set; }
         #endregion
 
         #region Methods
@@ -228,6 +234,8 @@ namespace WaywardGamers.KParser
             sb.AppendFormat("    Success Level: {0}\n", SuccessLevel);
             sb.AppendFormat("    Is Crit: {0}\n", FlagCrit);
             sb.AppendFormat("    Is Covered: {0}\n", FlagCover);
+            sb.AppendFormat("    Cor Roll Name: {0}\n", CorsairRollName);
+            sb.AppendFormat("    Cor Roll Value: {0}\n", CorsairRollValue);
 
             foreach (TargetDetails target in Targets)
                 sb.Append(target.ToString());
