@@ -289,7 +289,8 @@ namespace WaywardGamers.KParser
         }
 
         /// <summary>
-        /// Variant on Rollup to separate values from past elements.
+        /// Variant on Rollup to separate values from past elements
+        /// instead of aggragate with them.
         /// </summary>
         /// <typeparam name="TSource"></typeparam>
         /// <typeparam name="TResult"></typeparam>
@@ -402,7 +403,7 @@ namespace WaywardGamers.KParser
 
 
     /// <summary>
-    /// A grouping enumeration class for use by the grouping extensions.
+    /// A grouping enumeration class for use by the linq extensions for grouping.
     /// </summary>
     /// <typeparam name="TSource">The object to group.</typeparam>
     /// <typeparam name="TKey">The key to group on.</typeparam>
