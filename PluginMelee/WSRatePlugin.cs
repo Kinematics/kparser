@@ -14,6 +14,33 @@ namespace WaywardGamers.KParser.Plugin
 {
     public class WSRatePlugin : BasePluginControl
     {
+        #region Local data structure
+        private class WSAggregates
+        {
+            internal string Name { get; set; }
+            internal int WSCount { get; set; }
+            internal int MHits { get; set; }
+            internal int MMin { get; set; }
+            internal int MMax { get; set; }
+            internal int MMode { get; set; }
+            internal int MMedian { get; set; }
+            internal double MMean { get; set; }
+            internal int RHits { get; set; }
+            internal int RMin { get; set; }
+            internal int RMax { get; set; }
+            internal int RMode { get; set; }
+            internal int RMedian { get; set; }
+            internal double RMean { get; set; }
+            internal int SCast { get; set; }
+            internal int SFail { get; set; }
+            internal int STotal { get; set; }
+            internal int SMin { get; set; }
+            internal int SMax { get; set; }
+            internal double SMean { get; set; }
+            internal double SMeanF { get; set; }
+        }
+        #endregion
+
         #region Member Variables
 
         bool groupMobs = true;
@@ -42,10 +69,22 @@ namespace WaywardGamers.KParser.Plugin
         string lsAll;
 
         string lsTitle;
-        string lsHeader;
-        string lsFormat;
+        string lsDetailsTitle;
 
-        string lsDetailsHeader;
+        string lsTotalWSs;
+        string lsMeleeTitle;
+        string lsRangeTitle;
+        string lsAbsorbTitle;
+
+        string lsWSHeader;
+        string lsWSFormat;
+        string lsPhysicalHeader;
+        string lsPhysicalFormat;
+        string lsSpellHeader;
+        string lsSpellFormat;
+
+        string lsDetailsMHeader;
+        string lsDetailsRHeader;
         string lsDetailsFormat;
 
         #endregion
@@ -293,6 +332,13 @@ namespace WaywardGamers.KParser.Plugin
                                                ((DefenseType)q.DefenseType == DefenseType.None))
                                         orderby q.Timestamp
                                         select q,
+                                Range = from q in ca
+                                        where ((ActionType)q.ActionType == ActionType.Ranged &&
+                                               ((HarmType)q.HarmType == HarmType.Damage ||
+                                                (HarmType)q.HarmType == HarmType.Drain) &&
+                                               ((DefenseType)q.DefenseType == DefenseType.None))
+                                        orderby q.Timestamp
+                                        select q,
                                 Retaliate = from q in ca
                                             where ((ActionType)q.ActionType == ActionType.Retaliation &&
                                                    ((HarmType)q.HarmType == HarmType.Damage ||
@@ -312,6 +358,14 @@ namespace WaywardGamers.KParser.Plugin
                                                 q.Preparing == false)
                                          orderby q.Timestamp
                                          select q,
+                                Spell = from q in ca
+                                        where ((ActionType)q.ActionType == ActionType.Spell &&
+                                                (HarmType)q.HarmType == HarmType.Enfeeble &&
+                                                q.Preparing == false &&
+                                                q.IsActionIDNull() == false &&
+                                                q.ActionsRow.ActionName == Resources.ParsedStrings.AbsorbTP)
+                                        orderby q.Timestamp
+                                        select q
                             };
             }
             else
@@ -325,6 +379,12 @@ namespace WaywardGamers.KParser.Plugin
                                 Name = c.CombatantNameOrJobName,
                                 Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Melee &&
+                                               ((HarmType)n.HarmType == HarmType.Damage ||
+                                                (HarmType)n.HarmType == HarmType.Drain) &&
+                                               ((DefenseType)n.DefenseType == DefenseType.None))
+                                        select n,
+                                Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                        where ((ActionType)n.ActionType == ActionType.Ranged &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
                                                ((DefenseType)n.DefenseType == DefenseType.None))
@@ -345,6 +405,13 @@ namespace WaywardGamers.KParser.Plugin
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
                                                 n.Preparing == false)
+                                         select n,
+                                Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                         where ((ActionType)n.ActionType == ActionType.Spell &&
+                                                (HarmType)n.HarmType == HarmType.Enfeeble &&
+                                                n.Preparing == false &&
+                                                n.IsActionIDNull() == false &&
+                                                n.ActionsRow.ActionName == Resources.ParsedStrings.AbsorbTP)
                                          select n,
                             };
             }
@@ -373,21 +440,14 @@ namespace WaywardGamers.KParser.Plugin
             });
             sb.Append(lsTitle + "\n\n");
 
-            strModList.Add(new StringMods
-            {
-                Start = sb.Length,
-                Length = lsHeader.Length,
-                Bold = true,
-                Underline = true,
-                Color = Color.Black
-            });
-            sb.Append(lsHeader + "\n");
 
             StringBuilder sbDetails = new StringBuilder();
             List<StringMods> strDetailsModList = new List<StringMods>();
 
+            List<WSAggregates> WSDataList = new List<WSAggregates>();
+
             // Per-player processing
-            foreach (var player in attackSet)
+            foreach (var player in attackSet.OrderBy(a => a.Name))
             {
                 // Get a weaponskill count
                 int numWSs = player.WSkill.Count();
@@ -395,14 +455,22 @@ namespace WaywardGamers.KParser.Plugin
                 if (numWSs == 0)
                     continue;
 
+                WSAggregates wsAgg = new WSAggregates();
+                wsAgg.Name = player.Name;
+                wsAgg.WSCount = numWSs;
+
+                WSDataList.Add(wsAgg);
+
                 // We'll create a couple arrays to store the database ID of
                 // each weaponskill, and a count of the melee hits leading up to
                 // that weaponskill
                 int[] wsIDs = new int[numWSs];
                 int[] hitBuckets = new int[numWSs];
+                int[] rangedBuckets = new int[numWSs];
 
                 int totalMeleeHits = 0;
                 int totalRetaliationHits = 0;
+                int totalRangedHits = 0;
 
                 // Get the IDs of the weaponskills
                 for (int i = 0; i < numWSs; i++)
@@ -431,7 +499,7 @@ namespace WaywardGamers.KParser.Plugin
                     }
                 }
 
-                // And the same for retaliations
+                // The same for retaliations
                 foreach (var retaliate in player.Retaliate)
                 {
                     // Should always return a negative bitwise complement value
@@ -449,13 +517,37 @@ namespace WaywardGamers.KParser.Plugin
                     }
                 }
 
+                // And the same for Ranged
+                foreach (var ranged in player.Range)
+                {
+                    // Should always return a negative bitwise complement value
+                    int nearestWS_bwc = Array.BinarySearch(wsIDs, ranged.InteractionID);
+
+                    if (nearestWS_bwc < 0)
+                    {
+                        int nearestWS = ~nearestWS_bwc;
+
+                        if (nearestWS < numWSs)
+                        {
+                            rangedBuckets[nearestWS]++;
+                            totalRangedHits++;
+                        }
+                    }
+                }
+
                 // The hit buckets have now been filled.  Time for the math.
 
                 // Simple computations
-                int minHits = hitBuckets.Min();
-                int maxHits = hitBuckets.Max();
-                int totalHits = hitBuckets.Sum();
-                double arithMean = (double)totalHits / numWSs;
+                wsAgg.MHits = totalMeleeHits + totalRetaliationHits;
+                wsAgg.MMin = hitBuckets.Min();
+                wsAgg.MMax = hitBuckets.Max();
+                wsAgg.MMean = (double)wsAgg.MHits / numWSs;
+
+                wsAgg.RHits = totalRangedHits;
+                wsAgg.RMin = rangedBuckets.Min();
+                wsAgg.RMax = rangedBuckets.Max();
+                wsAgg.RMean = (double)totalRangedHits / numWSs;
+
 
                 // Group sets for complex computations
                 var groupedHits = from h in hitBuckets
@@ -467,45 +559,76 @@ namespace WaywardGamers.KParser.Plugin
                                       Count = hg.Count()
                                   };
 
-                // Get the mode
-                int mode = groupedHits.OrderBy(a => a.Count).Last().NumHits;
+                // Group sets for complex computations
+                var groupedRange = from h in rangedBuckets
+                                   group h by h into hg
+                                   orderby hg.Key
+                                   select new
+                                   {
+                                       NumHits = hg.Key,
+                                       Count = hg.Count()
+                                   };
 
-                // Calculate the median
-                int median = 0;
+
                 int sum = 0;
 
-                foreach (var hitCount in groupedHits)
+                // For melee swings
+                if (totalMeleeHits + totalRetaliationHits > 0)
                 {
-                    if ((sum + hitCount.Count) > (numWSs / 2))
-                    {
-                        median = hitCount.NumHits;
-                        break;
-                    }
+                    wsAgg.MMode = groupedHits.MaxEntry(compare => compare.Count, retVal => retVal.NumHits);
 
-                    sum += hitCount.Count;
+                    foreach (var hitCount in groupedHits)
+                    {
+                        if ((sum + hitCount.Count) >= (numWSs / 2))
+                        {
+                            wsAgg.MMedian = hitCount.NumHits;
+                            break;
+                        }
+
+                        sum += hitCount.Count;
+                    }
                 }
 
-                // Calculate the harmonic mean
-                double recipSum = hitBuckets.Sum(a => (a > 0) ? 1d / a : 0);
+                sum = 0;
 
-                double harmonicMean = (recipSum > 0) ? numWSs / recipSum : 0;
+                // For ranged shots
+                if (totalRangedHits > 0)
+                {
+                    wsAgg.RMode = groupedRange.MaxEntry(compare => compare.Count, retVal => retVal.NumHits);
+
+                    foreach (var hitCount in groupedRange)
+                    {
+                        if ((sum + hitCount.Count) >= (numWSs / 2))
+                        {
+                            wsAgg.RMedian = hitCount.NumHits;
+                            break;
+                        }
+
+                        sum += hitCount.Count;
+                    }
+                }
 
 
-                // Print it out
+                // Absorb-TP stuff
+                if (player.Spell.Count() > 0)
+                {
+                    wsAgg.SCast = player.Spell.Count();
+                    wsAgg.SFail = player.Spell.Count(s => (FailedActionType)s.FailedActionType != FailedActionType.None);
 
-                sb.AppendFormat(lsFormat,
-                    player.Name,
-                    totalMeleeHits,
-                    totalRetaliationHits,
-                    numWSs,
-                    minHits,
-                    maxHits,
-                    arithMean,
-                    harmonicMean,
-                    median,
-                    mode);
+                    var successfulCast = player.Spell.Where(s => (FailedActionType)s.FailedActionType == FailedActionType.None);
 
-                sb.Append("\n");
+                    wsAgg.STotal = successfulCast.Sum(s => s.Amount);
+
+                    wsAgg.SMin = successfulCast.Min(s => s.Amount);
+                    wsAgg.SMax = successfulCast.Max(s => s.Amount);
+                    wsAgg.SMeanF = (double)wsAgg.STotal / wsAgg.SCast;
+
+                    if (successfulCast.Count() > 0)
+                        wsAgg.SMean = (double)wsAgg.STotal / (wsAgg.SCast - wsAgg.SFail);
+                }
+
+
+
 
 
                 // Construct the details info
@@ -520,30 +643,71 @@ namespace WaywardGamers.KParser.Plugin
                     });
                     sbDetails.Append(player.Name + "\n");
 
-                    strDetailsModList.Add(new StringMods
+                    if (totalMeleeHits + totalRetaliationHits > 0)
                     {
-                        Start = sbDetails.Length,
-                        Length = lsDetailsHeader.Length,
-                        Bold = true,
-                        Underline = true,
-                        Color = Color.Black
-                    });
-                    sbDetails.Append(lsDetailsHeader + "\n");
+                        strDetailsModList.Add(new StringMods
+                        {
+                            Start = sbDetails.Length,
+                            Length = lsDetailsMHeader.Length,
+                            Bold = true,
+                            Underline = true,
+                            Color = Color.Black
+                        });
+                        sbDetails.Append(lsDetailsMHeader + "\n");
 
-                    foreach (var hitGroup in groupedHits)
-                    {
-                        sbDetails.AppendFormat(lsDetailsFormat,
-                            hitGroup.NumHits, hitGroup.Count);
+                        foreach (var hitGroup in groupedHits)
+                        {
+                            sbDetails.AppendFormat(lsDetailsFormat,
+                                hitGroup.NumHits, hitGroup.Count);
+                            sbDetails.Append("\n");
+                        }
+
                         sbDetails.Append("\n");
                     }
 
-                    sbDetails.Append("\n");
+                    if (totalRangedHits > 0)
+                    {
+                        strDetailsModList.Add(new StringMods
+                        {
+                            Start = sbDetails.Length,
+                            Length = lsDetailsRHeader.Length,
+                            Bold = true,
+                            Underline = true,
+                            Color = Color.Black
+                        });
+                        sbDetails.Append(lsDetailsRHeader + "\n");
+
+                        foreach (var hitGroup in groupedRange)
+                        {
+                            sbDetails.AppendFormat(lsDetailsFormat,
+                                hitGroup.NumHits, hitGroup.Count);
+                            sbDetails.Append("\n");
+                        }
+
+                        sbDetails.Append("\n");
+                    }
                 }
             }
 
+            OutputWSTotals(WSDataList, sb, strModList);
+            OutputMeleeTotals(WSDataList, sb, strModList);
+            OutputRangeTotals(WSDataList, sb, strModList);
+            OutputSpellTotals(WSDataList, sb, strModList);
+
+
+            // Main loop done, show details if appropriate
             if (showDetails)
             {
                 sb.Append("\n\n");
+
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = lsDetailsTitle.Length,
+                    Bold = true,
+                    Color = Color.Red
+                });
+                sb.Append(lsDetailsTitle + "\n\n");
 
                 foreach (var mod in strDetailsModList)
                 {
@@ -553,6 +717,190 @@ namespace WaywardGamers.KParser.Plugin
 
                 sb.Append(sbDetails.ToString());
             }
+        }
+
+        private void OutputWSTotals(List<WSAggregates> WSDataList, StringBuilder sb, List<StringMods> strModList)
+        {
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = lsTotalWSs.Length,
+                Bold = true,
+                Color = Color.Blue
+            });
+            sb.Append(lsTotalWSs + "\n\n");
+
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = lsWSHeader.Length,
+                Bold = true,
+                Underline = true,
+                Color = Color.Black
+            });
+            sb.Append(lsWSHeader + "\n");
+
+            foreach (var player in WSDataList.OrderBy(p => p.Name))
+            {
+                if (player.WSCount > 0)
+                {
+                    sb.AppendFormat(lsWSFormat,
+                            player.Name,
+                            player.WSCount);
+
+                    sb.Append("\n");
+                }
+            }
+
+            sb.Append("\n\n");
+        }
+
+        private void OutputMeleeTotals(List<WSAggregates> WSDataList, StringBuilder sb, List<StringMods> strModList)
+        {
+            bool shownHeader = false;
+
+            foreach (var player in WSDataList.OrderBy(p => p.Name))
+            {
+                if ((player.WSCount > 0) && (player.MHits > 0))
+                {
+                    if (shownHeader == false)
+                    {
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = lsMeleeTitle.Length,
+                            Bold = true,
+                            Color = Color.Blue
+                        });
+                        sb.Append(lsMeleeTitle + "\n\n");
+
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = lsPhysicalHeader.Length,
+                            Bold = true,
+                            Underline = true,
+                            Color = Color.Black
+                        });
+                        sb.Append(lsPhysicalHeader + "\n");
+
+                        shownHeader = true;
+                    }
+
+                    sb.AppendFormat(lsPhysicalFormat,
+                            player.Name,
+                            player.MHits,
+                            player.MMin,
+                            player.MMax,
+                            player.MMean,
+                            player.MMedian,
+                            player.MMode);
+
+                    sb.Append("\n");
+                }
+            }
+
+            if (shownHeader)
+                sb.Append("\n\n");
+        }
+
+        private void OutputRangeTotals(List<WSAggregates> WSDataList, StringBuilder sb, List<StringMods> strModList)
+        {
+            bool shownHeader = false;
+
+            foreach (var player in WSDataList.OrderBy(p => p.Name))
+            {
+                if ((player.WSCount > 0) && (player.RHits > 0))
+                {
+                    if (shownHeader == false)
+                    {
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = lsRangeTitle.Length,
+                            Bold = true,
+                            Color = Color.Blue
+                        });
+                        sb.Append(lsRangeTitle + "\n\n");
+
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = lsPhysicalHeader.Length,
+                            Bold = true,
+                            Underline = true,
+                            Color = Color.Black
+                        });
+                        sb.Append(lsPhysicalHeader + "\n");
+
+                        shownHeader = true;
+                    }
+
+                    sb.AppendFormat(lsPhysicalFormat,
+                            player.Name,
+                            player.RHits,
+                            player.RMin,
+                            player.RMax,
+                            player.RMean,
+                            player.RMedian,
+                            player.RMode);
+
+                    sb.Append("\n");
+                }
+            }
+
+            if (shownHeader)
+                sb.Append("\n\n");
+        }
+
+        private void OutputSpellTotals(List<WSAggregates> WSDataList, StringBuilder sb, List<StringMods> strModList)
+        {
+            bool shownHeader = false;
+
+            foreach (var player in WSDataList.OrderBy(p => p.Name))
+            {
+                if ((player.WSCount > 0) && (player.SCast > 0))
+                {
+                    if (shownHeader == false)
+                    {
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = lsAbsorbTitle.Length,
+                            Bold = true,
+                            Color = Color.Blue
+                        });
+                        sb.Append(lsAbsorbTitle + "\n\n");
+
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = lsSpellHeader.Length,
+                            Bold = true,
+                            Underline = true,
+                            Color = Color.Black
+                        });
+                        sb.Append(lsSpellHeader + "\n");
+                        
+                        shownHeader = true;
+                    }
+
+                    sb.AppendFormat(lsSpellFormat,
+                            player.Name,
+                            player.SCast,
+                            player.SFail,
+                            player.STotal,
+                            player.SMin,
+                            player.SMax,
+                            player.SMean,
+                            player.SMeanF);
+
+                    sb.Append("\n");
+                }
+            }
+
+            if (shownHeader)
+                sb.Append("\n\n");
         }
 
         #endregion
@@ -687,11 +1035,22 @@ namespace WaywardGamers.KParser.Plugin
             lsAll = Resources.PublicResources.All;
 
             lsTitle = Resources.Combat.WSRatePluginTitle;
+            lsDetailsTitle = Resources.Combat.WSRatePluginDetailsTitle;
+            lsTotalWSs = Resources.Combat.WSRatePluginTotalWSs;
+            lsMeleeTitle = Resources.Combat.WSRatePluginMeleeTitle;
+            lsRangeTitle = Resources.Combat.WSRatePluginRangeTitle;
+            lsAbsorbTitle = Resources.Combat.WSRatePluginAbsorbTitle;
 
-            lsHeader = Resources.Combat.WSRatePluginMainHeader;
-            lsFormat = Resources.Combat.WSRatePluginMainFormat;
+            lsWSHeader = Resources.Combat.WSRatePluginWSHeader;
+            lsPhysicalHeader = Resources.Combat.WSRatePluginPhysicalHeader;
+            lsSpellHeader = Resources.Combat.WSRatePluginSpellHeader;
 
-            lsDetailsHeader = Resources.Combat.WSRatePluginDetailsHeader;
+            lsWSFormat = Resources.Combat.WSRatePluginWSFormat;
+            lsPhysicalFormat = Resources.Combat.WSRatePluginPhysicalFormat;
+            lsSpellFormat = Resources.Combat.WSRatePluginSpellFormat;
+
+            lsDetailsMHeader = Resources.Combat.WSRatePluginDetailsMHeader;
+            lsDetailsRHeader = Resources.Combat.WSRatePluginDetailsRHeader;
             lsDetailsFormat = Resources.Combat.WSRatePluginDetailsFormat;
         }
         #endregion

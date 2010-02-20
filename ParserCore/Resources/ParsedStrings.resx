@@ -1131,4 +1131,7 @@
   <data name="Bust" xml:space="preserve">
     <value>Bust</value>
   </data>
+  <data name="AbsorbTP" xml:space="preserve">
+    <value>Absorb-TP</value>
+  </data>
 </root>

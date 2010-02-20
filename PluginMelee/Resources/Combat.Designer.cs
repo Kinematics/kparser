@@ -2176,6 +2176,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Absorb-TP.
+        /// </summary>
+        internal static string WSRatePluginAbsorbTitle {
+            get {
+                return ResourceManager.GetString("WSRatePluginAbsorbTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0,10}  :  {1,10}.
         /// </summary>
         internal static string WSRatePluginDetailsFormat {
@@ -2185,11 +2194,29 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to       Hits      Frequency.
+        ///   Looks up a localized string similar to      Melee      Frequency.
         /// </summary>
-        internal static string WSRatePluginDetailsHeader {
+        internal static string WSRatePluginDetailsMHeader {
             get {
-                return ResourceManager.GetString("WSRatePluginDetailsHeader", resourceCulture);
+                return ResourceManager.GetString("WSRatePluginDetailsMHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to      Range      Frequency.
+        /// </summary>
+        internal static string WSRatePluginDetailsRHeader {
+            get {
+                return ResourceManager.GetString("WSRatePluginDetailsRHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Details.
+        /// </summary>
+        internal static string WSRatePluginDetailsTitle {
+            get {
+                return ResourceManager.GetString("WSRatePluginDetailsTitle", resourceCulture);
             }
         }
         
@@ -2203,11 +2230,65 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Player               # Melee Hits   # Retal.   # WSkills   Min Hits   Max Hits   A.Mean   H.Mean   Median   Mode.
+        ///   Looks up a localized string similar to Player               # Melee Hits   # Retal.   # WSkills   Min Hits   Max Hits     Mean   Median   Mode.
         /// </summary>
         internal static string WSRatePluginMainHeader {
             get {
                 return ResourceManager.GetString("WSRatePluginMainHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Melee.
+        /// </summary>
+        internal static string WSRatePluginMeleeTitle {
+            get {
+                return ResourceManager.GetString("WSRatePluginMeleeTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,13}{2,7}{3,7}{4,9:f2}{5,10}{6,8}.
+        /// </summary>
+        internal static string WSRatePluginPhysicalFormat {
+            get {
+                return ResourceManager.GetString("WSRatePluginPhysicalFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player                 Total Hits    Min    Max     Mean    Median    Mode.
+        /// </summary>
+        internal static string WSRatePluginPhysicalHeader {
+            get {
+                return ResourceManager.GetString("WSRatePluginPhysicalHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ranged.
+        /// </summary>
+        internal static string WSRatePluginRangeTitle {
+            get {
+                return ResourceManager.GetString("WSRatePluginRangeTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,13}{2,11}{3,12}{4,7}{5,7}{6,9:f2}{7,19:f2}.
+        /// </summary>
+        internal static string WSRatePluginSpellFormat {
+            get {
+                return ResourceManager.GetString("WSRatePluginSpellFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player                    # Casts   # Failed    Total TP    Min    Max     Mean    Mean w/Failures.
+        /// </summary>
+        internal static string WSRatePluginSpellHeader {
+            get {
+                return ResourceManager.GetString("WSRatePluginSpellHeader", resourceCulture);
             }
         }
         
@@ -2226,6 +2307,33 @@ namespace WaywardGamers.KParser.Resources {
         internal static string WSRatePluginTitle {
             get {
                 return ResourceManager.GetString("WSRatePluginTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total Weaponskills.
+        /// </summary>
+        internal static string WSRatePluginTotalWSs {
+            get {
+                return ResourceManager.GetString("WSRatePluginTotalWSs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,13}.
+        /// </summary>
+        internal static string WSRatePluginWSFormat {
+            get {
+                return ResourceManager.GetString("WSRatePluginWSFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player               Weaponskills.
+        /// </summary>
+        internal static string WSRatePluginWSHeader {
+            get {
+                return ResourceManager.GetString("WSRatePluginWSHeader", resourceCulture);
             }
         }
     }
