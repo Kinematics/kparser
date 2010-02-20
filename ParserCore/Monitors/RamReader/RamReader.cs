@@ -260,7 +260,7 @@ namespace WaywardGamers.KParser.Monitoring
                             {
                                 Active = true,
                                 DataSourceType = DataSource.Ram,
-                                StatusMessage = string.Format("Not logged in [{0x}/{1}].",
+                                StatusMessage = string.Format("Not logged in [0x{0:X8}/{1}].",
                                     initialMemoryOffset, currentDetails.ChatLogInfo.NumberOfLines)
                             });
 
