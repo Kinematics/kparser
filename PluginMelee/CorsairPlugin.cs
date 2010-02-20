@@ -25,6 +25,21 @@ namespace WaywardGamers.KParser.Plugin
 
         string lsAll;
 
+        string lsTotals;
+        string lsAllRolls;
+        string lsRollFrequency;
+        string lsDoubleUpFrequency;
+
+        string lsFullRollHeader;
+        string lsSingleRollValueHeader;
+        string lsSingleRollInitialHeader;
+
+        string lsLongFrequencyFormat;
+        string lsLongPercentageFormat;
+        string lsAverageFormat;
+        string lsShortFormat;
+        string lsShortPercentageFormat;
+        string lsFrequency;
         #endregion
 
         #region Constructor
@@ -173,9 +188,6 @@ namespace WaywardGamers.KParser.Plugin
             StringBuilder sb = new StringBuilder();
             List<StringMods> strModList = new List<StringMods>();
 
-            string temp;
-
-
             string localDoubleUp = Resources.ParsedStrings.DoubleUp;
             string localBust = Resources.ParsedStrings.Bust;
 
@@ -212,17 +224,16 @@ namespace WaywardGamers.KParser.Plugin
                         rollCounter[rollGroup.Key] = rollGroup.Count();
                     }
 
-                    temp = "Totals";
                     strModList.Add(new StringMods
                     {
                         Start = sb.Length,
-                        Length = temp.Length,
+                        Length = lsTotals.Length,
                         Bold = true,
                         Color = Color.Red
                     });
-                    sb.AppendFormat("{0}\n\n", temp);
+                    sb.AppendFormat("{0}\n\n", lsTotals);
 
-                    OutputRollCounter(rollCounter, sb, strModList, "All Rolls");
+                    OutputRollCounter(rollCounter, sb, strModList, lsAllRolls);
                     sb.Append("\n\n");
 
 
@@ -263,9 +274,40 @@ namespace WaywardGamers.KParser.Plugin
                         }
                     }
 
-                    OutputPerRollCounter(perRollCounter, sb, strModList, "Roll Frequency");
+                    strModList.Add(new StringMods
+                    {
+                        Start = sb.Length,
+                        Length = lsRollFrequency.Length,
+                        Bold = true,
+                        Color = Color.Red
+                    });
+                    sb.AppendFormat("{0}\n\n", lsRollFrequency);
 
-                    //Debugger.Break();
+
+                    OutputPerRollCounter(perRollCounter, sb, strModList, lsAllRolls);
+
+                    sb.Append("\n\n");
+
+                    var followupRolls = individualRolls.Where(a => a.Count() > 1);
+
+                    int[,] followupTable = new int[7, 7];
+
+                    foreach (var fRoll in followupRolls)
+                    {
+                        int first = fRoll.First();
+                        int second = fRoll.Skip(1).First();
+
+                        // Busts are listed as 0, and will generate negative values
+                        // when subtracted from previous roll
+                        // The only way to get a bust on the second roll is to
+                        // roll two sixes in a row, so setting to 6 here.
+                        if (second <= 0)
+                            second = 6;
+
+                        followupTable[first, second]++;
+                    }
+
+                    OutputFollowupCounter(followupTable, sb, strModList, lsDoubleUpFrequency);
 
                 }
             }
@@ -275,52 +317,14 @@ namespace WaywardGamers.KParser.Plugin
 
         }
 
-        private void OutputPerRollCounter(int[] perRollCounter, StringBuilder sb, List<StringMods> strModList, string title)
+        private void OutputRollCounter(int[] rollCounter, StringBuilder sb,
+            List<StringMods> strModList, string leadText)
         {
-            int totalNumberOfRolls = perRollCounter.Sum();
+            int totalNumberOfRolls = rollCounter.Sum();
 
-            strModList.Add(new StringMods
-            {
-                Start = sb.Length,
-                Length = title.Length,
-                Bold = true,
-                Color = Color.Red
-            });
-            sb.Append(title);
-            sb.Append("\n\n");
+            if (totalNumberOfRolls == 0)
+                return;
 
-            string temp = "Value:             1       2       3       4       5       6";
-            strModList.Add(new StringMods
-            {
-                Start = sb.Length,
-                Length = temp.Length,
-                Bold = true,
-                Underline = true,
-                Color = Color.Black
-            });
-            sb.Append(temp);
-            sb.Append("\n");
-
-            sb.AppendFormat("Frequency:  {0,8:d}{1,8:d}{2,8:d}{3,8:d}{4,8:d}{5,8:d}\n",
-                perRollCounter[1],
-                perRollCounter[2],
-                perRollCounter[3],
-                perRollCounter[4],
-                perRollCounter[5],
-                perRollCounter[6]);
-
-            sb.AppendFormat("Percentage: {0,8:f2}{1,8:f2}{2,8:f2}{3,8:f2}{4,8:f2}{5,8:f2}\n",
-                (double)perRollCounter[1] * 100 / totalNumberOfRolls,
-                (double)perRollCounter[2] * 100 / totalNumberOfRolls,
-                (double)perRollCounter[3] * 100 / totalNumberOfRolls,
-                (double)perRollCounter[4] * 100 / totalNumberOfRolls,
-                (double)perRollCounter[5] * 100 / totalNumberOfRolls,
-                (double)perRollCounter[6] * 100 / totalNumberOfRolls);
-
-        }
-
-        private void OutputRollCounter(int[] rollCounter, StringBuilder sb, List<StringMods> strModList, string leadText)
-        {
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
@@ -332,22 +336,18 @@ namespace WaywardGamers.KParser.Plugin
             sb.Append("\n");
             
 
-            string temp = "                   1       2       3       4       5       6       7       8       9      10      11    Bust";
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
-                Length = temp.Length,
+                Length = lsFullRollHeader.Length,
                 Bold = true,
                 Underline = true,
                 Color = Color.Black
             });
-            sb.Append(temp);
+            sb.Append(lsFullRollHeader);
             sb.Append("\n");
 
-
-            int totalNumberOfRolls = rollCounter.Sum();
-
-            sb.AppendFormat("Frequency:  {0,8:d}{1,8:d}{2,8:d}{3,8:d}{4,8:d}{5,8:d}{6,8:d}{7,8:d}{8,8:d}{9,8:d}{10,8:d}{11,8:d}\n",
+            sb.AppendFormat(lsLongFrequencyFormat,
                 rollCounter[1],
                 rollCounter[2],
                 rollCounter[3],
@@ -360,8 +360,9 @@ namespace WaywardGamers.KParser.Plugin
                 rollCounter[10],
                 rollCounter[11],
                 rollCounter[0]);
+            sb.Append("\n");
 
-            sb.AppendFormat("Percentage: {0,8:f2}{1,8:f2}{2,8:f2}{3,8:f2}{4,8:f2}{5,8:f2}{6,8:f2}{7,8:f2}{8,8:f2}{9,8:f2}{10,8:f2}{11,8:f2}\n",
+            sb.AppendFormat(lsLongPercentageFormat,
                 (double)rollCounter[1] * 100 / totalNumberOfRolls,
                 (double)rollCounter[2] * 100 / totalNumberOfRolls,
                 (double)rollCounter[3] * 100 / totalNumberOfRolls,
@@ -374,6 +375,7 @@ namespace WaywardGamers.KParser.Plugin
                 (double)rollCounter[10] * 100 / totalNumberOfRolls,
                 (double)rollCounter[11] * 100 / totalNumberOfRolls,
                 (double)rollCounter[0] * 100 / totalNumberOfRolls);
+            sb.Append("\n");
 
             int weightedSum = 0;
 
@@ -382,9 +384,96 @@ namespace WaywardGamers.KParser.Plugin
                 weightedSum += i * rollCounter[i];
             }
 
-            sb.AppendFormat("Average:    {0,8:f2}\n", (double)weightedSum / totalNumberOfRolls);
+            sb.AppendFormat(lsAverageFormat, (double)weightedSum / totalNumberOfRolls);
+            sb.Append("\n");
 
         }
+
+        private void OutputPerRollCounter(int[] perRollCounter, StringBuilder sb,
+            List<StringMods> strModList, string leadText)
+        {
+            int totalNumberOfRolls = perRollCounter.Sum();
+
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = leadText.Length,
+                Bold = true,
+                Color = Color.Blue
+            });
+            sb.Append(leadText);
+            sb.Append("\n");
+
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = lsSingleRollValueHeader.Length,
+                Bold = true,
+                Underline = true,
+                Color = Color.Black
+            });
+            sb.Append(lsSingleRollValueHeader);
+            sb.Append("\n");
+
+            sb.AppendFormat(lsShortFormat,
+                lsFrequency,
+                perRollCounter[1],
+                perRollCounter[2],
+                perRollCounter[3],
+                perRollCounter[4],
+                perRollCounter[5],
+                perRollCounter[6]);
+            sb.Append("\n");
+
+            sb.AppendFormat(lsShortPercentageFormat,
+                (double)perRollCounter[1] * 100 / totalNumberOfRolls,
+                (double)perRollCounter[2] * 100 / totalNumberOfRolls,
+                (double)perRollCounter[3] * 100 / totalNumberOfRolls,
+                (double)perRollCounter[4] * 100 / totalNumberOfRolls,
+                (double)perRollCounter[5] * 100 / totalNumberOfRolls,
+                (double)perRollCounter[6] * 100 / totalNumberOfRolls);
+            sb.Append("\n");
+
+        }
+
+        private void OutputFollowupCounter(int[,] followupCounter, StringBuilder sb,
+            List<StringMods> strModList, string leadText)
+        {
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = leadText.Length,
+                Bold = true,
+                Color = Color.Blue
+            });
+            sb.Append(leadText);
+            sb.Append("\n");
+
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = lsSingleRollInitialHeader.Length,
+                Bold = true,
+                Underline = true,
+                Color = Color.Black
+            });
+            sb.Append(lsSingleRollInitialHeader);
+            sb.Append("\n");
+
+            for (int i = 1; i <= 6; i++)
+            {
+                sb.AppendFormat(lsShortFormat,
+                    i,
+                    followupCounter[i, 1],
+                    followupCounter[i, 2],
+                    followupCounter[i, 3],
+                    followupCounter[i, 4],
+                    followupCounter[i, 5],
+                    followupCounter[i, 6]);
+                sb.Append("\n");
+            }
+        }
+
         #endregion
 
 
@@ -413,6 +502,22 @@ namespace WaywardGamers.KParser.Plugin
             this.tabName = Resources.Combat.CorsairPluginTabName;
 
             lsAll = Resources.PublicResources.All;
+
+            lsTotals = Resources.Combat.CorsairPluginTotals;
+            lsAllRolls = Resources.Combat.CorsairPluginAllRolls;
+            lsRollFrequency = Resources.Combat.CorsairPluginRollFrequency;
+            lsDoubleUpFrequency = Resources.Combat.CorsairPluginDoubleUpFrequency;
+
+            lsFullRollHeader = Resources.Combat.CorsairPluginFullRollHeader;
+            lsSingleRollValueHeader = Resources.Combat.CorsairPluginSingleRollValueHeader;
+            lsSingleRollInitialHeader = Resources.Combat.CorsairPluginSingleRollInitialHeader;
+
+            lsLongFrequencyFormat = Resources.Combat.CorsairPluginLongFrequencyFormat;
+            lsLongPercentageFormat = Resources.Combat.CorsairPluginLongFloatFormat;
+            lsAverageFormat = Resources.Combat.CorsairPluginAverageFormat;
+            lsShortPercentageFormat = Resources.Combat.CorsairPluginShortPercentageFormat;
+            lsShortFormat = Resources.Combat.CorsairPluginShortFormat;
+            lsFrequency = Resources.Combat.CorsairPluginFrequency;
         }
         #endregion
 

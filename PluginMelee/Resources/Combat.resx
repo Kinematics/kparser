@@ -801,4 +801,43 @@
   <data name="CorsairPluginTabName" xml:space="preserve">
     <value>Corsair</value>
   </data>
+  <data name="CorsairPluginAllRolls" xml:space="preserve">
+    <value>All Rolls</value>
+  </data>
+  <data name="CorsairPluginAverageFormat" xml:space="preserve">
+    <value>Average:    {0,8:f2}</value>
+  </data>
+  <data name="CorsairPluginDoubleUpFrequency" xml:space="preserve">
+    <value>Frequency of first Double-Up per initial roll</value>
+  </data>
+  <data name="CorsairPluginFrequency" xml:space="preserve">
+    <value>Frequency:</value>
+  </data>
+  <data name="CorsairPluginFullRollHeader" xml:space="preserve">
+    <value>                   1       2       3       4       5       6       7       8       9      10      11    Bust</value>
+  </data>
+  <data name="CorsairPluginLongFloatFormat" xml:space="preserve">
+    <value>Percentage: {0,8:f2}{1,8:f2}{2,8:f2}{3,8:f2}{4,8:f2}{5,8:f2}{6,8:f2}{7,8:f2}{8,8:f2}{9,8:f2}{10,8:f2}{11,8:f2}</value>
+  </data>
+  <data name="CorsairPluginLongFrequencyFormat" xml:space="preserve">
+    <value>Frequency:  {0,8:d}{1,8:d}{2,8:d}{3,8:d}{4,8:d}{5,8:d}{6,8:d}{7,8:d}{8,8:d}{9,8:d}{10,8:d}{11,8:d}</value>
+  </data>
+  <data name="CorsairPluginRollFrequency" xml:space="preserve">
+    <value>Roll Frequency</value>
+  </data>
+  <data name="CorsairPluginShortFormat" xml:space="preserve">
+    <value>{0,-11} {1,8:d}{2,8:d}{3,8:d}{4,8:d}{5,8:d}{6,8:d}</value>
+  </data>
+  <data name="CorsairPluginShortPercentageFormat" xml:space="preserve">
+    <value>Percentage: {0,8:f2}{1,8:f2}{2,8:f2}{3,8:f2}{4,8:f2}{5,8:f2}</value>
+  </data>
+  <data name="CorsairPluginSingleRollInitialHeader" xml:space="preserve">
+    <value>Initial            1       2       3       4       5       6</value>
+  </data>
+  <data name="CorsairPluginSingleRollValueHeader" xml:space="preserve">
+    <value>Value:             1       2       3       4       5       6</value>
+  </data>
+  <data name="CorsairPluginTotals" xml:space="preserve">
+    <value>Totals</value>
+  </data>
 </root>
