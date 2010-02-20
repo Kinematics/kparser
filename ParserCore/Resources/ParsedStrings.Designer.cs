@@ -124,7 +124,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Roll|Double-Up.
+        ///   Looks up a localized string similar to Roll|Double-Up|Bust.
         /// </summary>
         public static string AnyRoll {
             get {
@@ -525,6 +525,15 @@ namespace WaywardGamers.KParser.Resources {
         public static string BurstAffinity {
             get {
                 return ResourceManager.GetString("BurstAffinity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bust.
+        /// </summary>
+        public static string Bust {
+            get {
+                return ResourceManager.GetString("Bust", resourceCulture);
             }
         }
         
@@ -984,6 +993,15 @@ namespace WaywardGamers.KParser.Resources {
         public static string DoubleThrust {
             get {
                 return ResourceManager.GetString("DoubleThrust", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Double-Up.
+        /// </summary>
+        public static string DoubleUp {
+            get {
+                return ResourceManager.GetString("DoubleUp", resourceCulture);
             }
         }
         

@@ -1123,6 +1123,12 @@
     <value>Wheeling Thrust</value>
   </data>
   <data name="AnyRoll" xml:space="preserve">
-    <value>Roll|Double-Up</value>
+    <value>Roll|Double-Up|Bust</value>
+  </data>
+  <data name="DoubleUp" xml:space="preserve">
+    <value>Double-Up</value>
+  </data>
+  <data name="Bust" xml:space="preserve">
+    <value>Bust</value>
   </data>
 </root>
