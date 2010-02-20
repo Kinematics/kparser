@@ -1077,7 +1077,7 @@ namespace WaywardGamers.KParser.Plugin
             CompileSongBuffs(Resources.ParsedStrings.March1, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
             CompileSongBuffs(Resources.ParsedStrings.March2, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
 
-            string altRollsRegex = Resources.ParsedStrings.AnyRoll;
+            string altRollsRegex = Resources.ParsedStrings.PhantomRoll;
 
             CompileRollBuffs(Resources.ParsedStrings.RngRoll, altRollsRegex, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
             CompileRollBuffs(Resources.ParsedStrings.DrkRoll, altRollsRegex, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
