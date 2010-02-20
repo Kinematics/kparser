@@ -2566,6 +2566,8 @@ namespace WaywardGamers.KParser.Parsing
                 combatMatch = ParseExpressions.BustCorRoll.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
+                    msgCombatDetails.ActionName = Resources.ParsedStrings.Bust;
+                    msgCombatDetails.ActionType = ActionType.Ability;
                     msgCombatDetails.HarmType = HarmType.Dispel;
                     message.SetParseSuccess(true);
                     return;
@@ -2577,6 +2579,7 @@ namespace WaywardGamers.KParser.Parsing
                     target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Name].Value);
                     target.EffectName = combatMatch.Groups[ParseFields.Ability].Value;
                     target.SecondaryAction = combatMatch.Groups[ParseFields.Ability].Value;
+                    target.Amount = 0;
                     target.HarmType = HarmType.Dispel;
                     target.AidType = msgCombatDetails.AidType;
                     message.SetParseSuccess(true);
