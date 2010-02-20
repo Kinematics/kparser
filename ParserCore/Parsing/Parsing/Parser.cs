@@ -1091,19 +1091,22 @@ namespace WaywardGamers.KParser.Parsing
                             combatMatch = ParseExpressions.UseCorRoll.Match(currentMessageText);
                             if (combatMatch.Success == true)
                             {
+                                // Initial roll
                                 msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                                 msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
                                 msgCombatDetails.ActionType = ActionType.Ability;
-                                msgCombatDetails.CorsairRoll = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
+                                msgCombatDetails.CorsairRollName = combatMatch.Groups[ParseFields.Ability].Value;
+                                msgCombatDetails.CorsairRollValue = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
                                 message.SetParseSuccess(true);
                                 return;
                             }
                             combatMatch = ParseExpressions.TotalCorRoll.Match(currentMessageText);
                             if (combatMatch.Success == true)
                             {
-                                msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
+                                // Double-Up roll
                                 msgCombatDetails.ActionType = ActionType.Ability;
-                                msgCombatDetails.CorsairRoll = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
+                                msgCombatDetails.CorsairRollName = combatMatch.Groups[ParseFields.Ability].Value;
+                                msgCombatDetails.CorsairRollValue = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
                                 message.SetParseSuccess(true);
                                 return;
                             }
@@ -1147,9 +1150,10 @@ namespace WaywardGamers.KParser.Parsing
                             if (combatMatch.Success == true)
                             {
                                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Name].Value);
-                                target.EffectName = combatMatch.Groups[ParseFields.Ability].Value;
                                 target.AidType = msgCombatDetails.AidType;
-                                target.Amount = msgCombatDetails.CorsairRoll;
+                                target.EffectName = combatMatch.Groups[ParseFields.Ability].Value;
+                                target.SecondaryAction = msgCombatDetails.CorsairRollName;
+                                target.Amount = msgCombatDetails.CorsairRollValue;
                                 message.SetParseSuccess(true);
                                 return;
                             }
