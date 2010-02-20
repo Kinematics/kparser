@@ -65,6 +65,9 @@
     <Compile Include="BuffsByTime.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="CorsairPlugin.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Resources\Combat.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

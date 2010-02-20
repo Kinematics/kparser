@@ -798,4 +798,7 @@
   <data name="OffenseFreqPluginRetaliations" xml:space="preserve">
     <value>  Retaliations</value>
   </data>
+  <data name="CorsairPluginTabName" xml:space="preserve">
+    <value>Corsair</value>
+  </data>
 </root>

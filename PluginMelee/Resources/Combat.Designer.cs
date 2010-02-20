@@ -133,6 +133,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Corsair.
+        /// </summary>
+        internal static string CorsairPluginTabName {
+            get {
+                return ResourceManager.GetString("CorsairPluginTabName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Debuff                # Times   # Successful   # No Effect   % Successful.
         /// </summary>
         internal static string DebuffPluginDebuffHeader {
