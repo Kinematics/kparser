@@ -133,11 +133,128 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All Rolls.
+        /// </summary>
+        internal static string CorsairPluginAllRolls {
+            get {
+                return ResourceManager.GetString("CorsairPluginAllRolls", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Average:    {0,8:f2}.
+        /// </summary>
+        internal static string CorsairPluginAverageFormat {
+            get {
+                return ResourceManager.GetString("CorsairPluginAverageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Frequency of first Double-Up per initial roll.
+        /// </summary>
+        internal static string CorsairPluginDoubleUpFrequency {
+            get {
+                return ResourceManager.GetString("CorsairPluginDoubleUpFrequency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Frequency:.
+        /// </summary>
+        internal static string CorsairPluginFrequency {
+            get {
+                return ResourceManager.GetString("CorsairPluginFrequency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to                    1       2       3       4       5       6       7       8       9      10      11    Bust.
+        /// </summary>
+        internal static string CorsairPluginFullRollHeader {
+            get {
+                return ResourceManager.GetString("CorsairPluginFullRollHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Percentage: {0,8:f2}{1,8:f2}{2,8:f2}{3,8:f2}{4,8:f2}{5,8:f2}{6,8:f2}{7,8:f2}{8,8:f2}{9,8:f2}{10,8:f2}{11,8:f2}.
+        /// </summary>
+        internal static string CorsairPluginLongFloatFormat {
+            get {
+                return ResourceManager.GetString("CorsairPluginLongFloatFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Frequency:  {0,8:d}{1,8:d}{2,8:d}{3,8:d}{4,8:d}{5,8:d}{6,8:d}{7,8:d}{8,8:d}{9,8:d}{10,8:d}{11,8:d}.
+        /// </summary>
+        internal static string CorsairPluginLongFrequencyFormat {
+            get {
+                return ResourceManager.GetString("CorsairPluginLongFrequencyFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Roll Frequency.
+        /// </summary>
+        internal static string CorsairPluginRollFrequency {
+            get {
+                return ResourceManager.GetString("CorsairPluginRollFrequency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-11} {1,8:d}{2,8:d}{3,8:d}{4,8:d}{5,8:d}{6,8:d}.
+        /// </summary>
+        internal static string CorsairPluginShortFormat {
+            get {
+                return ResourceManager.GetString("CorsairPluginShortFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Percentage: {0,8:f2}{1,8:f2}{2,8:f2}{3,8:f2}{4,8:f2}{5,8:f2}.
+        /// </summary>
+        internal static string CorsairPluginShortPercentageFormat {
+            get {
+                return ResourceManager.GetString("CorsairPluginShortPercentageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initial            1       2       3       4       5       6.
+        /// </summary>
+        internal static string CorsairPluginSingleRollInitialHeader {
+            get {
+                return ResourceManager.GetString("CorsairPluginSingleRollInitialHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value:             1       2       3       4       5       6.
+        /// </summary>
+        internal static string CorsairPluginSingleRollValueHeader {
+            get {
+                return ResourceManager.GetString("CorsairPluginSingleRollValueHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Corsair.
         /// </summary>
         internal static string CorsairPluginTabName {
             get {
                 return ResourceManager.GetString("CorsairPluginTabName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Totals.
+        /// </summary>
+        internal static string CorsairPluginTotals {
+            get {
+                return ResourceManager.GetString("CorsairPluginTotals", resourceCulture);
             }
         }
         
