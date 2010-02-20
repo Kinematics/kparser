@@ -1,5 +1,17 @@
 KParser Change Log
 
+
+1.4.15 (February 19, 2010)
+- Fix bug of missed actor name on some missed abilities, causing bogus battle entries.
+- Fix bug of bogus fight creation related to entity classification.
+- AOE effects targetting multiple mobs of the same name fixed to better handle the multiple targets.
+* Add additional conditions when excluding player actions outside of party to filter out kills by players outside party.
+* Improve handling of AOE debuff target matching.
+* Improve update time on text box updates to reduce flicker.  Partially complete.
+- Fix formatting bug in status string.
+- Fix icon size in Win7 taskbar.
+
+
 1.4.14 (February 6, 2010)
 - Fix minor bugs in entities and outside-party kills to avoid data being incorrectly attributed.
 
