@@ -28,6 +28,7 @@ namespace WaywardGamers.KParser.Plugin
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Retaliate { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Spikes { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> AnyAction { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> Death { get; set; }
 
         internal int TotalActions
         {
