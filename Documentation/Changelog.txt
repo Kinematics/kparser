@@ -1,12 +1,12 @@
 KParser Change Log
 
 
-1.4.16 (February ??, 2010)
+1.4.16 (February 21, 2010)
 - Fixed minor bugs in Corsair roll parsing.
 + Added new plugin (Corsair) for Corsair roll results.
 * Rewrite of WS Rates plugin to include ranged attacks and Absorb-TP.  Removed harmonic mean.
 - Fixed a bug in storing entries on player deaths.
-+ Added new plugin (Deaths) to display player deaths.  Requires reparsing older parses.
++ Added new plugin (Deaths) to display player deaths.  Requires reparsing older parses due to above bug fix.
 
 
 1.4.15 (February 19, 2010)
