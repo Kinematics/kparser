@@ -1428,6 +1428,7 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.Defeat.Match(message.CurrentMessageText);
             if (combatMatch.Success == true)
             {
+                combatDetails.ActionType = ActionType.Death;
                 combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
 
@@ -1454,6 +1455,7 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.Defeated.Match(message.CurrentMessageText);
             if (combatMatch.Success == true)
             {
+                combatDetails.ActionType = ActionType.Death;
                 combatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                 target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                 message.SetParseSuccess(true);
@@ -1463,6 +1465,7 @@ namespace WaywardGamers.KParser.Parsing
             combatMatch = ParseExpressions.Dies.Match(message.CurrentMessageText);
             if (combatMatch.Success == true)
             {
+                combatDetails.ActionType = ActionType.Death;
                 target = combatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
                 message.SetParseSuccess(true);
                 return;
