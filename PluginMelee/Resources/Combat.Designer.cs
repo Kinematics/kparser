@@ -259,6 +259,87 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,14}{2,22}.
+        /// </summary>
+        internal static string DeathPluginDetailsFormat {
+            get {
+                return ResourceManager.GetString("DeathPluginDetailsFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player               Time of Death             Killed By.
+        /// </summary>
+        internal static string DeathPluginDetailsHeader {
+            get {
+                return ResourceManager.GetString("DeathPluginDetailsHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Details.
+        /// </summary>
+        internal static string DeathPluginDetailsTitle {
+            get {
+                return ResourceManager.GetString("DeathPluginDetailsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,9}.
+        /// </summary>
+        internal static string DeathPluginSummaryFormat {
+            get {
+                return ResourceManager.GetString("DeathPluginSummaryFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player               # Deaths.
+        /// </summary>
+        internal static string DeathPluginSummaryHeader {
+            get {
+                return ResourceManager.GetString("DeathPluginSummaryHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Summary.
+        /// </summary>
+        internal static string DeathPluginSummaryTitle {
+            get {
+                return ResourceManager.GetString("DeathPluginSummaryTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deaths.
+        /// </summary>
+        internal static string DeathPluginTabName {
+            get {
+                return ResourceManager.GetString("DeathPluginTabName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player Deaths.
+        /// </summary>
+        internal static string DeathPluginTitle {
+            get {
+                return ResourceManager.GetString("DeathPluginTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -Unknown-.
+        /// </summary>
+        internal static string DeathPluginUnknown {
+            get {
+                return ResourceManager.GetString("DeathPluginUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Debuff                # Times   # Successful   # No Effect   % Successful.
         /// </summary>
         internal static string DebuffPluginDebuffHeader {
