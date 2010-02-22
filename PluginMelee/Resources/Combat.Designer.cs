@@ -151,6 +151,33 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to As Cor Main      {0,16:f2}{1,23:f2}.
+        /// </summary>
+        internal static string CorsairPluginAvgBonusAsMainFormat {
+            get {
+                return ResourceManager.GetString("CorsairPluginAvgBonusAsMainFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to As Cor Sub       {0,16:f2}{1,23:f2}.
+        /// </summary>
+        internal static string CorsairPluginAvgBonusAsSubFormat {
+            get {
+                return ResourceManager.GetString("CorsairPluginAvgBonusAsSubFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Average Bonus      With Job Bonus      Without Job Bonus.
+        /// </summary>
+        internal static string CorsairPluginAvgBonusHeader {
+            get {
+                return ResourceManager.GetString("CorsairPluginAvgBonusHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Frequency of first Double-Up per initial roll.
         /// </summary>
         internal static string CorsairPluginDoubleUpFrequency {
