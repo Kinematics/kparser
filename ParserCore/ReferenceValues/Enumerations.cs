@@ -165,6 +165,7 @@ namespace WaywardGamers.KParser
         Spikes,
         Steal,
         Retaliation,
+        Death
     }
 
 
