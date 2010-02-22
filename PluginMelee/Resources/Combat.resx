@@ -876,4 +876,31 @@
   <data name="WSRatePluginWSHeader" xml:space="preserve">
     <value>Player               Weaponskills</value>
   </data>
+  <data name="DeathPluginDetailsFormat" xml:space="preserve">
+    <value>{0,-20}{1,14}{2,22}</value>
+  </data>
+  <data name="DeathPluginDetailsHeader" xml:space="preserve">
+    <value>Player               Time of Death             Killed By</value>
+  </data>
+  <data name="DeathPluginDetailsTitle" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="DeathPluginSummaryFormat" xml:space="preserve">
+    <value>{0,-20}{1,9}</value>
+  </data>
+  <data name="DeathPluginSummaryHeader" xml:space="preserve">
+    <value>Player               # Deaths</value>
+  </data>
+  <data name="DeathPluginSummaryTitle" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="DeathPluginTabName" xml:space="preserve">
+    <value>Deaths</value>
+  </data>
+  <data name="DeathPluginTitle" xml:space="preserve">
+    <value>Player Deaths</value>
+  </data>
+  <data name="DeathPluginUnknown" xml:space="preserve">
+    <value>-Unknown-</value>
+  </data>
 </root>
