@@ -1,6 +1,10 @@
 KParser Change Log
 
 
+1.4.17 (February 21, 2010)
++ Add average bonus value calculations to Corsair plugin.
+
+
 1.4.16 (February 21, 2010)
 - Fixed minor bugs in Corsair roll parsing.
 + Added new plugin (Corsair) for Corsair roll results.
