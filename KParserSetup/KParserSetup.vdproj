@@ -331,7 +331,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.Debugging, Version=1.4.15.0, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.Debugging, Version=1.4.16.0, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_3B672CE8EC7373B4A27415646DC3D64E"
@@ -473,7 +473,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.Combat, Version=1.4.15.0, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.Combat, Version=1.4.16.0, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_7D6B78DBCBE5EF3CE1B31A799AD41B34"
@@ -504,7 +504,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.ParserCore, Version=1.4.15.0, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.ParserCore, Version=1.4.16.0, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_85A24E44668EFF5E062472FAE9806B71"
@@ -683,14 +683,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:KParser"
-        "ProductCode" = "8:{0CB968B7-3347-40A2-B62A-83B48D2A3E88}"
-        "PackageCode" = "8:{2B263682-1BE7-48BF-8A98-27F1D146EA4D}"
+        "ProductCode" = "8:{F0671B8B-5D4A-4804-A25A-84CF793DB994}"
+        "PackageCode" = "8:{2756885E-8F9B-4393-A04E-7658C06EB87C}"
         "UpgradeCode" = "8:{BE6F6D70-234C-4B71-96CD-D020C6872A1D}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:FALSE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.4.16"
+        "ProductVersion" = "8:1.4.17"
         "Manufacturer" = "8:Wayward Gamers"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://code.google.com/p/kparser"
