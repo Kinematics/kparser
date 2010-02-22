@@ -903,4 +903,13 @@
   <data name="DeathPluginUnknown" xml:space="preserve">
     <value>-Unknown-</value>
   </data>
+  <data name="CorsairPluginAvgBonusAsMainFormat" xml:space="preserve">
+    <value>As Cor Main      {0,16:f2}{1,23:f2}</value>
+  </data>
+  <data name="CorsairPluginAvgBonusAsSubFormat" xml:space="preserve">
+    <value>As Cor Sub       {0,16:f2}{1,23:f2}</value>
+  </data>
+  <data name="CorsairPluginAvgBonusHeader" xml:space="preserve">
+    <value>Average Bonus      With Job Bonus      Without Job Bonus</value>
+  </data>
 </root>
