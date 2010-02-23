@@ -83,6 +83,17 @@ namespace WaywardGamers.KParser.Parsing
             // width.
             msg = MsgManager.Instance.FindMessageWithEventNumber(messageLine.EventSequence);
 
+            // Make sure the returned msg is within a short time interval of the current msg.
+            // It's possible to get matches on lines in a reparse of a parse that was continued
+            // between sessions.  Time needs to be fairly long, though, in case parse was done
+            // from log files rather than RAM.
+
+            if (msg != null)
+            {
+                if (msg.Timestamp.AddMinutes(3) < messageLine.Timestamp)
+                    msg = null;
+            }
+
             // If there was no prior message with the same event number, do more complicated checking.
 
             // Additional messages can be:
