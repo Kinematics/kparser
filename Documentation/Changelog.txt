@@ -1,5 +1,8 @@
 KParser Change Log
 
+1.5.0 (February 22, 2010)
++ Added ability to live translate text in the chat window to the currently specified UI language.  Uses Google Translate APIs, so must be online to work.
+
 
 1.4.17 (February 21, 2010)
 + Add average bonus value calculations to Corsair plugin.
