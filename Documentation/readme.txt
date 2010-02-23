@@ -59,12 +59,10 @@ SQLCE if it is not already present on your computer.
 
 Troubleshooting:
 
-If you are running Windows Vista or Windows 7 you may need to adjust the runtime
-permisssions for the program if you wish to make use of the RAM monitoring methodology
-of the parser.
-
-Right click on the .exe file (or desktop shortcut) and select Properties.
-Go to the Compatibility tab and check the check box "Run this program as an Administrator".
+KParser requires administrative privileges to run.  If you are running Windows Vista or Windows 7,
+you will need to authorize this via the UAC prompt.  You do not need to adjust the properties
+tab to run the program as administrator since that is automatically requested in the program
+manifest.
 
 If you are running 64-bit Windows Vista you may need to install the patch
 from this page in order to fix some problems with .NET 3.5:
@@ -72,5 +70,4 @@ from this page in order to fix some problems with .NET 3.5:
 http://www.microsoft.com/downloads/details.aspx?FamilyID=98E83614-C30A-4B75-9E05-0A9C3FBDD20D&amp;displaylang=en&displaylang=en
 
 It is uncertain if this patch is already included in 3.5 SP1.
-
 
