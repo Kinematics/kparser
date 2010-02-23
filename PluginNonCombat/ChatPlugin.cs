@@ -4,7 +4,10 @@ using System.Linq;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Diagnostics;
 using WaywardGamers.KParser;
+using WaywardGamers.KParser.Utility;
 
 namespace WaywardGamers.KParser.Plugin
 {
@@ -16,13 +19,22 @@ namespace WaywardGamers.KParser.Plugin
         ToolStripLabel catLabel = new ToolStripLabel();
         ToolStripLabel speakerLabel = new ToolStripLabel();
 
+        ToolStripButton translateButton = new ToolStripButton();
+        ToolStripTextBox translationText = new ToolStripTextBox();
+
         bool flagNoUpdate = false;
+        bool translateActive = false;
+
+        int[] indexesOfAssignedLines = new int[0];
+        Regex lineTimestamp = new Regex(@"^\[\d{1,2}:\d\d:\d\d (AM|PM)] (?<remainder>.*)$");
+
         #endregion
 
         #region Constructor
         public ChatPlugin()
         {
             richTextBox.WordWrap = true;
+            richTextBox.MouseClick += new MouseEventHandler(richTextBox_MouseClick);
 
             LoadLocalizedUI();
 
@@ -35,10 +47,19 @@ namespace WaywardGamers.KParser.Plugin
             speakerCombo.SelectedIndex = 0;
             speakerCombo.SelectedIndexChanged += new EventHandler(this.speakerCombo_SelectedIndexChanged);
 
+            translateButton.CheckOnClick = true;
+            translateButton.Click += new EventHandler(translateButton_Click);
+            translateButton.Margin = new Padding(8, 1, 0, 1);
+            translationText.ReadOnly = true;
+            translationText.Enabled = false;
+            translationText.AutoSize = false;
+
             toolStrip.Items.Add(catLabel);
             toolStrip.Items.Add(chatTypeCombo);
             toolStrip.Items.Add(speakerLabel);
             toolStrip.Items.Add(speakerCombo);
+            toolStrip.Items.Add(translateButton);
+            toolStrip.Items.Add(translationText);
         }
         #endregion
 
@@ -57,6 +78,7 @@ namespace WaywardGamers.KParser.Plugin
         public override void NotifyOfUpdate()
         {
             ResetTextBox();
+
             UpdateSpeakerList();
             flagNoUpdate = true;
             speakerCombo.CBSelectItem(Resources.PublicResources.All);
@@ -164,6 +186,13 @@ namespace WaywardGamers.KParser.Plugin
             PushStrings(sb, strModList);
 
         }
+
+        protected new void ResetTextBox()
+        {
+            base.ResetTextBox();
+            indexesOfAssignedLines = new int[0];
+        }
+
         #endregion
 
         #region Private functions
@@ -250,6 +279,103 @@ namespace WaywardGamers.KParser.Plugin
 
             flagNoUpdate = false;
         }
+
+        void translateButton_Click(object sender, EventArgs e)
+        {
+            translateActive = translateButton.Checked;
+            translationText.Enabled = translateActive;
+        }
+
+        void richTextBox_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (richTextBox.Lines.Length == 0)
+                return;
+
+            if (translateActive == false)
+                return;
+
+            PerformTranslation();
+
+        }
+        #endregion
+
+        #region Translation support
+        private void PerformTranslation()
+        {
+            // Find where we just clicked
+            int currentCharIndex = richTextBox.SelectionStart;
+
+            // Determine what the line number is
+            int realCurrentLineNumber = GetLineNumberFromCharIndex(currentCharIndex);
+
+            // Get the line text
+            string currentLine = richTextBox.Lines[realCurrentLineNumber];
+
+            // Trim the timestamp info from the displayed text.
+            Match timestampMatch = lineTimestamp.Match(currentLine);
+            if (timestampMatch.Success)
+            {
+                string lineToTranslate = timestampMatch.Groups["remainder"].Value;
+
+                try
+                {
+                    this.Cursor = Cursors.WaitCursor;
+
+                    // Translate text from any arbitrary language to the current UI culture language.
+                    string translatedText = Translator.TranslateText(lineToTranslate,
+                        "", System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName);
+
+                    // Alternative: Force assumption of Japanese text as original
+                    //string translatedText = Translator.TranslateText(lineToTranslate,
+                    //    "ja", System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName);
+
+                    Size tTextSize = TextRenderer.MeasureText(translatedText, translationText.Font);
+                    translationText.Width = tTextSize.Width + 3;
+
+                    translationText.Text = translatedText;
+
+                }
+                finally
+                {
+                    this.Cursor = Cursors.Default;
+                }
+            }
+        }
+
+        private int GetLineNumberFromCharIndex(int currentCharIndex)
+        {
+            if (currentCharIndex < 0)
+                throw new ArgumentOutOfRangeException();
+
+            UpdateLineLengths();
+
+            int binLineNumber = Array.BinarySearch<int>(indexesOfAssignedLines, currentCharIndex);
+
+            if (binLineNumber < 0)
+            {
+                binLineNumber = ~binLineNumber - 1;
+            }
+
+            return binLineNumber;
+        }
+
+        private void UpdateLineLengths()
+        {
+            if (indexesOfAssignedLines.Length != richTextBox.Lines.Length)
+            {
+                indexesOfAssignedLines = new int[richTextBox.Lines.Length];
+
+                int sum = 0;
+
+                for (int i = 0; i < indexesOfAssignedLines.Length; i++)
+                {
+                    indexesOfAssignedLines[i] = sum;
+                    // Add extra +1 for newlines
+                    sum += richTextBox.Lines[i].Length + 1;
+                }
+            }
+        }
+
         #endregion
 
         #region Localization Overrides
@@ -257,6 +383,8 @@ namespace WaywardGamers.KParser.Plugin
         {
             catLabel.Text = Resources.NonCombat.ChatPluginCategoryLabel;
             speakerLabel.Text = Resources.NonCombat.ChatPluginSpeakerLabel;
+
+            translateButton.Text = Resources.NonCombat.ChatPluginTranslate;
 
             int prevChatTypeIndex = chatTypeCombo.SelectedIndex;
             PopulateChatTypes();

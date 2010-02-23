@@ -405,4 +405,7 @@
   <data name="TreasurePluginHELMNormalDigs" xml:space="preserve">
     <value>Normal Digs:</value>
   </data>
+  <data name="ChatPluginTranslate" xml:space="preserve">
+    <value>Translate</value>
+  </data>
 </root>
