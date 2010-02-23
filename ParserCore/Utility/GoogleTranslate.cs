@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Web;
 using System.Globalization;
 using System.Web.Script.Serialization;
 
@@ -69,7 +70,9 @@ namespace WaywardGamers.KParser.Utility
 
                 if (translation != null && translation.responseData != null && translation.responseData.responseStatus == HttpStatusCode.OK)
                 {
-                    return translation.responseData.translatedText;
+                    string decodedTranslation = HttpUtility.HtmlDecode(translation.responseData.translatedText);
+
+                    return decodedTranslation;
                 }
                 else
                 {
