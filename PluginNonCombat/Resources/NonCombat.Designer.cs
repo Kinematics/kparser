@@ -169,6 +169,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Translate.
+        /// </summary>
+        internal static string ChatPluginTranslate {
+            get {
+                return ResourceManager.GetString("ChatPluginTranslate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Don&apos;t Count &apos;exclude&apos;d Player Kills.
         /// </summary>
         internal static string ExcludedPlayerOption {
