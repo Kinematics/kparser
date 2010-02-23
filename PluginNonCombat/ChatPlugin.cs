@@ -26,7 +26,7 @@ namespace WaywardGamers.KParser.Plugin
         bool translateActive = false;
 
         int[] indexesOfAssignedLines = new int[0];
-        Regex lineTimestamp = new Regex(@"^\[\d{1,2}:\d\d:\d\d (AM|PM)] (?<remainder>.*)$");
+        Regex lineTimestamp = new Regex(@"^\[\d{1,2}:\d\d:\d\d( (AM|PM))?] (?<remainder>.*)$");
 
         #endregion
 
@@ -322,8 +322,14 @@ namespace WaywardGamers.KParser.Plugin
                     this.Cursor = Cursors.WaitCursor;
 
                     // Translate text from any arbitrary language to the current UI culture language.
+
+                    // Force to "en" if we've reset to the Invariant culture.
+                    string translateToLanguage = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
+                    if ((translateToLanguage == "") || (translateToLanguage == "iv"))
+                        translateToLanguage = "en";
+
                     string translatedText = Translator.TranslateText(lineToTranslate,
-                        "", System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName);
+                        "", translateToLanguage);
 
                     // Alternative: Force assumption of Japanese text as original
                     //string translatedText = Translator.TranslateText(lineToTranslate,
