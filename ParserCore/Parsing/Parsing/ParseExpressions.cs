@@ -35,9 +35,9 @@ namespace WaywardGamers.KParser
         private static readonly string playername  = @"(?<name>\w{3,16})";
         private static readonly string npcName     = @"(?<fullname>([Tt]he )?(?<name>\w+((,)|(\.\w{0,2})|['\- ](\d|\w)+)*))";
 
-        private static readonly string name        = @"(?<fullname>([Tt]he )?(?<name>\w+(((('s (?=\w+'s))\w+)|('\w{1,}('s)?)|(-(\w|\d)+)|(the \w+)|( No.\d+)|( \w+)){0,3}|(( \w+)?'s \w+))))";
-        private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+(((('s (?=\w+'s))\w+)|('\w{1,}('s)?)|(-(\w|\d)+)|(the \w+)|( No.\d+)|( \w+)){0,3}|(( \w+)?'s \w+))))";
-        private static readonly string repeatname  = @"([Tt]he )?(?<repeatname>\w+(((('s (?=\w+'s))\w+)|('\w{1,}('s)?)|(-(\w|\d)+)|(the \w+)|( No.\d+)|( \w+)){0,3}|(( \w+)?'s \w+)))";
+        private static readonly string name        = @"(?<fullname>([Tt]he )?(?<name>\w+(((('s (?=\w+'s))\w+)|('[^s]\w*('s)?)|(-(\w|\d)+)|(the \w+)|( No.\d+)|( \w+)){0,3}|(( \w+)?'s \w+))))";
+        private static readonly string target      = @"(?<fulltarget>([Tt]he )?(?<target>\w+(((('s (?=\w+'s))\w+)|('[^s]\w*('s)?)|(-(\w|\d)+)|(the \w+)|( No.\d+)|( \w+)){0,3}|(( \w+)?'s \w+))))";
+        private static readonly string repeatname  = @"([Tt]he )?(?<repeatname>\w+(((('s (?=\w+'s))\w+)|('[^s]\w*('s)?)|(-(\w|\d)+)|(the \w+)|( No.\d+)|( \w+)){0,3}|(( \w+)?'s \w+)))";
 
         private static readonly string damage      = @"(?<damage>\d{1,5})";
         private static readonly string number      = @"(?<number>\d{1,5})";
