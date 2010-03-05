@@ -1,7 +1,20 @@
 KParser Change Log
 
+1.5.1 (March ??, 2010)
+- Fix for a bug in combining messages in a reparse of a parse comprised of multiple continued parses from multiple sessions.
+- Bug fix: mob names can have ' followed by one letter (eg: Fe'e).
+- Fix bug in custom mob selection dialog that caused a crash when changing between different sized mob lists.
+
+
 1.5.0 (February 22, 2010)
-+ Added ability to live translate text in the chat window to the currently specified UI language.  Uses Google Translate APIs, so must be online to work.
++ Added ability to actively translate text in the chat window to the currently specified UI language.  Uses Google Translate APIs, so must be online to work.
+
+Use:
+
+On the chat plugin is a button labelled 'Translate'.  When pressed, clicking on text in the chat window itself will translate that line of text to the current UI language and display it in a text box to the right of the button.  If there is not enough room to show the full text box, a drop-down arrow will show up at the end of the toolbar; clicking that will show the text box and translated text.
+
+The translation uses Google's Translate APIs.  You must be online for it to work.  Translation only occurs when the Translate button is pressed, and only a line at a time so you can isolate exactly what you want translated, and of course can choose not to use it if you wish.  This is the only feature of KParser which sends any data outside of the local machine.
+
 
 
 1.4.17 (February 21, 2010)
