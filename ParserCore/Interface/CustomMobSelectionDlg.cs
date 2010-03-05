@@ -56,10 +56,13 @@ namespace WaywardGamers.KParser.Plugin
 
         private void mobList_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // Flag to prevent processing of this section of code if we're
+            // using one of the predefined event handler functions below.
             if (checkingMobList)
                 return;
 
             MobFilter mobFilter = MobXPHandler.Instance.CustomMobFilter;
+            // List of which entries in the mob list are currently selected.
             var indices = mobList.SelectedIndices;
 
             foreach (int i in indices)
@@ -415,6 +418,7 @@ namespace WaywardGamers.KParser.Plugin
         public void ResetMobsList()
         {
             mobList.Items.Clear();
+            oldIndices.Clear();
         }
 
         internal void NotifyOfCultureChange()
@@ -427,6 +431,7 @@ namespace WaywardGamers.KParser.Plugin
         private void FillMobsList()
         {
             mobList.Items.Clear();
+            oldIndices.Clear();
 
             // Get data from Mob XP Handler to add mob entries to the checked item list.
             MobFilter mobFilter = MobXPHandler.Instance.CustomMobFilter;
