@@ -2203,6 +2203,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ranged Attack.
+        /// </summary>
+        public static string RangedAttack {
+            get {
+                return ResourceManager.GetString("RangedAttack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Rapture.
         /// </summary>
         public static string Rapture {

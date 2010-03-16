@@ -3195,7 +3195,7 @@ namespace WaywardGamers.KParser.Parsing
                 {
                     string possibleActionName = combatMatch.Groups[ParseFields.Ability].Value;
 
-                    if (possibleActionName == "Ranged Attack")
+                    if (possibleActionName == Resources.ParsedStrings.RangedAttack)
                     {
                         msgCombatDetails.ActionType = ActionType.Ranged;
                         msgCombatDetails.HarmType = HarmType.Damage;
