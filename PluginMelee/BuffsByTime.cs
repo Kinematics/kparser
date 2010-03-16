@@ -432,7 +432,7 @@ namespace WaywardGamers.KParser.Plugin
             List<string> attBuffNames = new List<string>()
                 {   "Valor Minuet", "Valor Minuet II", "Valor Minuet III", "Valor Minuet IV", "Chaos Roll",
                     "Berserk", "Warcry", "Last Resort", "Souleater", "Hasso", "Defender",
-                    "Dia", "Dia II", "Dia III" };
+                    "Dia", "Dia II", "Dia III", "Footwork" };
 
 
             var attackSet = from c in dataSet.Combatants
@@ -1058,6 +1058,7 @@ namespace WaywardGamers.KParser.Plugin
             CompileFixedLengthBuffs(Resources.ParsedStrings.Warcry, TimeSpan.FromSeconds(30), playerList, playerIntervals, dataSet);
             CompileFixedLengthBuffs(Resources.ParsedStrings.LastResort, TimeSpan.FromSeconds(30), playerList, playerIntervals, dataSet);
             CompileFixedLengthBuffs(Resources.ParsedStrings.Haste, TimeSpan.FromMinutes(3), playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Footwork, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
 
             CompileStanceBuffs(Resources.ParsedStrings.Hasso, Resources.ParsedStrings.Seigan, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
             CompileStanceBuffs(Resources.ParsedStrings.Yonin, Resources.ParsedStrings.Innin, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
