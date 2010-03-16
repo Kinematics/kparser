@@ -273,6 +273,9 @@
       <DependentUpon>PlayerInfoDlg.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SplitParsesDlg.resx">
+      <DependentUpon>SplitParsesDlg.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ParserWindow.de.resx">
       <DependentUpon>ParserWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
