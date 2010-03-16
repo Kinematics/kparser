@@ -1134,4 +1134,7 @@
   <data name="AbsorbTP" xml:space="preserve">
     <value>Absorb-TP</value>
   </data>
+  <data name="RangedAttack" xml:space="preserve">
+    <value>Ranged Attack</value>
+  </data>
 </root>
