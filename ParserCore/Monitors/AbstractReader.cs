@@ -9,18 +9,24 @@ namespace WaywardGamers.KParser.Monitoring
 
         public virtual void Start()
         {
-            throw new InvalidOperationException();
+            throw new NotImplementedException();
         }
 
         public virtual void Import(ImportSourceType importSource, IDBReader dbReaderManager, bool modifyTimestamp)
         {
-            throw new InvalidOperationException();
+            throw new NotImplementedException();
         }
 
         public virtual void ImportRange(ImportSourceType importSource, IDBReader dbReaderManager,
             bool modifyTimestamp, DateTime startOfRange, DateTime endOfRange)
         {
-            throw new InvalidOperationException();
+            throw new NotImplementedException();
+        }
+
+        public virtual void Join(ImportSourceType importSource, IDBReader dbReaderManager,
+            IDBReader dbReaderManager2, bool modifyTimestamp, bool modifyTimestamp2)
+        {
+            throw new NotImplementedException();
         }
 
         public abstract void Stop();
