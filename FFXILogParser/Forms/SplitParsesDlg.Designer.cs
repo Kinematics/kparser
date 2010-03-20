@@ -44,6 +44,7 @@
             this.endAtEndOfParse = new System.Windows.Forms.RadioButton();
             this.acceptButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
+            this.resetButton = new System.Windows.Forms.Button();
             this.startGroup.SuspendLayout();
             this.endGroup.SuspendLayout();
             this.SuspendLayout();
@@ -73,15 +74,18 @@
             this.startDateTimePicker.Name = "startDateTimePicker";
             this.startDateTimePicker.Size = new System.Drawing.Size(270, 20);
             this.startDateTimePicker.TabIndex = 5;
+            this.startDateTimePicker.ValueChanged += new System.EventHandler(this.startDateTimePicker_ValueChanged);
             // 
             // startFightCombo
             // 
+            this.startFightCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.startFightCombo.Enabled = false;
             this.startFightCombo.FormattingEnabled = true;
             this.startFightCombo.Location = new System.Drawing.Point(192, 38);
             this.startFightCombo.Name = "startFightCombo";
             this.startFightCombo.Size = new System.Drawing.Size(270, 21);
             this.startFightCombo.TabIndex = 4;
+            this.startFightCombo.SelectedIndexChanged += new System.EventHandler(this.startFightCombo_SelectedIndexChanged);
             // 
             // startAtTime
             // 
@@ -158,15 +162,18 @@
             this.endDateTimePicker.Name = "endDateTimePicker";
             this.endDateTimePicker.Size = new System.Drawing.Size(270, 20);
             this.endDateTimePicker.TabIndex = 5;
+            this.endDateTimePicker.ValueChanged += new System.EventHandler(this.endDateTimePicker_ValueChanged);
             // 
             // endFightCombo
             // 
+            this.endFightCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.endFightCombo.Enabled = false;
             this.endFightCombo.FormattingEnabled = true;
             this.endFightCombo.Location = new System.Drawing.Point(192, 38);
             this.endFightCombo.Name = "endFightCombo";
             this.endFightCombo.Size = new System.Drawing.Size(270, 21);
             this.endFightCombo.TabIndex = 4;
+            this.endFightCombo.SelectedIndexChanged += new System.EventHandler(this.endFightCombo_SelectedIndexChanged);
             // 
             // endAtTime
             // 
@@ -239,6 +246,16 @@
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
             // 
+            // resetButton
+            // 
+            this.resetButton.Location = new System.Drawing.Point(12, 274);
+            this.resetButton.Name = "resetButton";
+            this.resetButton.Size = new System.Drawing.Size(75, 23);
+            this.resetButton.TabIndex = 4;
+            this.resetButton.Text = "Reset";
+            this.resetButton.UseVisualStyleBackColor = true;
+            this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
+            // 
             // SplitParsesDlg
             // 
             this.AcceptButton = this.acceptButton;
@@ -247,6 +264,7 @@
             this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(492, 309);
             this.ControlBox = false;
+            this.Controls.Add(this.resetButton);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.acceptButton);
             this.Controls.Add(this.endGroup);
@@ -256,6 +274,7 @@
             this.ShowInTaskbar = false;
             this.Text = "Split Parse File";
             this.Load += new System.EventHandler(this.SplitParsesDlg_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SplitParsesDlg_FormClosing);
             this.startGroup.ResumeLayout(false);
             this.startGroup.PerformLayout();
             this.endGroup.ResumeLayout(false);
@@ -282,5 +301,6 @@
         private System.Windows.Forms.ComboBox startFightCombo;
         private System.Windows.Forms.DateTimePicker endDateTimePicker;
         private System.Windows.Forms.ComboBox endFightCombo;
+        private System.Windows.Forms.Button resetButton;
     }
 }
