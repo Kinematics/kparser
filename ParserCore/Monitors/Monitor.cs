@@ -292,8 +292,7 @@ namespace WaywardGamers.KParser.Monitoring
                     break;
                 case ImportSourceType.DirectParse:
                 case ImportSourceType.DVSParse:
-                    dbReader = DirectParseReadingManager.Instance;
-                    break;
+                    // Not supported
                 default:
                     throw new InvalidOperationException();
             }
@@ -311,7 +310,7 @@ namespace WaywardGamers.KParser.Monitoring
             {
                 MsgManager.Instance.StartNewSession();
 
-                currentReader.Import(importSource, dbReader, upgradeTimestamp);
+                currentReader.ImportRange(importSource, dbReader, upgradeTimestamp, startOfRange, endOfRange);
             }
             catch (Exception)
             {
