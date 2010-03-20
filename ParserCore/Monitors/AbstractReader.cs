@@ -17,6 +17,12 @@ namespace WaywardGamers.KParser.Monitoring
             throw new InvalidOperationException();
         }
 
+        public virtual void ImportRange(ImportSourceType importSource, IDBReader dbReaderManager,
+            bool modifyTimestamp, DateTime startOfRange, DateTime endOfRange)
+        {
+            throw new InvalidOperationException();
+        }
+
         public abstract void Stop();
 
         public abstract DataSource ParseModeType { get; }

@@ -9,6 +9,8 @@ namespace WaywardGamers.KParser.Interface
     {
         void Start();
         void Import(ImportSourceType importSource, IDBReader dbReaderManager, bool modifyTimestamp);
+        void ImportRange(ImportSourceType importSource, IDBReader dbReaderManager, bool modifyTimestamp,
+            DateTime startOfRange, DateTime endOfRange);
         void Stop();
 
         DataSource ParseModeType { get; }

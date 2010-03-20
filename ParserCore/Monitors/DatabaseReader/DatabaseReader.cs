@@ -98,8 +98,55 @@ namespace WaywardGamers.KParser.Monitoring
 
                 dbReaderManager.CloseDatabase();
             }
+        }
 
+        public override void ImportRange(ImportSourceType importSource, IDBReader dbReaderManager,
+            bool modifyTimestamp, DateTime startOfRange, DateTime endOfRange)
+        {
+            this.upgradeTimestamp = modifyTimestamp;
+            IsRunning = true;
 
+            try
+            {
+                // Reset the thread
+                if ((readerThread != null) &&
+                    ((readerThread.ThreadState == System.Threading.ThreadState.Running) ||
+                    (readerThread.ThreadState == System.Threading.ThreadState.Background)))
+                {
+                    readerThread.Abort();
+                }
+
+                this.dbReaderManager = dbReaderManager;
+                readerThread = null;
+
+                // Create the thread
+                switch (importSource)
+                {
+                    case ImportSourceType.KParser:
+                        if (dbReaderManager is KParserReadingManager)
+                            readerThread = new Thread(ImportKParserDB);
+                        break;
+                    case ImportSourceType.DVSParse:
+                    case ImportSourceType.DirectParse:
+                        if (dbReaderManager is DirectParseReadingManager)
+                            readerThread = new Thread(ImportDirectParseDB);
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+
+                readerThread.IsBackground = true;
+                readerThread.Name = "Read database thread";
+                readerThread.Start();
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Log(e);
+                IsRunning = false;
+                OnReaderStatusChanged(new ReaderStatusEventArgs(0, 0, false, true));
+
+                dbReaderManager.CloseDatabase();
+            }
         }
 
         /// <summary>
