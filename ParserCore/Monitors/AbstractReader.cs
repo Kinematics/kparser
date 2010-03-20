@@ -23,8 +23,8 @@ namespace WaywardGamers.KParser.Monitoring
             throw new NotImplementedException();
         }
 
-        public virtual void Join(ImportSourceType importSource, IDBReader dbReaderManager,
-            bool modifyTimestamp, IDBReader dbReaderManager2, bool modifyTimestamp2)
+        public virtual void Join(ImportSourceType importSource,
+            IDBReader dbReaderManager, IDBReader dbReaderManager2)
         {
             throw new NotImplementedException();
         }
