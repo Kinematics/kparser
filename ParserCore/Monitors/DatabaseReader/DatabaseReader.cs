@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using WaywardGamers.KParser.Interface;
@@ -43,7 +44,10 @@ namespace WaywardGamers.KParser.Monitoring
         #region Member Variables
         private Thread readerThread;
         private IDBReader dbReaderManager;
+        private IDBReader dbReaderManager2;
+
         private bool upgradeTimestamp;
+
         private bool useTimeRange;
         private DateTime startOfTimeRange;
         private DateTime endOfTimeRange;
@@ -151,6 +155,57 @@ namespace WaywardGamers.KParser.Monitoring
                 OnReaderStatusChanged(new ReaderStatusEventArgs(0, 0, false, true));
 
                 dbReaderManager.CloseDatabase();
+            }
+        }
+
+        public override void Join(ImportSourceType importSource,
+            IDBReader dbReaderManager, IDBReader dbReaderManager2)
+        {
+            this.upgradeTimestamp = false;
+            this.useTimeRange = false;
+            IsRunning = true;
+
+            try
+            {
+                // Reset the thread
+                if ((readerThread != null) &&
+                    ((readerThread.ThreadState == System.Threading.ThreadState.Running) ||
+                    (readerThread.ThreadState == System.Threading.ThreadState.Background)))
+                {
+                    readerThread.Abort();
+                }
+
+                this.dbReaderManager = dbReaderManager;
+                this.dbReaderManager2 = dbReaderManager2;
+                readerThread = null;
+
+                // Create the thread
+                switch (importSource)
+                {
+                    case ImportSourceType.KParser:
+                        if ((dbReaderManager is KParserReadingManager) &&
+                            (dbReaderManager2 is KParserReadingManager))
+                            readerThread = new Thread(JoinKParserDB);
+                        break;
+                    case ImportSourceType.DVSParse:
+                    case ImportSourceType.DirectParse:
+                        // Not supported.
+                    default:
+                        throw new NotImplementedException();
+                }
+
+                readerThread.IsBackground = true;
+                readerThread.Name = "Join databases thread";
+                readerThread.Start();
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Log(e);
+                IsRunning = false;
+                OnReaderStatusChanged(new ReaderStatusEventArgs(0, 0, false, true));
+
+                dbReaderManager.CloseDatabase();
+                dbReaderManager2.CloseDatabase();
             }
         }
 
@@ -390,6 +445,108 @@ namespace WaywardGamers.KParser.Monitoring
                 dbReaderManager.CloseDatabase();
             }
         }
+
+        /// <summary>
+        /// Join two KParser parses.  They must have already had
+        /// timestamps upgraded, if applicable.
+        /// </summary>
+        private void JoinKParserDB()
+        {
+            int rowCount = 0;
+            int totalCount = 0;
+            bool completed = false;
+
+            try
+            {
+                KParserReadingManager db1 = dbReaderManager as KParserReadingManager;
+                if (db1 == null)
+                    throw new ArgumentNullException();
+                if (db1.Database == null)
+                    throw new ArgumentNullException();
+
+                KParserReadingManager db2 = dbReaderManager2 as KParserReadingManager;
+                if (db2 == null)
+                    throw new ArgumentNullException();
+                if (db2.Database == null)
+                    throw new ArgumentNullException();
+
+
+                var allLines = Enumerable.Concat<KPDatabaseDataSet.RecordLogRow>
+                    (db1.Database.RecordLog.Rows.Cast<KPDatabaseDataSet.RecordLogRow>(),
+                     db2.Database.RecordLog.Rows.Cast<KPDatabaseDataSet.RecordLogRow>())
+                    .OrderBy(l => l.Timestamp);
+
+                List<ChatLine> chatLines = new List<ChatLine>(100);
+
+                totalCount = allLines.Count();
+
+                // Read the (fixed) record log from the database, reconstruct
+                // the chat line, and send it to the new database.
+                foreach (var logLine in allLines)
+                {
+                    rowCount++;
+                    if (IsRunning == false)
+                        break;
+
+                    chatLines.Add(new ChatLine(logLine.MessageText, logLine.Timestamp));
+
+                    OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed, false));
+
+                    if (chatLines.Count > 99)
+                    {
+                        OnReaderDataChanged(new ReaderDataEventArgs(chatLines));
+                        chatLines = new List<ChatLine>(100);
+                    }
+                }
+
+                if (chatLines.Count > 0)
+                {
+                    OnReaderDataChanged(new ReaderDataEventArgs(chatLines));
+                }
+
+                completed = IsRunning;
+
+                List<PlayerInfo> playerInfoList = new List<PlayerInfo>();
+
+                foreach (var player in db1.Database.Combatants)
+                {
+                    playerInfoList.Add(new PlayerInfo()
+                    {
+                        Name = player.CombatantName,
+                        CombatantType = (EntityType)player.CombatantType,
+                        Info = player.PlayerInfo
+                    });
+                }
+
+                foreach (var player in db2.Database.Combatants)
+                {
+                    playerInfoList.Add(new PlayerInfo()
+                    {
+                        Name = player.CombatantName,
+                        CombatantType = (EntityType)player.CombatantType,
+                        Info = player.PlayerInfo
+                    });
+                }
+
+                WaywardGamers.KParser.Parsing.MsgManager.Instance.PlayerInfoList = playerInfoList;
+            }
+            catch (ThreadAbortException e)
+            {
+                Logger.Instance.Log(e);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Log(e);
+            }
+            finally
+            {
+                IsRunning = false;
+                OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed, (completed == false)));
+                dbReaderManager.CloseDatabase();
+                dbReaderManager2.CloseDatabase();
+            }
+        }
+
         #endregion
     }
 }
