@@ -243,7 +243,7 @@ namespace WaywardGamers.KParser.Monitoring
 
             dbReader.OpenDatabase(inFilename);
 
-            if (dbReader == KParserReadingManager.Instance)
+            if (dbReader is KParserReadingManager)
             {
                 // Auto-detect files needing timestamp upgrades.
                 if (KParserReadingManager.Instance.DatabaseParseVersion.CompareTo("1.3") < 0)
@@ -311,6 +311,67 @@ namespace WaywardGamers.KParser.Monitoring
                 MsgManager.Instance.StartNewSession();
 
                 currentReader.ImportRange(importSource, dbReader, upgradeTimestamp, startOfRange, endOfRange);
+            }
+            catch (Exception)
+            {
+                MsgManager.Instance.EndSession();
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Import data from another database (reparse, DVS, DirectParse, etc)
+        /// </summary>
+        /// <param name="inFilename1">The name of the first database file to import.</param>
+        /// <param name="inFilename2">The name of the second database file to import.</param>
+        /// <param name="outputFileName">The name of the new database.</param>
+        /// <param name="importSource">The type of database to import.</param>
+        public void Join(string inFilename1, string inFilename2, string outputFileName,
+            ImportSourceType importSource)
+        {
+            if (currentReader.IsRunning == true)
+                throw new InvalidOperationException(string.Format(
+                    "{0} is already running", currentReader.GetType().Name));
+
+            currentReader = DatabaseReader.Instance;
+
+            DatabaseManager.Instance.CreateDatabase(outputFileName);
+            System.Threading.Thread.Sleep(100);
+
+            IDBReader dbReader;
+            IDBReader dbReader2;
+            bool upgradeTimestamp = false;
+
+            switch (importSource)
+            {
+                case ImportSourceType.KParser:
+                    dbReader = KParserReadingManager.Instance;
+                    dbReader2 = new KParserReadingManager();
+                    break;
+                case ImportSourceType.DirectParse:
+                case ImportSourceType.DVSParse:
+                    // Not supported
+                default:
+                    throw new InvalidOperationException();
+            }
+
+            dbReader.OpenDatabase(inFilename1);
+            dbReader2.OpenDatabase(inFilename2);
+
+            if (dbReader is KParserReadingManager)
+            {
+                // Auto-detect files needing timestamp upgrades.
+                if (dbReader.DatabaseParseVersion.CompareTo("1.3") < 0)
+                    throw new InvalidOperationException("Reparse to upgrade timestamps first.");
+                if (dbReader2.DatabaseParseVersion.CompareTo("1.3") < 0)
+                    throw new InvalidOperationException("Reparse to upgrade timestamps first.");
+            }
+
+            try
+            {
+                MsgManager.Instance.StartNewSession();
+
+                currentReader.Join(importSource, dbReader, dbReader2);
             }
             catch (Exception)
             {
