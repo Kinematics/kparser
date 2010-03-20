@@ -44,6 +44,9 @@ namespace WaywardGamers.KParser.Monitoring
         private Thread readerThread;
         private IDBReader dbReaderManager;
         private bool upgradeTimestamp;
+        private bool useTimeRange;
+        private DateTime startOfTimeRange;
+        private DateTime endOfTimeRange;
         #endregion
 
         #region Interface Control Methods and Properties
@@ -55,6 +58,7 @@ namespace WaywardGamers.KParser.Monitoring
         public override void Import(ImportSourceType importSource, IDBReader dbReaderManager, bool modifyTimestamp)
         {
             this.upgradeTimestamp = modifyTimestamp;
+            this.useTimeRange = false;
             IsRunning = true;
 
             try
@@ -104,6 +108,9 @@ namespace WaywardGamers.KParser.Monitoring
             bool modifyTimestamp, DateTime startOfRange, DateTime endOfRange)
         {
             this.upgradeTimestamp = modifyTimestamp;
+            this.useTimeRange = true;
+            this.startOfTimeRange = startOfRange;
+            this.endOfTimeRange = endOfRange;
             IsRunning = true;
 
             try
@@ -128,9 +135,7 @@ namespace WaywardGamers.KParser.Monitoring
                         break;
                     case ImportSourceType.DVSParse:
                     case ImportSourceType.DirectParse:
-                        if (dbReaderManager is DirectParseReadingManager)
-                            readerThread = new Thread(ImportDirectParseDB);
-                        break;
+                        // Not supported
                     default:
                         throw new NotImplementedException();
                 }
@@ -196,10 +201,22 @@ namespace WaywardGamers.KParser.Monitoring
                         if (IsRunning == false)
                             break;
 
-                        if (upgradeTimestamp == true)
-                            chatLines.Add(new ChatLine(logLine.MessageText, logLine.Timestamp.ToUniversalTime()));
+                        if (useTimeRange == true)
+                        {
+                            DateTime logLineTime = logLine.Timestamp;
+                            if (upgradeTimestamp == true)
+                                logLineTime = logLine.Timestamp.ToUniversalTime();
+
+                            if ((logLineTime >= startOfTimeRange) && (logLineTime <= endOfTimeRange))
+                                chatLines.Add(new ChatLine(logLine.MessageText, logLineTime));
+                        }
                         else
-                            chatLines.Add(new ChatLine(logLine.MessageText, logLine.Timestamp));
+                        {
+                            if (upgradeTimestamp == true)
+                                chatLines.Add(new ChatLine(logLine.MessageText, logLine.Timestamp.ToUniversalTime()));
+                            else
+                                chatLines.Add(new ChatLine(logLine.MessageText, logLine.Timestamp));
+                        }
 
                         OnReaderStatusChanged(new ReaderStatusEventArgs(rowCount, totalCount, completed, false));
 
