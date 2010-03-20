@@ -270,6 +270,12 @@
   <data name="openSavedDataMenuItem.Text" xml:space="preserve">
     <value>&amp;Open Saved Data</value>
   </data>
+  <data name="importToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>262, 22</value>
+  </data>
+  <data name="importToolStripMenuItem.Text" xml:space="preserve">
+    <value>Import...</value>
+  </data>
   <data name="saveCurrentDataAsMenuItem.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+S</value>
   </data>
@@ -288,11 +294,17 @@
   <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
     <value>259, 6</value>
   </data>
-  <data name="importToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="splitParseToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>262, 22</value>
   </data>
-  <data name="importToolStripMenuItem.Text" xml:space="preserve">
-    <value>Import...</value>
+  <data name="splitParseToolStripMenuItem.Text" xml:space="preserve">
+    <value>Split Parse...</value>
+  </data>
+  <data name="joinParsesToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>262, 22</value>
+  </data>
+  <data name="joinParsesToolStripMenuItem.Text" xml:space="preserve">
+    <value>Join Parses...</value>
   </data>
   <data name="toolStripSeparator4.Size" type="System.Drawing.Size, System.Drawing">
     <value>259, 6</value>
@@ -522,11 +534,11 @@
   <data name="&gt;&gt;mainMenuStrip.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
-  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>30</value>
+  </metadata>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
   </metadata>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
     <value>6, 13</value>
@@ -871,6 +883,12 @@
   <data name="&gt;&gt;openSavedDataMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;importToolStripMenuItem.Name" xml:space="preserve">
+    <value>importToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;importToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;saveCurrentDataAsMenuItem.Name" xml:space="preserve">
     <value>saveCurrentDataAsMenuItem</value>
   </data>
@@ -889,10 +907,16 @@
   <data name="&gt;&gt;toolStripSeparator2.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;importToolStripMenuItem.Name" xml:space="preserve">
-    <value>importToolStripMenuItem</value>
+  <data name="&gt;&gt;splitParseToolStripMenuItem.Name" xml:space="preserve">
+    <value>splitParseToolStripMenuItem</value>
   </data>
-  <data name="&gt;&gt;importToolStripMenuItem.Type" xml:space="preserve">
+  <data name="&gt;&gt;splitParseToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;joinParsesToolStripMenuItem.Name" xml:space="preserve">
+    <value>joinParsesToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;joinParsesToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;toolStripSeparator4.Name" xml:space="preserve">
