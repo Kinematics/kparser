@@ -209,12 +209,69 @@ namespace WaywardGamers.KParser.Monitoring
         }
 
         /// <summary>
-        /// Import data from another parser's database (DVS, DirectParse, etc)
+        /// Import data from another database (reparse, DVS, DirectParse, etc)
         /// </summary>
         /// <param name="inFilename">The name of the database file to import.</param>
         /// <param name="outputFileName">The name of the new database.</param>
         /// <param name="importSource">The type of database to import.</param>
         public void Import(string inFilename, string outputFileName, ImportSourceType importSource)
+        {
+            if (currentReader.IsRunning == true)
+                throw new InvalidOperationException(string.Format(
+                    "{0} is already running", currentReader.GetType().Name));
+
+            currentReader = DatabaseReader.Instance;
+
+            DatabaseManager.Instance.CreateDatabase(outputFileName);
+            System.Threading.Thread.Sleep(100);
+
+            IDBReader dbReader;
+            bool upgradeTimestamp = false;
+
+            switch (importSource)
+            {
+                case ImportSourceType.KParser:
+                    dbReader = KParserReadingManager.Instance;
+                    break;
+                case ImportSourceType.DirectParse:
+                case ImportSourceType.DVSParse:
+                    dbReader = DirectParseReadingManager.Instance;
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
+
+            dbReader.OpenDatabase(inFilename);
+
+            if (dbReader == KParserReadingManager.Instance)
+            {
+                // Auto-detect files needing timestamp upgrades.
+                if (KParserReadingManager.Instance.DatabaseParseVersion.CompareTo("1.3") < 0)
+                    upgradeTimestamp = true;
+            }
+
+            try
+            {
+                MsgManager.Instance.StartNewSession();
+
+                currentReader.Import(importSource, dbReader, upgradeTimestamp);
+            }
+            catch (Exception)
+            {
+                MsgManager.Instance.EndSession();
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Import data (within a specific timestamp range) from
+        /// another database (reparse, DVS, DirectParse, etc)
+        /// </summary>
+        /// <param name="inFilename">The name of the database file to import.</param>
+        /// <param name="outputFileName">The name of the new database.</param>
+        /// <param name="importSource">The type of database to import.</param>
+        public void ImportRange(string inFilename, string outputFileName, ImportSourceType importSource,
+            DateTime startOfRange, DateTime endOfRange)
         {
             if (currentReader.IsRunning == true)
                 throw new InvalidOperationException(string.Format(
