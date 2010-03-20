@@ -159,13 +159,6 @@ namespace WaywardGamers.KParser.Monitoring
         /// </summary>
         public override void Stop()
         {
-            //if ((readerThread != null) &&
-            //    ((readerThread.ThreadState == System.Threading.ThreadState.Running) ||
-            //    (readerThread.ThreadState == System.Threading.ThreadState.Background)))
-            //{
-            //    readerThread.Abort();
-            //}
-
             IsRunning = false;
         }
         #endregion
