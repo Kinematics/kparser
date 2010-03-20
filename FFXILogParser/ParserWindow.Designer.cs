@@ -48,10 +48,12 @@ namespace WaywardGamers.KParser
             this.quitParsingMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.openSavedDataMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveCurrentDataAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveReportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.splitParseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.joinParsesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.recentFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.noneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -172,10 +174,12 @@ namespace WaywardGamers.KParser
             this.quitParsingMenuItem,
             this.toolStripSeparator1,
             this.openSavedDataMenuItem,
+            this.importToolStripMenuItem,
             this.saveCurrentDataAsMenuItem,
             this.saveReportMenuItem,
             this.toolStripSeparator2,
-            this.importToolStripMenuItem,
+            this.splitParseToolStripMenuItem,
+            this.joinParsesToolStripMenuItem,
             this.toolStripSeparator4,
             this.recentFilesToolStripMenuItem,
             this.toolStripSeparator7,
@@ -219,6 +223,12 @@ namespace WaywardGamers.KParser
             resources.ApplyResources(this.openSavedDataMenuItem, "openSavedDataMenuItem");
             this.openSavedDataMenuItem.Click += new System.EventHandler(this.menuOpenSavedData_Click);
             // 
+            // importToolStripMenuItem
+            // 
+            this.importToolStripMenuItem.Name = "importToolStripMenuItem";
+            resources.ApplyResources(this.importToolStripMenuItem, "importToolStripMenuItem");
+            this.importToolStripMenuItem.Click += new System.EventHandler(this.importDatabaseToolStripMenuItem_Click);
+            // 
             // saveCurrentDataAsMenuItem
             // 
             this.saveCurrentDataAsMenuItem.Name = "saveCurrentDataAsMenuItem";
@@ -236,11 +246,16 @@ namespace WaywardGamers.KParser
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             resources.ApplyResources(this.toolStripSeparator2, "toolStripSeparator2");
             // 
-            // importToolStripMenuItem
+            // splitParseToolStripMenuItem
             // 
-            this.importToolStripMenuItem.Name = "importToolStripMenuItem";
-            resources.ApplyResources(this.importToolStripMenuItem, "importToolStripMenuItem");
-            this.importToolStripMenuItem.Click += new System.EventHandler(this.importDatabaseToolStripMenuItem_Click);
+            this.splitParseToolStripMenuItem.Name = "splitParseToolStripMenuItem";
+            resources.ApplyResources(this.splitParseToolStripMenuItem, "splitParseToolStripMenuItem");
+            this.splitParseToolStripMenuItem.Click += new System.EventHandler(this.splitParseToolStripMenuItem_Click);
+            // 
+            // joinParsesToolStripMenuItem
+            // 
+            this.joinParsesToolStripMenuItem.Name = "joinParsesToolStripMenuItem";
+            resources.ApplyResources(this.joinParsesToolStripMenuItem, "joinParsesToolStripMenuItem");
             // 
             // toolStripSeparator4
             // 
@@ -543,5 +558,7 @@ namespace WaywardGamers.KParser
         private System.Windows.Forms.ToolStripMenuItem frenchParsingToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem germanParsingToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem japaneseParsingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem splitParseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem joinParsesToolStripMenuItem;
     }
 }
