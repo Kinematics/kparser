@@ -11,5 +11,6 @@ namespace WaywardGamers.KParser.Interface
         void CloseDatabase();
 
         string DatabaseFilename { get; }
+        string DatabaseParseVersion { get; }
     }
 }

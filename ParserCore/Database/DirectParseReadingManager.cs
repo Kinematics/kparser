@@ -104,6 +104,14 @@ namespace WaywardGamers.KParser
             }
         }
 
+        public string DatabaseParseVersion
+        {
+            get
+            {
+                return string.Empty;
+            }
+        }
+
         public void CloseDatabase()
         {
             if (localTAManager != null)
