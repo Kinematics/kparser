@@ -22,9 +22,8 @@ namespace WaywardGamers.KParser
         /// <summary>
         /// Private constructor ensures singleton purity.
         /// </summary>
-        private KParserReadingManager()
+        public KParserReadingManager()
         {
-            defaultSaveDirectory = System.Windows.Forms.Application.CommonAppDataPath;
         }
 
         /// <summary>
@@ -60,8 +59,6 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Member Variables
-        private string defaultSaveDirectory;
-
         private string databaseFilename;
         private string databaseConnectionString;
 
