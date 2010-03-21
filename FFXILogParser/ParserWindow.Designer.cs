@@ -256,6 +256,7 @@ namespace WaywardGamers.KParser
             // 
             this.joinParsesToolStripMenuItem.Name = "joinParsesToolStripMenuItem";
             resources.ApplyResources(this.joinParsesToolStripMenuItem, "joinParsesToolStripMenuItem");
+            this.joinParsesToolStripMenuItem.Click += new System.EventHandler(this.joinParsesToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
