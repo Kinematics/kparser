@@ -473,8 +473,11 @@ namespace WaywardGamers.KParser.Monitoring
 
                 var allLines = Enumerable.Concat<KPDatabaseDataSet.RecordLogRow>
                     (db1.Database.RecordLog.Rows.Cast<KPDatabaseDataSet.RecordLogRow>(),
-                     db2.Database.RecordLog.Rows.Cast<KPDatabaseDataSet.RecordLogRow>())
-                    .OrderBy(l => l.Timestamp);
+                     db2.Database.RecordLog.Rows.Cast<KPDatabaseDataSet.RecordLogRow>());
+
+                var orderedLines = from line in allLines
+                                   orderby line.Timestamp, line.RecordLogID
+                                   select line;
 
                 List<ChatLine> chatLines = new List<ChatLine>(100);
 
@@ -482,7 +485,7 @@ namespace WaywardGamers.KParser.Monitoring
 
                 // Read the (fixed) record log from the database, reconstruct
                 // the chat line, and send it to the new database.
-                foreach (var logLine in allLines)
+                foreach (var logLine in orderedLines)
                 {
                     rowCount++;
                     if (IsRunning == false)
