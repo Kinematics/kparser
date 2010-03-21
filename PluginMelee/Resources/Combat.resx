@@ -912,4 +912,7 @@
   <data name="CorsairPluginAvgBonusHeader" xml:space="preserve">
     <value>Average Bonus      With Job Bonus      Without Job Bonus</value>
   </data>
+  <data name="OffensePluginCopySummary" xml:space="preserve">
+    <value>Copy Summary</value>
+  </data>
 </root>

@@ -55,6 +55,7 @@ namespace WaywardGamers.KParser.Plugin
         string lsSkillchainTitle;
         string lsOtherPhysicalTitle;
         string lsOtherMagicalTitle;
+        string lsCopySummaryTitle;
 
         // Headers
 
@@ -1328,6 +1329,9 @@ namespace WaywardGamers.KParser.Plugin
                 case 8: // "Skillchains":
                     ProcessSkillchains(ref sb, ref strModList);
                     break;
+                case 9: // "Copy Summary":
+                    ProcessCopySummary(ref sb, ref strModList);
+                    break;
             }
 
             PushStrings(sb, strModList);
@@ -1827,6 +1831,55 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
+        private void ProcessCopySummary(
+            ref StringBuilder sb, ref List<StringMods> strModList)
+        {
+            totalDamage = dataAccum.Sum(p => p.TDmg);
+
+            if (totalDamage > 0)
+            {
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = lsCopySummaryTitle.Length,
+                    Bold = true,
+                    Color = Color.Red
+                });
+                sb.Append(lsCopySummaryTitle + "\n\n");
+
+
+
+                // Only 1% and higher results
+                int cutoff = totalDamage / 100;
+
+                var playersPlusPets = dataAccum
+                    .Where(d => d.CType == EntityType.Player || d.CType == EntityType.Pet)
+                    .Where(d => d.TDmg > cutoff)
+                    .OrderBy(d => d.TDmg).Reverse();
+
+                var head = playersPlusPets.Take(5);
+                var tail = playersPlusPets.Skip(5);
+
+                while (head.Count() > 0)
+                {
+                    string prefix = "";
+
+                    foreach (var entry in head)
+                    {
+                        sb.AppendFormat("{2}{0}: {1:p2}", entry.Name, (double)entry.TDmg / totalDamage, prefix);
+
+                        prefix = ", ";
+                    }
+                    sb.Append("\n");
+
+                    head = tail.Take(5);
+                    tail = tail.Skip(5);
+                }
+            }
+
+            sb.Append("\n\n");
+        }
+
         #endregion
 
         #region Event Handlers
@@ -1992,6 +2045,7 @@ namespace WaywardGamers.KParser.Plugin
             categoryCombo.Items.Add(Resources.Combat.OffensePluginCategoryAbility);
             categoryCombo.Items.Add(Resources.Combat.OffensePluginCategorySpell);
             categoryCombo.Items.Add(Resources.Combat.OffensePluginCategorySkillchain);
+            categoryCombo.Items.Add(Resources.Combat.OffensePluginCopySummary);
             categoryCombo.SelectedIndex = 0;
 
             UpdateMobList();
@@ -2020,7 +2074,7 @@ namespace WaywardGamers.KParser.Plugin
             lsSkillchainTitle = Resources.Combat.OffensePluginTitleSkillchain;
             lsOtherPhysicalTitle = Resources.Combat.OffensePluginTitleOtherPhysical;
             lsOtherMagicalTitle = Resources.Combat.OffensePluginTitleOtherMagical;
-
+            lsCopySummaryTitle = Resources.Combat.OffensePluginCopySummary;
 
             // Headers
 

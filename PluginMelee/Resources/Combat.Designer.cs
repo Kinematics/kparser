@@ -1600,6 +1600,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copy Summary.
+        /// </summary>
+        internal static string OffensePluginCopySummary {
+            get {
+                return ResourceManager.GetString("OffensePluginCopySummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0,-23}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}.
         /// </summary>
         internal static string OffensePluginFormatAbility {
