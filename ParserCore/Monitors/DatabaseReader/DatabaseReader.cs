@@ -470,10 +470,9 @@ namespace WaywardGamers.KParser.Monitoring
                 if (db2.Database == null)
                     throw new ArgumentNullException();
 
-
-                var allLines = Enumerable.Concat<KPDatabaseDataSet.RecordLogRow>
-                    (db1.Database.RecordLog.Rows.Cast<KPDatabaseDataSet.RecordLogRow>(),
-                     db2.Database.RecordLog.Rows.Cast<KPDatabaseDataSet.RecordLogRow>());
+                var allLines = Enumerable.Concat
+                    (db1.Database.RecordLog.AsEnumerable(),
+                     db2.Database.RecordLog.AsEnumerable());
 
                 var orderedLines = from line in allLines
                                    orderby line.Timestamp, line.RecordLogID
