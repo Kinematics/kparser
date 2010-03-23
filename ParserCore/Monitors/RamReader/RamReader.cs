@@ -803,7 +803,7 @@ namespace WaywardGamers.KParser.Monitoring
 
                 // Locate a pointer to the start of the chat log messages. (0x02A8FF90)
                 // The location of that pointer is used in Section 3.
-                //FindAddress(0x85DB030);
+                //FindAddress(0x077ce500);
                 // Use calculated pointerLocation.
                 // EG: Scan Address 0x0488f000 + Index j (989) * 4 -
                 //     Base address 0x01e00000 = Pointer location 0x02a8ff74
@@ -821,14 +821,14 @@ namespace WaywardGamers.KParser.Monitoring
 
                 // Examine the ChatLogInfoStruct from the previous address
                 // to make sure things match up.
-                //CheckStructureAtAddress(0x8559E30);
+                //CheckStructureAtAddress(0x5876580);
 
                 // Section 5
 
                 // Since we know where the structure lives, find the address
                 // that points to that.  Use the same address as that used when
                 // checking the ChatLog structure.
-                //FindAddress(0x8559E30);
+                //FindAddress(0x5876580);
                 // Use calculated pointerLocation.
                 // EG: Scan Address 0x0488f000 + Index j (929) * 4 - 
                 //     Base address 0x01e00000 = Pointer location 0x02a8fe84
@@ -839,7 +839,7 @@ namespace WaywardGamers.KParser.Monitoring
                 // to by an initial address point.  Locate the address of our
                 // (pointer from section 5) - 4.
                 // EG: 0x02a8fe84 - 4 = 0x02a8fe80
-                //FindAddress(0x082cd538);
+                //FindAddress(0x0579ce88);
                 // Use calculated pointerLocation.
                 // EG: Scan Address 0x0237d000 + Index j (474) * 4 - 
                 //     Base address 0x01e00000 = Pointer location 0x0057d768
@@ -856,6 +856,7 @@ namespace WaywardGamers.KParser.Monitoring
                 // Base address after patch  on 2009-04-22:  0x0057d7e8
                 // Base address after update  on 2009-07-20: 0x0057da98
                 // Base address after update  on 2009-11-09: 0x005801d8
+                // Base address after update  on 2010-03-22: 0x00581518
 
 
                 // stop break point
@@ -992,7 +993,7 @@ namespace WaywardGamers.KParser.Monitoring
                 byte[][] scanChatLines = ReadChatLinesAsByteArrays(examineDetails.ChatLogInfo.PtrToCurrentChatLog,
                         examineDetails.ChatLogInfo.FinalOffset, examineDetails.ChatLogInfo.NumberOfLines);
 
-                string[] scanChatLinesStrings = new string[scanChatLines.Length];
+                //string[] scanChatLinesStrings = new string[scanChatLines.Length];
 
             }
             catch (Exception e)
