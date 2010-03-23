@@ -1,9 +1,17 @@
 KParser Change Log
 
-1.5.1 (March ??, 2010)
+
+1.5.1 (March 23, 2010)
 - Fix for a bug in combining messages in a reparse of a parse comprised of multiple continued parses from multiple sessions.
 - Bug fix: mob names can have ' followed by one letter (eg: Fe'e).
 - Fix bug in custom mob selection dialog that caused a crash when changing between different sized mob lists.
+- Fix bug in parsing Mk.IV puppet name.
++ Add ability to extract a portion of a parse into a new parse file.  'Split Parse' on File menu.
++ Add ability to join multiple parses together.  'Join Parses' on File menu.
++ Add selection for a quick summary of damage percentage share in the Offense tab that can be copied to be pasted in to the game.
++ Add functionality to WS Rates plugin to process /echo'd TP data for weaponskills.
+  Syntax for echo is "/echo KParser: TP return = <tp>", or "/echo KParser: <tp> WS TP", or "/echo KParser: <tp> TP".  "KParser" may be abbreviated as "KP".  There's a bit of flexibility in the spacing, but try to stick with the above syntax if you want the TP info handled.
+* Updated with new memloc.  New memloc is 0x00581518.
 
 
 1.5.0 (February 22, 2010)
