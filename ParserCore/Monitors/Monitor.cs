@@ -342,7 +342,6 @@ namespace WaywardGamers.KParser.Monitoring
 
                 IDBReader dbReader;
                 IDBReader dbReader2;
-                bool upgradeTimestamp = false;
 
                 switch (importSource)
                 {
