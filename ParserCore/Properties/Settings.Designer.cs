@@ -56,7 +56,7 @@ namespace WaywardGamers.KParser.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5767640")]
+        [global::System.Configuration.DefaultSettingValueAttribute("5772568")]
         public uint MemoryOffset {
             get {
                 return ((uint)(this["MemoryOffset"]));
