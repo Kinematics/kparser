@@ -583,24 +583,37 @@ namespace WaywardGamers.KParser.Plugin
         private int GetTP(KPDatabaseDataSet.InteractionsRow ws,
             EnumerableRowCollection<KPDatabaseDataSet.ChatMessagesRow> tpEchoes)
         {
-            // Find anything +/- 3 seconds from the ws
+            if (ws == null)
+                throw new ArgumentNullException("ws");
+            if (tpEchoes == null)
+                throw new ArgumentNullException("tpEchoes");
 
-            var tpSet = tpEchoes.Where(c => Math.Abs((c.Timestamp - ws.Timestamp).TotalSeconds) <= 3);
 
-            if (tpSet.Count() == 0)
+            // Find anything +/- 5 seconds from the ws
+            var localTPSet = tpEchoes.Where(c => Math.Abs((c.Timestamp - ws.Timestamp).TotalSeconds) <= 5);
+
+            // If none, no valid TP
+            if (localTPSet.Count() == 0)
                 return -1;
 
-            if (tpSet.Count() == 1)
-                return GetTPValue(tpSet.First().Message);
+            // If only one, return that
+            if (localTPSet.Count() == 1)
+                return GetTPValue(localTPSet.First().Message);
 
-            int minTP = tpSet.Min(t => GetTPValue(t.Message));
+            // If there's more than one, sort them by how close they are to the weaponskill,
+            // picking only those with validly parsed results.
+            var proximityTPSet = from e in localTPSet
+                                 let tpAmount = GetTPValue(e.Message)
+                                 where tpAmount >= 0 && tpAmount < 100
+                                 orderby Math.Abs((e.Timestamp - ws.Timestamp).TotalSeconds)
+                                 select e;
 
-            var tpOrdered = tpSet.Select(t => GetTPValue(t.Message)).Where(a => a >= 0);
+            // If no validly formatted results, return unknown.
+            if (proximityTPSet.Count() == 0)
+                return -1;
 
-            if (tpOrdered.Count() > 0)
-                return tpOrdered.Min();
-
-            return -1;
+            // Otherwise take the first (closest to weaponskill) echo in the list.
+            return GetTPValue(proximityTPSet.First().Message);
         }
 
         private int GetTPValue(string tpEcho)
