@@ -583,9 +583,9 @@ namespace WaywardGamers.KParser.Plugin
         private int GetTP(KPDatabaseDataSet.InteractionsRow ws,
             EnumerableRowCollection<KPDatabaseDataSet.ChatMessagesRow> tpEchoes)
         {
-            // Find anything +/- 5 seconds from the ws
+            // Find anything +/- 3 seconds from the ws
 
-            var tpSet = tpEchoes.Where(c => Math.Abs((c.Timestamp - ws.Timestamp).TotalSeconds) <= 5);
+            var tpSet = tpEchoes.Where(c => Math.Abs((c.Timestamp - ws.Timestamp).TotalSeconds) <= 3);
 
             if (tpSet.Count() == 0)
                 return -1;
