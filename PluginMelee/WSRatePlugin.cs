@@ -65,6 +65,10 @@ namespace WaywardGamers.KParser.Plugin
         ToolStripButton editCustomMobFilter = new ToolStripButton();
 
 
+        Regex tpRegex = new Regex(@"KP(arser)?:\s*(TP return =)?\s*(?<tpReturn>\d+\s?%)\W*((ws)?\s*tp)?",
+            RegexOptions.IgnoreCase);
+        
+
         // Localized strings
         string lsAll;
 
@@ -420,9 +424,206 @@ namespace WaywardGamers.KParser.Plugin
             List<StringMods> strModList = new List<StringMods>();
             StringBuilder sb = new StringBuilder();
 
-            ProcessAttackSet(attackSet,  ref sb, ref strModList);
+            ProcessAttackSet(attackSet, ref sb, ref strModList);
+
+            ProcessTPReturns(attackSet, dataSet, ref sb, ref strModList);
 
             PushStrings(sb, strModList);
+        }
+
+
+        private void ProcessTPReturns(IEnumerable<AttackGroup> attackSet, KPDatabaseDataSet dataSet,
+            ref StringBuilder sb, ref List<StringMods> strModList)
+        {
+            var echoes = from c in dataSet.ChatMessages
+                         where c.ChatSpeakersRow.SpeakerName == "-Echo-"
+                         select c;
+
+            var tpEchoes = from e in echoes
+                           where tpRegex.Match(e.Message).Success == true
+                           select e;
+
+            //if (tpEchoes.Count() == 0)
+            //    return;
+
+            var selfPlayer = attackSet.Where(a => a.WSkill.Count() > 0).Where(a =>
+                a.WSkill.Any(w => (ActorPlayerType)w.ActorType == ActorPlayerType.Self));
+
+            foreach (var player in selfPlayer.OrderBy(a => a.Name))
+            {
+                var combatant = dataSet.Combatants.FirstOrDefault(c => c.CombatantName == player.Name);
+
+                if (combatant == null)
+                    continue;
+
+                // Ok, we've found the parsing player. Collect the TP returns for as many WSs as we can.
+
+                var wsTP = from ws in player.WSkill
+                           select new
+                           {
+                               WS = ws,
+                               TP = GetTP(ws, tpEchoes)
+                           };
+
+                if (wsTP.Count() == 0)
+                    return;
+
+                int totalWS = wsTP.Count();
+
+                var groupedByWS = wsTP.GroupBy(w => w.WS.ActionsRow.ActionName);
+
+                string tmp = string.Format("TP Returns for {0}", player.Name);
+
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = tmp.Length,
+                    Bold = true,
+                    Color = Color.Red
+                });
+                sb.Append(tmp + "\n\n");
+
+                sb.Append("Echo format: \"/echo KParser: TP return = <tp>\" or \"/echo KParser: <tp> WS TP\"\n\n");
+
+                foreach (var byWS in groupedByWS)
+                {
+                    tmp = byWS.Key;
+                    strModList.Add(new StringMods
+                    {
+                        Start = sb.Length,
+                        Length = tmp.Length,
+                        Bold = true,
+                        Color = Color.Green
+                    });
+                    sb.Append(tmp + "\n\n");
+
+                    var groupedWSTP = byWS.GroupBy(a => a.TP);
+
+                    var over0TP = byWS.Where(a => a.TP >= 0);
+                    int freqOver0TP = over0TP.Count();
+                    int dmgOver0TP = over0TP.Sum(a => a.WS.Amount);
+
+                    int sumTP = over0TP.Sum(a => a.TP);
+
+                    groupedWSTP.Sum(a => a.Count());
+
+                    double avgTP = 0;
+                    if (freqOver0TP > 0)
+                    {
+                        avgTP = (double)sumTP / freqOver0TP;
+                        sb.AppendFormat("Average recorded TP return: {0:f2}\n\n", avgTP);
+                    }
+                    else
+                    {
+                        sb.Append("Average recorded TP return: Unknown\n\n");
+                    }
+
+                    tmp = "Data by TP return (-1 is invalid or missing echo data):";
+
+                    strModList.Add(new StringMods
+                    {
+                        Start = sb.Length,
+                        Length = tmp.Length,
+                        Bold = true,
+                        Color = Color.Blue
+                    });
+                    sb.Append(tmp + "\n\n");
+
+                    string tpHeader = "TP    Count      Freq %    Total WS Dmg    Avg WS Dmg";
+
+                    strModList.Add(new StringMods
+                    {
+                        Start = sb.Length,
+                        Length = tpHeader.Length,
+                        Bold = true,
+                        Underline = true,
+                        Color = Color.Black
+                    });
+                    sb.Append(tpHeader + "\n");
+
+
+                    foreach (var tp in groupedWSTP.OrderBy(a => a.Key))
+                    {
+                        sb.AppendFormat("{0,-3}{1,8}{2,12:p2}{3,16}{4,14:f2}",
+                            tp.Key,
+                            tp.Count(),
+                            (double)tp.Count() / totalWS,
+                            tp.Sum(a => a.WS.Amount),
+                            tp.Average(a => a.WS.Amount));
+                        sb.Append("\n");
+                    }
+                    sb.Append("\n");
+
+
+                    tmp = "Details:";
+
+                    strModList.Add(new StringMods
+                    {
+                        Start = sb.Length,
+                        Length = tmp.Length,
+                        Bold = true,
+                        Color = Color.Blue
+                    });
+                    sb.Append(tmp + "\n\n");
+
+                    foreach (var tp in groupedWSTP.OrderBy(a => a.Key))
+                    {
+                        sb.AppendFormat("{0} TP\n", tp.Key);
+
+                        foreach (var ws in tp.OrderBy(a => a.WS.Timestamp))
+                        {
+                            sb.AppendFormat("   {0}\n", ws.WS.Amount);
+                        }
+                    }
+                    sb.Append("\n\n");
+                }
+            }
+        }
+
+        private int GetTP(KPDatabaseDataSet.InteractionsRow ws,
+            EnumerableRowCollection<KPDatabaseDataSet.ChatMessagesRow> tpEchoes)
+        {
+            // Find anything +/- 5 seconds from the ws
+
+            var tpSet = tpEchoes.Where(c => Math.Abs((c.Timestamp - ws.Timestamp).TotalSeconds) <= 5);
+
+            if (tpSet.Count() == 0)
+                return -1;
+
+            if (tpSet.Count() == 1)
+                return GetTPValue(tpSet.First().Message);
+
+            int minTP = tpSet.Min(t => GetTPValue(t.Message));
+
+            var tpOrdered = tpSet.Select(t => GetTPValue(t.Message)).Where(a => a >= 0);
+
+            if (tpOrdered.Count() > 0)
+                return tpOrdered.Min();
+
+            return -1;
+        }
+
+        private int GetTPValue(string tpEcho)
+        {
+            if (string.IsNullOrEmpty(tpEcho))
+                throw new ArgumentNullException();
+
+            Match tpMatch = tpRegex.Match(tpEcho);
+
+            if (tpMatch.Success)
+            {
+                string tpStr = tpMatch.Groups["tpReturn"].Value;
+                int tp = 0;
+
+                if (int.TryParse(tpStr, out tp))
+                    return tp;
+                else
+                    return -1;
+            }
+            else
+            {
+                return -1;
+            }
         }
 
         private void ProcessAttackSet(IEnumerable<AttackGroup> attackSet,
