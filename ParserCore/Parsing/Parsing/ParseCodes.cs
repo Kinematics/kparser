@@ -1130,7 +1130,7 @@ namespace WaywardGamers.KParser
             actorPlayerTypeLookup[0x1c] = ActorPlayerType.None; // <mob> hits <me> or <pm>
             actorPlayerTypeLookup[0x1d] = ActorPlayerType.None; // <mob> misses <me> or <pm>
             actorPlayerTypeLookup[0x1e] = ActorPlayerType.Self; // <me> drains
-            actorPlayerTypeLookup[0x1f] = ActorPlayerType.Self; // <me> recovers/cures
+            actorPlayerTypeLookup[0x1f] = ActorPlayerType.Party; // <me> recovers/cures (me curing, or me being cured)
             actorPlayerTypeLookup[0x20] = ActorPlayerType.None; // <mob> hits <pm> ??
             actorPlayerTypeLookup[0x21] = ActorPlayerType.None; // <mob> misses <pm> ??
             actorPlayerTypeLookup[0x22] = ActorPlayerType.Party; // <pm> Drains
@@ -1200,7 +1200,7 @@ namespace WaywardGamers.KParser
             actorPlayerTypeLookup[0x62] = ActorPlayerType.None; //
             actorPlayerTypeLookup[0x63] = ActorPlayerType.None; //
             actorPlayerTypeLookup[0x64] = ActorPlayerType.Unknown; // prep ability, None target
-            actorPlayerTypeLookup[0x65] = ActorPlayerType.Self; // <me> uses buff (self-buff?)
+            actorPlayerTypeLookup[0x65] = ActorPlayerType.Party; // <me> uses buff (self-buff?)
             actorPlayerTypeLookup[0x66] = ActorPlayerType.None; // <me> is enfeebled
             actorPlayerTypeLookup[0x67] = ActorPlayerType.None; //
             actorPlayerTypeLookup[0x68] = ActorPlayerType.None; // <mob> uses ability, misses <me>
@@ -1211,7 +1211,7 @@ namespace WaywardGamers.KParser
             actorPlayerTypeLookup[0x6d] = ActorPlayerType.None; //
             actorPlayerTypeLookup[0x6e] = ActorPlayerType.None; // Move being readied for/against mob
             actorPlayerTypeLookup[0x6f] = ActorPlayerType.Other; // <other> uses buff (self-buff?)
-            actorPlayerTypeLookup[0x70] = ActorPlayerType.Self; // <me> enfeebles (ability), use buff and fail (cor bust)
+            actorPlayerTypeLookup[0x70] = ActorPlayerType.Party; // <me> enfeebles (ability), use buff and fail (cor bust)
             actorPlayerTypeLookup[0x71] = ActorPlayerType.None; //
             actorPlayerTypeLookup[0x72] = ActorPlayerType.Alliance; // <am> uses weaponskill (ability?), misses
             actorPlayerTypeLookup[0x73] = ActorPlayerType.None; //
