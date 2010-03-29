@@ -65,7 +65,7 @@ namespace WaywardGamers.KParser.Plugin
         ToolStripButton editCustomMobFilter = new ToolStripButton();
 
 
-        Regex tpRegex = new Regex(@"KP(arser)?:\s*(TP return =)?\s*(?<tpReturn>\d+\s?%)\W*((ws)?\s*tp)?",
+        Regex tpRegex = new Regex(@"KP(arser)?:\s*(TP return =)?\s*(?<tpReturn>\d+)%\W*((ws)?\s*tp)?",
             RegexOptions.IgnoreCase);
         
 
