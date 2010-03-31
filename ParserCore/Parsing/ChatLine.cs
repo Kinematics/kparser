@@ -168,6 +168,9 @@ namespace WaywardGamers.KParser
         /// <returns>Char array of the same length and same content.</returns>
         private char[] ConvertToCharArray(byte[] byteArray)
         {
+            if (byteArray == null)
+                throw new ArgumentNullException();
+
             char[] charArray = new char[byteArray.Length];
 
             for (int i = 0; i < byteArray.Length; i++)

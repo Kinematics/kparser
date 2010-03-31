@@ -393,7 +393,8 @@ namespace WaywardGamers.KParser.Monitoring
 
                             foreach (var newLine in linesToProcessBytes)
                             {
-                                chatData.Add(new ChatLine(newLine));
+                                if (newLine != null)
+                                    chatData.Add(new ChatLine(newLine));
                             }
 
                             // Notify watchers
