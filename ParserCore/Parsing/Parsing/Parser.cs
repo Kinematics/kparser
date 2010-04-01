@@ -148,11 +148,13 @@ namespace WaywardGamers.KParser.Parsing
                 Match debuffMatch = ParseExpressions.Debuff.Match(messageLine.TextOutput);
                 Match resMatch = ParseExpressions.GainResistance.Match(messageLine.TextOutput);
                 Match corMatch = ParseExpressions.GainCorRoll.Match(messageLine.TextOutput);
+                Match enhanceMatch = ParseExpressions.Enhance.Match(messageLine.TextOutput);
 
                 if (buffMatch.Success ||
                     debuffMatch.Success ||
                     resMatch.Success ||
-                    corMatch.Success)
+                    corMatch.Success ||
+                    enhanceMatch.Success)
                 {
                     string effectName = string.Empty;
                     string targetName = string.Empty;
@@ -177,6 +179,11 @@ namespace WaywardGamers.KParser.Parsing
                         effectName = corMatch.Groups[ParseFields.Ability].Value;
                         targetName = corMatch.Groups[ParseFields.Target].Value;
                     }
+                    else if (enhanceMatch.Success)
+                    {
+                        effectName = "EnhanceAttack";
+                        targetName = enhanceMatch.Groups[ParseFields.Target].Value;
+                    }
 
                     msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseWithEffect(messageLine,
                         ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), effectName, targetName);
@@ -186,8 +193,7 @@ namespace WaywardGamers.KParser.Parsing
             // AOE Buff (2)
             if (msg == null)
             {
-                if (ParseExpressions.Enhance.Match(messageLine.TextOutput).Success ||
-                    ParseExpressions.RemoveStatus.Match(messageLine.TextOutput).Success)
+                if (ParseExpressions.RemoveStatus.Match(messageLine.TextOutput).Success)
                 {
                     msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUse(messageLine,
                         ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode));
