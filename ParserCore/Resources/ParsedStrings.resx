@@ -1137,4 +1137,7 @@
   <data name="RangedAttack" xml:space="preserve">
     <value>Ranged Attack</value>
   </data>
+  <data name="ResistRegex" xml:space="preserve">
+    <value>^Resist!</value>
+  </data>
 </root>
