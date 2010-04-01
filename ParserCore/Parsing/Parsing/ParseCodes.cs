@@ -860,7 +860,7 @@ namespace WaywardGamers.KParser
             actorEntityTypeLookup[0x6d] = EntityType.Unknown; //
             actorEntityTypeLookup[0x6e] = EntityType.Unknown; // <me/party> prep weaponskill, <bt> prep self-buff
             actorEntityTypeLookup[0x6f] = EntityType.Unknown; // <other> uses buff (self-buff?)
-            actorEntityTypeLookup[0x70] = EntityType.Player; // <me> enfeebles (ability)
+            actorEntityTypeLookup[0x70] = EntityType.Unknown; // <me> enfeebles (ability)
             actorEntityTypeLookup[0x71] = EntityType.Unknown; //
             actorEntityTypeLookup[0x72] = EntityType.Player; // <am> uses weaponskill (ability?), misses
             actorEntityTypeLookup[0x73] = EntityType.Unknown; //
@@ -1394,10 +1394,6 @@ namespace WaywardGamers.KParser
                 case 0x72:
                     return new List<uint>() { 0x65, 0x6f };
                 // Enfeebles (successful and resisted)
-                case 0x44:
-                    return new List<uint>() { 0x41 };
-                case 0x45:
-                    return new List<uint>() { 0x39, 0x3b, 0x3d, 0x3f, 0xb6 };
                 case 0x3f:
                     return new List<uint>() { 0x39, 0x3b, 0x3d, 0x45, 0xb6 };
                 case 0x39:
@@ -1406,6 +1402,12 @@ namespace WaywardGamers.KParser
                     return new List<uint>() { 0x39, 0x45, 0x3d, 0x3f, 0xb6 };
                 case 0x3d:
                     return new List<uint>() { 0x39, 0x3b, 0x45, 0x3f, 0xb6 };
+                case 0x41:
+                    return new List<uint>() { 0xb6 };
+                case 0x44:
+                    return new List<uint>() { 0x41 };
+                case 0x45:
+                    return new List<uint>() { 0x39, 0x3b, 0x3d, 0x3f, 0xb6 };
                 case 0xb6:
                     return new List<uint>() { 0x39, 0x3b, 0x45, 0x3f, 0x45 };
                 // AOE attacks
@@ -1419,7 +1421,7 @@ namespace WaywardGamers.KParser
                 case 0x20: // hits <pm>
                     return new List<uint>() { 0x6d, 0x1c };
                 case 0x28: // hits <other>
-                    return new List<uint>() { 0x1c, 0x20 };
+                    return new List<uint>() { 0x1c, 0x20, 0xa3 };
                 // AOE Drain
                 case 0x16:
                     return new List<uint>() { 0x1b, 0xa5 };
