@@ -1395,7 +1395,7 @@ namespace WaywardGamers.KParser
                     return new List<uint>() { 0x65, 0x6f };
                 // Enfeebles (successful and resisted)
                 case 0x3f:
-                    return new List<uint>() { 0x39, 0x3b, 0x3d, 0x45, 0xb6 };
+                    return new List<uint>() { 0x39, 0x3b, 0x3d, 0x45, 0x70, 0xb6 };
                 case 0x39:
                     return new List<uint>() { 0x45, 0x3b, 0x3d, 0x3f, 0xb6 };
                 case 0x3b:
@@ -1407,7 +1407,7 @@ namespace WaywardGamers.KParser
                 case 0x44:
                     return new List<uint>() { 0x41 };
                 case 0x45:
-                    return new List<uint>() { 0x39, 0x3b, 0x3d, 0x3f, 0xb6 };
+                    return new List<uint>() { 0x39, 0x3b, 0x3d, 0x3f, 0x70, 0xb6 };
                 case 0xb6:
                     return new List<uint>() { 0x39, 0x3b, 0x45, 0x3f, 0x45 };
                 // AOE attacks
