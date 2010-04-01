@@ -168,7 +168,6 @@ namespace WaywardGamers.KParser
         }
         #endregion
 
-
         #region Methods to modify Message
         internal void AddMessageLine(MessageLine msgLine)
         {
@@ -222,7 +221,6 @@ namespace WaywardGamers.KParser
             }
         }
         #endregion
-
 
         #region Overrides
         public override string ToString()
