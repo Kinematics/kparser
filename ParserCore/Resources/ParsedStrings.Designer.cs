@@ -2266,6 +2266,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ^Resist!.
+        /// </summary>
+        public static string ResistRegex {
+            get {
+                return ResourceManager.GetString("ResistRegex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Retribution.
         /// </summary>
         public static string Retribution {
