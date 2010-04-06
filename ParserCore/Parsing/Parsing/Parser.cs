@@ -219,6 +219,7 @@ namespace WaywardGamers.KParser.Parsing
                 Match debuffMatch = ParseExpressions.Debuff.Match(messageLine.TextOutput);
                 Match enfeebMatch = ParseExpressions.Enfeeble.Match(messageLine.TextOutput);
                 Match resistMatch = ParseExpressions.ResistSpell.Match(messageLine.TextOutput);
+                //Match noEffectMatch = ParseExpressions.NoEffect2.Match(messageLine.TextOutput);
 
                 if (dispMatch.Success ||
                     debuffMatch.Success ||
@@ -248,6 +249,11 @@ namespace WaywardGamers.KParser.Parsing
                         effectName = string.Empty;
                         targetName = resistMatch.Groups[ParseFields.Target].Value;
                     }
+                    //else if (noEffectMatch.Success)
+                    //{
+                    //    effectName = string.Empty;
+                    //    targetName = noEffectMatch.Groups[ParseFields.Target].Value;
+                    //}
 
                     msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseWithEffect(messageLine,
                         ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), effectName, targetName);
