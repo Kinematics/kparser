@@ -1866,7 +1866,7 @@ namespace WaywardGamers.KParser.Plugin
 
                     foreach (var entry in head)
                     {
-                        sb.AppendFormat("{2}{0}: {1:p2}", entry.Name, (double)entry.TDmg / totalDamage, prefix);
+                        sb.AppendFormat("{2}{0}: {1:p2}", entry.DisplayName, (double)entry.TDmg / totalDamage, prefix);
 
                         prefix = ", ";
                     }
