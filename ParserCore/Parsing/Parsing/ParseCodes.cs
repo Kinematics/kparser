@@ -1418,6 +1418,8 @@ namespace WaywardGamers.KParser
                     return new List<uint>() { 0x6d, 0x1c, 0x20 };
                 case 0x68: // <me> evades
                     return new List<uint>() { 0x6d, 0x1c, 0x20 };
+                case 0x1c: // hits <me>
+                    return new List<uint>() { 0x20 };
                 case 0x20: // hits <pm>
                     return new List<uint>() { 0x6d, 0x1c };
                 case 0x28: // hits <other>
