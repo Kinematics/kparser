@@ -321,6 +321,12 @@ namespace WaywardGamers.KParser.Plugin
                         if (second <= 0)
                             second = 6;
 
+                        // In some cases intermediary rolls may have been missed,
+                        // in which case the followup roll may appear to be
+                        // greater than 6.  We can't adjust for that, so skip.
+                        if (second > 6)
+                            continue;
+
                         followupTable[first, second]++;
                     }
 
@@ -1059,7 +1065,6 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
         #endregion
-
 
         #region Event Handlers
         protected void playersCombo_SelectedIndexChanged(object sender, EventArgs e)
