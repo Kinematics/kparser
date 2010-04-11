@@ -82,6 +82,10 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="ZedGraph, Version=5.1.5.28844, Culture=neutral, PublicKeyToken=02a83cbd123fcd60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ZedGraph.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Database\AccessToTheDatabase.cs" />
@@ -89,6 +93,12 @@
     <Compile Include="Database\KParserReadingManager.cs" />
     <Compile Include="Database\DirectParseReadingManager.cs" />
     <Compile Include="Database\MobXPHandler.cs" />
+    <Compile Include="Interface\BaseGraphPluginControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Interface\BaseGraphPluginControl.Designer.cs">
+      <DependentUpon>BaseGraphPluginControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Interface\CustomMobSelectionDlg.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -265,6 +275,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Interface\BaseGraphPluginControl.resx">
+      <DependentUpon>BaseGraphPluginControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Interface\BasePluginControl.resx">
       <DependentUpon>BasePluginControl.cs</DependentUpon>
       <SubType>Designer</SubType>
