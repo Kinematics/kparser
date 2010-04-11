@@ -85,6 +85,6 @@
         #endregion
 
         protected System.Windows.Forms.ToolStrip toolStrip;
-        protected System.Windows.Forms.RichTextBox richTextBox;
+        public System.Windows.Forms.RichTextBox richTextBox;
     }
 }
