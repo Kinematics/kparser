@@ -70,6 +70,7 @@
 
         #endregion
 
-        private ZedGraph.ZedGraphControl zedGraphControl;
+        protected ZedGraph.ZedGraphControl zedGraphControl;
+
     }
 }
