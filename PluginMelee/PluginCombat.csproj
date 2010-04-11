@@ -62,10 +62,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddEffectPlugin.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="BuffsByTime.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="CorsairPlugin.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DamageGraphPlugin.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="DeathPlugin.cs">
