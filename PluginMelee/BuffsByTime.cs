@@ -789,88 +789,92 @@ namespace WaywardGamers.KParser.Plugin
                                     else
                                         wInSetRate = 0;
 
+                                    int inCount = mInSetCount + rInSetCount + wInSetCount;
+
                                     // In sets
                                     string plusString = string.Format("+{0,20}", intervalSet.SetName);
                                     string minusString = string.Format("-{0,20}", intervalSet.SetName);
 
-                                    if (mCount > 0)
+                                    if (inCount > 0)
                                     {
-                                        sb.AppendFormat("{0,21}   {1,6} {2,12} {3,10:f2} {4,12} {5,10:f2}  {6,19:p2}\n",
-                                            plusString,
-                                            "Melee",
-                                            string.Format("{0}/{1}", mInMin, mInMax),
-                                            mInAvg,
-                                            string.Format("{0}/{1}", mInCritMin, mInCritMax),
-                                            mInCritAvg,
-                                            mInSetRate);
-                                        //tmpString = string.Empty;
+                                        if (mCount > 0)
+                                        {
+                                            sb.AppendFormat("{0,21}   {1,6} {2,12} {3,10:f2} {4,12} {5,10:f2}  {6,19:p2}\n",
+                                                plusString,
+                                                "Melee",
+                                                string.Format("{0}/{1}", mInMin, mInMax),
+                                                mInAvg,
+                                                string.Format("{0}/{1}", mInCritMin, mInCritMax),
+                                                mInCritAvg,
+                                                mInSetRate);
+                                            //tmpString = string.Empty;
+                                        }
+
+                                        if (mCount > 0)
+                                        {
+                                            sb.AppendFormat("{0,21}   {1,6} {2,12} {3,10:f2} {4,12} {5,10:f2}  {6,19:p2}\n",
+                                                minusString,
+                                                "Melee",
+                                                string.Format("{0}/{1}", mNotInMin, mNotInMax),
+                                                mNotInAvg,
+                                                string.Format("{0}/{1}", mNotInCritMin, mNotInCritMax),
+                                                mNotInCritAvg,
+                                                1 - mInSetRate);
+                                            //tmpString = string.Empty;
+                                        }
+
+
+                                        if (rCount > 0)
+                                        {
+                                            sb.AppendFormat("{0,21}   {1,6} {2,12} {3,10:f2} {4,12} {5,10:f2}  {6,19:p2}\n",
+                                                plusString,
+                                                "Ranged",
+                                                string.Format("{0}/{1}", rInMin, rInMax),
+                                                rInAvg,
+                                                string.Format("{0}/{1}", rInCritMin, rInCritMax),
+                                                rInCritAvg,
+                                                rInSetRate);
+                                            //tmpString = string.Empty;
+                                        }
+
+                                        if (rCount > 0)
+                                        {
+                                            sb.AppendFormat("{0,21}   {1,6} {2,12} {3,10:f2} {4,12} {5,10:f2}  {6,19:p2}\n",
+                                                minusString,
+                                                "Ranged",
+                                                string.Format("{0}/{1}", rNotInMin, rNotInMax),
+                                                rNotInAvg,
+                                                string.Format("{0}/{1}", rNotInCritMin, rNotInCritMax),
+                                                rNotInCritAvg,
+                                                1 - rInSetRate);
+                                            //tmpString = string.Empty;
+                                        }
+
+
+                                        if (wCount > 0)
+                                        {
+                                            sb.AppendFormat("{0,21}   {1,6} {2,12} {3,10:f2} {4,24} {5,19:p2}\n",
+                                                plusString,
+                                                "WSkill",
+                                                string.Format("{0}/{1}", wInMin, wInMax),
+                                                wInAvg,
+                                                string.Empty,
+                                                wInSetRate);
+                                            //tmpString = string.Empty;
+                                        }
+
+                                        if (wCount > 0)
+                                        {
+                                            sb.AppendFormat("{0,21}   {1,6} {2,12} {3,10:f2} {4,24} {5,19:p2}\n",
+                                                minusString,
+                                                "WSkill",
+                                                string.Format("{0}/{1}", wNotInMin, wNotInMax),
+                                                wNotInAvg,
+                                                string.Empty,
+                                                1 - wInSetRate);
+                                            //tmpString = string.Empty;
+                                        }
                                     }
-
-                                    if (mCount > 0)
-                                    {
-                                        sb.AppendFormat("{0,21}   {1,6} {2,12} {3,10:f2} {4,12} {5,10:f2}  {6,19:p2}\n",
-                                            minusString,
-                                            "Melee",
-                                            string.Format("{0}/{1}", mNotInMin, mNotInMax),
-                                            mNotInAvg,
-                                            string.Format("{0}/{1}", mNotInCritMin, mNotInCritMax),
-                                            mNotInCritAvg,
-                                            1 - mInSetRate);
-                                        //tmpString = string.Empty;
-                                    }
-
-
-                                    if (rCount > 0)
-                                    {
-                                        sb.AppendFormat("{0,21}   {1,6} {2,12} {3,10:f2} {4,12} {5,10:f2}  {6,19:p2}\n",
-                                            plusString,
-                                            "Ranged",
-                                            string.Format("{0}/{1}", rInMin, rInMax),
-                                            rInAvg,
-                                            string.Format("{0}/{1}", rInCritMin, rInCritMax),
-                                            rInCritAvg,
-                                            rInSetRate);
-                                        //tmpString = string.Empty;
-                                    }
-
-                                    if (rCount > 0)
-                                    {
-                                        sb.AppendFormat("{0,21}   {1,6} {2,12} {3,10:f2} {4,12} {5,10:f2}  {6,19:p2}\n",
-                                            minusString,
-                                            "Ranged",
-                                            string.Format("{0}/{1}", rNotInMin, rNotInMax),
-                                            rNotInAvg,
-                                            string.Format("{0}/{1}", rNotInCritMin, rNotInCritMax),
-                                            rNotInCritAvg,
-                                            1-rInSetRate);
-                                        //tmpString = string.Empty;
-                                    }
-
-
-                                    if (wCount > 0)
-                                    {
-                                        sb.AppendFormat("{0,21}   {1,6} {2,12} {3,10:f2} {4,24} {5,19:p2}\n",
-                                            plusString,
-                                            "WSkill",
-                                            string.Format("{0}/{1}", wInMin, wInMax),
-                                            wInAvg,
-                                            string.Empty,
-                                            wInSetRate);
-                                        //tmpString = string.Empty;
-                                    }
-
-                                    if (wCount > 0)
-                                    {
-                                        sb.AppendFormat("{0,21}   {1,6} {2,12} {3,10:f2} {4,24} {5,19:p2}\n",
-                                            minusString,
-                                            "WSkill",
-                                            string.Format("{0}/{1}", wNotInMin, wNotInMax),
-                                            wNotInAvg,
-                                            string.Empty,
-                                            1-wInSetRate);
-                                       //tmpString = string.Empty;
-                                    }
-
 
                                 }
                             }
