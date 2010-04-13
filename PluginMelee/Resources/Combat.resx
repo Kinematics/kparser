@@ -915,4 +915,31 @@
   <data name="OffensePluginCopySummary" xml:space="preserve">
     <value>Copy Summary</value>
   </data>
+  <data name="DamageGraphPluginCollectiveDamageOption" xml:space="preserve">
+    <value>Show Collective Damage</value>
+  </data>
+  <data name="DamageGraphPluginCumulativeDamage" xml:space="preserve">
+    <value>Cumulative damage</value>
+  </data>
+  <data name="DamageGraphPluginCumulativeDamageOption" xml:space="preserve">
+    <value>Show Cumulative Damage</value>
+  </data>
+  <data name="DamageGraphPluginGraphTitle" xml:space="preserve">
+    <value>Damage over Time</value>
+  </data>
+  <data name="DamageGraphPluginGraphTitleCumulative" xml:space="preserve">
+    <value>Cumulative Damage over Time</value>
+  </data>
+  <data name="DamageGraphPluginSequenceDamage" xml:space="preserve">
+    <value>Sequence damage</value>
+  </data>
+  <data name="DamageGraphPluginTabName" xml:space="preserve">
+    <value>Damage Graph</value>
+  </data>
+  <data name="DamageGraphPluginXAxisTitle" xml:space="preserve">
+    <value>Time (Seconds)</value>
+  </data>
+  <data name="DamageGraphPluginYAxisTitle" xml:space="preserve">
+    <value>Damage</value>
+  </data>
 </root>

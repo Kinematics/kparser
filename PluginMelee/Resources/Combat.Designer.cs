@@ -286,6 +286,87 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show Collective Damage.
+        /// </summary>
+        internal static string DamageGraphPluginCollectiveDamageOption {
+            get {
+                return ResourceManager.GetString("DamageGraphPluginCollectiveDamageOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cumulative damage.
+        /// </summary>
+        internal static string DamageGraphPluginCumulativeDamage {
+            get {
+                return ResourceManager.GetString("DamageGraphPluginCumulativeDamage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Cumulative Damage.
+        /// </summary>
+        internal static string DamageGraphPluginCumulativeDamageOption {
+            get {
+                return ResourceManager.GetString("DamageGraphPluginCumulativeDamageOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Damage over Time.
+        /// </summary>
+        internal static string DamageGraphPluginGraphTitle {
+            get {
+                return ResourceManager.GetString("DamageGraphPluginGraphTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cumulative Damage over Time.
+        /// </summary>
+        internal static string DamageGraphPluginGraphTitleCumulative {
+            get {
+                return ResourceManager.GetString("DamageGraphPluginGraphTitleCumulative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sequence damage.
+        /// </summary>
+        internal static string DamageGraphPluginSequenceDamage {
+            get {
+                return ResourceManager.GetString("DamageGraphPluginSequenceDamage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Damage Graph.
+        /// </summary>
+        internal static string DamageGraphPluginTabName {
+            get {
+                return ResourceManager.GetString("DamageGraphPluginTabName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time (Seconds).
+        /// </summary>
+        internal static string DamageGraphPluginXAxisTitle {
+            get {
+                return ResourceManager.GetString("DamageGraphPluginXAxisTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Damage.
+        /// </summary>
+        internal static string DamageGraphPluginYAxisTitle {
+            get {
+                return ResourceManager.GetString("DamageGraphPluginYAxisTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0,-20}{1,14}{2,22}.
         /// </summary>
         internal static string DeathPluginDetailsFormat {
