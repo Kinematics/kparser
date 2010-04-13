@@ -49,6 +49,13 @@ namespace WaywardGamers.KParser.Plugin
 
         string lsNumTimesFormat;
         string lsIntervalsFormat;
+
+        string lsAttack;
+        string lsAttackHeader;
+        string lsAccuracy;
+        string lsAccuracyHeader;
+        string lsHaste;
+        string lsHasteHeader;
         #endregion
 
         #region Constructor
@@ -228,8 +235,17 @@ namespace WaywardGamers.KParser.Plugin
             if (mobCount == 0)
                 return;
 
-            List<string> accBuffNames = new List<string>() { "Focus", "Aggressor", "Sharpshot", "Souleater",
-                "Diabolic Eye", "Hasso", "Yonin", "Innin", "Sword Madrigal", "Blade Madrigal" };
+            List<string> accBuffNames = new List<string>() {
+                Resources.ParsedStrings.Focus,
+                Resources.ParsedStrings.Aggressor,
+                Resources.ParsedStrings.Sharpshot,
+                Resources.ParsedStrings.Souleater,
+                Resources.ParsedStrings.DiabolicEye,
+                Resources.ParsedStrings.Hasso,
+                Resources.ParsedStrings.Yonin,
+                Resources.ParsedStrings.Innin,
+                Resources.ParsedStrings.Madrigal1,
+                Resources.ParsedStrings.Madrigal2 };
 
 
             var attackSet = from c in dataSet.Combatants
@@ -275,17 +291,14 @@ namespace WaywardGamers.KParser.Plugin
                                          select n,
                             };
 
-            string accHeader = "Buff                     M.Hit/Miss     MHit%    R.Hit/Miss     RHit%     Buff (In)Active%";
-            string tmpString = "Accuracy";
-
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
-                Length = tmpString.Length,
+                Length = lsAccuracy.Length,
                 Bold = true,
                 Color = Color.Red
             });
-            sb.Append(tmpString + "\n");
+            sb.Append(lsAccuracy + "\n");
 
 
             foreach (var playerInterval in intervalSets)
@@ -311,11 +324,11 @@ namespace WaywardGamers.KParser.Plugin
                         strModList.Add(new StringMods
                         {
                             Start = sb.Length,
-                            Length = accHeader.Length,
+                            Length = lsAccuracyHeader.Length,
                             Bold = true,
                             Underline = true
                         });
-                        sb.Append(accHeader + "\n");
+                        sb.Append(lsAccuracyHeader + "\n");
 
 
                         foreach (var intervalSet in playerInterval.TimeIntervalSets)
@@ -433,10 +446,22 @@ namespace WaywardGamers.KParser.Plugin
             if (mobCount == 0)
                 return;
 
-            List<string> attBuffNames = new List<string>()
-                {   "Valor Minuet", "Valor Minuet II", "Valor Minuet III", "Valor Minuet IV", "Chaos Roll",
-                    "Berserk", "Warcry", "Last Resort", "Souleater", "Hasso", "Defender",
-                    "Dia", "Dia II", "Dia III", "Footwork" };
+            List<string> attBuffNames = new List<string>() {
+                Resources.ParsedStrings.Minuet1,
+                Resources.ParsedStrings.Minuet2,
+                Resources.ParsedStrings.Minuet3,
+                Resources.ParsedStrings.Minuet4,
+                Resources.ParsedStrings.DrkRoll,
+                Resources.ParsedStrings.Berserk,
+                Resources.ParsedStrings.Warcry,
+                Resources.ParsedStrings.LastResort,
+                Resources.ParsedStrings.Souleater,
+                Resources.ParsedStrings.Hasso,
+                Resources.ParsedStrings.Defender,
+                Resources.ParsedStrings.Dia1,
+                Resources.ParsedStrings.Dia2,
+                Resources.ParsedStrings.Dia3,
+                Resources.ParsedStrings.Footwork };
 
 
             var attackSet = from c in dataSet.Combatants
@@ -528,19 +553,14 @@ namespace WaywardGamers.KParser.Plugin
             double wInSetRate = 0;
 
 
-
-            string attHeader = "Buff                      Type      Min/Max    Average   Cr.Min/Max     Cr.Avg     Buff (In)Active%";
-
-            string tmpString = "Attack";
-
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
-                Length = tmpString.Length,
+                Length = lsAttack.Length,
                 Bold = true,
                 Color = Color.Red
             });
-            sb.Append(tmpString + "\n");
+            sb.Append(lsAttack + "\n");
 
 
             foreach (var playerInterval in intervalSets)
@@ -566,11 +586,11 @@ namespace WaywardGamers.KParser.Plugin
                         strModList.Add(new StringMods
                         {
                             Start = sb.Length,
-                            Length = attHeader.Length,
+                            Length = lsAttackHeader.Length,
                             Bold = true,
                             Underline = true
                         });
-                        sb.Append(attHeader + "\n");
+                        sb.Append(lsAttackHeader + "\n");
 
                         foreach (var intervalSet in playerInterval.TimeIntervalSets)
                         {
@@ -913,9 +933,12 @@ namespace WaywardGamers.KParser.Plugin
             if (mobCount == 0)
                 return;
 
-            List<string> hasteBuffNames = new List<string>() { "Haste",
-                "Advancing March", "Victory March",
-                "Hasso", "Haste Samba" };
+            List<string> hasteBuffNames = new List<string>() {
+                Resources.ParsedStrings.Haste,
+                Resources.ParsedStrings.March1,
+                Resources.ParsedStrings.March2,
+                Resources.ParsedStrings.Hasso,
+                Resources.ParsedStrings.HasteSamba };
 
 
             var attackSet = from c in dataSet.Combatants
@@ -940,17 +963,14 @@ namespace WaywardGamers.KParser.Plugin
                                          select n,
                             };
 
-            string hasteHeader = "Buff                    Melee w/Buff   Melee wo/Buff    % w/Buff    WS w/Buff   WS wo/Buff   % w/Buff";
-            string tmpString = "Haste";
-
             strModList.Add(new StringMods
             {
                 Start = sb.Length,
-                Length = tmpString.Length,
+                Length = lsHaste.Length,
                 Bold = true,
                 Color = Color.Red
             });
-            sb.Append(tmpString + "\n");
+            sb.Append(lsHaste + "\n");
 
 
             foreach (var playerInterval in intervalSets)
@@ -976,11 +996,11 @@ namespace WaywardGamers.KParser.Plugin
                         strModList.Add(new StringMods
                         {
                             Start = sb.Length,
-                            Length = hasteHeader.Length,
+                            Length = lsHasteHeader.Length,
                             Bold = true,
                             Underline = true
                         });
-                        sb.Append(hasteHeader + "\n");
+                        sb.Append(lsHasteHeader + "\n");
 
 
                         foreach (var intervalSet in playerInterval.TimeIntervalSets)
@@ -1641,7 +1661,7 @@ namespace WaywardGamers.KParser.Plugin
 
         protected override void LoadResources()
         {
-            this.tabName = "Buffs by Time";
+            this.tabName = Resources.Combat.BuffsByTimePluginTabName;
 
             lsAll = Resources.PublicResources.All;
 
@@ -1651,6 +1671,13 @@ namespace WaywardGamers.KParser.Plugin
             lsIntervalsFormat = Resources.Combat.BuffPluginIntervalsFormat;
 
             lsSelf = Resources.Combat.BuffPluginSelf;
+
+            lsAccuracy = Resources.Combat.BuffsByTimePluginAccuracy;
+            lsAccuracyHeader = Resources.Combat.BuffsByTimePluginAccuracyHeader;
+            lsAttack = Resources.Combat.BuffsByTimePluginAttack;
+            lsAttackHeader = Resources.Combat.BuffsByTimePluginAttackHeader;
+            lsHaste = Resources.Combat.BuffsByTimePluginHaste;
+            lsHasteHeader = Resources.Combat.BuffsByTimePluginHasteHeader;
         }
         #endregion
 

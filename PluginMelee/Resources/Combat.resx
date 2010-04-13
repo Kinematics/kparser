@@ -915,6 +915,27 @@
   <data name="OffensePluginCopySummary" xml:space="preserve">
     <value>Copy Summary</value>
   </data>
+  <data name="BuffsByTimePluginAccuracy" xml:space="preserve">
+    <value>Accuracy</value>
+  </data>
+  <data name="BuffsByTimePluginAccuracyHeader" xml:space="preserve">
+    <value>Buff                     M.Hit/Miss     MHit%    R.Hit/Miss     RHit%     Buff (In)Active%</value>
+  </data>
+  <data name="BuffsByTimePluginAttack" xml:space="preserve">
+    <value>Attack</value>
+  </data>
+  <data name="BuffsByTimePluginAttackHeader" xml:space="preserve">
+    <value>Buff                      Type      Min/Max    Average   Cr.Min/Max     Cr.Avg     Buff (In)Active%</value>
+  </data>
+  <data name="BuffsByTimePluginHaste" xml:space="preserve">
+    <value>Haste</value>
+  </data>
+  <data name="BuffsByTimePluginHasteHeader" xml:space="preserve">
+    <value>Buff                    Melee w/Buff   Melee wo/Buff    % w/Buff    WS w/Buff   WS wo/Buff   % w/Buff</value>
+  </data>
+  <data name="BuffsByTimePluginTabName" xml:space="preserve">
+    <value>Buffs by Time</value>
+  </data>
   <data name="DamageGraphPluginCollectiveDamageOption" xml:space="preserve">
     <value>Show Collective Damage</value>
   </data>
