@@ -11,7 +11,7 @@ using WaywardGamers.KParser.Database;
 
 namespace WaywardGamers.KParser.Plugin
 {
-    class AdditionalEffect : BasePluginControl
+    public class AdditionalEffect : BasePluginControl
     {
         #region Member Variables
 
@@ -232,12 +232,14 @@ namespace WaywardGamers.KParser.Plugin
                                         where ((ActionType)n.ActionType == ActionType.Melee &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain)) &&
+                                               (DefenseType)n.DefenseType == DefenseType.None &&
                                                mobFilter.CheckFilterMobTarget(n) == true
                                         select n,
                                 Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Ranged &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain)) &&
+                                               (DefenseType)n.DefenseType == DefenseType.None &&
                                                mobFilter.CheckFilterMobTarget(n) == true
                                         select n,
                             };
@@ -253,6 +255,10 @@ namespace WaywardGamers.KParser.Plugin
             StringBuilder sb = new StringBuilder();
             List<StringMods> strModList = new List<StringMods>();
 
+            string meleeHeader = "Melee Effect           # Procs     # Hits     Raw Proc %    # Restricted Hits   Restricted Proc %";
+            string rangeHeader = "Range Effect           # Procs     # Hits     Raw Proc %";
+
+
             string tmp = "Additional Effect Status Inflictions";
             strModList.Add(new StringMods
             {
@@ -264,6 +270,103 @@ namespace WaywardGamers.KParser.Plugin
             sb.Append(tmp + "\n\n");
 
 
+            foreach (var player in attackSet)
+            {
+                if ((player.Melee.Count() == 0) && (player.Range.Count() == 0))
+                    continue;
+
+                var meleeByAE = player.Melee.Where(a =>
+                    a.IsSecondActionIDNull() == false &&
+                    (HarmType)a.SecondHarmType == HarmType.Enfeeble);
+
+                var rangeByAE = player.Range.Where(a =>
+                    a.IsSecondActionIDNull() == false &&
+                    (HarmType)a.SecondHarmType == HarmType.Enfeeble);
+
+                if ((meleeByAE.Count() == 0) && (rangeByAE.Count() == 0))
+                    continue;
+
+                // Ok, this player has generated some AE effects.
+
+                tmp = string.Format("{0}", player.DisplayName);
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = tmp.Length,
+                    Bold = true,
+                    Color = Color.Blue
+                });
+                sb.Append(tmp + "\n\n");
+
+                int meleeCount = player.Melee.Count();
+
+                if (meleeCount > 0)
+                {
+                    if (meleeByAE.Count() > 0)
+                    {
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = meleeHeader.Length,
+                            Bold = true,
+                            Underline = true,
+                            Color = Color.Black
+                        });
+                        sb.Append(meleeHeader + "\n");
+
+                        var groupMeleeByAE = meleeByAE.GroupBy(a => a.ActionsRowBySecondaryActionNameRelation.ActionName);
+
+                        foreach (var ae in groupMeleeByAE)
+                        {
+                            var meleeAfterAE = player.Melee.Where(m =>
+                                ae.Any(a => m.Timestamp >= a.Timestamp && m.Timestamp <= a.Timestamp.AddSeconds(30)));
+
+                            int countMeleeAfterAE = meleeAfterAE.Count();
+                            int outsideMelee = meleeCount - countMeleeAfterAE;
+
+                            sb.AppendFormat("{0,-20}{1,10}{2,11}{3,15:p2}{4,21}{5,20:p2}\n",
+                                ae.Key,
+                                ae.Count(),
+                                meleeCount,
+                                (double)ae.Count() / meleeCount,
+                                outsideMelee,
+                                (outsideMelee > 0) ? (double)ae.Count() / outsideMelee : 0
+                                );
+                        }
+                    }
+                }
+
+                if (player.Range.Count() > 0)
+                {
+
+                    if (rangeByAE.Count() > 0)
+                    {
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = rangeHeader.Length,
+                            Bold = true,
+                            Underline = true,
+                            Color = Color.Black
+                        });
+                        sb.Append(rangeHeader + "\n");
+
+                        var groupRangeByAE = rangeByAE.GroupBy(a => a.ActionsRowBySecondaryActionNameRelation.ActionName);
+
+                        foreach (var ae in groupRangeByAE)
+                        {
+                            sb.AppendFormat("{0,-20}{1,10}{2,11}{3,15:p2}\n",
+                                ae.Key,
+                                ae.Count(),
+                                player.Range.Count(),
+                                (double)ae.Count() / player.Range.Count()
+                                );
+                        }
+                    }
+                }
+
+                sb.Append("\n");
+            }
             
             PushStrings(sb, strModList);
         }
