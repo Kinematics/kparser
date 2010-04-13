@@ -374,28 +374,32 @@ namespace WaywardGamers.KParser.Plugin
                                     if (rNotInSetCount > 0)
                                         rNisHitRate = (double)rNisHitCount / rNotInSetCount;
 
-                                    
-                                    double inSetRate = 0;
-                                    double notInSetRate = 0;
 
-                                    if (mInSetCount + mNotInSetCount + rInSetCount + rNisHitCount > 0)
+                                    int inCount = mInSetCount + rInSetCount;
+
+                                    if (inCount > 0)
                                     {
-                                        inSetRate = (double)(mInSetCount + rInSetCount) / (mInSetCount + mNotInSetCount + rInSetCount + rNisHitCount);
-                                        notInSetRate = (double)(mNotInSetCount + rNisHitCount) / (mInSetCount + mNotInSetCount + rInSetCount + rNisHitCount);
+                                        double inSetRate = 0;
+                                        double notInSetRate = 0;
+
+                                        if (mInSetCount + mNotInSetCount + rInSetCount + rNisHitCount > 0)
+                                        {
+                                            inSetRate = (double)(mInSetCount + rInSetCount) / (mInSetCount + mNotInSetCount + rInSetCount + rNisHitCount);
+                                            notInSetRate = (double)(mNotInSetCount + rNisHitCount) / (mInSetCount + mNotInSetCount + rInSetCount + rNisHitCount);
+                                        }
+
+                                        sb.AppendFormat("+{0,20}", intervalSet.SetName);
+
+                                        sb.AppendFormat("{0,14}  {1,8:p2}  {2,12}  {3,8:p2}  {4,19:p2}\n",
+                                            string.Format("{0}/{1}", mHitCount, mMissCount), mHitRate,
+                                            string.Format("{0}/{1}", rHitCount, rMissCount), rHitRate, inSetRate);
+
+                                        sb.AppendFormat("-{0,20}", intervalSet.SetName);
+
+                                        sb.AppendFormat("{0,14}  {1,8:p2}  {2,12}  {3,8:p2}  {4,19:p2}\n",
+                                            string.Format("{0}/{1}", mNisHitCount, mNisMissCount), mNisHitRate,
+                                            string.Format("{0}/{1}", rNisHitCount, rNisMissCount), rNisHitRate, notInSetRate);
                                     }
-
-                                    sb.AppendFormat("+{0,20}", intervalSet.SetName);
-
-                                    sb.AppendFormat("{0,14}  {1,8:p2}  {2,12}  {3,8:p2}  {4,19:p2}\n",
-                                        string.Format("{0}/{1}", mHitCount, mMissCount), mHitRate,
-                                        string.Format("{0}/{1}", rHitCount, rMissCount), rHitRate, inSetRate);
-
-                                    sb.AppendFormat("-{0,20}", intervalSet.SetName);
-
-                                    sb.AppendFormat("{0,14}  {1,8:p2}  {2,12}  {3,8:p2}  {4,19:p2}\n",
-                                        string.Format("{0}/{1}", mNisHitCount, mNisMissCount), mNisHitRate,
-                                        string.Format("{0}/{1}", rNisHitCount, rNisMissCount), rNisHitRate, notInSetRate);
-
                                 }
                             }
                         }
@@ -1020,16 +1024,19 @@ namespace WaywardGamers.KParser.Plugin
                                     if (wTotalCount > 0)
                                         wInRate = (double)wCount / wTotalCount;
 
+                                    int inCount = mCount + wCount;
 
-                                    sb.AppendFormat(" {0,20}   {1,12}   {2,13}   {3,9:p2}   {4,10}   {5,10}   {6,8:p2}\n",
-                                        intervalSet.SetName,
-                                        mCount,
-                                        mNotCount,
-                                        mInRate,
-                                        wCount,
-                                        wNotCount,
-                                        wInRate);
-
+                                    if (inCount > 0)
+                                    {
+                                        sb.AppendFormat(" {0,20}   {1,12}   {2,13}   {3,9:p2}   {4,10}   {5,10}   {6,8:p2}\n",
+                                            intervalSet.SetName,
+                                            mCount,
+                                            mNotCount,
+                                            mInRate,
+                                            wCount,
+                                            wNotCount,
+                                            wInRate);
+                                    }
                                 }
                             }
                         }
