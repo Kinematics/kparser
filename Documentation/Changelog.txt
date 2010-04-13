@@ -1,5 +1,22 @@
 KParser Change Log
 
+1.5.2 (April 13, 2010)
+- Clean up synchronization methodologies.
+- Several additional improvements in message handling to avoid entity mismatches.
+- Fix Copy Summary on Offense tab to use display names.
+- Fix AOE damage association bug.
+- Fix issue with tallying followup rolls on the Corsair plugin.
+- Don't display buffs/debuffs that aren't relevant to the currently selected battle(s) in Buffs by Time plugin.
++ New plugin for reviewing rates that Additional Effect statuses proc.
++ New graph plugin type.
++ New graph plugin (Damage Graph) to show damage progression over time.
+
+~ For the Damage Graph plugin, there are four basic modes of view:
+~ If you set "Show Collective Damage", it displays the total damage of all players over the time spread.  If it's not checked, it will show each individual player's damage as a separate line.  If you set "Show Cumulative Damage", it displays the total accumulated damage over time, either for all players or each individually.  If it's not checked it displays the 'instantaneous' damage at each time interval, where the resolution is per second.
+~ The data can be filtered by mob as usual (primary use is likely to analyze performance over a long NM-type fight), as well as isolated by player.
+~ The graph can be manipulated in various ways.  For example, drawing a box around an area of interest causes it to zoom in on the selected area. Right-clicking on the graph can give you various options such as resetting a zoomed graph back to the original state, saving the graph as an image, or seeing the x/y values under the mouse cursor.
+
+
 1.5.1.1 (March 28, 2010)
 - Fix bug in TP return determination.
 
