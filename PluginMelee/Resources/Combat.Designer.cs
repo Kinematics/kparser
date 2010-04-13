@@ -133,6 +133,69 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Accuracy.
+        /// </summary>
+        internal static string BuffsByTimePluginAccuracy {
+            get {
+                return ResourceManager.GetString("BuffsByTimePluginAccuracy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buff                     M.Hit/Miss     MHit%    R.Hit/Miss     RHit%     Buff (In)Active%.
+        /// </summary>
+        internal static string BuffsByTimePluginAccuracyHeader {
+            get {
+                return ResourceManager.GetString("BuffsByTimePluginAccuracyHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attack.
+        /// </summary>
+        internal static string BuffsByTimePluginAttack {
+            get {
+                return ResourceManager.GetString("BuffsByTimePluginAttack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buff                      Type      Min/Max    Average   Cr.Min/Max     Cr.Avg     Buff (In)Active%.
+        /// </summary>
+        internal static string BuffsByTimePluginAttackHeader {
+            get {
+                return ResourceManager.GetString("BuffsByTimePluginAttackHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Haste.
+        /// </summary>
+        internal static string BuffsByTimePluginHaste {
+            get {
+                return ResourceManager.GetString("BuffsByTimePluginHaste", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buff                    Melee w/Buff   Melee wo/Buff    % w/Buff    WS w/Buff   WS wo/Buff   % w/Buff.
+        /// </summary>
+        internal static string BuffsByTimePluginHasteHeader {
+            get {
+                return ResourceManager.GetString("BuffsByTimePluginHasteHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buffs by Time.
+        /// </summary>
+        internal static string BuffsByTimePluginTabName {
+            get {
+                return ResourceManager.GetString("BuffsByTimePluginTabName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to All Rolls.
         /// </summary>
         internal static string CorsairPluginAllRolls {
