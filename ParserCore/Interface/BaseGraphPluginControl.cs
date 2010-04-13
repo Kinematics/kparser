@@ -30,6 +30,7 @@ namespace WaywardGamers.KParser.Plugin
 
         protected void ResetGraph()
         {
+            zedGraphControl.GraphPane.CurveList.Clear();
         }
     }
 }
