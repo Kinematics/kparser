@@ -497,7 +497,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.Combat, Version=1.5.1.0, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.Plugin.Combat, Version=1.5.2.0, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_6BA8DE60499B63FD65E10FB34C909D5F"
@@ -610,7 +610,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.ParserCore, Version=1.5.1.0, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:WaywardGamers.KParser.ParserCore, Version=1.5.2.0, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_CC50CF8B8B603576C057ED6CBB50FDA1"
@@ -738,14 +738,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:KParser"
-        "ProductCode" = "8:{3DF34C33-8934-4579-BDEC-3D0D128A236A}"
-        "PackageCode" = "8:{D22C1550-9686-48B4-98F9-6AF8F0B37114}"
+        "ProductCode" = "8:{82390329-454B-4697-AAB4-9449581F4372}"
+        "PackageCode" = "8:{42F0B92D-BA16-4168-A703-BB05123CDA96}"
         "UpgradeCode" = "8:{BE6F6D70-234C-4B71-96CD-D020C6872A1D}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:FALSE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.5.1"
+        "ProductVersion" = "8:1.5.2"
         "Manufacturer" = "8:Wayward Gamers"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://code.google.com/p/kparser"
