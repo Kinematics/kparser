@@ -430,23 +430,66 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Private helper functions
-
+        /// <summary>
+        /// Given a collection of AttackGroup data, determine the earliest and
+        /// latest time any action took place.  Return those values in the out
+        /// params for startTime and endTime.  If no valid time can be determined,
+        /// throw an exception.
+        /// </summary>
+        /// <param name="attackSet"></param>
+        /// <param name="startTime">Earliest time of any action in the attackSet.</param>
+        /// <param name="endTime">Latest time of any action in the attackSet.</param>
         private void GetTimeRange(EnumerableRowCollection<AttackGroup> attackSet,
             out DateTime startTime, out DateTime endTime)
         {
-            var minTimes = from a in attackSet.Select(s => s.AnyAction)
-                           select a.MinEntry(c => c.Timestamp, v => v.Timestamp);
+            startTime = default(DateTime);
+
+            // Start time should be based on the first battle rather than
+            // the first action, so that changing between players for display
+            // yields the same scale in 'event time'.
+
+            var minBattleTimes = from a in attackSet.Select(s => s.AnyAction)
+                           select a.MinEntry(c => c.Timestamp, v => v.BattlesRow.StartTime);
+
+            var validMinTimes = minBattleTimes.Where(t => t != default(DateTime));
+
+            if (validMinTimes.Count() > 0)
+                startTime = validMinTimes.Min();
+
+
+            // Determine the time of the last action in the attack set.
+            endTime = default(DateTime);
 
             var maxTimes = from a in attackSet.Select(s => s.AnyAction)
                            select a.MaxEntry(c => c.Timestamp, v => v.Timestamp);
 
-            startTime = minTimes.Where(t => t != DateTime.MinValue).Min();
-            endTime = maxTimes.Where(t => t != DateTime.MinValue).Max();
+            var validMaxTimes = maxTimes.Where(t => t != default(DateTime));
+
+            if (validMaxTimes.Count() > 0)
+                endTime = validMaxTimes.Max();
+
+            // Verify we ended up with actual valid times.
+            if ((startTime == default(DateTime)) && (endTime != default(DateTime)))
+                throw new ArgumentOutOfRangeException("startTime");
+
+            if ((endTime == default(DateTime)) && (startTime != default(DateTime)))
+                throw new ArgumentOutOfRangeException("endTime");
         }
 
+        /// <summary>
+        /// Create an array of the seconds that cover the duration between
+        /// the specified start and end times.
+        /// </summary>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
+        /// <returns>An array of doubles filled with the sequence
+        /// of seconds between the start time and the end time.</returns>
         private double[] GetXAxis(DateTime startTime, DateTime endTime)
         {
             int totalSeconds = GetAxisSize(startTime, endTime);
+
+            if (totalSeconds <= 0)
+                throw new ArgumentOutOfRangeException();
 
             double[] xAxis = new double[totalSeconds];
 
@@ -458,6 +501,15 @@ namespace WaywardGamers.KParser.Plugin
             return xAxis;
         }
 
+        /// <summary>
+        /// Calculate the integral number of seconds elapsed between
+        /// the given start and end time values.  Will always return
+        /// a positive value.
+        /// </summary>
+        /// <param name="startTime">The time the axis should start (the first second)</param>
+        /// <param name="endTime">The time the axis should end.</param>
+        /// <returns>Returns a value of at least 1 for the number of seconds
+        /// between the start and the end.</returns>
         private int GetAxisSize(DateTime startTime, DateTime endTime)
         {
             return (int)Math.Abs((endTime - startTime).TotalSeconds) + 1;
