@@ -309,7 +309,7 @@ namespace WaywardGamers.KParser
 
             #region Experience
             ExpChain     = new Regex(string.Format("^(EXP|Limit) chain #{0}!$", number));
-            Experience   = new Regex(string.Format("^{0} gains {1} (experience|limit) points\\.$", name, number));
+            Experience   = new Regex(string.Format("^{0} gains {1} (experience|limit) points\\.$", playername, number));
             NoExperience = new Regex(string.Format("^No experience gained\\.$"));
             #endregion
 
@@ -504,7 +504,7 @@ namespace WaywardGamers.KParser
 
             #region Experience
             ExpChain     = new Regex(string.Format("^(EXP|Limit) chain #{0}!$", number));
-            Experience   = new Regex(string.Format("^{0} gains {1} (experience|limit) points\\.$", name, number));
+            Experience   = new Regex(string.Format("^{0} gains {1} (experience|limit) points\\.$", playername, number));
             NoExperience = new Regex(string.Format("^No experience gained\\.$"));
             #endregion
 
