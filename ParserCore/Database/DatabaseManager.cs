@@ -208,7 +208,7 @@ namespace WaywardGamers.KParser
                 // Reset the static string classes to get the properly translated
                 // version of the resource strings.
                 JobAbilities.Reset();
-                ParseExpressions.Reset();
+                ParseExpressions.Reset(parsedCulture);
             }
             catch (Exception)
             {
@@ -308,7 +308,7 @@ namespace WaywardGamers.KParser
             // Reset the static string classes to get the properly translated
             // version of the resource strings.
             JobAbilities.Reset();
-            ParseExpressions.Reset();
+            ParseExpressions.Reset(parsedCulture);
         }
 
         /// <summary>
