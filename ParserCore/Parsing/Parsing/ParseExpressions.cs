@@ -487,12 +487,12 @@ namespace WaywardGamers.KParser
             #region Chat name extractions
             ChatSay      = new Regex(string.Format("^{0} : (.+)$", playername));
             ChatParty    = new Regex(string.Format("^\\({0}\\) (.+)$", playername));
-            ChatTell     = new Regex(string.Format("^(>>)?{0}(>>)? (.+)$", playername));
+            ChatTell     = new Regex(string.Format("^(>>)?{0}(>>)?( :)? (.+)$", playername));
             ChatTellFrom = new Regex(string.Format("^{0}>> (.+)$", playername));
-            ChatTellTo   = new Regex(string.Format("^>>{0} (.+)$", playername));
+            ChatTellTo   = new Regex(string.Format("^>>{0} : (.+)$", playername));
             ChatShout    = new Regex(string.Format("^{0} : (.+)$", playername));
             ChatLinkshell = new Regex(string.Format("^<{0}> (.+)$", playername));
-            ChatEmote    = new Regex(string.Format("^{0}('s)? (.+)$", playername));
+            ChatEmote    = new Regex(string.Format("^{0} (.+)$", playername));
             ChatNPC      = new Regex(string.Format("^{0} : (.+)$", npcName));
             #endregion
 
