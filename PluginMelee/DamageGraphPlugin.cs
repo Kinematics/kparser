@@ -32,8 +32,8 @@ namespace WaywardGamers.KParser.Plugin
         bool groupMobs = true;
         bool exclude0XPMobs = false;
         bool customMobSelection = false;
-        bool showCumulativeDamage = false;
-        bool showCollectiveDamage = true;
+        bool showCumulativeDamage = true;
+        bool showCollectiveDamage = false;
 
         Color[] indexOfColors = new Color[18];
 
@@ -86,11 +86,11 @@ namespace WaywardGamers.KParser.Plugin
             ToolStripSeparator aSeparator = new ToolStripSeparator();
 
             collectiveDamageOption.CheckOnClick = true;
-            collectiveDamageOption.Checked = true;
+            collectiveDamageOption.Checked = false;
             collectiveDamageOption.Click += new EventHandler(collectiveDamageOption_Click);
 
             cumulativeDamageOption.CheckOnClick = true;
-            cumulativeDamageOption.Checked = false;
+            cumulativeDamageOption.Checked = true;
             cumulativeDamageOption.Click += new EventHandler(cumulativeDamageOption_Click);
 
             optionsMenu.DropDownItems.Add(groupMobsOption);
