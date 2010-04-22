@@ -1438,6 +1438,33 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,16}{2,18}{3,17}{4,19}.
+        /// </summary>
+        internal static string ExtraAttPluginFormatRanged1 {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginFormatRanged1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,12}{2,16}.
+        /// </summary>
+        internal static string ExtraAttPluginFormatRanged2 {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginFormatRanged2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,21}{2,17:p2}{3,24}.
+        /// </summary>
+        internal static string ExtraAttPluginFormatRanged3 {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginFormatRanged3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Player               # Melee Attacks    # Melee Rounds    Attacks/Round    # Extra Attacks.
         /// </summary>
         internal static string ExtraAttPluginHeaderMain1 {
@@ -1465,11 +1492,47 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Basic Data.
+        ///   Looks up a localized string similar to Player               # Range Attacks    # Range Rounds    Attacks/Round    # Extra Attacks.
+        /// </summary>
+        internal static string ExtraAttPluginHeaderRanged1 {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginHeaderRanged1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player               # +1 Rounds    # &gt;+1 Rounds.
+        /// </summary>
+        internal static string ExtraAttPluginHeaderRanged2 {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginHeaderRanged2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player               # MultiAttack Rounds    MultiAttack %     Kills w/Min Attacks.
+        /// </summary>
+        internal static string ExtraAttPluginHeaderRanged3 {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginHeaderRanged3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Melee Data.
         /// </summary>
         internal static string ExtraAttPluginMainSectionTitle {
             get {
                 return ResourceManager.GetString("ExtraAttPluginMainSectionTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ranged Data.
+        /// </summary>
+        internal static string ExtraAttPluginRangedSectionTitle {
+            get {
+                return ResourceManager.GetString("ExtraAttPluginRangedSectionTitle", resourceCulture);
             }
         }
         

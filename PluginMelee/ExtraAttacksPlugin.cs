@@ -41,6 +41,14 @@ namespace WaywardGamers.KParser.Plugin
         string lsMainFormat2;
         string lsMainFormat3;
 
+        string lsRangedSectionTitle;
+        string lsRangedHeader1;
+        string lsRangedHeader2;
+        string lsRangedHeader3;
+        string lsRangedFormat1;
+        string lsRangedFormat2;
+        string lsRangedFormat3;
+
         string lsSectionTreatAs;
 
         string lsSectionMultiAttacksTitle;
@@ -1131,6 +1139,113 @@ namespace WaywardGamers.KParser.Plugin
             }
             #endregion
 
+            sb.Append("\n");
+
+            PushStrings(sb, strModList);
+        }
+
+        private void PrintRangedOutput(List<AttackCalculations> rangedAttackCalcs)
+        {
+            // If we're given an empty list, exit out
+            if (rangedAttackCalcs.Count == 0)
+                return;
+
+            // If there are no extra attacks, don't push any output
+            if (rangedAttackCalcs.Any(r => r.RExtraAttacks > 0) == false)
+                return;
+
+            StringBuilder sb = new StringBuilder();
+            List<StringMods> strModList = new List<StringMods>();
+
+
+            #region Basic Data
+
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = lsRangedSectionTitle.Length,
+                Bold = true,
+                Color = Color.Red
+            });
+            sb.Append(lsRangedSectionTitle + "\n\n");
+
+
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = lsRangedHeader1.Length,
+                Bold = true,
+                Underline = true,
+                Color = Color.Black
+            });
+            sb.Append(lsRangedHeader1 + "\n");
+
+            foreach (var attacker in rangedAttackCalcs)
+            {
+                if (attacker.RExtraAttacks > 0)
+                {
+                    sb.AppendFormat(lsRangedFormat1,
+                        attacker.Name,
+                        attacker.RAttacks,
+                        attacker.RRounds,
+                        attacker.RAttacksPerRound,
+                        attacker.RExtraAttacks);
+                    sb.Append("\n");
+                }
+            }
+            sb.Append("\n");
+
+
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = lsRangedHeader2.Length,
+                Bold = true,
+                Underline = true,
+                Color = Color.Black
+            });
+            sb.Append(lsRangedHeader2 + "\n");
+
+            foreach (var attacker in rangedAttackCalcs)
+            {
+                if (attacker.RExtraAttacks > 0)
+                {
+                    sb.AppendFormat(lsRangedFormat2,
+                        attacker.Name,
+                        attacker.RPlus1Rounds,
+                        attacker.RPlusNRounds);
+                    sb.Append("\n");
+                }
+            }
+            sb.Append("\n");
+
+
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = lsRangedHeader3.Length,
+                Bold = true,
+                Underline = true,
+                Color = Color.Black
+            });
+            sb.Append(lsRangedHeader3 + "\n");
+
+            foreach (var attacker in rangedAttackCalcs)
+            {
+                if (attacker.RExtraAttacks > 0)
+                {
+                    sb.AppendFormat(lsRangedFormat3,
+                        attacker.Name,
+                        attacker.RTotalMultiRounds,
+                        attacker.RAttackRoundsNonKill > 0 ? (double)attacker.RTotalMultiRounds / attacker.RAttackRoundsNonKill : 0,
+                        attacker.RAttackRoundCountKills);
+                    sb.Append("\n");
+                }
+            }
+            sb.Append("\n\n");
+
+            #endregion
+
             PushStrings(sb, strModList);
         }
 
@@ -1185,12 +1300,16 @@ namespace WaywardGamers.KParser.Plugin
                                        SimpleMelee = from ma in actions
                                                      where (ActionType)ma.ActionType == ActionType.Melee
                                                      select ma,
+                                       SimpleRanged = from ma in actions
+                                                      where (ActionType)ma.ActionType == ActionType.Ranged
+                                                      select ma,
                                    };
 
 
             int attacksPerRound;
             IEnumerable<IGrouping<DateTime, KPDatabaseDataSet.InteractionsRow>> timestampedAttackGroups;
             List<AttackCalculations> attackCalcs = new List<AttackCalculations>();
+            List<AttackCalculations> rangedAttackCalcs = new List<AttackCalculations>();
 
             // Fill in the timestamp lists at the start.
             foreach (var combatant in simpleAttackList)
@@ -1243,9 +1362,57 @@ namespace WaywardGamers.KParser.Plugin
                             AddDetailsForOutput(ref sbDetails, combatant.DisplayName, bucketCounts, timestampedAttackGroups);
                     }
                 }
+
+                if (combatant.SimpleRanged.Count() > 0)
+                {
+                    // fill in buckets of count of .5 second intervals in the timespan list.
+                    int[] bucketCounts = FillBuckets(GetAltTimespanList(combatant.SimpleRanged));
+
+                    // determine the timespans that indicate a division between rounds vs
+                    // double attacks
+                    //List<TimeSpan> valleyTimepoints = AnalyzeBuckets(bucketCounts);
+
+                    // Because of the way ranged attacks work, we can set a fairly arbitrary
+                    // timepoint as the separator between non-DA and DA attacks.  Two normal ranged
+                    // attacks can't be much less than 3 seconds apart (and that's being
+                    // generous), so defining that as an arbitrary value here.
+                    TimeSpan rangedValley = TimeSpan.FromSeconds(3);
+
+                    // As long as we get any distinctive valley profile, use the first one as
+                    // the separator between non-DA and DA attacks.
+                    //if ((valleyTimepoints.Count > 0))
+                    //{
+                        // Lazy grouping for attacks within the timespan
+                        // specified by the first valley marker.
+                        timestampedAttackGroups = combatant.SimpleRanged.
+                            GroupAdjacentByTimeLimit<KPDatabaseDataSet.InteractionsRow, DateTime>(
+                            i => i.Timestamp, rangedValley);
+
+                        // For ranged, default attacks per round is always 1
+                        attacksPerRound = 1;
+
+                        var playerKills = from b in dataSet.Battles
+                                          where b.IsKillerIDNull() == false &&
+                                                b.CombatantsRowByBattleKillerRelation == combatant.Combatant
+                                          select b;
+
+
+                        // Run the calculations for this combatant and add it to the list.
+                        rangedAttackCalcs.Add(
+                            RunRangedCalculations(
+                                combatant.DisplayName,
+                                timestampedAttackGroups,
+                                attacksPerRound,
+                                playerKills));
+
+                        if (showDetails)
+                            AddDetailsForOutput(ref sbDetails, combatant.DisplayName, bucketCounts, timestampedAttackGroups);
+                    //}
+                }            
             }
 
             PrintOutput(attackCalcs);
+            PrintRangedOutput(rangedAttackCalcs);
 
             if (showDetails)
                 PushStrings(sbDetails, null);
@@ -1560,6 +1727,68 @@ namespace WaywardGamers.KParser.Plugin
             return attackCalc;
         }
 
+        private AttackCalculations RunRangedCalculations(string name,
+            IEnumerable<IGrouping<DateTime, KPDatabaseDataSet.InteractionsRow>> timestampedAttackGroups,
+            int attacksPerRound, EnumerableRowCollection<KPDatabaseDataSet.BattlesRow> playerKills)
+        {
+            // Put the results of all the calculations in an AttackCalculations object to return.
+            AttackCalculations attackCalc = new AttackCalculations();
+
+            // Summary of basic data
+
+            attackCalc.RAttacksPerRound = attacksPerRound;
+
+            attackCalc.Name = name;
+
+            attackCalc.RAttacks = timestampedAttackGroups.Sum(a => a.Count());
+            attackCalc.RRounds = timestampedAttackGroups.Count();
+
+            var roundsWithExtraAttacks = timestampedAttackGroups.Where(r => r.Count() > attacksPerRound);
+
+            attackCalc.RPlus1Rounds = roundsWithExtraAttacks.Count(r => r.Count() == (attacksPerRound + 1));
+            attackCalc.RPlusNRounds = roundsWithExtraAttacks.Count(r => r.Count() > (attacksPerRound + 1));
+
+            attackCalc.RExtraAttacks = roundsWithExtraAttacks.Sum(r => r.Count() - attacksPerRound);
+            attackCalc.RRoundsWithExtraAttacks = roundsWithExtraAttacks.Count();
+            attackCalc.RTotalMultiRounds = roundsWithExtraAttacks.Count();
+
+            attackCalc.RAttackRoundsNonKill = attackCalc.RRounds;
+            attackCalc.RAttackRoundCountKills = 0;
+
+            // Correct for melee rounds that kill the mob
+            foreach (var battle in playerKills)
+            {
+                var actions = battle.GetInteractionsRows().Where(i => i.IsActorIDNull() == false &&
+                    i.CombatantsRowByActorCombatantRelation == battle.CombatantsRowByBattleKillerRelation &&
+                    (HarmType)i.HarmType == HarmType.Damage);
+
+                if (actions.Count() > 0)
+                {
+                    var finalAction = actions.Last();
+
+                    if ((ActionType)finalAction.ActionType == ActionType.Ranged)
+                    {
+                        // get melee round that this belongs to
+                        var killRound = timestampedAttackGroups.LastOrDefault(a =>
+                            Math.Abs((finalAction.Timestamp - a.Key).TotalSeconds) < 2.0);
+
+                        if (killRound != null)
+                        {
+                            if (killRound.Count() == attacksPerRound)
+                            {
+                                attackCalc.AttackRoundCountKills++;
+                                attackCalc.AttackRoundsNonKill--;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // End summary section
+
+            return attackCalc;
+        }
+
         private void AddHeaderForDetailsOutput(ref StringBuilder sbDetails)
         {
             sbDetails.Append("\n\n\n");
@@ -1682,6 +1911,14 @@ namespace WaywardGamers.KParser.Plugin
             lsMainFormat1 = Resources.Combat.ExtraAttPluginFormatMain1;
             lsMainFormat2 = Resources.Combat.ExtraAttPluginFormatMain2;
             lsMainFormat3 = Resources.Combat.ExtraAttPluginFormatMain3;
+
+            lsRangedSectionTitle = Resources.Combat.ExtraAttPluginRangedSectionTitle;
+            lsRangedHeader1 = Resources.Combat.ExtraAttPluginHeaderRanged1;
+            lsRangedHeader2 = Resources.Combat.ExtraAttPluginHeaderRanged2;
+            lsRangedHeader3 = Resources.Combat.ExtraAttPluginHeaderRanged3;
+            lsRangedFormat1 = Resources.Combat.ExtraAttPluginFormatRanged1;
+            lsRangedFormat2 = Resources.Combat.ExtraAttPluginFormatRanged2;
+            lsRangedFormat3 = Resources.Combat.ExtraAttPluginFormatRanged3;
 
             lsSectionTreatAs = Resources.Combat.ExtraAttPluginSectionTreatAs;
 
