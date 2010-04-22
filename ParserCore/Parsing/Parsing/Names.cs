@@ -6,7 +6,7 @@ using System.Text;
 namespace WaywardGamers.KParser
 {
     /// <summary>
-    /// Class for the names of the avatars for separation from normal mobs.
+    /// Class for the names of the avatars and pets for separation from normal mobs.
     /// </summary>
     public static class GameNames
     {
@@ -298,7 +298,6 @@ namespace WaywardGamers.KParser
         /// <summary>
         /// Set for holding the names of all weaponskills to allow easy identification
         /// vs. Abilities.
-        /// TODO: put these in the Resources file.
         /// </summary>
         private static HashSet<string> GetWeaponskills()
         {
