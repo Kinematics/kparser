@@ -155,7 +155,7 @@ namespace WaywardGamers.KParser.Plugin
         }
         #endregion
 
-        #region Processing sections
+        #region Data subclass
         private class AttackCalculations
         {
             internal string Name { get; set; }
@@ -178,526 +178,695 @@ namespace WaywardGamers.KParser.Plugin
             internal int PossibleZanshin { get; set; }
             internal double FirstAttackAcc { get; set; }
             internal double SecondAttackAcc { get; set; }
+            // Following for ranged data:
+            internal int RAttacks { get; set; }
+            internal int RRounds { get; set; }
+            internal int RAttacksPerRound { get; set; }
+            internal int RExtraAttacks { get; set; }
+            internal int RRoundsWithExtraAttacks { get; set; }
+            internal int RPlus1Rounds { get; set; }
+            internal int RPlusNRounds { get; set; }
+            internal int RTotalMultiRounds { get; set; }
+            internal int RAttackRoundCountKills { get; set; }
+            internal int RAttackRoundsNonKill { get; set; }
         }
-
-        private DateTime ClosestTimestamp(DateTime timestamp, List<DateTime> timestampList)
-        {
-            int index = timestampList.BinarySearch(timestamp);
-
-            if (index >= 0)
-                return timestampList[index];
-            else
-                return timestampList[~index - 1];
-        }
-
-        private Dictionary<string, List<DateTime>> GetInitialDictionary(List<string> playersList)
-        {
-            Dictionary<string, List<DateTime>> timestampLists = new Dictionary<string, List<DateTime>>();
-
-            foreach (string player in playersList)
-            {
-                timestampLists.Add(player, new List<DateTime>());
-            }
-
-            return timestampLists;
-        }
-
-        private void FillTimestampList(List<DateTime> timestampList, IEnumerable<KPDatabaseDataSet.InteractionsRow> meleeRows)
-        {
-            if (meleeRows.Count() == 0)
-                throw new InvalidOperationException();
-
-            if (meleeRows.Count() == 1)
-            {
-                timestampList.Add(meleeRows.First().Timestamp);
-                return;
-            }
-
-            double sumTimeDiffs = 0;
-            int countTimeDiffs = 0;
-            DateTime thistime;
-            DateTime lasttime = meleeRows.First().Timestamp;
-            double timeDiff;
-
-            foreach (var round in meleeRows.Where((a,index) => index > 0))
-            {
-                // Get the current interval since the previous baseline timestamp
-                thistime = round.Timestamp;
-                timeDiff = (thistime - lasttime).TotalSeconds;
-
-                // If we're at least 2 seconds past the previous entry, this is a valid interval
-                // and we can update the lasttime value
-                if (timeDiff > 2)
-                {
-                    lasttime = thistime;
-
-                    // Ignore inordinately long periods as possible breaks between fights, etc.
-                    // Otherwise update the sum and count values.
-                    if (timeDiff < 20)
-                    {
-                        sumTimeDiffs += timeDiff;
-                        countTimeDiffs++;
-                    }
-                }
-            }
-
-            // Find the average, and set the threshold at 2/3 that value.
-            double timeDiffThreshold = 0;
-            if (countTimeDiffs > 0)
-                timeDiffThreshold = (sumTimeDiffs / countTimeDiffs) * 2 / 3;
-
-            if (timeDiffThreshold < 2)
-                timeDiffThreshold = 2;
-
-            DateTime lastTS;
-
-            foreach (var melee in meleeRows)
-            {
-                if (timestampList.Count == 0)
-                {
-                    timestampList.Add(melee.Timestamp);
-                    continue;
-                }
-
-                lastTS = timestampList.LastOrDefault(t =>
-                    t <= melee.Timestamp &&
-                    t.AddSeconds(timeDiffThreshold) >= melee.Timestamp);
-
-                if ((lastTS == null) || (lastTS == DateTime.MinValue))
-                    timestampList.Add(melee.Timestamp);
-            }
-
-            timestampList.Sort();
-        }
-
-        protected override void ProcessData(KPDatabaseDataSet dataSet)
-        {
-            if (alternateProcessMode)
-            {
-                ProcessDataAlternateMode(dataSet);
-                return;
-            }
-
-            ResetTextBox();
-
-            string playerFilter = playersCombo.CBSelectedItem();
-            List<string> playersList = new List<string>();
-
-            if (playerFilter == lsAll)
-            {
-                string[] players = playersCombo.CBGetStrings();
-
-                foreach (string player in players)
-                {
-                    if (player != lsAll)
-                    {
-                        playersList.Add(player);
-                    }
-                }
-            }
-            else
-            {
-                playersList.Add(playerFilter);
-            }
-
-            Dictionary<string, List<DateTime>> timestampLists = GetInitialDictionary(playersList);
-
-            if (timestampLists.Count == 0)
-                return;
-
-            // Setup work for calculating attack round timing
-            var simpleAttackList = from c in dataSet.Combatants
-                                   where (((EntityType)c.CombatantType == EntityType.Player) ||
-                                         ((EntityType)c.CombatantType == EntityType.Pet) ||
-                                         ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
-                                         ((EntityType)c.CombatantType == EntityType.Fellow)) &&
-                                         (playersList.Contains(c.CombatantName))
-                                   orderby c.CombatantType, c.CombatantName
-                                   let actions = c.GetInteractionsRowsByActorCombatantRelation()
-                                   select new
-                                   {
-                                       Name = c.CombatantName,
-                                       DisplayName = c.CombatantNameOrJobName,
-                                       HasMelee = actions.Any(a => (ActionType)a.ActionType == ActionType.Melee),
-                                       SimpleMelee = from ma in actions
-                                                     where (ActionType)ma.ActionType == ActionType.Melee
-                                                     orderby ma.Timestamp
-                                                     select ma,
-                                   };
-
-            // Fill in the timestamp lists at the start.
-            foreach (var combatant in simpleAttackList)
-            {
-                if (combatant.HasMelee == true)
-                    FillTimestampList(timestampLists[combatant.Name], combatant.SimpleMelee);
-            }
-
-
-
-            // Now for the real work
-
-            #region LINQ query
-            var attacksMade = from c in dataSet.Combatants
-                              where (((EntityType)c.CombatantType == EntityType.Player) ||
-                                     ((EntityType)c.CombatantType == EntityType.Pet) ||
-                                     ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
-                                     ((EntityType)c.CombatantType == EntityType.Fellow)) &&
-                                    (playersList.Contains(c.CombatantName))
-                              orderby c.CombatantType, c.CombatantName
-                              let actions = c.GetInteractionsRowsByActorCombatantRelation()
-                              select new
-                              {
-                                  Name = c.CombatantName,
-                                  DisplayName = c.CombatantNameOrJobName,
-                                  CombatantRow = c,
-                                  HasMelee = actions.Any(a => (ActionType)a.ActionType == ActionType.Melee),
-                                  SimpleMelee = from ma in actions
-                                                where (ActionType)ma.ActionType == ActionType.Melee
-                                                select ma,
-                                  MeleeRounds = from ma in actions
-                                                where (ActionType)ma.ActionType == ActionType.Melee
-                                                group ma by ClosestTimestamp(ma.Timestamp, timestampLists[c.CombatantName])
-                              };
-            #endregion
-
-            // If no results, just exit.
-            if (attacksMade.Any(a => a.HasMelee == true) == false)
-                return;
-
-
-            List<AttackCalculations> attackCalcs = new List<AttackCalculations>();
-            AttackCalculations attackCalc;
-            int defaultAttacksPerRound = attacksCombo.CBSelectedIndex();
-
-            #region Calculations
-
-            foreach (var attacker in attacksMade.Where(a => a.HasMelee == true))
-            {
-                // Create a new object to store the info
-                attackCalc = new AttackCalculations();
-
-                // Note the name of the player
-                attackCalc.Name = attacker.DisplayName;
-
-                // Quick counts to be used further
-                attackCalc.Attacks = attacker.SimpleMelee.Count();
-                attackCalc.Rounds = attacker.MeleeRounds.Count();
-
-
-                // First we need to determine the number of attacks per round.
-                // If the UI setting is on Auto (0), need to automatically figure
-                // it out.
-                if (defaultAttacksPerRound == 0)
-                {
-                    // Attempt to auto-calculate default attacks per round.
-                    var attacksPerRoundGroups = attacker.MeleeRounds.GroupBy(m => m.Count());
-                    var attacksPerRoundThreshold = attacksPerRoundGroups
-                        .Where(m => m.Count() > attackCalc.Rounds / 4);
-
-                    if (attacksPerRoundThreshold.Count() > 0)
-                    {
-                        attackCalc.AttacksPerRound = attacksPerRoundThreshold.Min(m => m.Key);
-                        if (attackCalc.AttacksPerRound > 2)
-                            attackCalc.AttacksPerRound = attacksPerRoundGroups.Min(m => m.Key);
-                    }
-                    else
-                    {
-                        attackCalc.AttacksPerRound = attacksPerRoundGroups.Min(m => m.Key);
-                    }
-                }
-                else
-                {
-                    attackCalc.AttacksPerRound = defaultAttacksPerRound;
-                }
-
-                // Then we need the list of killshots made by the player where they
-                // only hit once when they have a default of 2 attacks per round.
-                var madeKill = dataSet.Battles.Where(b => b.IsKillerIDNull() == false &&
-                    b.KillerID == attacker.CombatantRow.CombatantID);
-
-                List<DateTime> killTimestamps = new List<DateTime>();
-
-                attackCalc.AttackRoundCountKills = 0;
-                attackCalc.AttackRoundUnderCountKills = 0;
-
-                foreach (var kill in madeKill)
-                {
-                    var killerActions = kill.GetInteractionsRows()
-                        .Where(a => a.IsActorIDNull() == false && a.ActorID == attacker.CombatantRow.CombatantID);
-
-                    var damageActions = killerActions.Where(n => (HarmType)n.HarmType == HarmType.Damage ||
-                                            (HarmType)n.HarmType == HarmType.Drain);
-
-                    if (damageActions.Count() > 0)
-                    {
-                        var lastAction = damageActions.Last();
-
-                        if ((ActionType)lastAction.ActionType == ActionType.Melee)
-                        {
-                            DateTime meleeKillEvent = ClosestTimestamp(
-                                lastAction.Timestamp, timestampLists[attacker.Name]);
-
-                            killTimestamps.Add(meleeKillEvent);
-
-                            int attacksOnMeleeKill = attacker.MeleeRounds.First(m => m.Key == meleeKillEvent).Count();
-
-                            if (attacksOnMeleeKill == attackCalc.AttacksPerRound)
-                                attackCalc.AttackRoundCountKills++;
-                            if (attacksOnMeleeKill < attackCalc.AttacksPerRound)
-                                attackCalc.AttackRoundUnderCountKills++;
-                        }
-                    }
-                }
-
-
-
-                // Put together possible Zanshin data
-                if (attackCalc.AttacksPerRound == 1)
-                {
-                    // Count possible zanshin rounds
-                    var missedFirstAttacks = attacker.MeleeRounds
-                        .Where(a => (DefenseType)a.First().DefenseType != DefenseType.None);
-
-                    attackCalc.MissedFirstAttacks = missedFirstAttacks.Count();
-
-                    var possibleZanshinRounds = missedFirstAttacks.Where(a => a.Count() == 2);
-
-                    attackCalc.PossibleZanshin = possibleZanshinRounds.Count();
-
-                    // Get acc of first hits of each round (all rounds)
-                    int firstAttHit = attacker.MeleeRounds
-                        .Where(a => (DefenseType)a.First().DefenseType == DefenseType.None).Count();
-
-                    attackCalc.FirstAttackAcc = (double)firstAttHit / (firstAttHit + attackCalc.MissedFirstAttacks);
-
-                    // Get acc of second hits of each round
-
-                    if (attackCalc.PossibleZanshin > 0)
-                    {
-                        int secondAttHit = possibleZanshinRounds.Where(a => (DefenseType)a.Last().DefenseType == DefenseType.None).Count();
-                        int secondAttMiss = possibleZanshinRounds.Where(a => (DefenseType)a.Last().DefenseType != DefenseType.None).Count();
-
-                        attackCalc.SecondAttackAcc = (double)secondAttHit / (secondAttHit + secondAttMiss);
-                    }
-                    else
-                    {
-                        attackCalc.SecondAttackAcc = 0;
-                    }
-                }
-
-
-                // Here we can calculate the distribution of extra attacks.
-
-
-                var minusOneRounds = attacker.MeleeRounds.Where(a => a.Count() < attackCalc.AttacksPerRound);
-
-                attackCalc.Minus1Rounds = minusOneRounds.Count();
-
-                var roundsWithExtraAttacks = attacker.MeleeRounds
-                    .Where(m => m.Count() > attackCalc.AttacksPerRound);
-
-                if (roundsWithExtraAttacks.Count() > 0)
-                {
-                    attackCalc.RoundsWithExtraAttacks = roundsWithExtraAttacks.Count();
-
-                    attackCalc.Plus1Rounds = roundsWithExtraAttacks.Count(
-                        m => (m.Count() - attackCalc.AttacksPerRound) == 1);
-                    attackCalc.Plus2Rounds = roundsWithExtraAttacks.Count(
-                        m => (m.Count() - attackCalc.AttacksPerRound) == 2);
-                    attackCalc.Plus3Rounds = roundsWithExtraAttacks.Count(
-                        m => (m.Count() - attackCalc.AttacksPerRound) == 3);
-                    attackCalc.Plus4Rounds = roundsWithExtraAttacks.Count(
-                        m => (m.Count() - attackCalc.AttacksPerRound) == 4);
-                    attackCalc.PlusNRounds = roundsWithExtraAttacks.Count(
-                        m => (m.Count() - attackCalc.AttacksPerRound) > 4);
-
-                    // Corrections to results due to -1 rounds
-                    foreach (var minusOne in minusOneRounds)
-                    {
-                        if (killTimestamps.Contains(minusOne.Key) == true)
-                            continue;
-
-
-                        // If a sequence of 1 1 1 is found, turn it into a +1 entry and remove
-                        // the first two -1's (the third will be removed in the next block).
-                        var middleOne = attacker.MeleeRounds.Where((a, index) => a.Key == minusOne.Key &&
-                            index != 0 &&
-                            index != attacker.MeleeRounds.Count() - 1 &&
-                            attacker.MeleeRounds.ElementAt(index - 1).Count() < attackCalc.AttacksPerRound &&
-                            attacker.MeleeRounds.ElementAt(index + 1).Count() < attackCalc.AttacksPerRound)
-                            .SingleOrDefault();
-
-                        if (middleOne != null)
-                        {
-                            attackCalc.Plus1Rounds++;
-                            //attackCalc.Minus1Rounds -= 2;
-                            continue;
-                        }
-
-                        // If a sequence of 1 1 is found, ignore if this is the first of the two entries.
-                        // It will be corrected in the next pass.
-                        var priorOne = attacker.MeleeRounds.Where((a, index) => a.Key == minusOne.Key &&
-                                index != 0 &&
-                                index != attacker.MeleeRounds.Count() - 1 &&
-                                attacker.MeleeRounds.ElementAt(index + 1).Count() < attackCalc.AttacksPerRound)
-                                .SingleOrDefault();
-
-                        if (priorOne != null)
-                        {
-                            continue;
-                        }
-
-                        // If a sequence of 1 1 is found where this is the second of two entries,
-                        // treat it as a +0 entry and remove the -1
-                        var adjacentOne = attacker.MeleeRounds.Where((a, index) => a.Key == minusOne.Key &&
-                                index != 0 &&
-                                index != attacker.MeleeRounds.Count() - 1 &&
-                                killTimestamps.Contains(attacker.MeleeRounds.ElementAt(index - 1).Key) == false &&
-                                attacker.MeleeRounds.ElementAt(index - 1).Count() < attackCalc.AttacksPerRound)
-                                .SingleOrDefault();
-
-                        if (adjacentOne != null)
-                        {
-                            //attackCalc.Minus1Rounds--;
-                            continue;
-                        }
-
-                        // If this is a -1 next to any +0's, add an extra +1 round and remove this -1.
-                        middleOne = attacker.MeleeRounds.Where((a, index) => a.Key == minusOne.Key &&
-                                index != 0 &&
-                                index != attacker.MeleeRounds.Count() - 1 &&
-                                (attacker.MeleeRounds.ElementAt(index - 1).Count() == attackCalc.AttacksPerRound ||
-                                attacker.MeleeRounds.ElementAt(index + 1).Count() == attackCalc.AttacksPerRound))
-                                .SingleOrDefault();
-
-                        if (middleOne != null)
-                        {
-                            attackCalc.Plus1Rounds++;
-                            //attackCalc.Minus1Rounds--;
-                            continue;
-                        }
-
-                        int first = 0, second = 0;
-
-                        // If this is a -1 between multiple +1 or highers, add to the lower of the +'s.
-                        middleOne = attacker.MeleeRounds.Where((a, index) => a.Key == minusOne.Key &&
-                                index != 0 &&
-                                index != attacker.MeleeRounds.Count() - 1 &&
-                                attacker.MeleeRounds.ElementAt(index - 1).Count() > attackCalc.AttacksPerRound &&
-                                attacker.MeleeRounds.ElementAt(index + 1).Count() > attackCalc.AttacksPerRound &&
-                                (killTimestamps.Contains(attacker.MeleeRounds.ElementAt(index - 1).Key) == false ||
-                                ((first = attacker.MeleeRounds.ElementAt(index - 1).Count()) > 0)) &&
-                                (killTimestamps.Contains(attacker.MeleeRounds.ElementAt(index + 1).Key) == false ||
-                                ((second = attacker.MeleeRounds.ElementAt(index + 1).Count()) > 0)))
-                                .SingleOrDefault();
-
-                        if (middleOne != null)
-                        {
-                            if ((first == 0) && (second == 0))
-                                continue;
-
-                            if (first == 0)
-                                first = second;
-                            else if ((second != 0) && (second < first))
-                                first = second;
-
-                            switch (first)
-                            {
-                                case 3:
-                                    attackCalc.Plus1Rounds--;
-                                    attackCalc.Plus2Rounds++;
-                                    break;
-                                case 4:
-                                    attackCalc.Plus2Rounds--;
-                                    attackCalc.Plus3Rounds++;
-                                    break;
-                                case 5:
-                                    attackCalc.Plus3Rounds--;
-                                    attackCalc.Plus4Rounds++;
-                                    break;
-                                case 6:
-                                    attackCalc.Plus4Rounds--;
-                                    attackCalc.PlusNRounds++;
-                                    break;
-                                default:
-                                    attackCalc.PlusNRounds++;
-                                    break;
-                            }
-
-                            //attackCalc.Minus1Rounds--;
-                            continue;
-                        }
-
-                    }
-
-
-                    // And put together a total for multi-attack rounds
-                    attackCalc.TotalMultiRounds = attackCalc.Plus1Rounds +
-                        attackCalc.Plus2Rounds + attackCalc.Plus3Rounds +
-                        attackCalc.Plus4Rounds + attackCalc.PlusNRounds;
-                }
-
-                // Now that we have a corrected version for multi-attack rounds, figure out
-                // the number of base rounds.
-                attackCalc.Rounds = ((attackCalc.Attacks -
-                    attackCalc.AttackRoundUnderCountKills -
-                    attackCalc.Plus1Rounds -
-                    2 * attackCalc.Plus2Rounds -
-                    3 * attackCalc.Plus3Rounds -
-                    4 * attackCalc.Plus4Rounds -
-                    5 * attackCalc.PlusNRounds) / attackCalc.AttacksPerRound) + attackCalc.AttackRoundUnderCountKills;
-
-                // From there we can determine the number of extra attacks generated overall.
-                if (attackCalc.AttacksPerRound == 2)
-                {
-                    attackCalc.ExtraAttacks = (attackCalc.Attacks - attackCalc.AttackRoundUnderCountKills)
-                        - (attackCalc.Rounds - attackCalc.AttackRoundUnderCountKills) * 2;
-                }
-                else
-                {
-                    attackCalc.ExtraAttacks = attackCalc.Attacks - attackCalc.Rounds;
-                }
-
-
-                // Calculate the number of rounds that are valid to look at for percentages.
-                attackCalc.AttackRoundsNonKill = attackCalc.Rounds
-                    - attackCalc.AttackRoundCountKills - attackCalc.AttackRoundUnderCountKills;
-
-
-
-                // And then store it for output
-                attackCalcs.Add(attackCalc);
-            }
-
-
-            #endregion
-
-            PrintOutput(attackCalcs);
-
-            #region Dump Details
-            if (showDetails == true)
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.Append("\n\n\n");
-                sb.Append(lsSectionUncorrectedDetails);
-                sb.Append("\n\n");
-                foreach (var attacker in attacksMade.Where(a => a.MeleeRounds.Count() > 0))
-                {
-                    sb.AppendLine(attacker.Name);
-
-                    foreach (var round in attacker.MeleeRounds)
-                    {
-                        sb.Append(string.Format("  {0}  -- #{1}\n", round.Key, round.Count()));
-                    }
-
-                    sb.AppendLine();
-                }
-
-                PushStrings(sb, null);
-            }
-            #endregion
-        }
-
+        #endregion
+
+        #region Old processing sections (obsolete)
+
+        //private DateTime ClosestTimestamp(DateTime timestamp, List<DateTime> timestampList)
+        //{
+        //    int index = timestampList.BinarySearch(timestamp);
+
+        //    if (index >= 0)
+        //        return timestampList[index];
+        //    else
+        //        return timestampList[~index - 1];
+        //}
+
+        //private Dictionary<string, List<DateTime>> GetInitialDictionary(List<string> playersList)
+        //{
+        //    Dictionary<string, List<DateTime>> timestampLists = new Dictionary<string, List<DateTime>>();
+
+        //    foreach (string player in playersList)
+        //    {
+        //        timestampLists.Add(player, new List<DateTime>());
+        //    }
+
+        //    return timestampLists;
+        //}
+
+        //private void FillMeleeTimestampList(List<DateTime> timestampList,
+        //    IEnumerable<KPDatabaseDataSet.InteractionsRow> meleeRows)
+        //{
+        //    if (meleeRows.Count() == 0)
+        //        throw new InvalidOperationException();
+
+        //    if (meleeRows.Count() == 1)
+        //    {
+        //        timestampList.Add(meleeRows.First().Timestamp);
+        //        return;
+        //    }
+
+        //    double sumTimeDiffs = 0;
+        //    int countTimeDiffs = 0;
+        //    DateTime thistime;
+        //    DateTime lasttime = meleeRows.First().Timestamp;
+        //    double timeDiff;
+
+        //    foreach (var round in meleeRows.Where((a, index) => index > 0))
+        //    {
+        //        // Get the current interval since the previous baseline timestamp
+        //        thistime = round.Timestamp;
+        //        timeDiff = (thistime - lasttime).TotalSeconds;
+
+        //        // If we're at least 2 seconds past the previous entry, this is a valid interval
+        //        // and we can update the lasttime value
+        //        if (timeDiff > 2)
+        //        {
+        //            lasttime = thistime;
+
+        //            // Ignore inordinately long periods as possible breaks between fights, etc.
+        //            // Otherwise update the sum and count values.
+        //            if (timeDiff < 20)
+        //            {
+        //                sumTimeDiffs += timeDiff;
+        //                countTimeDiffs++;
+        //            }
+        //        }
+        //    }
+
+        //    // Find the average, and set the threshold at 2/3 that value.
+        //    double timeDiffThreshold = 0;
+        //    if (countTimeDiffs > 0)
+        //        timeDiffThreshold = (sumTimeDiffs / countTimeDiffs) * 2 / 3;
+
+        //    if (timeDiffThreshold < 2)
+        //        timeDiffThreshold = 2;
+
+        //    DateTime lastTS;
+
+        //    foreach (var melee in meleeRows)
+        //    {
+        //        if (timestampList.Count == 0)
+        //        {
+        //            timestampList.Add(melee.Timestamp);
+        //            continue;
+        //        }
+
+        //        lastTS = timestampList.LastOrDefault(t =>
+        //            t <= melee.Timestamp &&
+        //            t.AddSeconds(timeDiffThreshold) >= melee.Timestamp);
+
+        //        if ((lastTS == null) || (lastTS == DateTime.MinValue))
+        //            timestampList.Add(melee.Timestamp);
+        //    }
+
+        //    timestampList.Sort();
+        //}
+
+        //private void FillRangeTimestampList(List<DateTime> timestampList,
+        //    IEnumerable<KPDatabaseDataSet.InteractionsRow> rangeRows)
+        //{
+        //    if (rangeRows.Count() == 0)
+        //        throw new InvalidOperationException();
+
+        //    if (rangeRows.Count() == 1)
+        //    {
+        //        timestampList.Add(rangeRows.First().Timestamp);
+        //        return;
+        //    }
+
+        //    double sumTimeDiffs = 0;
+        //    int countTimeDiffs = 0;
+        //    DateTime thistime;
+        //    DateTime lasttime = rangeRows.First().Timestamp;
+        //    double timeDiff;
+
+        //    foreach (var round in rangeRows.Where((a, index) => index > 0))
+        //    {
+        //        // Get the current interval since the previous baseline timestamp
+        //        thistime = round.Timestamp;
+        //        timeDiff = (thistime - lasttime).TotalSeconds;
+
+        //        // If we're at least 2 seconds past the previous entry, this is a valid interval
+        //        // and we can update the lasttime value
+        //        if (timeDiff > 2)
+        //        {
+        //            lasttime = thistime;
+
+        //            // Ignore inordinately long periods as possible breaks between fights, etc.
+        //            // Otherwise update the sum and count values.
+        //            if (timeDiff < 20)
+        //            {
+        //                sumTimeDiffs += timeDiff;
+        //                countTimeDiffs++;
+        //            }
+        //        }
+        //    }
+
+        //    // Find the average, and set the threshold at 2/3 that value.
+        //    double timeDiffThreshold = 0;
+        //    if (countTimeDiffs > 0)
+        //        timeDiffThreshold = (sumTimeDiffs / countTimeDiffs) * 2 / 3;
+
+        //    if (timeDiffThreshold < 2)
+        //        timeDiffThreshold = 2;
+
+        //    DateTime lastTS;
+
+        //    foreach (var range in rangeRows)
+        //    {
+        //        if (timestampList.Count == 0)
+        //        {
+        //            timestampList.Add(range.Timestamp);
+        //            continue;
+        //        }
+
+        //        lastTS = timestampList.LastOrDefault(t =>
+        //            t <= range.Timestamp &&
+        //            t.AddSeconds(timeDiffThreshold) >= range.Timestamp);
+
+        //        if ((lastTS == null) || (lastTS == DateTime.MinValue))
+        //            timestampList.Add(range.Timestamp);
+        //    }
+
+        //    timestampList.Sort();
+        //}
+
+        //protected void OldProcessData(KPDatabaseDataSet dataSet)
+        //{
+        //    if (alternateProcessMode)
+        //    {
+        //        ProcessData(dataSet);
+        //        return;
+        //    }
+
+        //    ResetTextBox();
+
+        //    string playerFilter = playersCombo.CBSelectedItem();
+        //    List<string> playersList = new List<string>();
+
+        //    if (playerFilter == lsAll)
+        //    {
+        //        string[] players = playersCombo.CBGetStrings();
+
+        //        foreach (string player in players)
+        //        {
+        //            if (player != lsAll)
+        //            {
+        //                playersList.Add(player);
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        playersList.Add(playerFilter);
+        //    }
+
+        //    Dictionary<string, List<DateTime>> meleeTimestampLists = GetInitialDictionary(playersList);
+        //    Dictionary<string, List<DateTime>> rangeTimestampLists = GetInitialDictionary(playersList);
+
+        //    if (meleeTimestampLists.Count == 0)
+        //        return;
+
+        //    // Setup work for calculating attack round timing
+        //    var simpleAttackList = from c in dataSet.Combatants
+        //                           where (((EntityType)c.CombatantType == EntityType.Player) ||
+        //                                 ((EntityType)c.CombatantType == EntityType.Pet) ||
+        //                                 ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
+        //                                 ((EntityType)c.CombatantType == EntityType.Fellow)) &&
+        //                                 (playersList.Contains(c.CombatantName))
+        //                           orderby c.CombatantType, c.CombatantName
+        //                           let actions = c.GetInteractionsRowsByActorCombatantRelation()
+        //                           select new
+        //                           {
+        //                               Name = c.CombatantName,
+        //                               DisplayName = c.CombatantNameOrJobName,
+        //                               HasMelee = actions.Any(a => (ActionType)a.ActionType == ActionType.Melee),
+        //                               SimpleMelee = from ma in actions
+        //                                             where (ActionType)ma.ActionType == ActionType.Melee
+        //                                             orderby ma.Timestamp
+        //                                             select ma,
+        //                               HasRange = actions.Any(a => (ActionType)a.ActionType == ActionType.Ranged),
+        //                               SimpleRange = from ma in actions
+        //                                             where (ActionType)ma.ActionType == ActionType.Ranged
+        //                                             orderby ma.Timestamp
+        //                                             select ma,
+        //                           };
+
+        //    // Fill in the timestamp lists at the start.
+        //    foreach (var combatant in simpleAttackList)
+        //    {
+        //        if (combatant.HasMelee == true)
+        //            FillMeleeTimestampList(meleeTimestampLists[combatant.Name], combatant.SimpleMelee);
+
+        //        if (combatant.HasRange == true)
+        //            FillRangeTimestampList(rangeTimestampLists[combatant.Name], combatant.SimpleRange);
+        //    }
+
+
+
+        //    // Now for the real work
+
+        //    #region LINQ query
+        //    var attacksMade = from c in dataSet.Combatants
+        //                      where (((EntityType)c.CombatantType == EntityType.Player) ||
+        //                             ((EntityType)c.CombatantType == EntityType.Pet) ||
+        //                             ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
+        //                             ((EntityType)c.CombatantType == EntityType.Fellow)) &&
+        //                            (playersList.Contains(c.CombatantName))
+        //                      orderby c.CombatantType, c.CombatantName
+        //                      let actions = c.GetInteractionsRowsByActorCombatantRelation()
+        //                      select new
+        //                      {
+        //                          Name = c.CombatantName,
+        //                          DisplayName = c.CombatantNameOrJobName,
+        //                          CombatantRow = c,
+        //                          HasMelee = actions.Any(a => (ActionType)a.ActionType == ActionType.Melee),
+        //                          SimpleMelee = from ma in actions
+        //                                        where (ActionType)ma.ActionType == ActionType.Melee
+        //                                        select ma,
+        //                          MeleeRounds = from ma in actions
+        //                                        where (ActionType)ma.ActionType == ActionType.Melee
+        //                                        group ma by ClosestTimestamp(ma.Timestamp, meleeTimestampLists[c.CombatantName]),
+        //                          HasRanged = actions.Any(a => (ActionType)a.ActionType == ActionType.Ranged),
+        //                          SimpleRanged = from ma in actions
+        //                                         where (ActionType)ma.ActionType == ActionType.Ranged
+        //                                         select ma,
+        //                          RangedRounds = from ma in actions
+        //                                         where (ActionType)ma.ActionType == ActionType.Ranged
+        //                                         group ma by ClosestTimestamp(ma.Timestamp, rangeTimestampLists[c.CombatantName])
+        //                      };
+        //    #endregion
+
+        //    // If no results, just exit.
+        //    if ((attacksMade.Any(a => a.HasMelee == true) == false) &&
+        //        (attacksMade.Any(a => a.HasRanged == true) == false))
+        //        return;
+
+
+        //    List<AttackCalculations> attackCalcs = new List<AttackCalculations>();
+        //    AttackCalculations attackCalc;
+        //    int defaultAttacksPerRound = attacksCombo.CBSelectedIndex();
+
+        //    #region Calculations (Melee)
+
+        //    foreach (var attacker in attacksMade.Where(a => a.HasMelee == true || a.HasRanged == true))
+        //    {
+        //        // Create a new object to store the info
+        //        attackCalc = new AttackCalculations();
+
+        //        // Note the name of the player
+        //        attackCalc.Name = attacker.DisplayName;
+
+        //        // Quick counts to be used further
+        //        if (attacker.HasMelee)
+        //        {
+        //            attackCalc.Attacks = attacker.SimpleMelee.Count();
+        //            attackCalc.Rounds = attacker.MeleeRounds.Count();
+        //        }
+
+        //        if (attacker.HasRanged)
+        //        {
+        //            attackCalc.RAttacks = attacker.SimpleRanged.Count();
+        //            attackCalc.RRounds = attacker.RangedRounds.Count();
+        //        }
+
+
+
+        //        // First we need to determine the number of attacks per round.
+        //        // If the UI setting is on Auto (0), need to automatically figure
+        //        // it out.
+        //        if (defaultAttacksPerRound == 0)
+        //        {
+        //            // Attempt to auto-calculate default attacks per round.
+        //            var attacksPerRoundGroups = attacker.MeleeRounds.GroupBy(m => m.Count());
+        //            var attacksPerRoundThreshold = attacksPerRoundGroups
+        //                .Where(m => m.Count() > attackCalc.Rounds / 4);
+
+        //            if (attacksPerRoundThreshold.Count() > 0)
+        //            {
+        //                attackCalc.AttacksPerRound = attacksPerRoundThreshold.Min(m => m.Key);
+        //                if (attackCalc.AttacksPerRound > 2)
+        //                    attackCalc.AttacksPerRound = attacksPerRoundGroups.Min(m => m.Key);
+        //            }
+        //            else
+        //            {
+        //                attackCalc.AttacksPerRound = attacksPerRoundGroups.Min(m => m.Key);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            attackCalc.AttacksPerRound = defaultAttacksPerRound;
+        //        }
+
+        //        // Ranged is always base 1
+        //        attackCalc.RAttacksPerRound = 1;
+
+        //        // Then we need the list of killshots made by the player where they
+        //        // only hit once when they have a default of 2 attacks per round.
+        //        var madeKill = dataSet.Battles.Where(b => b.IsKillerIDNull() == false &&
+        //            b.KillerID == attacker.CombatantRow.CombatantID);
+
+        //        List<DateTime> mKillTimestamps = new List<DateTime>();
+        //        List<DateTime> rKillTimestamps = new List<DateTime>();
+
+        //        attackCalc.AttackRoundCountKills = 0;
+        //        attackCalc.AttackRoundUnderCountKills = 0;
+        //        attackCalc.RAttackRoundCountKills = 0;
+
+        //        foreach (var kill in madeKill)
+        //        {
+        //            var killerActions = kill.GetInteractionsRows()
+        //                .Where(a => a.IsActorIDNull() == false && a.ActorID == attacker.CombatantRow.CombatantID);
+
+        //            var damageActions = killerActions.Where(n => (HarmType)n.HarmType == HarmType.Damage ||
+        //                                    (HarmType)n.HarmType == HarmType.Drain);
+
+        //            if (damageActions.Count() > 0)
+        //            {
+        //                var lastAction = damageActions.Last();
+
+        //                if ((ActionType)lastAction.ActionType == ActionType.Melee)
+        //                {
+        //                    DateTime meleeKillEvent = ClosestTimestamp(
+        //                        lastAction.Timestamp, meleeTimestampLists[attacker.Name]);
+
+        //                    mKillTimestamps.Add(meleeKillEvent);
+
+        //                    int attacksOnMeleeKill = attacker.MeleeRounds.First(m => m.Key == meleeKillEvent).Count();
+
+        //                    if (attacksOnMeleeKill == attackCalc.AttacksPerRound)
+        //                        attackCalc.AttackRoundCountKills++;
+        //                    if (attacksOnMeleeKill < attackCalc.AttacksPerRound)
+        //                        attackCalc.AttackRoundUnderCountKills++;
+        //                }
+        //                else if ((ActionType)lastAction.ActionType == ActionType.Ranged)
+        //                {
+        //                    DateTime rangeKillEvent = ClosestTimestamp(
+        //                        lastAction.Timestamp, rangeTimestampLists[attacker.Name]);
+
+        //                    rKillTimestamps.Add(rangeKillEvent);
+
+        //                    int attacksOnRangeKill = attacker.RangedRounds.First(m => m.Key == rangeKillEvent).Count();
+
+        //                    if (attacksOnRangeKill == attackCalc.RAttacksPerRound)
+        //                        attackCalc.RAttackRoundCountKills++;
+        //                }
+        //            }
+        //        }
+
+
+
+        //        // Put together possible Zanshin data
+        //        if (attackCalc.AttacksPerRound == 1)
+        //        {
+        //            // Count possible zanshin rounds
+        //            var missedFirstAttacks = attacker.MeleeRounds
+        //                .Where(a => (DefenseType)a.First().DefenseType != DefenseType.None);
+
+        //            attackCalc.MissedFirstAttacks = missedFirstAttacks.Count();
+
+        //            var possibleZanshinRounds = missedFirstAttacks.Where(a => a.Count() == 2);
+
+        //            attackCalc.PossibleZanshin = possibleZanshinRounds.Count();
+
+        //            // Get acc of first hits of each round (all rounds)
+        //            int firstAttHit = attacker.MeleeRounds
+        //                .Where(a => (DefenseType)a.First().DefenseType == DefenseType.None).Count();
+
+        //            attackCalc.FirstAttackAcc = (double)firstAttHit / (firstAttHit + attackCalc.MissedFirstAttacks);
+
+        //            // Get acc of second hits of each round
+
+        //            if (attackCalc.PossibleZanshin > 0)
+        //            {
+        //                int secondAttHit = possibleZanshinRounds.Where(a => (DefenseType)a.Last().DefenseType == DefenseType.None).Count();
+        //                int secondAttMiss = possibleZanshinRounds.Where(a => (DefenseType)a.Last().DefenseType != DefenseType.None).Count();
+
+        //                attackCalc.SecondAttackAcc = (double)secondAttHit / (secondAttHit + secondAttMiss);
+        //            }
+        //            else
+        //            {
+        //                attackCalc.SecondAttackAcc = 0;
+        //            }
+        //        }
+
+
+        //        // Here we can calculate the distribution of extra attacks.
+
+
+        //        var minusOneRounds = attacker.MeleeRounds.Where(a => a.Count() < attackCalc.AttacksPerRound);
+
+        //        attackCalc.Minus1Rounds = minusOneRounds.Count();
+
+        //        var roundsWithExtraAttacks = attacker.MeleeRounds
+        //            .Where(m => m.Count() > attackCalc.AttacksPerRound);
+
+        //        var roundsWithExtraRAttacks = attacker.RangedRounds
+        //            .Where(r => r.Count() > attackCalc.RAttacksPerRound);
+
+        //        // Ranged counts
+        //        if (roundsWithExtraRAttacks.Count() > 0)
+        //        {
+        //            attackCalc.RRoundsWithExtraAttacks = roundsWithExtraRAttacks.Count();
+        //            attackCalc.RPlus1Rounds = roundsWithExtraRAttacks.Count(
+        //                r => (r.Count() - attackCalc.RAttacksPerRound) == 1);
+        //            attackCalc.RPlusNRounds = roundsWithExtraRAttacks.Count(
+        //                r => (r.Count() - attackCalc.RAttacksPerRound) > 1);
+
+        //            attackCalc.RTotalMultiRounds = attackCalc.RPlus1Rounds + attackCalc.RPlusNRounds;
+        //        }
+
+
+        //        // Melee counts
+        //        if (roundsWithExtraAttacks.Count() > 0)
+        //        {
+        //            attackCalc.RoundsWithExtraAttacks = roundsWithExtraAttacks.Count();
+
+        //            attackCalc.Plus1Rounds = roundsWithExtraAttacks.Count(
+        //                m => (m.Count() - attackCalc.AttacksPerRound) == 1);
+        //            attackCalc.Plus2Rounds = roundsWithExtraAttacks.Count(
+        //                m => (m.Count() - attackCalc.AttacksPerRound) == 2);
+        //            attackCalc.Plus3Rounds = roundsWithExtraAttacks.Count(
+        //                m => (m.Count() - attackCalc.AttacksPerRound) == 3);
+        //            attackCalc.Plus4Rounds = roundsWithExtraAttacks.Count(
+        //                m => (m.Count() - attackCalc.AttacksPerRound) == 4);
+        //            attackCalc.PlusNRounds = roundsWithExtraAttacks.Count(
+        //                m => (m.Count() - attackCalc.AttacksPerRound) > 4);
+
+        //            // Corrections to results due to -1 rounds
+        //            foreach (var minusOne in minusOneRounds)
+        //            {
+        //                if (mKillTimestamps.Contains(minusOne.Key) == true)
+        //                    continue;
+
+
+        //                // If a sequence of 1 1 1 is found, turn it into a +1 entry and remove
+        //                // the first two -1's (the third will be removed in the next block).
+        //                var middleOne = attacker.MeleeRounds.Where((a, index) => a.Key == minusOne.Key &&
+        //                    index != 0 &&
+        //                    index != attacker.MeleeRounds.Count() - 1 &&
+        //                    attacker.MeleeRounds.ElementAt(index - 1).Count() < attackCalc.AttacksPerRound &&
+        //                    attacker.MeleeRounds.ElementAt(index + 1).Count() < attackCalc.AttacksPerRound)
+        //                    .SingleOrDefault();
+
+        //                if (middleOne != null)
+        //                {
+        //                    attackCalc.Plus1Rounds++;
+        //                    //attackCalc.Minus1Rounds -= 2;
+        //                    continue;
+        //                }
+
+        //                // If a sequence of 1 1 is found, ignore if this is the first of the two entries.
+        //                // It will be corrected in the next pass.
+        //                var priorOne = attacker.MeleeRounds.Where((a, index) => a.Key == minusOne.Key &&
+        //                        index != 0 &&
+        //                        index != attacker.MeleeRounds.Count() - 1 &&
+        //                        attacker.MeleeRounds.ElementAt(index + 1).Count() < attackCalc.AttacksPerRound)
+        //                        .SingleOrDefault();
+
+        //                if (priorOne != null)
+        //                {
+        //                    continue;
+        //                }
+
+        //                // If a sequence of 1 1 is found where this is the second of two entries,
+        //                // treat it as a +0 entry and remove the -1
+        //                var adjacentOne = attacker.MeleeRounds.Where((a, index) => a.Key == minusOne.Key &&
+        //                        index != 0 &&
+        //                        index != attacker.MeleeRounds.Count() - 1 &&
+        //                        mKillTimestamps.Contains(attacker.MeleeRounds.ElementAt(index - 1).Key) == false &&
+        //                        attacker.MeleeRounds.ElementAt(index - 1).Count() < attackCalc.AttacksPerRound)
+        //                        .SingleOrDefault();
+
+        //                if (adjacentOne != null)
+        //                {
+        //                    //attackCalc.Minus1Rounds--;
+        //                    continue;
+        //                }
+
+        //                // If this is a -1 next to any +0's, add an extra +1 round and remove this -1.
+        //                middleOne = attacker.MeleeRounds.Where((a, index) => a.Key == minusOne.Key &&
+        //                        index != 0 &&
+        //                        index != attacker.MeleeRounds.Count() - 1 &&
+        //                        (attacker.MeleeRounds.ElementAt(index - 1).Count() == attackCalc.AttacksPerRound ||
+        //                        attacker.MeleeRounds.ElementAt(index + 1).Count() == attackCalc.AttacksPerRound))
+        //                        .SingleOrDefault();
+
+        //                if (middleOne != null)
+        //                {
+        //                    attackCalc.Plus1Rounds++;
+        //                    //attackCalc.Minus1Rounds--;
+        //                    continue;
+        //                }
+
+        //                int first = 0, second = 0;
+
+        //                // If this is a -1 between multiple +1 or highers, add to the lower of the +'s.
+        //                middleOne = attacker.MeleeRounds.Where((a, index) => a.Key == minusOne.Key &&
+        //                        index != 0 &&
+        //                        index != attacker.MeleeRounds.Count() - 1 &&
+        //                        attacker.MeleeRounds.ElementAt(index - 1).Count() > attackCalc.AttacksPerRound &&
+        //                        attacker.MeleeRounds.ElementAt(index + 1).Count() > attackCalc.AttacksPerRound &&
+        //                        (mKillTimestamps.Contains(attacker.MeleeRounds.ElementAt(index - 1).Key) == false ||
+        //                        ((first = attacker.MeleeRounds.ElementAt(index - 1).Count()) > 0)) &&
+        //                        (mKillTimestamps.Contains(attacker.MeleeRounds.ElementAt(index + 1).Key) == false ||
+        //                        ((second = attacker.MeleeRounds.ElementAt(index + 1).Count()) > 0)))
+        //                        .SingleOrDefault();
+
+        //                if (middleOne != null)
+        //                {
+        //                    if ((first == 0) && (second == 0))
+        //                        continue;
+
+        //                    if (first == 0)
+        //                        first = second;
+        //                    else if ((second != 0) && (second < first))
+        //                        first = second;
+
+        //                    switch (first)
+        //                    {
+        //                        case 3:
+        //                            attackCalc.Plus1Rounds--;
+        //                            attackCalc.Plus2Rounds++;
+        //                            break;
+        //                        case 4:
+        //                            attackCalc.Plus2Rounds--;
+        //                            attackCalc.Plus3Rounds++;
+        //                            break;
+        //                        case 5:
+        //                            attackCalc.Plus3Rounds--;
+        //                            attackCalc.Plus4Rounds++;
+        //                            break;
+        //                        case 6:
+        //                            attackCalc.Plus4Rounds--;
+        //                            attackCalc.PlusNRounds++;
+        //                            break;
+        //                        default:
+        //                            attackCalc.PlusNRounds++;
+        //                            break;
+        //                    }
+
+        //                    //attackCalc.Minus1Rounds--;
+        //                    continue;
+        //                }
+
+        //            }
+
+
+        //            // And put together a total for multi-attack rounds
+        //            attackCalc.TotalMultiRounds = attackCalc.Plus1Rounds +
+        //                attackCalc.Plus2Rounds + attackCalc.Plus3Rounds +
+        //                attackCalc.Plus4Rounds + attackCalc.PlusNRounds;
+        //        }
+
+        //        // Now that we have a corrected version for multi-attack rounds, figure out
+        //        // the number of base rounds.
+        //        attackCalc.Rounds = ((attackCalc.Attacks -
+        //            attackCalc.AttackRoundUnderCountKills -
+        //            attackCalc.Plus1Rounds -
+        //            2 * attackCalc.Plus2Rounds -
+        //            3 * attackCalc.Plus3Rounds -
+        //            4 * attackCalc.Plus4Rounds -
+        //            5 * attackCalc.PlusNRounds) / attackCalc.AttacksPerRound) + attackCalc.AttackRoundUnderCountKills;
+
+        //        // From there we can determine the number of extra attacks generated overall.
+        //        if (attackCalc.AttacksPerRound == 2)
+        //        {
+        //            attackCalc.ExtraAttacks = (attackCalc.Attacks - attackCalc.AttackRoundUnderCountKills)
+        //                - (attackCalc.Rounds - attackCalc.AttackRoundUnderCountKills) * 2;
+        //        }
+        //        else
+        //        {
+        //            attackCalc.ExtraAttacks = attackCalc.Attacks - attackCalc.Rounds;
+        //        }
+
+
+        //        // Calculate the number of rounds that are valid to look at for percentages.
+        //        attackCalc.AttackRoundsNonKill = attackCalc.Rounds -
+        //            attackCalc.AttackRoundCountKills - attackCalc.AttackRoundUnderCountKills;
+
+        //        // And then store it for output
+        //        attackCalcs.Add(attackCalc);
+
+
+        //        // Same for ranged:
+        //        attackCalc.RRounds = attackCalc.RAttacks -
+        //            attackCalc.RPlus1Rounds -
+        //            attackCalc.RPlusNRounds;
+
+        //        attackCalc.RExtraAttacks = attackCalc.RAttacks - attackCalc.RRounds;
+        //        attackCalc.RAttackRoundsNonKill = attackCalc.Rounds -
+        //            attackCalc.RAttackRoundCountKills;
+        //    }
+
+
+        //    #endregion
+
+        //    PrintOutput(attackCalcs);
+
+        //    #region Dump Details
+        //    if (showDetails == true)
+        //    {
+        //        StringBuilder sb = new StringBuilder();
+        //        sb.Append("\n\n\n");
+        //        sb.Append(lsSectionUncorrectedDetails);
+        //        sb.Append("\n\n");
+        //        foreach (var attacker in attacksMade.Where(a => a.MeleeRounds.Count() > 0))
+        //        {
+        //            sb.AppendLine(attacker.Name);
+
+        //            foreach (var round in attacker.MeleeRounds)
+        //            {
+        //                sb.Append(string.Format("  {0}  -- #{1}\n", round.Key, round.Count()));
+        //            }
+
+        //            sb.AppendLine();
+        //        }
+
+        //        foreach (var attacker in attacksMade.Where(a => a.RangedRounds.Count() > 0))
+        //        {
+        //            sb.AppendLine(attacker.Name);
+
+        //            foreach (var round in attacker.RangedRounds)
+        //            {
+        //                sb.Append(string.Format("  {0}  -- #{1}\n", round.Key, round.Count()));
+        //            }
+
+        //            sb.AppendLine();
+        //        }
+
+
+        //        PushStrings(sb, null);
+        //    }
+        //    #endregion
+        //}
+
+        #endregion
+
+        #region Display functions
         private void PrintOutput(List<AttackCalculations> attackCalcs)
         {
             if (attackCalcs.Count == 0)
@@ -967,8 +1136,8 @@ namespace WaywardGamers.KParser.Plugin
 
         #endregion
 
-        #region Alternate processing
-        private void ProcessDataAlternateMode(KPDatabaseDataSet dataSet)
+        #region New processing sections
+        protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
             ResetTextBox();
 
