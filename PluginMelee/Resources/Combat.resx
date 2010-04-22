@@ -403,7 +403,7 @@
     <value>Player               # MultiAttack Rounds    MultiAttack %     Kills w/Min Attacks    Kills w/&lt;Min Attacks</value>
   </data>
   <data name="ExtraAttPluginMainSectionTitle" xml:space="preserve">
-    <value>Basic Data</value>
+    <value>Melee Data</value>
   </data>
   <data name="ExtraAttPluginRestrictedWarning" xml:space="preserve">
     <value>Restricted while a parse is running.</value>
@@ -962,5 +962,26 @@
   </data>
   <data name="DamageGraphPluginYAxisTitle" xml:space="preserve">
     <value>Damage</value>
+  </data>
+  <data name="ExtraAttPluginFormatRanged1" xml:space="preserve">
+    <value>{0,-20}{1,16}{2,18}{3,17}{4,19}</value>
+  </data>
+  <data name="ExtraAttPluginFormatRanged2" xml:space="preserve">
+    <value>{0,-20}{1,12}{2,16}</value>
+  </data>
+  <data name="ExtraAttPluginFormatRanged3" xml:space="preserve">
+    <value>{0,-20}{1,21}{2,17:p2}{3,24}</value>
+  </data>
+  <data name="ExtraAttPluginHeaderRanged1" xml:space="preserve">
+    <value>Player               # Range Attacks    # Range Rounds    Attacks/Round    # Extra Attacks</value>
+  </data>
+  <data name="ExtraAttPluginHeaderRanged2" xml:space="preserve">
+    <value>Player               # +1 Rounds    # &gt;+1 Rounds</value>
+  </data>
+  <data name="ExtraAttPluginHeaderRanged3" xml:space="preserve">
+    <value>Player               # MultiAttack Rounds    MultiAttack %     Kills w/Min Attacks</value>
+  </data>
+  <data name="ExtraAttPluginRangedSectionTitle" xml:space="preserve">
+    <value>Ranged Data</value>
   </data>
 </root>
