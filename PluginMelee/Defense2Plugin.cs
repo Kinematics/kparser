@@ -2094,7 +2094,7 @@ namespace WaywardGamers.KParser.Plugin
             ref StringBuilder sb, ref List<StringMods> strModList)
         {
             if (dataAccum.Any(p => p.DefEvasion > 0 || p.DefParry > 0 || p.DefIntimidate > 0 ||
-                (p.CAHits + p.CAMiss) > 0))
+                p.DefCounter > 0))
             {
                 strModList.Add(new StringMods
                 {
