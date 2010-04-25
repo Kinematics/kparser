@@ -831,14 +831,16 @@ namespace WaywardGamers.KParser.Plugin
 
                     var successfulCast = player.Spell.Where(s => (FailedActionType)s.FailedActionType == FailedActionType.None);
 
-                    wsAgg.STotal = successfulCast.Sum(s => s.Amount);
-
-                    wsAgg.SMin = successfulCast.Min(s => s.Amount);
-                    wsAgg.SMax = successfulCast.Max(s => s.Amount);
-                    wsAgg.SMeanF = (double)wsAgg.STotal / wsAgg.SCast;
-
                     if (successfulCast.Count() > 0)
-                        wsAgg.SMean = (double)wsAgg.STotal / (wsAgg.SCast - wsAgg.SFail);
+                    {
+                        wsAgg.STotal = successfulCast.Sum(s => s.Amount);
+
+                        wsAgg.SMin = successfulCast.Min(s => s.Amount);
+                        wsAgg.SMax = successfulCast.Max(s => s.Amount);
+                        wsAgg.SMeanF = (double)wsAgg.STotal / wsAgg.SCast;
+
+                        wsAgg.SMean = (double)wsAgg.STotal / successfulCast.Count();
+                    }
                 }
 
 
