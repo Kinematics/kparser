@@ -1,5 +1,13 @@
 KParser Change Log
 
+
+1.5.3 (April 25, 2010)
++ Added reporting of multi-attack rates for ranged weapons in Extra Attacks plugin, for new magian weapons.
+* Change default options for Damage Graph plugin to Individual/Cumulative. I believe that will be more useful for most people.
+- Fix minor bug when filtering counters in Defense plugin.
+- Fix minor bug in WSRates plugin.
+- Fix parsing of interruptions of ranged attacks by moving.
+
 1.5.2 (April 13, 2010)
 - Clean up synchronization methodologies.
 - Several additional improvements in message handling to avoid entity mismatches.
@@ -7,7 +15,7 @@ KParser Change Log
 - Fix AOE damage association bug.
 - Fix issue with tallying followup rolls on the Corsair plugin.
 - Don't display buffs/debuffs that aren't relevant to the currently selected battle(s) in Buffs by Time plugin.
-+ New plugin for reviewing rates that Additional Effect statuses proc.
++ New plugin for reviewing rates that Additional Effect status procs.
 + New graph plugin type.
 + New graph plugin (Damage Graph) to show damage progression over time.
 
