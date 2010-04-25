@@ -151,6 +151,7 @@ namespace WaywardGamers.KParser
 
         #region Failed Actions
         internal static readonly Regex Interrupted = new Regex(string.Format("^{0}'(s)? casting is interrupted\\.$", name));
+        internal static readonly Regex MoveInterrupt = new Regex(string.Format("^You move and interrupt your aim\\.$", name));
         internal static readonly Regex Paralyzed   = new Regex(string.Format("^{0} (is|are) paralyzed\\.$", name));
         internal static readonly Regex CannotSee   = new Regex(string.Format("^Unable to see {0}\\.$", target));
         internal static readonly Regex CannotSee2  = new Regex(string.Format("^You cannot see {0}\\.$", target));
@@ -381,6 +382,7 @@ namespace WaywardGamers.KParser
 
             #region Failed Actions
             Interrupted  = new Regex(string.Format("^{0}'(s)? casting is interrupted\\.$", name));
+            MoveInterrupt = new Regex(string.Format("^You move and interrupt your aim\\.$", name));
             Paralyzed    = new Regex(string.Format("^{0} (is|are) paralyzed\\.$", name));
             CannotSee    = new Regex(string.Format("^Unable to see {0}\\.$", target));
             CannotSee2   = new Regex(string.Format("^You cannot see {0}\\.$", target));
@@ -995,6 +997,7 @@ namespace WaywardGamers.KParser
 
         #region Failed Actions
         internal static Regex Interrupted;
+        internal static Regex MoveInterrupt;
         internal static Regex Paralyzed;
         internal static Regex CannotSee;
         internal static Regex CannotSee2;

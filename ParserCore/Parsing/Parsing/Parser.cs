@@ -3069,6 +3069,14 @@ namespace WaywardGamers.KParser.Parsing
                     message.SetParseSuccess(true);
                     return;
                 }
+                combatMatch = ParseExpressions.MoveInterrupt.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    msgCombatDetails.ActorPlayerType = ActorPlayerType.Self;
+                    msgCombatDetails.FailedActionType = FailedActionType.MoveInterrupt;
+                    message.SetParseSuccess(true);
+                    return;
+                }
                 combatMatch = ParseExpressions.Paralyzed.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
