@@ -142,7 +142,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Buff                     M.Hit/Miss     MHit%    R.Hit/Miss     RHit%     Buff (In)Active%.
+        ///   Looks up a localized string similar to Buff                     M.Hit/Miss     MHit%   M.Crit%   R.Hit/Miss    RHit%   Buff (In)Active%.
         /// </summary>
         internal static string BuffsByTimePluginAccuracyHeader {
             get {

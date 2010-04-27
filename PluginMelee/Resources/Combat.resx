@@ -919,7 +919,7 @@
     <value>Accuracy</value>
   </data>
   <data name="BuffsByTimePluginAccuracyHeader" xml:space="preserve">
-    <value>Buff                     M.Hit/Miss     MHit%    R.Hit/Miss     RHit%     Buff (In)Active%</value>
+    <value>Buff                     M.Hit/Miss     MHit%   M.Crit%   R.Hit/Miss    RHit%   Buff (In)Active%</value>
   </data>
   <data name="BuffsByTimePluginAttack" xml:space="preserve">
     <value>Attack</value>

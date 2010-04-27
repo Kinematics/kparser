@@ -394,6 +394,8 @@ namespace WaywardGamers.KParser.Plugin
                                     {
                                         double inSetRate = 0;
                                         double notInSetRate = 0;
+                                        double inCritRate = 0;
+                                        double ninCritRate = 0;
 
                                         if (mInSetCount + mNotInSetCount + rInSetCount + rNisHitCount > 0)
                                         {
@@ -401,16 +403,31 @@ namespace WaywardGamers.KParser.Plugin
                                             notInSetRate = (double)(mNotInSetCount + rNisHitCount) / (mInSetCount + mNotInSetCount + rInSetCount + rNisHitCount);
                                         }
 
+                                        var inSetHits = mInSet.Where(a => (DefenseType)a.DefenseType == DefenseType.None);
+                                        var outSetHits = mNotInSet.Where(a => (DefenseType)a.DefenseType == DefenseType.None);
+
+                                        if (inSetHits.Count() > 0)
+                                        {
+                                            inCritRate = (double) inSetHits.Count(c => (DamageModifier)c.DamageModifier == DamageModifier.Critical) /
+                                                inSetHits.Count();
+                                        }
+
+                                        if (outSetHits.Count() > 0)
+                                        {
+                                            ninCritRate = (double)outSetHits.Count(c => (DamageModifier)c.DamageModifier == DamageModifier.Critical) /
+                                                outSetHits.Count();
+                                        }
+
                                         sb.AppendFormat("+{0,20}", intervalSet.SetName);
 
-                                        sb.AppendFormat("{0,14}  {1,8:p2}  {2,12}  {3,8:p2}  {4,19:p2}\n",
-                                            string.Format("{0}/{1}", mHitCount, mMissCount), mHitRate,
+                                        sb.AppendFormat("{0,14}  {1,8:p2}  {2,8:p2}  {3,11}  {4,7:p2}  {5,17:p2}\n",
+                                            string.Format("{0}/{1}", mHitCount, mMissCount), mHitRate, inCritRate,
                                             string.Format("{0}/{1}", rHitCount, rMissCount), rHitRate, inSetRate);
 
                                         sb.AppendFormat("-{0,20}", intervalSet.SetName);
 
-                                        sb.AppendFormat("{0,14}  {1,8:p2}  {2,12}  {3,8:p2}  {4,19:p2}\n",
-                                            string.Format("{0}/{1}", mNisHitCount, mNisMissCount), mNisHitRate,
+                                        sb.AppendFormat("{0,14}  {1,8:p2}  {2,8:p2}  {3,11}  {4,7:p2}  {5,17:p2}\n",
+                                            string.Format("{0}/{1}", mNisHitCount, mNisMissCount), mNisHitRate, ninCritRate,
                                             string.Format("{0}/{1}", rNisHitCount, rNisMissCount), rNisHitRate, notInSetRate);
                                     }
                                 }
