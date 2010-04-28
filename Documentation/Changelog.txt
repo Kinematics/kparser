@@ -1,5 +1,9 @@
 KParser Change Log
 
+1.5.4 (April 28, 2010)
++ Add crit rate to accuracy section of Buffs by Time.
+- Fix bug in counting min attack kill shots in ranged Extra Attacks.
+
 
 1.5.3 (April 25, 2010)
 + Added reporting of multi-attack rates for ranged weapons in Extra Attacks plugin, for new magian weapons.
@@ -7,6 +11,7 @@ KParser Change Log
 - Fix minor bug when filtering counters in Defense plugin.
 - Fix minor bug in WSRates plugin.
 - Fix parsing of interruptions of ranged attacks by moving.
+
 
 1.5.2 (April 13, 2010)
 - Clean up synchronization methodologies.
