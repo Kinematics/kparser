@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -19,7 +20,7 @@ namespace WaywardGamers.KParser.Parsing
         /// message manager as data is accumulated by the Monitor.</param>
         internal static Message Parse(MessageLine messageLine)
         {
-            Message message = GetBaseMessage(messageLine);
+            Message message = GetBaseMessageA(messageLine);
 
             if (message == null)
             {
@@ -33,36 +34,6 @@ namespace WaywardGamers.KParser.Parsing
                 message.AddMessageLine(messageLine);
                 ContinueParse(message);
             }
-
-            //if (message.IsParseSuccessful == true)
-            //{
-            //    if ((message.MessageCategory == MessageCategoryType.Event) &&
-            //        (message.EventDetails.EventMessageType == EventMessageType.Interaction) &&
-            //        (message.EventDetails.CombatDetails.InteractionType != InteractionType.Unknown))
-            //    {
-            //        if ((message.EventDetails.CombatDetails.IsPreparing == false) &&
-            //            (message.EventDetails.CombatDetails.ActorName == string.Empty) &&
-            //            ((message.EventDetails.CombatDetails.SuccessLevel != SuccessType.Failed) ||
-            //             (message.EventDetails.CombatDetails.ActionType == ActionType.Spell)))
-            //        {
-            //            Message prevMsg = MsgManager.Instance.FindLastMessageToMatch(messageLine,
-            //                ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), message);
-
-            //            if (prevMsg != null)
-            //            {
-            //                foreach (var msgLine in message.MessageLineCollection)
-            //                    prevMsg.AddMessageLine(msgLine);
-
-            //                message = prevMsg;
-            //                ContinueParse(message);
-            //            }
-            //            else
-            //            {
-            //                // No previous message with same code.  Probably additional effect
-            //            }
-            //        }
-            //    }
-            //}
 
             return message;
         }
@@ -276,6 +247,135 @@ namespace WaywardGamers.KParser.Parsing
 
             return msg;
         }
+
+        private static Message GetBaseMessageA(MessageLine messageLine)
+        {
+            Message msg = null;
+
+            Match aoeMatch;
+            string effectName = string.Empty;
+            string targetName = string.Empty;
+
+            // Messages with the same event number are tied together.  If we've already
+            // processed a message with the same event number, get that.  This can include
+            // things like critical hits, or messages that were broken up to fit the screen
+            // width.
+            msg = MsgManager.Instance.FindMessageWithEventNumber(messageLine.EventSequence);
+
+            // Make sure the returned msg is within a short time interval of the current msg.
+            // It's possible to get matches on lines in a reparse of a parse that was continued
+            // between sessions.  Time needs to be fairly long, though, in case parse was done
+            // from log files rather than RAM.
+
+            if (msg != null)
+            {
+                if (msg.Timestamp.AddMinutes(3) < messageLine.Timestamp)
+                    msg = null;
+                else
+                    return msg;
+            }
+
+            // Additional Effect
+            if (ParseExpressions.AdditionalEffect.Match(messageLine.TextOutput).Success)
+            {
+                msg = MsgManager.Instance.FindMatchingMeleeOrRanged(messageLine,
+                    ParseCodes.Instance.GetAEAlternateCodes(messageLine.MessageCode));
+
+                // If we got a valid message, we can mark it has having an additional effect.
+                if (msg != null)
+                {
+                    msg.EventDetails.CombatDetails.HasAdditionalEffect = true;
+                    return msg;
+                }
+            }
+
+            // AOE Damage
+            Match damageMatch = ParseExpressions.TargetTakesDamage.Match(messageLine.TextOutput);
+            if (damageMatch.Success)
+            {
+                targetName = damageMatch.Groups[ParseFields.Target].Value;
+                msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseForDamage(messageLine,
+                    ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), targetName);
+
+                if (msg != null)
+                    return msg;
+            }
+
+            // Curaga
+            if (ParseExpressions.RecoversHP.Match(messageLine.TextOutput).Success)
+            {
+                msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUse(messageLine,
+                    ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode));
+
+                if (msg != null)
+                    return msg;
+            }
+
+            // AOE Buffs/Debuffs/etc
+
+            List<Regex> aoeRegexes = new List<Regex>() {
+                ParseExpressions.Buff,
+                //ParseExpressions.Enhance, -- uses fixed effectName
+                ParseExpressions.Debuff,
+                ParseExpressions.Enfeeble,
+                ParseExpressions.GainResistance,
+                ParseExpressions.GainCorRoll,
+                ParseExpressions.Dispelled,
+                ParseExpressions.ResistSpell
+            };
+
+            foreach (var reg in aoeRegexes)
+            {
+                aoeMatch = reg.Match(messageLine.TextOutput);
+
+                if (aoeMatch.Success)
+                {
+                    effectName = aoeMatch.Groups[ParseFields.Effect].Value;
+                    targetName = aoeMatch.Groups[ParseFields.Target].Value;
+
+                    msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseWithEffect(
+                        messageLine,
+                        ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode),
+                        effectName,
+                        targetName);
+
+                    if (msg != null)
+                        return msg;
+                }
+            }
+
+            // Slight variants on AOE code
+            aoeMatch = ParseExpressions.Enhance.Match(messageLine.TextOutput);
+
+            if (aoeMatch.Success)
+            {
+                effectName = "EnhanceAttack";
+                targetName = aoeMatch.Groups[ParseFields.Target].Value;
+
+                msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseWithEffect(
+                    messageLine,
+                    ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode),
+                    effectName,
+                    targetName);
+
+                if (msg != null)
+                    return msg;
+            }
+
+            aoeMatch = ParseExpressions.RemoveStatus.Match(messageLine.TextOutput);
+
+            if (aoeMatch.Success)
+            {
+                msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUse(messageLine,
+                    ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode));
+
+                if (msg != null)
+                    return msg;
+            }
+
+            return msg;
+        }
+
 
         /// <summary>
         /// Code branching for initial parse of a new message.
