@@ -1776,8 +1776,8 @@ namespace WaywardGamers.KParser.Plugin
                         {
                             if (killRound.Count() == attacksPerRound)
                             {
-                                attackCalc.AttackRoundCountKills++;
-                                attackCalc.AttackRoundsNonKill--;
+                                attackCalc.RAttackRoundCountKills++;
+                                attackCalc.RAttackRoundsNonKill--;
                             }
                         }
                     }
