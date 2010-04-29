@@ -634,30 +634,42 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Event Handling and Notification
+        /// <summary>
+        /// Notify listeners if changes are about to be made to the database.
+        /// </summary>
+        /// <param name="databaseWatchEventArgs"></param>
         private void OnDatabaseChanging(DatabaseWatchEventArgs databaseWatchEventArgs)
         {
-            if (DatabaseChanging != null)
+            DatabaseWatchEventHandler localDatabaseChanging = DatabaseChanging;
+            if (localDatabaseChanging != null)
             {
-                // Invokes the delegates. 
-                DatabaseChanging(this, databaseWatchEventArgs);
+                localDatabaseChanging(this, databaseWatchEventArgs);
             }
         }
 
+        /// <summary>
+        /// Notify listeners if changes have just been made to the database.
+        /// </summary>
+        /// <param name="databaseWatchEventArgs"></param>
         private void OnDatabaseChanged(DatabaseWatchEventArgs databaseWatchEventArgs)
         {
-            if (DatabaseChanged != null)
+            DatabaseWatchEventHandler localDatabaseChanged = DatabaseChanged;
+            if (localDatabaseChanged != null)
             {
-                // Invokes the delegates. 
-                DatabaseChanged(this, databaseWatchEventArgs);
+                localDatabaseChanged(this, databaseWatchEventArgs);
             }
         }
 
+        /// <summary>
+        /// Notify listeners if the status of saving reparse data has changed.
+        /// </summary>
+        /// <param name="e"></param>
         private void OnMessageProcessed(ReaderStatusEventArgs e)
         {
-            if (ReparseProgressChanged != null)
+            ReaderStatusHandler localReparseProgress = ReparseProgressChanged;
+            if (localReparseProgress != null)
             {
-                // Invokes the delegates. 
-                ReparseProgressChanged(this, e);
+                localReparseProgress(this, e);
             }
         }
         #endregion
