@@ -43,6 +43,7 @@ namespace WaywardGamers.KParser.Parsing
             periodicUpdates.Enabled = false;
 
             Monitoring.Monitor.Instance.ReaderDataChanged += ChatLinesListener;
+            Monitoring.Monitor.Instance.ReaderStatusChanged += MonitorStatusListener;
         }
         #endregion
 
@@ -191,6 +192,27 @@ namespace WaywardGamers.KParser.Parsing
                 catch (Exception ex)
                 {
                     Logger.Instance.Log(ex, messageLine);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Listener function for when the reader status changes.  If
+        /// it's noted as completed or failed, end the session.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        internal void MonitorStatusListener(object sender, ReaderStatusEventArgs e)
+        {
+            if ((e.Completed == true) || (e.Failed == true))
+            {
+                try
+                {
+                    EndSession();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Instance.Log(ex);
                 }
             }
         }

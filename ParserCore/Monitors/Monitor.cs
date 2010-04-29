@@ -86,10 +86,7 @@ namespace WaywardGamers.KParser.Monitoring
         {
             if ((sender as IReader) == currentReader)
             {
-                if (ReaderDataChanged != null)
-                {
-                    ReaderDataChanged(sender, e);
-                }
+                OnReaderDataChanged(sender, e);
             }
         }
 
@@ -104,16 +101,37 @@ namespace WaywardGamers.KParser.Monitoring
         {
             if ((sender as IReader) == currentReader)
             {
-                if (ReaderStatusChanged != null)
-                {
-                    ReaderStatusChanged(sender, e);
-                }
+                OnReaderStatusChanged(sender, e);
+            }
+        }
 
-                // TODO: Move this logic to the MsgManager class.
-                if ((e.Completed == true) || (e.Failed == true))
-                {
-                    MsgManager.Instance.EndSession();
-                }
+        /// <summary>
+        /// This function is called to notify any attached listeners about
+        /// new reader data.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void OnReaderDataChanged(object sender, ReaderDataEventArgs e)
+        {
+            ReaderDataHandler localDataChanged = ReaderDataChanged;
+            if (localDataChanged != null)
+            {
+                localDataChanged(sender, e);
+            }
+        }
+
+        /// <summary>
+        /// This function is called to notify any attached listeners about
+        /// the current reader status.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void OnReaderStatusChanged(object sender, ReaderStatusEventArgs e)
+        {
+            ReaderStatusHandler localStatusChanged = ReaderStatusChanged;
+            if (localStatusChanged != null)
+            {
+                localStatusChanged(sender, e);
             }
         }
         #endregion

@@ -290,9 +290,10 @@ namespace WaywardGamers.KParser.Database
 
         public void OnCustomMobFilterWasChanged()
         {
-            if (CustomMobFilterChanged != null)
+            EventHandler localMobFilterChanged = CustomMobFilterChanged;
+            if (localMobFilterChanged != null)
             {
-                CustomMobFilterChanged(this, new EventArgs());
+                localMobFilterChanged(this, new EventArgs());
             }
         }
 
