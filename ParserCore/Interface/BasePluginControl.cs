@@ -292,6 +292,7 @@ namespace WaywardGamers.KParser.Plugin
             PushStringsQ(sb, strModList);
             return;
 
+            /*
             int start = richTextBox.Text.Length;
 
             richTextBox.AppendText(sb.ToString());
@@ -327,6 +328,7 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             richTextBox.Select(0, 0);
+            */
         }
 
         /// <summary>
