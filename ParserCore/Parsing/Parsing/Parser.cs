@@ -174,12 +174,16 @@ namespace WaywardGamers.KParser.Parsing
             // AOE Damage
             if (msg == null)
             {
-                Match damageMatch = ParseExpressions.TargetTakesDamage.Match(messageLine.TextOutput);
-                if (damageMatch.Success)
+                Match shortDmgMatch = ParseExpressions.ShortTargetTakesDamage.Match(messageLine.TextOutput);
+                if (shortDmgMatch.Success)
                 {
-                    string targetName = damageMatch.Groups[ParseFields.Target].Value;
-                    msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseForDamage(messageLine,
-                        ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), targetName);
+                    Match damageMatch = ParseExpressions.TargetTakesDamage.Match(messageLine.TextOutput);
+                    if (damageMatch.Success)
+                    {
+                        string targetName = damageMatch.Groups[ParseFields.Target].Value;
+                        msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseForDamage(messageLine,
+                            ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), targetName);
+                    }
                 }
             }
 
@@ -275,6 +279,11 @@ namespace WaywardGamers.KParser.Parsing
                     return msg;
             }
 
+            // Don't try to find matches for chat or system messages if they
+            // aren't already found via event number.
+            if (messageLine.MessageCategory != MessageCategoryType.Event)
+                return msg;
+
             // Additional Effect
             if (ParseExpressions.AdditionalEffect.Match(messageLine.TextOutput).Success)
             {
@@ -290,15 +299,19 @@ namespace WaywardGamers.KParser.Parsing
             }
 
             // AOE Damage
-            Match damageMatch = ParseExpressions.TargetTakesDamage.Match(messageLine.TextOutput);
-            if (damageMatch.Success)
+            Match shortDmgMatch = ParseExpressions.ShortTargetTakesDamage.Match(messageLine.TextOutput);
+            if (shortDmgMatch.Success)
             {
-                targetName = damageMatch.Groups[ParseFields.Target].Value;
-                msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseForDamage(messageLine,
-                    ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), targetName);
+                Match damageMatch = ParseExpressions.TargetTakesDamage.Match(messageLine.TextOutput);
+                if (damageMatch.Success)
+                {
+                    targetName = damageMatch.Groups[ParseFields.Target].Value;
+                    msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseForDamage(messageLine,
+                        ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode), targetName);
 
-                if (msg != null)
-                    return msg;
+                    if (msg != null)
+                        return msg;
+                }
             }
 
             // Curaga
@@ -313,20 +326,86 @@ namespace WaywardGamers.KParser.Parsing
 
             // AOE Buffs/Debuffs/etc
 
-            List<Regex> aoeRegexes = new List<Regex>() {
-                ParseExpressions.Buff,
-                //ParseExpressions.Enhance, -- uses fixed effectName
-                ParseExpressions.Debuff,
-                ParseExpressions.Enfeeble,
-                ParseExpressions.GainResistance,
-                ParseExpressions.GainCorRoll,
-                ParseExpressions.Dispelled,
-                ParseExpressions.ResistSpell
-            };
+            // While this could be done in a loop, I'm leaving it expanded so that
+            // performance tracing can pinpoint specific poor-performing regexes.
 
-            foreach (var reg in aoeRegexes)
+            aoeMatch = ParseExpressions.Buff.Match(messageLine.TextOutput);
+
+            if (aoeMatch.Success)
             {
-                aoeMatch = reg.Match(messageLine.TextOutput);
+                effectName = aoeMatch.Groups[ParseFields.Effect].Value;
+                targetName = aoeMatch.Groups[ParseFields.Target].Value;
+
+                msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseWithEffect(
+                    messageLine,
+                    ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode),
+                    effectName,
+                    targetName);
+
+                if (msg != null)
+                    return msg;
+            }
+
+
+            aoeMatch = ParseExpressions.Debuff.Match(messageLine.TextOutput);
+
+            if (aoeMatch.Success)
+            {
+                effectName = aoeMatch.Groups[ParseFields.Effect].Value;
+                targetName = aoeMatch.Groups[ParseFields.Target].Value;
+
+                msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseWithEffect(
+                    messageLine,
+                    ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode),
+                    effectName,
+                    targetName);
+
+                if (msg != null)
+                    return msg;
+            }
+
+
+            aoeMatch = ParseExpressions.GainResistance.Match(messageLine.TextOutput);
+
+            if (aoeMatch.Success)
+            {
+                effectName = aoeMatch.Groups[ParseFields.Effect].Value;
+                targetName = aoeMatch.Groups[ParseFields.Target].Value;
+
+                msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseWithEffect(
+                    messageLine,
+                    ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode),
+                    effectName,
+                    targetName);
+
+                if (msg != null)
+                    return msg;
+            }
+
+
+            aoeMatch = ParseExpressions.GainCorRoll.Match(messageLine.TextOutput);
+
+            if (aoeMatch.Success)
+            {
+                effectName = aoeMatch.Groups[ParseFields.Effect].Value;
+                targetName = aoeMatch.Groups[ParseFields.Target].Value;
+
+                msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseWithEffect(
+                    messageLine,
+                    ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode),
+                    effectName,
+                    targetName);
+
+                if (msg != null)
+                    return msg;
+            }
+
+
+            Match shortEnfeebleMatch = ParseExpressions.ShortEnfeeble.Match(messageLine.TextOutput);
+
+            if (shortEnfeebleMatch.Success)
+            {
+                aoeMatch = ParseExpressions.Enfeeble.Match(messageLine.TextOutput);
 
                 if (aoeMatch.Success)
                 {
@@ -343,6 +422,43 @@ namespace WaywardGamers.KParser.Parsing
                         return msg;
                 }
             }
+
+
+            aoeMatch = ParseExpressions.Dispelled.Match(messageLine.TextOutput);
+
+            if (aoeMatch.Success)
+            {
+                effectName = aoeMatch.Groups[ParseFields.Effect].Value;
+                targetName = aoeMatch.Groups[ParseFields.Target].Value;
+
+                msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseWithEffect(
+                    messageLine,
+                    ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode),
+                    effectName,
+                    targetName);
+
+                if (msg != null)
+                    return msg;
+            }
+
+
+            aoeMatch = ParseExpressions.ResistSpell.Match(messageLine.TextOutput);
+
+            if (aoeMatch.Success)
+            {
+                effectName = aoeMatch.Groups[ParseFields.Effect].Value;
+                targetName = aoeMatch.Groups[ParseFields.Target].Value;
+
+                msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseWithEffect(
+                    messageLine,
+                    ParseCodes.Instance.GetAlternateCodes(messageLine.MessageCode),
+                    effectName,
+                    targetName);
+
+                if (msg != null)
+                    return msg;
+            }
+
 
             // Slight variants on AOE code
             aoeMatch = ParseExpressions.Enhance.Match(messageLine.TextOutput);
