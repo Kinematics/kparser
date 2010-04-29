@@ -102,7 +102,6 @@ namespace WaywardGamers.KParser
         internal static readonly Regex DiceRoll   = new Regex(string.Format("^Dice roll! {0} rolls {1}!$", playername, number));
         #endregion
 
-
         #region Preparing to take action
         internal static readonly Regex PrepSpell    = new Regex(string.Format("^{0} start(s)? casting {1}\\.$", name, spell));
         internal static readonly Regex PrepSpellOn  = new Regex(string.Format("^{0} start(s)? casting {1} on {2}\\.$", name, spell, target));
@@ -131,19 +130,20 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Spell/Ability Effects
-        internal static readonly Regex RecoversHP = new Regex(string.Format("^{0} recover(s)? {1} HP\\.$", target, number), RegexOptions.Compiled);
-        internal static readonly Regex RecoversMP = new Regex(string.Format("^{0} recover(s)? {1} MP\\.$", target, number));
-        internal static readonly Regex Afflict    = new Regex(string.Format("^{0} (is|are) afflicted with {1} {2}\\.$", target, effect, afflictLvl));
-        internal static readonly Regex Enfeeble = new Regex(string.Format("{0} (is|are) {1}\\.$", target, effect), RegexOptions.Compiled);
-        internal static readonly Regex Buff = new Regex(string.Format("^{0} gain(s)? the effect of {1}\\.$", target, effect), RegexOptions.Compiled);
-        internal static readonly Regex GainResistance = new Regex(string.Format("^{0} gain(s)? resistance against {1}\\.$", target, effect), RegexOptions.Compiled);
-        internal static readonly Regex Debuff = new Regex(string.Format("^{0} receive(s)? the effect of {1}\\.$", target, effect), RegexOptions.Compiled);
-        internal static readonly Regex Enhance = new Regex(string.Format("^{0}'(s)? attacks are enhanced\\.$", target), RegexOptions.Compiled);
-        internal static readonly Regex Charmed    = new Regex(string.Format("^{0} (is|are) now under {1}'s control\\.$", target, name));
-        internal static readonly Regex NotCharmed = new Regex(string.Format("^{0} (is|are) no longer charmed\\.$", target));
-        internal static readonly Regex Dispelled = new Regex(string.Format("^{0}'(s)? {1} effect disappears!$", target, effect), RegexOptions.Compiled);
+        internal static readonly Regex RecoversHP  = new Regex(string.Format("^{0} recovers? {1} HP\\.$", target, number), RegexOptions.Compiled);
+        internal static readonly Regex RecoversMP  = new Regex(string.Format("^{0} recovers? {1} MP\\.$", target, number));
+        internal static readonly Regex Afflict     = new Regex(string.Format("^{0} (is|are) afflicted with {1} {2}\\.$", target, effect, afflictLvl));
+        internal static readonly Regex ShortEnfeeble = new Regex(string.Format(" (is|are) "), RegexOptions.Compiled);
+        internal static readonly Regex Enfeeble    = new Regex(string.Format("{0} (is|are) {1}\\.$", target, effect), RegexOptions.Compiled);
+        internal static readonly Regex Buff        = new Regex(string.Format("^{0} gains? the effect of {1}\\.$", target, effect), RegexOptions.Compiled);
+        internal static readonly Regex GainResistance = new Regex(string.Format("^{0} gains? resistance against {1}\\.$", target, effect), RegexOptions.Compiled);
+        internal static readonly Regex Debuff      = new Regex(string.Format("^{0} receives? the effect of {1}\\.$", target, effect), RegexOptions.Compiled);
+        internal static readonly Regex Enhance     = new Regex(string.Format("^{0}'(s)? attacks are enhanced\\.$", target), RegexOptions.Compiled);
+        internal static readonly Regex Charmed     = new Regex(string.Format("^{0} (is|are) now under {1}'s control\\.$", target, name));
+        internal static readonly Regex NotCharmed  = new Regex(string.Format("^{0} (is|are) no longer charmed\\.$", target));
+        internal static readonly Regex Dispelled   = new Regex(string.Format("^{0}'s? {1} effect disappears!$", target, effect), RegexOptions.Compiled);
         internal static readonly Regex RemoveStatus = new Regex(string.Format("^{0} successfully removes {1}'s {2}$", name, target, effect), RegexOptions.Compiled);
-        internal static readonly Regex ItemBuff    = new Regex(string.Format("^{0} receive(s)? the effect of {1}\\.$", target, effect));
+        internal static readonly Regex ItemBuff    = new Regex(string.Format("^{0} receives? the effect of {1}\\.$", target, effect));
         internal static readonly Regex ItemCleanse = new Regex(string.Format("^{0} is no longer {1}\\.$", target, effect));
         internal static readonly Regex ReduceTP    = new Regex(string.Format("^{0}'s? TP is reduced( to 0)?\\.$", target));
         internal static readonly Regex Hide        = new Regex(string.Format("^{0} hides!$", name));
@@ -190,16 +190,17 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Combat damage
-        internal static readonly Regex MeleeHit          = new Regex(string.Format("^{0} hit(s)? {1} for {2} point(s)? of damage\\.$", name, target, damage));
+        internal static readonly Regex MeleeHit          = new Regex(string.Format("^{0} hits? {1} for {2} points? of damage\\.$", name, target, damage));
         internal static readonly Regex RangedAttack      = new Regex(string.Format("^{0}'s? ranged attack hits? {1} for {2} points? of damage\\.$", name, target, damage));
         internal static readonly Regex RangedGoodSpot    = new Regex(string.Format("^{0}'s? ranged attack hits? {1} squarely for {2} points? of damage!$", name, target, damage));
         internal static readonly Regex RangedSweetSpot   = new Regex(string.Format("^{0}'s? ranged attack strikes true, pummeling {1} for {2} points? of damage!$", name, target, damage));
-        internal static readonly Regex RangedHit         = new Regex(string.Format("^{0} use(s)? Ranged Attack\\.$", name));
-        internal static readonly Regex CriticalHit       = new Regex(string.Format("^{0} score(s)? a critical hit!$", name));
-        internal static readonly Regex RangedCriticalHit = new Regex(string.Format("^{0}'(s)? ranged attack scores a critical hit!$", name));
-        internal static readonly Regex TargetTakesDamage = new Regex(string.Format("{0} take(s)? {1}( additional)? point(s)? of damage\\.$", target, damage), RegexOptions.Compiled);
-        internal static readonly Regex DamageAndStun     = new Regex(string.Format("^{0} take(s)? {1} point(s)? of damage and is stunned\\.$", target, damage));
-        internal static readonly Regex Spikes            = new Regex(string.Format("{0}'s? spikes deal {1} point(s)? of damage to {2}\\.", name, damage, target));
+        internal static readonly Regex RangedHit         = new Regex(string.Format("^{0} uses? Ranged Attack\\.$", name));
+        internal static readonly Regex CriticalHit       = new Regex(string.Format("^{0} scores? a critical hit!$", name));
+        internal static readonly Regex RangedCriticalHit = new Regex(string.Format("^{0}'s? ranged attack scores a critical hit!$", name));
+        internal static readonly Regex TargetTakesDamage = new Regex(string.Format("{0} takes? {1}( additional)? points? of damage\\.$", target, damage), RegexOptions.Compiled);
+        internal static readonly Regex ShortTargetTakesDamage = new Regex(string.Format("takes? {0}( additional)? points? of damage\\.$", damage), RegexOptions.Compiled);
+        internal static readonly Regex DamageAndStun     = new Regex(string.Format("^{0} takes? {1} points? of damage and is stunned\\.$", target, damage));
+        internal static readonly Regex Spikes            = new Regex(string.Format("{0}'s? spikes deal {1} points? of damage to {2}\\.", name, damage, target));
         internal static readonly Regex DreadSpikes       = new Regex(string.Format("{0}'s? spikes drain {1} HP from {2}\\.", name, damage, target));
         internal static readonly Regex Skillchain        = new Regex(string.Format("^Skillchain: {0}\\.$", skillchain));
         #endregion
