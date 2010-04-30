@@ -334,7 +334,6 @@ namespace WaywardGamers.KParser
             DiceRoll     = new Regex(string.Format("^Dice roll! {0} rolls {1}!$", playername, number));
             #endregion
 
-
             #region Preparing to take action
             PrepSpell    = new Regex(string.Format("^{0} start(s)? casting {1}\\.$", name, spell));
             PrepSpellOn  = new Regex(string.Format("^{0} start(s)? casting {1} on {2}\\.$", name, spell, target));
@@ -532,11 +531,10 @@ namespace WaywardGamers.KParser
             FailMug      = new Regex(string.Format("^{0} fails to mug {1}\\.$", playername, target));
             #endregion
 
-
             #region Preparing to take action
-            PrepSpell    = new Regex(string.Format("^{0} start(s)? casting {1}\\.$", name, spell));
-            PrepSpellOn  = new Regex(string.Format("^{0} start(s)? casting {1} on {2}\\.$", name, spell, target));
-            PrepAbility  = new Regex(string.Format("^{0} read(y|ies) {1}\\.$", name, ability));
+            PrepSpell    = new Regex(string.Format("^{0} commence à lancer {1}\\.$", name, spell));
+            PrepSpellOn  = new Regex(string.Format("^{0} commence à lancer {1} sur {2}\\.$", name, spell, target));
+            PrepAbility  = new Regex(string.Format("^{0} prépare {1}\\.$", name, ability));
             #endregion
 
             #region Completes action
