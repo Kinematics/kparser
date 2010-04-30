@@ -946,7 +946,6 @@ namespace WaywardGamers.KParser
         internal static Regex FailMug;
         #endregion
 
-
         #region Preparing to take action
         internal static Regex PrepSpell;
         internal static Regex PrepSpellOn;
