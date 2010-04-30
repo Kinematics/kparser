@@ -335,20 +335,20 @@ namespace WaywardGamers.KParser
             #endregion
 
             #region Preparing to take action
-            PrepSpell    = new Regex(string.Format("^{0} start(s)? casting {1}\\.$", name, spell));
-            PrepSpellOn  = new Regex(string.Format("^{0} start(s)? casting {1} on {2}\\.$", name, spell, target));
+            PrepSpell    = new Regex(string.Format("^{0} starts? casting {1}\\.$", name, spell));
+            PrepSpellOn  = new Regex(string.Format("^{0} starts? casting {1} on {2}\\.$", name, spell, target));
             PrepAbility  = new Regex(string.Format("^{0} read(y|ies) {1}\\.$", name, ability));
             #endregion
 
             #region Completes action
-            CastSpell    = new Regex(string.Format("^{0} cast(s)? {1}\\.$", name, spell));
-            CastSpellOn  = new Regex(string.Format("^{0} cast(s)? {1} on {2}\\.$", name, spell, target));
-            UseAbility   = new Regex(string.Format("^{0} use(s)? {1}\\.$", name, ability));
-            UseAbilityOn = new Regex(string.Format("^{0} use(s)? {1} on {2}\\.$", name, ability, target));
-            MissAbility  = new Regex(string.Format("^{0} use(s)? {1}, but miss(es)? {2}\\.$", name, ability, target));
+            CastSpell    = new Regex(string.Format("^{0} casts? {1}\\.$", name, spell));
+            CastSpellOn  = new Regex(string.Format("^{0} casts? {1} on {2}\\.$", name, spell, target));
+            UseAbility   = new Regex(string.Format("^{0} uses? {1}\\.$", name, ability));
+            UseAbilityOn = new Regex(string.Format("^{0} uses? {1} on {2}\\.$", name, ability, target));
+            MissAbility  = new Regex(string.Format("^{0} uses? {1}, but miss(es)? {2}\\.$", name, ability, target));
             MissAbilityNoTarget = new Regex(string.Format("^{0} use(s)? {1}, but miss(es)?\\.$", name, ability, target));
-            FailsCharm   = new Regex(string.Format("^{0} fail(s)? to charm {1}\\.$", name, target));
-            UseItem      = new Regex(string.Format("^{0} use(s)? {1}\\.$", name, item));
+            FailsCharm   = new Regex(string.Format("^{0} fails? to charm {1}\\.$", name, target));
+            UseItem      = new Regex(string.Format("^{0} uses? {1}\\.$", name, item));
             // Corsair stuff (6f/65|70/66):
             UseCorRoll   = new Regex(string.Format("^{0} uses {1}\\. The total comes to {2}!$", name, ability, number));
             TotalCorRoll = new Regex(string.Format("^The total for {0} increases to {1}!$", ability, number));
@@ -362,26 +362,26 @@ namespace WaywardGamers.KParser
             #endregion
 
             #region Spell/Ability Effects
-            RecoversHP   = new Regex(string.Format("^{0} recover(s)? {1} HP\\.$", target, number));
-            RecoversMP   = new Regex(string.Format("^{0} recover(s)? {1} MP\\.$", target, number));
+            RecoversHP   = new Regex(string.Format("^{0} recovers? {1} HP\\.$", target, number));
+            RecoversMP   = new Regex(string.Format("^{0} recovers? {1} MP\\.$", target, number));
             Afflict      = new Regex(string.Format("^{0} (is|are) afflicted with {1} {2}\\.$", target, effect, afflictLvl));
             Enfeeble     = new Regex(string.Format("{0} (is|are) {1}\\.$", target, effect));
-            Buff         = new Regex(string.Format("^{0} gain(s)? the effect of {1}\\.$", target, effect));
-            GainResistance = new Regex(string.Format("^{0} gain(s)? resistance against {1}\\.$", target, effect));
-            Debuff       = new Regex(string.Format("^{0} receive(s)? the effect of {1}\\.$", target, effect));
-            Enhance      = new Regex(string.Format("^{0}'(s)? attacks are enhanced\\.$", target));
+            Buff         = new Regex(string.Format("^{0} gains? the effect of {1}\\.$", target, effect));
+            GainResistance = new Regex(string.Format("^{0} gains? resistance against {1}\\.$", target, effect));
+            Debuff       = new Regex(string.Format("^{0} receives? the effect of {1}\\.$", target, effect));
+            Enhance      = new Regex(string.Format("^{0}'s? attacks are enhanced\\.$", target));
             Charmed      = new Regex(string.Format("^{0} (is|are) now under {1}'s control\\.$", target, name));
             NotCharmed   = new Regex(string.Format("^{0} (is|are) no longer charmed\\.$", target));
-            Dispelled    = new Regex(string.Format("^{0}'(s)? {1} effect disappears!$", target, effect));
+            Dispelled    = new Regex(string.Format("^{0}'s? {1} effect disappears!$", target, effect));
             RemoveStatus = new Regex(string.Format("^{0} successfully removes {1}'s {2}$", name, target, effect));
-            ItemBuff     = new Regex(string.Format("^{0} receive(s)? the effect of {1}\\.$", target, effect));
+            ItemBuff     = new Regex(string.Format("^{0} receives? the effect of {1}\\.$", target, effect));
             ItemCleanse  = new Regex(string.Format("^{0} is no longer {1}\\.$", target, effect));
             ReduceTP     = new Regex(string.Format("^{0}'s? TP is reduced( to 0)?\\.$", target));
             Hide         = new Regex(string.Format("^{0} hides!$", name));
             #endregion
 
             #region Failed Actions
-            Interrupted  = new Regex(string.Format("^{0}'(s)? casting is interrupted\\.$", name));
+            Interrupted  = new Regex(string.Format("^{0}'s? casting is interrupted\\.$", name));
             MoveInterrupt = new Regex(string.Format("^You move and interrupt your aim\\.$", name));
             Paralyzed    = new Regex(string.Format("^{0} (is|are) paralyzed\\.$", name));
             CannotSee    = new Regex(string.Format("^Unable to see {0}\\.$", target));
@@ -398,7 +398,7 @@ namespace WaywardGamers.KParser
             UnableToUse  = new Regex(string.Format("^Unable to use job ability\\.$"));
             UnableToUse2 = new Regex(string.Format("^Unable to use weapon skill\\.$"));
             UnableToUse3 = new Regex(string.Format("^{0} is unable to use weapon skills\\.$", name));
-            NoEffect     = new Regex(string.Format("^{0}'(s)? {1} has no effect on {2}\\.$", name, spell, target));
+            NoEffect     = new Regex(string.Format("^{0}'s? {1} has no effect on {2}\\.$", name, spell, target));
             NoEffect2    = new Regex(string.Format("^No effect on {0}\\.$", target));
             NoEffect3    = new Regex(string.Format("^{0} casts {1} on {2}, but the spell fails to take effect\\.$", name, spell, target));
             AutoTarget   = new Regex(string.Format("^Auto-targeting {0}\\.$", target));
@@ -421,15 +421,15 @@ namespace WaywardGamers.KParser
             #endregion
 
             #region Combat damage
-            MeleeHit        = new Regex(string.Format("^{0} hit(s)? {1} for {2} point(s)? of damage\\.$", name, target, damage));
+            MeleeHit        = new Regex(string.Format("^{0} hits? {1} for {2} point(s)? of damage\\.$", name, target, damage));
             RangedAttack    = new Regex(string.Format("^{0}'s? ranged attack hits? {1} for {2} points? of damage\\.$", name, target, damage));
             RangedGoodSpot  = new Regex(string.Format("^{0}'s? ranged attack hits? {1} squarely for {2} points? of damage!$", name, target, damage));
             RangedSweetSpot = new Regex(string.Format("^{0}'s? ranged attack strikes true, pummeling {1} for {2} points? of damage!$", name, target, damage));
-            RangedHit       = new Regex(string.Format("^{0} use(s)? Ranged Attack\\.$", name));
-            CriticalHit     = new Regex(string.Format("^{0} score(s)? a critical hit!$", name));
-            RangedCriticalHit = new Regex(string.Format("^{0}'(s)? ranged attack scores a critical hit!$", name));
-            TargetTakesDamage = new Regex(string.Format("{0} take(s)? {1}( additional)? point(s)? of damage\\.$", target, damage));
-            DamageAndStun   = new Regex(string.Format("^{0} take(s)? {1} point(s)? of damage and is stunned\\.$", target, damage));
+            RangedHit       = new Regex(string.Format("^{0} uses? Ranged Attack\\.$", name));
+            CriticalHit     = new Regex(string.Format("^{0} scores? a critical hit!$", name));
+            RangedCriticalHit = new Regex(string.Format("^{0}'s? ranged attack scores a critical hit!$", name));
+            TargetTakesDamage = new Regex(string.Format("{0} takes? {1}( additional)? point(s)? of damage\\.$", target, damage));
+            DamageAndStun   = new Regex(string.Format("^{0} takes? {1} point(s)? of damage and is stunned\\.$", target, damage));
             Spikes          = new Regex(string.Format("{0}'s? spikes deal {1} point(s)? of damage to {2}\\.", name, damage, target));
             DreadSpikes     = new Regex(string.Format("{0}'s? spikes drain {1} HP from {2}\\.", name, damage, target));
             Skillchain      = new Regex(string.Format("^Skillchain: {0}\\.$", skillchain));
@@ -439,27 +439,27 @@ namespace WaywardGamers.KParser
             MeleeMiss    = new Regex(string.Format("^{0} miss(es)? {1}\\.$", name, target));
             MeleeDodge   = new Regex(string.Format("^{0} dodges the attack\\.$", target));
             RangedMiss   = new Regex(string.Format("^{0} use(s)? Ranged Attack, but miss(es)? {1}\\.$", name, target));
-            RangedMiss2  = new Regex(string.Format("^{0}'(s)? ranged attack misses\\.$", name));
-            Blink        = new Regex(string.Format("^{0} of {1}'s shadows absorb(s)? the damage and disappear(s)?\\.$", number, target));
-            Parry        = new Regex(string.Format("^{0} parr(y|ies) {1}'(s)? attack with (his|her|its) weapon\\.$", target, name));
-            Anticipate   = new Regex(string.Format("^{0} anticipate(s)? {1}'(s)? attack\\.$", target, name));
-            Anticipate2  = new Regex(string.Format("^{0} anticipate(s)? the attack\\.$", target));
+            RangedMiss2  = new Regex(string.Format("^{0}'s? ranged attack misses\\.$", name));
+            Blink        = new Regex(string.Format("^{0} of {1}'s shadows absorbs? the damage and disappears?\\.$", number, target));
+            Parry        = new Regex(string.Format("^{0} parr(y|ies) {1}'s? attack with (his|her|its) weapon\\.$", target, name));
+            Anticipate   = new Regex(string.Format("^{0} anticipates? {1}'s? attack\\.$", target, name));
+            Anticipate2  = new Regex(string.Format("^{0} anticipates? the attack\\.$", target));
             Evade        = new Regex(string.Format("^{0} evade(s)?( the attack)?\\.$", target));
-            Counter      = new Regex(string.Format("^{0}'(s)? attack is countered by {1}\\. {2} takes {3} point(s)? of damage\\.$",
+            Counter      = new Regex(string.Format("^{0}'s? attack is countered by {1}\\. {2} takes {3} points? of damage\\.$",
                 target, name, repeatname, damage));
-            CounterShadow = new Regex(string.Format("^{0}'(s)? attack is countered by {1}\\. {2} of {3}'(s)? shadows absorbs the damage and disappears\\.$",
+            CounterShadow = new Regex(string.Format("^{0}'s? attack is countered by {1}\\. {2} of {3}'(s)? shadows absorbs the damage and disappears\\.$",
                 target, name, number, repeatname));
             Retaliate    = new Regex(string.Format("^{0} retaliates\\. {1} takes {2} points? of damage\\.$",
                 name, target, damage));
             RetaliateShadow = new Regex(string.Format("^{0} retaliates\\. {1} of {2}'s? shadows absorbs the damage and disappears\\.$",
                 name, number, target));
-            ResistSpell  = new Regex(string.Format("^(Resist! )?{0} resist(s)? the (effects of the )?spell(\\.|!)$", target));
-            ResistEffect = new Regex(string.Format("^{0} resist(s)? the effect\\.$", target));
+            ResistSpell  = new Regex(string.Format("^(Resist! )?{0} resists? the (effects of the )?spell(\\.|!)$", target));
+            ResistEffect = new Regex(string.Format("^{0} resists? the effect\\.$", target));
             #endregion
 
             #region Drains
             Drain        = new Regex(string.Format("^{0} {1} drained from {2}\\.$", damage, drainType, target));
-            AbsorbStat   = new Regex(string.Format("^{0}'(s)? {1} is drained\\.$", target, drainStat));
+            AbsorbStat   = new Regex(string.Format("^{0}'s? {1} is drained\\.$", target, drainStat));
             #endregion
         }
 
