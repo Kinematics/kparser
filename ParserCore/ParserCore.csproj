@@ -111,7 +111,6 @@
     <Compile Include="Parsing\InternalTesting.cs" />
     <Compile Include="Monad\MonadParser.cs" />
     <Compile Include="Monad\Parser.cs" />
-    <Compile Include="Monad\ParseResult.cs" />
     <Compile Include="ReferenceValues\PlayerInfo.cs" />
     <Compile Include="DPDatabaseImportV1.Designer.cs">
       <AutoGen>True</AutoGen>
