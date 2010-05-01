@@ -192,6 +192,8 @@ namespace WaywardGamers.KParser.Monad
     // Representation type for parsers
     public delegate Consumed<T, U> P<T, U>(ParserState<U> input);
 
+
+
     /// <summary>
     /// Token tuple.
     /// </summary>

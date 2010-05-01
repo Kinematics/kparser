@@ -4,140 +4,361 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
+/// <summary>
+/// This is a set of static classes to define appropriate extension methods
+/// for monadic parsing.
+/// </summary>
 namespace WaywardGamers.KParser.Monad
 {
-    // Representation type for parsers
-    public delegate ParseResult<T> P<T>(List<string> input);
-    //public delegate Consumed<T, Token> P<T, Token>(ParserState<Token> input);
 
 
+
+    /// <summary>
+    /// The parser takes the token stream and uses the information provided
+    /// to build a new message describing the full event that the chat line
+    /// shows.
+    /// </summary>
     public static class Parser
     {
-        // core functions that know the underlying parser representation
-        public static P<T> Fail<T>()
-        {
-            return input => null;
-        }
-
-        public static P<T> Return<T>(T x)
-        {
-            return input => new ParseResult<T>(x, input);
-        }
-
-        public static P<U> Then<T, U>(this P<T> p1, Func<T, P<U>> f)
+        #region Core functions that know the underlying parser representation
+        /// <summary>
+        /// This function always fails (consumes no input), regardless of input.
+        /// </summary>
+        /// <typeparam name="T">The type of result object generated.</typeparam>
+        /// <returns>Returns a new empty Consumed object where none of the input was consumed,
+        /// but the input position is marked..</returns>
+        public static P<T, Token> Fail<T>(string message)
         {
             return input =>
-            {
-                ParseResult<T> result1 = p1(input);
-
-                if (result1 == null)
-                    return null;
-                else
-                    return f(result1.Result)(result1.RemainingInput);
-            };
+                new Consumed<T, Token>(
+                    false,
+                    new ParseResult<T, Token>(
+                        new ErrorInfo(input.Position, Enumerable.Empty<string>(), message)));
         }
-
-        public static P<T> Or<T>(this P<T> p1, P<T> p2)
-        {
-            return input =>
-            {
-                ParseResult<T> result1 = p1(input);
-
-                if (result1 == null)
-                    return p2(input);
-                else
-                    return result1;
-            };
-        }
-
-        public static P<string> Item()
-        {
-            return input =>
-            {
-                if ((input == null) || (input.Count == 0))
-                    return null;
-
-                return new ParseResult<string>(input[0], input.Skip(1).ToList<string>());
-            };
-        }
-
-        // other handy functions
-        public static P<U> Then_<T, U>(this P<T> p1, P<U> p2)
-        {
-            return p1.Then(dummy => p2);
-        }
-
-
-        #region Scanner
-        // The regex to define what comprises a word.
-        // Embedded periods, apostraphes and dashs are allowed. (eg: Lamia No.09, Da'Dha Hundredmask, ??-??)
-        // Other punctuation is separated out into their own 'words'
-        // EG: Cover! The Mandragora >> "Cover", "!", "The", "Mandragora"...
-        static Regex WordRegex = new Regex(@"(?<FirstWord>(\w|[.'-]\w)+|[:,!.])( (?<Remainder>.+))?");
 
         /// <summary>
-        /// A scanner to break down the provided input string into a list of words.
-        /// The recursive version is essentially identical in speed to the non-recursive
-        /// version, so using this methodology.
+        /// Return(x) is a parser that always succeeds with result x, without consuming any input.
         /// </summary>
-        /// <param name="input">The string to break down.</param>
-        /// <returns>A list of strings comprised of the individual words of the input string.</returns>
-        public static List<string> Scan(string input)
+        /// <typeparam name="T">The type of result object generated.</typeparam>
+        /// <param name="x">The result object generated.</param>
+        /// <returns>Always returns a Consumed object containing a ParseResult
+        /// built with the provided result object.</returns>
+        public static P<T, Token> Return<T>(T x)
         {
-            Match match;
-
-            // At the end of the recursion, return an empty list.
-            if (string.IsNullOrEmpty(input))
-                return new List<string>();
-
-            // Match against the regex.
-            match = WordRegex.Match(input);
-            if (match.Success)
-            {
-                // Have to break this down into separate steps because Insert returns void.
-                List<string> words = Scan(match.Groups["Remainder"].Value);
-                words.Insert(0, match.Groups["FirstWord"].Value);
-                return words;
-            }
-            else
-            {
-                throw new ArgumentException(
-                    string.Format("Unable to complete parsing of input string: {0}", input));
-            }
+            return input =>
+                new Consumed<T, Token>(
+                    false,
+                    new ParseResult<T, Token>(
+                        x,
+                        input,
+                        input,
+                        new ErrorInfo(input.Position)));
         }
+
+        /// <summary>
+        /// This function runs parser p1 on the input.  If it fails, return
+        /// null.  If it succeeds, run the provided function on the result
+        /// of the initial function.
+        /// </summary>
+        /// <typeparam name="T">The type of result object generated by the first function.</typeparam>
+        /// <typeparam name="U">The type of result object generated by the second function.</typeparam>
+        /// <param name="p1">The initial parser to run.</param>
+        /// <param name="f">The function defining the second parser to run.</param>
+        /// <returns>Returns the completely constructed parser.</returns>
+        public static P<U, Token> Then<T, U>(this P<T, Token> p1, Func<T, P<U, Token>> f)
+        {
+            return input =>
+            {
+                Consumed<T, Token> consumed1 = p1(input);
+
+                if (consumed1.ParseResult.Succeeded)
+                {
+                    Consumed<U, Token> consumed2 = f(consumed1.ParseResult.Result)(consumed1.ParseResult.RemainingInput);
+                    return new Consumed<U, Token>(
+                           consumed1.HasConsumedInput || consumed2.HasConsumedInput,
+                           consumed2.HasConsumedInput
+                               ? consumed2.ParseResult
+                               : consumed2.ParseResult.MergeError(consumed1.ParseResult.ErrorInfo));
+                }
+                else
+                {
+                    return new Consumed<U, Token>(
+                        consumed1.HasConsumedInput,
+                        new ParseResult<U, Token>(consumed1.ParseResult.ErrorInfo));
+                }
+            };
+        }
+
+        /// <summary>
+        /// Then_ is a variant on Then.  It runs p1 predicate on the input,
+        /// discards the results, and runs p2 on the result of the p1 function.
+        /// </summary>
+        /// <typeparam name="T">The type of result object generated by the first function.</typeparam>
+        /// <typeparam name="U">The type of result object generated by the second function.</typeparam>
+        /// <param name="p1">The first parser to run.</param>
+        /// <param name="p2">The second parser to run.</param>
+        /// <returns>Returns the combined parser function.</returns>
+        public static P<U, Token> Then_<T, U>(this P<T, Token> p1, P<U, Token> p2)
+        {
+            return p1.Then<T, U>(dummy => p2);
+        }
+
+
+        /// <summary>
+        /// p1.Or(p2) tries p1, but if it fails without consuming input, runs p2 instead.
+        /// </summary>
+        /// <typeparam name="T">The type of result object generated.</typeparam>
+        /// <param name="p1">The first parser to run.</param>
+        /// <param name="p2">The second parser to run.</param>
+        /// <returns>Returns the combined parser function.</returns>
+        public static P<T, Token> Or<T>(this P<T, Token> p1, P<T, Token> p2)
+        {
+            return input =>
+            {
+                Consumed<T, Token> consumed1 = p1(input);
+
+                if (consumed1.ParseResult.Succeeded || consumed1.HasConsumedInput)
+                {
+                    return consumed1;
+                }
+                else
+                {
+                    Consumed<T, Token> consumed2 = p2(input);
+
+                    if (consumed2.HasConsumedInput)
+                        return consumed2;
+
+                    return new Consumed<T, Token>(
+                        consumed2.HasConsumedInput,
+                        consumed2.ParseResult.MergeError(consumed1.ParseResult.ErrorInfo));
+                }
+            };
+        }
+
+        /// <summary>
+        /// p.Tag(label) makes it so if p fails without consuming input, the error "expected label" occurs
+        /// </summary>
+        /// <typeparam name="T">The type of the result object.</typeparam>
+        /// <param name="p">The predicate this is extending.</param>
+        /// <param name="label">A string to use to tag the resulting parse state.</param>
+        /// <returns></returns>
+        public static P<T, Token> Tag<T>(this P<T, Token> p, string label)
+        {
+            return input => p(input).Tag(label);
+        }
+
+
+        /// <summary>
+        /// Satisfy(pred) succeeds parsing a string only if the string matches the predicate.
+        /// </summary>
+        /// <param name="pred">The predicate comparitor.</param>
+        /// <returns></returns>
+        public static P<Token, Token> Satisfy(Predicate<Token> pred)
+        {
+            return input =>
+            {
+                if (input.Position >= input.Input.Count)
+                {
+                    return new Consumed<Token, Token>(
+                        false,
+                        new ParseResult<Token, Token>(
+                            new ErrorInfo(
+                                input.Position,
+                                Enumerable.Empty<string>(),
+                                "unexpected end of input")));
+                }
+                else if (!pred(input.Input[input.Position]))
+                {
+                    return new Consumed<Token, Token>(
+                        false,
+                        new ParseResult<Token, Token>(
+                            new ErrorInfo(
+                                input.Position,
+                                Enumerable.Empty<string>(),
+                                "unexpected string '" + input.Input[input.Position] + "'")));
+                }
+                else
+                {
+                    return new Consumed<Token, Token>(
+                        true,
+                        new ParseResult<Token, Token>(
+                            input.Input[input.Position],
+                            input,
+                            new ParserState<Token>(
+                                input.Position + 1,
+                                input.Input),
+                            new ErrorInfo(input.Position + 1)));
+                }
+            };
+        }
+
+        /// <summary>
+        /// Item() consumes the first element of the input string list and returns it as a result
+        /// </summary>
+        /// <returns></returns>
+        public static P<Token, Token> Item()
+        {
+            return Satisfy(c => true).Tag("any string");
+        }
+
+
+        public static P<TokenType, Token> Literal(List<Token> toParse, List<Token> consumed, TokenType result)
+        {
+            if (consumed == null)
+                consumed = new List<Token>();
+
+            if (toParse.Count == 0)
+                return Parser.Return(result);
+            else
+                return Satisfy(c => c == toParse.First())
+                    .Then_(Literal(toParse.Skip(1).ToList(), consumed, result));
+        }
+
         #endregion
 
         #region Tokenizer
+
+
         // The Tokenizer section takes the scanned list of words and groups certain ones together.
         // It returns a list of word 'clusters'.
-        
-        static Predicate<string> IsCapitalized = (s => Regex.Match(s, @"^[A-Z]").Success);
-        static Predicate<string> IsPosessive = (s => Regex.Match(s, @"'s$").Success);
-        static Predicate<string> IsYou = (s => Regex.Match(s, @"You").Success);
 
-        static string Combine(string word1, string word2)
+
+        public static List<Token> Parse(List<Token> wordList)
         {
-            return word1 + word2;
+            List<Token> tokenList = new List<Token>();
+
+            return tokenList;
         }
 
-        static string CombineWords(string word1, string word2)
-        {
-            return word1 + " " + word2;
-        }
-
-        public static List<string> Tokenize(List<string> wordList)
-        {
-            return wordList;
-        }
-
-        #endregion
-
-        #region Parser
-        internal static Message Parse(List<string> input)
-        {
-            return null;
-        }
         #endregion
 
     }
+
+
+
+
+    /// <summary>
+    /// The parser takes the token stream and uses the information provided
+    /// to build a new message describing the full event that the chat line
+    /// shows.
+    /// </summary>
+    //public static class Parser1
+    //{
+    //    #region Core functions that know the underlying parser representation
+    //    /// <summary>
+    //    /// This function always returns null, regardless of input.
+    //    /// </summary>
+    //    /// <typeparam name="T"></typeparam>
+    //    /// <returns></returns>
+    //    public static P<T> Fail<T>()
+    //    {
+    //        return input => null;
+    //    }
+
+    //    /// <summary>
+    //    /// This function returns a fixed value x as part of a new
+    //    /// ParseResult combining x with input.
+    //    /// </summary>
+    //    /// <typeparam name="T"></typeparam>
+    //    /// <param name="x"></param>
+    //    /// <returns></returns>
+    //    public static P<T> Return<T>(T x)
+    //    {
+    //        return input => new ParseResult<T>(x, input);
+    //    }
+
+    //    /// <summary>
+    //    /// This function runs parser p1 on the input.  If it fails, return
+    //    /// null.  If it succeeds, run the provided function on the result
+    //    /// of the initial function.
+    //    /// </summary>
+    //    /// <typeparam name="T"></typeparam>
+    //    /// <typeparam name="U"></typeparam>
+    //    /// <param name="p1"></param>
+    //    /// <param name="f"></param>
+    //    /// <returns></returns>
+    //    public static P<U> Then<T, U>(this P<T> p1, Func<T, P<U>> f)
+    //    {
+    //        return input =>
+    //        {
+    //            ParseResult<T> result1 = p1(input);
+
+    //            if (result1 == null)
+    //                return null;
+    //            else
+    //                return f(result1.Result)(result1.RemainingInput);
+    //        };
+    //    }
+
+    //    /// <summary>
+    //    /// Then_ is a variant on Then.  It runs p1 predicate on the input,
+    //    /// discards the results, and runs p2 on the result of the p1 function.
+    //    /// </summary>
+    //    /// <typeparam name="T"></typeparam>
+    //    /// <typeparam name="U"></typeparam>
+    //    /// <param name="p1"></param>
+    //    /// <param name="p2"></param>
+    //    /// <returns></returns>
+    //    public static P<U> Then_<T, U>(this P<T> p1, P<U> p2)
+    //    {
+    //        return p1.Then(dummy => p2);
+    //    }
+
+    //    /// <summary>
+    //    /// This parser runs function p1.  If it succeeds, it returns
+    //    /// the result of p1.  If it fails it runs and returns the
+    //    /// result of p2.
+    //    /// </summary>
+    //    /// <typeparam name="T"></typeparam>
+    //    /// <param name="p1"></param>
+    //    /// <param name="p2"></param>
+    //    /// <returns></returns>
+    //    public static P<T> Or<T>(this P<T> p1, P<T> p2)
+    //    {
+    //        return input =>
+    //        {
+    //            ParseResult<T> result1 = p1(input);
+
+    //            if (result1 == null)
+    //                return p2(input);
+    //            else
+    //                return result1;
+    //        };
+    //    }
+
+    //    /// <summary>
+    //    /// Item consumes the first object of the provided input and returns
+    //    /// that as the result.
+    //    /// </summary>
+    //    /// <returns></returns>
+    //    public static P<Token> Item()
+    //    {
+    //        return input =>
+    //        {
+    //            if ((input == null) || (input.Count == 0))
+    //                return null;
+
+    //            return new ParseResult<Token>(input[0], input.Skip(1).ToList<Token>());
+    //        };
+    //    }
+
+    //    /// <summary>
+    //    /// Satisfy checks whether the first Item to be parsed satisfies the
+    //    /// provided predicate check.  If it does, it returns the Item.
+    //    /// </summary>
+    //    /// <returns></returns>
+    //    public static P<Token> Satisfy(Predicate<Token> pred)
+    //    {
+    //        return Item().Then(s => pred(s) ? Parser.Return(s) : Parser.Fail<Token>());
+    //    }
+    //    #endregion
+
+    //    #region Parser
+    //    internal static Message Parse(List<Token> input)
+    //    {
+    //        return null;
+    //    }
+    //    #endregion
+
+    //}
 }
