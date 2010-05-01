@@ -105,6 +105,9 @@
     <Compile Include="Interface\CustomMobSelectionDlg.Designer.cs">
       <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
     </Compile>
+    <Compile Include="Monad\BaseMonadClasses.cs" />
+    <Compile Include="Monad\Lexer.cs" />
+    <Compile Include="Monad\Scanner.cs" />
     <Compile Include="Parsing\InternalTesting.cs" />
     <Compile Include="Monad\MonadParser.cs" />
     <Compile Include="Monad\Parser.cs" />
