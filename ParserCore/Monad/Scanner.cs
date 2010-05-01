@@ -15,7 +15,8 @@ namespace WaywardGamers.KParser.Monad
         // Embedded periods, apostraphes and dashs are allowed. (eg: Lamia No.09, Da'Dha Hundredmask, Koru-moru)
         // Other punctuation (including "'s" for possessives) is separated out into their own 'words'
         // EG: "Cover! The Mandragora ..." >> "Cover", "!", "The", "Mandragora"...
-        static Regex ScanWordRegex = new Regex(@"\s*(?<Word>!(?= |$)|\.(?= |$)|'s(?= )|(?(?=\S+'s )\S+(?='s )|\S+\w))(?<Remainder>.+)?");
+        static Regex ScanWordRegex =
+            new Regex(@"\s*(?<Word>!(?= |$)|\.(?= |$)|'s(?= )|(?(?=\S+'s )\S+(?='s )|\S+\w))(?<Remainder>.+)?");
 
         /// <summary>
         /// A scanner to break down the provided input string into a list of words.
