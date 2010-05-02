@@ -9,7 +9,7 @@ namespace WaywardGamers.KParser.Monad
     /// series of words (strings).
     /// Current timing: approx 0.01 ms per word.
     /// </summary>
-    public static class Scanner
+    internal static class Scanner
     {
         // The regex to define what comprises a word.
         // Embedded periods, apostraphes and dashs are allowed. (eg: Lamia No.09, Da'Dha Hundredmask, Koru-moru)
@@ -25,7 +25,7 @@ namespace WaywardGamers.KParser.Monad
         /// </summary>
         /// <param name="input">The string to break down.</param>
         /// <returns>A list of strings comprised of the individual words of the input string.</returns>
-        public static List<string> Scan(string input)
+        internal static List<string> Scan(string input)
         {
             Match match;
 
