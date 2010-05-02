@@ -10,15 +10,12 @@ using System.Text.RegularExpressions;
 /// </summary>
 namespace WaywardGamers.KParser.Monad
 {
-
-
-
     /// <summary>
     /// The parser takes the token stream and uses the information provided
     /// to build a new message describing the full event that the chat line
     /// shows.
     /// </summary>
-    public static class Parser
+    internal static class Parser
     {
         #region Core functions that know the underlying parser representation
         /// <summary>
@@ -26,33 +23,48 @@ namespace WaywardGamers.KParser.Monad
         /// </summary>
         /// <typeparam name="T">The type of result object generated.</typeparam>
         /// <returns>Returns a new empty Consumed object where none of the input was consumed,
-        /// but the input position is marked..</returns>
-        public static P<T, Token> Fail<T>(string message)
+        /// but the input position is marked.</returns>
+        internal static P<T, TokenTuple> Fail<T>(string message)
         {
             return input =>
-                new Consumed<T, Token>(
+                new Consumed<T, TokenTuple>(
                     false,
-                    new ParseResult<T, Token>(
+                    new ParseResult<T, TokenTuple>(
                         new ErrorInfo(input.Position, Enumerable.Empty<string>(), message)));
         }
 
         /// <summary>
-        /// Return(x) is a parser that always succeeds with result x, without consuming any input.
+        /// Return(x) is a parser that always succeeds and returns a Consumed object
+        /// containing a ParseResult of type T that contains x, without consuming
+        /// any input.
         /// </summary>
         /// <typeparam name="T">The type of result object generated.</typeparam>
         /// <param name="x">The result object generated.</param>
         /// <returns>Always returns a Consumed object containing a ParseResult
         /// built with the provided result object.</returns>
-        public static P<T, Token> Return<T>(T x)
+        internal static P<T, TokenTuple> Return<T>(T x)
         {
             return input =>
-                new Consumed<T, Token>(
+                new Consumed<T, TokenTuple>(
                     false,
-                    new ParseResult<T, Token>(
+                    new ParseResult<T, TokenTuple>(
                         x,
                         input,
-                        input,
                         new ErrorInfo(input.Position)));
+        }
+
+        /// <summary>
+        /// Return(f) is a parser that always succeeds returns the function f
+        /// (which processes objects of type T), without consuming any input.
+        /// </summary>
+        /// <typeparam name="T">The type of result object generated.</typeparam>
+        /// <param name="f">The function to be returned.</param>
+        /// <returns>Always returns a function capable of operating on
+        /// objects of type T.</returns>
+        internal static P<Func<T, T, T>, TokenTuple> Return<T>(Func<T, T, T> f)
+        {
+            // Use base Return function to handle the explicit construction work.
+            return Return<Func<T, T, T>>(f);
         }
 
         /// <summary>
@@ -65,16 +77,16 @@ namespace WaywardGamers.KParser.Monad
         /// <param name="p1">The initial parser to run.</param>
         /// <param name="f">The function defining the second parser to run.</param>
         /// <returns>Returns the completely constructed parser.</returns>
-        public static P<U, Token> Then<T, U>(this P<T, Token> p1, Func<T, P<U, Token>> f)
+        internal static P<U, TokenTuple> Then<T, U>(this P<T, TokenTuple> p1, Func<T, P<U, TokenTuple>> f)
         {
             return input =>
             {
-                Consumed<T, Token> consumed1 = p1(input);
+                Consumed<T, TokenTuple> consumed1 = p1(input);
 
                 if (consumed1.ParseResult.Succeeded)
                 {
-                    Consumed<U, Token> consumed2 = f(consumed1.ParseResult.Result)(consumed1.ParseResult.RemainingInput);
-                    return new Consumed<U, Token>(
+                    Consumed<U, TokenTuple> consumed2 = f(consumed1.ParseResult.Result)(consumed1.ParseResult.RemainingInput);
+                    return new Consumed<U, TokenTuple>(
                            consumed1.HasConsumedInput || consumed2.HasConsumedInput,
                            consumed2.HasConsumedInput
                                ? consumed2.ParseResult
@@ -82,9 +94,9 @@ namespace WaywardGamers.KParser.Monad
                 }
                 else
                 {
-                    return new Consumed<U, Token>(
+                    return new Consumed<U, TokenTuple>(
                         consumed1.HasConsumedInput,
-                        new ParseResult<U, Token>(consumed1.ParseResult.ErrorInfo));
+                        new ParseResult<U, TokenTuple>(consumed1.ParseResult.ErrorInfo));
                 }
             };
         }
@@ -98,7 +110,7 @@ namespace WaywardGamers.KParser.Monad
         /// <param name="p1">The first parser to run.</param>
         /// <param name="p2">The second parser to run.</param>
         /// <returns>Returns the combined parser function.</returns>
-        public static P<U, Token> Then_<T, U>(this P<T, Token> p1, P<U, Token> p2)
+        internal static P<U, TokenTuple> Then_<T, U>(this P<T, TokenTuple> p1, P<U, TokenTuple> p2)
         {
             return p1.Then<T, U>(dummy => p2);
         }
@@ -111,11 +123,11 @@ namespace WaywardGamers.KParser.Monad
         /// <param name="p1">The first parser to run.</param>
         /// <param name="p2">The second parser to run.</param>
         /// <returns>Returns the combined parser function.</returns>
-        public static P<T, Token> Or<T>(this P<T, Token> p1, P<T, Token> p2)
+        internal static P<T, TokenTuple> Or<T>(this P<T, TokenTuple> p1, P<T, TokenTuple> p2)
         {
             return input =>
             {
-                Consumed<T, Token> consumed1 = p1(input);
+                Consumed<T, TokenTuple> consumed1 = p1(input);
 
                 if (consumed1.ParseResult.Succeeded || consumed1.HasConsumedInput)
                 {
@@ -123,12 +135,12 @@ namespace WaywardGamers.KParser.Monad
                 }
                 else
                 {
-                    Consumed<T, Token> consumed2 = p2(input);
+                    Consumed<T, TokenTuple> consumed2 = p2(input);
 
                     if (consumed2.HasConsumedInput)
                         return consumed2;
 
-                    return new Consumed<T, Token>(
+                    return new Consumed<T, TokenTuple>(
                         consumed2.HasConsumedInput,
                         consumed2.ParseResult.MergeError(consumed1.ParseResult.ErrorInfo));
                 }
@@ -136,55 +148,45 @@ namespace WaywardGamers.KParser.Monad
         }
 
         /// <summary>
-        /// p.Tag(label) makes it so if p fails without consuming input, the error "expected label" occurs
-        /// </summary>
-        /// <typeparam name="T">The type of the result object.</typeparam>
-        /// <param name="p">The predicate this is extending.</param>
-        /// <param name="label">A string to use to tag the resulting parse state.</param>
-        /// <returns></returns>
-        public static P<T, Token> Tag<T>(this P<T, Token> p, string label)
-        {
-            return input => p(input).Tag(label);
-        }
-
-
-        /// <summary>
-        /// Satisfy(pred) succeeds parsing a string only if the string matches the predicate.
+        /// Satisfy(predicate) succeeds only if the predicate, when applied to
+        /// a Token, returns true.  If it succeeds, return the Token that passed.
         /// </summary>
         /// <param name="pred">The predicate comparitor.</param>
         /// <returns></returns>
-        public static P<Token, Token> Satisfy(Predicate<Token> pred)
+        internal static P<TokenTuple, TokenTuple> Satisfy(Predicate<TokenTuple> pred)
         {
             return input =>
             {
+                // If we're past the end of the input, can't comply, fail.
                 if (input.Position >= input.Input.Count)
                 {
-                    return new Consumed<Token, Token>(
+                    return new Consumed<TokenTuple, TokenTuple>(
                         false,
-                        new ParseResult<Token, Token>(
+                        new ParseResult<TokenTuple, TokenTuple>(
                             new ErrorInfo(
                                 input.Position,
                                 Enumerable.Empty<string>(),
                                 "unexpected end of input")));
                 }
+                // If predicate fails, return fail result.
                 else if (!pred(input.Input[input.Position]))
                 {
-                    return new Consumed<Token, Token>(
+                    return new Consumed<TokenTuple, TokenTuple>(
                         false,
-                        new ParseResult<Token, Token>(
+                        new ParseResult<TokenTuple, TokenTuple>(
                             new ErrorInfo(
                                 input.Position,
                                 Enumerable.Empty<string>(),
                                 "unexpected string '" + input.Input[input.Position] + "'")));
                 }
+                // Otherwise return new Consumed result.
                 else
                 {
-                    return new Consumed<Token, Token>(
+                    return new Consumed<TokenTuple, TokenTuple>(
                         true,
-                        new ParseResult<Token, Token>(
+                        new ParseResult<TokenTuple, TokenTuple>(
                             input.Input[input.Position],
-                            input,
-                            new ParserState<Token>(
+                            new ParserState<TokenTuple>(
                                 input.Position + 1,
                                 input.Input),
                             new ErrorInfo(input.Position + 1)));
@@ -196,16 +198,31 @@ namespace WaywardGamers.KParser.Monad
         /// Item() consumes the first element of the input string list and returns it as a result
         /// </summary>
         /// <returns></returns>
-        public static P<Token, Token> Item()
+        internal static P<TokenTuple, TokenTuple> Item()
         {
             return Satisfy(c => true).Tag("any string");
         }
 
+        #endregion
 
-        public static P<TokenType, Token> Literal(List<Token> toParse, List<Token> consumed, TokenType result)
+        #region Other helpful support functions
+        /// <summary>
+        /// Add a label to the state of any parse result.
+        /// p.Tag(label) makes it so if p fails without consuming input, the error "expected label" occurs
+        /// </summary>
+        /// <typeparam name="T">The type of the result object.</typeparam>
+        /// <param name="p">The predicate this is extending.</param>
+        /// <param name="label">A string to use to tag the resulting parse state.</param>
+        /// <returns></returns>
+        internal static P<T, TokenTuple> Tag<T>(this P<T, TokenTuple> p, string label)
+        {
+            return input => p(input).Tag(label);
+        }
+
+        internal static P<TokenType, TokenTuple> Literal(List<TokenTuple> toParse, List<TokenTuple> consumed, TokenType result)
         {
             if (consumed == null)
-                consumed = new List<Token>();
+                consumed = new List<TokenTuple>();
 
             if (toParse.Count == 0)
                 return Parser.Return(result);
@@ -214,20 +231,14 @@ namespace WaywardGamers.KParser.Monad
                     .Then_(Literal(toParse.Skip(1).ToList(), consumed, result));
         }
 
+
         #endregion
 
-        #region Tokenizer
+        #region Parser
 
-
-        // The Tokenizer section takes the scanned list of words and groups certain ones together.
-        // It returns a list of word 'clusters'.
-
-
-        public static List<Token> Parse(List<Token> wordList)
+        internal static Message Parse(List<TokenTuple> tokenList)
         {
-            List<Token> tokenList = new List<Token>();
-
-            return tokenList;
+            return new Message();
         }
 
         #endregion
@@ -242,7 +253,7 @@ namespace WaywardGamers.KParser.Monad
     /// to build a new message describing the full event that the chat line
     /// shows.
     /// </summary>
-    //public static class Parser1
+    //internal static class Parser1
     //{
     //    #region Core functions that know the underlying parser representation
     //    /// <summary>
@@ -250,7 +261,7 @@ namespace WaywardGamers.KParser.Monad
     //    /// </summary>
     //    /// <typeparam name="T"></typeparam>
     //    /// <returns></returns>
-    //    public static P<T> Fail<T>()
+    //    internal static P<T> Fail<T>()
     //    {
     //        return input => null;
     //    }
@@ -262,7 +273,7 @@ namespace WaywardGamers.KParser.Monad
     //    /// <typeparam name="T"></typeparam>
     //    /// <param name="x"></param>
     //    /// <returns></returns>
-    //    public static P<T> Return<T>(T x)
+    //    internal static P<T> Return<T>(T x)
     //    {
     //        return input => new ParseResult<T>(x, input);
     //    }
@@ -277,7 +288,7 @@ namespace WaywardGamers.KParser.Monad
     //    /// <param name="p1"></param>
     //    /// <param name="f"></param>
     //    /// <returns></returns>
-    //    public static P<U> Then<T, U>(this P<T> p1, Func<T, P<U>> f)
+    //    internal static P<U> Then<T, U>(this P<T> p1, Func<T, P<U>> f)
     //    {
     //        return input =>
     //        {
@@ -299,7 +310,7 @@ namespace WaywardGamers.KParser.Monad
     //    /// <param name="p1"></param>
     //    /// <param name="p2"></param>
     //    /// <returns></returns>
-    //    public static P<U> Then_<T, U>(this P<T> p1, P<U> p2)
+    //    internal static P<U> Then_<T, U>(this P<T> p1, P<U> p2)
     //    {
     //        return p1.Then(dummy => p2);
     //    }
@@ -313,7 +324,7 @@ namespace WaywardGamers.KParser.Monad
     //    /// <param name="p1"></param>
     //    /// <param name="p2"></param>
     //    /// <returns></returns>
-    //    public static P<T> Or<T>(this P<T> p1, P<T> p2)
+    //    internal static P<T> Or<T>(this P<T> p1, P<T> p2)
     //    {
     //        return input =>
     //        {
@@ -331,7 +342,7 @@ namespace WaywardGamers.KParser.Monad
     //    /// that as the result.
     //    /// </summary>
     //    /// <returns></returns>
-    //    public static P<Token> Item()
+    //    internal static P<Token> Item()
     //    {
     //        return input =>
     //        {
@@ -347,7 +358,7 @@ namespace WaywardGamers.KParser.Monad
     //    /// provided predicate check.  If it does, it returns the Item.
     //    /// </summary>
     //    /// <returns></returns>
-    //    public static P<Token> Satisfy(Predicate<Token> pred)
+    //    internal static P<Token> Satisfy(Predicate<Token> pred)
     //    {
     //        return Item().Then(s => pred(s) ? Parser.Return(s) : Parser.Fail<Token>());
     //    }
