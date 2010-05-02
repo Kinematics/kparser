@@ -35,6 +35,9 @@ namespace WaywardGamers.KParser.Plugin
         bool showCumulativeDamage = true;
         bool showCollectiveDamage = false;
 
+        int xAxisScale;
+        int xAxisSize;
+
         Color[] indexOfColors = new Color[18];
 
         // Localized strings
@@ -118,6 +121,8 @@ namespace WaywardGamers.KParser.Plugin
         public override void Reset()
         {
             ResetGraph();
+            xAxisScale = 1;
+            xAxisSize = 1;
             SetGraphLabels();
         }
 
@@ -233,7 +238,27 @@ namespace WaywardGamers.KParser.Plugin
         {
             SetGraphTitle();
 
-            zedGraphControl.GraphPane.XAxis.Title.Text = lsXAxisTitle;
+            StringBuilder lsXAxisScaled = new StringBuilder();
+            if (xAxisScale > 1)
+            {
+                int endPoint = lsXAxisTitle.IndexOf(')');
+                if (endPoint > 0)
+                {
+                    lsXAxisScaled.Append(lsXAxisTitle.Substring(0, endPoint));
+                    lsXAxisScaled.AppendFormat(" x{0}", xAxisScale);
+                    lsXAxisScaled.Append(lsXAxisTitle.Substring(endPoint));
+                }
+                else
+                {
+                    lsXAxisScaled.Append(lsXAxisTitle);
+                }
+            }
+            else
+            {
+                lsXAxisScaled.Append(lsXAxisTitle);
+            }
+
+            zedGraphControl.GraphPane.XAxis.Title.Text = lsXAxisScaled.ToString();
             zedGraphControl.GraphPane.YAxis.Title.Text = lsYAxisTitle;
         }
 
@@ -362,20 +387,24 @@ namespace WaywardGamers.KParser.Plugin
 
             #endregion
 
+            double[] xAxis = GetXAxis(attackSet);
+            SetGraphLabels();
+
             if (showCollectiveDamage)
-                ProcessCollectiveDamage(dataSet, attackSet, mobFilter);
+                ProcessCollectiveDamage(dataSet, attackSet, mobFilter, xAxis);
             else
-                ProcessIndividualDamage(dataSet, attackSet, mobFilter);
+                ProcessIndividualDamage(dataSet, attackSet, mobFilter, xAxis);
+
         }
 
         private void ProcessCollectiveDamage(KPDatabaseDataSet dataSet,
-            EnumerableRowCollection<AttackGroup> attackSet, MobFilter mobFilter)
+            EnumerableRowCollection<AttackGroup> attackSet, MobFilter mobFilter,
+            double[] xAxis)
         {
             DateTime startTime;
             DateTime endTime;
 
             GetTimeRange(attackSet, out startTime, out endTime);
-            double[] xAxis = GetXAxis(startTime, endTime);
 
             double[] sequenceDamage = GetCollectiveSequenceDamage(attackSet, startTime, endTime);
             string label = lsSequenceDamage;
@@ -394,13 +423,13 @@ namespace WaywardGamers.KParser.Plugin
         }
 
         private void ProcessIndividualDamage(KPDatabaseDataSet dataSet,
-            EnumerableRowCollection<AttackGroup> attackSet, MobFilter mobFilter)
+            EnumerableRowCollection<AttackGroup> attackSet, MobFilter mobFilter,
+            double[] xAxis)
         {
             DateTime startTime;
             DateTime endTime;
 
             GetTimeRange(attackSet, out startTime, out endTime);
-            double[] xAxis = GetXAxis(startTime, endTime);
 
             int colorIndex = 0;
 
@@ -484,18 +513,20 @@ namespace WaywardGamers.KParser.Plugin
         /// <param name="endTime"></param>
         /// <returns>An array of doubles filled with the sequence
         /// of seconds between the start time and the end time.</returns>
-        private double[] GetXAxis(DateTime startTime, DateTime endTime)
+        private double[] GetXAxis(EnumerableRowCollection<AttackGroup> attackSet)
         {
-            int totalSeconds = GetAxisSize(startTime, endTime);
+            DateTime startTime;
+            DateTime endTime;
 
-            if (totalSeconds <= 0)
-                throw new ArgumentOutOfRangeException();
+            GetTimeRange(attackSet, out startTime, out endTime);
 
-            double[] xAxis = new double[totalSeconds];
+            CalculateAxisSize(startTime, endTime);
 
-            for (int i = 0; i < totalSeconds; i++)
+            double[] xAxis = new double[xAxisSize];
+
+            for (int i = 0; i < xAxis.Length; i++)
             {
-                xAxis[i] = i;
+                xAxis[i] = i * xAxisScale;
             }
 
             return xAxis;
@@ -510,15 +541,27 @@ namespace WaywardGamers.KParser.Plugin
         /// <param name="endTime">The time the axis should end.</param>
         /// <returns>Returns a value of at least 1 for the number of seconds
         /// between the start and the end.</returns>
-        private int GetAxisSize(DateTime startTime, DateTime endTime)
+        private void CalculateAxisSize(DateTime startTime, DateTime endTime)
         {
-            return (int)Math.Abs((endTime - startTime).TotalSeconds) + 1;
+            int axisSize = (int)Math.Abs((endTime - startTime).TotalSeconds) + 1;
+
+            // To prevent out of memory errors, put a limit on the x axis size.
+            // Current limit is set to 604,800 elements (seconds), or one
+            // week's worth of seconds.
+            xAxisScale = 1;
+
+            while ((axisSize/xAxisScale) > 604800)
+            {
+                xAxisScale *= 2;
+            }
+
+            xAxisSize = axisSize / xAxisScale + 1;
         }
 
         private double[] GetCollectiveSequenceDamage(EnumerableRowCollection<AttackGroup> attackSet,
             DateTime startTime, DateTime endTime)
         {
-            double[] totalSequenceDamage = new double[GetAxisSize(startTime, endTime)];
+            double[] totalSequenceDamage = new double[xAxisSize];
 
             foreach (var player in attackSet)
             {
@@ -537,12 +580,12 @@ namespace WaywardGamers.KParser.Plugin
         private double[] GetIndividualSequenceDamage(AttackGroup attackSet,
             DateTime startTime, DateTime endTime)
         {
-            double[] playerSequenceDamage = new double[GetAxisSize(startTime, endTime)];
+            double[] playerSequenceDamage = new double[xAxisSize];
 
             foreach (var action in attackSet.AnyAction)
             {
                 int seconds = (int)(action.Timestamp - startTime).TotalSeconds;
-                playerSequenceDamage[seconds] += action.Amount + action.SecondAmount;
+                playerSequenceDamage[seconds/xAxisScale] += action.Amount + action.SecondAmount;
             }
 
             return playerSequenceDamage;
