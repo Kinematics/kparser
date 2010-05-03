@@ -8,36 +8,15 @@ namespace WaywardGamers.KParser.Monad
 {
     public class MonadParser
     {
+        #region Constructor/member variables
+        Lexer lexer = new Lexer();
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public MonadParser()
         {
-            BuildParsers();
         }
-
-        #region Parsers
-        private void BuildParsers()
-        {
-            P<string, string> IsPeriodOrEx = Check(endOfLine);
-            P<string, string> IsNumber = Check(numeric);
-
-            var failInt = Lexer.Fail<int>("failint");
-
-            var resFailInt = failInt(new ParserState<string>(0, new List<string>(){"one", "2"}));
-
-            if (resFailInt != null)
-                throw new InvalidOperationException();
-        }
-
-        P<string, string> Word = Lexer.Item();
-        P<string, string> Fail = Lexer.Fail<string>("failstring");
-        Predicate<string> endOfLine = s => s == "." || s == "!";
-        Predicate<string> numeric = s => Regex.Match(s, @"\d+").Success;
-
-
-        public P<string, string> Check(Predicate<string> pred)
-        {
-            return Word.Then(w => pred(w) ? Lexer.Return(w) : Fail);
-        }
-
         #endregion
 
         #region Testing
@@ -49,9 +28,10 @@ namespace WaywardGamers.KParser.Monad
         {
             List<List<string>> scannedStrings = GetScannedStrings();
 
+
             foreach (List<string> scannedString in scannedStrings)
             {
-                List<Token> tokenizedString = Lexer.Tokenize(scannedString);
+                List<TokenTuple> tokenizedString = lexer.Tokenize(scannedString);
 
                 Parser.Parse(tokenizedString);
             }
@@ -73,11 +53,6 @@ namespace WaywardGamers.KParser.Monad
             }
 
             return stringList;
-        }
-
-        private void TestMonadParserOn(List<string> stringTokenList)
-        {
-            throw new NotImplementedException();
         }
         #endregion
     }
