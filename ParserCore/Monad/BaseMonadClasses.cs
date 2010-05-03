@@ -234,17 +234,17 @@ namespace WaywardGamers.KParser.Monad
         #endregion
 
         #region Properties/Info Functions
-        internal List<TInput> ConsumedInputSince(Consumed<TInput, TValue> previousConsumedResult)
+        internal List<TInput> InputConsumedSince(Consumed<TInput, TValue> previousConsumedResult)
         {
             return this.ParseResult.ConsumedInputSince(previousConsumedResult.ParseResult);
         }
 
-        internal List<TInput> ConsumedInputSince(ParseResult<TInput, TValue> previousParseResult)
+        internal List<TInput> InputConsumedSince(ParseResult<TInput, TValue> previousParseResult)
         {
             return this.ParseResult.ConsumedInputSince(previousParseResult);
         }
 
-        internal List<TInput> ConsumedInputSince(ParserState<TInput> previousState)
+        internal List<TInput> InputConsumedSince(ParserState<TInput> previousState)
         {
             return this.ParseResult.ConsumedInputSince(previousState);
         }
@@ -468,9 +468,9 @@ namespace WaywardGamers.KParser.Monad
         /// <typeparam name="T"></typeparam>
         /// <param name="p"></param>
         /// <returns></returns>
-        protected internal P<TInput, IEnumerable<TValue>> Many<TValue>(P<TInput, TValue> p)
+        protected internal P<TInput, IEnumerable<TValue>> Repeat0<TValue>(P<TInput, TValue> p)
         {
-            return Many1<TValue>(p).Or(Return(Enumerable.Empty<TValue>()));
+            return Repeat1<TValue>(p).Or(Return(Enumerable.Empty<TValue>()));
         }
 
         /// <summary>
@@ -479,10 +479,10 @@ namespace WaywardGamers.KParser.Monad
         /// <typeparam name="T"></typeparam>
         /// <param name="p"></param>
         /// <returns></returns>
-        protected internal P<TInput, IEnumerable<TValue>> Many1<TValue>(P<TInput, TValue> p)
+        protected internal P<TInput, IEnumerable<TValue>> Repeat1<TValue>(P<TInput, TValue> p)
         {
             return from x in p
-                   from xs in Many(p)
+                   from xs in Repeat0(p)
                    select Cons(x, xs);
         }
 
@@ -855,8 +855,9 @@ namespace WaywardGamers.KParser.Monad
     /// </summary>
     internal class TokenTuple
     {
-        internal TokenType TokenType;
-        internal string Text;
+        internal TokenType TokenType = TokenType.None;
+        internal int Position = 0;
+        internal string Text = string.Empty;
     }
 
     /// <summary>
@@ -864,6 +865,7 @@ namespace WaywardGamers.KParser.Monad
     /// </summary>
     internal enum TokenType
     {
+        None,
         Cover,
         MagicBurst,
         Bust,
