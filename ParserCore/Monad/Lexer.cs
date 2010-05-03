@@ -73,53 +73,27 @@ namespace WaywardGamers.KParser.Monad
     internal static class LexerUtilityExtensions
     {
         /// <summary>
-        /// If the new state consumed input, create a token from the consumed input and token
-        /// type and add it to the supplied token list.
+        /// If the parse succeeded and consumed input, create a token that indicates
+        /// the result and contains the text and position of the consumed input.
+        /// If the parse was not successful, returns a default TokenTuple
+        /// (TokenType=None).
         /// </summary>
-        /// <param name="newState">The state after the parsing of the token.</param>
-        /// <param name="tokenList">The list of tokens to add the new Token to.</param>
-        /// <param name="startingState">The state prior to the parsing of the token.</param>
-        /// <returns>Returns the newState object to allow for sequential function flow.</returns>
-        private static Consumed<string, TokenType> AppendToken(this Consumed<string, TokenType> newState,
-            List<TokenTuple> tokenList, ParserState<string> startingState)
+        /// <param name="newState">The state after a successful parse.</param>
+        /// <param name="startingState">The state before the parse began.</param>
+        /// <returns>Returns a TokenTuple containing the token type, text and position.</returns>
+        internal static TokenTuple CreateToken(this Consumed<string, TokenType> newState,
+            ParserState<string> startingState)
         {
-            if (newState.HasConsumedInput)
+            TokenTuple tok = default(TokenTuple);
+
+            if ((newState.HasConsumedInput) && (newState.ParseResult.Succeeded))
             {
-                tokenList.Add(
-                    new TokenTuple()
-                    {
-                        TokenType = newState.ParseResult.Result,
-                        Text = ConstructString(newState.ConsumedInputSince(startingState))
-                    });
+                tok.TokenType = newState.ParseResult.Result;
+                tok.Position = startingState.Position;
+                tok.Text = ConstructString(newState.InputConsumedSince(startingState));
             }
 
-            return newState;
-        }
-
-        /// <summary>
-        /// Same as above, but allowing for a ParseResult as the starting state.
-        /// </summary>
-        /// <param name="newState"></param>
-        /// <param name="tokenList"></param>
-        /// <param name="startingState"></param>
-        /// <returns></returns>
-        private static Consumed<string, TokenType> AppendToken(this Consumed<string, TokenType> newState,
-            List<TokenTuple> tokenList, ParseResult<string, TokenType> startingState)
-        {
-            return newState.AppendToken(tokenList, startingState.RemainingInput);
-        }
-
-        /// <summary>
-        /// Same as above, but allowing for a Consumed object as the starting state.
-        /// </summary>
-        /// <param name="newState"></param>
-        /// <param name="tokenList"></param>
-        /// <param name="startingState"></param>
-        /// <returns></returns>
-        private static Consumed<string, TokenType> AppendToken(this Consumed<string, TokenType> newState,
-            List<TokenTuple> tokenList, Consumed<string, TokenType> startingState)
-        {
-            return newState.AppendToken(tokenList, startingState.ParseResult.RemainingInput);
+            return tok;
         }
 
         /// <summary>
