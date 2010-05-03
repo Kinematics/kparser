@@ -109,14 +109,14 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Completes action
-        internal static readonly Regex CastSpell    = new Regex(string.Format("^{0} cast(s)? {1}\\.$", name, spell));
-        internal static readonly Regex CastSpellOn  = new Regex(string.Format("^{0} cast(s)? {1} on {2}\\.$", name, spell, target));
-        internal static readonly Regex UseAbility   = new Regex(string.Format("^{0} use(s)? {1}\\.$", name, ability));
-        internal static readonly Regex UseAbilityOn = new Regex(string.Format("^{0} use(s)? {1} on {2}\\.$", name, ability, target));
-        internal static readonly Regex MissAbility  = new Regex(string.Format("^{0} use(s)? {1}, but miss(es)? {2}\\.$", name, ability, target));
-        internal static readonly Regex MissAbilityNoTarget = new Regex(string.Format("^{0} use(s)? {1}, but miss(es)?\\.$", name, ability, target));
-        internal static readonly Regex FailsCharm   = new Regex(string.Format("^{0} fail(s)? to charm {1}\\.$", name, target));
-        internal static readonly Regex UseItem      = new Regex(string.Format("^{0} use(s)? {1}\\.$", name, item));
+        internal static readonly Regex CastSpell    = new Regex(string.Format("^{0} casts? {1}\\.$", name, spell));
+        internal static readonly Regex CastSpellOn  = new Regex(string.Format("^{0} casts? {1} on {2}\\.$", name, spell, target));
+        internal static readonly Regex UseAbility   = new Regex(string.Format("^{0} uses? {1}\\.$", name, ability));
+        internal static readonly Regex UseAbilityOn = new Regex(string.Format("^{0} uses? {1} on {2}\\.$", name, ability, target));
+        internal static readonly Regex MissAbility  = new Regex(string.Format("^{0} uses? {1}, but miss(es)? {2}\\.$", name, ability, target));
+        internal static readonly Regex MissAbilityNoTarget = new Regex(string.Format("^{0} uses? {1}, but miss(es)?\\.$", name, ability, target));
+        internal static readonly Regex FailsCharm   = new Regex(string.Format("^{0} fails? to charm {1}\\.$", name, target));
+        internal static readonly Regex UseItem      = new Regex(string.Format("^{0} uses? {1}\\.$", name, item));
         // Corsair stuff (6f/65|70/66):
         internal static readonly Regex UseCorRoll   = new Regex(string.Format("^{0} uses {1}\\. The total comes to {2}!$", name, ability, number));
         internal static readonly Regex TotalCorRoll = new Regex(string.Format("^The total for {0} increases to {1}!$", ability, number));
