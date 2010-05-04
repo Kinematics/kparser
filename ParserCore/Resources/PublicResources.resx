@@ -123,6 +123,9 @@
   <data name="All" xml:space="preserve">
     <value>All</value>
   </data>
+  <data name="BuffsLabel" xml:space="preserve">
+    <value>Buffs</value>
+  </data>
   <data name="CategoryLabel" xml:space="preserve">
     <value>Category:</value>
   </data>

@@ -79,6 +79,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Buffs.
+        /// </summary>
+        public static string BuffsLabel {
+            get {
+                return ResourceManager.GetString("BuffsLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Category:.
         /// </summary>
         public static string CategoryLabel {
