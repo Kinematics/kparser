@@ -108,6 +108,11 @@ namespace WaywardGamers.KParser.Plugin
             toolStrip.Items.Add(optionsMenu);
             toolStrip.Items.Add(editCustomMobFilter);
 
+
+            TrackedBuffNames.AddRange(accBuffNames);
+            TrackedBuffNames.AddRange(attBuffNames);
+            TrackedBuffNames.AddRange(hasteBuffNames);
+            
         }
         #endregion
 
@@ -164,6 +169,46 @@ namespace WaywardGamers.KParser.Plugin
         {
             mobsCombo.UpdateWithMobList(groupMobs, exclude0XPMobs);
         }
+        #endregion
+
+        #region Buff lists
+        List<string> accBuffNames = new List<string>() {
+                Resources.ParsedStrings.Focus,
+                Resources.ParsedStrings.Aggressor,
+                Resources.ParsedStrings.Sharpshot,
+                Resources.ParsedStrings.Souleater,
+                Resources.ParsedStrings.DiabolicEye,
+                Resources.ParsedStrings.Hasso,
+                Resources.ParsedStrings.Yonin,
+                Resources.ParsedStrings.Innin,
+                Resources.ParsedStrings.Madrigal1,
+                Resources.ParsedStrings.Madrigal2 };
+
+        List<string> attBuffNames = new List<string>() {
+                Resources.ParsedStrings.Minuet1,
+                Resources.ParsedStrings.Minuet2,
+                Resources.ParsedStrings.Minuet3,
+                Resources.ParsedStrings.Minuet4,
+                Resources.ParsedStrings.DrkRoll,
+                Resources.ParsedStrings.Berserk,
+                Resources.ParsedStrings.Warcry,
+                Resources.ParsedStrings.LastResort,
+                Resources.ParsedStrings.Souleater,
+                Resources.ParsedStrings.Hasso,
+                Resources.ParsedStrings.Defender,
+                Resources.ParsedStrings.Dia1,
+                Resources.ParsedStrings.Dia2,
+                Resources.ParsedStrings.Dia3,
+                Resources.ParsedStrings.Footwork };
+
+        List<string> hasteBuffNames = new List<string>() {
+                Resources.ParsedStrings.Haste,
+                Resources.ParsedStrings.March1,
+                Resources.ParsedStrings.March2,
+                Resources.ParsedStrings.Hasso,
+                Resources.ParsedStrings.HasteSamba };
+
+        internal List<string> TrackedBuffNames = new List<string>();
         #endregion
 
         #region Processing/display sections
@@ -234,19 +279,6 @@ namespace WaywardGamers.KParser.Plugin
 
             if (mobCount == 0)
                 return;
-
-            List<string> accBuffNames = new List<string>() {
-                Resources.ParsedStrings.Focus,
-                Resources.ParsedStrings.Aggressor,
-                Resources.ParsedStrings.Sharpshot,
-                Resources.ParsedStrings.Souleater,
-                Resources.ParsedStrings.DiabolicEye,
-                Resources.ParsedStrings.Hasso,
-                Resources.ParsedStrings.Yonin,
-                Resources.ParsedStrings.Innin,
-                Resources.ParsedStrings.Madrigal1,
-                Resources.ParsedStrings.Madrigal2 };
-
 
             var attackSet = from c in dataSet.Combatants
                             where (playerList.Contains(c.CombatantName) &&
@@ -462,24 +494,6 @@ namespace WaywardGamers.KParser.Plugin
 
             if (mobCount == 0)
                 return;
-
-            List<string> attBuffNames = new List<string>() {
-                Resources.ParsedStrings.Minuet1,
-                Resources.ParsedStrings.Minuet2,
-                Resources.ParsedStrings.Minuet3,
-                Resources.ParsedStrings.Minuet4,
-                Resources.ParsedStrings.DrkRoll,
-                Resources.ParsedStrings.Berserk,
-                Resources.ParsedStrings.Warcry,
-                Resources.ParsedStrings.LastResort,
-                Resources.ParsedStrings.Souleater,
-                Resources.ParsedStrings.Hasso,
-                Resources.ParsedStrings.Defender,
-                Resources.ParsedStrings.Dia1,
-                Resources.ParsedStrings.Dia2,
-                Resources.ParsedStrings.Dia3,
-                Resources.ParsedStrings.Footwork };
-
 
             var attackSet = from c in dataSet.Combatants
                             where (playerList.Contains(c.CombatantName) &&
@@ -950,14 +964,6 @@ namespace WaywardGamers.KParser.Plugin
             if (mobCount == 0)
                 return;
 
-            List<string> hasteBuffNames = new List<string>() {
-                Resources.ParsedStrings.Haste,
-                Resources.ParsedStrings.March1,
-                Resources.ParsedStrings.March2,
-                Resources.ParsedStrings.Hasso,
-                Resources.ParsedStrings.HasteSamba };
-
-
             var attackSet = from c in dataSet.Combatants
                             where (playerList.Contains(c.CombatantName) &&
                                    RegexUtility.ExcludedPlayer.Match(c.PlayerInfo).Success == false)
@@ -1087,7 +1093,7 @@ namespace WaywardGamers.KParser.Plugin
         #endregion
 
         #region Get Time-based info collected
-        private List<PlayerTimeIntervalSets> GetTimeIntervals(KPDatabaseDataSet dataSet, List<string> playerList)
+        internal List<PlayerTimeIntervalSets> GetTimeIntervals(KPDatabaseDataSet dataSet, List<string> playerList)
         {
             List<PlayerTimeIntervalSets> playerIntervals = new List<PlayerTimeIntervalSets>();
 
