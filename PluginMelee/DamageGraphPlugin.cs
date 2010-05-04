@@ -16,6 +16,8 @@ namespace WaywardGamers.KParser.Plugin
 
         ToolStripLabel playersLabel = new ToolStripLabel();
         ToolStripComboBox playersCombo = new ToolStripComboBox();
+        ToolStripLabel buffsLabel = new ToolStripLabel();
+        ToolStripComboBox buffsCombo = new ToolStripComboBox();
         ToolStripLabel mobsLabel = new ToolStripLabel();
         ToolStripComboBox mobsCombo = new ToolStripComboBox();
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
@@ -39,6 +41,8 @@ namespace WaywardGamers.KParser.Plugin
         int xAxisSize;
 
         Color[] indexOfColors = new Color[18];
+
+        BuffsByTimePlugin bbt = new BuffsByTimePlugin();
 
         // Localized strings
 
@@ -65,6 +69,11 @@ namespace WaywardGamers.KParser.Plugin
             playersCombo.DropDownStyle = ComboBoxStyle.DropDownList;
             playersCombo.MaxDropDownItems = 10;
             playersCombo.SelectedIndexChanged += new EventHandler(this.playersCombo_SelectedIndexChanged);
+
+            buffsCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+            buffsCombo.Enabled = false;
+            buffsCombo.MaxDropDownItems = 10;
+            buffsCombo.SelectedIndexChanged += new EventHandler(this.buffsCombo_SelectedIndexChanged);
 
             mobsCombo.DropDownStyle = ComboBoxStyle.DropDownList;
             mobsCombo.AutoSize = false;
@@ -110,6 +119,8 @@ namespace WaywardGamers.KParser.Plugin
 
             toolStrip.Items.Add(playersLabel);
             toolStrip.Items.Add(playersCombo);
+            toolStrip.Items.Add(buffsLabel);
+            toolStrip.Items.Add(buffsCombo);
             toolStrip.Items.Add(mobsLabel);
             toolStrip.Items.Add(mobsCombo);
             toolStrip.Items.Add(optionsMenu);
@@ -207,6 +218,54 @@ namespace WaywardGamers.KParser.Plugin
             mobsCombo.UpdateWithMobList(groupMobs, exclude0XPMobs);
         }
 
+        private void FillBuffsCombo()
+        {
+            string player = playersCombo.CBSelectedItem();
+            if (player != lsAll)
+            {
+                MobFilter mobFilter;
+                if (customMobSelection)
+                    mobFilter = MobXPHandler.Instance.CustomMobFilter;
+                else
+                    mobFilter = mobsCombo.CBGetMobFilter(exclude0XPMobs);
+
+                IEnumerable<SimpleInteractionGroup> playerBuffs = null;
+
+                using (var db = new Database.AccessToTheDatabase())
+                {
+                    playerBuffs = GetPlayerBuffs(db.Database, mobFilter, player);
+                }
+
+                if (playerBuffs == null)
+                    return;
+
+                List<string> buffStrings = new List<string>();
+                buffStrings.Add(Resources.PublicResources.None);
+
+                var targetBuffs = from b in playerBuffs
+                                  from c in b.IRows1
+                                  where c.IsActionIDNull() == false
+                                  select c.ActionsRow.ActionName;
+
+                var selfBuffs = from b in playerBuffs
+                                from c in b.IRows2
+                                where c.IsActionIDNull() == false
+                                select c.ActionsRow.ActionName;
+
+                var allBuffs = targetBuffs.Concat(selfBuffs).Distinct()
+                    .Where(b => bbt.TrackedBuffNames.Contains(b))
+                    .OrderBy(b => b);
+
+                buffStrings.AddRange(allBuffs);
+
+                buffsCombo.Items.Clear();
+                buffsCombo.Items.AddRange(buffStrings.ToArray());
+
+                buffsCombo.CBSelectIndex(0);
+
+            }
+        }
+
         /// <summary>
         /// Set up an array of colors to be used for individual lines
         /// in the graph.
@@ -215,8 +274,8 @@ namespace WaywardGamers.KParser.Plugin
         {
             indexOfColors = new Color[18] {
                 Color.Red,
-                Color.Purple,
                 Color.Blue,
+                Color.Purple,
                 Color.Green,
                 Color.Orange,
                 Color.Orchid,
@@ -426,6 +485,12 @@ namespace WaywardGamers.KParser.Plugin
             EnumerableRowCollection<AttackGroup> attackSet, MobFilter mobFilter,
             double[] xAxis)
         {
+            if (attackSet.Count() == 1)
+            {
+                ProcessSingleIndividualDamage(dataSet, attackSet, mobFilter, xAxis);
+                return;
+            }
+
             DateTime startTime;
             DateTime endTime;
 
@@ -449,6 +514,91 @@ namespace WaywardGamers.KParser.Plugin
                     zedGraphControl.GraphPane.AddCurve(label, ppl, indexOfColors[colorIndex], SymbolType.None);
 
                     colorIndex = (colorIndex + 1) % 18;
+                }
+            }
+
+            zedGraphControl.AxisChange();
+
+        }
+
+        private void ProcessSingleIndividualDamage(KPDatabaseDataSet dataSet,
+            EnumerableRowCollection<AttackGroup> attackSet, MobFilter mobFilter,
+            double[] xAxis)
+        {
+            DateTime startTime;
+            DateTime endTime;
+
+            GetTimeRange(attackSet, out startTime, out endTime);
+
+            int colorIndex = 0;
+
+            foreach (var player in attackSet)
+            {
+                if (player.AnyAction.Count() > 0)
+                {
+                    double[] playerDamage = GetIndividualSequenceDamage(player, startTime, endTime);
+                    string label = player.DisplayName;
+                    string buffName = buffsCombo.CBSelectedItem();
+
+                    if (showCumulativeDamage)
+                    {
+                        playerDamage = AccumulateDamage(playerDamage);
+                    }
+
+                    if (buffName != lsNone)
+                    {
+                        var intervals = bbt.GetTimeIntervals(dataSet, new List<string>() { player.Name });
+
+                        var playerIntervals = intervals.FirstOrDefault(i => i.PlayerName == player.Name);
+
+                        if (playerIntervals != null)
+                        {
+                            var actionIntervals = playerIntervals.TimeIntervalSets.FirstOrDefault(
+                                i => i.SetName == buffName);
+
+                            if ((actionIntervals != null) && (actionIntervals.TimeIntervals.Count > 0))
+                            {
+                                //double[] playerInDamage = new double[playerDamage.Length];
+                                double[] playerOutDamage = new double[playerDamage.Length];
+
+                                DateTime timePoint;
+
+                                for (int i = 0; i < playerDamage.Length; i++)
+                                {
+                                    timePoint = startTime.AddSeconds(i * xAxisScale);
+
+                                    if (!actionIntervals.Contains(timePoint))
+                                    {
+                                        //    playerInDamage[i] = playerDamage[i];
+                                        //else
+                                        playerOutDamage[i] = playerDamage[i];
+
+                                    }
+                                }
+
+                                string label1 = label + " w/" + buffName;
+                                string label2 = label + " wo/" + buffName;
+
+                                PointPairList ppl2 = new PointPairList(xAxis, playerOutDamage);
+                                var li2 = zedGraphControl.GraphPane.AddCurve(label2, ppl2, Color.Red, SymbolType.None);
+                                li2.Line.Fill = new Fill(Color.Red, Color.Bisque);
+
+
+                                PointPairList ppl1 = new PointPairList(xAxis, playerDamage);
+                                var li1 = zedGraphControl.GraphPane.AddCurve(label1, ppl1, Color.Blue, SymbolType.None);
+                                li1.Line.Fill = new Fill(Color.Blue, Color.LightBlue);
+
+                                continue;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        PointPairList ppl = new PointPairList(xAxis, playerDamage);
+                        zedGraphControl.GraphPane.AddCurve(label, ppl, indexOfColors[colorIndex], SymbolType.None);
+
+                        colorIndex = (colorIndex + 1) % 18;
+                    }
                 }
             }
 
@@ -616,6 +766,34 @@ namespace WaywardGamers.KParser.Plugin
 
             return accumulatedDamage;
         }
+
+
+        private IEnumerable<SimpleInteractionGroup> GetPlayerBuffs(
+            KPDatabaseDataSet dataSet, MobFilter mobFilter, string playerName)
+        {
+            var buffSet = from c in dataSet.Combatants
+                          where c.CombatantName == playerName
+                          select new SimpleInteractionGroup
+                          {
+                              Name = c.CombatantName,
+                              DisplayName = c.CombatantNameOrJobName,
+                              IRows1 = from n in c.GetInteractionsRowsByTargetCombatantRelation()
+                                       where (n.IsBattleIDNull() == false &&
+                                              (mobFilter.CheckFilterMobTarget(n) == true ||
+                                               n.BattlesRow.DefaultBattle == true)) &&
+                                              (AidType)n.AidType == AidType.Enhance
+                                       select n,
+                              IRows2 = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                       where (n.IsBattleIDNull() == false &&
+                                              (mobFilter.CheckFilterMobTarget(n) == true ||
+                                               n.BattlesRow.DefaultBattle == true)) &&
+                                              n.IsTargetIDNull() == true &&
+                                              (AidType)n.AidType == AidType.Enhance
+                                       select n
+                          };
+
+            return buffSet;
+        }
         #endregion
 
         #region Event Handlers
@@ -643,6 +821,20 @@ namespace WaywardGamers.KParser.Plugin
         }
 
         protected void playersCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (flagNoUpdate == false)
+                HandleDataset(null);
+
+            buffsCombo.Enabled = !(playersCombo.SelectedItem.ToString() == lsAll);
+            if (buffsCombo.Enabled)
+                FillBuffsCombo();
+            else
+                buffsCombo.Items.Clear();
+
+            flagNoUpdate = false;
+        }
+
+        protected void buffsCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (flagNoUpdate == false)
                 HandleDataset(null);
@@ -789,6 +981,7 @@ namespace WaywardGamers.KParser.Plugin
         protected override void LoadLocalizedUI()
         {
             playersLabel.Text = Resources.PublicResources.PlayersLabel;
+            buffsLabel.Text = Resources.PublicResources.BuffsLabel;
             mobsLabel.Text = Resources.PublicResources.MobsLabel;
 
             optionsMenu.Text = Resources.PublicResources.Options;
