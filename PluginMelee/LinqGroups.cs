@@ -158,7 +158,6 @@ namespace WaywardGamers.KParser.Plugin
         }
     }
 
-
     /// <summary>
     /// Class to handle a LINQ query result so that it can be passed
     /// as a function argument.
@@ -319,6 +318,14 @@ namespace WaywardGamers.KParser.Plugin
         public DebuffGroup()
         {
         }
+    }
+
+    internal class SimpleInteractionGroup
+    {
+        internal string Name { get; set; }
+        internal string DisplayName { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> IRows1 { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> IRows2 { get; set; }
     }
 
     internal class Debuffs
