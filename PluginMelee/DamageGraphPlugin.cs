@@ -223,17 +223,11 @@ namespace WaywardGamers.KParser.Plugin
             string player = playersCombo.CBSelectedItem();
             if (player != lsAll)
             {
-                MobFilter mobFilter;
-                if (customMobSelection)
-                    mobFilter = MobXPHandler.Instance.CustomMobFilter;
-                else
-                    mobFilter = mobsCombo.CBGetMobFilter(exclude0XPMobs);
-
                 IEnumerable<SimpleInteractionGroup> playerBuffs = null;
 
                 using (var db = new Database.AccessToTheDatabase())
                 {
-                    playerBuffs = GetPlayerBuffs(db.Database, mobFilter, player);
+                    playerBuffs = GetPlayerBuffs(db.Database, player);
                 }
 
                 if (playerBuffs == null)
@@ -262,7 +256,6 @@ namespace WaywardGamers.KParser.Plugin
                 buffsCombo.Items.AddRange(buffStrings.ToArray());
 
                 buffsCombo.CBSelectIndex(0);
-
             }
         }
 
@@ -383,7 +376,8 @@ namespace WaywardGamers.KParser.Plugin
 
             #region LINQ
             var attackSet = from c in dataSet.Combatants
-                            where (playerList.Contains(c.CombatantName) &&
+                            where ((EntityType)c.CombatantType == EntityType.Player &&
+                                   playerList.Contains(c.CombatantName) &&
                                    RegexUtility.ExcludedPlayer.Match(c.PlayerInfo).Success == false)
                             orderby c.CombatantType, c.CombatantName
                             select new AttackGroup
@@ -452,7 +446,10 @@ namespace WaywardGamers.KParser.Plugin
             if (showCollectiveDamage)
                 ProcessCollectiveDamage(dataSet, attackSet, mobFilter, xAxis);
             else
-                ProcessIndividualDamage(dataSet, attackSet, mobFilter, xAxis);
+                if (playerList.Count == 1)
+                    ProcessSingleIndividualDamage(dataSet, attackSet, mobFilter, xAxis);
+                else
+                    ProcessIndividualDamage(dataSet, attackSet, mobFilter, xAxis);
 
         }
 
@@ -485,12 +482,6 @@ namespace WaywardGamers.KParser.Plugin
             EnumerableRowCollection<AttackGroup> attackSet, MobFilter mobFilter,
             double[] xAxis)
         {
-            if (attackSet.Count() == 1)
-            {
-                ProcessSingleIndividualDamage(dataSet, attackSet, mobFilter, xAxis);
-                return;
-            }
-
             DateTime startTime;
             DateTime endTime;
 
@@ -769,7 +760,7 @@ namespace WaywardGamers.KParser.Plugin
 
 
         private IEnumerable<SimpleInteractionGroup> GetPlayerBuffs(
-            KPDatabaseDataSet dataSet, MobFilter mobFilter, string playerName)
+            KPDatabaseDataSet dataSet, string playerName)
         {
             var buffSet = from c in dataSet.Combatants
                           where c.CombatantName == playerName
@@ -779,16 +770,12 @@ namespace WaywardGamers.KParser.Plugin
                               DisplayName = c.CombatantNameOrJobName,
                               IRows1 = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                        where (n.IsBattleIDNull() == false &&
-                                              (mobFilter.CheckFilterMobTarget(n) == true ||
-                                               n.BattlesRow.DefaultBattle == true)) &&
-                                              (AidType)n.AidType == AidType.Enhance
+                                              (AidType)n.AidType == AidType.Enhance)
                                        select n,
                               IRows2 = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                        where (n.IsBattleIDNull() == false &&
-                                              (mobFilter.CheckFilterMobTarget(n) == true ||
-                                               n.BattlesRow.DefaultBattle == true)) &&
                                               n.IsTargetIDNull() == true &&
-                                              (AidType)n.AidType == AidType.Enhance
+                                              (AidType)n.AidType == AidType.Enhance)
                                        select n
                           };
 
