@@ -1,5 +1,12 @@
 KParser Change Log
 
+1.5.5 (May 05, 2010)
+* Improve correctness of event handling.
+* Improve speed of parsing (minor) and reparsing (significant).
+- Fix bug of out of memory conditions in the Damage Graph plugin when a parse has numerous players and covers a very long period of time (ie: months or more).  This restricts the resolution of the data.  1 second resolution is possible for up to one week's worth of time.  More than that gets scaled down.
++ Additional feature in the Damage Graph plugin.  If a single player is selected, you can access a list of all the buffs that they received.  For any buff selected, the graph will show the time periods when that particular buff was active on the player vs not having the buff.  Mob selection can be done as normal with this.
+
+
 1.5.4 (April 28, 2010)
 + Add crit rate to accuracy section of Buffs by Time.
 - Fix bug in counting min attack kill shots in ranged Extra Attacks.
