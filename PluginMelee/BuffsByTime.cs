@@ -112,6 +112,7 @@ namespace WaywardGamers.KParser.Plugin
             TrackedBuffNames.AddRange(accBuffNames);
             TrackedBuffNames.AddRange(attBuffNames);
             TrackedBuffNames.AddRange(hasteBuffNames);
+            TrackedBuffNames.AddRange(otherBuffNames);
             
         }
         #endregion
@@ -178,6 +179,7 @@ namespace WaywardGamers.KParser.Plugin
                 Resources.ParsedStrings.Sharpshot,
                 Resources.ParsedStrings.Souleater,
                 Resources.ParsedStrings.DiabolicEye,
+                Resources.ParsedStrings.RngRoll,
                 Resources.ParsedStrings.Hasso,
                 Resources.ParsedStrings.Yonin,
                 Resources.ParsedStrings.Innin,
@@ -207,6 +209,13 @@ namespace WaywardGamers.KParser.Plugin
                 Resources.ParsedStrings.March2,
                 Resources.ParsedStrings.Hasso,
                 Resources.ParsedStrings.HasteSamba };
+
+        /// <summary>
+        /// Not used in this plugin, but may be used by others.
+        /// </summary>
+        List<string> otherBuffNames = new List<string>() {
+                Resources.ParsedStrings.SamRoll,
+                 };
 
         internal List<string> TrackedBuffNames = new List<string>();
         #endregion
@@ -1136,6 +1145,8 @@ namespace WaywardGamers.KParser.Plugin
 
             CompileRollBuffs(Resources.ParsedStrings.RngRoll, altRollsRegex, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
             CompileRollBuffs(Resources.ParsedStrings.DrkRoll, altRollsRegex, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
+            CompileRollBuffs(Resources.ParsedStrings.RngRoll, altRollsRegex, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
+            CompileRollBuffs(Resources.ParsedStrings.SamRoll, altRollsRegex, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
 
 
             //CompileDebuffs("Gravity", TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
