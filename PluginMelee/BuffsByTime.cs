@@ -215,7 +215,10 @@ namespace WaywardGamers.KParser.Plugin
         /// </summary>
         List<string> otherBuffNames = new List<string>() {
                 Resources.ParsedStrings.SamRoll,
-                 };
+                Resources.ParsedStrings.WarRoll,
+                Resources.ParsedStrings.ThfRoll,
+                Resources.ParsedStrings.BlmRoll,
+        };
 
         internal List<string> TrackedBuffNames = new List<string>();
         #endregion
