@@ -26,7 +26,7 @@ namespace WaywardGamers.KParser.Plugin
         ToolStripMenuItem exclude0XPOption = new ToolStripMenuItem();
         ToolStripMenuItem customMobSelectionOption = new ToolStripMenuItem();
         ToolStripMenuItem cumulativeDamageOption = new ToolStripMenuItem();
-        ToolStripMenuItem collectiveDamageOption = new ToolStripMenuItem();
+        ToolStripMenuItem individualDamageOption = new ToolStripMenuItem();
 
         ToolStripButton editCustomMobFilter = new ToolStripButton();
 
@@ -35,7 +35,7 @@ namespace WaywardGamers.KParser.Plugin
         bool exclude0XPMobs = false;
         bool customMobSelection = false;
         bool showCumulativeDamage = true;
-        bool showCollectiveDamage = false;
+        bool showIndividualDamage = true;
 
         int xAxisScale;
         int xAxisSize;
@@ -97,9 +97,9 @@ namespace WaywardGamers.KParser.Plugin
 
             ToolStripSeparator aSeparator = new ToolStripSeparator();
 
-            collectiveDamageOption.CheckOnClick = true;
-            collectiveDamageOption.Checked = false;
-            collectiveDamageOption.Click += new EventHandler(collectiveDamageOption_Click);
+            individualDamageOption.CheckOnClick = true;
+            individualDamageOption.Checked = true;
+            individualDamageOption.Click += new EventHandler(individualDamageOption_Click);
 
             cumulativeDamageOption.CheckOnClick = true;
             cumulativeDamageOption.Checked = true;
@@ -109,7 +109,7 @@ namespace WaywardGamers.KParser.Plugin
             optionsMenu.DropDownItems.Add(exclude0XPOption);
             optionsMenu.DropDownItems.Add(customMobSelectionOption);
             optionsMenu.DropDownItems.Add(aSeparator);
-            optionsMenu.DropDownItems.Add(collectiveDamageOption);
+            optionsMenu.DropDownItems.Add(individualDamageOption);
             optionsMenu.DropDownItems.Add(cumulativeDamageOption);
 
 
@@ -444,13 +444,17 @@ namespace WaywardGamers.KParser.Plugin
             double[] xAxis = GetXAxis(attackSet);
             SetGraphLabels();
 
-            if (showCollectiveDamage)
-                ProcessCollectiveDamage(dataSet, attackSet, mobFilter, xAxis);
-            else
+            if (showIndividualDamage)
+            {
                 if (playerList.Count == 1)
                     ProcessSingleIndividualDamage(dataSet, attackSet, mobFilter, xAxis);
                 else
                     ProcessIndividualDamage(dataSet, attackSet, mobFilter, xAxis);
+            }
+            else
+            {
+                ProcessCollectiveDamage(dataSet, attackSet, mobFilter, xAxis);
+            }
 
         }
 
@@ -889,13 +893,13 @@ namespace WaywardGamers.KParser.Plugin
             flagNoUpdate = false;
         }
 
-        protected void collectiveDamageOption_Click(object sender, EventArgs e)
+        protected void individualDamageOption_Click(object sender, EventArgs e)
         {
             ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
             if (sentBy == null)
                 return;
 
-            showCollectiveDamage = sentBy.Checked;
+            showIndividualDamage = sentBy.Checked;
 
             if (flagNoUpdate == false)
                 HandleDataset(null);
@@ -986,7 +990,7 @@ namespace WaywardGamers.KParser.Plugin
             exclude0XPOption.Text = Resources.PublicResources.Exclude0XPMobs;
             customMobSelectionOption.Text = Resources.PublicResources.CustomMobSelection;
             editCustomMobFilter.Text = Resources.PublicResources.EditMobFilter;
-            collectiveDamageOption.Text = Resources.Combat.DamageGraphPluginCollectiveDamageOption;
+            individualDamageOption.Text = Resources.Combat.DamageGraphPluginIndividualDamageOption;
             cumulativeDamageOption.Text = Resources.Combat.DamageGraphPluginCumulativeDamageOption;
         }
 

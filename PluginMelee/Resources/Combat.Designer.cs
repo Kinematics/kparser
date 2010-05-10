@@ -349,15 +349,6 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Show Collective Damage.
-        /// </summary>
-        internal static string DamageGraphPluginCollectiveDamageOption {
-            get {
-                return ResourceManager.GetString("DamageGraphPluginCollectiveDamageOption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cumulative damage.
         /// </summary>
         internal static string DamageGraphPluginCumulativeDamage {
@@ -390,6 +381,15 @@ namespace WaywardGamers.KParser.Resources {
         internal static string DamageGraphPluginGraphTitleCumulative {
             get {
                 return ResourceManager.GetString("DamageGraphPluginGraphTitleCumulative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Individual Damage.
+        /// </summary>
+        internal static string DamageGraphPluginIndividualDamageOption {
+            get {
+                return ResourceManager.GetString("DamageGraphPluginIndividualDamageOption", resourceCulture);
             }
         }
         
