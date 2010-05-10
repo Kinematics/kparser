@@ -376,7 +376,8 @@ namespace WaywardGamers.KParser.Plugin
 
             #region LINQ
             var attackSet = from c in dataSet.Combatants
-                            where ((EntityType)c.CombatantType == EntityType.Player &&
+                            where (((EntityType)c.CombatantType == EntityType.Player ||
+                                    (EntityType)c.CombatantType == EntityType.Pet) &&
                                    playerList.Contains(c.CombatantName) &&
                                    RegexUtility.ExcludedPlayer.Match(c.PlayerInfo).Success == false)
                             orderby c.CombatantType, c.CombatantName
