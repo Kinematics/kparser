@@ -936,8 +936,8 @@
   <data name="BuffsByTimePluginTabName" xml:space="preserve">
     <value>Buffs by Time</value>
   </data>
-  <data name="DamageGraphPluginCollectiveDamageOption" xml:space="preserve">
-    <value>Show Collective Damage</value>
+  <data name="DamageGraphPluginIndividualDamageOption" xml:space="preserve">
+    <value>Show Individual Damage</value>
   </data>
   <data name="DamageGraphPluginCumulativeDamage" xml:space="preserve">
     <value>Cumulative damage</value>
