@@ -1160,7 +1160,7 @@ namespace WaywardGamers.KParser.Plugin
             CompileDebuffsWithOR(Resources.ParsedStrings.Dia1, Resources.ParsedStrings.Bio1,
                 TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
             CompileDebuffsWithOR(Resources.ParsedStrings.Dia2, Resources.ParsedStrings.Bio2,
-                TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
+                TimeSpan.FromMinutes(2), playerList, playerIntervals, dataSet);
             CompileDebuffsWithOR(Resources.ParsedStrings.Dia3, Resources.ParsedStrings.Bio3,
                 TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
 
