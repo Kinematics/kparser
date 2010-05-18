@@ -406,7 +406,8 @@ namespace WaywardGamers.KParser.Parsing
                         // Extra limits on JAs
                        (m.EventDetails.CombatDetails.ActionType == ActionType.Ability &&
                         string.IsNullOrEmpty(m.EventDetails.CombatDetails.ActionName) == false &&
-                        JobAbilities.TwoHourJAs.Contains(m.EventDetails.CombatDetails.ActionName) == false &&
+                        (JobAbilities.TwoHourJAs.Contains(m.EventDetails.CombatDetails.ActionName) == false ||
+                        m.EventDetails.CombatDetails.ActionName == Resources.ParsedStrings.Benediction) &&
                         JobAbilities.SelfUseJAs.Contains(m.EventDetails.CombatDetails.ActionName) == false)
                       )
                     );
