@@ -142,7 +142,7 @@ namespace WaywardGamers.KParser
         internal static readonly Regex Charmed     = new Regex(string.Format("^{0} (is|are) now under {1}'s control\\.$", target, name));
         internal static readonly Regex NotCharmed  = new Regex(string.Format("^{0} (is|are) no longer charmed\\.$", target));
         internal static readonly Regex Dispelled   = new Regex(string.Format("^{0}'s? {1} effect disappears!$", target, effect), RegexOptions.Compiled);
-        internal static readonly Regex RemoveStatus = new Regex(string.Format("^{0} successfully removes {1}'s {2}$", name, target, effect), RegexOptions.Compiled);
+        internal static readonly Regex RemoveStatus = new Regex(string.Format("^{0} successfully removes {1}'s {2}\\.$", name, target, effect), RegexOptions.Compiled);
         internal static readonly Regex ItemBuff    = new Regex(string.Format("^{0} receives? the effect of {1}\\.$", target, effect));
         internal static readonly Regex ItemCleanse = new Regex(string.Format("^{0} is no longer {1}\\.$", target, effect));
         internal static readonly Regex ReduceTP    = new Regex(string.Format("^{0}'s? TP is reduced( to 0)?\\.$", target));
