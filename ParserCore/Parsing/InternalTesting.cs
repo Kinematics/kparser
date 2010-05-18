@@ -24,8 +24,8 @@ namespace WaywardGamers.KParser.Parsing
 
         public void RunA2LineTest()
         {
-            string chatText1 = "3b,18,2d,80808050,00001ef4,000023b8,001d,00,01,02,00,Motenten uses Spectral Jig.";
-            string chatText2 = "3b,18,2d,80808050,00001ef4,000023b9,0019,00,01,02,00,No effect on Motenten.1";
+            string chatText1 = "40,00,00,8067ef18,00004bc9,000059fb,0026,00,01,02,00,The Vanguard Amputator casts Silena.";
+            string chatText2 = "40,00,00,8067ef18,00004bc9,000059fc,0050,00,01,02,00,The Vanguard Amputator successfully removes the Vanguard Amputator's silence.1";
             ChatLine chatLine1 = new ChatLine(chatText1);
             MessageLine msgLine1 = new MessageLine(chatLine1);
             ChatLine chatLine2 = new ChatLine(chatText2);
