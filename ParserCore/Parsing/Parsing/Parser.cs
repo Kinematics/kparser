@@ -1460,7 +1460,7 @@ namespace WaywardGamers.KParser.Parsing
                                 if ((msgCombatDetails.ActorName != string.Empty) &&
                                     (msgCombatDetails.ActionName != string.Empty))
                                 {
-                                    target = msgCombatDetails.AddTarget(msgCombatDetails.ActorName);
+                                    target = msgCombatDetails.AddTarget(msgCombatDetails.FullActorName);
                                     target.AidType = msgCombatDetails.AidType;
                                     message.SetParseSuccess(true);
                                 }
