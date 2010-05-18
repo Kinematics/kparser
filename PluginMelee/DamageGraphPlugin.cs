@@ -731,7 +731,11 @@ namespace WaywardGamers.KParser.Plugin
             foreach (var action in attackSet.AnyAction)
             {
                 int seconds = (int)(action.Timestamp - startTime).TotalSeconds;
-                playerSequenceDamage[seconds/xAxisScale] += action.Amount + action.SecondAmount;
+
+                if (seconds < 0)
+                    seconds = 0;
+
+                playerSequenceDamage[seconds / xAxisScale] += action.Amount + action.SecondAmount;
             }
 
             return playerSequenceDamage;
