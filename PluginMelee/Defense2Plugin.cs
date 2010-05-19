@@ -232,17 +232,16 @@ namespace WaywardGamers.KParser.Plugin
             {
                 using (AccessToTheDatabase db = new AccessToTheDatabase())
                 {
-                    //UpdateAccumulationA(db.Database);
-                    UpdateAccumulationB(db.Database, false);
+                    UpdateAccumulation(db.Database, false);
                 }
             }
             else
             {
-                //UpdateAccumulationA(datasetChanges);
-                UpdateAccumulationB(datasetChanges, true);
+                UpdateAccumulation(datasetChanges, true);
             }
         }
 
+        [Obsolete("Rewritten")]
         private void UpdateAccumulationA(KPDatabaseDataSet dataSet)
         {
             MobFilter mobFilter = mobsCombo.CBGetMobFilter(exclude0XPMobs);
@@ -790,7 +789,7 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
-        private void UpdateAccumulationB(KPDatabaseDataSet dataSet, bool newRowsOnly)
+        private void UpdateAccumulation(KPDatabaseDataSet dataSet, bool newRowsOnly)
         {
             if (dataSet == null)
                 return;
