@@ -984,4 +984,16 @@
   <data name="ExtraAttPluginRangedSectionTitle" xml:space="preserve">
     <value>Ranged Data</value>
   </data>
+  <data name="DefensePluginAbilityUsage" xml:space="preserve">
+    <value>Ability Usage</value>
+  </data>
+  <data name="DefensePluginAbilityUsageFormat1" xml:space="preserve">
+    <value>{0,-20}   {1,14}</value>
+  </data>
+  <data name="DefensePluginAbilityUsageFormat2" xml:space="preserve">
+    <value>{0}/{1}</value>
+  </data>
+  <data name="DefensePluginAbilityUsageHeader" xml:space="preserve">
+    <value>Ability                 Used/Prepared</value>
+  </data>
 </root>
