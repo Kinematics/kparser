@@ -11,6 +11,44 @@ using WaywardGamers.KParser.Database;
 
 namespace WaywardGamers.KParser.Plugin
 {
+    #region Local equality comparer class
+    internal class SameAbilityUse : IEqualityComparer<KPDatabaseDataSet.InteractionsRow>
+    {
+        #region IEqualityComparer<InteractionsRow> Members
+
+        public bool Equals(KPDatabaseDataSet.InteractionsRow x, KPDatabaseDataSet.InteractionsRow y)
+        {
+            if (x == null)
+                return false;
+
+            if (y == null)
+                return false;
+
+            if (x.IsActionIDNull())
+                return false;
+
+            if (y.IsActionIDNull())
+                return false;
+
+            if ((x.ActionsRow.ActionName == y.ActionsRow.ActionName) &&
+                (x.Timestamp == y.Timestamp))
+                return true;
+
+            return false;
+        }
+
+        public int GetHashCode(KPDatabaseDataSet.InteractionsRow obj)
+        {
+            if (obj.IsActionIDNull())
+                return obj.Timestamp.GetHashCode();
+
+            return (obj.ActionsRow.GetHashCode() ^ obj.Timestamp.GetHashCode());
+        }
+
+        #endregion
+    }
+    #endregion
+
     public class DefensePlugin : BasePluginControl
     {
         #region Member Variables
@@ -18,6 +56,7 @@ namespace WaywardGamers.KParser.Plugin
         IEnumerable<DefenseGroup> defenseSet = null;
         IEnumerable<DefenseGroup> counterSet = null;
         IEnumerable<DefenseGroup> utsuSet = null;
+        IEnumerable<KPDatabaseDataSet.InteractionsRow> abilityUseSet = null;
 
         int totalDamage;
         List<string> playerList = new List<string>();
@@ -54,6 +93,7 @@ namespace WaywardGamers.KParser.Plugin
         string lsSkillchainTitle;
         string lsOtherPhysicalTitle;
         string lsOtherMagicalTitle;
+        string lsAbilityUsageTitle;
 
         string lsPassiveDefensesTitle;
         string lsActiveDefensesTitle;
@@ -71,6 +111,7 @@ namespace WaywardGamers.KParser.Plugin
         string lsSkillchainHeader;
         string lsOtherPhysicalHeader;
         string lsOtherMagicalHeader;
+        string lsAbilityUsageHeader;
 
         string lsPassiveDefensesHeader;
         string lsActiveDefensesHeader;
@@ -88,6 +129,8 @@ namespace WaywardGamers.KParser.Plugin
         string lsSkillchainFormat;
         string lsOtherPhysicalFormat;
         string lsOtherMagicalFormat;
+        string lsAbilityUsageFormat1;
+        string lsAbilityUsageFormat2;
 
         string lsPassiveDefensesFormat;
         string lsActiveDefensesFormat;
@@ -802,6 +845,17 @@ namespace WaywardGamers.KParser.Plugin
 
             #region LINQ queries
 
+
+            abilityUseSet = from i in dataSet.Interactions
+                            where i.IsBattleIDNull() == false &&
+                                  i.BattlesRow.DefaultBattle == false &&
+                                  mobFilter.CheckFilterBattle(i.BattlesRow) == true &&
+                                  i.IsActorIDNull() == false &&
+                                  i.CombatantsRowByActorCombatantRelation.CombatantID == i.BattlesRow.EnemyID &&
+                                  (ActionType)i.ActionType == ActionType.Ability &&
+                                  i.IsActionIDNull() == false
+                            select i;
+
             if (mobFilter.AllMobs == false)
             {
                 // If we have any mob filter subset, get that data starting
@@ -859,7 +913,7 @@ namespace WaywardGamers.KParser.Plugin
                                                ((HarmType)q.HarmType == HarmType.Damage ||
                                                 (HarmType)q.HarmType == HarmType.Drain ||
                                                 (HarmType)q.HarmType == HarmType.Unknown) &&
-                                                q.Preparing == false)
+                                                q.Preparing == false )
                                           select q,
                                 WSkill = from q in ca
                                          where ((ActionType)q.ActionType == ActionType.Weaponskill &&
@@ -987,7 +1041,7 @@ namespace WaywardGamers.KParser.Plugin
                                                 ((HarmType)n.HarmType == HarmType.Damage ||
                                                  (HarmType)n.HarmType == HarmType.Drain ||
                                                  (HarmType)n.HarmType == HarmType.Unknown) &&
-                                                 n.Preparing == false)
+                                                 n.Preparing == false )
                                            select n,
                                  WSkill = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                                      .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
@@ -1533,16 +1587,20 @@ namespace WaywardGamers.KParser.Plugin
             {
                 case 0: // All
                     ProcessDamageTaken(ref sb, ref strModList);
+                    ProcessAbilityUsage(ref sb, ref strModList);
                     ProcessDefenses(ref sb, ref strModList);
                     ProcessUtsusemi(ref sb, ref strModList);
                     break;
                 case 1: // Damage Taken
                     ProcessDamageTaken(ref sb, ref strModList);
                     break;
-                case 2: // Defenses
+                case 2: // Ability Usage
+                    ProcessAbilityUsage(ref sb, ref strModList);
+                    break;
+                case 3: // Defenses
                     ProcessDefenses(ref sb, ref strModList);
                     break;
-                case 3: // Utsusemi
+                case 4: // Utsusemi
                     ProcessUtsusemi(ref sb, ref strModList);
                     break;
             }
@@ -2073,6 +2131,90 @@ namespace WaywardGamers.KParser.Plugin
         }
         #endregion
 
+        #region JA Uses
+        private void ProcessAbilityUsage(
+            ref StringBuilder sb, ref List<StringMods> strModList)
+        {
+            if ((abilityUseSet != null) && (abilityUseSet.Count() > 0))
+            {
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = lsAbilityUsageTitle.Length,
+                    Bold = true,
+                    Color = Color.Red
+                });
+                sb.Append(lsAbilityUsageTitle + "\n\n");
+
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = lsAbilityUsageHeader.Length,
+                    Bold = true,
+                    Underline = true,
+                    Color = Color.Black
+                });
+                sb.Append(lsAbilityUsageHeader + "\n");
+
+
+                var preppedAbilities = abilityUseSet.Where(i => i.Preparing == true);
+                var usedAbilities = abilityUseSet.Where(i => i.Preparing == false).Distinct(new SameAbilityUse());
+
+                var namedPrepped = from a in preppedAbilities
+                                   group a by a.ActionsRow.ActionName;
+
+                var namedUsed = from a in usedAbilities
+                                group a by a.ActionsRow.ActionName;
+
+                int totalPrep = 0;
+                int totalUsed = 0;
+
+                foreach (var prep in namedPrepped.OrderBy(a => a.Key))
+                {
+                    int countPrep = prep.Count();
+                    int countUsed = 0;
+
+                    var used = namedUsed.FirstOrDefault(u => u.Key == prep.Key);
+
+                    if (used != null)
+                        countUsed = used.Count();
+
+                    sb.AppendFormat(lsAbilityUsageFormat1,
+                        prep.Key,
+                        string.Format(lsAbilityUsageFormat2,
+                            countUsed,
+                            countPrep)
+                            );
+
+                    sb.Append("\n");
+
+                    totalPrep += countPrep;
+                    totalUsed += countUsed;
+                }
+
+                string tmp = string.Format(lsAbilityUsageFormat1,
+                    Resources.PublicResources.Total,
+                    string.Format(lsAbilityUsageFormat2,
+                        totalUsed,
+                        totalPrep)
+                        );
+
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = tmp.Length,
+                    Bold = true,
+                    Underline = false,
+                    Color = Color.Black
+                });
+                sb.Append(tmp + "\n");
+
+
+                sb.Append("\n\n");
+            }
+        }
+        #endregion
+
         #region Defenses
         private void ProcessDefenses(ref StringBuilder sb, ref List<StringMods> strModList)
         {
@@ -2426,6 +2568,7 @@ namespace WaywardGamers.KParser.Plugin
             categoryCombo.Items.Clear();
             categoryCombo.Items.Add(Resources.PublicResources.All);
             categoryCombo.Items.Add(Resources.Combat.DefensePluginCategoryDamageTaken);
+            categoryCombo.Items.Add(Resources.Combat.DefensePluginAbilityUsage);
             categoryCombo.Items.Add(Resources.Combat.DefensePluginCategoryDefenses);
             categoryCombo.Items.Add(Resources.Combat.DefensePluginCategoryUtsusemi);
             categoryCombo.SelectedIndex = 0;
@@ -2456,6 +2599,7 @@ namespace WaywardGamers.KParser.Plugin
             lsSkillchainTitle = Resources.Combat.DefensePluginTitleSkillchain;
             lsOtherPhysicalTitle = Resources.Combat.DefensePluginTitleOtherPhysical;
             lsOtherMagicalTitle = Resources.Combat.DefensePluginTitleOtherMagical;
+            lsAbilityUsageTitle = Resources.Combat.DefensePluginAbilityUsage;
 
             lsPassiveDefensesTitle = Resources.Combat.DefensePluginTitlePassiveDefenses;
             lsActiveDefensesTitle = Resources.Combat.DefensePluginTitleActiveDefenses;
@@ -2473,6 +2617,7 @@ namespace WaywardGamers.KParser.Plugin
             lsSkillchainHeader = Resources.Combat.DefensePluginHeaderSkillchain;
             lsOtherPhysicalHeader = Resources.Combat.DefensePluginHeaderOtherPhysical;
             lsOtherMagicalHeader = Resources.Combat.DefensePluginHeaderOtherMagical;
+            lsAbilityUsageHeader = Resources.Combat.DefensePluginAbilityUsageHeader;
 
             lsPassiveDefensesHeader = Resources.Combat.DefensePluginHeaderPassiveDefense;
             lsActiveDefensesHeader = Resources.Combat.DefensePluginHeaderActiveDefense;
@@ -2490,6 +2635,8 @@ namespace WaywardGamers.KParser.Plugin
             lsSkillchainFormat = Resources.Combat.DefensePluginFormatSkillchain;
             lsOtherPhysicalFormat = Resources.Combat.DefensePluginFormatOtherPhysical;
             lsOtherMagicalFormat = Resources.Combat.DefensePluginFormatOtherMagical;
+            lsAbilityUsageFormat1 = Resources.Combat.DefensePluginAbilityUsageFormat1;
+            lsAbilityUsageFormat2 = Resources.Combat.DefensePluginAbilityUsageFormat2;
 
             lsPassiveDefensesFormat = Resources.Combat.DefensePluginFormatPassiveDefense;
             lsActiveDefensesFormat = Resources.Combat.DefensePluginFormatActiveDefense;

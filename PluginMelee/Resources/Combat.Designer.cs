@@ -700,6 +700,42 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ability Usage.
+        /// </summary>
+        internal static string DefensePluginAbilityUsage {
+            get {
+                return ResourceManager.GetString("DefensePluginAbilityUsage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-20}   {1,14}.
+        /// </summary>
+        internal static string DefensePluginAbilityUsageFormat1 {
+            get {
+                return ResourceManager.GetString("DefensePluginAbilityUsageFormat1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}/{1}.
+        /// </summary>
+        internal static string DefensePluginAbilityUsageFormat2 {
+            get {
+                return ResourceManager.GetString("DefensePluginAbilityUsageFormat2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ability                 Used/Prepared.
+        /// </summary>
+        internal static string DefensePluginAbilityUsageHeader {
+            get {
+                return ResourceManager.GetString("DefensePluginAbilityUsageHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Damage Taken.
         /// </summary>
         internal static string DefensePluginCategoryDamageTaken {
