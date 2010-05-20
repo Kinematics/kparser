@@ -91,7 +91,7 @@ namespace WaywardGamers.KParser.Plugin
                             Name = c.CombatantNameOrJobName,
                             Buffs = from b in c.GetInteractionsRowsByActorCombatantRelation()
                                     where ((AidType)b.AidType == AidType.Enhance ||
-                                           (AidType)b.AidType == AidType.RemoveStatus ||
+                                           //(AidType)b.AidType == AidType.RemoveStatus ||
                                            (AidType)b.AidType == AidType.RemoveEnmity) &&
                                           b.Preparing == false &&
                                           b.IsActionIDNull() == false
@@ -275,7 +275,7 @@ namespace WaywardGamers.KParser.Plugin
                             Name = c.CombatantNameOrJobName,
                             Buffs = from b in c.GetInteractionsRowsByTargetCombatantRelation()
                                     where ((AidType)b.AidType == AidType.Enhance ||
-                                           (AidType)b.AidType == AidType.RemoveStatus ||
+                                           //(AidType)b.AidType == AidType.RemoveStatus ||
                                            (AidType)b.AidType == AidType.RemoveEnmity) &&
                                           b.Preparing == false &&
                                           b.IsActionIDNull() == false
