@@ -877,10 +877,10 @@
     <value>Player               Weaponskills</value>
   </data>
   <data name="DeathPluginDetailsFormat" xml:space="preserve">
-    <value>{0,-20}{1,14}{2,22}</value>
+    <value>{0,-20}{1,14}{2,26}</value>
   </data>
   <data name="DeathPluginDetailsHeader" xml:space="preserve">
-    <value>Player               Time of Death             Killed By</value>
+    <value>Player               Time of Death                 Killed By</value>
   </data>
   <data name="DeathPluginDetailsTitle" xml:space="preserve">
     <value>Details</value>
