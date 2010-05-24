@@ -430,7 +430,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0,-20}{1,14}{2,22}.
+        ///   Looks up a localized string similar to {0,-20}{1,14}{2,26}.
         /// </summary>
         internal static string DeathPluginDetailsFormat {
             get {
@@ -439,7 +439,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Player               Time of Death             Killed By.
+        ///   Looks up a localized string similar to Player               Time of Death                 Killed By.
         /// </summary>
         internal static string DeathPluginDetailsHeader {
             get {
