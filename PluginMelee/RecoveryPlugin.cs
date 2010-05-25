@@ -77,7 +77,6 @@ namespace WaywardGamers.KParser.Plugin
         Regex lsCuragaRegex;
         #endregion
 
-
         #region Constructor
         public RecoveryPlugin()
         {
@@ -186,29 +185,41 @@ namespace WaywardGamers.KParser.Plugin
             else
                 mobFilter = mobsCombo.CBGetMobFilter(exclude0XPMobs);
 
+            StringBuilder sb = new StringBuilder();
+            List<StringMods> strModList = new List<StringMods>();
+
             switch (categoryCombo.CBSelectedIndex())
             {
                 case 0:
                     // All
-                    ProcessDamage(dataSet, mobFilter);
-                    ProcessCuring(dataSet, mobFilter, true, true);
+                    ProcessDamage(dataSet, mobFilter, ref sb, strModList);
+                    ProcessCuring(dataSet, mobFilter, true, true, ref sb, strModList);
+                    ProcessStatus(dataSet, mobFilter, ref sb, strModList);
                     break;
                 case 1:
                     // Recovery
-                    ProcessDamage(dataSet, mobFilter);
+                    ProcessDamage(dataSet, mobFilter, ref sb, strModList);
                     break;
                 case 2:
                     // Curing
-                    ProcessCuring(dataSet, mobFilter, true, false);
+                    ProcessCuring(dataSet, mobFilter, true, false, ref sb, strModList);
                     break;
                 case 3:
                     // AverageCuring
-                    ProcessCuring(dataSet, mobFilter, false, true);
+                    ProcessCuring(dataSet, mobFilter, false, true, ref sb, strModList);
+                    break;
+                case 4:
+                    // Status healing
+                    ProcessStatus(dataSet, mobFilter, ref sb, strModList);
                     break;
             }
+
+            PushStrings(sb, strModList);
+
         }
 
-        private void ProcessDamage(KPDatabaseDataSet dataSet, MobFilter mobFilter)
+        private void ProcessDamage(KPDatabaseDataSet dataSet, MobFilter mobFilter,
+            ref StringBuilder sb, List<StringMods> strModList)
         {
             var playerData = from c in dataSet.Combatants
                              where (((EntityType)c.CombatantType == EntityType.Player) ||
@@ -216,52 +227,48 @@ namespace WaywardGamers.KParser.Plugin
                                     ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
                                     ((EntityType)c.CombatantType == EntityType.Fellow))
                              orderby c.CombatantType, c.CombatantName
-                             select new
+                              let targetInteractions = c.GetInteractionsRowsByTargetCombatantRelation().Where(a => mobFilter.CheckFilterMobBattle(a))
+                              let actorInteractions = c.GetInteractionsRowsByActorCombatantRelation().Where(a => mobFilter.CheckFilterMobBattle(a))
+                              select new
                              {
                                  Player = c.CombatantNameOrJobName,
-                                 PrimeDmgTaken = from dm in c.GetInteractionsRowsByTargetCombatantRelation()
+                                 PrimeDmgTaken = from dm in targetInteractions
                                                  where ((dm.HarmType == (byte)HarmType.Damage) ||
-                                                        (dm.HarmType == (byte)HarmType.Drain)) &&
-                                                        mobFilter.CheckFilterMobBattle(dm)
+                                                        (dm.HarmType == (byte)HarmType.Drain))
                                                  select dm.Amount,
-                                 SecondDmgTaken = from dm in c.GetInteractionsRowsByTargetCombatantRelation()
+                                 SecondDmgTaken = from dm in targetInteractions
                                                   where ((dm.SecondHarmType == (byte)HarmType.Damage) ||
-                                                         (dm.SecondHarmType == (byte)HarmType.Drain)) &&
-                                                        mobFilter.CheckFilterMobBattle(dm)
+                                                         (dm.SecondHarmType == (byte)HarmType.Drain))
                                                   select dm.SecondAmount,
-                                 PrimeDrain = from dr in c.GetInteractionsRowsByActorCombatantRelation()
+                                 PrimeDrain = from dr in actorInteractions
                                               where (dr.HarmType == (byte)HarmType.Drain) &&
                                                     mobFilter.CheckFilterMobBattle(dr)
                                               select dr.Amount,
-                                 SecondDrain = from dr in c.GetInteractionsRowsByActorCombatantRelation()
+                                 SecondDrain = from dr in actorInteractions
                                                where ((dr.SecondHarmType == (byte)HarmType.Drain) ||
-                                                      (dr.SecondAidType == (byte)AidType.Recovery)) &&
-                                                      mobFilter.CheckFilterMobBattle(dr)
+                                                      (dr.SecondAidType == (byte)AidType.Recovery))
                                                select dr.SecondAmount,
-                                 Cured = from cr in c.GetInteractionsRowsByTargetCombatantRelation()
+                                 Cured = from cr in targetInteractions
                                          where ((cr.AidType == (byte)AidType.Recovery) &&
-                                                (cr.RecoveryType == (byte)RecoveryType.RecoverHP)) &&
-                                                mobFilter.CheckFilterMobBattle(cr)
+                                                (cr.RecoveryType == (byte)RecoveryType.RecoverHP))
                                          select cr.Amount,
-                                 Regen1 = from cr in c.GetInteractionsRowsByTargetCombatantRelation()
+                                 Regen1 = from cr in targetInteractions
                                           where ((cr.AidType == (byte)AidType.Enhance) &&
                                                  (cr.IsActionIDNull() == false) &&
-                                                 (cr.ActionsRow.ActionName == lsRegen1)) &&
-                                                 mobFilter.CheckFilterMobBattle(cr)
+                                                 (cr.ActionsRow.ActionName == lsRegen1))
                                           select cr,
-                                 Regen2 = from cr in c.GetInteractionsRowsByTargetCombatantRelation()
+                                 Regen2 = from cr in targetInteractions
                                           where ((cr.AidType == (byte)AidType.Enhance) &&
                                                  (cr.IsActionIDNull() == false) &&
-                                                 (cr.ActionsRow.ActionName == lsRegen2)) &&
-                                                 mobFilter.CheckFilterMobBattle(cr)
+                                                 (cr.ActionsRow.ActionName == lsRegen2))
                                           select cr,
-                                 Regen3 = from cr in c.GetInteractionsRowsByTargetCombatantRelation()
+                                 Regen3 = from cr in targetInteractions
                                           where ((cr.AidType == (byte)AidType.Enhance) &&
                                                  (cr.IsActionIDNull() == false) &&
-                                                 (cr.ActionsRow.ActionName == lsRegen3)) &&
-                                                 mobFilter.CheckFilterMobBattle(cr)
+                                                 (cr.ActionsRow.ActionName == lsRegen3))
                                           select cr,
                              };
+
 
             int dmgTaken = 0;
             int drainAmt = 0;
@@ -279,8 +286,6 @@ namespace WaywardGamers.KParser.Plugin
 
             bool placeHeader = false;
 
-            StringBuilder sb = new StringBuilder();
-
             if (playerData.Count() > 0)
             {
                 foreach (var player in playerData)
@@ -296,10 +301,24 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         if (placeHeader == false)
                         {
-                            AppendText(lsTitleRecovery, Color.Blue, true, false);
-                            AppendText("\n");
-                            AppendText(lsHeaderRecovery, Color.Black, true, true);
-                            AppendText("\n");
+                            strModList.Add(new StringMods
+                            {
+                                Start = sb.Length,
+                                Length = lsTitleRecovery.Length,
+                                Bold = true,
+                                Color = Color.Blue
+                            });
+                            sb.Append(lsTitleRecovery + "\n");
+
+                            strModList.Add(new StringMods
+                            {
+                                Start = sb.Length,
+                                Length = lsHeaderRecovery.Length,
+                                Bold = true,
+                                Underline = true,
+                                Color = Color.Black
+                            });
+                            sb.Append(lsHeaderRecovery + "\n");
 
                             placeHeader = true;
                         }
@@ -326,8 +345,6 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (placeHeader == true)
                 {
-                    AppendText(sb.ToString());
-
                     string totalString = string.Format(lsFormatRecovery,
                         lsTotal,
                         ttlDmgTaken,
@@ -337,14 +354,21 @@ namespace WaywardGamers.KParser.Plugin
                         ttlNumR2,
                         ttlNumR3);
 
-                    AppendText(totalString, Color.Black, true, false);
-                    AppendText("\n\n\n");
+                    strModList.Add(new StringMods
+                    {
+                        Start = sb.Length,
+                        Length = totalString.Length,
+                        Bold = true,
+                        Color = Color.Black
+                    });
+                    sb.Append(totalString + "\n\n\n");
                 }
             }
         }
 
         private void ProcessCuring(KPDatabaseDataSet dataSet, MobFilter mobFilter,
-            bool displayCures, bool displayAvgCures)
+            bool displayCures, bool displayAvgCures,
+            ref StringBuilder sb, List<StringMods> strModList)
         {
             var uberHealing = from c in dataSet.Combatants
                               where (((EntityType)c.CombatantType == EntityType.Player) ||
@@ -352,93 +376,82 @@ namespace WaywardGamers.KParser.Plugin
                                      ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
                                      ((EntityType)c.CombatantType == EntityType.Fellow))
                               orderby c.CombatantName
+                              let actorInteractions = c.GetInteractionsRowsByActorCombatantRelation().Where(a => mobFilter.CheckFilterMobBattle(a))
                               select new
                               {
                                   Player = c.CombatantNameOrJobName,
-                                  Cure1s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                  Cure1s = from cr in actorInteractions
                                            where (((AidType)cr.AidType == AidType.Recovery) &&
                                                   (cr.IsActionIDNull() == false) &&
                                                   ((cr.ActionsRow.ActionName == lsCure1) ||
                                                    (cr.ActionsRow.ActionName == lsPollen) ||
-                                                   (cr.ActionsRow.ActionName == lsHealingBreath1))) &&
-                                                  mobFilter.CheckFilterMobBattle(cr)
+                                                   (cr.ActionsRow.ActionName == lsHealingBreath1)))
                                            select cr.Amount,
-                                  Cure2s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                  Cure2s = from cr in actorInteractions
                                            where (((AidType)cr.AidType == AidType.Recovery) &&
                                                   (cr.IsActionIDNull() == false) &&
                                                   ((cr.ActionsRow.ActionName == lsCure2) ||
                                                    (cr.ActionsRow.ActionName == lsCWaltz1) ||
-                                                   (cr.ActionsRow.ActionName == lsHealingBreath2))) &&
-                                                  mobFilter.CheckFilterMobBattle(cr)
+                                                   (cr.ActionsRow.ActionName == lsHealingBreath2)))
                                            select cr.Amount,
-                                  Cure3s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                  Cure3s = from cr in actorInteractions
                                            where (((AidType)cr.AidType == AidType.Recovery) &&
                                                   (cr.IsActionIDNull() == false) &&
                                                   ((cr.ActionsRow.ActionName == lsCure3) ||
                                                    (cr.ActionsRow.ActionName == lsCWaltz2) ||
                                                    (cr.ActionsRow.ActionName == lsWildCarrot) ||
-                                                   (cr.ActionsRow.ActionName == lsHealingBreath3))) &&
-                                                  mobFilter.CheckFilterMobBattle(cr)
+                                                   (cr.ActionsRow.ActionName == lsHealingBreath3)))
                                            select cr.Amount,
-                                  Cure4s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                  Cure4s = from cr in actorInteractions
                                            where (((AidType)cr.AidType == AidType.Recovery) &&
                                                   (cr.IsActionIDNull() == false) &&
                                                   ((cr.ActionsRow.ActionName == lsCure4) ||
                                                    (cr.ActionsRow.ActionName == lsCWaltz3) ||
-                                                   (cr.ActionsRow.ActionName == lsMagicFruit))) &&
-                                                  mobFilter.CheckFilterMobBattle(cr)
+                                                   (cr.ActionsRow.ActionName == lsMagicFruit)))
                                            select cr.Amount,
-                                  Cure5s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                  Cure5s = from cr in actorInteractions
                                            where (((AidType)cr.AidType == AidType.Recovery) &&
                                                   (cr.IsActionIDNull() == false) &&
                                                   ((cr.ActionsRow.ActionName == lsCure5) ||
-                                                  (cr.ActionsRow.ActionName == lsCWaltz4))) &&
-                                                  mobFilter.CheckFilterMobBattle(cr)
+                                                  (cr.ActionsRow.ActionName == lsCWaltz4)))
                                            select cr.Amount,
-                                  Curagas = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                  Curagas = from cr in actorInteractions
                                             where (((AidType)cr.AidType == AidType.Recovery) &&
                                                    (cr.IsActionIDNull() == false) &&
                                                    ((lsCuragaRegex.Match(cr.ActionsRow.ActionName).Success) ||
                                                     (cr.ActionsRow.ActionName == lsHealingBreeze) ||
-                                                    (cr.ActionsRow.ActionName == lsDivineWaltz))) &&
-                                                  mobFilter.CheckFilterMobBattle(cr)
+                                                    (cr.ActionsRow.ActionName == lsDivineWaltz)))
                                             group cr by cr.Timestamp into crt
                                             select crt,
-                                  OtherCures = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                  OtherCures = from cr in actorInteractions
                                                where (((AidType)cr.AidType == AidType.Recovery) &&
                                                       (cr.IsActionIDNull() == false) &&
-                                                      (cr.ActionsRow.ActionName == lsChakra)) &&
-                                                  mobFilter.CheckFilterMobBattle(cr)
+                                                      (cr.ActionsRow.ActionName == lsChakra))
                                                select cr.Amount,
-                                  Reg1s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                  Reg1s = from cr in actorInteractions
                                           where (((AidType)cr.AidType == AidType.Enhance) &&
                                                  (cr.IsActionIDNull() == false) &&
-                                                 (cr.ActionsRow.ActionName == lsRegen1)) &&
-                                                  mobFilter.CheckFilterMobBattle(cr)
+                                                 (cr.ActionsRow.ActionName == lsRegen1))
                                           select cr,
-                                  Reg2s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                  Reg2s = from cr in actorInteractions
                                           where (((AidType)cr.AidType == AidType.Enhance) &&
                                                  (cr.IsActionIDNull() == false) &&
-                                                 (cr.ActionsRow.ActionName == lsRegen2)) &&
-                                                  mobFilter.CheckFilterMobBattle(cr)
+                                                 (cr.ActionsRow.ActionName == lsRegen2))
                                           select cr,
-                                  Reg3s = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                  Reg3s = from cr in actorInteractions
                                           where (((AidType)cr.AidType == AidType.Enhance) &&
                                                  (cr.IsActionIDNull() == false) &&
-                                                 (cr.ActionsRow.ActionName == lsRegen3)) &&
-                                                  mobFilter.CheckFilterMobBattle(cr)
+                                                 (cr.ActionsRow.ActionName == lsRegen3))
                                           select cr,
-                                  Spells = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                  Spells = from cr in actorInteractions
                                            where (((ActionType)cr.ActionType == ActionType.Spell) &&
                                                   ((AidType)cr.AidType == AidType.Recovery) &&
-                                                  ((RecoveryType)cr.RecoveryType == RecoveryType.RecoverHP)) &&
-                                                  mobFilter.CheckFilterMobBattle(cr)
+                                                  ((RecoveryType)cr.RecoveryType == RecoveryType.RecoverHP))
                                            select cr.Amount,
-                                  Ability = from cr in c.GetInteractionsRowsByActorCombatantRelation()
+                                  Ability = from cr in actorInteractions
                                             where (((ActionType)cr.ActionType == ActionType.Ability) &&
                                                    ((AidType)cr.AidType == AidType.Recovery) &&
-                                                   ((RecoveryType)cr.RecoveryType == RecoveryType.RecoverHP)) &&
-                                                  mobFilter.CheckFilterMobBattle(cr)
+                                                   ((RecoveryType)cr.RecoveryType == RecoveryType.RecoverHP))
                                             select cr.Amount
                               };
 
@@ -463,15 +476,12 @@ namespace WaywardGamers.KParser.Plugin
             double avgCg = 0;
             double avgAb = 0;
 
-            StringBuilder sb;
             bool placeHeader = false;
 
             if (uberHealing.Count() > 0)
             {
                 if (displayCures == true)
                 {
-                    sb = new StringBuilder();
-
                     foreach (var healer in uberHealing)
                     {
                         cureSpell = healer.Spells.Sum();
@@ -492,10 +502,24 @@ namespace WaywardGamers.KParser.Plugin
                         {
                             if (placeHeader == false)
                             {
-                                AppendText(lsTitleCuring, Color.Blue, true, false);
-                                AppendText("\n");
-                                AppendText(lsHeaderCuring, Color.Black, true, true);
-                                AppendText("\n");
+                                strModList.Add(new StringMods
+                                {
+                                    Start = sb.Length,
+                                    Length = lsTitleCuring.Length,
+                                    Bold = true,
+                                    Color = Color.Blue
+                                });
+                                sb.Append(lsTitleCuring + "\n");
+
+                                strModList.Add(new StringMods
+                                {
+                                    Start = sb.Length,
+                                    Length = lsHeaderCuring.Length,
+                                    Bold = true,
+                                    Underline = true,
+                                    Color = Color.Black
+                                });
+                                sb.Append(lsHeaderCuring + "\n");
 
                                 placeHeader = true;
                             }
@@ -518,17 +542,13 @@ namespace WaywardGamers.KParser.Plugin
                         }
                     }
 
-                    if (placeHeader == true)
-                    {
+                    if (placeHeader)
                         sb.Append("\n\n");
-                        AppendText(sb.ToString());
-                    }
                 }
 
                 if (displayAvgCures == true)
                 {
                     placeHeader = false;
-                    sb = new StringBuilder();
 
                     foreach (var healer in uberHealing)
                     {
@@ -562,10 +582,24 @@ namespace WaywardGamers.KParser.Plugin
                         {
                             if (placeHeader == false)
                             {
-                                AppendText(lsTitleAvgCuring, Color.Blue, true, false);
-                                AppendText("\n");
-                                AppendText(lsHeaderAvgCuring, Color.Black, true, true);
-                                AppendText("\n");
+                                strModList.Add(new StringMods
+                                {
+                                    Start = sb.Length,
+                                    Length = lsTitleAvgCuring.Length,
+                                    Bold = true,
+                                    Color = Color.Blue
+                                });
+                                sb.Append(lsTitleAvgCuring + "\n");
+
+                                strModList.Add(new StringMods
+                                {
+                                    Start = sb.Length,
+                                    Length = lsHeaderAvgCuring.Length,
+                                    Bold = true,
+                                    Underline = true,
+                                    Color = Color.Black
+                                });
+                                sb.Append(lsHeaderAvgCuring + "\n");
 
                                 placeHeader = true;
                             }
@@ -585,14 +619,17 @@ namespace WaywardGamers.KParser.Plugin
                         }
                     }
 
-                    if (placeHeader == true)
-                    {
+                    if (placeHeader)
                         sb.Append("\n\n");
-                        AppendText(sb.ToString());
-                    }
                 }
             }
         }
+
+        private void ProcessStatus(KPDatabaseDataSet dataSet, MobFilter mobFilter,
+            ref StringBuilder sb, List<StringMods> strModList)
+        {
+        }
+
         #endregion
 
         #region Event Handlers
@@ -695,6 +732,7 @@ namespace WaywardGamers.KParser.Plugin
             categoryCombo.Items.Add(Resources.Combat.RecoveryPluginCategoryRecovery);
             categoryCombo.Items.Add(Resources.Combat.RecoveryPluginCategoryCuring);
             categoryCombo.Items.Add(Resources.Combat.RecoveryPluginCategoryAvgCuring);
+            categoryCombo.Items.Add("Status Curing");
             categoryCombo.SelectedIndex = 0;
 
             UpdateMobList();
