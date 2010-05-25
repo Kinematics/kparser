@@ -297,6 +297,13 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
+        internal int UnknownDmg
+        {
+            get
+            {
+                return Unknown.Sum(d => d.Amount);
+            }
+        }
     }
 
     internal class MobGroup
