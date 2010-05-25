@@ -727,6 +727,51 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cura.
+        /// </summary>
+        public static string Cura {
+            get {
+                return ResourceManager.GetString("Cura", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Curaga.
+        /// </summary>
+        public static string Curaga1 {
+            get {
+                return ResourceManager.GetString("Curaga1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Curaga II.
+        /// </summary>
+        public static string Curaga2 {
+            get {
+                return ResourceManager.GetString("Curaga2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Curaga III.
+        /// </summary>
+        public static string Curaga3 {
+            get {
+                return ResourceManager.GetString("Curaga3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Curaga IV.
+        /// </summary>
+        public static string Curaga4 {
+            get {
+                return ResourceManager.GetString("Curaga4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to (Cura|Curaga( [IV]+)?).
         /// </summary>
         public static string CuragaRegex {
