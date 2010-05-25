@@ -1076,6 +1076,7 @@ namespace WaywardGamers.KParser.Plugin
                                            select n
                              };
 
+
                 counterSet = from c in dataSet.Combatants
                              where (((EntityType)c.CombatantType == EntityType.Player) ||
                                     ((EntityType)c.CombatantType == EntityType.Pet) ||
@@ -1096,7 +1097,6 @@ namespace WaywardGamers.KParser.Plugin
                                               where (ActionType)n.ActionType == ActionType.Retaliation
                                               select n,
                              };
-
 
 
                 utsuSet = from c in dataSet.Combatants
@@ -1548,6 +1548,14 @@ namespace WaywardGamers.KParser.Plugin
                     playerAccum.RTDmg += dmg;
                     playerAccum.TDmg += dmg;
                     playerAccum.TODmg += dmg;
+                }
+                #endregion
+
+                #region Unknown source
+                if (player.Unknown.Count() > 0)
+                {
+                    playerAccum.TDmg += player.UnknownDmg;
+                    playerAccum.TODmg += player.UnknownDmg;
                 }
                 #endregion
 
