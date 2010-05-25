@@ -38,14 +38,18 @@ namespace WaywardGamers.KParser.Plugin
         string lsTitleRecovery;
         string lsTitleCuring;
         string lsTitleAvgCuring;
+        string lsTitleStatusCuring;
 
         string lsHeaderRecovery;
         string lsHeaderCuring;
         string lsHeaderAvgCuring;
+        string lsHeaderStatusCuring;
 
         string lsFormatRecovery;
         string lsFormatCuring;
         string lsFormatAvgCuring;
+        string lsFormatStatusCuring;
+        string lsFormatStatusCuringSub;
 
         string lsTotal;
 
@@ -628,6 +632,93 @@ namespace WaywardGamers.KParser.Plugin
         private void ProcessStatus(KPDatabaseDataSet dataSet, MobFilter mobFilter,
             ref StringBuilder sb, List<StringMods> strModList)
         {
+            var statusHealing = from c in dataSet.Combatants
+                                where (((EntityType)c.CombatantType == EntityType.Player) ||
+                                       ((EntityType)c.CombatantType == EntityType.Pet) ||
+                                       ((EntityType)c.CombatantType == EntityType.Fellow))
+                                orderby c.CombatantType, c.CombatantName
+                                let actorInteractions = c.GetInteractionsRowsByActorCombatantRelation().Where(a => mobFilter.CheckFilterMobBattle(a))
+                                select new
+                                {
+                                    Player = c.CombatantNameOrJobName,
+                                    StatusRemovals = from cr in actorInteractions
+                                             where ((AidType)cr.AidType == AidType.RemoveStatus) &&
+                                                   (cr.IsActionIDNull() == false)
+                                             group cr by cr.ActionsRow.ActionName
+                                };
+
+            bool placeHeader = false;
+
+            foreach (var player in statusHealing)
+            {
+                if (player.StatusRemovals.Count() > 0)
+                {
+                    if (placeHeader == false)
+                    {
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = lsTitleStatusCuring.Length,
+                            Bold = true,
+                            Color = Color.Red
+                        });
+                        sb.Append(lsTitleStatusCuring + "\n\n");
+
+                        placeHeader = true;
+                    }
+
+                    strModList.Add(new StringMods
+                    {
+                        Start = sb.Length,
+                        Length = player.Player.Length,
+                        Bold = true,
+                        Color = Color.Blue
+                    });
+                    sb.Append(player.Player + "\n");
+
+                    strModList.Add(new StringMods
+                    {
+                        Start = sb.Length,
+                        Length = lsHeaderStatusCuring.Length,
+                        Bold = true,
+                        Underline = true,
+                        Color = Color.Black
+                    });
+                    sb.Append(lsHeaderStatusCuring + "\n");
+
+
+                    foreach (var statusSpell in player.StatusRemovals)
+                    {
+                        int spellUsed = statusSpell.Count();
+                        int spellNoEffect = statusSpell.Count(a => (FailedActionType)a.FailedActionType
+                            == FailedActionType.NoEffect);
+
+                        sb.AppendFormat(lsFormatStatusCuring,
+                            statusSpell.Key,
+                            spellUsed,
+                            spellNoEffect);
+                        sb.Append("\n");
+
+                        var effects = statusSpell.GroupBy(a =>
+                            a.IsSecondActionIDNull() ? "-unknown-" :
+                            a.ActionsRowBySecondaryActionNameRelation.ActionName);
+
+                        foreach (var effect in effects)
+                        {
+                            if (effect.Key != "-unknown-")
+                            {
+                                sb.AppendFormat(lsFormatStatusCuringSub,
+                                    effect.Key,
+                                    effect.Count());
+                                sb.Append("\n");
+                            }
+                        }
+                    }
+
+                    sb.Append("\n");
+                    
+                }
+            }
         }
 
         #endregion
@@ -755,6 +846,7 @@ namespace WaywardGamers.KParser.Plugin
             lsTitleRecovery = Resources.Combat.RecoveryPluginTitleRecovery;
             lsTitleCuring = Resources.Combat.RecoveryPluginTitleCuring;
             lsTitleAvgCuring = Resources.Combat.RecoveryPluginTitleAvgCuring;
+            lsTitleStatusCuring = "Status Curing";
 
 
             // Headers
@@ -762,12 +854,15 @@ namespace WaywardGamers.KParser.Plugin
             lsHeaderRecovery = Resources.Combat.RecoveryPluginHeaderRecovery;
             lsHeaderCuring = Resources.Combat.RecoveryPluginHeaderCuring;
             lsHeaderAvgCuring = Resources.Combat.RecoveryPluginHeaderAvgCuring;
+            lsHeaderStatusCuring = "Status               # Times Cast     # No Effect";
 
             // Formatters
 
             lsFormatRecovery = Resources.Combat.RecoveryPluginFormatRecovery;
             lsFormatCuring = Resources.Combat.RecoveryPluginFormatCuring;
             lsFormatAvgCuring = Resources.Combat.RecoveryPluginFormatAvgCuring;
+            lsFormatStatusCuring = "{0,-20} {1,12} {2,15}";
+            lsFormatStatusCuringSub = " - {0,-17} {1,12}";
 
             // Misc
 
