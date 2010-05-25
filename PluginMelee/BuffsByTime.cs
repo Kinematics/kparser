@@ -250,6 +250,7 @@ namespace WaywardGamers.KParser.Plugin
 
 
             List<PlayerTimeIntervalSets> intervalSets = GetTimeIntervals(dataSet, playerList);
+            //List<PlayerTimeIntervalSets> intervalSets = CollectTimeIntervals.GetTimeIntervals(dataSet, playerList);
 
             if (intervalSets == null)
                 return;
