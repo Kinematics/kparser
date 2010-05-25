@@ -1140,4 +1140,19 @@
   <data name="ResistRegex" xml:space="preserve">
     <value>^Resist!</value>
   </data>
+  <data name="Cura" xml:space="preserve">
+    <value>Cura</value>
+  </data>
+  <data name="Curaga1" xml:space="preserve">
+    <value>Curaga</value>
+  </data>
+  <data name="Curaga2" xml:space="preserve">
+    <value>Curaga II</value>
+  </data>
+  <data name="Curaga3" xml:space="preserve">
+    <value>Curaga III</value>
+  </data>
+  <data name="Curaga4" xml:space="preserve">
+    <value>Curaga IV</value>
+  </data>
 </root>
