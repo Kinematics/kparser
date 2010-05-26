@@ -39,17 +39,21 @@ namespace WaywardGamers.KParser.Plugin
         string lsTitleCuring;
         string lsTitleAvgCuring;
         string lsTitleStatusCuring;
+        string lsTitleStatusCured;
+        string lsTitleCuringCost;
 
         string lsHeaderRecovery;
         string lsHeaderCuring;
         string lsHeaderAvgCuring;
         string lsHeaderStatusCuring;
+        string lsHeaderCuringCost;
 
         string lsFormatRecovery;
         string lsFormatCuring;
         string lsFormatAvgCuring;
         string lsFormatStatusCuring;
         string lsFormatStatusCuringSub;
+        string lsFormatCuringCost;
 
         string lsTotal;
 
@@ -76,6 +80,11 @@ namespace WaywardGamers.KParser.Plugin
         string lsDivineWaltz;
         string lsHealingBreeze;
         string lsChakra;
+        string lsCura;
+        string lsCuraga1;
+        string lsCuraga2;
+        string lsCuraga3;
+        string lsCuraga4;
 
         string lsCuragaREString;
         Regex lsCuragaRegex;
@@ -198,7 +207,8 @@ namespace WaywardGamers.KParser.Plugin
                     // All
                     ProcessDamage(dataSet, mobFilter, ref sb, strModList);
                     ProcessCuring(dataSet, mobFilter, true, true, ref sb, strModList);
-                    ProcessStatus(dataSet, mobFilter, ref sb, strModList);
+                    ProcessStatusCuring(dataSet, mobFilter, ref sb, strModList);
+                    ProcessStatusCured(dataSet, mobFilter, ref sb, strModList);
                     break;
                 case 1:
                     // Recovery
@@ -214,7 +224,11 @@ namespace WaywardGamers.KParser.Plugin
                     break;
                 case 4:
                     // Status healing
-                    ProcessStatus(dataSet, mobFilter, ref sb, strModList);
+                    ProcessStatusCuring(dataSet, mobFilter, ref sb, strModList);
+                    break;
+                case 5:
+                    // Statuses healed
+                    ProcessStatusCured(dataSet, mobFilter, ref sb, strModList);
                     break;
             }
 
@@ -310,9 +324,9 @@ namespace WaywardGamers.KParser.Plugin
                                 Start = sb.Length,
                                 Length = lsTitleRecovery.Length,
                                 Bold = true,
-                                Color = Color.Blue
+                                Color = Color.Red
                             });
-                            sb.Append(lsTitleRecovery + "\n");
+                            sb.Append(lsTitleRecovery + "\n\n");
 
                             strModList.Add(new StringMods
                             {
@@ -380,44 +394,98 @@ namespace WaywardGamers.KParser.Plugin
                                      ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
                                      ((EntityType)c.CombatantType == EntityType.Fellow))
                               orderby c.CombatantName
-                              let actorInteractions = c.GetInteractionsRowsByActorCombatantRelation().Where(a => mobFilter.CheckFilterMobBattle(a))
+                              let actorInteractions = c.GetInteractionsRowsByActorCombatantRelation()
+                                        .Where(a => mobFilter.CheckFilterMobBattle(a) &&
+                                                    a.IsActionIDNull() == false &&
+                                                    ((AidType)a.AidType == AidType.Recovery ||
+                                                     (AidType)a.AidType == AidType.Enhance))
                               select new
                               {
                                   Player = c.CombatantNameOrJobName,
-                                  Cure1s = from cr in actorInteractions
-                                           where (((AidType)cr.AidType == AidType.Recovery) &&
-                                                  (cr.IsActionIDNull() == false) &&
-                                                  ((cr.ActionsRow.ActionName == lsCure1) ||
-                                                   (cr.ActionsRow.ActionName == lsPollen) ||
-                                                   (cr.ActionsRow.ActionName == lsHealingBreath1)))
+                                  Cure1 = from cr in actorInteractions
+                                          where cr.ActionsRow.ActionName == lsCure1
+                                          select cr.Amount,
+                                  Cure2 = from cr in actorInteractions
+                                          where cr.ActionsRow.ActionName == lsCure2
+                                          select cr.Amount,
+                                  Cure3 = from cr in actorInteractions
+                                          where cr.ActionsRow.ActionName == lsCure3
+                                          select cr.Amount,
+                                  Cure4 = from cr in actorInteractions
+                                          where cr.ActionsRow.ActionName == lsCure4
+                                          select cr.Amount,
+                                  Cure5 = from cr in actorInteractions
+                                          where cr.ActionsRow.ActionName == lsCure5
+                                          select cr.Amount,
+                                  Cura = from cr in actorInteractions
+                                         where cr.ActionsRow.ActionName == lsCura
+                                         group cr by cr.Timestamp into crt
+                                         select crt,
+                                  Curaga1 = from cr in actorInteractions
+                                            where cr.ActionsRow.ActionName == lsCuraga1
+                                            group cr by cr.Timestamp into crt
+                                            select crt,
+                                  Curaga2 = from cr in actorInteractions
+                                            where cr.ActionsRow.ActionName == lsCuraga2
+                                            group cr by cr.Timestamp into crt
+                                            select crt,
+                                  Curaga3 = from cr in actorInteractions
+                                            where cr.ActionsRow.ActionName == lsCuraga3
+                                            group cr by cr.Timestamp into crt
+                                            select crt,
+                                  Curaga4 = from cr in actorInteractions
+                                            where cr.ActionsRow.ActionName == lsCuraga4
+                                            group cr by cr.Timestamp into crt
+                                            select crt,
+                                  Pollen = from cr in actorInteractions
+                                           where cr.ActionsRow.ActionName == lsPollen
                                            select cr.Amount,
-                                  Cure2s = from cr in actorInteractions
-                                           where (((AidType)cr.AidType == AidType.Recovery) &&
-                                                  (cr.IsActionIDNull() == false) &&
-                                                  ((cr.ActionsRow.ActionName == lsCure2) ||
-                                                   (cr.ActionsRow.ActionName == lsCWaltz1) ||
-                                                   (cr.ActionsRow.ActionName == lsHealingBreath2)))
+                                  Carrot = from cr in actorInteractions
+                                           where cr.ActionsRow.ActionName == lsWildCarrot
                                            select cr.Amount,
-                                  Cure3s = from cr in actorInteractions
-                                           where (((AidType)cr.AidType == AidType.Recovery) &&
-                                                  (cr.IsActionIDNull() == false) &&
-                                                  ((cr.ActionsRow.ActionName == lsCure3) ||
-                                                   (cr.ActionsRow.ActionName == lsCWaltz2) ||
-                                                   (cr.ActionsRow.ActionName == lsWildCarrot) ||
-                                                   (cr.ActionsRow.ActionName == lsHealingBreath3)))
+                                  Fruit = from cr in actorInteractions
+                                          where cr.ActionsRow.ActionName == lsMagicFruit
+                                          select cr.Amount,
+                                  Breeze = from cr in actorInteractions
+                                           where cr.ActionsRow.ActionName == lsHealingBreeze
+                                           group cr by cr.Timestamp into crt
+                                           select crt,
+                                  Breath1 = from cr in actorInteractions
+                                            where cr.ActionsRow.ActionName == lsHealingBreath1
+                                            select cr.Amount,
+                                  Breath2 = from cr in actorInteractions
+                                            where cr.ActionsRow.ActionName == lsHealingBreath2
+                                            select cr.Amount,
+                                  Breath3 = from cr in actorInteractions
+                                            where cr.ActionsRow.ActionName == lsHealingBreath3
+                                            select cr.Amount,
+                                  Waltz1 = from cr in actorInteractions
+                                           where cr.ActionsRow.ActionName == lsCWaltz1
                                            select cr.Amount,
-                                  Cure4s = from cr in actorInteractions
-                                           where (((AidType)cr.AidType == AidType.Recovery) &&
-                                                  (cr.IsActionIDNull() == false) &&
-                                                  ((cr.ActionsRow.ActionName == lsCure4) ||
-                                                   (cr.ActionsRow.ActionName == lsCWaltz3) ||
-                                                   (cr.ActionsRow.ActionName == lsMagicFruit)))
+                                  Waltz2 = from cr in actorInteractions
+                                           where cr.ActionsRow.ActionName == lsCWaltz2
                                            select cr.Amount,
-                                  Cure5s = from cr in actorInteractions
-                                           where (((AidType)cr.AidType == AidType.Recovery) &&
-                                                  (cr.IsActionIDNull() == false) &&
-                                                  ((cr.ActionsRow.ActionName == lsCure5) ||
-                                                  (cr.ActionsRow.ActionName == lsCWaltz4)))
+                                  Waltz3 = from cr in actorInteractions
+                                           where cr.ActionsRow.ActionName == lsCWaltz3
+                                           select cr.Amount,
+                                  Waltz4 = from cr in actorInteractions
+                                           where cr.ActionsRow.ActionName == lsCWaltz4
+                                           select cr.Amount,
+                                  DivineWaltz = from cr in actorInteractions
+                                                where cr.ActionsRow.ActionName == lsDivineWaltz
+                                                group cr by cr.Timestamp into crt
+                                                select crt,
+                                  Chakra = from cr in actorInteractions
+                                           where cr.ActionsRow.ActionName == lsChakra
+                                           select cr.Amount,
+                                  Regen1 = from cr in actorInteractions
+                                           where cr.ActionsRow.ActionName == lsRegen1
+                                           select cr.Amount,
+                                  Regen2 = from cr in actorInteractions
+                                           where cr.ActionsRow.ActionName == lsRegen2
+                                           select cr.Amount,
+                                  Regen3 = from cr in actorInteractions
+                                           where cr.ActionsRow.ActionName == lsRegen3
                                            select cr.Amount,
                                   Curagas = from cr in actorInteractions
                                             where (((AidType)cr.AidType == AidType.Recovery) &&
@@ -427,26 +495,6 @@ namespace WaywardGamers.KParser.Plugin
                                                     (cr.ActionsRow.ActionName == lsDivineWaltz)))
                                             group cr by cr.Timestamp into crt
                                             select crt,
-                                  OtherCures = from cr in actorInteractions
-                                               where (((AidType)cr.AidType == AidType.Recovery) &&
-                                                      (cr.IsActionIDNull() == false) &&
-                                                      (cr.ActionsRow.ActionName == lsChakra))
-                                               select cr.Amount,
-                                  Reg1s = from cr in actorInteractions
-                                          where (((AidType)cr.AidType == AidType.Enhance) &&
-                                                 (cr.IsActionIDNull() == false) &&
-                                                 (cr.ActionsRow.ActionName == lsRegen1))
-                                          select cr,
-                                  Reg2s = from cr in actorInteractions
-                                          where (((AidType)cr.AidType == AidType.Enhance) &&
-                                                 (cr.IsActionIDNull() == false) &&
-                                                 (cr.ActionsRow.ActionName == lsRegen2))
-                                          select cr,
-                                  Reg3s = from cr in actorInteractions
-                                          where (((AidType)cr.AidType == AidType.Enhance) &&
-                                                 (cr.IsActionIDNull() == false) &&
-                                                 (cr.ActionsRow.ActionName == lsRegen3))
-                                          select cr,
                                   Spells = from cr in actorInteractions
                                            where (((ActionType)cr.ActionType == ActionType.Spell) &&
                                                   ((AidType)cr.AidType == AidType.Recovery) &&
@@ -490,15 +538,17 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         cureSpell = healer.Spells.Sum();
                         cureAbil = healer.Ability.Sum();
-                        numCure1 = healer.Cure1s.Count();
-                        numCure2 = healer.Cure2s.Count();
-                        numCure3 = healer.Cure3s.Count();
-                        numCure4 = healer.Cure4s.Count();
-                        numCure5 = healer.Cure5s.Count();
-                        numCuraga = healer.Curagas.Count();
-                        numRegen1 = healer.Reg1s.Count();
-                        numRegen2 = healer.Reg2s.Count();
-                        numRegen3 = healer.Reg3s.Count();
+                        numCure1 = healer.Cure1.Count() + healer.Pollen.Count() + healer.Breath1.Count();
+                        numCure2 = healer.Cure2.Count() + healer.Waltz1.Count() + healer.Breath2.Count();
+                        numCure3 = healer.Cure3.Count() + healer.Waltz2.Count() + healer.Breath3.Count() + healer.Carrot.Count();
+                        numCure4 = healer.Cure4.Count() + healer.Waltz3.Count() + healer.Fruit.Count();
+                        numCure5 = healer.Cure5.Count() + healer.Waltz4.Count();
+                        numCuraga = healer.Breeze.Count() + healer.DivineWaltz.Count() +
+                            healer.Cura.Count() + healer.Curaga1.Count() + healer.Curaga2.Count() +
+                            healer.Curaga3.Count() + healer.Curaga4.Count();
+                        numRegen1 = healer.Regen1.Count();
+                        numRegen2 = healer.Regen2.Count();
+                        numRegen3 = healer.Regen3.Count();
 
 
                         if ((cureSpell + cureAbil + numCure1 + numCure2 + numCure3 + numCure4 + numCure5 +
@@ -511,9 +561,9 @@ namespace WaywardGamers.KParser.Plugin
                                     Start = sb.Length,
                                     Length = lsTitleCuring.Length,
                                     Bold = true,
-                                    Color = Color.Blue
+                                    Color = Color.Red
                                 });
-                                sb.Append(lsTitleCuring + "\n");
+                                sb.Append(lsTitleCuring + "\n\n");
 
                                 strModList.Add(new StringMods
                                 {
@@ -547,7 +597,73 @@ namespace WaywardGamers.KParser.Plugin
                     }
 
                     if (placeHeader)
+                    {
                         sb.Append("\n\n");
+
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = lsTitleCuringCost.Length,
+                            Bold = true,
+                            Color = Color.Blue
+                        });
+                        sb.Append(lsTitleCuringCost + "\n\n");
+
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = lsHeaderCuringCost.Length,
+                            Bold = true,
+                            Underline = true,
+                            Color = Color.Black
+                        });
+                        sb.Append(lsHeaderCuringCost + "\n");
+
+
+                        // Estimate costs
+                        foreach (var healer in uberHealing)
+                        {
+                            int totalMP = 0;
+
+                            totalMP += healer.Cure1.Count() * 8;
+                            totalMP += healer.Cure2.Count() * 24;
+                            totalMP += healer.Cure3.Count() * 46;
+                            totalMP += healer.Cure4.Count() * 88;
+                            totalMP += healer.Cure5.Count() * 135;
+                            totalMP += healer.Regen1.Count() * 15;
+                            totalMP += healer.Regen2.Count() * 36;
+                            totalMP += healer.Regen3.Count() * 64;
+                            totalMP += healer.Pollen.Count() * 8;
+                            totalMP += healer.Carrot.Count() * 37;
+                            totalMP += healer.Fruit.Count() * 72;
+                            totalMP += healer.Breeze.Count() * 55;
+                            totalMP += healer.Cura.Count() * 30;
+                            totalMP += healer.Curaga1.Count() * 60;
+                            totalMP += healer.Curaga2.Count() * 120;
+                            totalMP += healer.Curaga3.Count() * 180;
+                            totalMP += healer.Curaga4.Count() * 260;
+
+                            int totalTP = 0;
+                            totalTP += healer.Waltz1.Count() * 20;
+                            totalTP += healer.Waltz2.Count() * 35;
+                            totalTP += healer.Waltz3.Count() * 50;
+                            totalTP += healer.Waltz4.Count() * 65;
+                            totalTP += healer.DivineWaltz.Count() * 40;
+
+
+                            if ((totalMP > 0) || (totalTP > 0))
+                            {
+                                sb.AppendFormat(lsFormatCuringCost,
+                                    healer.Player,
+                                    totalMP,
+                                    totalTP);
+
+                                sb.Append("\n");
+                            }
+                        }
+
+                        sb.Append("\n\n");
+                    }
                 }
 
                 if (displayAvgCures == true)
@@ -564,22 +680,35 @@ namespace WaywardGamers.KParser.Plugin
                         avgCg = 0;
                         avgAb = 0;
 
-                        if (healer.Cure1s.Count() > 0)
-                            avgC1 = healer.Cure1s.Average();
-                        if (healer.Cure2s.Count() > 0)
-                            avgC2 = healer.Cure2s.Average();
-                        if (healer.Cure3s.Count() > 0)
-                            avgC3 = healer.Cure3s.Average();
-                        if (healer.Cure4s.Count() > 0)
-                            avgC4 = healer.Cure4s.Average();
-                        if (healer.Cure5s.Count() > 0)
-                            avgC5 = healer.Cure5s.Average();
+                        var cure1s = healer.Cure1.Concat(healer.Pollen).Concat(healer.Breath1);
+                        if (cure1s.Count() > 0)
+                            avgC1 = cure1s.Average();
 
+                        var cure2s = healer.Cure2.Concat(healer.Waltz1).Concat(healer.Breath2);
+                        if (cure2s.Count() > 0)
+                            avgC2 = cure2s.Average();
+
+                        var cure3s = healer.Cure3.Concat(healer.Waltz2).Concat(healer.Breath3).Concat(healer.Carrot);
+                        if (cure3s.Count() > 0)
+                            avgC3 = cure3s.Average();
+
+                        var cure4s = healer.Cure4.Concat(healer.Waltz3).Concat(healer.Fruit);
+                        if (cure4s.Count() > 0)
+                            avgC4 = cure4s.Average();
+
+                        var cure5s = healer.Cure5.Concat(healer.Waltz4);
+                        if (cure5s.Count() > 0)
+                            avgC5 = cure5s.Average();
+
+                        var curagas = healer.Cura.Concat(healer.Curaga1).Concat(healer.Curaga2)
+                            .Concat(healer.Curaga3).Concat(healer.Curaga4).Concat(healer.Breeze)
+                            .Concat(healer.DivineWaltz);
                         if (healer.Curagas.Count() > 0)
                             avgCg = healer.Curagas.Average(c => c.Sum(i => i.Amount));
 
-                        if (healer.OtherCures.Count() > 0)
-                            avgAb = healer.OtherCures.Average();
+                        var otherCures = healer.Chakra;
+                        if (otherCures.Count() > 0)
+                            avgAb = otherCures.Average();
 
 
                         if ((avgAb + avgC1 + avgC2 + avgC3 + avgC4 + avgC5 + avgCg) > 0)
@@ -591,9 +720,9 @@ namespace WaywardGamers.KParser.Plugin
                                     Start = sb.Length,
                                     Length = lsTitleAvgCuring.Length,
                                     Bold = true,
-                                    Color = Color.Blue
+                                    Color = Color.Red
                                 });
-                                sb.Append(lsTitleAvgCuring + "\n");
+                                sb.Append(lsTitleAvgCuring + "\n\n");
 
                                 strModList.Add(new StringMods
                                 {
@@ -629,7 +758,7 @@ namespace WaywardGamers.KParser.Plugin
             }
         }
 
-        private void ProcessStatus(KPDatabaseDataSet dataSet, MobFilter mobFilter,
+        private void ProcessStatusCuring(KPDatabaseDataSet dataSet, MobFilter mobFilter,
             ref StringBuilder sb, List<StringMods> strModList)
         {
             var statusHealing = from c in dataSet.Combatants
@@ -715,12 +844,102 @@ namespace WaywardGamers.KParser.Plugin
                         }
                     }
 
-                    sb.Append("\n");
-                    
+                    sb.Append("\n\n");
                 }
             }
         }
 
+        private void ProcessStatusCured(KPDatabaseDataSet dataSet, MobFilter mobFilter,
+            ref StringBuilder sb, List<StringMods> strModList)
+        {
+            var statusHealing = from c in dataSet.Combatants
+                                where (((EntityType)c.CombatantType == EntityType.Player) ||
+                                       ((EntityType)c.CombatantType == EntityType.Pet) ||
+                                       ((EntityType)c.CombatantType == EntityType.Fellow))
+                                orderby c.CombatantType, c.CombatantName
+                                let targetInteractions = c.GetInteractionsRowsByTargetCombatantRelation().Where(a => mobFilter.CheckFilterMobBattle(a))
+                                select new
+                                {
+                                    Player = c.CombatantNameOrJobName,
+                                    StatusRemovals = from cr in targetInteractions
+                                                     where ((AidType)cr.AidType == AidType.RemoveStatus) &&
+                                                           (cr.IsActionIDNull() == false)
+                                                     group cr by cr.ActionsRow.ActionName
+                                };
+
+            bool placeHeader = false;
+
+            foreach (var player in statusHealing)
+            {
+                if (player.StatusRemovals.Count() > 0)
+                {
+                    if (placeHeader == false)
+                    {
+                        strModList.Add(new StringMods
+                        {
+                            Start = sb.Length,
+                            Length = lsTitleStatusCured.Length,
+                            Bold = true,
+                            Color = Color.Red
+                        });
+                        sb.Append(lsTitleStatusCured + "\n\n");
+
+                        placeHeader = true;
+                    }
+
+                    strModList.Add(new StringMods
+                    {
+                        Start = sb.Length,
+                        Length = player.Player.Length,
+                        Bold = true,
+                        Color = Color.Blue
+                    });
+                    sb.Append(player.Player + "\n");
+
+                    strModList.Add(new StringMods
+                    {
+                        Start = sb.Length,
+                        Length = lsHeaderStatusCuring.Length,
+                        Bold = true,
+                        Underline = true,
+                        Color = Color.Black
+                    });
+                    sb.Append(lsHeaderStatusCuring + "\n");
+
+
+                    foreach (var statusSpell in player.StatusRemovals)
+                    {
+                        int spellUsed = statusSpell.Count();
+                        int spellNoEffect = statusSpell.Count(a => (FailedActionType)a.FailedActionType
+                            == FailedActionType.NoEffect);
+
+                        sb.AppendFormat(lsFormatStatusCuring,
+                            statusSpell.Key,
+                            spellUsed,
+                            spellNoEffect);
+                        sb.Append("\n");
+
+                        var effects = statusSpell.GroupBy(a =>
+                            a.IsSecondActionIDNull() ? "-unknown-" :
+                            a.ActionsRowBySecondaryActionNameRelation.ActionName);
+
+                        foreach (var effect in effects)
+                        {
+                            if (effect.Key != "-unknown-")
+                            {
+                                sb.AppendFormat(lsFormatStatusCuringSub,
+                                    effect.Key,
+                                    effect.Count());
+                                sb.Append("\n");
+                            }
+                        }
+                    }
+
+                    sb.Append("\n");
+
+                }
+            }
+        }
         #endregion
 
         #region Event Handlers
@@ -824,6 +1043,7 @@ namespace WaywardGamers.KParser.Plugin
             categoryCombo.Items.Add(Resources.Combat.RecoveryPluginCategoryCuring);
             categoryCombo.Items.Add(Resources.Combat.RecoveryPluginCategoryAvgCuring);
             categoryCombo.Items.Add("Status Curing");
+            categoryCombo.Items.Add("Statuses Cured");
             categoryCombo.SelectedIndex = 0;
 
             UpdateMobList();
@@ -847,6 +1067,8 @@ namespace WaywardGamers.KParser.Plugin
             lsTitleCuring = Resources.Combat.RecoveryPluginTitleCuring;
             lsTitleAvgCuring = Resources.Combat.RecoveryPluginTitleAvgCuring;
             lsTitleStatusCuring = "Status Curing";
+            lsTitleStatusCured = "Statuses Cured";
+            lsTitleCuringCost = "Curing Costs (estimated)";
 
 
             // Headers
@@ -855,14 +1077,16 @@ namespace WaywardGamers.KParser.Plugin
             lsHeaderCuring = Resources.Combat.RecoveryPluginHeaderCuring;
             lsHeaderAvgCuring = Resources.Combat.RecoveryPluginHeaderAvgCuring;
             lsHeaderStatusCuring = "Status               # Times Cast     # No Effect";
+            lsHeaderCuringCost   = "Player                   MP Spent        TP Spent";
 
             // Formatters
 
             lsFormatRecovery = Resources.Combat.RecoveryPluginFormatRecovery;
             lsFormatCuring = Resources.Combat.RecoveryPluginFormatCuring;
             lsFormatAvgCuring = Resources.Combat.RecoveryPluginFormatAvgCuring;
-            lsFormatStatusCuring = "{0,-20} {1,12} {2,15}";
+            lsFormatStatusCuring = "{0,-20}{1,13}{2,16}";
             lsFormatStatusCuringSub = " - {0,-17} {1,12}";
+            lsFormatCuringCost = "{0,-20}{1,13}{2,16}";
 
             // Misc
 
@@ -892,6 +1116,11 @@ namespace WaywardGamers.KParser.Plugin
             lsHealingBreeze = Resources.ParsedStrings.HealingBreeze;
             lsCuragaREString = Resources.ParsedStrings.CuragaRegex;
             lsChakra = Resources.ParsedStrings.Chakra;
+            lsCura = Resources.ParsedStrings.Cura;
+            lsCuraga1 = Resources.ParsedStrings.Curaga1;
+            lsCuraga2 = Resources.ParsedStrings.Curaga2;
+            lsCuraga3 = Resources.ParsedStrings.Curaga3;
+            lsCuraga4 = Resources.ParsedStrings.Curaga4;
 
             lsCuragaRegex = new Regex(lsCuragaREString);
         }
