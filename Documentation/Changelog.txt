@@ -1,5 +1,23 @@
 KParser Change Log
 
+1.5.6 (May 26, 2010)
++ Add Hunter's Roll to accuracy buff section of Buffs by Time plugin.
++ Add Samurai Roll to tracked buffs on Damage Graph.
++ Put pets back in damage graph.
+* Change option from 'collective' to 'individual' in Damage Graph, to make purpose of option clearer.
+- Fix duration of Dia II for Buffs by Time.  Should be 2 minutes.
+- Fix issue of mobs not being properly copied/identified in certain fallback circumstances.  Should remove issue of mobs being listed in the Deaths tab.
+- Fix bug in parsing status removal messages.  Older parses will need to be reparsed.
+- Fix bug where Benediction didn't allow for multiple targets being hit.  This fixes certain instances of charmed players and/or mobs that shouldn't exist.
+- Fix bug in Damage Graph that occasionally caused an index out of bounds error.
++ Add ability usage counting to the Defense tab.  This allows you to see how many times the mob(s) used TP moves, even if the moves were absorbed by shadows or stunned and thus not reported in the Damage Taken section, or if the moves did no damage at all (self-cast buffs, etc).  Also useful for getting a count of moves that hit multiple targets which make it difficult to get a count from the damage section.  Note that the code is not optimized, and will slow down processing on this tab a bit.
+- Fix parsing of Sub-zero Smash spell.
+* Status removal spells are no longer listed on the Buffs page.  They've been moved to the Recovery tab.
+* Increase spacing on Killed By column of Deaths plugin for longer mob names.
+- Fix bug of Defense tab not reporting all damage taken.
++ Add reporting of estimated MP and TP spent on curing.
+
+
 1.5.5 (May 05, 2010)
 * Improve correctness of event handling.
 * Improve speed of parsing (minor) and reparsing (significant).
