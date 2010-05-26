@@ -2239,6 +2239,24 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Statuses Cured.
+        /// </summary>
+        internal static string RecoveryPluginCategoryStatusCured {
+            get {
+                return ResourceManager.GetString("RecoveryPluginCategoryStatusCured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status Curing.
+        /// </summary>
+        internal static string RecoveryPluginCategoryStatusCuring {
+            get {
+                return ResourceManager.GetString("RecoveryPluginCategoryStatusCuring", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0,-17}{1,10:f2}{2,13:f2}{3,13:f2}{4,13:f2}{5,13:f2}{6,13:f2}{7,14:f2}.
         /// </summary>
         internal static string RecoveryPluginFormatAvgCuring {
@@ -2257,11 +2275,38 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,13}{2,16}.
+        /// </summary>
+        internal static string RecoveryPluginFormatCuringCost {
+            get {
+                return ResourceManager.GetString("RecoveryPluginFormatCuringCost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0,-17}{1,9}{2,13}{3,11}{4,9}{5,11}{6,11}.
         /// </summary>
         internal static string RecoveryPluginFormatRecovery {
             get {
                 return ResourceManager.GetString("RecoveryPluginFormatRecovery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-20}{1,13}{2,16}.
+        /// </summary>
+        internal static string RecoveryPluginFormatStatusCures {
+            get {
+                return ResourceManager.GetString("RecoveryPluginFormatStatusCures", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  - {0,-17} {1,12}.
+        /// </summary>
+        internal static string RecoveryPluginFormatStatusCuresSub {
+            get {
+                return ResourceManager.GetString("RecoveryPluginFormatStatusCuresSub", resourceCulture);
             }
         }
         
@@ -2284,11 +2329,29 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Player                   MP Spent        TP Spent.
+        /// </summary>
+        internal static string RecoveryPluginHeaderCuringCost {
+            get {
+                return ResourceManager.GetString("RecoveryPluginHeaderCuringCost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Player           Dmg Taken   HP Drained   HP Cured   #Regen   #Regen 2   #Regen 3.
         /// </summary>
         internal static string RecoveryPluginHeaderRecovery {
             get {
                 return ResourceManager.GetString("RecoveryPluginHeaderRecovery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status               # Times Cast     # No Effect.
+        /// </summary>
+        internal static string RecoveryPluginHeaderStatusCuring {
+            get {
+                return ResourceManager.GetString("RecoveryPluginHeaderStatusCuring", resourceCulture);
             }
         }
         
@@ -2320,11 +2383,38 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Curing Costs (estimated).
+        /// </summary>
+        internal static string RecoveryPluginTitleCuringCost {
+            get {
+                return ResourceManager.GetString("RecoveryPluginTitleCuringCost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Damage Recovery.
         /// </summary>
         internal static string RecoveryPluginTitleRecovery {
             get {
                 return ResourceManager.GetString("RecoveryPluginTitleRecovery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Statuses Cured.
+        /// </summary>
+        internal static string RecoveryPluginTitleStatusCured {
+            get {
+                return ResourceManager.GetString("RecoveryPluginTitleStatusCured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status Curing.
+        /// </summary>
+        internal static string RecoveryPluginTitleStatusCuring {
+            get {
+                return ResourceManager.GetString("RecoveryPluginTitleStatusCuring", resourceCulture);
             }
         }
         

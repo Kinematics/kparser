@@ -996,4 +996,34 @@
   <data name="DefensePluginAbilityUsageHeader" xml:space="preserve">
     <value>Ability                 Used/Prepared</value>
   </data>
+  <data name="RecoveryPluginCategoryStatusCured" xml:space="preserve">
+    <value>Statuses Cured</value>
+  </data>
+  <data name="RecoveryPluginCategoryStatusCuring" xml:space="preserve">
+    <value>Status Curing</value>
+  </data>
+  <data name="RecoveryPluginFormatCuringCost" xml:space="preserve">
+    <value>{0,-20}{1,13}{2,16}</value>
+  </data>
+  <data name="RecoveryPluginFormatStatusCures" xml:space="preserve">
+    <value>{0,-20}{1,13}{2,16}</value>
+  </data>
+  <data name="RecoveryPluginFormatStatusCuresSub" xml:space="preserve">
+    <value> - {0,-17} {1,12}</value>
+  </data>
+  <data name="RecoveryPluginHeaderCuringCost" xml:space="preserve">
+    <value>Player                   MP Spent        TP Spent</value>
+  </data>
+  <data name="RecoveryPluginHeaderStatusCuring" xml:space="preserve">
+    <value>Status               # Times Cast     # No Effect</value>
+  </data>
+  <data name="RecoveryPluginTitleCuringCost" xml:space="preserve">
+    <value>Curing Costs (estimated)</value>
+  </data>
+  <data name="RecoveryPluginTitleStatusCured" xml:space="preserve">
+    <value>Statuses Cured</value>
+  </data>
+  <data name="RecoveryPluginTitleStatusCuring" xml:space="preserve">
+    <value>Status Curing</value>
+  </data>
 </root>
