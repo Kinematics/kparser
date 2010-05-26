@@ -1042,8 +1042,8 @@ namespace WaywardGamers.KParser.Plugin
             categoryCombo.Items.Add(Resources.Combat.RecoveryPluginCategoryRecovery);
             categoryCombo.Items.Add(Resources.Combat.RecoveryPluginCategoryCuring);
             categoryCombo.Items.Add(Resources.Combat.RecoveryPluginCategoryAvgCuring);
-            categoryCombo.Items.Add("Status Curing");
-            categoryCombo.Items.Add("Statuses Cured");
+            categoryCombo.Items.Add(Resources.Combat.RecoveryPluginCategoryStatusCuring);
+            categoryCombo.Items.Add(Resources.Combat.RecoveryPluginCategoryStatusCured);
             categoryCombo.SelectedIndex = 0;
 
             UpdateMobList();
@@ -1066,9 +1066,9 @@ namespace WaywardGamers.KParser.Plugin
             lsTitleRecovery = Resources.Combat.RecoveryPluginTitleRecovery;
             lsTitleCuring = Resources.Combat.RecoveryPluginTitleCuring;
             lsTitleAvgCuring = Resources.Combat.RecoveryPluginTitleAvgCuring;
-            lsTitleStatusCuring = "Status Curing";
-            lsTitleStatusCured = "Statuses Cured";
-            lsTitleCuringCost = "Curing Costs (estimated)";
+            lsTitleStatusCuring = Resources.Combat.RecoveryPluginTitleStatusCuring;
+            lsTitleStatusCured = Resources.Combat.RecoveryPluginTitleStatusCured;
+            lsTitleCuringCost = Resources.Combat.RecoveryPluginTitleCuringCost;
 
 
             // Headers
@@ -1076,17 +1076,17 @@ namespace WaywardGamers.KParser.Plugin
             lsHeaderRecovery = Resources.Combat.RecoveryPluginHeaderRecovery;
             lsHeaderCuring = Resources.Combat.RecoveryPluginHeaderCuring;
             lsHeaderAvgCuring = Resources.Combat.RecoveryPluginHeaderAvgCuring;
-            lsHeaderStatusCuring = "Status               # Times Cast     # No Effect";
-            lsHeaderCuringCost   = "Player                   MP Spent        TP Spent";
+            lsHeaderStatusCuring = Resources.Combat.RecoveryPluginHeaderStatusCuring;
+            lsHeaderCuringCost = Resources.Combat.RecoveryPluginHeaderCuringCost;
 
             // Formatters
 
             lsFormatRecovery = Resources.Combat.RecoveryPluginFormatRecovery;
             lsFormatCuring = Resources.Combat.RecoveryPluginFormatCuring;
             lsFormatAvgCuring = Resources.Combat.RecoveryPluginFormatAvgCuring;
-            lsFormatStatusCuring = "{0,-20}{1,13}{2,16}";
-            lsFormatStatusCuringSub = " - {0,-17} {1,12}";
-            lsFormatCuringCost = "{0,-20}{1,13}{2,16}";
+            lsFormatStatusCuring = Resources.Combat.RecoveryPluginFormatStatusCures;
+            lsFormatStatusCuringSub = Resources.Combat.RecoveryPluginFormatStatusCuresSub;
+            lsFormatCuringCost = Resources.Combat.RecoveryPluginFormatCuringCost;
 
             // Misc
 
