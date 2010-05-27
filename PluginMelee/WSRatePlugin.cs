@@ -19,6 +19,7 @@ namespace WaywardGamers.KParser.Plugin
         {
             internal string Name { get; set; }
             internal int WSCount { get; set; }
+            internal TimeSpan WSInterval { get; set; }
             internal int MHits { get; set; }
             internal int MMin { get; set; }
             internal int MMax { get; set; }
@@ -431,7 +432,6 @@ namespace WaywardGamers.KParser.Plugin
             PushStrings(sb, strModList);
         }
 
-
         private void ProcessTPReturns(IEnumerable<AttackGroup> attackSet, KPDatabaseDataSet dataSet,
             ref StringBuilder sb, ref List<StringMods> strModList)
         {
@@ -672,6 +672,16 @@ namespace WaywardGamers.KParser.Plugin
                 WSAggregates wsAgg = new WSAggregates();
                 wsAgg.Name = player.Name;
                 wsAgg.WSCount = numWSs;
+
+                if (numWSs > 1)
+                {
+                    DateTime firstWS = player.WSkill.Min(a => a.Timestamp);
+                    DateTime lastWS = player.WSkill.Max(a => a.Timestamp);
+
+                    double interval = (lastWS - firstWS).TotalSeconds;
+                    wsAgg.WSInterval = TimeSpan.FromSeconds(interval / (numWSs - 1));
+                }
+
 
                 WSDataList.Add(wsAgg);
 
@@ -962,7 +972,8 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     sb.AppendFormat(lsWSFormat,
                             player.Name,
-                            player.WSCount);
+                            player.WSCount,
+                            player.WSInterval.FormattedShortTimeString());
 
                     sb.Append("\n");
                 }
