@@ -2275,7 +2275,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0,-20}{1,8}{2,11:f2}{3,18:f2}{4,12}{5,15:f2}.
+        ///   Looks up a localized string similar to {0,-20}{1,8}{2,11:f2}{3,18:f2}{4,12}{5,14:f2}.
         /// </summary>
         internal static string RecoveryPluginFormatCuringCost {
             get {
