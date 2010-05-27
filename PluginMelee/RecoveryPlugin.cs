@@ -388,125 +388,22 @@ namespace WaywardGamers.KParser.Plugin
             bool displayCures, bool displayAvgCures,
             ref StringBuilder sb, List<StringMods> strModList)
         {
+            // linq query to get the basic rows with healing
             var uberHealing = from c in dataSet.Combatants
-                              where (((EntityType)c.CombatantType == EntityType.Player) ||
-                                     ((EntityType)c.CombatantType == EntityType.Pet) ||
-                                     ((EntityType)c.CombatantType == EntityType.CharmedMob) ||
-                                     ((EntityType)c.CombatantType == EntityType.Fellow))
-                              orderby c.CombatantName
-                              let actorInteractions = c.GetInteractionsRowsByActorCombatantRelation()
-                                        .Where(a => mobFilter.CheckFilterMobBattle(a) &&
-                                                    a.IsActionIDNull() == false &&
-                                                    ((AidType)a.AidType == AidType.Recovery ||
-                                                     (AidType)a.AidType == AidType.Enhance))
-                              select new
-                              {
-                                  Player = c.CombatantNameOrJobName,
-                                  Cure1 = from cr in actorInteractions
-                                          where cr.ActionsRow.ActionName == lsCure1
-                                          select cr.Amount,
-                                  Cure2 = from cr in actorInteractions
-                                          where cr.ActionsRow.ActionName == lsCure2
-                                          select cr.Amount,
-                                  Cure3 = from cr in actorInteractions
-                                          where cr.ActionsRow.ActionName == lsCure3
-                                          select cr.Amount,
-                                  Cure4 = from cr in actorInteractions
-                                          where cr.ActionsRow.ActionName == lsCure4
-                                          select cr.Amount,
-                                  Cure5 = from cr in actorInteractions
-                                          where cr.ActionsRow.ActionName == lsCure5
-                                          select cr.Amount,
-                                  Cura = from cr in actorInteractions
-                                         where cr.ActionsRow.ActionName == lsCura
-                                         group cr by cr.Timestamp into crt
-                                         select crt,
-                                  Curaga1 = from cr in actorInteractions
-                                            where cr.ActionsRow.ActionName == lsCuraga1
-                                            group cr by cr.Timestamp into crt
-                                            select crt,
-                                  Curaga2 = from cr in actorInteractions
-                                            where cr.ActionsRow.ActionName == lsCuraga2
-                                            group cr by cr.Timestamp into crt
-                                            select crt,
-                                  Curaga3 = from cr in actorInteractions
-                                            where cr.ActionsRow.ActionName == lsCuraga3
-                                            group cr by cr.Timestamp into crt
-                                            select crt,
-                                  Curaga4 = from cr in actorInteractions
-                                            where cr.ActionsRow.ActionName == lsCuraga4
-                                            group cr by cr.Timestamp into crt
-                                            select crt,
-                                  Pollen = from cr in actorInteractions
-                                           where cr.ActionsRow.ActionName == lsPollen
-                                           select cr.Amount,
-                                  Carrot = from cr in actorInteractions
-                                           where cr.ActionsRow.ActionName == lsWildCarrot
-                                           select cr.Amount,
-                                  Fruit = from cr in actorInteractions
-                                          where cr.ActionsRow.ActionName == lsMagicFruit
-                                          select cr.Amount,
-                                  Breeze = from cr in actorInteractions
-                                           where cr.ActionsRow.ActionName == lsHealingBreeze
-                                           group cr by cr.Timestamp into crt
-                                           select crt,
-                                  Breath1 = from cr in actorInteractions
-                                            where cr.ActionsRow.ActionName == lsHealingBreath1
-                                            select cr.Amount,
-                                  Breath2 = from cr in actorInteractions
-                                            where cr.ActionsRow.ActionName == lsHealingBreath2
-                                            select cr.Amount,
-                                  Breath3 = from cr in actorInteractions
-                                            where cr.ActionsRow.ActionName == lsHealingBreath3
-                                            select cr.Amount,
-                                  Waltz1 = from cr in actorInteractions
-                                           where cr.ActionsRow.ActionName == lsCWaltz1
-                                           select cr.Amount,
-                                  Waltz2 = from cr in actorInteractions
-                                           where cr.ActionsRow.ActionName == lsCWaltz2
-                                           select cr.Amount,
-                                  Waltz3 = from cr in actorInteractions
-                                           where cr.ActionsRow.ActionName == lsCWaltz3
-                                           select cr.Amount,
-                                  Waltz4 = from cr in actorInteractions
-                                           where cr.ActionsRow.ActionName == lsCWaltz4
-                                           select cr.Amount,
-                                  DivineWaltz = from cr in actorInteractions
-                                                where cr.ActionsRow.ActionName == lsDivineWaltz
-                                                group cr by cr.Timestamp into crt
-                                                select crt,
-                                  Chakra = from cr in actorInteractions
-                                           where cr.ActionsRow.ActionName == lsChakra
-                                           select cr.Amount,
-                                  Regen1 = from cr in actorInteractions
-                                           where cr.ActionsRow.ActionName == lsRegen1
-                                           select cr.Amount,
-                                  Regen2 = from cr in actorInteractions
-                                           where cr.ActionsRow.ActionName == lsRegen2
-                                           select cr.Amount,
-                                  Regen3 = from cr in actorInteractions
-                                           where cr.ActionsRow.ActionName == lsRegen3
-                                           select cr.Amount,
-                                  Curagas = from cr in actorInteractions
-                                            where (((AidType)cr.AidType == AidType.Recovery) &&
-                                                   (cr.IsActionIDNull() == false) &&
-                                                   ((lsCuragaRegex.Match(cr.ActionsRow.ActionName).Success) ||
-                                                    (cr.ActionsRow.ActionName == lsHealingBreeze) ||
-                                                    (cr.ActionsRow.ActionName == lsDivineWaltz)))
-                                            group cr by cr.Timestamp into crt
-                                            select crt,
-                                  Spells = from cr in actorInteractions
-                                           where (((ActionType)cr.ActionType == ActionType.Spell) &&
-                                                  ((AidType)cr.AidType == AidType.Recovery) &&
-                                                  ((RecoveryType)cr.RecoveryType == RecoveryType.RecoverHP))
-                                           select cr.Amount,
-                                  Ability = from cr in actorInteractions
-                                            where (((ActionType)cr.ActionType == ActionType.Ability) &&
-                                                   ((AidType)cr.AidType == AidType.Recovery) &&
-                                                   ((RecoveryType)cr.RecoveryType == RecoveryType.RecoverHP))
-                                            select cr.Amount
-                              };
-
+                               where (((EntityType)c.CombatantType == EntityType.Player) ||
+                                      ((EntityType)c.CombatantType == EntityType.Pet) ||
+                                      ((EntityType)c.CombatantType == EntityType.Fellow))
+                               orderby c.CombatantType, c.CombatantName
+                               select new
+                               {
+                                   Player = c.CombatantNameOrJobName,
+                                   Healing = from h in c.GetInteractionsRowsByActorCombatantRelation()
+                                             where mobFilter.CheckFilterMobBattle(h) &&
+                                                h.IsActionIDNull() == false &&
+                                                ((AidType)h.AidType == AidType.Recovery ||
+                                                 (AidType)h.AidType == AidType.Enhance)
+                                             select h
+                               };
 
             int cureSpell = 0;
             int cureAbil = 0;
@@ -534,22 +431,47 @@ namespace WaywardGamers.KParser.Plugin
             {
                 if (displayCures == true)
                 {
+                    
+                    StringBuilder costsSB2 = new StringBuilder();
+
                     foreach (var healer in uberHealing)
                     {
-                        cureSpell = healer.Spells.Sum();
-                        cureAbil = healer.Ability.Sum();
-                        numCure1 = healer.Cure1.Count() + healer.Pollen.Count() + healer.Breath1.Count();
-                        numCure2 = healer.Cure2.Count() + healer.Waltz1.Count() + healer.Breath2.Count();
-                        numCure3 = healer.Cure3.Count() + healer.Waltz2.Count() + healer.Breath3.Count() + healer.Carrot.Count();
-                        numCure4 = healer.Cure4.Count() + healer.Waltz3.Count() + healer.Fruit.Count();
-                        numCure5 = healer.Cure5.Count() + healer.Waltz4.Count();
-                        numCuraga = healer.Breeze.Count() + healer.DivineWaltz.Count() +
-                            healer.Cura.Count() + healer.Curaga1.Count() + healer.Curaga2.Count() +
-                            healer.Curaga3.Count() + healer.Curaga4.Count();
-                        numRegen1 = healer.Regen1.Count();
-                        numRegen2 = healer.Regen2.Count();
-                        numRegen3 = healer.Regen3.Count();
+                        var healLU = healer.Healing.ToLookup(a => a.ActionsRow.ActionName);
 
+                        numCure1 = healLU[lsCure1].Count() +
+                            healLU[lsPollen].Count() +
+                            healLU[lsHealingBreath1].Count();
+                        numCure2 = healLU[lsCure2].Count() +
+                            healLU[lsCWaltz1].Count() +
+                            healLU[lsHealingBreath2].Count();
+                        numCure3 = healLU[lsCure3].Count() +
+                            healLU[lsCWaltz2].Count() +
+                            healLU[lsHealingBreath3].Count()
+                            +healLU[lsWildCarrot].Count();
+                        numCure4 = healLU[lsCure4].Count() +
+                            healLU[lsCWaltz3].Count() +
+                            healLU[lsMagicFruit].Count();
+                        numCure5 = healLU[lsCure5].Count() +
+                            healLU[lsCWaltz4].Count();
+                        numCuraga = healLU[lsHealingBreeze].GroupBy(a => a.Timestamp).Count() +
+                            healLU[lsDivineWaltz].GroupBy(a => a.Timestamp).Count() +
+                            healLU[lsCura].GroupBy(a => a.Timestamp).Count() +
+                            healLU[lsCuraga1].GroupBy(a => a.Timestamp).Count() +
+                            healLU[lsCuraga2].GroupBy(a => a.Timestamp).Count() +
+                            healLU[lsCuraga3].GroupBy(a => a.Timestamp).Count() +
+                            healLU[lsCuraga4].GroupBy(a => a.Timestamp).Count();
+                        numRegen1 = healLU[lsRegen1].Count();
+                        numRegen2 = healLU[lsRegen2].Count();
+                        numRegen3 = healLU[lsRegen3].Count();
+
+                        var cures = healer.Healing.Where(a => (AidType)a.AidType == AidType.Recovery &&
+                            (RecoveryType)a.RecoveryType == RecoveryType.RecoverHP);
+
+                        var spellCures = cures.Where(a => (ActionType)a.ActionType == ActionType.Spell);
+                        var abilCures = cures.Where(a => (ActionType)a.ActionType == ActionType.Ability);
+
+                        cureSpell = spellCures.Sum(a => a.Amount);
+                        cureAbil = abilCures.Sum(a => a.Amount);
 
                         if ((cureSpell + cureAbil + numCure1 + numCure2 + numCure3 + numCure4 + numCure5 +
                             numRegen1 + numRegen2 + numRegen3 + numCuraga) > 0)
@@ -593,9 +515,81 @@ namespace WaywardGamers.KParser.Plugin
                                 numRegen3);
 
                             sb.Append("\n");
+
+
+                            // Costs of curing (generate text for this during this loop)
+                            int totalMP = 0;
+
+                            totalMP += healLU[lsCure1].Count() * 8;
+                            totalMP += healLU[lsCure2].Count() * 24;
+                            totalMP += healLU[lsCure3].Count() * 46;
+                            totalMP += healLU[lsCure4].Count() * 88;
+                            totalMP += healLU[lsCure5].Count() * 135;
+                            totalMP += healLU[lsPollen].Count() * 8;
+                            totalMP += healLU[lsWildCarrot].Count() * 37;
+                            totalMP += healLU[lsMagicFruit].Count() * 72;
+                            totalMP += healLU[lsHealingBreeze].Count() * 55;
+                            totalMP += healLU[lsCura].Count() * 30;
+                            totalMP += healLU[lsCuraga1].Count() * 60;
+                            totalMP += healLU[lsCuraga2].Count() * 120;
+                            totalMP += healLU[lsCuraga3].Count() * 180;
+                            totalMP += healLU[lsCuraga4].Count() * 260;
+
+                            int regenCost = 0;
+                            regenCost += numRegen1 * 15;
+                            regenCost += numRegen2 * 36;
+                            regenCost += numRegen3 * 64;
+
+                            totalMP += regenCost;
+
+                            int totalTP = 0;
+                            totalTP += healLU[lsCWaltz1].Count() * 20;
+                            totalTP += healLU[lsCWaltz2].Count() * 35;
+                            totalTP += healLU[lsCWaltz3].Count() * 50;
+                            totalTP += healLU[lsCWaltz4].Count() * 65;
+                            totalTP += healLU[lsDivineWaltz].Count() * 40;
+
+
+                            float mpCureEff = 0;
+                            float mpCureRegEff = 0;
+                            float tpCureEff = 0;
+
+                            if (totalMP > 0)
+                            {
+                                mpCureEff = (float)cureSpell / (totalMP - regenCost);
+
+                                int curesWithRegen = cureSpell +
+                                    numRegen1 * 125 +
+                                    numRegen2 * 240 +
+                                    numRegen3 * 400;
+
+                                mpCureRegEff = (float)curesWithRegen / totalMP;
+                            }
+
+                            if (totalTP > 0)
+                            {
+                                int tpCures = cureAbil - healLU[lsChakra].Sum(a => a.Amount);
+                                tpCureEff = (float)tpCures / totalTP;
+                            }
+
+                            if ((totalMP > 0) || (totalTP > 0))
+                            {
+                                costsSB2.AppendFormat(lsFormatCuringCost,
+                                    healer.Player,
+                                    totalMP,
+                                    mpCureEff,
+                                    mpCureRegEff,
+                                    totalTP,
+                                    tpCureEff);
+
+                                costsSB2.Append("\n");
+                            }
+
                         }
                     }
+                    
 
+                    // Insert costs calculations into the text stream here
                     if (placeHeader)
                     {
                         sb.Append("\n\n");
@@ -619,48 +613,7 @@ namespace WaywardGamers.KParser.Plugin
                         });
                         sb.Append(lsHeaderCuringCost + "\n");
 
-
-                        // Estimate costs
-                        foreach (var healer in uberHealing)
-                        {
-                            int totalMP = 0;
-
-                            totalMP += healer.Cure1.Count() * 8;
-                            totalMP += healer.Cure2.Count() * 24;
-                            totalMP += healer.Cure3.Count() * 46;
-                            totalMP += healer.Cure4.Count() * 88;
-                            totalMP += healer.Cure5.Count() * 135;
-                            totalMP += healer.Regen1.Count() * 15;
-                            totalMP += healer.Regen2.Count() * 36;
-                            totalMP += healer.Regen3.Count() * 64;
-                            totalMP += healer.Pollen.Count() * 8;
-                            totalMP += healer.Carrot.Count() * 37;
-                            totalMP += healer.Fruit.Count() * 72;
-                            totalMP += healer.Breeze.Count() * 55;
-                            totalMP += healer.Cura.Count() * 30;
-                            totalMP += healer.Curaga1.Count() * 60;
-                            totalMP += healer.Curaga2.Count() * 120;
-                            totalMP += healer.Curaga3.Count() * 180;
-                            totalMP += healer.Curaga4.Count() * 260;
-
-                            int totalTP = 0;
-                            totalTP += healer.Waltz1.Count() * 20;
-                            totalTP += healer.Waltz2.Count() * 35;
-                            totalTP += healer.Waltz3.Count() * 50;
-                            totalTP += healer.Waltz4.Count() * 65;
-                            totalTP += healer.DivineWaltz.Count() * 40;
-
-
-                            if ((totalMP > 0) || (totalTP > 0))
-                            {
-                                sb.AppendFormat(lsFormatCuringCost,
-                                    healer.Player,
-                                    totalMP,
-                                    totalTP);
-
-                                sb.Append("\n");
-                            }
-                        }
+                        sb.Append(costsSB2.ToString());
 
                         sb.Append("\n\n");
                     }
@@ -672,43 +625,38 @@ namespace WaywardGamers.KParser.Plugin
 
                     foreach (var healer in uberHealing)
                     {
-                        avgC1 = 0;
-                        avgC2 = 0;
-                        avgC3 = 0;
-                        avgC4 = 0;
-                        avgC5 = 0;
+                        var healLU = healer.Healing.ToLookup(a => a.ActionsRow.ActionName);
+
                         avgCg = 0;
                         avgAb = 0;
 
-                        var cure1s = healer.Cure1.Concat(healer.Pollen).Concat(healer.Breath1);
-                        if (cure1s.Count() > 0)
-                            avgC1 = cure1s.Average();
+                        avgC1 = healLU[lsCure1].Concat(healLU[lsPollen]).Concat(healLU[lsHealingBreath1])
+                            .Average(a => (int?)a.Amount) ?? 0.0;
 
-                        var cure2s = healer.Cure2.Concat(healer.Waltz1).Concat(healer.Breath2);
-                        if (cure2s.Count() > 0)
-                            avgC2 = cure2s.Average();
+                        avgC2 = healLU[lsCure2].Concat(healLU[lsHealingBreath2]).Concat(healLU[lsCWaltz1])
+                            .Average(a => (int?)a.Amount) ?? 0.0;
 
-                        var cure3s = healer.Cure3.Concat(healer.Waltz2).Concat(healer.Breath3).Concat(healer.Carrot);
-                        if (cure3s.Count() > 0)
-                            avgC3 = cure3s.Average();
+                        avgC3 = healLU[lsCure3].Concat(healLU[lsHealingBreath3]).Concat(healLU[lsCWaltz2]).Concat(healLU[lsWildCarrot])
+                            .Average(a => (int?)a.Amount) ?? 0.0;
 
-                        var cure4s = healer.Cure4.Concat(healer.Waltz3).Concat(healer.Fruit);
-                        if (cure4s.Count() > 0)
-                            avgC4 = cure4s.Average();
+                        avgC4 = healLU[lsCure4].Concat(healLU[lsMagicFruit]).Concat(healLU[lsCWaltz3])
+                            .Average(a => (int?)a.Amount) ?? 0.0;
 
-                        var cure5s = healer.Cure5.Concat(healer.Waltz4);
-                        if (cure5s.Count() > 0)
-                            avgC5 = cure5s.Average();
+                        avgC5 = healLU[lsCure5].Concat(healLU[lsCWaltz4])
+                            .Average(a => (int?)a.Amount) ?? 0.0;
 
-                        var curagas = healer.Cura.Concat(healer.Curaga1).Concat(healer.Curaga2)
-                            .Concat(healer.Curaga3).Concat(healer.Curaga4).Concat(healer.Breeze)
-                            .Concat(healer.DivineWaltz);
-                        if (healer.Curagas.Count() > 0)
-                            avgCg = healer.Curagas.Average(c => c.Sum(i => i.Amount));
 
-                        var otherCures = healer.Chakra;
-                        if (otherCures.Count() > 0)
-                            avgAb = otherCures.Average();
+                        avgCg = healLU[lsCura].GroupBy(a => a.Timestamp)
+                            .Concat(healLU[lsCuraga1].GroupBy(a => a.Timestamp))
+                            .Concat(healLU[lsCuraga2].GroupBy(a => a.Timestamp))
+                            .Concat(healLU[lsCuraga3].GroupBy(a => a.Timestamp))
+                            .Concat(healLU[lsCuraga4].GroupBy(a => a.Timestamp))
+                            .Concat(healLU[lsDivineWaltz].GroupBy(a => a.Timestamp))
+                            .Concat(healLU[lsHealingBreeze].GroupBy(a => a.Timestamp))
+                            .Average(a => a.Sum(b => (int?)b.Amount)) ?? 0.0;
+
+                        avgAb = healLU[lsChakra]
+                            .Average(a => (int?)a.Amount) ?? 0.0;
 
 
                         if ((avgAb + avgC1 + avgC2 + avgC3 + avgC4 + avgC5 + avgCg) > 0)

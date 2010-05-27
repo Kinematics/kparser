@@ -2275,7 +2275,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0,-20}{1,13}{2,16}.
+        ///   Looks up a localized string similar to {0,-20}{1,8}{2,11:f2}{3,18:f2}{4,12}{5,15:f2}.
         /// </summary>
         internal static string RecoveryPluginFormatCuringCost {
             get {
@@ -2329,7 +2329,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Player                   MP Spent        TP Spent.
+        ///   Looks up a localized string similar to Player              MP Spent   Cure Eff.   Cure+Regen Eff.   TP Spent   TP Cure Eff..
         /// </summary>
         internal static string RecoveryPluginHeaderCuringCost {
             get {
@@ -2383,7 +2383,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Curing Costs (estimated).
+        ///   Looks up a localized string similar to Curing Costs and Efficiency (estimated).
         /// </summary>
         internal static string RecoveryPluginTitleCuringCost {
             get {
