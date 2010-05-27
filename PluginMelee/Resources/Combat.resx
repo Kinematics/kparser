@@ -1003,7 +1003,7 @@
     <value>Status Curing</value>
   </data>
   <data name="RecoveryPluginFormatCuringCost" xml:space="preserve">
-    <value>{0,-20}{1,8}{2,11:f2}{3,18:f2}{4,12}{5,15:f2}</value>
+    <value>{0,-20}{1,8}{2,11:f2}{3,18:f2}{4,12}{5,14:f2}</value>
   </data>
   <data name="RecoveryPluginFormatStatusCures" xml:space="preserve">
     <value>{0,-20}{1,13}{2,16}</value>
