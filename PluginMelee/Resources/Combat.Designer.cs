@@ -2770,7 +2770,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0,-20}{1,13}.
+        ///   Looks up a localized string similar to {0,-20}{1,13}{2,16}.
         /// </summary>
         internal static string WSRatePluginWSFormat {
             get {
@@ -2779,7 +2779,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Player               Weaponskills.
+        ///   Looks up a localized string similar to Player               Weaponskills    Avg Interval.
         /// </summary>
         internal static string WSRatePluginWSHeader {
             get {

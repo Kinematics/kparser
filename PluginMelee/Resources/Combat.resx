@@ -871,10 +871,10 @@
     <value>Total Weaponskills</value>
   </data>
   <data name="WSRatePluginWSFormat" xml:space="preserve">
-    <value>{0,-20}{1,13}</value>
+    <value>{0,-20}{1,13}{2,16}</value>
   </data>
   <data name="WSRatePluginWSHeader" xml:space="preserve">
-    <value>Player               Weaponskills</value>
+    <value>Player               Weaponskills    Avg Interval</value>
   </data>
   <data name="DeathPluginDetailsFormat" xml:space="preserve">
     <value>{0,-20}{1,14}{2,26}</value>
