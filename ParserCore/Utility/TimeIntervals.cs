@@ -449,6 +449,7 @@ namespace WaywardGamers.KParser.Utility
                 CompileRollBuffs(Resources.ParsedStrings.DrkRoll, anyRollRegex, TimeSpan.FromMinutes(5), player, dataSet);
                 CompileRollBuffs(Resources.ParsedStrings.RngRoll, anyRollRegex, TimeSpan.FromMinutes(5), player, dataSet);
                 CompileRollBuffs(Resources.ParsedStrings.SamRoll, anyRollRegex, TimeSpan.FromMinutes(5), player, dataSet);
+                CompileRollBuffs(Resources.ParsedStrings.WarRoll, anyRollRegex, TimeSpan.FromMinutes(5), player, dataSet);
 
                 playerIntervals.Add(player);
             }
