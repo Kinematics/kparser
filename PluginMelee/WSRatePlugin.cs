@@ -435,16 +435,16 @@ namespace WaywardGamers.KParser.Plugin
         private void ProcessTPReturns(IEnumerable<AttackGroup> attackSet, KPDatabaseDataSet dataSet,
             ref StringBuilder sb, ref List<StringMods> strModList)
         {
-            var echoes = from c in dataSet.ChatMessages
-                         where c.ChatSpeakersRow.SpeakerName == "-Echo-"
-                         select c;
+            var echoSpeaker = dataSet.ChatSpeakers.FirstOrDefault(s => s.SpeakerName == "-Echo-");
 
-            var tpEchoes = from e in echoes
+            if (echoSpeaker == null)
+                return;
+
+            var echos = echoSpeaker.GetChatMessagesRows();
+
+            var tpEchoes = from e in echos
                            where tpRegex.Match(e.Message).Success == true
                            select e;
-
-            //if (tpEchoes.Count() == 0)
-            //    return;
 
             var selfPlayer = attackSet.Where(a => a.WSkill.Count() > 0).Where(a =>
                 a.WSkill.Any(w => (ActorPlayerType)w.ActorType == ActorPlayerType.Self));
@@ -465,10 +465,9 @@ namespace WaywardGamers.KParser.Plugin
                                TP = GetTP(ws, tpEchoes)
                            };
 
-                if (wsTP.Count() == 0)
-                    return;
 
-                int totalWS = wsTP.Count();
+                if (wsTP.Any(w => w.TP >= 0) == false)
+                    return;
 
                 var groupedByWS = wsTP.GroupBy(w => w.WS.ActionsRow.ActionName);
 
@@ -583,7 +582,7 @@ namespace WaywardGamers.KParser.Plugin
         }
 
         private int GetTP(KPDatabaseDataSet.InteractionsRow ws,
-            EnumerableRowCollection<KPDatabaseDataSet.ChatMessagesRow> tpEchoes)
+            IEnumerable<KPDatabaseDataSet.ChatMessagesRow> tpEchoes)
         {
             if (ws == null)
                 throw new ArgumentNullException("ws");
