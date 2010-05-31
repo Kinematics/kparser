@@ -1293,6 +1293,21 @@ namespace WaywardGamers.KParser.Parsing
                                 message.SetParseSuccess(true);
                                 return;
                             }
+                            // Check for additional effect: drain effects (eg: shinsoku)
+                            combatMatch = ParseExpressions.AdditionalTP.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                target = msgCombatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
+                                if (target != null)
+                                {
+                                    msgCombatDetails.InteractionType = InteractionType.Harm;
+                                    target.SecondaryAidType = AidType.Recovery;
+                                    target.SecondaryRecoveryType = RecoveryType.RecoverTP;
+                                    target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Damage].Value);
+                                }
+                                message.SetParseSuccess(true);
+                                return;
+                            }
 
                             combatMatch = ParseExpressions.AdditionalHeal.Match(currentMessageText);
                             if (combatMatch.Success == true)
