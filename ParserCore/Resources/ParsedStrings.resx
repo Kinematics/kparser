@@ -1155,4 +1155,7 @@
   <data name="Curaga4" xml:space="preserve">
     <value>Curaga IV</value>
   </data>
+  <data name="Refueling" xml:space="preserve">
+    <value>Refueling</value>
+  </data>
 </root>

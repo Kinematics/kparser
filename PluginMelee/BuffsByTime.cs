@@ -184,7 +184,8 @@ namespace WaywardGamers.KParser.Plugin
                 Resources.ParsedStrings.Yonin,
                 Resources.ParsedStrings.Innin,
                 Resources.ParsedStrings.Madrigal1,
-                Resources.ParsedStrings.Madrigal2 };
+                Resources.ParsedStrings.Madrigal2
+        };
 
         List<string> attBuffNames = new List<string>() {
                 Resources.ParsedStrings.Minuet1,
@@ -201,14 +202,17 @@ namespace WaywardGamers.KParser.Plugin
                 Resources.ParsedStrings.Dia1,
                 Resources.ParsedStrings.Dia2,
                 Resources.ParsedStrings.Dia3,
-                Resources.ParsedStrings.Footwork };
+                Resources.ParsedStrings.Footwork
+        };
 
         List<string> hasteBuffNames = new List<string>() {
                 Resources.ParsedStrings.Haste,
                 Resources.ParsedStrings.March1,
                 Resources.ParsedStrings.March2,
                 Resources.ParsedStrings.Hasso,
-                Resources.ParsedStrings.HasteSamba };
+                Resources.ParsedStrings.HasteSamba,
+                Resources.ParsedStrings.Refueling
+        };
 
         /// <summary>
         /// Not used in this plugin, but may be used by others.
@@ -1126,6 +1130,7 @@ namespace WaywardGamers.KParser.Plugin
             CompileFixedLengthBuffs(Resources.ParsedStrings.LastResort, TimeSpan.FromSeconds(30), playerList, playerIntervals, dataSet);
             CompileFixedLengthBuffs(Resources.ParsedStrings.Haste, TimeSpan.FromMinutes(3), playerList, playerIntervals, dataSet);
             CompileFixedLengthBuffs(Resources.ParsedStrings.Footwork, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Refueling, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
 
             CompileStanceBuffs(Resources.ParsedStrings.Hasso, Resources.ParsedStrings.Seigan, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
             CompileStanceBuffs(Resources.ParsedStrings.Yonin, Resources.ParsedStrings.Innin, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
