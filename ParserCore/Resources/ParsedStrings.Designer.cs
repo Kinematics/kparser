@@ -2284,6 +2284,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Refueling.
+        /// </summary>
+        public static string Refueling {
+            get {
+                return ResourceManager.GetString("Refueling", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Regen.
         /// </summary>
         public static string Regen1 {
