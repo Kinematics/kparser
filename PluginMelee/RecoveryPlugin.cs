@@ -530,10 +530,10 @@ namespace WaywardGamers.KParser.Plugin
                             totalMP += healLU[lsMagicFruit].Count() * 72;
                             totalMP += healLU[lsHealingBreeze].Count() * 55;
                             totalMP += healLU[lsCura].Count() * 30;
-                            totalMP += healLU[lsCuraga1].Count() * 60;
-                            totalMP += healLU[lsCuraga2].Count() * 120;
-                            totalMP += healLU[lsCuraga3].Count() * 180;
-                            totalMP += healLU[lsCuraga4].Count() * 260;
+                            totalMP += healLU[lsCuraga1].GroupBy(a => a.Timestamp).Count() * 60;
+                            totalMP += healLU[lsCuraga2].GroupBy(a => a.Timestamp).Count() * 120;
+                            totalMP += healLU[lsCuraga3].GroupBy(a => a.Timestamp).Count() * 180;
+                            totalMP += healLU[lsCuraga4].GroupBy(a => a.Timestamp).Count() * 260;
 
                             int regenCost = 0;
                             regenCost += numRegen1 * 15;
