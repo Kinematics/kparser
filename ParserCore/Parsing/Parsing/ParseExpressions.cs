@@ -186,6 +186,7 @@ namespace WaywardGamers.KParser
         internal static readonly Regex AdditionalStatus = new Regex(string.Format("^Additional effect: {0}\\.$", effect));
         internal static readonly Regex AdditionalDrain  = new Regex(string.Format("^Additional effect: {0} HP drained from {1}\\.$", damage, target));
         internal static readonly Regex AdditionalAspir  = new Regex(string.Format("^Additional effect: {0} MP drained from {1}\\.$", damage, target));
+        internal static readonly Regex AdditionalTP     = new Regex(string.Format("^Additional effect: {0} TP drained from {1}\\.$", damage, target));
         internal static readonly Regex AdditionalHeal   = new Regex(string.Format("^Additional effect: {0} recovers {1} HP\\.$", target, damage));
         #endregion
 
