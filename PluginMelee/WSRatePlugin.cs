@@ -497,6 +497,8 @@ namespace WaywardGamers.KParser.Plugin
                     });
                     sb.Append(tmp + "\n\n");
 
+                    int wsCount = byWS.Count();
+
                     var groupedWSTP = byWS.GroupBy(a => a.TP);
 
                     var over0TP = byWS.Where(a => a.TP >= 0);
@@ -547,7 +549,7 @@ namespace WaywardGamers.KParser.Plugin
                         sb.AppendFormat("{0,-3}{1,8}{2,12:p2}{3,16}{4,14:f2}",
                             tp.Key,
                             tp.Count(),
-                            (double)tp.Count() / totalWS,
+                            (double)tp.Count() / wsCount,
                             tp.Sum(a => a.WS.Amount),
                             tp.Average(a => a.WS.Amount));
                         sb.Append("\n");
