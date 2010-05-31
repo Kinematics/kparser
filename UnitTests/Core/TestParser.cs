@@ -1394,7 +1394,7 @@ namespace WaywardGamers.KParser
             Assert.That(msg.EventDetails.CombatDetails.AidType, Is.EqualTo(AidType.Enhance));
             Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
             Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Aurun"));
-            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Player));
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Player).Or.EqualTo(EntityType.Unknown));
             Assert.That(msg.EventDetails.CombatDetails.ActionType, Is.EqualTo(ActionType.Spell));
             Assert.That(msg.EventDetails.CombatDetails.ActionName, Is.EqualTo("Monomi: Ichi"));
             Assert.That(msg.EventDetails.CombatDetails.HasAdditionalEffect, Is.False);
@@ -1404,7 +1404,7 @@ namespace WaywardGamers.KParser
             Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Null);
             Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Empty);
             TargetDetails target = msg.EventDetails.CombatDetails.Targets.First();
-            Assert.That(target.EntityType, Is.EqualTo(EntityType.Player));
+            Assert.That(target.EntityType, Is.EqualTo(EntityType.Player).Or.EqualTo(EntityType.Unknown));
             Assert.That(target.Name, Is.EqualTo("Aurun"));
             Assert.That(target.AidType, Is.EqualTo(AidType.Enhance));
             Assert.That(target.DefenseType, Is.EqualTo(DefenseType.None));
@@ -1498,7 +1498,7 @@ namespace WaywardGamers.KParser
             Assert.That((msg.EventDetails.CombatDetails.AidType & (AidType.Enhance | AidType.RemoveStatus)), Is.Not.EqualTo(AidType.None));
             Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
             Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Starfall"));
-            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Player));
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Player).Or.EqualTo(EntityType.Unknown));
             Assert.That(msg.EventDetails.CombatDetails.ActionType, Is.EqualTo(ActionType.Spell));
             Assert.That(msg.EventDetails.CombatDetails.ActionName, Is.EqualTo("Paralyna"));
             Assert.That(msg.EventDetails.CombatDetails.HasAdditionalEffect, Is.False);
@@ -1508,7 +1508,7 @@ namespace WaywardGamers.KParser
             Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Null);
             Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Empty);
             TargetDetails target = msg.EventDetails.CombatDetails.Targets.First();
-            Assert.That(target.EntityType, Is.EqualTo(EntityType.Player));
+            Assert.That(target.EntityType, Is.EqualTo(EntityType.Player).Or.EqualTo(EntityType.Unknown));
             Assert.That(target.Name, Is.EqualTo("Aurun"));
             Assert.That((target.AidType & (AidType.Enhance | AidType.RemoveStatus)), Is.Not.EqualTo(AidType.None));
             Assert.That(target.DefenseType, Is.EqualTo(DefenseType.None));
@@ -1588,6 +1588,58 @@ namespace WaywardGamers.KParser
         #endregion
 
         #region Loot
+        #endregion
+
+        #region Misc Bugs
+        [Test]
+        public void TPDrainNotCharmedMob()
+        {
+            string chatText1 = "a3,00,00,80c08080,000003ec,00000485,003c,00,01,02,00,Vixx hits the Vanguard Enchanter for 90 points of damage.1";
+            string chatText2 = "bb,00,00,8090c0f0,0000040b,000004ad,003f,00,01,02,00,Additional effect: 3 TP drained from the Vanguard Enchanter.1";
+            ChatLine chatLine1 = new ChatLine(chatText1);
+            MessageLine msgLine1 = new MessageLine(chatLine1);
+            ChatLine chatLine2 = new ChatLine(chatText2);
+            MessageLine msgLine2 = new MessageLine(chatLine2);
+
+            MsgManager.Instance.Reset();
+
+            Message msg1 = Parser.Parse(msgLine1);
+
+            //MsgManager.Instance.Reset();
+            EntityManager.Instance.AddEntitiesFromMessage(msg1);
+            MsgManager.Instance.AddMessageToMessageCollection(msg1);
+
+            // Save msg1 in MsgManager
+            Message msg = Parser.Parse(msgLine2);
+
+            Assert.That(msg.IsParseSuccessful, Is.True);
+            Assert.That(msg.MessageCategory, Is.EqualTo(MessageCategoryType.Event));
+            Assert.That(msg.EventDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.EventMessageType, Is.EqualTo(EventMessageType.Interaction));
+            Assert.That(msg.EventDetails.CombatDetails, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.ActionType, Is.EqualTo(ActionType.Melee));
+            Assert.That(msg.EventDetails.CombatDetails.InteractionType, Is.EqualTo(InteractionType.Harm));
+            Assert.That(msg.EventDetails.CombatDetails.HarmType, Is.EqualTo(HarmType.Damage));
+            Assert.That(msg.EventDetails.CombatDetails.HasActor, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.ActorName, Is.EqualTo("Vixx"));
+            Assert.That(msg.EventDetails.CombatDetails.ActorEntityType, Is.EqualTo(EntityType.Player));
+            Assert.That(msg.EventDetails.CombatDetails.HasAdditionalEffect, Is.True);
+            Assert.That(msg.EventDetails.CombatDetails.IsPreparing, Is.False);
+            Assert.That(msg.EventDetails.CombatDetails.SuccessLevel, Is.EqualTo(SuccessType.Successful));
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Null);
+            Assert.That(msg.EventDetails.CombatDetails.Targets, Is.Not.Empty);
+            TargetDetails target = msg.EventDetails.CombatDetails.Targets.First();
+            Assert.That(target.EntityType, Is.EqualTo(EntityType.Mob));
+            Assert.That(target.Name, Is.EqualTo("Vanguard Enchanter"));
+            Assert.That(target.HarmType, Is.EqualTo(HarmType.Damage));
+            Assert.That(target.DefenseType, Is.EqualTo(DefenseType.None));
+            Assert.That(target.Amount, Is.EqualTo(90));
+            Assert.That(target.DamageModifier, Is.EqualTo(DamageModifier.None));
+            Assert.That(target.ShadowsUsed, Is.EqualTo(0));
+            Assert.That(target.SecondaryAmount, Is.EqualTo(3));
+            Assert.That(target.SecondaryAidType, Is.EqualTo(AidType.Recovery));
+            Assert.That(target.SecondaryRecoveryType, Is.EqualTo(RecoveryType.RecoverTP));
+        }
         #endregion
     }
 }
