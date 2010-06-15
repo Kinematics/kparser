@@ -1,5 +1,19 @@
 KParser Change Log
 
+
+1.5.7 (June 15, 2010)
++ Addition of MP/TP efficiency calculations to Recovery tab.
+* Improve processing speed of Recovery plugin. (~5x faster)
++ Add average time between weaponskills to WS Rates tab.
+- Fix bug in parsing Shinsoku's additional effect: drain TP messaging.
+- Fix bug in calculating MP spent on curagas.
+- Weaponskill frequency by TP return should show frequency per weaponskill, rather than frequency per all weaponskills.  Corrected.
+* Improve processing speed of WS Rates plugin. (~8x faster)
+* Refueling added to haste buffs in Buffs by Time, as well as included in Damage Graph.
+- Fix issue of Fighter's Roll not being properly tabulated for Damage Graph.
+- Fix bug when viewing Deaths plugin with a subset of mobs.
+
+
 1.5.6 (May 26, 2010)
 + Add Hunter's Roll to accuracy buff section of Buffs by Time plugin.
 + Add Samurai Roll to tracked buffs on Damage Graph.
