@@ -20,6 +20,7 @@ namespace WaywardGamers.KParser.Plugin
             internal string Name { get; set; }
             internal int WSCount { get; set; }
             internal TimeSpan WSInterval { get; set; }
+            internal TimeSpan WSHarmonicInterval { get; set; }
             internal int MHits { get; set; }
             internal int MMin { get; set; }
             internal int MMax { get; set; }
