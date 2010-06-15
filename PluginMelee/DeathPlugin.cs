@@ -273,8 +273,8 @@ namespace WaywardGamers.KParser.Plugin
                 }
 
                 attackSet = from c in iRows
-                            where (c.IsActorIDNull() == false) &&
-                                  (selectedPlayers.Contains(c.CombatantsRowByActorCombatantRelation.CombatantName))
+                            where (c.IsTargetIDNull() == false) &&
+                                  (selectedPlayers.Contains(c.CombatantsRowByTargetCombatantRelation.CombatantName))
                             group c by c.CombatantsRowByTargetCombatantRelation into ca
                             orderby ca.Key.CombatantType, ca.Key.CombatantName
                             select new AttackGroup
@@ -296,6 +296,7 @@ namespace WaywardGamers.KParser.Plugin
                             select new AttackGroup
                             {
                                 Name = c.CombatantNameOrJobName,
+                                ComType = (EntityType)c.CombatantType,
                                 Death = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Death)
                                         orderby n.Timestamp
