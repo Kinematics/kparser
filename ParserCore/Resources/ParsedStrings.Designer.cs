@@ -871,6 +871,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cure VI.
+        /// </summary>
+        public static string Cure6 {
+            get {
+                return ResourceManager.GetString("Cure6", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Curing Waltz.
         /// </summary>
         public static string CuringWaltz1 {
