@@ -77,7 +77,8 @@ namespace WaywardGamers.KParser.Plugin
         string lsPollen;
         string lsWildCarrot;
         string lsMagicFruit;
-        string lsDivineWaltz;
+        string lsDivineWaltz1;
+        string lsDivineWaltz2;
         string lsHealingBreeze;
         string lsChakra;
         string lsCura;
@@ -454,7 +455,8 @@ namespace WaywardGamers.KParser.Plugin
                         numCure5 = healLU[lsCure5].Count() +
                             healLU[lsCWaltz4].Count();
                         numCuraga = healLU[lsHealingBreeze].GroupBy(a => a.Timestamp).Count() +
-                            healLU[lsDivineWaltz].GroupBy(a => a.Timestamp).Count() +
+                            healLU[lsDivineWaltz1].GroupBy(a => a.Timestamp).Count() +
+                            healLU[lsDivineWaltz2].GroupBy(a => a.Timestamp).Count() +
                             healLU[lsCura].GroupBy(a => a.Timestamp).Count() +
                             healLU[lsCuraga1].GroupBy(a => a.Timestamp).Count() +
                             healLU[lsCuraga2].GroupBy(a => a.Timestamp).Count() +
@@ -547,7 +549,8 @@ namespace WaywardGamers.KParser.Plugin
                             totalTP += healLU[lsCWaltz2].Count() * 35;
                             totalTP += healLU[lsCWaltz3].Count() * 50;
                             totalTP += healLU[lsCWaltz4].Count() * 65;
-                            totalTP += healLU[lsDivineWaltz].Count() * 40;
+                            totalTP += healLU[lsDivineWaltz1].Count() * 40;
+                            totalTP += healLU[lsDivineWaltz2].Count() * 80;
 
 
                             float mpCureEff = 0;
@@ -651,7 +654,8 @@ namespace WaywardGamers.KParser.Plugin
                             .Concat(healLU[lsCuraga2].GroupBy(a => a.Timestamp))
                             .Concat(healLU[lsCuraga3].GroupBy(a => a.Timestamp))
                             .Concat(healLU[lsCuraga4].GroupBy(a => a.Timestamp))
-                            .Concat(healLU[lsDivineWaltz].GroupBy(a => a.Timestamp))
+                            .Concat(healLU[lsDivineWaltz1].GroupBy(a => a.Timestamp))
+                            .Concat(healLU[lsDivineWaltz2].GroupBy(a => a.Timestamp))
                             .Concat(healLU[lsHealingBreeze].GroupBy(a => a.Timestamp))
                             .Average(a => a.Sum(b => (int?)b.Amount)) ?? 0.0;
 
@@ -1060,7 +1064,8 @@ namespace WaywardGamers.KParser.Plugin
             lsPollen = Resources.ParsedStrings.Pollen;
             lsWildCarrot = Resources.ParsedStrings.WildCarrot;
             lsMagicFruit = Resources.ParsedStrings.MagicFruit;
-            lsDivineWaltz = Resources.ParsedStrings.DivineWaltz1;
+            lsDivineWaltz1 = Resources.ParsedStrings.DivineWaltz1;
+            lsDivineWaltz2 = Resources.ParsedStrings.DivineWaltz2;
             lsHealingBreeze = Resources.ParsedStrings.HealingBreeze;
             lsCuragaREString = Resources.ParsedStrings.CuragaRegex;
             lsChakra = Resources.ParsedStrings.Chakra;
