@@ -1060,7 +1060,7 @@ namespace WaywardGamers.KParser.Plugin
             lsPollen = Resources.ParsedStrings.Pollen;
             lsWildCarrot = Resources.ParsedStrings.WildCarrot;
             lsMagicFruit = Resources.ParsedStrings.MagicFruit;
-            lsDivineWaltz = Resources.ParsedStrings.DivineWaltz;
+            lsDivineWaltz = Resources.ParsedStrings.DivineWaltz1;
             lsHealingBreeze = Resources.ParsedStrings.HealingBreeze;
             lsCuragaREString = Resources.ParsedStrings.CuragaRegex;
             lsChakra = Resources.ParsedStrings.Chakra;
