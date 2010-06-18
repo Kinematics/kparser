@@ -1260,4 +1260,7 @@
   <data name="TornadoKick" xml:space="preserve">
     <value>Tornado Kick</value>
   </data>
+  <data name="Cure6" xml:space="preserve">
+    <value>Cure VI</value>
+  </data>
 </root>
