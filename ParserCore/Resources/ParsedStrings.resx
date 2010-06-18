@@ -288,7 +288,7 @@
   <data name="DivineSeal" xml:space="preserve">
     <value>Divine Seal</value>
   </data>
-  <data name="DivineWaltz" xml:space="preserve">
+  <data name="DivineWaltz1" xml:space="preserve">
     <value>Divine Waltz</value>
   </data>
   <data name="DncRoll" xml:space="preserve">
@@ -1157,5 +1157,107 @@
   </data>
   <data name="Refueling" xml:space="preserve">
     <value>Refueling</value>
+  </data>
+  <data name="AeolianEdge" xml:space="preserve">
+    <value>Aeolian Edge</value>
+  </data>
+  <data name="BladeYu" xml:space="preserve">
+    <value>Blade: Yu</value>
+  </data>
+  <data name="BoraAxe" xml:space="preserve">
+    <value>Bora Axe</value>
+  </data>
+  <data name="Cataclysm" xml:space="preserve">
+    <value>Cataclysm</value>
+  </data>
+  <data name="ClimacticFlourish" xml:space="preserve">
+    <value>Climactic Flourish</value>
+  </data>
+  <data name="Despoil" xml:space="preserve">
+    <value>Despoil</value>
+  </data>
+  <data name="DivineEmblem" xml:space="preserve">
+    <value>Divine Emblem</value>
+  </data>
+  <data name="DivineWaltz2" xml:space="preserve">
+    <value>Divine Waltz II</value>
+  </data>
+  <data name="DoubleShot" xml:space="preserve">
+    <value>Double Shot</value>
+  </data>
+  <data name="FastCastRoll" xml:space="preserve">
+    <value>Caster's Roll</value>
+  </data>
+  <data name="FellCleave" xml:space="preserve">
+    <value>Fell Cleave</value>
+  </data>
+  <data name="FlashNova" xml:space="preserve">
+    <value>Flash Nova</value>
+  </data>
+  <data name="Futae" xml:space="preserve">
+    <value>Futae</value>
+  </data>
+  <data name="HerculeanSlash" xml:space="preserve">
+    <value>Herculean Slash</value>
+  </data>
+  <data name="HolyMist" xml:space="preserve">
+    <value>Holy Mist</value>
+  </data>
+  <data name="InfernalScythe" xml:space="preserve">
+    <value>Infernal Scythe</value>
+  </data>
+  <data name="Libra" xml:space="preserve">
+    <value>Libra</value>
+  </data>
+  <data name="LunarBay" xml:space="preserve">
+    <value>Lunar Bay</value>
+  </data>
+  <data name="ManaWall" xml:space="preserve">
+    <value>Mana Wall</value>
+  </data>
+  <data name="MoveRoll" xml:space="preserve">
+    <value>Bolter's Roll</value>
+  </data>
+  <data name="NetherVoid" xml:space="preserve">
+    <value>Nether Void</value>
+  </data>
+  <data name="NightTerror" xml:space="preserve">
+    <value>Night Terror</value>
+  </data>
+  <data name="NumbingShot" xml:space="preserve">
+    <value>Numbing Shot</value>
+  </data>
+  <data name="PerfectCounter" xml:space="preserve">
+    <value>Perfect Counter</value>
+  </data>
+  <data name="Presto" xml:space="preserve">
+    <value>Presto</value>
+  </data>
+  <data name="RefulgentArrow" xml:space="preserve">
+    <value>Refulgent Arrow</value>
+  </data>
+  <data name="Restraint" xml:space="preserve">
+    <value>Restraint</value>
+  </data>
+  <data name="SanguineBlade" xml:space="preserve">
+    <value>Sanguine Blade</value>
+  </data>
+  <data name="Sengikori" xml:space="preserve">
+    <value>Sengikori</value>
+  </data>
+  <data name="SonicThrust" xml:space="preserve">
+    <value>Sonic Thrust</value>
+  </data>
+  <data name="SpiritJump" xml:space="preserve">
+    <value>Spirit Jump</value>
+  </data>
+  <data name="TachiAgeha" xml:space="preserve">
+    <value>Tachi: Ageha</value>
+  </data>
+  <data name="TacticalSwitch" xml:space="preserve">
+    <value>Tactical Switch</value>
+  </data>
+  <data name="TornadoKick" xml:space="preserve">
+    <value>Tornado Kick</value>
   </data>
 </root>
