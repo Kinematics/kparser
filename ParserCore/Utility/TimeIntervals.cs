@@ -352,6 +352,35 @@ namespace WaywardGamers.KParser.Utility
         }
 
         /// <summary>
+        /// Get the list of spells/ability buffs that affect haste.
+        /// </summary>
+        public static List<string> CritBuffNames
+        {
+            get
+            {
+                return new List<string>()
+                {
+                    Resources.ParsedStrings.Restraint,
+                    Resources.ParsedStrings.ThfRoll,
+                };
+            }
+        }
+
+        /// <summary>
+        /// Get the list of spells/ability buffs that affect haste.
+        /// </summary>
+        public static List<string> WeaponskillBuffNames
+        {
+            get
+            {
+                return new List<string>()
+                {
+                    Resources.ParsedStrings.Restraint,
+                };
+            }
+        }
+
+        /// <summary>
         /// Get the list of spells/ability buffs that are tracked, but don't
         /// affect accuracy/attack/haste.
         /// </summary>
@@ -378,7 +407,10 @@ namespace WaywardGamers.KParser.Utility
             {
                 return AccuracyBuffNames.Concat(
                        AttackBuffNames.Concat(
-                       HasteBuffNames.Concat(OtherBuffNames)))
+                       HasteBuffNames.Concat(
+                       CritBuffNames.Concat(
+                       WeaponskillBuffNames.Concat(
+                       OtherBuffNames)))))
                     .ToList<string>();
             }
         }
@@ -441,6 +473,8 @@ namespace WaywardGamers.KParser.Utility
                 playerList, playerIntervals, dataSet);
             CompileFixedLengthBuffs(Resources.ParsedStrings.Refueling, TimeSpan.FromMinutes(5),
                 playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Restraint, TimeSpan.FromMinutes(5),
+                playerList, playerIntervals, dataSet);
 
 
             CompileStanceBuffs(Resources.ParsedStrings.Hasso, Resources.ParsedStrings.Seigan,
@@ -491,9 +525,7 @@ namespace WaywardGamers.KParser.Utility
                 playerList, playerIntervals, dataSet);
 
 
-            // Debuffs only need to be calculated once for all players, so can be done
-            // outside of the above loop.
-
+            // Debuffs only need to be calculated once for all players
             //CompileDebuffs("Gravity", TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
 
             CompileSambaBuffs(Resources.ParsedStrings.HasteSamba, Resources.ParsedStrings.AnySamba,
