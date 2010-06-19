@@ -253,8 +253,8 @@ namespace WaywardGamers.KParser.Plugin
                 return;
 
 
-            List<PlayerTimeIntervalSets> intervalSets = GetTimeIntervals(dataSet, playerList);
-            //List<PlayerTimeIntervalSets> intervalSets = CollectTimeIntervals.GetTimeIntervals(dataSet, playerList);
+            //List<PlayerTimeIntervalSets> intervalSets = GetTimeIntervals(dataSet, playerList);
+            List<PlayerTimeIntervalSets> intervalSets = CollectTimeIntervals.GetTimeIntervals(dataSet, playerList);
 
             if (intervalSets == null)
                 return;
@@ -559,42 +559,52 @@ namespace WaywardGamers.KParser.Plugin
             int mInMin = 0;
             int mInMax = 0;
             double mInAvg = 0;
+            int mInCount = 0;
 
             int mNotInMin = 0;
             int mNotInMax = 0;
             double mNotInAvg = 0;
+            int mNotInCount = 0;
 
             int rInMin = 0;
             int rInMax = 0;
             double rInAvg = 0;
+            int rInCount = 0;
 
             int rNotInMin = 0;
             int rNotInMax = 0;
             double rNotInAvg = 0;
+            int rNotInCount = 0;
 
             int mInCritMin = 0;
             int mInCritMax = 0;
             double mInCritAvg = 0;
+            int mInCritCount = 0;
 
             int mNotInCritMin = 0;
             int mNotInCritMax = 0;
             double mNotInCritAvg = 0;
+            int mNotInCritCount = 0;
 
             int rInCritMin = 0;
             int rInCritMax = 0;
             double rInCritAvg = 0;
+            int rInCritCount = 0;
 
             int rNotInCritMin = 0;
             int rNotInCritMax = 0;
             double rNotInCritAvg = 0;
+            int rNotInCritCount = 0;
 
             int wInMin = 0;
             int wInMax = 0;
             double wInAvg = 0;
+            int wInCount = 0;
 
             int wNotInMin = 0;
             int wNotInMax = 0;
             double wNotInAvg = 0;
+            int wNotInCount = 0;
 
             double mInSetRate = 0;
             double rInSetRate = 0;
@@ -703,139 +713,29 @@ namespace WaywardGamers.KParser.Plugin
                                                     select n;
 
 
-                                    if (mInSet.Count() > 0)
-                                    {
-                                        mInMin = mInSet.Min(a => a.Amount);
-                                        mInMax = mInSet.Max(a => a.Amount);
-                                        mInAvg = mInSet.Average(a => a.Amount);
-                                    }
-                                    else
-                                    {
-                                        mInMin = 0;
-                                        mInMax = 0;
-                                        mInAvg = 0;
-                                    }
+                                    CalcMinMaxAvgAmount(mInSet, out mInMin, out mInMax, out mInAvg, out mInCount);
 
-                                    if (mNotInSet.Count() > 0)
-                                    {
-                                        mNotInMin = mNotInSet.Min(a => a.Amount);
-                                        mNotInMax = mNotInSet.Max(a => a.Amount);
-                                        mNotInAvg = mNotInSet.Average(a => a.Amount);
-                                    }
-                                    else
-                                    {
-                                        mNotInMin = 0;
-                                        mNotInMax = 0;
-                                        mNotInAvg = 0;
-                                    }
+                                    CalcMinMaxAvgAmount(mNotInSet, out mNotInMin, out mNotInMax, out mNotInAvg, out mNotInCount);
 
-                                    if (rInSet.Count() > 0)
-                                    {
-                                        rInMin = rInSet.Min(a => a.Amount);
-                                        rInMax = rInSet.Max(a => a.Amount);
-                                        rInAvg = rInSet.Average(a => a.Amount);
-                                    }
-                                    else
-                                    {
-                                        rInMin = 0;
-                                        rInMax = 0;
-                                        rInAvg = 0;
-                                    }
+                                    CalcMinMaxAvgAmount(rInSet, out rInMin, out rInMax, out rInAvg, out rInCount);
 
-                                    if (rNotInSet.Count() > 0)
-                                    {
-                                        rNotInMin = rNotInSet.Min(a => a.Amount);
-                                        rNotInMax = rNotInSet.Max(a => a.Amount);
-                                        rNotInAvg = rNotInSet.Average(a => a.Amount);
-                                    }
-                                    else
-                                    {
-                                        rNotInMin = 0;
-                                        rNotInMax = 0;
-                                        rNotInAvg = 0;
-                                    }
+                                    CalcMinMaxAvgAmount(rNotInSet, out rNotInMin, out rNotInMax, out rNotInAvg, out rNotInCount);
 
-                                    if (mInCritSet.Count() > 0)
-                                    {
-                                        mInCritMin = mInCritSet.Min(a => a.Amount);
-                                        mInCritMax = mInCritSet.Max(a => a.Amount);
-                                        mInCritAvg = mInCritSet.Average(a => a.Amount);
-                                    }
-                                    else
-                                    {
-                                        mInCritMin = 0;
-                                        mInCritMax = 0;
-                                        mInCritAvg = 0;
-                                    }
+                                    CalcMinMaxAvgAmount(mInCritSet, out mInCritMin, out mInCritMax, out mInCritAvg, out mInCritCount);
 
-                                    if (mNotInCritSet.Count() > 0)
-                                    {
-                                        mNotInCritMin = mNotInCritSet.Min(a => a.Amount);
-                                        mNotInCritMax = mNotInCritSet.Max(a => a.Amount);
-                                        mNotInCritAvg = mNotInCritSet.Average(a => a.Amount);
-                                    }
-                                    else
-                                    {
-                                        mNotInCritMin = 0;
-                                        mNotInCritMax = 0;
-                                        mNotInCritAvg = 0;
-                                    }
+                                    CalcMinMaxAvgAmount(mNotInCritSet, out mNotInCritMin, out mNotInCritMax, out mNotInCritAvg, out mNotInCritCount);
 
-                                    if (rInCritSet.Count() > 0)
-                                    {
-                                        rInCritMin = rInCritSet.Min(a => a.Amount);
-                                        rInCritMax = rInCritSet.Max(a => a.Amount);
-                                        rInCritAvg = rInCritSet.Average(a => a.Amount);
-                                    }
-                                    else
-                                    {
-                                        rInCritMin = 0;
-                                        rInCritMax = 0;
-                                        rInCritAvg = 0;
-                                    }
+                                    CalcMinMaxAvgAmount(rInCritSet, out rInCritMin, out rInCritMax, out rInCritAvg, out rInCritCount);
 
-                                    if (rNotInCritSet.Count() > 0)
-                                    {
-                                        rNotInCritMin = rNotInCritSet.Min(a => a.Amount);
-                                        rNotInCritMax = rNotInCritSet.Max(a => a.Amount);
-                                        rNotInCritAvg = rNotInCritSet.Average(a => a.Amount);
-                                    }
-                                    else
-                                    {
-                                        rNotInCritMin = 0;
-                                        rNotInCritMax = 0;
-                                        rNotInCritAvg = 0;
-                                    }
+                                    CalcMinMaxAvgAmount(rNotInCritSet, out rNotInCritMin, out rNotInCritMax, out rNotInCritAvg, out rNotInCritCount);
 
-                                    if (wInSet.Count() > 0)
-                                    {
-                                        wInMin = wInSet.Min(a => a.Amount);
-                                        wInMax = wInSet.Max(a => a.Amount);
-                                        wInAvg = wInSet.Average(a => a.Amount);
-                                    }
-                                    else
-                                    {
-                                        wInMin = 0;
-                                        wInMax = 0;
-                                        wInAvg = 0;
-                                    }
+                                    CalcMinMaxAvgAmount(wInSet, out wInMin, out wInMax, out wInAvg, out wInCount);
 
-                                    if (wNotInSet.Count() > 0)
-                                    {
-                                        wNotInMin = wNotInSet.Min(a => a.Amount);
-                                        wNotInMax = wNotInSet.Max(a => a.Amount);
-                                        wNotInAvg = wNotInSet.Average(a => a.Amount);
-                                    }
-                                    else
-                                    {
-                                        wNotInMin = 0;
-                                        wNotInMax = 0;
-                                        wNotInAvg = 0;
-                                    }
+                                    CalcMinMaxAvgAmount(wNotInSet, out wNotInMin, out wNotInMax, out wNotInAvg, out wNotInCount);
 
 
-                                    int mInSetCount = mInSet.Count() + mInCritSet.Count();
-                                    int mNotInSetCount = mNotInSet.Count() + mNotInCritSet.Count();
+                                    int mInSetCount = mInCount + mInCritCount;
+                                    int mNotInSetCount = mNotInCount + mNotInCritCount;
                                     int mCount = mInSetCount + mNotInSetCount;
 
                                     if (mCount > 0)
@@ -843,8 +743,8 @@ namespace WaywardGamers.KParser.Plugin
                                     else
                                         mInSetRate = 0;
 
-                                    int rInSetCount = rInSet.Count() + rInCritSet.Count();
-                                    int rNotInSetCount = rNotInSet.Count() + rNotInCritSet.Count();
+                                    int rInSetCount = rInCount + rInCritCount;
+                                    int rNotInSetCount = rNotInCount + rNotInCritCount;
                                     int rCount = rInSetCount + rNotInSetCount;
 
                                     if (rCount > 0)
@@ -852,16 +752,14 @@ namespace WaywardGamers.KParser.Plugin
                                     else
                                         rInSetRate = 0;
 
-                                    int wInSetCount = wInSet.Count();
-                                    int wNotInSetCount = wNotInSet.Count();
-                                    int wCount = wInSetCount + wNotInSetCount;
+                                    int wCount = wInCount + wNotInCount;
 
                                     if (wCount > 0)
-                                        wInSetRate = (double) wInSetCount / wCount;
+                                        wInSetRate = (double) wInCount / wCount;
                                     else
                                         wInSetRate = 0;
 
-                                    int inCount = mInSetCount + rInSetCount + wInSetCount;
+                                    int inCount = mInSetCount + rInSetCount + wInCount;
 
                                     // In sets
                                     string plusString = string.Format("+{0,20}", intervalSet.SetName);
@@ -956,6 +854,41 @@ namespace WaywardGamers.KParser.Plugin
                     }
                 }
             }
+        }
+
+        private void CalcMinMaxAvgAmount(IEnumerable<KPDatabaseDataSet.InteractionsRow> inSet,
+            out int inMin, out int inMax, out double inAvg, out int inCount)
+        {
+            if (inSet == null)
+                throw new ArgumentNullException();
+
+            inMin = 0;
+            inMax = 0;
+            inAvg = 0;
+
+            int sum = 0;
+            inCount = 0;
+
+            var firstRow = inSet.FirstOrDefault();
+            if (firstRow == null)
+                return;
+
+            inMin = firstRow.Amount;
+            inMax = firstRow.Amount;
+
+            foreach (var row in inSet)
+            {
+                inCount++;
+                sum += row.Amount;
+
+                if (row.Amount > inMax)
+                    inMax = row.Amount;
+
+                if (row.Amount < inMin)
+                    inMin = row.Amount;
+            }
+
+            inAvg = (double)sum / inCount;
         }
 
         /// <summary>
