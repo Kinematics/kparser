@@ -107,13 +107,6 @@ namespace WaywardGamers.KParser.Plugin
             toolStrip.Items.Add(mobsCombo);
             toolStrip.Items.Add(optionsMenu);
             toolStrip.Items.Add(editCustomMobFilter);
-
-
-            TrackedBuffNames.AddRange(accBuffNames);
-            TrackedBuffNames.AddRange(attBuffNames);
-            TrackedBuffNames.AddRange(hasteBuffNames);
-            TrackedBuffNames.AddRange(otherBuffNames);
-            
         }
         #endregion
 
@@ -172,61 +165,6 @@ namespace WaywardGamers.KParser.Plugin
         }
         #endregion
 
-        #region Buff lists
-        List<string> accBuffNames = new List<string>() {
-                Resources.ParsedStrings.Focus,
-                Resources.ParsedStrings.Aggressor,
-                Resources.ParsedStrings.Sharpshot,
-                Resources.ParsedStrings.Souleater,
-                Resources.ParsedStrings.DiabolicEye,
-                Resources.ParsedStrings.RngRoll,
-                Resources.ParsedStrings.Hasso,
-                Resources.ParsedStrings.Yonin,
-                Resources.ParsedStrings.Innin,
-                Resources.ParsedStrings.Madrigal1,
-                Resources.ParsedStrings.Madrigal2
-        };
-
-        List<string> attBuffNames = new List<string>() {
-                Resources.ParsedStrings.Minuet1,
-                Resources.ParsedStrings.Minuet2,
-                Resources.ParsedStrings.Minuet3,
-                Resources.ParsedStrings.Minuet4,
-                Resources.ParsedStrings.DrkRoll,
-                Resources.ParsedStrings.Berserk,
-                Resources.ParsedStrings.Warcry,
-                Resources.ParsedStrings.LastResort,
-                Resources.ParsedStrings.Souleater,
-                Resources.ParsedStrings.Hasso,
-                Resources.ParsedStrings.Defender,
-                Resources.ParsedStrings.Dia1,
-                Resources.ParsedStrings.Dia2,
-                Resources.ParsedStrings.Dia3,
-                Resources.ParsedStrings.Footwork
-        };
-
-        List<string> hasteBuffNames = new List<string>() {
-                Resources.ParsedStrings.Haste,
-                Resources.ParsedStrings.March1,
-                Resources.ParsedStrings.March2,
-                Resources.ParsedStrings.Hasso,
-                Resources.ParsedStrings.HasteSamba,
-                Resources.ParsedStrings.Refueling
-        };
-
-        /// <summary>
-        /// Not used in this plugin, but may be used by others.
-        /// </summary>
-        List<string> otherBuffNames = new List<string>() {
-                Resources.ParsedStrings.SamRoll,
-                Resources.ParsedStrings.WarRoll,
-                Resources.ParsedStrings.ThfRoll,
-                Resources.ParsedStrings.BlmRoll,
-        };
-
-        internal List<string> TrackedBuffNames = new List<string>();
-        #endregion
-
         #region Processing/display sections
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
@@ -252,8 +190,6 @@ namespace WaywardGamers.KParser.Plugin
             if (playerList.Count == 0)
                 return;
 
-
-            //List<PlayerTimeIntervalSets> intervalSets = GetTimeIntervals(dataSet, playerList);
             List<PlayerTimeIntervalSets> intervalSets = CollectTimeIntervals.GetTimeIntervals(dataSet, playerList);
 
             if (intervalSets == null)
@@ -358,7 +294,8 @@ namespace WaywardGamers.KParser.Plugin
 
                     if ((playerActions != null) &&
                         ((playerActions.Melee.Count() > 0) || (playerActions.Range.Count() > 0)) &&
-                        (playerInterval.TimeIntervalSets.Any(s => accBuffNames.Contains(s.SetName))))
+                        (playerInterval.TimeIntervalSets.Any(s =>
+                            CollectTimeIntervals.AccuracyBuffNames.Contains(s.SetName))))
                     {
                         sb.Append("\n");
                         strModList.Add(new StringMods
@@ -382,7 +319,7 @@ namespace WaywardGamers.KParser.Plugin
 
                         foreach (var intervalSet in playerInterval.TimeIntervalSets)
                         {
-                            if (accBuffNames.Contains(intervalSet.SetName))
+                            if (CollectTimeIntervals.AccuracyBuffNames.Contains(intervalSet.SetName))
                             {
                                 if (intervalSet.TimeIntervals.Count > 0)
                                 {
@@ -629,7 +566,8 @@ namespace WaywardGamers.KParser.Plugin
 
                     if ((playerActions != null) &&
                         ((playerActions.Melee.Count() > 0) || (playerActions.Range.Count() > 0)) &&
-                        (playerInterval.TimeIntervalSets.Any(s => attBuffNames.Contains(s.SetName))))
+                        (playerInterval.TimeIntervalSets.Any(s =>
+                        CollectTimeIntervals.AttackBuffNames.Contains(s.SetName))))
                     {
                         sb.Append("\n");
                         strModList.Add(new StringMods
@@ -652,7 +590,7 @@ namespace WaywardGamers.KParser.Plugin
 
                         foreach (var intervalSet in playerInterval.TimeIntervalSets)
                         {
-                            if (attBuffNames.Contains(intervalSet.SetName))
+                            if (CollectTimeIntervals.AttackBuffNames.Contains(intervalSet.SetName))
                             {
                                 if (intervalSet.TimeIntervals.Count > 0)
                                 {
@@ -954,7 +892,8 @@ namespace WaywardGamers.KParser.Plugin
 
                     if ((playerActions != null) &&
                         ((playerActions.Melee.Count() > 0) || (playerActions.WSkill.Count() > 0)) &&
-                        (playerInterval.TimeIntervalSets.Any(s => hasteBuffNames.Contains(s.SetName))))
+                        (playerInterval.TimeIntervalSets.Any(s =>
+                        CollectTimeIntervals.HasteBuffNames.Contains(s.SetName))))
                     {
                         sb.Append("\n");
                         strModList.Add(new StringMods
@@ -978,7 +917,7 @@ namespace WaywardGamers.KParser.Plugin
 
                         foreach (var intervalSet in playerInterval.TimeIntervalSets)
                         {
-                            if (hasteBuffNames.Contains(intervalSet.SetName))
+                            if (CollectTimeIntervals.HasteBuffNames.Contains(intervalSet.SetName))
                             {
                                 if (intervalSet.TimeIntervals.Count > 0)
                                 {
@@ -1038,435 +977,6 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             sb.Append("\n\n");
-        }
-
-        #endregion
-
-        #region Get Time-based info collected
-        internal List<PlayerTimeIntervalSets> GetTimeIntervals(KPDatabaseDataSet dataSet, List<string> playerList)
-        {
-            List<PlayerTimeIntervalSets> playerIntervals = new List<PlayerTimeIntervalSets>();
-
-            foreach (var player in playerList)
-            {
-                playerIntervals.Add(new PlayerTimeIntervalSets(player));
-            }
-
-            CompileFixedLengthBuffs(Resources.ParsedStrings.Focus, TimeSpan.FromMinutes(2), playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs(Resources.ParsedStrings.Aggressor, TimeSpan.FromMinutes(3), playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs(Resources.ParsedStrings.Sharpshot, TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs(Resources.ParsedStrings.Souleater, TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs(Resources.ParsedStrings.DiabolicEye, TimeSpan.FromMinutes(3), playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs(Resources.ParsedStrings.Berserk, TimeSpan.FromMinutes(3), playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs(Resources.ParsedStrings.Defender, TimeSpan.FromMinutes(3), playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs(Resources.ParsedStrings.Warcry, TimeSpan.FromSeconds(30), playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs(Resources.ParsedStrings.LastResort, TimeSpan.FromSeconds(30), playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs(Resources.ParsedStrings.Haste, TimeSpan.FromMinutes(3), playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs(Resources.ParsedStrings.Footwork, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs(Resources.ParsedStrings.Refueling, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
-
-            CompileStanceBuffs(Resources.ParsedStrings.Hasso, Resources.ParsedStrings.Seigan, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
-            CompileStanceBuffs(Resources.ParsedStrings.Yonin, Resources.ParsedStrings.Innin, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
-            CompileStanceBuffs(Resources.ParsedStrings.Innin, Resources.ParsedStrings.Yonin, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
-
-
-            string altSongsRegex = Resources.ParsedStrings.AnySong;
-
-            CompileSongBuffs(Resources.ParsedStrings.Minuet1, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
-            CompileSongBuffs(Resources.ParsedStrings.Minuet2, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
-            CompileSongBuffs(Resources.ParsedStrings.Minuet3, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
-            CompileSongBuffs(Resources.ParsedStrings.Minuet4, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
-            CompileSongBuffs(Resources.ParsedStrings.Madrigal1, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
-            CompileSongBuffs(Resources.ParsedStrings.Madrigal2, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
-            CompileSongBuffs(Resources.ParsedStrings.Prelude1, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
-            CompileSongBuffs(Resources.ParsedStrings.Prelude2, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
-            CompileSongBuffs(Resources.ParsedStrings.March1, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
-            CompileSongBuffs(Resources.ParsedStrings.March2, altSongsRegex, TimeSpan.FromSeconds(144), playerList, playerIntervals, dataSet);
-
-            string altRollsRegex = Resources.ParsedStrings.PhantomRoll;
-
-            CompileRollBuffs(Resources.ParsedStrings.RngRoll, altRollsRegex, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
-            CompileRollBuffs(Resources.ParsedStrings.DrkRoll, altRollsRegex, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
-            CompileRollBuffs(Resources.ParsedStrings.RngRoll, altRollsRegex, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
-            CompileRollBuffs(Resources.ParsedStrings.SamRoll, altRollsRegex, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
-            CompileRollBuffs(Resources.ParsedStrings.WarRoll, altRollsRegex, TimeSpan.FromMinutes(5), playerList, playerIntervals, dataSet);
-
-
-            //CompileDebuffs("Gravity", TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
-
-            CompileSambaBuffs(Resources.ParsedStrings.HasteSamba, Resources.ParsedStrings.AnySamba,
-                TimeSpan.FromMinutes(2), playerList, playerIntervals, dataSet);
-
-            CompileDebuffsWithOR(Resources.ParsedStrings.Dia1, Resources.ParsedStrings.Bio1,
-                TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
-            CompileDebuffsWithOR(Resources.ParsedStrings.Dia2, Resources.ParsedStrings.Bio2,
-                TimeSpan.FromMinutes(2), playerList, playerIntervals, dataSet);
-            CompileDebuffsWithOR(Resources.ParsedStrings.Dia3, Resources.ParsedStrings.Bio3,
-                TimeSpan.FromMinutes(1), playerList, playerIntervals, dataSet);
-
-
-            return playerIntervals;
-        }
-
-        private void CompileFixedLengthBuffs(string buffName, TimeSpan duration,
-           List<string> playerList, List<PlayerTimeIntervalSets> playerIntervals,
-           KPDatabaseDataSet dataSet)
-        {
-            var allBuffActions = from a in dataSet.Actions
-                                 where a.ActionName == buffName
-                                 select a.GetInteractionsRows();
-
-            List<KPDatabaseDataSet.InteractionsRow> iBuffList = new List<KPDatabaseDataSet.InteractionsRow>();
-
-            foreach (var actionSet in allBuffActions)
-            {
-                iBuffList.AddRange(actionSet);
-            }
-
-            var buffsByTarget = from i in iBuffList
-                                where i.IsActorIDNull() == false &&
-                                      i.Preparing == false
-                                let targetName = (i.IsTargetIDNull() == true) ? i.CombatantsRowByActorCombatantRelation.CombatantName : i.CombatantsRowByTargetCombatantRelation.CombatantName
-                                where playerList.Contains(targetName)
-                                group i by targetName into sn
-                                select sn;
-
-
-            if ((buffsByTarget != null) && (buffsByTarget.Count() > 0))
-            {
-                foreach (var targetBuffActions in buffsByTarget)
-                {
-                    if (targetBuffActions.Count() > 0)
-                    {
-                        var playerIntervalSet = playerIntervals.First(s => s.PlayerName == targetBuffActions.Key);
-                        TimeIntervalSet intervalSet = new TimeIntervalSet(buffName);
-
-                        foreach (var buff in targetBuffActions)
-                        {
-                            intervalSet.Add(new TimeInterval(buff.Timestamp, duration));
-                        }
-
-                        playerIntervalSet.AddIntervalSet(intervalSet);
-                    }
-                }
-            }
-        }
-
-        private void CompileStanceBuffs(string stanceBuffName, string oppositeBuffName, TimeSpan duration,
-           List<string> playerList, List<PlayerTimeIntervalSets> playerIntervals, KPDatabaseDataSet dataSet)
-        {
-            var buffUses = from a in dataSet.Actions
-                           where Regex.Match(a.ActionName, stanceBuffName).Success ||
-                                 Regex.Match(a.ActionName, oppositeBuffName).Success
-                           select new
-                           {
-                               BuffName = a.ActionName,
-                               PlayerUses = from i in a.GetInteractionsRows()
-                                            where (i.IsTargetIDNull() == true ||
-                                                  i.IsActorIDNull() == false) &&
-                                                  (AidType)i.AidType == AidType.Enhance // redundant
-                                            let userName = (i.IsTargetIDNull() == true) ? i.CombatantsRowByActorCombatantRelation.CombatantName : i.CombatantsRowByTargetCombatantRelation.CombatantName
-                                            where playerList.Contains(userName)
-                                            group i by userName into iu
-                                            select new
-                                            {
-                                                UserName = iu.Key,
-                                                Buffs = iu
-                                            }
-
-                           };
-
-            var buffUse = buffUses.FirstOrDefault(b => b.BuffName == stanceBuffName);
-
-            if ((buffUse != null) && (buffUse.PlayerUses.Count() > 0))
-            {
-                foreach (var baseStance in buffUse.PlayerUses)
-                {
-                    if (baseStance.Buffs.Count() > 0)
-                    {
-                        var playerIntervalSet = playerIntervals.First(s => s.PlayerName == baseStance.UserName);
-                        TimeIntervalSet intervalSet = new TimeIntervalSet(buffUse.BuffName);
-
-                        var oppositeBuffUse = buffUses.FirstOrDefault(b => b.BuffName == oppositeBuffName);
-                        var oppositeStances = (oppositeBuffUse != null) ? oppositeBuffUse.PlayerUses.FirstOrDefault(b => b.UserName == baseStance.UserName) : null;
-                        KPDatabaseDataSet.InteractionsRow oppositeStance;
-
-                        foreach (var buff in baseStance.Buffs)
-                        {
-                            oppositeStance = null;
-                            DateTime endTime = buff.Timestamp + duration;
-
-                            if (oppositeStances != null)
-                            {
-                                oppositeStance = oppositeStances.Buffs.FirstOrDefault(b => b.Timestamp > buff.Timestamp
-                                    && b.Timestamp < endTime);
-
-                                if (oppositeStance != null)
-                                {
-                                    var hassoCheck = baseStance.Buffs.FirstOrDefault(b => b.Timestamp > buff.Timestamp
-                                        && b.Timestamp < oppositeStance.Timestamp);
-
-                                    if (hassoCheck != null)
-                                    {
-                                        endTime = hassoCheck.Timestamp;
-                                    }
-                                    else
-                                    {
-                                        endTime = oppositeStance.Timestamp;
-                                    }
-                                }
-                            }
-
-                            intervalSet.Add(new TimeInterval(buff.Timestamp, endTime));
-                        }
-
-                        playerIntervalSet.AddIntervalSet(intervalSet);
-                    }
-                }
-            }
-        }
-
-        private void CompileSongBuffs(string songBuffName, string alternatesRegex, TimeSpan duration,
-           List<string> playerList, List<PlayerTimeIntervalSets> playerIntervals,
-           KPDatabaseDataSet dataSet)
-        {
-            var allSongActions = from a in dataSet.Actions
-                                 where Regex.Match(a.ActionName, alternatesRegex).Success
-                                 select a.GetInteractionsRows();
-
-            List<KPDatabaseDataSet.InteractionsRow> iSongList = new List<KPDatabaseDataSet.InteractionsRow>();
-
-            foreach (var actionSet in allSongActions)
-            {
-                iSongList.AddRange(actionSet);
-            }
-
-            var songsByTarget = from i in iSongList
-                                where i.IsActorIDNull() == false &&
-                                      i.IsTargetIDNull() == false &&
-                                      i.Preparing == false
-                                 let targetName = i.CombatantsRowByTargetCombatantRelation.CombatantName
-                                 where playerList.Contains(targetName)
-                                 group i by targetName into sn
-                                 select sn;
-
-
-            if ((songsByTarget != null)  && (songsByTarget.Count() > 0))
-            {
-                foreach (var targetSongActions in songsByTarget)
-                {
-                    if (targetSongActions.Count() > 0)
-                    {
-                        var orderedTargetSongActions = targetSongActions.OrderBy(a => a.Timestamp);
-
-                        var playerIntervalSet = playerIntervals.First(s => s.PlayerName == targetSongActions.Key);
-                        TimeIntervalSet intervalSet = new TimeIntervalSet(songBuffName);
-
-                        foreach (var targettedSong in orderedTargetSongActions.Where(s => s.ActionsRow.ActionName == songBuffName))
-                        {
-                            DateTime endTime = targettedSong.Timestamp + duration;
-
-                            var checkSongs = orderedTargetSongActions.Where(s => 
-                                (s.CombatantsRowByActorCombatantRelation.CombatantName ==
-                                 targettedSong.CombatantsRowByActorCombatantRelation.CombatantName) &&
-                                (s.Timestamp > targettedSong.Timestamp) &&
-                                (s.Timestamp < endTime));
-
-                            if (checkSongs.Count() > 1)
-                            {
-                                endTime = checkSongs.Skip(1).First().Timestamp;
-                            }
-
-                            intervalSet.Add(new TimeInterval(targettedSong.Timestamp, endTime));
-                        }
-
-                        playerIntervalSet.AddIntervalSet(intervalSet);
-                    }
-                }
-            }
-        }
-
-        private void CompileRollBuffs(string songBuffName, string alternatesRegex, TimeSpan duration,
-           List<string> playerList, List<PlayerTimeIntervalSets> playerIntervals,
-           KPDatabaseDataSet dataSet)
-        {
-            var allSongActions = from a in dataSet.Actions
-                                 where Regex.Match(a.ActionName, alternatesRegex).Success
-                                 select a.GetInteractionsRows();
-
-            List<KPDatabaseDataSet.InteractionsRow> iSongList = new List<KPDatabaseDataSet.InteractionsRow>();
-
-            foreach (var actionSet in allSongActions)
-            {
-                iSongList.AddRange(actionSet);
-            }
-
-            var songsByTarget = from i in iSongList
-                                where i.IsActorIDNull() == false &&
-                                      i.IsTargetIDNull() == false &&
-                                      i.Preparing == false
-                                let targetName = i.CombatantsRowByTargetCombatantRelation.CombatantName
-                                where playerList.Contains(targetName)
-                                group i by targetName into sn
-                                select sn;
-
-
-            if ((songsByTarget != null) && (songsByTarget.Count() > 0))
-            {
-                foreach (var targetSongActions in songsByTarget)
-                {
-                    if (targetSongActions.Count() > 0)
-                    {
-                        var orderedTargetSongActions = targetSongActions.OrderBy(a => a.Timestamp);
-
-                        var groupOrderedTargetRolls = orderedTargetSongActions.
-                            GroupAdjacentByTimeLimit<KPDatabaseDataSet.InteractionsRow, DateTime>(
-                            i => i.Timestamp, TimeSpan.FromSeconds(45));
-
-                        var playerIntervalSet = playerIntervals.First(s => s.PlayerName == targetSongActions.Key);
-                        TimeIntervalSet intervalSet = new TimeIntervalSet(songBuffName);
-
-
-                        foreach (var targettedSong in groupOrderedTargetRolls.Where(s => s.First().ActionsRow.ActionName == songBuffName))
-                        {
-                            DateTime endTime = targettedSong.First().Timestamp + duration;
-
-                            var checkSongs = groupOrderedTargetRolls.Where(s =>
-                                (s.First().CombatantsRowByActorCombatantRelation.CombatantName ==
-                                 targettedSong.First().CombatantsRowByActorCombatantRelation.CombatantName) &&
-                                (s.Key > targettedSong.Last().Timestamp) &&
-                                (s.Key < endTime));
-
-                            if (checkSongs.Count() > 1)
-                            {
-                                endTime = checkSongs.Skip(1).First().Key;
-                            }
-
-                            intervalSet.Add(new TimeInterval(targettedSong.Key, endTime));
-                        }
-
-                        playerIntervalSet.AddIntervalSet(intervalSet);
-                    }
-                }
-            }
-        }
-
-        private void CompileDebuffs(string debuffName, TimeSpan duration,
-           List<string> playerList, List<PlayerTimeIntervalSets> playerIntervals,
-           KPDatabaseDataSet dataSet)
-        {
-        }
-
-        private void CompileDebuffsWithOR(string debuffName, string overrideDebuffName, TimeSpan duration,
-           List<string> playerList, List<PlayerTimeIntervalSets> playerIntervals,
-           KPDatabaseDataSet dataSet)
-        {
-            var allDebuffActions = from a in dataSet.Actions
-                                 where a.ActionName == debuffName ||
-                                       Regex.Match(a.ActionName, overrideDebuffName).Success
-                                 select a.GetInteractionsRows();
-
-            List<KPDatabaseDataSet.InteractionsRow> iDebuffList = new List<KPDatabaseDataSet.InteractionsRow>();
-
-            foreach (var actionSet in allDebuffActions)
-            {
-                iDebuffList.AddRange(actionSet);
-            }
-
-            var debuffsByBattle = from d in iDebuffList
-                                  where d.IsBattleIDNull() == false
-                                  group d by d.BattleID into db
-                                  select db;
-
-            TimeIntervalSet intervalSet = new TimeIntervalSet(debuffName);
-            DateTime prevDebuffUseTime;
-
-            if ((debuffsByBattle != null) && (debuffsByBattle.Count() > 0))
-            {
-                foreach (var battleSet in debuffsByBattle)
-                {
-                    prevDebuffUseTime = DateTime.MinValue;
-
-                    foreach (var debuff in battleSet.Where(d => d.ActionsRow.ActionName == debuffName))
-                    {
-                        if (prevDebuffUseTime == DateTime.MinValue)
-                            prevDebuffUseTime = debuff.Timestamp;
-
-                        DateTime endTime = debuff.Timestamp + duration;
-
-                        var overrideDebuff = battleSet.FirstOrDefault(d => d.Timestamp >= debuff.Timestamp &&
-                            Regex.Match(d.ActionsRow.ActionName, overrideDebuffName).Success);
-
-                        if (overrideDebuff != null)
-                        {
-                            if (overrideDebuff.Timestamp < endTime)
-                                endTime = overrideDebuff.Timestamp;
-                        }
-
-                        intervalSet.Add(new TimeInterval(debuff.Timestamp, endTime));
-
-                    }
-                }
-            }
-
-            if (intervalSet.TimeIntervals.Count > 0)
-            {
-                foreach (var player in playerList)
-                {
-                    var playerIntervalSet = playerIntervals.First(s => s.PlayerName == player);
-
-                    playerIntervalSet.AddIntervalSet(intervalSet);
-                }
-            }
-        }
-
-        private void CompileSambaBuffs(string buffName, string overrideBuffs, TimeSpan duration,
-           List<string> playerList, List<PlayerTimeIntervalSets> playerIntervals,
-           KPDatabaseDataSet dataSet)
-        {
-            var allBuffActions = from a in dataSet.Actions
-                                 where Regex.Match(a.ActionName, overrideBuffs).Success
-                                 select a.GetInteractionsRows();
-
-            List<KPDatabaseDataSet.InteractionsRow> iBuffList = new List<KPDatabaseDataSet.InteractionsRow>();
-
-            foreach (var actionSet in allBuffActions)
-            {
-                iBuffList.AddRange(actionSet);
-            }
-
-            if (iBuffList.Count == 0)
-                return;
-
-            var sambaBuffList = iBuffList.OrderBy(a => a.Timestamp).ToList<KPDatabaseDataSet.InteractionsRow>();
-
-            TimeIntervalSet intervalSet = new TimeIntervalSet(buffName);
-
-            var sambaBuffs = from i in sambaBuffList
-                             where i.ActionsRow.ActionName == buffName
-                             select i;
-
-            foreach (var samba in sambaBuffs)
-            {
-                DateTime endTime = samba.Timestamp + duration;
-
-                var limitSamba = sambaBuffList.Find(b => b.Timestamp > samba.Timestamp && b.Timestamp < endTime);
-
-                if (limitSamba != null)
-                    endTime = limitSamba.Timestamp;
-
-                intervalSet.Add(new TimeInterval(samba.Timestamp, endTime));
-            }
-
-            if (intervalSet.TimeIntervals.Count > 0)
-            {
-                foreach (var player in playerList)
-                {
-                    var playerIntervalSet = playerIntervals.First(s => s.PlayerName == player);
-
-                    playerIntervalSet.AddIntervalSet(intervalSet);
-                }
-            }
         }
 
         #endregion
