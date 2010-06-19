@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using WaywardGamers.KParser.Database;
+using WaywardGamers.KParser.Utility;
 using ZedGraph;
 
 namespace WaywardGamers.KParser.Plugin
@@ -41,8 +42,6 @@ namespace WaywardGamers.KParser.Plugin
         int xAxisSize;
 
         Color[] indexOfColors = new Color[18];
-
-        BuffsByTimePlugin bbt = new BuffsByTimePlugin();
 
         // Localized strings
 
@@ -247,7 +246,7 @@ namespace WaywardGamers.KParser.Plugin
                                 select c.ActionsRow.ActionName;
 
                 var allBuffs = targetBuffs.Concat(selfBuffs).Distinct()
-                    .Where(b => bbt.TrackedBuffNames.Contains(b))
+                    .Where(b => CollectTimeIntervals.TrackedBuffNames.Contains(b))
                     .OrderBy(b => b);
 
                 buffStrings.AddRange(allBuffs);
@@ -543,7 +542,7 @@ namespace WaywardGamers.KParser.Plugin
 
                     if (buffName != lsNone)
                     {
-                        var intervals = bbt.GetTimeIntervals(dataSet, new List<string>() { player.Name });
+                        var intervals = CollectTimeIntervals.GetTimeIntervals(dataSet, new List<string>() { player.Name });
 
                         var playerIntervals = intervals.FirstOrDefault(i => i.PlayerName == player.Name);
 
