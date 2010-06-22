@@ -318,8 +318,12 @@ namespace WaywardGamers.KParser.Plugin
 
                         foreach (var ae in groupMeleeByAE)
                         {
-                            var meleeAfterAE = player.Melee.Where(m =>
-                                ae.Any(a => m.Timestamp >= a.Timestamp && m.Timestamp <= a.Timestamp.AddSeconds(30)));
+                            var meleeAfterAE = player.Melee
+                                .Where(m =>
+                                ae.Any(a =>
+                                    a.BattleID == m.BattleID &&
+                                    m.Timestamp >= a.Timestamp &&
+                                    m.Timestamp <= a.Timestamp.AddSeconds(30)));
 
                             int countMeleeAfterAE = meleeAfterAE.Count();
                             int outsideMelee = meleeCount - countMeleeAfterAE;
