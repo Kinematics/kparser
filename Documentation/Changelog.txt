@@ -1,6 +1,12 @@
 KParser Change Log
 
 
+1.5.8 (June 21, 2010)
+* Improve processing speed of Buffs By Time plugin.
++ Add new weaponskill, spell, and JA names.
+* New memloc location: 0x005827D8
+
+
 1.5.7 (June 15, 2010)
 + Addition of MP/TP efficiency calculations to Recovery tab.
 * Improve processing speed of Recovery plugin. (~5x faster)
