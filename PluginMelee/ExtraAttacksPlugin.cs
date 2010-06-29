@@ -1439,8 +1439,8 @@ namespace WaywardGamers.KParser.Plugin
         private int[] FillBuckets(List<TimeSpan> attackIntervals)
         {
             // fill buckets in 1/2 second intervals
-            // initialize at 16 buckets, for up to 8 seconds
-            int[] bucketList = new int[8];
+            // initialize at 50 buckets, for up to 25 seconds
+            int[] bucketList = new int[50];
 
             int bucket = 0;
 
@@ -1448,12 +1448,7 @@ namespace WaywardGamers.KParser.Plugin
             {
                 bucket = (int)Math.Floor(interval.TotalSeconds * 2);
 
-                // resize if needed, to a max of 50 (25 seconds)
-                if ((bucket > bucketList.Length) && (bucket <= 50))
-                {
-                    Array.Resize<int>(ref bucketList, bucket + 1);
-                }
-
+                // Ignore intervals greater than 25 seconds
                 if (bucket < bucketList.Length)
                     bucketList[bucket]++;
             }
