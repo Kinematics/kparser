@@ -1493,8 +1493,8 @@ namespace WaywardGamers.KParser.Plugin
 
                 // Older parses captured at 1 second intervals; they won't
                 // have any data every other bucket.
-                if (currCount == 0)
-                    continue;
+                //if (currCount == 0)
+                //    continue;
 
                 // If we're sitting on a new wall (increase of 50% over previous bucket,
                 // and a count of at least 1% of the total sum of all buckets), add it to the list.
