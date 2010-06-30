@@ -142,6 +142,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Animating Wail.
+        /// </summary>
+        public static string AnimatingWail {
+            get {
+                return ResourceManager.GetString("AnimatingWail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Roll|Double-Up|Bust.
         /// </summary>
         public static string AnyRoll {
@@ -2334,6 +2343,15 @@ namespace WaywardGamers.KParser.Resources {
         public static string PldRoll {
             get {
                 return ResourceManager.GetString("PldRoll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plenilune Embrace.
+        /// </summary>
+        public static string PleniluneEmbrace {
+            get {
+                return ResourceManager.GetString("PleniluneEmbrace", resourceCulture);
             }
         }
         

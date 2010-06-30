@@ -1263,4 +1263,10 @@
   <data name="Cure6" xml:space="preserve">
     <value>Cure VI</value>
   </data>
+  <data name="AnimatingWail" xml:space="preserve">
+    <value>Animating Wail</value>
+  </data>
+  <data name="PleniluneEmbrace" xml:space="preserve">
+    <value>Plenilune Embrace</value>
+  </data>
 </root>
