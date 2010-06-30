@@ -346,7 +346,8 @@ namespace WaywardGamers.KParser.Utility
                     Resources.ParsedStrings.March2,
                     Resources.ParsedStrings.Hasso,
                     Resources.ParsedStrings.HasteSamba,
-                    Resources.ParsedStrings.Refueling
+                    Resources.ParsedStrings.Refueling,
+                    Resources.ParsedStrings.AnimatingWail
                 };
             }
         }
@@ -472,6 +473,8 @@ namespace WaywardGamers.KParser.Utility
             CompileFixedLengthBuffs(Resources.ParsedStrings.Footwork, TimeSpan.FromMinutes(5),
                 playerList, playerIntervals, dataSet);
             CompileFixedLengthBuffs(Resources.ParsedStrings.Refueling, TimeSpan.FromMinutes(5),
+                playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.AnimatingWail, TimeSpan.FromMinutes(5),
                 playerList, playerIntervals, dataSet);
             CompileFixedLengthBuffs(Resources.ParsedStrings.Restraint, TimeSpan.FromMinutes(5),
                 playerList, playerIntervals, dataSet);
