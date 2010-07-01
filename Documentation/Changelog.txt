@@ -1,10 +1,16 @@
 KParser Change Log
 
+1.5.9 (July ??, 2010)
++ Add new blu spells: Animating Wail (haste tracking on Buffs By Time/Damage Graph) and Plenilune Embrace (Recovery).
+* Remove legacy support for older parses that used 1 second sample intervals, when trying to calculate Extra Attacks.  This caused problems with newer parses that had smaller sample sizes.
++ Add min/max weaponskill damage to data shown by TP under WS Rates tab.
+* Detailed listing of weaponskill damage by TP is only shown when Show Details is checked.
+
 
 1.5.8 (June 21, 2010)
 * Improve processing speed of Buffs By Time plugin.
 + Add new weaponskill, spell, and JA names.
-* New memloc location: 0x005827D8
+* New memloc value: 0x005827D8
 
 
 1.5.7 (June 15, 2010)
