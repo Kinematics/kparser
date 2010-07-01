@@ -40,6 +40,13 @@ namespace WaywardGamers.KParser.Database
             }
         }
 
+        public bool HasAccess
+        {
+            get
+            {
+                return (databaseRef != null);
+            }
+        }
 
         /// <summary>
         /// Releases unmanaged resources and performs other cleanup operations before the
@@ -67,7 +74,10 @@ namespace WaywardGamers.KParser.Database
         {
             if (disposing == true)
             {
-                DatabaseManager.Instance.DoneReadingDatabase();
+                if (databaseRef != null)
+                {
+                    DatabaseManager.Instance.DoneReadingDatabase();
+                }
 
                 if (regionName != null)
                     Debug.WriteLine(string.Concat("Exiting database access region (", regionName, ")."));

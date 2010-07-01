@@ -188,62 +188,65 @@ namespace WaywardGamers.KParser.Forms
 
                 using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
                 {
-                    // Determine the first and last timestamp of the database
-                    var firstLine = dbAccess.Database.RecordLog.FirstOrDefault();
-                    bool hasData = (firstLine != null);
-
-                    startAtBeginningOfParse.Enabled = hasData;
-                    endAtEndOfParse.Enabled = hasData;
-                    startAtTime.Enabled = hasData;
-                    endAtTime.Enabled = hasData;
-
-                    if (hasData == true)
+                    if (dbAccess.HasAccess)
                     {
-                        firstTime = firstLine.Timestamp;
+                        // Determine the first and last timestamp of the database
+                        var firstLine = dbAccess.Database.RecordLog.FirstOrDefault();
+                        bool hasData = (firstLine != null);
 
-                        var lastLine = dbAccess.Database.RecordLog.Last();
-                        lastTime = lastLine.Timestamp;
+                        startAtBeginningOfParse.Enabled = hasData;
+                        endAtEndOfParse.Enabled = hasData;
+                        startAtTime.Enabled = hasData;
+                        endAtTime.Enabled = hasData;
 
-                        // Set these values as the min/max value for the datetimepickers.
-                        startDateTimePicker.MinDate = firstTime.ToLocalTime();
-                        startDateTimePicker.MaxDate = lastTime.ToLocalTime();
-                        startDateTimePicker.Value = firstTime.ToLocalTime();
-                        endDateTimePicker.MinDate = firstTime.ToLocalTime();
-                        endDateTimePicker.MaxDate = lastTime.ToLocalTime();
-                        endDateTimePicker.Value = lastTime.ToLocalTime();
+                        if (hasData == true)
+                        {
+                            firstTime = firstLine.Timestamp;
 
-                        // And update the default choices and boundaries with these values.
-                        startAtBeginningOfParse.Checked = true;
-                        endAtEndOfParse.Checked = true;
-                        StartBoundary = firstTime;
-                        EndBoundary = lastTime;
-                    }
-                    else
-                    {
-                        // If there's nothing in the database, default the values and return.
-                        firstTime = DateTime.MinValue;
-                        lastTime = DateTime.MinValue;
+                            var lastLine = dbAccess.Database.RecordLog.Last();
+                            lastTime = lastLine.Timestamp;
 
-                        // Disable everything if there's nothing in the database.
-                        startGroup.Enabled = false;
-                        endGroup.Enabled = false;
-                        acceptButton.Enabled = false;
+                            // Set these values as the min/max value for the datetimepickers.
+                            startDateTimePicker.MinDate = firstTime.ToLocalTime();
+                            startDateTimePicker.MaxDate = lastTime.ToLocalTime();
+                            startDateTimePicker.Value = firstTime.ToLocalTime();
+                            endDateTimePicker.MinDate = firstTime.ToLocalTime();
+                            endDateTimePicker.MaxDate = lastTime.ToLocalTime();
+                            endDateTimePicker.Value = lastTime.ToLocalTime();
 
-                        return;
-                    }
+                            // And update the default choices and boundaries with these values.
+                            startAtBeginningOfParse.Checked = true;
+                            endAtEndOfParse.Checked = true;
+                            StartBoundary = firstTime;
+                            EndBoundary = lastTime;
+                        }
+                        else
+                        {
+                            // If there's nothing in the database, default the values and return.
+                            firstTime = DateTime.MinValue;
+                            lastTime = DateTime.MinValue;
 
-                    // If there are any fights in the database, enable the options
-                    // to use those as demarcations, and load the battle list.
-                    bool hasBattles = dbAccess.Database.Battles.Any(b => b.DefaultBattle == false);
+                            // Disable everything if there's nothing in the database.
+                            startGroup.Enabled = false;
+                            endGroup.Enabled = false;
+                            acceptButton.Enabled = false;
 
-                    startAtStartOfFight.Enabled = hasBattles;
-                    startAtEndOfFight.Enabled = hasBattles;
-                    endAtStartOfFight.Enabled = hasBattles;
-                    endAtEndOfFight.Enabled = hasBattles;
+                            return;
+                        }
 
-                    if (hasBattles == true)
-                    {
-                        LoadBattleLists(dbAccess);
+                        // If there are any fights in the database, enable the options
+                        // to use those as demarcations, and load the battle list.
+                        bool hasBattles = dbAccess.Database.Battles.Any(b => b.DefaultBattle == false);
+
+                        startAtStartOfFight.Enabled = hasBattles;
+                        startAtEndOfFight.Enabled = hasBattles;
+                        endAtStartOfFight.Enabled = hasBattles;
+                        endAtEndOfFight.Enabled = hasBattles;
+
+                        if (hasBattles == true)
+                        {
+                            LoadBattleLists(dbAccess);
+                        }
                     }
                 }
             }

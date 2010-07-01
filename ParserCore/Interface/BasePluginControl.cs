@@ -157,7 +157,7 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         using (AccessToTheDatabase dbAccess = new AccessToTheDatabase())
                         {
-                            if (dbAccess.Database != null)
+                            if (dbAccess.HasAccess)
                                 ProcessData(dbAccess.Database);
                         }
                     }
@@ -534,12 +534,15 @@ namespace WaywardGamers.KParser.Plugin
 
             using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
             {
-                var speakers = from s in dbAccess.Database.ChatSpeakers
-                               orderby s.SpeakerName
-                               select  s.SpeakerName;
+                if (dbAccess.HasAccess)
+                {
+                    var speakers = from s in dbAccess.Database.ChatSpeakers
+                                   orderby s.SpeakerName
+                                   select s.SpeakerName;
 
-                foreach (var speaker in speakers)
-                    speakerStrings.Add(speaker);
+                    foreach (var speaker in speakers)
+                        speakerStrings.Add(speaker);
+                }
             }
 
             return speakerStrings.ToArray();
@@ -556,7 +559,7 @@ namespace WaywardGamers.KParser.Plugin
 
             using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
             {
-                if (dbAccess.Database != null)
+                if (dbAccess.HasAccess)
                 {
                     var playersFighting = from b in dbAccess.Database.Combatants
                                           where (((EntityType)b.CombatantType == EntityType.Player ||
@@ -589,7 +592,7 @@ namespace WaywardGamers.KParser.Plugin
 
             using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
             {
-                if (dbAccess.Database != null)
+                if (dbAccess.HasAccess)
                 {
                     if (groupMobs == true)
                     {
@@ -703,7 +706,7 @@ namespace WaywardGamers.KParser.Plugin
 
             using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
             {
-                if (dbAccess.Database != null)
+                if (dbAccess.HasAccess)
                 {
                     var speakers = from s in dbAccess.Database.ChatSpeakers
                                    orderby s.SpeakerName
@@ -741,7 +744,7 @@ namespace WaywardGamers.KParser.Plugin
 
             using (Database.AccessToTheDatabase dbAccess = new AccessToTheDatabase())
             {
-                if (dbAccess.Database != null)
+                if (dbAccess.HasAccess)
                 {
                     var playersFighting = from b in dbAccess.Database.Combatants
                                           where (((EntityType)b.CombatantType == EntityType.Player ||
