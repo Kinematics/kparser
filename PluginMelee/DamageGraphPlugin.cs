@@ -226,7 +226,10 @@ namespace WaywardGamers.KParser.Plugin
 
                 using (var db = new Database.AccessToTheDatabase())
                 {
-                    playerBuffs = GetPlayerBuffs(db.Database, player);
+                    if (db.HasAccess)
+                    {
+                        playerBuffs = GetPlayerBuffs(db.Database, player);
+                    }
                 }
 
                 if (playerBuffs == null)

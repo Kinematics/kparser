@@ -275,7 +275,8 @@ namespace WaywardGamers.KParser.Plugin
             {
                 using (AccessToTheDatabase db = new AccessToTheDatabase())
                 {
-                    UpdateAccumulation(db.Database, false);
+                    if (db.HasAccess)
+                        UpdateAccumulation(db.Database, false);
                 }
             }
             else
