@@ -1359,7 +1359,8 @@ namespace WaywardGamers.KParser.Plugin
                         attackCalcs.Add(RunCalculations(combatant.DisplayName, timestampedAttackGroups, attacksPerRound, playerKills));
 
                         if (showDetails)
-                            AddDetailsForOutput(ref sbDetails, combatant.DisplayName, bucketCounts, timestampedAttackGroups);
+                            AddDetailsForOutput(ref sbDetails,
+                                combatant.DisplayName, bucketCounts, timestampedAttackGroups, valleyTimepoints);
                     }
                 }
 
@@ -1406,7 +1407,8 @@ namespace WaywardGamers.KParser.Plugin
                                 playerKills));
 
                         if (showDetails)
-                            AddDetailsForOutput(ref sbDetails, combatant.DisplayName, bucketCounts, timestampedAttackGroups);
+                            AddDetailsForOutput(ref sbDetails, combatant.DisplayName, bucketCounts,
+                                timestampedAttackGroups, null);
                     //}
                 }            
             }
@@ -1792,7 +1794,8 @@ namespace WaywardGamers.KParser.Plugin
         }
 
         private void AddDetailsForOutput(ref StringBuilder sbDetails, string name, int[] bucketCounts,
-            IEnumerable<IGrouping<DateTime, KPDatabaseDataSet.InteractionsRow>> timestampedAttackGroups)
+            IEnumerable<IGrouping<DateTime, KPDatabaseDataSet.InteractionsRow>> timestampedAttackGroups,
+            List<TimeSpan> valleyTimepoints)
         {
             sbDetails.Append("\n");
             sbDetails.AppendLine(name);
@@ -1806,6 +1809,17 @@ namespace WaywardGamers.KParser.Plugin
 
                 sbDetails.Append("  ");
                 sbDetails.Append(string.Format("{0,6:d}", bucketCounts[i]));
+            }
+            sbDetails.Append("\n\n");
+
+            if (valleyTimepoints != null)
+            {
+                sbDetails.Append("  Timepoints\n");
+
+                foreach (var tp in valleyTimepoints)
+                {
+                    sbDetails.Append(string.Format("   - {0:f2}\n", tp.TotalSeconds));
+                }
             }
             sbDetails.Append("\n");
 
