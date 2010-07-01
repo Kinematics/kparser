@@ -74,10 +74,7 @@ namespace WaywardGamers.KParser.Database
         {
             if (disposing == true)
             {
-                if (databaseRef != null)
-                {
-                    DatabaseManager.Instance.DoneReadingDatabase();
-                }
+                DatabaseManager.Instance.DoneReadingDatabase();
 
                 if (regionName != null)
                     Debug.WriteLine(string.Concat("Exiting database access region (", regionName, ")."));
