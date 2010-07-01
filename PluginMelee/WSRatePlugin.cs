@@ -531,7 +531,7 @@ namespace WaywardGamers.KParser.Plugin
                     });
                     sb.Append(tmp + "\n\n");
 
-                    string tpHeader = "TP    Count      Freq %    Total WS Dmg    Avg WS Dmg";
+                    string tpHeader = "TP    Count      Freq %    Total WS Dmg    Min WS Dmg    Max WS Dmg    Avg WS Dmg";
 
                     strModList.Add(new StringMods
                     {
@@ -546,38 +546,43 @@ namespace WaywardGamers.KParser.Plugin
 
                     foreach (var tp in groupedWSTP.OrderBy(a => a.Key))
                     {
-                        sb.AppendFormat("{0,-3}{1,8}{2,12:p2}{3,16}{4,14:f2}",
+                        sb.AppendFormat("{0,-3}{1,8}{2,12:p2}{3,16}{4,14}{5,14}{6,14:f2}",
                             tp.Key,
                             tp.Count(),
                             (double)tp.Count() / wsCount,
                             tp.Sum(a => a.WS.Amount),
+                            tp.Min(a => a.WS.Amount),
+                            tp.Max(a => a.WS.Amount),
                             tp.Average(a => a.WS.Amount));
                         sb.Append("\n");
                     }
                     sb.Append("\n");
 
-
-                    tmp = "Details:";
-
-                    strModList.Add(new StringMods
+                    if (showDetails)
                     {
-                        Start = sb.Length,
-                        Length = tmp.Length,
-                        Bold = true,
-                        Color = Color.Blue
-                    });
-                    sb.Append(tmp + "\n\n");
+                        tmp = "Details:";
 
-                    foreach (var tp in groupedWSTP.OrderBy(a => a.Key))
-                    {
-                        sb.AppendFormat("{0} TP\n", tp.Key);
-
-                        foreach (var ws in tp.OrderBy(a => a.WS.Timestamp))
+                        strModList.Add(new StringMods
                         {
-                            sb.AppendFormat("   {0}\n", ws.WS.Amount);
+                            Start = sb.Length,
+                            Length = tmp.Length,
+                            Bold = true,
+                            Color = Color.Blue
+                        });
+                        sb.Append(tmp + "\n\n");
+
+                        foreach (var tp in groupedWSTP.OrderBy(a => a.Key))
+                        {
+                            sb.AppendFormat("{0} TP\n", tp.Key);
+
+                            foreach (var ws in tp.OrderBy(a => a.WS.Timestamp))
+                            {
+                                sb.AppendFormat("   {0}\n", ws.WS.Amount);
+                            }
                         }
+                        sb.Append("\n\n");
                     }
-                    sb.Append("\n\n");
+
                 }
             }
         }
@@ -856,9 +861,6 @@ namespace WaywardGamers.KParser.Plugin
                 }
 
 
-
-
-
                 // Construct the details info
                 if (showDetails)
                 {
@@ -926,8 +928,6 @@ namespace WaywardGamers.KParser.Plugin
             // Main loop done, show details if appropriate
             if (showDetails)
             {
-                sb.Append("\n\n");
-
                 strModList.Add(new StringMods
                 {
                     Start = sb.Length,
