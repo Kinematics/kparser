@@ -149,6 +149,7 @@
       <DependentUpon>PublicResources.resx</DependentUpon>
     </Compile>
     <Compile Include="Utility\GoogleTranslate.cs" />
+    <Compile Include="Utility\MathUtil.cs" />
     <Compile Include="Utility\PluginUtilities.cs" />
     <Compile Include="Utility\RTFStringMods.cs" />
     <Compile Include="KPDatabaseDataSet.cs">
