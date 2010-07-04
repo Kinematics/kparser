@@ -43,6 +43,7 @@ namespace WaywardGamers.KParser
         private static readonly string number      = @"(?<number>\d{1,5})";
         private static readonly string item        = @"(([Aa]|[Aa]n|[Tt]he) )?(?<item>(\?\?\? )?.{3,})";
         private static readonly string money       = @"((?<money>\d{1,5}?) gil)";
+        private static readonly string cruor       = @"((?<money>\d{1,5}?) cruor)";
         private static readonly string spell       = @"(?<spell>\w+((: (Ichi|Ni|San))|(((('s |. |-)\w+( [A-Z]\w+)?)|(( \w+(?<! (on|III|II|IV|VI|V))){1,2}))?( (III|II|IV|VI|V))?))?)";
         private static readonly string ability     = @"(?<ability>\w+((: \w+)|(-\w+)( \w+)?|('s \w+)|( \w+)( \w+)?| of the \w+)?( \w+'\w{2,})?)";
         private static readonly string effect      = @"(?<effect>\w+( \w+(\.)?){0,2})";
@@ -92,6 +93,7 @@ namespace WaywardGamers.KParser
         internal static readonly Regex OpenChest  = new Regex(string.Format("^{0} opens {1} and finds {2}\\.$", playername, target, item));
         internal static readonly Regex GetLoot    = new Regex(string.Format("^{0} obtains {1}(\\.|!)$", playername, item));
         internal static readonly Regex GetGil     = new Regex(string.Format("^{0} obtains {1}\\.$", playername, money));
+        internal static readonly Regex GetCruor   = new Regex(string.Format("^{0} obtains {1}\\.$", playername, cruor));
         internal static readonly Regex LootReqr   = new Regex(string.Format("^You do not meet the requirements to obtain {0}\\.$", item));
         internal static readonly Regex LootLost   = new Regex(string.Format("^{0} (?!was )lost\\.$", item));
         internal static readonly Regex LotItem    = new Regex(string.Format("^{0}'s lot for {1}: {2} points\\.$", playername, item, number));
@@ -325,6 +327,7 @@ namespace WaywardGamers.KParser
             OpenChest    = new Regex(string.Format("^{0} opens {1} and finds {2}\\.$", playername, target, item));
             GetLoot      = new Regex(string.Format("^{0} obtains {1}(\\.|!)$", playername, item));
             GetGil       = new Regex(string.Format("^{0} obtains {1}\\.$", playername, money));
+            GetCruor     = new Regex(string.Format("^{0} obtains {1}\\.$", playername, cruor));
             LootReqr     = new Regex(string.Format("^You do not meet the requirements to obtain {0}\\.$", item));
             LootLost     = new Regex(string.Format("^{0} (?!was )lost\\.$", item));
             LotItem      = new Regex(string.Format("^{0}'s lot for {1}: {2} points\\.$", playername, item, number));
@@ -523,6 +526,7 @@ namespace WaywardGamers.KParser
             OpenChest    = new Regex(string.Format("^{0} opens {1} and finds {2}\\.$", playername, target, item));
             GetLoot      = new Regex(string.Format("^{0} obtains {1}(\\.|!)$", playername, item));
             GetGil       = new Regex(string.Format("^{0} obtains {1}\\.$", playername, money));
+            GetCruor     = new Regex(string.Format("^{0} obtains {1}\\.$", playername, cruor));
             LootReqr     = new Regex(string.Format("^You do not meet the requirements to obtain {0}\\.$", item));
             LootLost     = new Regex(string.Format("^{0} (?!was )lost\\.$", item));
             LotItem      = new Regex(string.Format("^{0}'s lot for {1}: {2} points\\.$", playername, item, number));
@@ -720,6 +724,7 @@ namespace WaywardGamers.KParser
             OpenChest    = new Regex(string.Format("^{0} opens {1} and finds {2}\\.$", playername, target, item));
             GetLoot      = new Regex(string.Format("^{0} obtains {1}(\\.|!)$", playername, item));
             GetGil       = new Regex(string.Format("^{0} obtains {1}\\.$", playername, money));
+            GetCruor     = new Regex(string.Format("^{0} obtains {1}\\.$", playername, cruor));
             LootReqr     = new Regex(string.Format("^You do not meet the requirements to obtain {0}\\.$", item));
             LootLost     = new Regex(string.Format("^{0} (?!was )lost\\.$", item));
             LotItem      = new Regex(string.Format("^{0}'s lot for {1}: {2} points\\.$", playername, item, number));
@@ -728,7 +733,6 @@ namespace WaywardGamers.KParser
             Mug          = new Regex(string.Format("^{0} mugs {1} from {2}\\.$", playername, money, target));
             FailMug      = new Regex(string.Format("^{0} fails to mug {1}\\.$", playername, target));
             #endregion
-
 
             #region Preparing to take action
             PrepSpell    = new Regex(string.Format("^{0} start(s)? casting {1}\\.$", name, spell));
@@ -896,6 +900,7 @@ namespace WaywardGamers.KParser
         private static string number;
         private static string item;
         private static string money;
+        private static string cruor;
         private static string spell;
         private static string ability;
         private static string effect;
@@ -938,6 +943,7 @@ namespace WaywardGamers.KParser
         internal static Regex OpenChest;
         internal static Regex GetLoot;
         internal static Regex GetGil;
+        internal static Regex GetCruor;
         internal static Regex LootReqr;
         internal static Regex LootLost;
         internal static Regex LotItem;
