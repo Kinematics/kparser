@@ -50,7 +50,6 @@ namespace WaywardGamers.KParser.Plugin
         // Localizable strings
 
         // Display strings
-        string lsGil;
         string lsItemDrops;
         string lsDistribution;
         string lsCellDrops;
@@ -69,7 +68,8 @@ namespace WaywardGamers.KParser.Plugin
         string lsDropRateFormat;
 
         // Parse strings
-        string lsParsedGil;
+        string lsGil;
+        string lsCruor;
         string lsSalvageCell;
         string lsCrystalsAndSealsRegex;
 
@@ -379,16 +379,26 @@ namespace WaywardGamers.KParser.Plugin
 
         private void ProcessSummary(KPDatabaseDataSet dataSet)
         {
+            List<StringMods> strModList = new List<StringMods>();
+            StringBuilder sb = new StringBuilder();
+
             // All items
-            AppendText(lsItemDrops, Color.Red, true, false);
-            AppendText("\n");
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = lsItemDrops.Length,
+                Bold = true,
+                Color = Color.Red
+            });
+            sb.Append(lsItemDrops);
+            sb.Append("\n");
 
             string dropListFormat = "{0,9} {1}\n";
 
             int totalGil = 0;
             string gilPlayerName = string.Empty;
 
-            var gilItem = dataSet.Items.SingleOrDefault(i => i.ItemName == lsParsedGil);
+            var gilItem = dataSet.Items.SingleOrDefault(i => i.ItemName == lsGil);
             if (gilItem != null)
             {
                 gilPlayerName = gilItem.GetLootRows().First().CombatantsRow.CombatantName;
@@ -397,16 +407,31 @@ namespace WaywardGamers.KParser.Plugin
 
             if (totalGil > 0)
             {
-                AppendText(string.Format(dropListFormat, totalGil, lsGil));
+                sb.AppendFormat(dropListFormat, totalGil, lsGil);
+            }
+
+            int totalCruor = 0;
+            string cruorPlayerName = string.Empty;
+
+            var cruorItem = dataSet.Items.SingleOrDefault(i => i.ItemName == lsCruor);
+            if (cruorItem != null)
+            {
+                cruorPlayerName = cruorItem.GetLootRows().First().CombatantsRow.CombatantName;
+                totalCruor = cruorItem.GetLootRows().Sum(l => l.GilDropped);
+            }
+
+            if (totalCruor > 0)
+            {
+                sb.AppendFormat(dropListFormat, totalCruor, lsCruor);
             }
 
             foreach (var item in dataSet.Items)
             {
                 if ((item.GetLootRows().Count() > 0) &&
-                    (item.ItemName != lsParsedGil))
+                    (item.ItemName != lsGil) &&
+                    (item.ItemName != lsCruor))
                 {
-                    AppendText(string.Format(dropListFormat,
-                        item.GetLootRows().Count(), item.ItemName));
+                    sb.AppendFormat(dropListFormat, item.GetLootRows().Count(), item.ItemName);
                 }
             }
 
@@ -427,30 +452,47 @@ namespace WaywardGamers.KParser.Plugin
 
             if (lootByPlayer.Count() > 0)
             {
-                AppendText("\n\n");
-                AppendText(lsDistribution, Color.Red, true, false);
-                AppendText("\n");
+                sb.Append("\n\n");
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = lsDistribution.Length,
+                    Bold = true,
+                    Color = Color.Red
+                });
+                sb.Append(lsDistribution);
+                sb.Append("\n");
 
                 foreach (var loot in lootByPlayer)
                 {
-                    AppendText(string.Format("\n    {0}\n", loot.Name), Color.Black, true, false);
+                    string tmp = string.Format("\n    {0}\n", loot.Name);
+                    strModList.Add(new StringMods
+                    {
+                        Start = sb.Length,
+                        Length = tmp.Length,
+                        Bold = true,
+                        Color = Color.Black
+                    });
+                    sb.Append(tmp);
 
                     if (totalGil > 0)
                     {
                         if (gilPlayerName == loot.Name)
-                            AppendText(string.Format(dropListFormat, totalGil, lsGil));
+                            sb.AppendFormat(dropListFormat, totalGil, lsGil);
                     }
 
                     foreach (var lootItem in loot.LootItems)
                     {
-                        if (lootItem.Key != lsParsedGil)
+                        if ((lootItem.Key != lsGil) && (lootItem.Key != lsCruor))
                         {
-                            AppendText(string.Format(dropListFormat,
-                                lootItem.Count(), lootItem.Key));
+                            sb.AppendFormat(dropListFormat,
+                                lootItem.Count(), lootItem.Key);
                         }
                     }
                 }
             }
+
+            PushStrings(sb, strModList);
         }
 
         private void ProcessSalvage(KPDatabaseDataSet dataSet)
@@ -511,7 +553,7 @@ namespace WaywardGamers.KParser.Plugin
             }
             else
             {
-                excludeItemsRegex = new Regex(lsParsedGil);
+                excludeItemsRegex = new Regex(lsGil);
             }
 
             #region LINQ
@@ -1144,8 +1186,8 @@ namespace WaywardGamers.KParser.Plugin
         {
             this.tabName = Resources.NonCombat.TreasurePluginTabName;
 
-            lsGil = Resources.NonCombat.TreasurePluginGil;
-            lsParsedGil = Resources.ParsedStrings.Gil;
+            lsGil = Resources.ParsedStrings.Gil;
+            lsCruor = Resources.ParsedStrings.Cruor;
             lsItemDrops = Resources.NonCombat.TreasurePluginItemDrops;
             lsDistribution = Resources.NonCombat.TreasurePluginDistribution;
             lsNoDrops = Resources.NonCombat.TreasurePluginNoDrops;
