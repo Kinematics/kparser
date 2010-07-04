@@ -30,6 +30,11 @@ namespace WaywardGamers.KParser
         internal int Gil { get; set; }
 
         /// <summary>
+        /// Gets and sets the amount of gil obtained.
+        /// </summary>
+        internal int Amount { get; set; }
+
+        /// <summary>
         /// Gets and sets the name of the item
         /// </summary>
         internal string ItemName { get; set; }
@@ -74,6 +79,7 @@ namespace WaywardGamers.KParser
             sb.AppendFormat("    Mob Name: {0}\n", TargetName);
             sb.AppendFormat("    Who Obtained: {0}\n", WhoObtained);
             sb.AppendFormat("    Gil: {0}\n", Gil);
+            sb.AppendFormat(" Amount: {0}\n", Amount);
 
             return sb.ToString();
         }
