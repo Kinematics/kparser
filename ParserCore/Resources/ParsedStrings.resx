@@ -1269,4 +1269,7 @@
   <data name="PleniluneEmbrace" xml:space="preserve">
     <value>Plenilune Embrace</value>
   </data>
+  <data name="Cruor" xml:space="preserve">
+    <value>Cruor</value>
+  </data>
 </root>
