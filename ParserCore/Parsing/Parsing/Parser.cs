@@ -846,7 +846,7 @@ namespace WaywardGamers.KParser.Parsing
                 msgCombatDetails.ActionName = Resources.ParsedStrings.Mug;
                 target = msgCombatDetails.AddTarget(stealMatch.Groups[ParseFields.Fulltarget].Value);
                 msgCombatDetails.ActionType = ActionType.Steal;
-                target.Amount = int.Parse(stealMatch.Groups[ParseFields.Money].Value);
+                target.Amount = int.Parse(stealMatch.Groups[ParseFields.Number].Value);
                 msgCombatDetails.HarmType = HarmType.None;
                 msgCombatDetails.AidType = AidType.None;
                 message.SetParseSuccess(true);
@@ -989,6 +989,17 @@ namespace WaywardGamers.KParser.Parsing
                                 message.SetParseSuccess(true);
                                 break;
                             }
+                            // Obtaining Cruor in Abyssea
+                            lootOrXP = ParseExpressions.GetCruor.Match(message.CurrentMessageText);
+                            if (lootOrXP.Success == true)
+                            {
+                                message.EventDetails.EventMessageType = EventMessageType.Loot;
+                                message.EventDetails.LootDetails.IsFoundMessage = false;
+                                message.EventDetails.LootDetails.ItemName = lootOrXP.Groups[ParseFields.Item].Value;
+                                message.EventDetails.LootDetails.WhoObtained = lootOrXP.Groups[ParseFields.Name].Value;
+                                message.SetParseSuccess(true);
+                                break;
+                            }
                             message.EventDetails.EventMessageType = EventMessageType.Other;
                             message.SetParseSuccess(true);
                             break;
@@ -1010,7 +1021,7 @@ namespace WaywardGamers.KParser.Parsing
                     {
                         message.EventDetails.EventMessageType = EventMessageType.Loot;
                         message.EventDetails.LootDetails.IsFoundMessage = false;
-                        message.EventDetails.LootDetails.Gil = int.Parse(lootOrXP.Groups[ParseFields.Money].Value);
+                        message.EventDetails.LootDetails.Gil = int.Parse(lootOrXP.Groups[ParseFields.Number].Value);
                         message.EventDetails.LootDetails.WhoObtained = lootOrXP.Groups[ParseFields.Name].Value;
                         message.SetParseSuccess(true);
                         break;

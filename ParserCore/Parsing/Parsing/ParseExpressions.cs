@@ -14,7 +14,6 @@ namespace WaywardGamers.KParser
         internal static readonly string Damage     = "damage";
         internal static readonly string Number     = "number";
         internal static readonly string Item       = "item";
-        internal static readonly string Money      = "money";
         internal static readonly string Spell      = "spell";
         internal static readonly string Ability    = "ability";
         internal static readonly string Effect     = "effect";
@@ -42,8 +41,8 @@ namespace WaywardGamers.KParser
         private static readonly string damage      = @"(?<damage>\d{1,5})";
         private static readonly string number      = @"(?<number>\d{1,5})";
         private static readonly string item        = @"(([Aa]|[Aa]n|[Tt]he) )?(?<item>(\?\?\? )?.{3,})";
-        private static readonly string money       = @"((?<money>\d{1,5}?) gil)";
-        private static readonly string cruor       = @"((?<money>\d{1,5}?) cruor)";
+        private static readonly string money       = @"((?<number>\d{1,5}?) gil)";
+        private static readonly string cruor       = @"((?<number>\d{1,5}?) cruor)";
         private static readonly string spell       = @"(?<spell>\w+((: (Ichi|Ni|San))|(((('s |. |-)\w+( [A-Z]\w+)?)|(( \w+(?<! (on|III|II|IV|VI|V))){1,2}))?( (III|II|IV|VI|V))?))?)";
         private static readonly string ability     = @"(?<ability>\w+((: \w+)|(-\w+)( \w+)?|('s \w+)|( \w+)( \w+)?| of the \w+)?( \w+'\w{2,})?)";
         private static readonly string effect      = @"(?<effect>\w+( \w+(\.)?){0,2})";
@@ -284,7 +283,7 @@ namespace WaywardGamers.KParser
             damage       = @"(?<damage>\d{1,5})";
             number       = @"(?<number>\d{1,5})";
             item         = @"(([Aa]|[Aa]n|[Tt]he) )?(?<item>(\?\?\? )?.{3,})";
-            money        = @"((?<money>\d{1,5}?) gil)";
+            money        = @"((?<number>\d{1,5}?) gil)";
             spell        = @"(?<spell>\w+((: (Ichi|Ni|San))|(((('s |. |-)\w+)|(( \w+(?<! (on|III|II|IV|VI|V))){1,2}))?( (III|II|IV|VI|V))?))?)";
             ability      = @"(?<ability>\w+((: \w+)|(-\w+)( \w+)?|('s \w+)|( \w+)( \w+)?| of the \w+)?( \w+'\w{2,})?)";
             effect       = @"(?<effect>\w+( \w+(\.)?){0,2})";
@@ -483,7 +482,8 @@ namespace WaywardGamers.KParser
             damage       = @"(?<damage>\d{1,5})";
             number       = @"(?<number>\d{1,3}( \d{3})*)";
             item         = @"(([Aa]|[Aa]n|[Tt]he) )?(?<item>(\?\?\? )?.{3,})";
-            money        = @"((?<money>\d{1,5}?) gil)";
+            money        = @"((?<number>\d{1,5}?) gil)";
+            cruor        = @"((?<number>\d{1,5}?) cruor)";
             spell        = @"(?<spell>\w+(( : (Ichi|Ni|San))|(((('s |. |-)\w+)|(( \w+(?<! (on|III|II|IV|VI|V))){1,2}))?( (III|II|IV|VI|V))?))?)";
             ability      = @"(?<ability>\w+((: \w+)|(-\w+)( \w+)?|('s \w+)|( \w+)( \w+)?| of the \w+)?( \w+'\w{2,})?)";
             effect       = @"(?<effect>\w+( \w+(\.)?){0,2})";
@@ -681,7 +681,7 @@ namespace WaywardGamers.KParser
             damage       = @"(?<damage>\d{1,5})";
             number       = @"(?<number>\d{1,5})";
             item         = @"(([Aa]|[Aa]n|[Tt]he) )?(?<item>(\?\?\? )?.{3,})";
-            money        = @"((?<money>\d{1,5}?) gil)";
+            money        = @"((?<number>\d{1,5}?) gil)";
             spell        = @"(?<spell>\w+(( : (Ichi|Ni|San))|(((('s |. |-)\w+)|(( \w+(?<! (on|III|II|IV|VI|V))){1,2}))?( (III|II|IV|VI|V))?))?)";
             ability      = @"(?<ability>\w+((: \w+)|(-\w+)( \w+)?|('s \w+)|( \w+)( \w+)?| of the \w+)?( \w+'\w{2,})?)";
             effect       = @"(?<effect>\w+( \w+(\.)?){0,2})";
