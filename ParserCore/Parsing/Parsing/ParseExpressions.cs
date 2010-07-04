@@ -92,7 +92,7 @@ namespace WaywardGamers.KParser
         internal static readonly Regex OpenChest  = new Regex(string.Format("^{0} opens {1} and finds {2}\\.$", playername, target, item));
         internal static readonly Regex GetLoot    = new Regex(string.Format("^{0} obtains {1}(\\.|!)$", playername, item));
         internal static readonly Regex GetGil     = new Regex(string.Format("^{0} obtains {1}\\.$", playername, money));
-        internal static readonly Regex GetCruor   = new Regex(string.Format("^{0} obtains {1}\\.$", playername, cruor));
+        internal static readonly Regex GetCruor   = new Regex(string.Format("^{0} obtained {1}\\.$", playername, cruor));
         internal static readonly Regex LootReqr   = new Regex(string.Format("^You do not meet the requirements to obtain {0}\\.$", item));
         internal static readonly Regex LootLost   = new Regex(string.Format("^{0} (?!was )lost\\.$", item));
         internal static readonly Regex LotItem    = new Regex(string.Format("^{0}'s lot for {1}: {2} points\\.$", playername, item, number));
