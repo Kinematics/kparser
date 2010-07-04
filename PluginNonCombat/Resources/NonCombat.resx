@@ -267,9 +267,6 @@
   <data name="TreasurePluginDropRates" xml:space="preserve">
     <value>Drop Rates</value>
   </data>
-  <data name="TreasurePluginGil" xml:space="preserve">
-    <value>Gil</value>
-  </data>
   <data name="TreasurePluginItemDrops" xml:space="preserve">
     <value>Item Drops</value>
   </data>

@@ -547,15 +547,6 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Gil.
-        /// </summary>
-        internal static string TreasurePluginGil {
-            get {
-                return ResourceManager.GetString("TreasurePluginGil", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to You are unable to harvest anything..
         /// </summary>
         internal static string TreasurePluginHarvestFail {
