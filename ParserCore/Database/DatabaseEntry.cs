@@ -358,7 +358,8 @@ namespace WaywardGamers.KParser.Database
             {
                 // Messages for when items or gil are distributed to players.
 
-                if (message.EventDetails.LootDetails.Gil == 0)
+                if ((message.EventDetails.LootDetails.Gil == 0) &&
+                    (message.EventDetails.LootDetails.Amount == 0))
                 {
                     // handle item drops
 
@@ -407,17 +408,27 @@ namespace WaywardGamers.KParser.Database
 
                     if (lastFinishedBattle != null)
                     {
-                        // Get the "Gil" item from the items table (created if necessary).
-                        var itemRow = localDB.Items.GetItem("Gil");
+                        KPDatabaseDataSet.ItemsRow itemRow = null;
+
+                        if (message.EventDetails.LootDetails.ItemName == ":cruor")
+                        {
+                            // Get the "Cruor" item from the items table (created if necessary).
+                            itemRow = localDB.Items.GetItem("Cruor");
+                        }
+                        else
+                        {
+                            // Get the "Gil" item from the items table (created if necessary).
+                            itemRow = localDB.Items.GetItem("Gil");
+                        }
 
                         if (string.IsNullOrEmpty(message.EventDetails.LootDetails.WhoObtained) == false)
                         {
                             var player = localDB.Combatants.GetCombatant(message.EventDetails.LootDetails.WhoObtained, EntityType.Player);
-                            localDB.Loot.AddLootRow(itemRow, lastFinishedBattle, player, message.EventDetails.LootDetails.Gil, false);
+                            localDB.Loot.AddLootRow(itemRow, lastFinishedBattle, player, message.EventDetails.LootDetails.Amount, false);
                         }
                         else
                         {
-                            localDB.Loot.AddLootRow(itemRow, lastFinishedBattle, null, message.EventDetails.LootDetails.Gil, false);
+                            localDB.Loot.AddLootRow(itemRow, lastFinishedBattle, null, message.EventDetails.LootDetails.Amount, false);
                         }
                     }
                 }

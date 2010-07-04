@@ -995,7 +995,8 @@ namespace WaywardGamers.KParser.Parsing
                             {
                                 message.EventDetails.EventMessageType = EventMessageType.Loot;
                                 message.EventDetails.LootDetails.IsFoundMessage = false;
-                                message.EventDetails.LootDetails.ItemName = lootOrXP.Groups[ParseFields.Item].Value;
+                                message.EventDetails.LootDetails.Amount = int.Parse(lootOrXP.Groups[ParseFields.Number].Value);
+                                message.EventDetails.LootDetails.ItemName = ":cruor";
                                 message.EventDetails.LootDetails.WhoObtained = lootOrXP.Groups[ParseFields.Name].Value;
                                 message.SetParseSuccess(true);
                                 break;
@@ -1022,6 +1023,8 @@ namespace WaywardGamers.KParser.Parsing
                         message.EventDetails.EventMessageType = EventMessageType.Loot;
                         message.EventDetails.LootDetails.IsFoundMessage = false;
                         message.EventDetails.LootDetails.Gil = int.Parse(lootOrXP.Groups[ParseFields.Number].Value);
+                        message.EventDetails.LootDetails.Amount = int.Parse(lootOrXP.Groups[ParseFields.Number].Value);
+                        message.EventDetails.LootDetails.ItemName = ":gil";
                         message.EventDetails.LootDetails.WhoObtained = lootOrXP.Groups[ParseFields.Name].Value;
                         message.SetParseSuccess(true);
                         break;
