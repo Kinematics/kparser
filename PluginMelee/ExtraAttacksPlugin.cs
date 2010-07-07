@@ -7,6 +7,7 @@ using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using WaywardGamers.KParser;
+using WaywardGamers.KParser.Utility;
 
 namespace WaywardGamers.KParser.Plugin
 {
@@ -21,9 +22,6 @@ namespace WaywardGamers.KParser.Plugin
         ToolStripComboBox attacksCombo = new ToolStripComboBox();
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
         ToolStripMenuItem showDetailOption = new ToolStripMenuItem();
-
-        ToolStripMenuItem alternateProcessOption = new ToolStripMenuItem();
-        bool alternateProcessMode = true;
 
         // Localized strings
 
@@ -87,17 +85,8 @@ namespace WaywardGamers.KParser.Plugin
             showDetailOption.Checked = false;
             showDetailOption.Click += new EventHandler(showDetailOption_Click);
 
-            alternateProcessOption.CheckOnClick = true;
-            alternateProcessOption.Checked = true;
-            alternateProcessOption.Click += new EventHandler(alternateProcessOption_Click);
-
             optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
             optionsMenu.DropDownItems.Add(showDetailOption);
-
-            // Only add the option to turn off the new method in Debug mode, for comparative purposes.
-#if DEBUG
-            optionsMenu.DropDownItems.Add(alternateProcessOption);
-#endif
 
             toolStrip.Items.Add(playersLabel);
             toolStrip.Items.Add(playersCombo);
@@ -1307,31 +1296,62 @@ namespace WaywardGamers.KParser.Plugin
 
 
             int attacksPerRound;
-            IEnumerable<IGrouping<DateTime, KPDatabaseDataSet.InteractionsRow>> timestampedAttackGroups;
+            IEnumerable<IGrouping<DateTime, KPDatabaseDataSet.InteractionsRow>> timestampedAttackGroups = null;
             List<AttackCalculations> attackCalcs = new List<AttackCalculations>();
             List<AttackCalculations> rangedAttackCalcs = new List<AttackCalculations>();
 
             // Fill in the timestamp lists at the start.
             foreach (var combatant in simpleAttackList)
             {
-                if (combatant.SimpleMelee.Count() > 0)
+                if (combatant.SimpleMelee.Count() > 1)
                 {
                     // fill in buckets of count of .5 second intervals in the timespan list.
-                    int[] bucketCounts = FillBuckets(GetAltTimespanList(combatant.SimpleMelee));
+                    var tsList = GetTimespanList(combatant.SimpleMelee);
+                    int[] bucketCounts = FillBuckets(tsList);
 
                     // determine the timespans that indicate a division between rounds vs
                     // double attacks
                     List<TimeSpan> valleyTimepoints = AnalyzeBuckets(bucketCounts);
 
-                    // As long as we get any distinctive valley profile, use the first one as
-                    // the separator between non-DA and DA attacks.
+                    // experimental
                     if ((valleyTimepoints.Count > 0))
                     {
+                        // new rounds start on intervals higher than the first valley
+                        List<int> tsIndexes = new List<int>();
+                        TimeSpan valley = valleyTimepoints.First();
+
+                        List<KPDatabaseDataSet.InteractionsRow> startRoundMelee =
+                            new List<KPDatabaseDataSet.InteractionsRow>();
+
+                        startRoundMelee.Add(combatant.SimpleMelee.First());
+
+                        for (int i = 1; i < tsList.Count; i++)
+                        {
+                            if (tsList[i] > valley)
+                            {
+                                startRoundMelee.Add(combatant.SimpleMelee.ElementAt(i + 1));
+                            }
+                        }
+
+                        var startTSList = GetTimespanList(startRoundMelee);
+
+                        TimeSpan hMean = startTSList.GetHarmonicMean() - TimeSpan.FromSeconds(.75);
+
+                        timestampedAttackGroups = combatant.SimpleMelee.
+                            GroupAdjacentByTimeDiffLimit<KPDatabaseDataSet.InteractionsRow, DateTime>(
+                            i => i.Timestamp, TimeSpan.FromSeconds(1.5));
+                    //}
+
+
+                    // As long as we get any distinctive valley profile, use the first one as
+                    // the separator between non-DA and DA attacks.
+                    //if ((valleyTimepoints.Count > 0))
+                    //{
                         // Lazy grouping for attacks within the timespan
                         // specified by the first valley marker.
-                        timestampedAttackGroups = combatant.SimpleMelee.
-                            GroupAdjacentByTimeLimit<KPDatabaseDataSet.InteractionsRow, DateTime>(
-                            i => i.Timestamp, valleyTimepoints.First());
+                        //timestampedAttackGroups = combatant.SimpleMelee.
+                        //    GroupAdjacentByTimeLimit<KPDatabaseDataSet.InteractionsRow, DateTime>(
+                        //    i => i.Timestamp, valleyTimepoints.First());
 
                         // auto-determine # of attacks per round?
                         if (defaultAttacksPerRound == 0)
@@ -1367,7 +1387,7 @@ namespace WaywardGamers.KParser.Plugin
                 if (combatant.SimpleRanged.Count() > 0)
                 {
                     // fill in buckets of count of .5 second intervals in the timespan list.
-                    int[] bucketCounts = FillBuckets(GetAltTimespanList(combatant.SimpleRanged));
+                    int[] bucketCounts = FillBuckets(GetTimespanList(combatant.SimpleRanged));
 
                     // determine the timespans that indicate a division between rounds vs
                     // double attacks
@@ -1421,7 +1441,7 @@ namespace WaywardGamers.KParser.Plugin
 
         }
 
-        private List<TimeSpan> GetAltTimespanList(IEnumerable<KPDatabaseDataSet.InteractionsRow> simpleMelee)
+        private List<TimeSpan> GetTimespanList(IEnumerable<KPDatabaseDataSet.InteractionsRow> simpleMelee)
         {
             List<TimeSpan> tsList = new List<TimeSpan>();
 
@@ -1866,20 +1886,6 @@ namespace WaywardGamers.KParser.Plugin
 
             flagNoUpdate = false;
         }
-
-        protected void alternateProcessOption_Click(object sender, EventArgs e)
-        {
-            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
-            if (sentBy == null)
-                return;
-
-            alternateProcessMode = sentBy.Checked;
-
-            if (flagNoUpdate == false)
-                HandleDataset(null);
-
-            flagNoUpdate = false;
-        }
         #endregion
 
         #region Localization Overrides
@@ -1897,7 +1903,6 @@ namespace WaywardGamers.KParser.Plugin
 
             optionsMenu.Text = Resources.PublicResources.Options;
             showDetailOption.Text = Resources.PublicResources.ShowDetail;
-            alternateProcessOption.Text = "Alternate Calculation Mode";
 
             UpdatePlayerList();
             playersCombo.SelectedIndex = 0;
