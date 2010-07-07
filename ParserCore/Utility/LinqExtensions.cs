@@ -190,6 +190,48 @@ namespace WaywardGamers.KParser
                 yield return (IGrouping<TKey, TSource>)(new GroupOfAdjacent<TSource, DateTime>(list, first));
         }
 
+
+        public static IEnumerable<IGrouping<TKey, TSource>> GroupAdjacentByTimeDiffLimit<TSource, TKey>(
+            this IEnumerable<TSource> source,
+            Func<TSource, DateTime> keySelector,
+            TimeSpan adjacentTime) where TKey : IComparable<DateTime>
+        {
+            DateTime first = default(DateTime);
+            DateTime last = default(DateTime);
+            bool haveLast = false;
+            List<TSource> list = new List<TSource>();
+
+            foreach (TSource s in source)
+            {
+                DateTime k = keySelector(s);
+                if (haveLast)
+                {
+                    if (!((k - last) <= adjacentTime))
+                    {
+                        yield return (IGrouping<TKey, TSource>)(new GroupOfAdjacent<TSource, DateTime>(list, first));
+                        list = new List<TSource>();
+                        list.Add(s);
+                        first = k;
+                        last = k;
+                    }
+                    else
+                    {
+                        list.Add(s);
+                        last = k;
+                    }
+                }
+                else
+                {
+                    list.Add(s);
+                    first = k;
+                    last = k;
+                    haveLast = true;
+                }
+            }
+            if (haveLast)
+                yield return (IGrouping<TKey, TSource>)(new GroupOfAdjacent<TSource, DateTime>(list, first));
+        }
+
         /// <summary>
         /// A specialized version of the grouping extension that groups adjacent elements
         /// that are equal, or that match with a comparer function.
