@@ -381,8 +381,8 @@ namespace WaywardGamers.KParser
         /// returns null.</returns>
         internal KPDatabaseDataSet GetDatabaseForReading()
         {
-            // Wait for up to 5 seconds to try to acquire the mutex.
-            if (databaseAccessMutex.WaitOne(5000) == true)
+            // Wait for up to 2 seconds to try to acquire the mutex.
+            if (databaseAccessMutex.WaitOne() == true)
                 return localDB;
             else
                 return null;
