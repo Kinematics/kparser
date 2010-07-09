@@ -93,17 +93,21 @@ namespace WaywardGamers.KParser.Plugin
         {
             ResetTextBox();
             MobXPHandler.Instance.Update();
-            ProcessExperience(dataSet);
-            ProcessMobs(dataSet);
+
+            StringBuilder sb = new StringBuilder();
+            List<StringMods> strModList = new List<StringMods>();
+
+            ProcessExperience(dataSet, ref sb, ref strModList);
+            ProcessMobs(dataSet, ref sb, ref strModList);
+
+            PushStrings(sb, strModList);
         }
         #endregion
 
         #region Processing functions
-        private void ProcessExperience(KPDatabaseDataSet dataSet)
+        private void ProcessExperience(KPDatabaseDataSet dataSet,
+            ref StringBuilder sb, ref List<StringMods> strModList)
         {
-            StringBuilder sb1 = new StringBuilder();
-            StringBuilder sb2 = new StringBuilder();
-
             var completedFights = from b in dataSet.Battles
                                    where b.Killed == true &&
                                    (excludedPlayerInfo == false ||
@@ -174,53 +178,66 @@ namespace WaywardGamers.KParser.Plugin
                 avgFightLength = totalFightsLength.TotalSeconds / totalFights;
                 timePerFight = partyDuration.TotalSeconds / totalFights;
 
-                sb1.AppendFormat(lsXPListFormatNum + "\n", lsTotalExperience, totalXP);
-                sb1.AppendFormat(lsXPListFormatNum + "\n", lsNumberOfFights, totalFights);
-                sb1.AppendFormat(lsXPListFormatNum + "\n", lsDate, startTime.ToLocalTime().ToShortDateString());
-                sb1.AppendFormat(lsXPListFormatNum + "\n", lsStartTime, startTime.ToLocalTime().ToLongTimeString());
-                sb1.AppendFormat(lsXPListFormatNum + "\n", lsEndTime, endTime.ToLocalTime().ToLongTimeString());
-                sb1.AppendFormat(lsXPListFormatTime + "\n",
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = lsExperienceRates.Length,
+                    Bold = true,
+                    Color = Color.Black
+                });
+                sb.Append(lsExperienceRates + "\n");
+
+
+                sb.AppendFormat(lsXPListFormatNum + "\n", lsTotalExperience, totalXP);
+                sb.AppendFormat(lsXPListFormatNum + "\n", lsNumberOfFights, totalFights);
+                sb.AppendFormat(lsXPListFormatNum + "\n", lsDate, startTime.ToLocalTime().ToShortDateString());
+                sb.AppendFormat(lsXPListFormatNum + "\n", lsStartTime, startTime.ToLocalTime().ToLongTimeString());
+                sb.AppendFormat(lsXPListFormatNum + "\n", lsEndTime, endTime.ToLocalTime().ToLongTimeString());
+                sb.AppendFormat(lsXPListFormatTime + "\n",
                     lsPartyDuration, partyDuration.Hours, partyDuration.Minutes, partyDuration.Seconds);
-                sb1.AppendFormat(lsXPListFormatTime + "\n",
+                sb.AppendFormat(lsXPListFormatTime + "\n",
                     lsTotalFightTime, totalFightsLength.Hours, totalFightsLength.Minutes, totalFightsLength.Seconds);
-                sb1.AppendFormat(lsXPListFormatSec + "\n", lsAverageTimePerFight, timePerFight);
-                sb1.AppendFormat(lsXPListFormatSec + "\n", lsAverageFightLength, avgFightLength);
-                sb1.AppendFormat(lsXPListFormatDec + "\n", lsXPPerFight, xpPerFight);
-                sb1.AppendFormat(lsXPListFormatDec + "\n", lsXPPerMinute, xpPerMinute);
-                sb1.AppendFormat(lsXPListFormatDec + "\n", lsXPPerHour, xpPerHour);
-                sb1.Append("\n\n");
+                sb.AppendFormat(lsXPListFormatSec + "\n", lsAverageTimePerFight, timePerFight);
+                sb.AppendFormat(lsXPListFormatSec + "\n", lsAverageFightLength, avgFightLength);
+                sb.AppendFormat(lsXPListFormatDec + "\n", lsXPPerFight, xpPerFight);
+                sb.AppendFormat(lsXPListFormatDec + "\n", lsXPPerMinute, xpPerMinute);
+                sb.AppendFormat(lsXPListFormatDec + "\n", lsXPPerHour, xpPerHour);
+                sb.Append("\n\n");
 
 
-                sb2.Append(lsChainHeader);
-                sb2.Append("\n");
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = lsExperienceChains.Length,
+                    Bold = true,
+                    Color = Color.Black
+                });
+                sb.Append(lsExperienceChains + "\n");
+
+
+                sb.Append(lsChainHeader);
+                sb.Append("\n");
 
                 for (int i = 0; i < 10; i++)
                 {
                     if (chainCounts[i] > 0)
-                        sb2.AppendFormat(lsChainFormat + "\n", i, chainCounts[i], chainXPTotals[i],
+                        sb.AppendFormat(lsChainFormat + "\n", i, chainCounts[i], chainXPTotals[i],
                             (double)chainXPTotals[i] / chainCounts[i]);
                 }
 
                 if (chainCounts[10] > 0)
                 {
-                    sb2.AppendFormat(lsChainFormat + "\n", "10+", chainCounts[10], chainXPTotals[10],
+                    sb.AppendFormat(lsChainFormat + "\n", "10+", chainCounts[10], chainXPTotals[10],
                         (double)chainXPTotals[10] / chainCounts[10]);
                 }
 
-                sb2.Append("\n");
-                sb2.AppendFormat("{0}:  {1}\n\n\n", lsHighestChain, maxChain);
-
-
-                // Dump all the constructed text above into the window.
-                AppendText(lsExperienceRates + "\n", Color.Black, true, false);
-                AppendText(sb1.ToString());
-
-                AppendText(lsExperienceChains +"\n", Color.Black, true, false);
-                AppendText(sb2.ToString());
+                sb.Append("\n");
+                sb.AppendFormat("{0}:  {1}\n\n\n", lsHighestChain, maxChain);
             }
         }
 
-        private void ProcessMobs(KPDatabaseDataSet dataSet)
+        private void ProcessMobs(KPDatabaseDataSet dataSet,
+            ref StringBuilder sb, ref List<StringMods> strModList)
         {
             var mobSet = from c in dataSet.Combatants
                          where (c.CombatantType == (byte)EntityType.Mob)
@@ -242,7 +259,6 @@ namespace WaywardGamers.KParser.Plugin
             if ((mobSet == null) || (mobSet.Count() == 0))
                 return;
 
-            StringBuilder sb = new StringBuilder();
             bool headerDisplayed = false;
 
             double ttlMobFightTime;
@@ -262,8 +278,24 @@ namespace WaywardGamers.KParser.Plugin
                         {
                             if (headerDisplayed == false)
                             {
-                                AppendText(lsMobListing + "\n", Color.Blue, true, false);
-                                AppendText(lsMobListingHeader + "\n", Color.Black, true, true);
+                                strModList.Add(new StringMods
+                                {
+                                    Start = sb.Length,
+                                    Length = lsMobListing.Length,
+                                    Bold = true,
+                                    Color = Color.Blue
+                                });
+                                sb.Append(lsMobListing + "\n");
+
+                                strModList.Add(new StringMods
+                                {
+                                    Start = sb.Length,
+                                    Length = lsMobListingHeader.Length,
+                                    Bold = true,
+                                    Underline = true,
+                                    Color = Color.Black
+                                });
+                                sb.Append(lsMobListingHeader + "\n");
 
                                 headerDisplayed = true;
                             }
@@ -318,7 +350,6 @@ namespace WaywardGamers.KParser.Plugin
             if (headerDisplayed == true)
             {
                 sb.Append("\n\n");
-                AppendText(sb.ToString());
             }
         }
         #endregion
