@@ -53,6 +53,8 @@ namespace WaywardGamers.KParser.Plugin
         protected override void ProcessData(KPDatabaseDataSet dataSet)
         {
             ResetTextBox();
+            List<StringMods> strModList = new List<StringMods>();
+            StringBuilder sb = new StringBuilder();
 
             var playerData = from c in dataSet.Combatants
                              where ((EntityType)c.CombatantType == EntityType.Player ||
@@ -70,25 +72,46 @@ namespace WaywardGamers.KParser.Plugin
             if (playerData.Count() == 0)
                 return;
 
-            string playerDescrip;
+            string noInfoDescrip = string.Format("    {0}", Resources.NonCombat.PlayerInfoPluginNoInfo);
 
             foreach (var player in playerData)
             {
                 if (player.Description != "")
                 {
-                    playerDescrip = string.Format("\n    {0}\n\n", player.Description);
-                    AppendText(player.Name, Color.Blue, true, false);
-                    AppendText(playerDescrip);
+                    strModList.Add(new StringMods
+                    {
+                        Start = sb.Length,
+                        Length = player.Name.Length,
+                        Bold = true,
+                        Color = Color.Blue
+                    });
+                    sb.Append(player.Name + "\n");
+
+                    sb.AppendFormat("    {0}\n\n", player.Description);
                 }
                 else
                 {
-                    playerDescrip = string.Format("\n    {0}\n\n", Resources.NonCombat.PlayerInfoPluginNoInfo);
-                    AppendText(player.Name, Color.Blue, true, false);
-                    AppendText(playerDescrip, Color.Red, true, false);
+                    strModList.Add(new StringMods
+                    {
+                        Start = sb.Length,
+                        Length = player.Name.Length,
+                        Bold = true,
+                        Color = Color.Blue
+                    });
+                    sb.Append(player.Name + "\n");
+
+                    strModList.Add(new StringMods
+                    {
+                        Start = sb.Length,
+                        Length = noInfoDescrip.Length,
+                        Bold = true,
+                        Color = Color.Red
+                    });
+                    sb.Append(noInfoDescrip + "\n\n");
                 }
             }
 
-            AppendText("\n");
+            PushStrings(sb, strModList);
         }
         #endregion
 
