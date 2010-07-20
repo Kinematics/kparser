@@ -26,6 +26,9 @@ namespace WaywardGamers.KParser.Utility
                 denom += 1 / index.TotalSeconds;
             }
 
+            if (denom == 0)
+                return new TimeSpan();
+
             TimeSpan hMean = TimeSpan.FromSeconds(tsIndexes.Count / denom);
 
             return hMean;
