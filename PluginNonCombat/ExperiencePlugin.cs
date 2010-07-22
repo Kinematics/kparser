@@ -240,7 +240,7 @@ namespace WaywardGamers.KParser.Plugin
             ref StringBuilder sb, ref List<StringMods> strModList)
         {
             var mobSet = from c in dataSet.Combatants
-                         where (c.CombatantType == (byte)EntityType.Mob)
+                         where ((EntityType)c.CombatantType == EntityType.Mob)
                          orderby c.CombatantName
                          select new
                          {
@@ -256,7 +256,22 @@ namespace WaywardGamers.KParser.Plugin
                                        select bx
                          };
 
-            if ((mobSet == null) || (mobSet.Count() == 0))
+            var chestSet = from c in dataSet.Combatants
+                         where ((EntityType)c.CombatantType == EntityType.TreasureChest)
+                         orderby c.CombatantName
+                         select new
+                         {
+                             Mob = c.CombatantName,
+                             Battles = from b in c.GetBattlesRowsByEnemyCombatantRelation()
+                                       where b.Killed == true &&
+                                             b.ExperiencePoints != 0
+                                       group b by b.ExperiencePoints into bx
+                                       orderby bx.Key
+                                       select bx
+                         };
+
+            if (((mobSet == null) || (mobSet.Count() == 0)) &&
+                ((chestSet == null) || (chestSet.Count() == 0)))
                 return;
 
             bool headerDisplayed = false;
@@ -265,6 +280,7 @@ namespace WaywardGamers.KParser.Plugin
             double avgMobFightTime;
 
             int mobCount;
+            int chestCount;
 
             foreach (var mob in mobSet)
             {
@@ -340,6 +356,59 @@ namespace WaywardGamers.KParser.Plugin
                             }
 
                             sb.Append(fightLengthString.PadLeft(17));
+
+                            sb.Append("\n");
+                        }
+                    }
+                }
+            }
+
+            foreach (var chest in chestSet)
+            {
+                if (chest.Battles.Count() > 0)
+                {
+                    foreach (var openChest in chest.Battles)
+                    {
+                        chestCount = openChest.Count();
+
+                        if (chestCount > 0)
+                        {
+                            if (headerDisplayed == false)
+                            {
+                                strModList.Add(new StringMods
+                                {
+                                    Start = sb.Length,
+                                    Length = lsMobListing.Length,
+                                    Bold = true,
+                                    Color = Color.Blue
+                                });
+                                sb.Append(lsMobListing + "\n");
+
+                                strModList.Add(new StringMods
+                                {
+                                    Start = sb.Length,
+                                    Length = lsMobListingHeader.Length,
+                                    Bold = true,
+                                    Underline = true,
+                                    Color = Color.Black
+                                });
+                                sb.Append(lsMobListingHeader + "\n");
+
+                                headerDisplayed = true;
+                            }
+
+                            sb.Append(chest.Mob.PadRight(24));
+
+                            if (openChest.Key > 0)
+                            {
+                                sb.Append(openChest.Key.ToString().PadLeft(10));
+                            }
+                            else
+                            {
+                                sb.Append("---".PadLeft(10));
+                            }
+
+                            sb.Append(chestCount.ToString().PadLeft(9));
 
                             sb.Append("\n");
                         }
