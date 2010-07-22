@@ -245,46 +245,82 @@ namespace WaywardGamers.KParser.Database
         /// <param name="message">The message containing experience data.</param>
         private void InsertExperience(Message message)
         {
-            if ((lastFinishedBattle == null) || (lastFinishedBattle.ExperiencePoints != 0))
+            // Where should we be inserting experience when it's from a scroll
+            // or chest?
+            bool isFromChest = (message.EventDetails.ExperienceDetails.ExperiencePoints % 250) == 0;
+            KPDatabaseDataSet.BattlesRow useThisBattle = null;
+
+            // Look for entries for unlocked chests in the last 180 seconds
+            // that haven't been used yet.
+            if (isFromChest)
             {
-                lastFinishedBattle = null;
+                var chestBattles = from b in localDB.Battles
+                                   where b.DefaultBattle == false &&
+                                         b.IsOver == true &&
+                                         b.EndTime.AddSeconds(180) > message.Timestamp &&
+                                         b.ExperiencePoints == 0 &&
+                                         (EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.TreasureChest &&
+                                         b.GetLootRows().Count() == 0
+                                   orderby b.EndTime
+                                   select b;
 
-                if (activeBattleList.Count > 0)
+                if (chestBattles.Count() > 0)
                 {
-                    lastFinishedBattle = activeBattleList.FirstOrDefault(
-                        b => b.Key.DefaultBattle == false &&
-                            (b.Key.IsOver == false || b.Key.ExperiencePoints == 0)).Key;
-
-                    if (lastFinishedBattle != null)
-                    {
-                        // close out this battle
-                        if (lastFinishedBattle.IsOver == false)
-                        {
-                            lastFinishedBattle.EndTime = message.Timestamp;
-                            lastFinishedBattle.Killed = true;
-                        }
-
-                        if (lastFinishedBattle.IsEnemyIDNull() == false)
-                            activeMobBattleList.Remove(lastFinishedBattle.CombatantsRowByEnemyCombatantRelation.CombatantName);
-
-                        lock (activeBattleList)
-                            activeBattleList.Remove(lastFinishedBattle);
-
-                    }
-                }
-
-                if (lastFinishedBattle == null)
-                {
-                    lastFinishedBattle = localDB.Battles.AddBattlesRow(null,
-                        message.Timestamp, message.Timestamp, true,
-                        null, (byte)ActorPlayerType.Unknown,
-                        0, 0, // XP Points & Chain
-                        (byte)MobDifficulty.Unknown, false);
+                    useThisBattle = chestBattles.First();
                 }
             }
 
-            lastFinishedBattle.ExperiencePoints = message.EventDetails.ExperienceDetails.ExperiencePoints;
-            lastFinishedBattle.ExperienceChain = message.EventDetails.ExperienceDetails.ExperienceChain;
+            if (useThisBattle == null)
+            {
+                if ((lastFinishedBattle == null) || (lastFinishedBattle.ExperiencePoints != 0))
+                {
+                    lastFinishedBattle = null;
+
+                    if (activeBattleList.Count > 0)
+                    {
+                        lastFinishedBattle = activeBattleList.FirstOrDefault(
+                            b => b.Key.DefaultBattle == false &&
+                                (b.Key.IsOver == false || b.Key.ExperiencePoints == 0)).Key;
+
+                        if (lastFinishedBattle != null)
+                        {
+                            // Modifications:
+                            // It's possible to receive experience awards for a mob kill
+                            // *before* the message that mob was killed.  Cf: Abyssea.
+                            // Because of this, we don't actually want to close the battle
+                            // just yet.
+
+                            // close out this battle
+                            //if (lastFinishedBattle.IsOver == false)
+                            //{
+                            //    lastFinishedBattle.EndTime = message.Timestamp;
+                            //    lastFinishedBattle.Killed = true;
+                            //}
+
+                            //if (lastFinishedBattle.IsEnemyIDNull() == false)
+                            //    activeMobBattleList.Remove(lastFinishedBattle.CombatantsRowByEnemyCombatantRelation.CombatantName);
+
+                            //lock (activeBattleList)
+                            //    activeBattleList.Remove(lastFinishedBattle);
+
+                        }
+                    }
+
+                    if (lastFinishedBattle == null)
+                    {
+                        lastFinishedBattle = localDB.Battles.AddBattlesRow(null,
+                            message.Timestamp, message.Timestamp, true,
+                            null, (byte)ActorPlayerType.Unknown,
+                            0, 0, // XP Points & Chain
+                            (byte)MobDifficulty.Unknown, false);
+                    }
+                }
+
+                useThisBattle = lastFinishedBattle;
+            }
+
+            useThisBattle.ExperiencePoints = message.EventDetails.ExperienceDetails.ExperiencePoints;
+            useThisBattle.ExperienceChain = message.EventDetails.ExperienceDetails.ExperienceChain;
         }
 
         /// <summary>
@@ -296,63 +332,133 @@ namespace WaywardGamers.KParser.Database
             // Messages for when items are found on mob.
             if (message.EventDetails.LootDetails.IsFoundMessage == true)
             {
-                // First locate the target (mob or chest) in the combatants table
-                var targetCombatant = localDB.Combatants.GetCombatant(message.EventDetails.LootDetails.TargetName,
-                    message.EventDetails.LootDetails.TargetType);
-
-                // Get all battles the target has been involved in
-                var targetBattles = targetCombatant.GetBattlesRowsByEnemyCombatantRelation();
-
-                KPDatabaseDataSet.BattlesRow lastBattle = null;
-
-                // If any battles, get the last one.
-                if ((targetBattles != null) && (targetBattles.Count() > 0))
+                // Special handling for treasure chest drops in Abyssea
+                if (message.EventDetails.LootDetails.ItemName == ":treasurechest")
                 {
-                    lastBattle = targetBattles.OrderBy(b => b.EndTime).Last();
-                }
+                    // item row to link to
+                    KPDatabaseDataSet.ItemsRow chestRow = localDB.Items.GetItem("Treasure Chest");
 
-                // If we found one, make sure it's within 1:00 of Now.  This is
-                // for initial 'found' messages.
-                if (lastBattle != null)
-                {
-                    if (lastBattle.EndTime < (message.Timestamp.Subtract(TimeSpan.FromSeconds(60))))
+                    // Message usually occurs -before- the killshot message.
+                    // Message does not include the mob the chest dropped off of,
+                    // so we have no immediate target to check for.
+
+                    // We want to pick the most likely battle to be ending soon
+                    // (so the oldest open battle) that hasn't had a chest drop
+                    // added to its loot pool.
+
+                    KPDatabaseDataSet.BattlesRow firstNonChestBattle = null;
+
+                    if (activeBattleList.Count > 0)
                     {
-                        lastBattle = localDB.Battles.AddBattlesRow(targetCombatant, message.Timestamp,
+                        var nCBs = from b in activeBattleList
+                                   where b.Key.DefaultBattle == false &&
+                                         b.Key.GetLootRows().Any(l => l.ItemsRow == chestRow) == false
+                                   orderby b.Value
+                                   select b.Key;
+
+                        firstNonChestBattle = nCBs.FirstOrDefault();
+                    }
+
+                    // If not found in the active battles, check for battles 
+                    // that ended within the last 10 seconds that don't have
+                    // a chest attached.
+
+                    if (firstNonChestBattle == null)
+                    {
+                        var recentBattles = localDB.Battles.Where(
+                            b => b.DefaultBattle == false &&
+                            b.IsOver == true &&
+                            b.EndTime > message.Timestamp.AddSeconds(-10) &&
+                            b.GetLootRows().Any(l => l.ItemsRow == chestRow) == false);
+
+                        if (recentBattles.Count() > 0)
+                            firstNonChestBattle = recentBattles.Last();
+                    }
+
+                    if (firstNonChestBattle == null)
+                    {
+                        // Or if we didn't find any battles for this chest, create a new one.
+                        firstNonChestBattle = localDB.Battles.AddBattlesRow(
+                            null, message.Timestamp,
                             message.Timestamp, true, null, (byte)ActorPlayerType.Unknown, 0, 0,
                             (byte)MobDifficulty.Unknown, false);
                     }
+
+                    // Add the entry to the loot table.
+                    localDB.Loot.AddLootRow(chestRow, firstNonChestBattle, null, 0, false);
+
                 }
                 else
                 {
-                    // If we didn't find any battles for this target, look for recently
-                    // ended battles with no target (ie: battle created when player
-                    // gained xp, but no enemy name given so no targetCombatant).
+                    // First locate the target (mob or chest) in the combatants table
+                    var targetCombatant = localDB.Combatants.GetCombatant(message.EventDetails.LootDetails.TargetName,
+                        message.EventDetails.LootDetails.TargetType);
 
-                    var recentNonTargetBattles = localDB.Battles.Where(
-                        b => b.DefaultBattle == false &&
-                            b.IsOver == true &&
-                            b.IsEnemyIDNull() == true &&
-                            b.EndTime > message.Timestamp.AddSeconds(-30));
-
-                    if ((recentNonTargetBattles != null) && (recentNonTargetBattles.Count() > 0))
+                    // If we simply opened a treasure chest lock, loot will come in a later message.
+                    // Just create battle entry here.
+                    if (message.EventDetails.LootDetails.ItemName == ":openlock")
                     {
-                        lastBattle = recentNonTargetBattles.Last();
-                        lastBattle.EnemyID = targetCombatant.CombatantID;
-                    }
-                    else
-                    {
-                        // Or if we didn't find any battles for this target, create a new one.
-                        lastBattle = localDB.Battles.AddBattlesRow(targetCombatant, message.Timestamp,
+                        localDB.Battles.AddBattlesRow(targetCombatant, message.Timestamp,
                             message.Timestamp, true, null, (byte)ActorPlayerType.Unknown, 0, 0,
                             (byte)MobDifficulty.Unknown, false);
                     }
+                    else
+                    {
+                        // Get all battles the target has been involved in
+                        var targetBattles = targetCombatant.GetBattlesRowsByEnemyCombatantRelation();
+
+                        KPDatabaseDataSet.BattlesRow lastBattle = null;
+
+                        // If any battles, get the last one.
+                        if ((targetBattles != null) && (targetBattles.Count() > 0))
+                        {
+                            lastBattle = targetBattles.OrderBy(b => b.EndTime).Last();
+                        }
+
+                        // If we found one, make sure it's within 1:00 of Now.  This is
+                        // for initial 'found' messages.
+                        if (lastBattle != null)
+                        {
+                            if (lastBattle.EndTime < (message.Timestamp.Subtract(TimeSpan.FromSeconds(60))))
+                            {
+                                lastBattle = localDB.Battles.AddBattlesRow(targetCombatant, message.Timestamp,
+                                    message.Timestamp, true, null, (byte)ActorPlayerType.Unknown, 0, 0,
+                                    (byte)MobDifficulty.Unknown, false);
+                            }
+                        }
+                        else
+                        {
+                            // If we didn't find any battles for this target, look for recently
+                            // ended battles with no target (ie: battle created when player
+                            // gained xp, but no enemy name given so no targetCombatant).
+
+                            var recentNonTargetBattles = localDB.Battles.Where(
+                                b => b.DefaultBattle == false &&
+                                    b.IsOver == true &&
+                                    b.IsEnemyIDNull() == true &&
+                                    b.EndTime > message.Timestamp.AddSeconds(-30));
+
+                            if ((recentNonTargetBattles != null) && (recentNonTargetBattles.Count() > 0))
+                            {
+                                lastBattle = recentNonTargetBattles.Last();
+                                lastBattle.EnemyID = targetCombatant.CombatantID;
+                            }
+                            else
+                            {
+                                // Or if we didn't find any battles for this target, create a new one.
+                                lastBattle = localDB.Battles.AddBattlesRow(targetCombatant, message.Timestamp,
+                                    message.Timestamp, true, null, (byte)ActorPlayerType.Unknown, 0, 0,
+                                    (byte)MobDifficulty.Unknown, false);
+                            }
+                        }
+
+                        // Locate the item by name in the item table.
+                        var itemRow = localDB.Items.GetItem(message.EventDetails.LootDetails.ItemName);
+
+                        // Add the entry to the loot table.
+                        localDB.Loot.AddLootRow(itemRow, lastBattle, null, 0, false);
+                    }
                 }
-
-                // Locate the item by name in the item table.
-                var itemRow = localDB.Items.GetItem(message.EventDetails.LootDetails.ItemName);
-
-                // Add the entry to the loot table.
-                localDB.Loot.AddLootRow(itemRow, lastBattle, null, 0, false);
             }
             else
             {
@@ -403,32 +509,97 @@ namespace WaywardGamers.KParser.Database
                 {
                     // handle gil drops
 
-                    // If no record of the last kill for this mob type, we cannot create a new one
-                    // because we have no mob name.
+                    KPDatabaseDataSet.ItemsRow itemRow = null;
 
-                    if (lastFinishedBattle != null)
+                    if (message.EventDetails.LootDetails.ItemName == ":cruor")
                     {
-                        KPDatabaseDataSet.ItemsRow itemRow = null;
+                        // Get the "Cruor" item from the items table (created if necessary).
+                        itemRow = localDB.Items.GetItem("Cruor");
 
-                        if (message.EventDetails.LootDetails.ItemName == ":cruor")
+                        // Cruor rewards can occur before the end of a battle, or after
+                        // a chest is opened.  We can't rely on lastFinishedBattle, so
+                        // need to figure out what battle to attach this to.
+
+                        // Chest rewards are 200/400/600/800/1000
+                        bool isFromChest = (message.EventDetails.LootDetails.Amount % 200) == 0;
+                        KPDatabaseDataSet.BattlesRow cruorSourceBattle = null;
+
+                        // Look for entries for unlocked chests in the last 180 seconds
+                        // that haven't been used yet.
+                        if (isFromChest)
                         {
-                            // Get the "Cruor" item from the items table (created if necessary).
-                            itemRow = localDB.Items.GetItem("Cruor");
-                        }
-                        else
-                        {
-                            // Get the "Gil" item from the items table (created if necessary).
-                            itemRow = localDB.Items.GetItem("Gil");
+                            var chestBattles = from b in localDB.Battles
+                                               where b.DefaultBattle == false &&
+                                                     b.IsOver == true &&
+                                                     b.EndTime.AddSeconds(180) > message.Timestamp &&
+                                                     b.ExperiencePoints == 0 &&
+                                                     (EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.TreasureChest &&
+                                                     b.GetLootRows().Count() == 0
+                                               orderby b.EndTime
+                                               select b;
+
+                            if (chestBattles.Count() > 0)
+                            {
+                                cruorSourceBattle = chestBattles.First();
+                            }
                         }
 
-                        if (string.IsNullOrEmpty(message.EventDetails.LootDetails.WhoObtained) == false)
+                        // If not found from a chest (or unable to find a chest battle),
+                        // search for the current active battle that's likely to end.
+                        if (cruorSourceBattle == null)
                         {
-                            var player = localDB.Combatants.GetCombatant(message.EventDetails.LootDetails.WhoObtained, EntityType.Player);
-                            localDB.Loot.AddLootRow(itemRow, lastFinishedBattle, player, message.EventDetails.LootDetails.Amount, false);
+                            if (activeBattleList.Count > 0)
+                            {
+                                var nCBs = from b in activeBattleList
+                                           where b.Key.DefaultBattle == false &&
+                                                 b.Key.GetLootRows().Any(l => l.ItemsRow == itemRow) == false
+                                           orderby b.Value
+                                           select b.Key;
+
+                                cruorSourceBattle = nCBs.FirstOrDefault();
+                            }
                         }
-                        else
+
+                        if (cruorSourceBattle == null)
+                            cruorSourceBattle = lastFinishedBattle;
+
+                        if (cruorSourceBattle != null)
                         {
-                            localDB.Loot.AddLootRow(itemRow, lastFinishedBattle, null, message.EventDetails.LootDetails.Amount, false);
+                            // If we know who obtained the gil, use them as the player.
+                            if (string.IsNullOrEmpty(message.EventDetails.LootDetails.WhoObtained) == false)
+                            {
+                                var player = localDB.Combatants.GetCombatant(message.EventDetails.LootDetails.WhoObtained, EntityType.Player);
+                                localDB.Loot.AddLootRow(itemRow, cruorSourceBattle, player, message.EventDetails.LootDetails.Amount, false);
+                            }
+                            else
+                            {
+                                localDB.Loot.AddLootRow(itemRow, cruorSourceBattle, null, message.EventDetails.LootDetails.Amount, false);
+                            }
+                        }
+
+                    }
+                    else if (message.EventDetails.LootDetails.ItemName == ":gil")
+                    {
+                        
+                        // If no record of the last kill for this mob type, we cannot create a new one
+                        // because we have no mob name.
+
+                        // Get the "Gil" item from the items table (created if necessary).
+                        itemRow = localDB.Items.GetItem("Gil");
+
+                        if (lastFinishedBattle != null)
+                        {
+
+                            // If we know who obtained the gil, use them as the player.
+                            if (string.IsNullOrEmpty(message.EventDetails.LootDetails.WhoObtained) == false)
+                            {
+                                var player = localDB.Combatants.GetCombatant(message.EventDetails.LootDetails.WhoObtained, EntityType.Player);
+                                localDB.Loot.AddLootRow(itemRow, lastFinishedBattle, player, message.EventDetails.LootDetails.Amount, false);
+                            }
+                            else
+                            {
+                                localDB.Loot.AddLootRow(itemRow, lastFinishedBattle, null, message.EventDetails.LootDetails.Amount, false);
+                            }
                         }
                     }
                 }
