@@ -223,7 +223,7 @@
     <value>Counterstance</value>
   </data>
   <data name="CrystalsAndSealsRegex" xml:space="preserve">
-    <value>Gil|beastmen's seal|Kindred's seal|fire crystal|earth crystal|water crystal|wind crystal|ice crystal|thunder crystal|light crystal|dark crystal</value>
+    <value>Gil|Cruor|beastmen's seal|Kindred's seal|fire crystal|earth crystal|water crystal|wind crystal|ice crystal|thunder crystal|light crystal|dark crystal</value>
   </data>
   <data name="CuragaRegex" xml:space="preserve">
     <value>(Cura|Curaga( [IV]+)?)</value>
