@@ -1001,6 +1001,29 @@ namespace WaywardGamers.KParser.Parsing
                                 message.SetParseSuccess(true);
                                 break;
                             }
+                            // Mobs dropping chests in Abyssea
+                            lootOrXP = ParseExpressions.TreasureChest.Match(message.CurrentMessageText);
+                            if (lootOrXP.Success == true)
+                            {
+                                message.EventDetails.EventMessageType = EventMessageType.Loot;
+                                message.EventDetails.LootDetails.IsFoundMessage = true;
+                                message.EventDetails.LootDetails.ItemName = ":treasurechest";
+                                message.EventDetails.LootDetails.LootType = LootType.Chest;
+                                message.SetParseSuccess(true);
+                                break;
+                            }
+                            // Opening chests in Abyssea
+                            lootOrXP = ParseExpressions.OpenLock.Match(message.CurrentMessageText);
+                            if (lootOrXP.Success == true)
+                            {
+                                message.EventDetails.EventMessageType = EventMessageType.Loot;
+                                message.EventDetails.LootDetails.IsFoundMessage = true;
+                                message.EventDetails.LootDetails.ItemName = ":openlock";
+                                message.EventDetails.LootDetails.TargetName = "Sturdy Pyxis";
+                                message.EventDetails.LootDetails.TargetType = EntityType.TreasureChest;
+                                message.SetParseSuccess(true);
+                                break;
+                            }
                             message.EventDetails.EventMessageType = EventMessageType.Other;
                             message.SetParseSuccess(true);
                             break;
