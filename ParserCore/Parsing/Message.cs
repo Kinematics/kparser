@@ -144,7 +144,8 @@ namespace WaywardGamers.KParser
                 if (completedMessageStrings.Count == 0)
                     fullText = string.Empty;
                 else if (completedMessageStrings.Count > 1)
-                    fullText = completedMessageStrings.Aggregate((s1, s2) => s1 + "" + s2);
+                    fullText = completedMessageStrings.Aggregate((s1, s2) => s1 +
+                        (s1.EndsWith("!") ? " " : "") + s2);
                 else
                     fullText = completedMessageStrings[0];
 
