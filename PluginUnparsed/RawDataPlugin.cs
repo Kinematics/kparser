@@ -72,12 +72,13 @@ namespace WaywardGamers.KParser.Plugin
                         start = sb.Length;
                         sb.AppendFormat("[{0}] ", row.Timestamp.ToLocalTime().ToLongTimeString());
 
-                        strModList.Add(new StringMods
-                        {
-                            Start = start,
-                            Length = sb.Length - start,
-                            Color = Color.Purple
-                        });
+                        // Don't color stuff on unfiltered listing.
+                        //strModList.Add(new StringMods
+                        //{
+                        //    Start = start,
+                        //    Length = sb.Length - start,
+                        //    Color = Color.Purple
+                        //});
 
                         sb.AppendFormat("{0}\n", row.MessageText);
                     }
