@@ -370,10 +370,10 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         dummyRichTextBox.SelectionFont = underFont;
                     }
-                    else
-                    {
-                        dummyRichTextBox.SelectionFont = normFont;
-                    }
+                    //else
+                    //{
+                    //    dummyRichTextBox.SelectionFont = normFont;
+                    //}
 
                     dummyRichTextBox.SelectionColor = strMod.Color;
                 }
