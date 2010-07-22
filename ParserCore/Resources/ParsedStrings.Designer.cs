@@ -781,7 +781,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Gil|beastmen&apos;s seal|Kindred&apos;s seal|fire crystal|earth crystal|water crystal|wind crystal|ice crystal|thunder crystal|light crystal|dark crystal.
+        ///   Looks up a localized string similar to Gil|Cruor|beastmen&apos;s seal|Kindred&apos;s seal|fire crystal|earth crystal|water crystal|wind crystal|ice crystal|thunder crystal|light crystal|dark crystal.
         /// </summary>
         public static string CrystalsAndSealsRegex {
             get {
