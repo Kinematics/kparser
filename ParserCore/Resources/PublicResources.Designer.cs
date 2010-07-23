@@ -223,6 +223,24 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sturdy Pyxis.
+        /// </summary>
+        public static string SturdyPyxis {
+            get {
+                return ResourceManager.GetString("SturdyPyxis", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time Extension.
+        /// </summary>
+        public static string TimeExtension {
+            get {
+                return ResourceManager.GetString("TimeExtension", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Total.
         /// </summary>
         public static string Total {

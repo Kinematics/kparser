@@ -171,6 +171,12 @@
   <data name="ShowDetail" xml:space="preserve">
     <value>Show Detail</value>
   </data>
+  <data name="SturdyPyxis" xml:space="preserve">
+    <value>Sturdy Pyxis</value>
+  </data>
+  <data name="TimeExtension" xml:space="preserve">
+    <value>Time Extension</value>
+  </data>
   <data name="Total" xml:space="preserve">
     <value>Total</value>
   </data>
