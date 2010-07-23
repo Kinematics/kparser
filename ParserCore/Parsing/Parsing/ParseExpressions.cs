@@ -21,6 +21,7 @@ namespace WaywardGamers.KParser
         internal static readonly string DrainType  = "draintype";
         internal static readonly string DrainStat  = "drainstat";
         internal static readonly string Remainder  = "remainder";
+        internal static readonly string Color      = "color";
     }
 
     // Class to store regular expressions in.
@@ -51,6 +52,8 @@ namespace WaywardGamers.KParser
         private static readonly string afflictLvl  = @"\(lv\.\d\)";
         private static readonly string drainType   = @"(?<draintype>(H|M|T)P)";
         private static readonly string drainStat   = @"(?<drainstat>STR|DEX|AGI|VIT|INT|MND|CHR)";
+
+        private static readonly string colorLight  = @"(?<color>pearlescent|azure|ruby|amber|ebon|gold|silver)";
 
         private static readonly string remainder   = @"(?<remainder>.*)";
         #endregion
@@ -95,7 +98,9 @@ namespace WaywardGamers.KParser
         internal static readonly Regex GetCruor   = new Regex(string.Format("^{0} obtained {1}\\.$", playername, cruor));
         internal static readonly Regex TreasureChest = new Regex(string.Format("^The monster was concealing a treasure chest!$"));
         internal static readonly Regex OpenLock   = new Regex(string.Format("^{0} succeeded in opening the lock!$", playername));
-        internal static readonly Regex LootReqr   = new Regex(string.Format("^You do not meet the requirements to obtain {0}\\.$", item));
+        internal static readonly Regex FailOpenLock = new Regex(string.Format("^{0} failed to open the lock\\.$", playername));
+        internal static readonly Regex OpenLockWithKey = new Regex(string.Format("^{0} uses {1} and opens the lock!$", playername, item));
+        internal static readonly Regex LootReqr = new Regex(string.Format("^You do not meet the requirements to obtain {0}\\.$", item));
         internal static readonly Regex LootLost   = new Regex(string.Format("^{0} (?!was )lost\\.$", item));
         internal static readonly Regex LotItem    = new Regex(string.Format("^{0}'s lot for {1}: {2} points\\.$", playername, item, number));
         internal static readonly Regex Steal      = new Regex(string.Format("^{0} steals {1} from {2}\\.$", playername, item, target));
@@ -103,6 +108,9 @@ namespace WaywardGamers.KParser
         internal static readonly Regex Mug        = new Regex(string.Format("^{0} mugs {1} from {2}\\.$", playername, money, target));
         internal static readonly Regex FailMug    = new Regex(string.Format("^{0} fails to mug {1}\\.$", playername, target));
         internal static readonly Regex DiceRoll   = new Regex(string.Format("^Dice roll! {0} rolls {1}!$", playername, number));
+
+        internal static readonly Regex EmitLight = new Regex(string.Format("^{0}'s body emits a faint {1} light!$", playername, colorLight));
+        internal static readonly Regex VisitantTE = new Regex(string.Format("^Your visitant status has been extended by {0} minutes\\.$", number));
         #endregion
 
         #region Preparing to take action
@@ -295,6 +303,8 @@ namespace WaywardGamers.KParser
             drainType    = @"(?<draintype>(H|M|T)P)";
             drainStat    = @"(?<drainstat>STR|DEX|AGI|VIT|INT|MND|CHR)";
 
+            colorLight   = @"(?<color>pearlescent|azure|ruby|amber|ebon|gold|silver)";
+
             remainder    = @"(?<remainder>.*)";
             #endregion
 
@@ -339,6 +349,8 @@ namespace WaywardGamers.KParser
             Mug          = new Regex(string.Format("^{0} mugs {1} from {2}\\.$", playername, money, target));
             FailMug      = new Regex(string.Format("^{0} fails to mug {1}\\.$", playername, target));
             DiceRoll     = new Regex(string.Format("^Dice roll! {0} rolls {1}!$", playername, number));
+
+            EmitLight = new Regex(string.Format("^{0}'s body emits a faint {1} light!$", playername, colorLight));
             #endregion
 
             #region Preparing to take action
@@ -497,7 +509,9 @@ namespace WaywardGamers.KParser
             drainType    = @"(?<draintype>(H|M|T)P)";
             drainStat    = @"(?<drainstat>STR|DEX|AGI|VIT|INT|MND|CHR)";
 
-            remainder    = @"(?<remainder>.*)";
+            colorLight = @"(?<color>pearlescent|azure|ruby|amber|ebon|gold|silver)";
+
+            remainder = @"(?<remainder>.*)";
             #endregion
 
             #region Chat name extractions
@@ -540,6 +554,7 @@ namespace WaywardGamers.KParser
             FailSteal    = new Regex(string.Format("^{0} fails to steal from {1}\\.$", playername, target));
             Mug          = new Regex(string.Format("^{0} mugs {1} from {2}\\.$", playername, money, target));
             FailMug      = new Regex(string.Format("^{0} fails to mug {1}\\.$", playername, target));
+            EmitLight = new Regex(string.Format("^{0}'s body emits a faint {1} light!$", playername, colorLight));
             #endregion
 
             #region Preparing to take action
@@ -697,7 +712,9 @@ namespace WaywardGamers.KParser
             drainType    = @"(?<draintype>(H|M|T)P)";
             drainStat    = @"(?<drainstat>STR|DEX|AGI|VIT|INT|MND|CHR)";
 
-            remainder    = @"(?<remainder>.*)";
+            colorLight = @"(?<color>pearlescent|azure|ruby|amber|ebon|gold|silver)";
+
+            remainder = @"(?<remainder>.*)";
             #endregion
 
             #region Chat name extractions
@@ -740,6 +757,7 @@ namespace WaywardGamers.KParser
             FailSteal    = new Regex(string.Format("^{0} fails to steal from {1}\\.$", playername, target));
             Mug          = new Regex(string.Format("^{0} mugs {1} from {2}\\.$", playername, money, target));
             FailMug      = new Regex(string.Format("^{0} fails to mug {1}\\.$", playername, target));
+            EmitLight = new Regex(string.Format("^{0}'s body emits a faint {1} light!$", playername, colorLight));
             #endregion
 
             #region Preparing to take action
@@ -918,6 +936,8 @@ namespace WaywardGamers.KParser
         private static string drainType;
         private static string drainStat;
 
+        private static string colorLight;
+
         private static string remainder;
         #endregion
 
@@ -961,6 +981,7 @@ namespace WaywardGamers.KParser
         internal static Regex FailSteal;
         internal static Regex Mug;
         internal static Regex FailMug;
+        internal static Regex EmitLight;
         #endregion
 
         #region Preparing to take action
