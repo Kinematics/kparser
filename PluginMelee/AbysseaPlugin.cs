@@ -30,6 +30,12 @@ namespace WaywardGamers.KParser.Plugin
         ToolStripMenuItem customMobSelectionOption = new ToolStripMenuItem();
 
         ToolStripButton editCustomMobFilter = new ToolStripButton();
+
+        // Localizable strings
+        string lsCruor;
+        string lsTreasureChest;
+        string lsTimeExtension;
+
         #endregion
 
         #region Constructor
@@ -147,17 +153,202 @@ namespace WaywardGamers.KParser.Plugin
             {
                 case 0:
                     // All
-                    DoProcessWork(dataSet, mobFilter, ref sb, strModList);
+                    ProcessMobs(dataSet, mobFilter, ref sb, strModList);
+                    ProcessChests(dataSet, mobFilter, ref sb, strModList);
+                    ProcessLights(dataSet, mobFilter, ref sb, strModList);
+                    break;
+                case 1:
+                    // Mobs
+                    ProcessMobs(dataSet, mobFilter, ref sb, strModList);
+                    break;
+                case 2:
+                    // Chests
+                    ProcessChests(dataSet, mobFilter, ref sb, strModList);
+                    break;
+                case 3:
+                    // Lights
+                    ProcessLights(dataSet, mobFilter, ref sb, strModList);
                     break;
             }
 
             PushStrings(sb, strModList);
         }
 
-        private void DoProcessWork(KPDatabaseDataSet dataSet, MobFilter mobFilter, ref StringBuilder sb, List<StringMods> strModList)
+        private void ProcessMobs(KPDatabaseDataSet dataSet, MobFilter mobFilter,
+            ref StringBuilder sb, List<StringMods> strModList)
         {
-            throw new NotImplementedException();
+            var allBattles = from b in dataSet.Battles
+                          where mobFilter.CheckFilterBattle(b) == true 
+                          select b;
+
+            // Actual killed mobs
+            var battles = allBattles.Where(b => b.Killed == true);
+
+            int battleCount = battles.Count();
+
+            string tmpStr = "Mobs";
+
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = tmpStr.Length,
+                Bold = true,
+                Color = Color.Red
+            });
+            sb.Append(tmpStr + "\n\n");
+
+            sb.AppendFormat("Total number of mobs: {0}\n", battles.Count());
+
+            if (battleCount > 0)
+            {
+
+                var cruorBattles = battles.Where(b => b.GetLootRows().Any(l => l.ItemsRow.ItemName == lsCruor));
+
+                sb.AppendFormat("Number of mobs that dropped Cruor: {0}\n", cruorBattles.Count());
+
+                if (cruorBattles.Count() > 0)
+                {
+                    int totalCruor = cruorBattles.Sum(b =>
+                        b.GetLootRows().First(l => l.ItemsRow.ItemName == lsCruor).GilDropped);
+                    double avgCruor = (double)totalCruor / cruorBattles.Count();
+                    sb.AppendFormat("Average Cruor drop: {0:f2}\n\n", avgCruor);
+                }
+
+                // Types of kills
+                var dropDead = battles.Where(b => b.IsKillerIDNull() == true);
+
+                var lastActions = from b in battles
+                                  where b.IsKillerIDNull() == false
+                                  select new
+                                  {
+                                      Battle = b,
+                                      LastAction = GetLastAction(b)
+                                  };
+
+                int meleeCount = 0;
+                int magicCount = 0;
+                int wsCount = 0;
+                int jaCount = 0;
+                int otherCount = 0;
+                int dropDeadCount = 0;
+                int unknownCount = 0;
+                int petCount = 0;
+
+                dropDeadCount = dropDead.Count();
+
+                foreach (var action in lastActions)
+                {
+                    if (action.LastAction == null)
+                    {
+                        unknownCount++;
+                    }
+                    else
+                    {
+                        switch ((ActionType)action.LastAction.ActionType)
+                        {
+                            case ActionType.Ability:
+                                jaCount++;
+                                break;
+                            case ActionType.Spell:
+                                magicCount++;
+                                break;
+                            case ActionType.Weaponskill:
+                            case ActionType.Skillchain:
+                                wsCount++;
+                                break;
+                            case ActionType.Melee:
+                            case ActionType.Ranged:
+                            case ActionType.Counterattack:
+                            case ActionType.Retaliation:
+                                meleeCount++;
+                                break;
+                            default:
+                                otherCount++;
+                                break;
+                        };
+
+                        if ((EntityType)action.LastAction.CombatantsRowByActorCombatantRelation.CombatantType
+                            == EntityType.Pet)
+                        {
+                            petCount++;
+                        }
+                    }
+                }
+
+
+                tmpStr = "Kill Types:";
+
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = tmpStr.Length,
+                    Bold = true,
+                    Color = Color.Blue
+                });
+                sb.Append(tmpStr + "\n\n");
+
+                sb.AppendFormat("{0,-14}: {1,6}  ({2,8:p2})\n", "Melee",
+                    meleeCount, (double)meleeCount / battleCount);
+                sb.AppendFormat("{0,-14}: {1,6}  ({2,8:p2})\n", "Magic",
+                    magicCount, (double)magicCount / battleCount);
+                sb.AppendFormat("{0,-14}: {1,6}  ({2,8:p2})\n", "Weaponskill",
+                    wsCount, (double)wsCount / battleCount);
+                sb.AppendFormat("{0,-14}: {1,6}  ({2,8:p2})\n", "Ability",
+                    jaCount, (double)jaCount / battleCount);
+                sb.AppendFormat("{0,-14}: {1,6}  ({2,8:p2})\n", "Other",
+                    otherCount, (double)otherCount / battleCount);
+                sb.AppendFormat("{0,-14}: {1,6}  ({2,8:p2})\n", "Drop dead",
+                    dropDeadCount, (double)dropDeadCount / battleCount);
+                sb.AppendFormat("{0,-14}: {1,6}  ({2,8:p2})\n", "Unknown",
+                    unknownCount, (double)unknownCount / battleCount);
+                sb.Append("\n");
+                sb.AppendFormat("{0,-14}: {1,6}  ({2,8:p2})\n", "Pets",
+                    petCount, (double)petCount / battleCount);
+
+
+            }
+
         }
+
+        private KPDatabaseDataSet.InteractionsRow GetLastAction(KPDatabaseDataSet.BattlesRow b)
+        {
+            var killer = b.CombatantsRowByBattleKillerRelation;
+
+            var killerActions = b.GetInteractionsRows()
+                .Where(i =>
+                    i.IsActorIDNull() == false &&
+                    i.ActorID == killer.CombatantID);
+
+            return killerActions.LastOrDefault(a =>
+                (ActionType)a.ActionType != ActionType.Death);
+        }
+
+        private ActionType GetLastActionType(KPDatabaseDataSet.BattlesRow b)
+        {
+            var killer = b.CombatantsRowByBattleKillerRelation;
+
+            var killerActions = b.GetInteractionsRows()
+                .Where(i =>
+                    i.IsActorIDNull() == false &&
+                    i.ActorID == killer.CombatantID);
+
+
+            return (ActionType)killerActions
+                .LastOrDefault(a => (ActionType)a.ActionType != ActionType.Death)
+                .ActionType;
+        }
+
+
+        private void ProcessChests(KPDatabaseDataSet dataSet, MobFilter mobFilter,
+            ref StringBuilder sb, List<StringMods> strModList)
+        {
+        }
+
+        private void ProcessLights(KPDatabaseDataSet dataSet, MobFilter mobFilter,
+            ref StringBuilder sb, List<StringMods> strModList)
+        {
+        }
+
         #endregion
 
         #region Event Handlers
@@ -257,6 +448,9 @@ namespace WaywardGamers.KParser.Plugin
 
             categoryCombo.Items.Clear();
             categoryCombo.Items.Add(Resources.PublicResources.All);
+            categoryCombo.Items.Add("Mobs");
+            categoryCombo.Items.Add("Chests");
+            categoryCombo.Items.Add("Lights");
             categoryCombo.SelectedIndex = 0;
 
             UpdateMobList();
@@ -273,6 +467,10 @@ namespace WaywardGamers.KParser.Plugin
         protected override void LoadResources()
         {
             this.tabName = "Abyssea";
+
+            lsCruor = Resources.ParsedStrings.Cruor;
+            lsTreasureChest = "Treasure Chest";
+            lsTimeExtension = Resources.PublicResources.TimeExtension;
         }
         #endregion
     }
