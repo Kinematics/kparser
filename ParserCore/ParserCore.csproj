@@ -105,6 +105,9 @@
     <Compile Include="Interface\CustomMobSelectionDlg.Designer.cs">
       <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interface\PluginTemplate.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Monad\BaseMonadClasses.cs" />
     <Compile Include="Monad\Lexer.cs" />
     <Compile Include="Monad\Scanner.cs" />
