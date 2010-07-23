@@ -66,6 +66,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbysseaPlugin.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="AddEffectPlugin.cs">
       <SubType>UserControl</SubType>
     </Compile>
