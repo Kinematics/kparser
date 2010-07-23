@@ -190,6 +190,7 @@ namespace WaywardGamers.KParser
         Overloaded,
         Discovered,
         MoveInterrupt,
+        FailedUnlock,
     }
 
     public enum DamageModifier : byte
