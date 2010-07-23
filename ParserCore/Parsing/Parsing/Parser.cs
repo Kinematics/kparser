@@ -600,6 +600,40 @@ namespace WaywardGamers.KParser.Parsing
                 case 0x92: // Arena time remaining
                 case 0x94: // Arena intro/announcement
                     // Mark these as chat messages
+
+                    // Code 94 is used for opening chests with a key, and for failing to
+                    // open chests in Abyssea.
+                    Match chestLock = ParseExpressions.OpenLockWithKey.Match(message.CurrentMessageText);
+                    if (chestLock.Success == true)
+                    {
+                        message.SetMessageCategory(MessageCategoryType.Event);
+                        // These are to be considered 'death' events for the chest
+                        message.EventDetails.EventMessageType = EventMessageType.Interaction;
+                        message.EventDetails.CombatDetails.InteractionType = InteractionType.Death;
+                        message.EventDetails.CombatDetails.ActorName = chestLock.Groups[ParseFields.Name].Value;
+                        TargetDetails target = message.EventDetails.CombatDetails.AddTarget(
+                            Resources.PublicResources.SturdyPyxis);
+                        target.EntityType = EntityType.TreasureChest;
+                        message.EventDetails.CombatDetails.ItemName = chestLock.Groups[ParseFields.Item].Value;
+                        message.SetParseSuccess(true);
+                        break;
+                    }
+                    chestLock = ParseExpressions.FailOpenLock.Match(message.CurrentMessageText);
+                    if (chestLock.Success == true)
+                    {
+                        message.SetMessageCategory(MessageCategoryType.Event);
+                        // These are to be considered 'death' events for the chest
+                        message.EventDetails.EventMessageType = EventMessageType.Interaction;
+                        message.EventDetails.CombatDetails.InteractionType = InteractionType.Death;
+                        message.EventDetails.CombatDetails.ActorName = chestLock.Groups[ParseFields.Name].Value;
+                        TargetDetails target = message.EventDetails.CombatDetails.AddTarget(
+                            Resources.PublicResources.SturdyPyxis);
+                        target.EntityType = EntityType.TreasureChest;
+                        message.EventDetails.CombatDetails.FailedActionType = FailedActionType.FailedUnlock;
+                        message.SetParseSuccess(true);
+                        break;
+                    }
+
                     message.SetMessageCategory(MessageCategoryType.Chat);
                     message.ChatDetails.ChatMessageType = ChatMessageType.Arena;
                     message.ChatDetails.ChatSpeakerName = "-Arena-";
@@ -1016,14 +1050,32 @@ namespace WaywardGamers.KParser.Parsing
                             lootOrXP = ParseExpressions.OpenLock.Match(message.CurrentMessageText);
                             if (lootOrXP.Success == true)
                             {
-                                message.EventDetails.EventMessageType = EventMessageType.Loot;
-                                message.EventDetails.LootDetails.IsFoundMessage = true;
-                                message.EventDetails.LootDetails.ItemName = ":openlock";
-                                message.EventDetails.LootDetails.TargetName = "Sturdy Pyxis";
-                                message.EventDetails.LootDetails.TargetType = EntityType.TreasureChest;
+                                // These are to be considered 'death' events for the chest
+                                message.EventDetails.EventMessageType = EventMessageType.Interaction;
+                                message.EventDetails.CombatDetails.InteractionType = InteractionType.Death;
+                                message.EventDetails.CombatDetails.ActorName = lootOrXP.Groups[ParseFields.Name].Value;
+                                TargetDetails target = message.EventDetails.CombatDetails.AddTarget(
+                                    Resources.PublicResources.SturdyPyxis);
+                                target.EntityType = EntityType.TreasureChest;
                                 message.SetParseSuccess(true);
                                 break;
                             }
+                            // Opening the chest with a key is message code 94, which
+                            // is a system message.  Check there for regex.
+
+                            // Time Extensions
+                            lootOrXP = ParseExpressions.VisitantTE.Match(message.CurrentMessageText);
+                            if (lootOrXP.Success == true)
+                            {
+                                // These are to be considered 'death' events for the chest
+                                message.EventDetails.EventMessageType = EventMessageType.Loot;
+                                message.EventDetails.LootDetails.IsFoundMessage = false;
+                                message.EventDetails.LootDetails.Amount = int.Parse(lootOrXP.Groups[ParseFields.Number].Value);
+                                message.EventDetails.LootDetails.ItemName = ":TimeExtension";
+                                message.SetParseSuccess(true);
+                                break;
+                            }
+
                             message.EventDetails.EventMessageType = EventMessageType.Other;
                             message.SetParseSuccess(true);
                             break;
