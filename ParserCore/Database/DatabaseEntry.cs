@@ -16,11 +16,19 @@ namespace WaywardGamers.KParser.Database
 
         private Dictionary<KPDatabaseDataSet.BattlesRow, DateTime> activeBattleList;
         private Dictionary<string, KPDatabaseDataSet.BattlesRow> activeMobBattleList;
+        private List<KPDatabaseDataSet.BattlesRow> activeChestBattleList;
+
+        private List<Message> pendingCruorRewards;
+        private List<Message> pendingExperienceRewards;
 
         private List<KPDatabaseDataSet.InteractionsRow> deferredInteractions;
 
         private KPDatabaseDataSet.BattlesRow lastFinishedBattle;
         private DateTime mostRecentTimestamp = MagicNumbers.MinSQLDateTime;
+
+        private string lsCruor = Resources.ParsedStrings.Cruor;
+        private string lsGil = Resources.ParsedStrings.Gil;
+        private string lsPyxis = Resources.PublicResources.SturdyPyxis;
         #endregion
 
         #region Constructor
@@ -30,6 +38,10 @@ namespace WaywardGamers.KParser.Database
             activeBattleList = new Dictionary<KPDatabaseDataSet.BattlesRow, DateTime>();
             activeMobBattleList = new Dictionary<string, KPDatabaseDataSet.BattlesRow>();
             deferredInteractions = new List<KPDatabaseDataSet.InteractionsRow>();
+
+            activeChestBattleList = new List<KPDatabaseDataSet.BattlesRow>();
+            pendingCruorRewards = new List<Message>();
+            pendingExperienceRewards = new List<Message>();
         }
 
         /// <summary>
@@ -41,7 +53,11 @@ namespace WaywardGamers.KParser.Database
             
             activeBattleList.Clear();
             activeMobBattleList.Clear();
+            activeChestBattleList.Clear();
             deferredInteractions.Clear();
+
+            pendingCruorRewards.Clear();
+            pendingExperienceRewards.Clear();
 
             lastFinishedBattle = null;
             localDB = null;
@@ -250,14 +266,14 @@ namespace WaywardGamers.KParser.Database
             bool isFromChest = (message.EventDetails.ExperienceDetails.ExperiencePoints % 250) == 0;
             KPDatabaseDataSet.BattlesRow useThisBattle = null;
 
-            // Look for entries for unlocked chests in the last 180 seconds
+            // Look for entries for 'killed' (unlocked) chests in the last 15 seconds
             // that haven't been used yet.
             if (isFromChest)
             {
                 var chestBattles = from b in localDB.Battles
                                    where b.DefaultBattle == false &&
-                                         b.IsOver == true &&
-                                         b.EndTime.AddSeconds(180) > message.Timestamp &&
+                                         b.Killed == true &&
+                                         b.EndTime.AddSeconds(15) > message.Timestamp &&
                                          b.ExperiencePoints == 0 &&
                                          (EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.TreasureChest &&
                                          b.GetLootRows().Count() == 0
@@ -306,21 +322,32 @@ namespace WaywardGamers.KParser.Database
                         }
                     }
 
-                    if (lastFinishedBattle == null)
-                    {
-                        lastFinishedBattle = localDB.Battles.AddBattlesRow(null,
-                            message.Timestamp, message.Timestamp, true,
-                            null, (byte)ActorPlayerType.Unknown,
-                            0, 0, // XP Points & Chain
-                            (byte)MobDifficulty.Unknown, false);
-                    }
+                    // Likewise, don't create a new battle; just add
+                    // the experience reward to the pending list.
+                    // *** Note: This will probably cause problems.  Need to get back to it.
+
+                    //if (lastFinishedBattle == null)
+                    //{
+                    //    lastFinishedBattle = localDB.Battles.AddBattlesRow(null,
+                    //        message.Timestamp, message.Timestamp, true,
+                    //        null, (byte)ActorPlayerType.Unknown,
+                    //        0, 0, // XP Points & Chain
+                    //        (byte)MobDifficulty.Unknown, false);
+                    //}
                 }
 
                 useThisBattle = lastFinishedBattle;
             }
 
-            useThisBattle.ExperiencePoints = message.EventDetails.ExperienceDetails.ExperiencePoints;
-            useThisBattle.ExperienceChain = message.EventDetails.ExperienceDetails.ExperienceChain;
+            if (useThisBattle == null)
+            {
+                pendingExperienceRewards.Add(message);
+            }
+            else
+            {
+                useThisBattle.ExperiencePoints = message.EventDetails.ExperienceDetails.ExperiencePoints;
+                useThisBattle.ExperienceChain = message.EventDetails.ExperienceDetails.ExperienceChain;
+            }
         }
 
         /// <summary>
@@ -387,6 +414,20 @@ namespace WaywardGamers.KParser.Database
                     // Add the entry to the loot table.
                     localDB.Loot.AddLootRow(chestRow, firstNonChestBattle, null, 0, false);
 
+                    // At the same time as the chest is dropped as loot, we want to
+                    // create a new battle entry for it.
+
+                    KPDatabaseDataSet.CombatantsRow enemy =
+                        localDB.Combatants.GetCombatant(Resources.PublicResources.SturdyPyxis,
+                            EntityType.TreasureChest);
+
+                    KPDatabaseDataSet.BattlesRow battle =
+                        localDB.Battles.AddBattlesRow(
+                            enemy, message.Timestamp, MagicNumbers.MinSQLDateTime,
+                            false, null, 0, 0, 0, (byte)MobDifficulty.Unknown, false);
+
+                    // And add it to the current active list so we can reference it later.
+                    activeChestBattleList.Add(battle);
                 }
                 else
                 {
@@ -394,70 +435,59 @@ namespace WaywardGamers.KParser.Database
                     var targetCombatant = localDB.Combatants.GetCombatant(message.EventDetails.LootDetails.TargetName,
                         message.EventDetails.LootDetails.TargetType);
 
-                    // If we simply opened a treasure chest lock, loot will come in a later message.
-                    // Just create battle entry here.
-                    if (message.EventDetails.LootDetails.ItemName == ":openlock")
+                    // Get all battles the target has been involved in
+                    var targetBattles = targetCombatant.GetBattlesRowsByEnemyCombatantRelation();
+
+                    KPDatabaseDataSet.BattlesRow lastBattle = null;
+
+                    // If any battles, get the last one.
+                    if ((targetBattles != null) && (targetBattles.Count() > 0))
                     {
-                        localDB.Battles.AddBattlesRow(targetCombatant, message.Timestamp,
-                            message.Timestamp, true, null, (byte)ActorPlayerType.Unknown, 0, 0,
-                            (byte)MobDifficulty.Unknown, false);
+                        lastBattle = targetBattles.OrderBy(b => b.EndTime).Last();
+                    }
+
+                    // If we found one, make sure it's within 1:00 of Now.  This is
+                    // for initial 'found' messages.
+                    if (lastBattle != null)
+                    {
+                        if (lastBattle.EndTime < (message.Timestamp.Subtract(TimeSpan.FromSeconds(60))))
+                        {
+                            lastBattle = localDB.Battles.AddBattlesRow(targetCombatant, message.Timestamp,
+                                message.Timestamp, true, null, (byte)ActorPlayerType.Unknown, 0, 0,
+                                (byte)MobDifficulty.Unknown, false);
+                        }
                     }
                     else
                     {
-                        // Get all battles the target has been involved in
-                        var targetBattles = targetCombatant.GetBattlesRowsByEnemyCombatantRelation();
+                        // If we didn't find any battles for this target, look for recently
+                        // ended battles with no target (ie: battle created when player
+                        // gained xp, but no enemy name given so no targetCombatant).
 
-                        KPDatabaseDataSet.BattlesRow lastBattle = null;
+                        var recentNonTargetBattles = localDB.Battles.Where(
+                            b => b.DefaultBattle == false &&
+                                b.IsOver == true &&
+                                b.IsEnemyIDNull() == true &&
+                                b.EndTime > message.Timestamp.AddSeconds(-30));
 
-                        // If any battles, get the last one.
-                        if ((targetBattles != null) && (targetBattles.Count() > 0))
+                        if ((recentNonTargetBattles != null) && (recentNonTargetBattles.Count() > 0))
                         {
-                            lastBattle = targetBattles.OrderBy(b => b.EndTime).Last();
-                        }
-
-                        // If we found one, make sure it's within 1:00 of Now.  This is
-                        // for initial 'found' messages.
-                        if (lastBattle != null)
-                        {
-                            if (lastBattle.EndTime < (message.Timestamp.Subtract(TimeSpan.FromSeconds(60))))
-                            {
-                                lastBattle = localDB.Battles.AddBattlesRow(targetCombatant, message.Timestamp,
-                                    message.Timestamp, true, null, (byte)ActorPlayerType.Unknown, 0, 0,
-                                    (byte)MobDifficulty.Unknown, false);
-                            }
+                            lastBattle = recentNonTargetBattles.Last();
+                            lastBattle.EnemyID = targetCombatant.CombatantID;
                         }
                         else
                         {
-                            // If we didn't find any battles for this target, look for recently
-                            // ended battles with no target (ie: battle created when player
-                            // gained xp, but no enemy name given so no targetCombatant).
-
-                            var recentNonTargetBattles = localDB.Battles.Where(
-                                b => b.DefaultBattle == false &&
-                                    b.IsOver == true &&
-                                    b.IsEnemyIDNull() == true &&
-                                    b.EndTime > message.Timestamp.AddSeconds(-30));
-
-                            if ((recentNonTargetBattles != null) && (recentNonTargetBattles.Count() > 0))
-                            {
-                                lastBattle = recentNonTargetBattles.Last();
-                                lastBattle.EnemyID = targetCombatant.CombatantID;
-                            }
-                            else
-                            {
-                                // Or if we didn't find any battles for this target, create a new one.
-                                lastBattle = localDB.Battles.AddBattlesRow(targetCombatant, message.Timestamp,
-                                    message.Timestamp, true, null, (byte)ActorPlayerType.Unknown, 0, 0,
-                                    (byte)MobDifficulty.Unknown, false);
-                            }
+                            // Or if we didn't find any battles for this target, create a new one.
+                            lastBattle = localDB.Battles.AddBattlesRow(targetCombatant, message.Timestamp,
+                                message.Timestamp, true, null, (byte)ActorPlayerType.Unknown, 0, 0,
+                                (byte)MobDifficulty.Unknown, false);
                         }
-
-                        // Locate the item by name in the item table.
-                        var itemRow = localDB.Items.GetItem(message.EventDetails.LootDetails.ItemName);
-
-                        // Add the entry to the loot table.
-                        localDB.Loot.AddLootRow(itemRow, lastBattle, null, 0, false);
                     }
+
+                    // Locate the item by name in the item table.
+                    var itemRow = localDB.Items.GetItem(message.EventDetails.LootDetails.ItemName);
+
+                    // Add the entry to the loot table.
+                    localDB.Loot.AddLootRow(itemRow, lastBattle, null, 0, false);
                 }
             }
             else
@@ -507,14 +537,14 @@ namespace WaywardGamers.KParser.Database
                 }
                 else
                 {
-                    // handle gil drops
+                    // handle gil/cruor/TE drops
 
                     KPDatabaseDataSet.ItemsRow itemRow = null;
 
                     if (message.EventDetails.LootDetails.ItemName == ":cruor")
                     {
                         // Get the "Cruor" item from the items table (created if necessary).
-                        itemRow = localDB.Items.GetItem("Cruor");
+                        itemRow = localDB.Items.GetItem(lsCruor);
 
                         // Cruor rewards can occur before the end of a battle, or after
                         // a chest is opened.  We can't rely on lastFinishedBattle, so
@@ -524,59 +554,51 @@ namespace WaywardGamers.KParser.Database
                         bool isFromChest = (message.EventDetails.LootDetails.Amount % 200) == 0;
                         KPDatabaseDataSet.BattlesRow cruorSourceBattle = null;
 
-                        // Look for entries for unlocked chests in the last 180 seconds
+                        // Look for entries for chests that were unlocked in the last 15 seconds
                         // that haven't been used yet.
                         if (isFromChest)
                         {
-                            var chestBattles = from b in localDB.Battles
-                                               where b.DefaultBattle == false &&
-                                                     b.IsOver == true &&
-                                                     b.EndTime.AddSeconds(180) > message.Timestamp &&
-                                                     b.ExperiencePoints == 0 &&
-                                                     (EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.TreasureChest &&
-                                                     b.GetLootRows().Count() == 0
-                                               orderby b.EndTime
-                                               select b;
+                            var pyxis = localDB.Combatants.FirstOrDefault(
+                                c => c.CombatantName == lsPyxis && 
+                                    (EntityType)c.CombatantType == EntityType.TreasureChest);
 
-                            if (chestBattles.Count() > 0)
+                            if (pyxis != null)
                             {
-                                cruorSourceBattle = chestBattles.First();
+                                var pyxisBattles = pyxis.GetBattlesRowsByEnemyCombatantRelation();
+
+                                var killedPyxis = pyxisBattles.Where(b => b.Killed == true);
+
+                                var validPyxis = killedPyxis.Where(b =>
+                                    b.ExperiencePoints == 0 &&
+                                    b.GetLootRows().Count() == 0 &&
+                                    b.EndTime.AddSeconds(15) > message.Timestamp);
+
+                                if (validPyxis.Count() > 0)
+                                {
+                                    cruorSourceBattle = validPyxis.First();
+                                }
                             }
                         }
 
-                        // If not found from a chest (or unable to find a chest battle),
-                        // search for the current active battle that's likely to end.
+                        // If we didn't get it from a chest, the message would
+                        // have been generated before the message that the mob
+                        // was killed.  Add this to the pending list and move on.
                         if (cruorSourceBattle == null)
                         {
-                            if (activeBattleList.Count > 0)
-                            {
-                                var nCBs = from b in activeBattleList
-                                           where b.Key.DefaultBattle == false &&
-                                                 b.Key.GetLootRows().Any(l => l.ItemsRow == itemRow) == false
-                                           orderby b.Value
-                                           select b.Key;
-
-                                cruorSourceBattle = nCBs.FirstOrDefault();
-                            }
+                            pendingCruorRewards.Add(message);
+                            return;
                         }
 
-                        if (cruorSourceBattle == null)
-                            cruorSourceBattle = lastFinishedBattle;
-
-                        if (cruorSourceBattle != null)
+                        // If we know who obtained the gil, use them as the player.
+                        if (string.IsNullOrEmpty(message.EventDetails.LootDetails.WhoObtained) == false)
                         {
-                            // If we know who obtained the gil, use them as the player.
-                            if (string.IsNullOrEmpty(message.EventDetails.LootDetails.WhoObtained) == false)
-                            {
-                                var player = localDB.Combatants.GetCombatant(message.EventDetails.LootDetails.WhoObtained, EntityType.Player);
-                                localDB.Loot.AddLootRow(itemRow, cruorSourceBattle, player, message.EventDetails.LootDetails.Amount, false);
-                            }
-                            else
-                            {
-                                localDB.Loot.AddLootRow(itemRow, cruorSourceBattle, null, message.EventDetails.LootDetails.Amount, false);
-                            }
+                            var player = localDB.Combatants.GetCombatant(message.EventDetails.LootDetails.WhoObtained, EntityType.Player);
+                            localDB.Loot.AddLootRow(itemRow, cruorSourceBattle, player, message.EventDetails.LootDetails.Amount, false);
                         }
-
+                        else
+                        {
+                            localDB.Loot.AddLootRow(itemRow, cruorSourceBattle, null, message.EventDetails.LootDetails.Amount, false);
+                        }
                     }
                     else if (message.EventDetails.LootDetails.ItemName == ":gil")
                     {
@@ -585,7 +607,7 @@ namespace WaywardGamers.KParser.Database
                         // because we have no mob name.
 
                         // Get the "Gil" item from the items table (created if necessary).
-                        itemRow = localDB.Items.GetItem("Gil");
+                        itemRow = localDB.Items.GetItem(lsGil);
 
                         if (lastFinishedBattle != null)
                         {
@@ -601,6 +623,53 @@ namespace WaywardGamers.KParser.Database
                                 localDB.Loot.AddLootRow(itemRow, lastFinishedBattle, null, message.EventDetails.LootDetails.Amount, false);
                             }
                         }
+                    }
+                    else if (message.EventDetails.LootDetails.ItemName == ":TimeExtension")
+                    {
+                        // Get the "Cruor" item from the items table (created if necessary).
+                        itemRow = localDB.Items.GetItem(Resources.PublicResources.TimeExtension);
+
+                        // Time extensions can *only* come from chests.
+
+                        KPDatabaseDataSet.BattlesRow sourceBattle = null;
+
+                        // Look for entries for chests that were unlocked in the last 15 seconds
+                        // that haven't been used yet.
+                        var pyxis = localDB.Combatants.FirstOrDefault(
+                            c => c.CombatantName == lsPyxis &&
+                                (EntityType)c.CombatantType == EntityType.TreasureChest);
+
+                        if (pyxis != null)
+                        {
+                            var pyxisBattles = pyxis.GetBattlesRowsByEnemyCombatantRelation();
+
+                            var killedPyxis = pyxisBattles.Where(b => b.Killed == true);
+
+                            var validPyxis = killedPyxis.Where(b =>
+                                b.ExperiencePoints == 0 &&
+                                b.GetLootRows().Count() == 0 &&
+                                b.EndTime.AddSeconds(15) > message.Timestamp);
+
+                            if (validPyxis.Count() > 0)
+                            {
+                                sourceBattle = validPyxis.First();
+                            }
+                        }
+
+                        // If we can't find an existing chest, create a new entry.
+                        if (sourceBattle == null)
+                        {
+                            var targetCombatant = localDB.Combatants.GetCombatant(lsPyxis,
+                                EntityType.TreasureChest);
+
+                            sourceBattle = localDB.Battles.AddBattlesRow(targetCombatant, message.Timestamp,
+                                message.Timestamp, true, null, (byte)ActorPlayerType.Unknown, 0, 0,
+                                (byte)MobDifficulty.Unknown, false);
+                        }
+
+                        localDB.Loot.AddLootRow(itemRow, sourceBattle, null,
+                            message.EventDetails.LootDetails.Amount, false);
+
                     }
                 }
             }
@@ -750,7 +819,7 @@ namespace WaywardGamers.KParser.Database
                     if (deferredInteraction != null)
                     {
                         deferredInteraction.BattlesRow = battle;
-                        deferredInteractions = deferredInteractions.Skip(1).ToList<KPDatabaseDataSet.InteractionsRow>();
+                        deferredInteractions = deferredInteractions.Skip(1).ToList();
                     }
                 }
             }
@@ -957,7 +1026,7 @@ namespace WaywardGamers.KParser.Database
             if ((message.EventDetails.CombatDetails.Targets == null) || (message.EventDetails.CombatDetails.Targets.Count == 0))
                 return;
 
-            // If no actor name given, target just "fell to the ground".
+            // If we have an actor name, get the actor.  Otherwise the target just "fell to the ground".
             if (string.IsNullOrEmpty(message.EventDetails.CombatDetails.ActorName) == false)
             {
                 // Determine the acting combatant for this event
@@ -970,6 +1039,7 @@ namespace WaywardGamers.KParser.Database
             foreach (var target in message.EventDetails.CombatDetails.Targets)
             {
                 var targetRow = localDB.Combatants.GetCombatant(target.Name, target.EntityType);
+                KPDatabaseDataSet.ItemsRow item = null;
 
                 if ((target.EntityType == EntityType.Mob) ||
                     (target.EntityType == EntityType.CharmedPlayer))
@@ -1045,6 +1115,44 @@ namespace WaywardGamers.KParser.Database
 
                     lastFinishedBattle = battle;
                 }
+                else if (target.EntityType == EntityType.TreasureChest)
+                {
+                    // If target is a chest that was unlocked/killed, search our active
+                    // chests for one we can use.
+
+                    if (activeChestBattleList.Count > 0)
+                    {
+                        battle = activeChestBattleList.First();
+                        lock (activeChestBattleList)
+                            activeChestBattleList.Remove(battle);
+
+                        // Mark the battle as completed
+                        battle.EndTime = message.Timestamp;
+                        
+                        // Failure means expiring the chest, but not killed.
+                        if (message.EventDetails.CombatDetails.FailedActionType == FailedActionType.None)
+                            battle.Killed = true;
+
+                        battle.CombatantsRowByBattleKillerRelation = actor;
+                        battle.KillerPlayerType = (byte)message.EventDetails.CombatDetails.ActorPlayerType;
+                    }
+
+                    // If we didn't find one, create a new one
+                    if (battle == null)
+                    {
+                        battle = localDB.Battles.AddBattlesRow(targetRow, message.Timestamp, message.Timestamp,
+                            true, actor, (byte)message.EventDetails.CombatDetails.ActorPlayerType, 0, 0,
+                            (byte)MobDifficulty.Unknown, false);
+                    }
+
+                    // Get the item row for the forbidden key, if used.
+                    if (string.IsNullOrEmpty(
+                        message.EventDetails.CombatDetails.ItemName) == false)
+                    {
+                        item = localDB.Items.GetItem(message.EventDetails.CombatDetails.ItemName);
+                    }
+
+                }
                 else
                 {
                     // If target is player, find the battle to put this in
@@ -1109,51 +1217,106 @@ namespace WaywardGamers.KParser.Database
                        (byte)target.SecondaryHarmType,
                        target.SecondaryAmount,
                        null,
-                       null);
+                       item);
+
+                // Add pending cruor or experience, if applicable.
+                var pendingCruor = pendingCruorRewards.FirstOrDefault();
+                if ((pendingCruor != null) && (target.EntityType != EntityType.TreasureChest))
+                {
+                    pendingCruorRewards = pendingCruorRewards.Skip(1).ToList();
+
+                    KPDatabaseDataSet.ItemsRow itemRow = localDB.Items.GetItem(lsCruor);
+
+                    if (string.IsNullOrEmpty(pendingCruor.EventDetails.LootDetails.WhoObtained) == false)
+                    {
+                        var player = localDB.Combatants.GetCombatant(pendingCruor.EventDetails.LootDetails.WhoObtained, EntityType.Player);
+                        localDB.Loot.AddLootRow(itemRow, battle, player, pendingCruor.EventDetails.LootDetails.Amount, false);
+                    }
+                    else
+                    {
+                        localDB.Loot.AddLootRow(itemRow, battle, null, pendingCruor.EventDetails.LootDetails.Amount, false);
+                    }
+                }
+
+                var pendingExp = pendingExperienceRewards.FirstOrDefault();
+                if ((pendingExp != null) && (target.EntityType != EntityType.TreasureChest))
+                {
+                    pendingExperienceRewards = pendingExperienceRewards.Skip(1).ToList();
+
+                    battle.ExperiencePoints = pendingExp.EventDetails.ExperienceDetails.ExperiencePoints;
+
+                }
             }
         }
         #endregion
 
         #region Utility functions
         /// <summary>
-        /// Close out inactive battles.  And parse is ending, close out all remaining battles.
+        /// Close out inactive battles.  If parse is ending, close out all remaining battles.
         /// </summary>
         /// <param name="closeOutAllBattles">Flag to indicate whether the
         /// parse is ending and all battles should be closed.</param>
         private void UpdateActiveBattleList(bool closeOutAllBattles)
         {
-            List<KPDatabaseDataSet.BattlesRow> battlesToRemove = new List<KPDatabaseDataSet.BattlesRow>();
-            DateTime tenMinutesAgo = mostRecentTimestamp.Subtract(TimeSpan.FromMinutes(10));
-
-            lock (activeBattleList)
+            try
             {
-                if (activeBattleList.Count > 0)
+                List<KPDatabaseDataSet.BattlesRow> battlesToRemove = new List<KPDatabaseDataSet.BattlesRow>();
+                DateTime tenMinutesAgo = mostRecentTimestamp.Subtract(TimeSpan.FromMinutes(10));
+
+                lock (activeBattleList)
                 {
-                    foreach (var activeBattle in activeBattleList)
+                    if (activeBattleList.Count > 0)
                     {
-                        // Never close out the default battle, if it's in the list.
-                        if (activeBattle.Key.DefaultBattle == false)
+                        foreach (var activeBattle in activeBattleList)
                         {
-                            // Anything that hasn't had any activity in more than
-                            // 10 minutes is marked for removal.
-                            if ((closeOutAllBattles == true) || (activeBattle.Value < tenMinutesAgo))
+                            // Never close out the default battle, if it's in the list.
+                            if (activeBattle.Key.DefaultBattle == false)
                             {
-                                battlesToRemove.Add(activeBattle.Key);
+                                // Anything that hasn't had any activity in more than
+                                // 10 minutes is marked for removal.
+                                if ((closeOutAllBattles == true) || (activeBattle.Value < tenMinutesAgo))
+                                {
+                                    battlesToRemove.Add(activeBattle.Key);
+                                }
                             }
                         }
-                    }
 
-                    foreach (var battleToRemove in battlesToRemove)
-                    {
-                        // If the battle hasn't been marked as ended, set the
-                        // ending timestamp to match the most recent message's.
-                        // If reparsing, this will be the last message in the
-                        // log.
-                        if (battleToRemove.EndTime == MagicNumbers.MinSQLDateTime)
-                            battleToRemove.EndTime = mostRecentTimestamp;
-                        activeBattleList.Remove(battleToRemove);
+                        foreach (var battleToRemove in battlesToRemove)
+                        {
+                            // If the battle hasn't been marked as ended, set the
+                            // ending timestamp to match the most recent message's.
+                            // If reparsing, this will be the last message in the
+                            // log.
+                            if (battleToRemove.EndTime == MagicNumbers.MinSQLDateTime)
+                                battleToRemove.EndTime = mostRecentTimestamp;
+                            activeBattleList.Remove(battleToRemove);
+                        }
                     }
                 }
+
+                lock (activeChestBattleList)
+                {
+                    if (activeChestBattleList.Count > 0)
+                    {
+                        battlesToRemove.Clear();
+
+                        foreach (var chest in activeChestBattleList)
+                        {
+                            if ((closeOutAllBattles == true) ||
+                                (chest.StartTime.AddSeconds(180) < mostRecentTimestamp))
+                            {
+                                chest.EndTime = chest.StartTime.AddSeconds(180);
+                                battlesToRemove.Add(chest);
+                            }
+                        }
+
+                        activeChestBattleList = activeChestBattleList.Except(battlesToRemove).ToList();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Log(e);
             }
         }
 
