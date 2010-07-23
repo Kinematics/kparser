@@ -2257,7 +2257,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0,-17}{1,10:f2}{2,13:f2}{3,13:f2}{4,13:f2}{5,13:f2}{6,13:f2}{7,14:f2}.
+        ///   Looks up a localized string similar to {0,-17}{1,6:f2}{2,9:f2}{3,9:f2}{4,9:f2}{5,9:f2}{6,9:f2}{7,9:f2}{8,10:f2}.
         /// </summary>
         internal static string RecoveryPluginFormatAvgCuring {
             get {
@@ -2266,7 +2266,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0,-17}{1,9}{2,12}{3,7}{4,6}{5,6}{6,6}{7,6}{8,9}{9,7}{10,7}{11,7}.
+        ///   Looks up a localized string similar to {0,-17}{1,9}{2,12}{3,7}{4,6}{5,6}{6,6}{7,6}{8,6}{9,9}{10,7}{11,7}{12,7}.
         /// </summary>
         internal static string RecoveryPluginFormatCuring {
             get {
@@ -2311,7 +2311,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Player           Avg Cure 1   Avg Cure 2   Avg Cure 3   Avg Cure 4   Avg Cure 5   Avg Curaga   Avg Ability.
+        ///   Looks up a localized string similar to Player           Cure 1   Cure 2   Cure 3   Cure 4   Cure 5   Cure 6   Curaga   Ability.
         /// </summary>
         internal static string RecoveryPluginHeaderAvgCuring {
             get {
@@ -2320,7 +2320,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Player           Cured (Sp)  Cured (Ab)  C.1s  C.2s  C.3s  C.4s  C.5s  Curagas  Rg.1s  Rg.2s  Rg.3s.
+        ///   Looks up a localized string similar to Player           Cured (Sp)  Cured (Ab)  C.1s  C.2s  C.3s  C.4s  C.5s  C.6s  Curagas  Rg.1s  Rg.2s  Rg.3s.
         /// </summary>
         internal static string RecoveryPluginHeaderCuring {
             get {
