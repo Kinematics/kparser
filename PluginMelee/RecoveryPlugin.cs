@@ -1067,6 +1067,7 @@ namespace WaywardGamers.KParser.Plugin
             lsCure3 = Resources.ParsedStrings.Cure3;
             lsCure4 = Resources.ParsedStrings.Cure4;
             lsCure5 = Resources.ParsedStrings.Cure5;
+            lsCure6 = Resources.ParsedStrings.Cure6;
             lsCWaltz1 = Resources.ParsedStrings.CuringWaltz1;
             lsCWaltz2 = Resources.ParsedStrings.CuringWaltz2;
             lsCWaltz3 = Resources.ParsedStrings.CuringWaltz3;
