@@ -56,6 +56,7 @@ namespace WaywardGamers.KParser.Plugin
         string lsDropRates;
         string lsNoDrops;
         string lsTreasureChests;
+        string lsTimeExtension;
         string lsNumberOfTimesDropped;
         string lsNothing;
 
@@ -396,6 +397,12 @@ namespace WaywardGamers.KParser.Plugin
 
             string dropListFormat = "{0,9} {1}\n";
 
+            #region Special items
+
+            Regex specialItems = new Regex(string.Format("{0}|{1}|{2}|{3}",
+                lsGil, lsCruor, lsTreasureChest, lsTimeExtension));
+
+            // Gil
             int totalGil = 0;
             string gilPlayerName = string.Empty;
 
@@ -411,6 +418,7 @@ namespace WaywardGamers.KParser.Plugin
                 sb.AppendFormat(dropListFormat, totalGil, lsGil);
             }
 
+            // Cruor
             int totalCruor = 0;
             string cruorPlayerName = string.Empty;
 
@@ -426,6 +434,7 @@ namespace WaywardGamers.KParser.Plugin
                 sb.AppendFormat(dropListFormat, totalCruor, lsCruor);
             }
 
+            // Treasure Chests
             var treasureChestItem = dataSet.Items.SingleOrDefault(i => i.ItemName == lsTreasureChest);
             if (treasureChestItem != null)
             {
@@ -433,12 +442,20 @@ namespace WaywardGamers.KParser.Plugin
                 sb.AppendFormat(dropListFormat, treasureChestCount, lsTreasureChest);
             }
 
+            // Time Extensions
+            var timeExtensionItem = dataSet.Items.SingleOrDefault(i => i.ItemName == lsTimeExtension);
+            if (timeExtensionItem != null)
+            {
+                int timeExtensionCount = timeExtensionItem.GetLootRows().Count();
+                sb.AppendFormat(dropListFormat, timeExtensionCount, lsTimeExtension);
+            }
+
+            #endregion
+
             foreach (var item in dataSet.Items)
             {
                 if ((item.GetLootRows().Count() > 0) &&
-                    (item.ItemName != lsGil) &&
-                    (item.ItemName != lsCruor) &&
-                    (item.ItemName != lsTreasureChest))
+                    specialItems.Match(item.ItemName).Success == false)
                 {
                     sb.AppendFormat(dropListFormat, item.GetLootRows().Count(), item.ItemName);
                 }
@@ -1243,6 +1260,8 @@ namespace WaywardGamers.KParser.Plugin
             lsGil = Resources.ParsedStrings.Gil;
             lsCruor = Resources.ParsedStrings.Cruor;
             lsTreasureChest = "Treasure Chest";
+            lsTimeExtension = Resources.PublicResources.TimeExtension;
+
             lsItemDrops = Resources.NonCombat.TreasurePluginItemDrops;
             lsDistribution = Resources.NonCombat.TreasurePluginDistribution;
             lsNoDrops = Resources.NonCombat.TreasurePluginNoDrops;
