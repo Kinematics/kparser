@@ -67,6 +67,7 @@ namespace WaywardGamers.KParser.Plugin
         string lsCure3;
         string lsCure4;
         string lsCure5;
+        string lsCure6;
         string lsCWaltz1;
         string lsCWaltz2;
         string lsCWaltz3;
@@ -413,6 +414,7 @@ namespace WaywardGamers.KParser.Plugin
             int numCure3 = 0;
             int numCure4 = 0;
             int numCure5 = 0;
+            int numCure6 = 0;
             int numCuraga = 0;
             int numRegen1 = 0;
             int numRegen2 = 0;
@@ -423,6 +425,7 @@ namespace WaywardGamers.KParser.Plugin
             double avgC3 = 0;
             double avgC4 = 0;
             double avgC5 = 0;
+            double avgC6 = 0;
             double avgCg = 0;
             double avgAb = 0;
 
@@ -454,6 +457,7 @@ namespace WaywardGamers.KParser.Plugin
                             healLU[lsMagicFruit].Count();
                         numCure5 = healLU[lsCure5].Count() +
                             healLU[lsCWaltz4].Count();
+                        numCure6 = healLU[lsCure6].Count();
                         numCuraga = healLU[lsHealingBreeze].GroupBy(a => a.Timestamp).Count() +
                             healLU[lsDivineWaltz1].GroupBy(a => a.Timestamp).Count() +
                             healLU[lsDivineWaltz2].GroupBy(a => a.Timestamp).Count() +
@@ -475,7 +479,8 @@ namespace WaywardGamers.KParser.Plugin
                         cureSpell = spellCures.Sum(a => a.Amount);
                         cureAbil = abilCures.Sum(a => a.Amount);
 
-                        if ((cureSpell + cureAbil + numCure1 + numCure2 + numCure3 + numCure4 + numCure5 +
+                        if ((cureSpell + cureAbil +
+                            numCure1 + numCure2 + numCure3 + numCure4 + numCure5 + numCure6 +
                             numRegen1 + numRegen2 + numRegen3 + numCuraga) > 0)
                         {
                             if (placeHeader == false)
@@ -511,6 +516,7 @@ namespace WaywardGamers.KParser.Plugin
                                 numCure3,
                                 numCure4,
                                 numCure5,
+                                numCure6,
                                 numCuraga,
                                 numRegen1,
                                 numRegen2,
@@ -527,6 +533,7 @@ namespace WaywardGamers.KParser.Plugin
                             totalMP += healLU[lsCure3].Count() * 46;
                             totalMP += healLU[lsCure4].Count() * 88;
                             totalMP += healLU[lsCure5].Count() * 135;
+                            totalMP += healLU[lsCure6].Count() * 227;
                             totalMP += healLU[lsPollen].Count() * 8;
                             totalMP += healLU[lsWildCarrot].Count() * 37;
                             totalMP += healLU[lsMagicFruit].Count() * 72;
@@ -559,7 +566,10 @@ namespace WaywardGamers.KParser.Plugin
 
                             if (totalMP > 0)
                             {
-                                mpCureEff = (float)cureSpell / (totalMP - regenCost);
+                                if (totalMP > regenCost)
+                                    mpCureEff = (float)cureSpell / (totalMP - regenCost);
+                                else
+                                    mpCureEff = 0;
 
                                 int curesWithRegen = cureSpell +
                                     numRegen1 * 125 +
@@ -648,6 +658,8 @@ namespace WaywardGamers.KParser.Plugin
                         avgC5 = healLU[lsCure5].Concat(healLU[lsCWaltz4])
                             .Average(a => (int?)a.Amount) ?? 0.0;
 
+                        avgC6 = healLU[lsCure6].Average(a => (int?)a.Amount) ?? 0.0;
+
 
                         avgCg = healLU[lsCura].GroupBy(a => a.Timestamp)
                             .Concat(healLU[lsCuraga1].GroupBy(a => a.Timestamp))
@@ -663,7 +675,7 @@ namespace WaywardGamers.KParser.Plugin
                             .Average(a => (int?)a.Amount) ?? 0.0;
 
 
-                        if ((avgAb + avgC1 + avgC2 + avgC3 + avgC4 + avgC5 + avgCg) > 0)
+                        if ((avgAb + avgC1 + avgC2 + avgC3 + avgC4 + avgC5 + avgC6 + avgCg) > 0)
                         {
                             if (placeHeader == false)
                             {
@@ -697,6 +709,7 @@ namespace WaywardGamers.KParser.Plugin
                                 avgC3,
                                 avgC4,
                                 avgC5,
+                                avgC6,
                                 avgCg,
                                 avgAb);
 
