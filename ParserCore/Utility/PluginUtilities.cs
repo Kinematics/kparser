@@ -511,7 +511,9 @@ namespace WaywardGamers.KParser.Plugin
             {
                 if (mobFilter.Exclude0XPMobs)
                     return (rowToCheck.ExperiencePoints > 0);
-                else
+                else if (rowToCheck.IsEnemyIDNull() == true)
+                    return false;
+                else if ((EntityType)rowToCheck.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.Mob)
                     return true;
             }
 
@@ -535,6 +537,9 @@ namespace WaywardGamers.KParser.Plugin
                 return false;
 
             if (rowToCheck.IsEnemyIDNull() == true)
+                return false;
+
+            if ((EntityType)rowToCheck.CombatantsRowByEnemyCombatantRelation.CombatantType != EntityType.Mob)
                 return false;
 
             if (rowToCheck.CombatantsRowByEnemyCombatantRelation.CombatantName == mobFilter.MobName)
