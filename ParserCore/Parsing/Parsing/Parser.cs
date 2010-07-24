@@ -633,6 +633,19 @@ namespace WaywardGamers.KParser.Parsing
                         message.SetParseSuccess(true);
                         break;
                     }
+                    // Light auras
+                    Match aura = ParseExpressions.EmitLight.Match(message.CurrentMessageText);
+                    if (aura.Success == true)
+                    {
+                        message.SetMessageCategory(MessageCategoryType.Event);
+                        message.EventDetails.EventMessageType = EventMessageType.Loot;
+                        message.EventDetails.LootDetails.IsFoundMessage = false;
+                        message.EventDetails.LootDetails.LootType = LootType.Aura;
+                        message.EventDetails.LootDetails.ItemName = aura.Groups[ParseFields.Light].Value;
+                        message.SetParseSuccess(true);
+                        break;
+                    }
+
 
                     message.SetMessageCategory(MessageCategoryType.Chat);
                     message.ChatDetails.ChatMessageType = ChatMessageType.Arena;
@@ -1067,14 +1080,16 @@ namespace WaywardGamers.KParser.Parsing
                             lootOrXP = ParseExpressions.VisitantTE.Match(message.CurrentMessageText);
                             if (lootOrXP.Success == true)
                             {
-                                // These are to be considered 'death' events for the chest
                                 message.EventDetails.EventMessageType = EventMessageType.Loot;
                                 message.EventDetails.LootDetails.IsFoundMessage = false;
                                 message.EventDetails.LootDetails.Amount = int.Parse(lootOrXP.Groups[ParseFields.Number].Value);
-                                message.EventDetails.LootDetails.ItemName = ":TimeExtension";
+                                message.EventDetails.LootDetails.LootType = LootType.Time;
+                                message.EventDetails.LootDetails.ItemName = Resources.PublicResources.TimeExtension;
                                 message.SetParseSuccess(true);
                                 break;
                             }
+
+                            // Light auras use code 94.  Check in system parsing.
 
                             message.EventDetails.EventMessageType = EventMessageType.Other;
                             message.SetParseSuccess(true);
