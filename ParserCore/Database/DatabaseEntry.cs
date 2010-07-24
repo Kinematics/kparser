@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace WaywardGamers.KParser.Database
 {
@@ -20,6 +21,7 @@ namespace WaywardGamers.KParser.Database
 
         private List<Message> pendingCruorRewards;
         private List<Message> pendingExperienceRewards;
+        private List<Message> pendingLightRewards;
 
         private List<KPDatabaseDataSet.InteractionsRow> deferredInteractions;
 
@@ -42,6 +44,7 @@ namespace WaywardGamers.KParser.Database
             activeChestBattleList = new List<KPDatabaseDataSet.BattlesRow>();
             pendingCruorRewards = new List<Message>();
             pendingExperienceRewards = new List<Message>();
+            pendingLightRewards = new List<Message>();
         }
 
         /// <summary>
@@ -58,6 +61,7 @@ namespace WaywardGamers.KParser.Database
 
             pendingCruorRewards.Clear();
             pendingExperienceRewards.Clear();
+            pendingLightRewards.Clear();
 
             lastFinishedBattle = null;
             localDB = null;
@@ -356,6 +360,8 @@ namespace WaywardGamers.KParser.Database
         /// <param name="message">The message containing loot data.</param>
         private void InsertLoot(Message message)
         {
+            KPDatabaseDataSet.ItemsRow itemRow = null;
+
             // Messages for when items are found on mob.
             if (message.EventDetails.LootDetails.IsFoundMessage == true)
             {
@@ -484,7 +490,7 @@ namespace WaywardGamers.KParser.Database
                     }
 
                     // Locate the item by name in the item table.
-                    var itemRow = localDB.Items.GetItem(message.EventDetails.LootDetails.ItemName);
+                    itemRow = localDB.Items.GetItem(message.EventDetails.LootDetails.ItemName);
 
                     // Add the entry to the loot table.
                     localDB.Loot.AddLootRow(itemRow, lastBattle, null, 0, false);
@@ -494,13 +500,64 @@ namespace WaywardGamers.KParser.Database
             {
                 // Messages for when items or gil are distributed to players.
 
-                if ((message.EventDetails.LootDetails.Gil == 0) &&
-                    (message.EventDetails.LootDetails.Amount == 0))
+                if (message.EventDetails.LootDetails.LootType == LootType.Aura)
+                {
+                    // Auras can come from chests or battles
+                    // Ebon, Gold and Silver can only come from chests.
+
+                    Regex chestOnlyColors = new Regex("ebon|gold|silver");
+                    bool chestOnly = chestOnlyColors.Match(message.EventDetails.LootDetails.ItemName).Success;
+
+                    itemRow = localDB.Items.GetItem(message.EventDetails.LootDetails.ItemName);
+                    KPDatabaseDataSet.BattlesRow sourceBattle = null;
+
+                    // Look for entries for chests that were unlocked in the last 15 seconds
+                    // that haven't been used yet.
+                    var pyxis = localDB.Combatants.GetCombatant(lsPyxis,
+                        EntityType.TreasureChest);
+
+                    var pyxisBattles = pyxis.GetBattlesRowsByEnemyCombatantRelation();
+
+                    var killedPyxis = pyxisBattles.Where(b => b.Killed == true);
+
+                    var validPyxis = killedPyxis.Where(b =>
+                        b.ExperiencePoints == 0 &&
+                        b.GetLootRows().Count() == 0 &&
+                        b.EndTime.AddSeconds(10) > message.Timestamp);
+
+                    if (validPyxis.Count() > 0)
+                    {
+                        sourceBattle = validPyxis.First();
+                    }
+
+                    // chest-only auras need to create a new chest if one not found.
+                    if ((sourceBattle == null) && (chestOnly == true))
+                    {
+                        sourceBattle = localDB.Battles.AddBattlesRow(pyxis, message.Timestamp,
+                            message.Timestamp, true, null, (byte)ActorPlayerType.Unknown, 0, 0,
+                            (byte)MobDifficulty.Unknown, false);
+                    }
+
+                    // If we have a pyxis to put the aura in, add it there.
+                    if (sourceBattle != null)
+                    {
+                        localDB.Loot.AddLootRow(itemRow, sourceBattle, null,
+                            message.EventDetails.LootDetails.Amount, false);
+                    }
+                    else
+                    {
+                        // Otherwise add it to the pending queue for when we get
+                        // confirmation of a mob's death.
+                        pendingLightRewards.Add(message);
+                    }
+                }
+                else if ((message.EventDetails.LootDetails.Gil == 0) &&
+                (message.EventDetails.LootDetails.Amount == 0))
                 {
                     // handle item drops
 
                     // Locate the item in the item names table.
-                    var itemRow = localDB.Items.GetItem(message.EventDetails.LootDetails.ItemName);
+                    itemRow = localDB.Items.GetItem(message.EventDetails.LootDetails.ItemName);
 
                     // Get an array of all loot entries for this item.
                     var lootEntries = itemRow.GetLootRows();
@@ -539,8 +596,6 @@ namespace WaywardGamers.KParser.Database
                 {
                     // handle gil/cruor/TE drops
 
-                    KPDatabaseDataSet.ItemsRow itemRow = null;
-
                     if (message.EventDetails.LootDetails.ItemName == ":cruor")
                     {
                         // Get the "Cruor" item from the items table (created if necessary).
@@ -559,7 +614,7 @@ namespace WaywardGamers.KParser.Database
                         if (isFromChest)
                         {
                             var pyxis = localDB.Combatants.FirstOrDefault(
-                                c => c.CombatantName == lsPyxis && 
+                                c => c.CombatantName == lsPyxis &&
                                     (EntityType)c.CombatantType == EntityType.TreasureChest);
 
                             if (pyxis != null)
@@ -602,7 +657,7 @@ namespace WaywardGamers.KParser.Database
                     }
                     else if (message.EventDetails.LootDetails.ItemName == ":gil")
                     {
-                        
+
                         // If no record of the last kill for this mob type, we cannot create a new one
                         // because we have no mob name.
 
@@ -624,10 +679,10 @@ namespace WaywardGamers.KParser.Database
                             }
                         }
                     }
-                    else if (message.EventDetails.LootDetails.ItemName == ":TimeExtension")
+                    else if (message.EventDetails.LootDetails.LootType == LootType.Time)
                     {
-                        // Get the "Cruor" item from the items table (created if necessary).
-                        itemRow = localDB.Items.GetItem(Resources.PublicResources.TimeExtension);
+                        // Get the "Time Extension" item from the items table (created if necessary).
+                        itemRow = localDB.Items.GetItem(message.EventDetails.LootDetails.ItemName);
 
                         // Time extensions can *only* come from chests.
 
@@ -635,9 +690,8 @@ namespace WaywardGamers.KParser.Database
 
                         // Look for entries for chests that were unlocked in the last 15 seconds
                         // that haven't been used yet.
-                        var pyxis = localDB.Combatants.FirstOrDefault(
-                            c => c.CombatantName == lsPyxis &&
-                                (EntityType)c.CombatantType == EntityType.TreasureChest);
+                        var pyxis = localDB.Combatants.GetCombatant(lsPyxis,
+                            EntityType.TreasureChest);
 
                         if (pyxis != null)
                         {
@@ -659,10 +713,7 @@ namespace WaywardGamers.KParser.Database
                         // If we can't find an existing chest, create a new entry.
                         if (sourceBattle == null)
                         {
-                            var targetCombatant = localDB.Combatants.GetCombatant(lsPyxis,
-                                EntityType.TreasureChest);
-
-                            sourceBattle = localDB.Battles.AddBattlesRow(targetCombatant, message.Timestamp,
+                            sourceBattle = localDB.Battles.AddBattlesRow(pyxis, message.Timestamp,
                                 message.Timestamp, true, null, (byte)ActorPlayerType.Unknown, 0, 0,
                                 (byte)MobDifficulty.Unknown, false);
                         }
@@ -1246,6 +1297,17 @@ namespace WaywardGamers.KParser.Database
                     battle.ExperiencePoints = pendingExp.EventDetails.ExperienceDetails.ExperiencePoints;
 
                 }
+
+                var pendingLight = pendingLightRewards.FirstOrDefault();
+                if ((pendingLight != null) && (target.EntityType != EntityType.TreasureChest))
+                {
+                    pendingLightRewards = pendingLightRewards.Skip(1).ToList();
+
+                    KPDatabaseDataSet.ItemsRow itemRow = localDB.Items.GetItem(pendingLight.EventDetails.LootDetails.ItemName);
+
+                    localDB.Loot.AddLootRow(itemRow, battle, null, 0, false);
+                }
+
             }
         }
         #endregion
