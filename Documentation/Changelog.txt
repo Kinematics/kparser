@@ -1,10 +1,18 @@
 KParser Change Log
 
-1.5.9 (July ??, 2010)
-+ Add new blu spells: Animating Wail (haste tracking on Buffs By Time/Damage Graph) and Plenilune Embrace (Recovery).
+1.5.9 (July 24, 2010)
 * Remove legacy support for older parses that used 1 second sample intervals, when trying to calculate Extra Attacks.  This caused problems with newer parses that had smaller sample sizes.
-+ Add min/max weaponskill damage to data shown by TP under WS Rates tab.
+* Adjust methodology for detecting rounds in Extra Attacks plugin.
 * Detailed listing of weaponskill damage by TP is only shown when Show Details is checked.
+* Improve display of various tabs.
++ Add new blu spells: Animating Wail (haste tracking on Buffs By Time/Damage Graph) and Plenilune Embrace (Recovery).
++ Add min/max weaponskill damage to data shown by TP under WS Rates tab.
++ Added parsing of Cruor, and display in the Loot tab.  Have to reparse older parses to get this data from them.
++ Add parsing of chest drops from Abyssea mobs.
++ Add parsing of Cruor and Experience gained from chests.  Display in Loot and Experience tabs.
++ Add parsing of Time Extensions from chests.
++ Add parsing of aura lights.
++ Add Abyssea plugin tab to consolidate Abyssea run results.
 
 
 1.5.8 (June 21, 2010)
