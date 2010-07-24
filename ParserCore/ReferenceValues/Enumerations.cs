@@ -89,6 +89,8 @@ namespace WaywardGamers.KParser
         Drop,
         Steal,
         Chest,
+        Time,
+        Aura
     }
     #endregion
 
