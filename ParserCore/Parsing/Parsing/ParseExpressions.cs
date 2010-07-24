@@ -21,7 +21,7 @@ namespace WaywardGamers.KParser
         internal static readonly string DrainType  = "draintype";
         internal static readonly string DrainStat  = "drainstat";
         internal static readonly string Remainder  = "remainder";
-        internal static readonly string Color      = "color";
+        internal static readonly string Light      = "light";
     }
 
     // Class to store regular expressions in.
@@ -53,7 +53,7 @@ namespace WaywardGamers.KParser
         private static readonly string drainType   = @"(?<draintype>(H|M|T)P)";
         private static readonly string drainStat   = @"(?<drainstat>STR|DEX|AGI|VIT|INT|MND|CHR)";
 
-        private static readonly string colorLight  = @"(?<color>pearlescent|azure|ruby|amber|ebon|gold|silver)";
+        private static readonly string colorLight  = @"(?<light>(?<color>pearlescent|azure|ruby|amber|ebon|gold|silver) light)";
 
         private static readonly string remainder   = @"(?<remainder>.*)";
         #endregion
@@ -109,7 +109,7 @@ namespace WaywardGamers.KParser
         internal static readonly Regex FailMug    = new Regex(string.Format("^{0} fails to mug {1}\\.$", playername, target));
         internal static readonly Regex DiceRoll   = new Regex(string.Format("^Dice roll! {0} rolls {1}!$", playername, number));
 
-        internal static readonly Regex EmitLight = new Regex(string.Format("^{0}'s body emits a faint {1} light!$", playername, colorLight));
+        internal static readonly Regex EmitLight = new Regex(string.Format("^{0}'s body emits a (faint|feeble) {1}!$", playername, colorLight));
         internal static readonly Regex VisitantTE = new Regex(string.Format("^Your visitant status has been extended by {0} minutes\\.$", number));
         #endregion
 
