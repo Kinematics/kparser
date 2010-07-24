@@ -33,6 +33,7 @@ namespace WaywardGamers.KParser.Plugin
 
         // Localizable strings
         string lsCruor;
+        string lsKey;
         string lsTreasureChest;
         string lsTimeExtension;
 
@@ -305,7 +306,7 @@ namespace WaywardGamers.KParser.Plugin
                 sb.AppendFormat("{0,-14}: {1,6}  ({2,8:p2})\n", "Pets",
                     petCount, (double)petCount / battleCount);
 
-
+                sb.Append("\n\n");
             }
 
         }
@@ -323,30 +324,173 @@ namespace WaywardGamers.KParser.Plugin
                 (ActionType)a.ActionType != ActionType.Death);
         }
 
-        private ActionType GetLastActionType(KPDatabaseDataSet.BattlesRow b)
-        {
-            var killer = b.CombatantsRowByBattleKillerRelation;
-
-            var killerActions = b.GetInteractionsRows()
-                .Where(i =>
-                    i.IsActorIDNull() == false &&
-                    i.ActorID == killer.CombatantID);
-
-
-            return (ActionType)killerActions
-                .LastOrDefault(a => (ActionType)a.ActionType != ActionType.Death)
-                .ActionType;
-        }
-
-
         private void ProcessChests(KPDatabaseDataSet dataSet, MobFilter mobFilter,
             ref StringBuilder sb, List<StringMods> strModList)
         {
+            string tmpStr = "Chests";
+
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = tmpStr.Length,
+                Bold = true,
+                Color = Color.Red
+            });
+            sb.Append(tmpStr + "\n\n");
+
+            var selectBattles = from b in dataSet.Battles
+                                where mobFilter.CheckFilterBattle(b) == true
+                                select b;
+
+            var droppedChests = from b in selectBattles
+                                where b.GetLootRows().Count() > 0 &&
+                                      b.GetLootRows().Any(l => l.ItemsRow.ItemName == lsTreasureChest)
+                                select b;
+
+            int droppedChestCount = droppedChests.Count();
+
+            var chestBattles = from b in dataSet.Battles
+                               where b.IsEnemyIDNull() == false &&
+                               (EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.TreasureChest
+                               select b;
+
+            int failedChests = 0;
+            int expiredChests = 0;
+            int openedChests = 0;
+            int usedKey = 0;
+            int chestsWithCruor = 0;
+            int cruorTotal = 0;
+            int chestsWithExperience = 0;
+            int experienceTotal = 0;
+            int chestsWithTE = 0;
+
+            foreach (var chestBattle in chestBattles)
+            {
+                if (chestBattle.Killed)
+                {
+                    openedChests++;
+
+                    if (chestBattle.GetInteractionsRows()
+                        .Any(i => i.IsItemIDNull() == false && i.ItemsRow.ItemName == lsKey))
+                    {
+                        usedKey++;
+                    }
+
+                    if (chestBattle.ExperiencePoints > 0)
+                    {
+                        chestsWithExperience++;
+                        experienceTotal += chestBattle.ExperiencePoints;
+                    }
+                    else
+                    {
+                        var chestLoot = chestBattle.GetLootRows();
+
+                        if (chestLoot.Count() > 0)
+                        {
+                            var cruorLoot = chestLoot.Where(l => l.ItemsRow.ItemName == lsCruor);
+
+                            if ((cruorLoot != null) && (cruorLoot.Count() > 0))
+                            {
+                                chestsWithCruor++;
+                                cruorTotal += cruorLoot.Sum(l => l.GilDropped);
+                            }
+
+                            var teLoot = chestLoot.Where(l => l.ItemsRow.ItemName == lsTimeExtension);
+
+                            if ((teLoot != null) && (teLoot.Count() > 0))
+                            {
+                                chestsWithTE++;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (chestBattle.GetInteractionsRows()
+                        .Any(i => (FailedActionType)i.FailedActionType == FailedActionType.FailedUnlock))
+                    {
+                        failedChests++;
+                    }
+                    else
+                    {
+                        expiredChests++;
+                    }
+                }
+            }
+
+            if (droppedChestCount + failedChests + openedChests > 0)
+            {
+                sb.AppendFormat("Dropped chests: {0}\n", droppedChestCount);
+                sb.AppendFormat("Expired chests: {0}\n", expiredChests);
+                sb.AppendFormat("Failed chests: {0}\n", failedChests);
+                sb.Append("\n");
+                sb.AppendFormat("Opened chests: {0}\n", openedChests);
+                sb.AppendFormat(" - Using a key: {0}\n", usedKey);
+                sb.Append("\n");
+
+                if (chestsWithExperience > 0)
+                {
+                    sb.AppendFormat("Chests that granted experience: {0}\n", chestsWithExperience);
+                    sb.AppendFormat(" - Total experience: {0}\n", experienceTotal);
+                    sb.AppendFormat(" - Average experience: {0:f2}\n", (double)experienceTotal / chestsWithExperience);
+                    sb.Append("\n");
+                }
+
+                if (chestsWithCruor > 0)
+                {
+                    sb.AppendFormat("Chests that granted Cruor: {0}\n", chestsWithCruor);
+                    sb.AppendFormat(" - Total Cruor: {0}\n", cruorTotal);
+                    sb.AppendFormat(" - Average Cruor: {0:f2}\n", (double)cruorTotal / chestsWithCruor);
+                }
+
+                sb.Append("\n\n");
+            }
         }
 
         private void ProcessLights(KPDatabaseDataSet dataSet, MobFilter mobFilter,
             ref StringBuilder sb, List<StringMods> strModList)
         {
+            string tmpStr = "Lights";
+
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = tmpStr.Length,
+                Bold = true,
+                Color = Color.Red
+            });
+            sb.Append(tmpStr + "\n\n");
+
+            var allBattles = from b in dataSet.Battles
+                             where mobFilter.CheckFilterBattle(b) == true ||
+                                   (b.IsEnemyIDNull() == false &&
+                                    (EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.TreasureChest)
+                             select b;
+
+            Regex colorLight  = new Regex("(?<light>(?<color>pearlescent|azure|ruby|amber|ebon|gold|silver) light)");
+
+            foreach (var batt in allBattles)
+            {
+                var loot = batt.GetLootRows();
+
+                bool hasLight = loot.Any(l => colorLight.Match(l.ItemsRow.ItemName).Success == true);
+            }
+
+            var lightRewards = from b in allBattles
+                               let loot = b.GetLootRows()
+                               let light = loot.FirstOrDefault(l => colorLight.Match(l.ItemsRow.ItemName).Success == true)
+                               where light != null
+                               group b by colorLight.Match(light.ItemsRow.ItemName).Groups["color"].Value;
+
+
+            foreach (var light in lightRewards)
+            {
+                sb.AppendFormat("{0,-18}: {1,6}\n",
+                    light.Key, light.Count());
+            }
+
+            sb.Append("\n\n");
+
         }
 
         #endregion
@@ -471,6 +615,7 @@ namespace WaywardGamers.KParser.Plugin
             lsCruor = Resources.ParsedStrings.Cruor;
             lsTreasureChest = "Treasure Chest";
             lsTimeExtension = Resources.PublicResources.TimeExtension;
+            lsKey = "forbidden key";
         }
         #endregion
     }
