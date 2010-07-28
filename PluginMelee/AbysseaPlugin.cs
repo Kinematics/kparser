@@ -212,6 +212,7 @@ namespace WaywardGamers.KParser.Plugin
                     int totalCruor = cruorBattles.Sum(b =>
                         b.GetLootRows().First(l => l.ItemsRow.ItemName == lsCruor).GilDropped);
                     double avgCruor = (double)totalCruor / cruorBattles.Count();
+                    sb.AppendFormat("Total Cruor drop (mobs): {0}\n", totalCruor);
                     sb.AppendFormat("Average Cruor drop: {0:f2}\n\n", avgCruor);
                 }
 
