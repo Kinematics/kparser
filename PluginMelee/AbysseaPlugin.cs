@@ -198,7 +198,7 @@ namespace WaywardGamers.KParser.Plugin
             });
             sb.Append(tmpStr + "\n\n");
 
-            sb.AppendFormat("Total number of mobs: {0}\n", battles.Count());
+            sb.AppendFormat("Total number of mobs: {0}\n\n", battles.Count());
 
             if (battleCount > 0)
             {
@@ -441,6 +441,14 @@ namespace WaywardGamers.KParser.Plugin
                     sb.AppendFormat("Chests that granted Cruor: {0}\n", chestsWithCruor);
                     sb.AppendFormat(" - Total Cruor: {0}\n", cruorTotal);
                     sb.AppendFormat(" - Average Cruor: {0:f2}\n", (double)cruorTotal / chestsWithCruor);
+                    sb.Append("\n");
+                }
+
+                if (chestsWithTE > 0)
+                {
+                    sb.AppendFormat("Chests that granted Time Extensions: {0}\n", chestsWithTE);
+                    sb.AppendFormat(" - Total time gained: {0}\n",
+                        new TimeSpan(0, chestsWithTE*10, 0).FormattedShortTimeString());
                 }
 
                 sb.Append("\n\n");
@@ -467,7 +475,7 @@ namespace WaywardGamers.KParser.Plugin
                                     (EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.TreasureChest)
                              select b;
 
-            Regex colorLight  = new Regex("(?<light>(?<color>pearlescent|azure|ruby|amber|ebon|gold|silver) light)");
+            Regex colorLight  = new Regex("(?<light>(?<color>pearlescent|azure|ruby|amber|ebon|golden|silver) light)");
 
             foreach (var batt in allBattles)
             {
