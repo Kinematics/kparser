@@ -1860,6 +1860,7 @@ namespace WaywardGamers.KParser.Plugin
                 var head = playersPlusPets.Take(5);
                 var tail = playersPlusPets.Skip(5);
 
+                // in a linear format for pasting into game
                 while (head.Count() > 0)
                 {
                     string prefix = "";
@@ -1874,6 +1875,15 @@ namespace WaywardGamers.KParser.Plugin
 
                     head = tail.Take(5);
                     tail = tail.Skip(5);
+                }
+
+                sb.Append("\n\n");
+
+                // and in a tabular format for posting.
+
+                foreach (var entry in playersPlusPets)
+                {
+                    sb.AppendFormat("{0,-18} :  {1,8:p2}\n", entry.DisplayName, (double)entry.TDmg / totalDamage);
                 }
             }
 
