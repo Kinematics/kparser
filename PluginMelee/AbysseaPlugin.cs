@@ -31,6 +31,8 @@ namespace WaywardGamers.KParser.Plugin
 
         ToolStripButton editCustomMobFilter = new ToolStripButton();
 
+        Regex colorLight = new Regex("(?<light>(?<color>pearlescent|azure|ruby|amber|ebon|golden|silver) light)");
+
         // Localizable strings
         string lsCruor;
         string lsKey;
@@ -131,6 +133,19 @@ namespace WaywardGamers.KParser.Plugin
         {
             mobsCombo.UpdateWithMobList(groupMobs, exclude0XPMobs);
         }
+
+        private KPDatabaseDataSet.InteractionsRow GetLastAction(KPDatabaseDataSet.BattlesRow b)
+        {
+            var killer = b.CombatantsRowByBattleKillerRelation;
+
+            var killerActions = b.GetInteractionsRows()
+                .Where(i =>
+                    i.IsActorIDNull() == false &&
+                    i.ActorID == killer.CombatantID);
+
+            return killerActions.LastOrDefault(a =>
+                (ActionType)a.ActionType != ActionType.Death);
+        }
         #endregion
 
         #region Processing sections
@@ -154,25 +169,110 @@ namespace WaywardGamers.KParser.Plugin
             {
                 case 0:
                     // All
+                    ProcessLights(dataSet, mobFilter, ref sb, strModList);
                     ProcessMobs(dataSet, mobFilter, ref sb, strModList);
                     ProcessChests(dataSet, mobFilter, ref sb, strModList);
-                    ProcessLights(dataSet, mobFilter, ref sb, strModList);
                     break;
                 case 1:
+                    // Lights
+                    ProcessLights(dataSet, mobFilter, ref sb, strModList);
+                    break;
+                case 2:
                     // Mobs
                     ProcessMobs(dataSet, mobFilter, ref sb, strModList);
                     break;
-                case 2:
+                case 3:
                     // Chests
                     ProcessChests(dataSet, mobFilter, ref sb, strModList);
-                    break;
-                case 3:
-                    // Lights
-                    ProcessLights(dataSet, mobFilter, ref sb, strModList);
                     break;
             }
 
             PushStrings(sb, strModList);
+        }
+
+        private void ProcessLights(KPDatabaseDataSet dataSet, MobFilter mobFilter,
+            ref StringBuilder sb, List<StringMods> strModList)
+        {
+            string tmpStr = "Lights";
+
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = tmpStr.Length,
+                Bold = true,
+                Color = Color.Red
+            });
+            sb.Append(tmpStr + "\n\n");
+
+            var allBattles = from b in dataSet.Battles
+                             where mobFilter.CheckFilterBattle(b) == true ||
+                                   (b.IsEnemyIDNull() == false &&
+                                    (EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.TreasureChest)
+                             select b;
+
+            var lightRewards = from b in allBattles
+                               let loot = b.GetLootRows()
+                               let light = loot.FirstOrDefault(l => colorLight.Match(l.ItemsRow.ItemName).Success == true)
+                               where light != null
+                               group b by light.ItemsRow.ItemName;
+
+            // Header
+            string formatString = "{0,-18} : {1,10}{2,14}{3,10}";
+            tmpStr = string.Format(formatString,
+                "Color Light",
+                "From Mobs",
+                "From Chests",
+                "Total");
+
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = tmpStr.Length,
+                Bold = true,
+                Underline = true,
+                Color = Color.Black
+            });
+            sb.Append(tmpStr + "\n");
+
+
+            int totalMobCount = 0;
+            int totalChestCount = 0;
+            int totalCount = 0;
+
+            foreach (var light in lightRewards.OrderBy(a => a.Key))
+            {
+                int lightCount = light.Count();
+                int chestLightCount = light.Count(a =>
+                    (EntityType)a.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.TreasureChest);
+
+                int mobLightCount = lightCount - chestLightCount;
+
+                totalCount += lightCount;
+                totalMobCount += mobLightCount;
+                totalChestCount += chestLightCount;
+
+                sb.AppendFormat(formatString,
+                    light.Key,
+                    mobLightCount,
+                    chestLightCount,
+                    lightCount);
+                sb.Append("\n");
+            }
+
+            if (totalCount > 0)
+            {
+                sb.Append("\n");
+                sb.AppendFormat(formatString,
+                    "Total",
+                    totalMobCount,
+                    totalChestCount,
+                    totalCount);
+                sb.Append("\n");
+            }
+
+
+            sb.Append("\n\n");
+
         }
 
         private void ProcessMobs(KPDatabaseDataSet dataSet, MobFilter mobFilter,
@@ -202,20 +302,6 @@ namespace WaywardGamers.KParser.Plugin
 
             if (battleCount > 0)
             {
-
-                var cruorBattles = battles.Where(b => b.GetLootRows().Any(l => l.ItemsRow.ItemName == lsCruor));
-
-                sb.AppendFormat("Number of mobs that dropped Cruor: {0}\n", cruorBattles.Count());
-
-                if (cruorBattles.Count() > 0)
-                {
-                    int totalCruor = cruorBattles.Sum(b =>
-                        b.GetLootRows().First(l => l.ItemsRow.ItemName == lsCruor).GilDropped);
-                    double avgCruor = (double)totalCruor / cruorBattles.Count();
-                    sb.AppendFormat("Total Cruor drop (mobs): {0}\n", totalCruor);
-                    sb.AppendFormat("Average Cruor drop: {0:f2}\n\n", avgCruor);
-                }
-
                 // Types of kills
                 var dropDead = battles.Where(b => b.IsKillerIDNull() == true);
 
@@ -285,7 +371,7 @@ namespace WaywardGamers.KParser.Plugin
                     Start = sb.Length,
                     Length = tmpStr.Length,
                     Bold = true,
-                    Color = Color.Blue
+                    Color = Color.Black
                 });
                 sb.Append(tmpStr + "\n\n");
 
@@ -308,21 +394,35 @@ namespace WaywardGamers.KParser.Plugin
                     petCount, (double)petCount / battleCount);
 
                 sb.Append("\n\n");
+
+                // Cruor
+                tmpStr = "Cruor:";
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = tmpStr.Length,
+                    Bold = true,
+                    Color = Color.Black
+                });
+                sb.Append(tmpStr + "\n\n");
+
+                var cruorBattles = battles.Where(b => b.GetLootRows().Any(l => l.ItemsRow.ItemName == lsCruor));
+
+                sb.AppendFormat("Number of mobs that dropped Cruor : {0}\n", cruorBattles.Count());
+
+                if (cruorBattles.Count() > 0)
+                {
+                    int totalCruor = cruorBattles.Sum(b =>
+                        b.GetLootRows().First(l => l.ItemsRow.ItemName == lsCruor).GilDropped);
+                    double avgCruor = (double)totalCruor / cruorBattles.Count();
+                    sb.AppendFormat("Total Cruor drop (mobs) : {0}\n", totalCruor);
+                    sb.AppendFormat("Average Cruor drop      : {0:f2}\n", avgCruor);
+                }
+
+                sb.Append("\n\n");
+
             }
 
-        }
-
-        private KPDatabaseDataSet.InteractionsRow GetLastAction(KPDatabaseDataSet.BattlesRow b)
-        {
-            var killer = b.CombatantsRowByBattleKillerRelation;
-
-            var killerActions = b.GetInteractionsRows()
-                .Where(i =>
-                    i.IsActorIDNull() == false &&
-                    i.ActorID == killer.CombatantID);
-
-            return killerActions.LastOrDefault(a =>
-                (ActionType)a.ActionType != ActionType.Death);
         }
 
         private void ProcessChests(KPDatabaseDataSet dataSet, MobFilter mobFilter,
@@ -421,85 +521,39 @@ namespace WaywardGamers.KParser.Plugin
 
             if (droppedChestCount + failedChests + openedChests > 0)
             {
-                sb.AppendFormat("Dropped chests: {0}\n", droppedChestCount);
-                sb.AppendFormat("Expired chests: {0}\n", expiredChests);
-                sb.AppendFormat("Failed chests: {0}\n", failedChests);
+                sb.AppendFormat("Dropped chests : {0}\n", droppedChestCount);
+                sb.AppendFormat("Expired chests : {0}\n", expiredChests);
+                sb.AppendFormat("Failed chests  : {0}\n", failedChests);
                 sb.Append("\n");
-                sb.AppendFormat("Opened chests: {0}\n", openedChests);
-                sb.AppendFormat(" - Using a key: {0}\n", usedKey);
+                sb.AppendFormat("Opened chests  : {0}\n", openedChests);
+                sb.AppendFormat(" - Using a key : {0}\n", usedKey);
                 sb.Append("\n");
+
+                if (chestsWithTE > 0)
+                {
+                    sb.AppendFormat("Chests that granted Time Extensions : {0}\n", chestsWithTE);
+                    sb.AppendFormat(" - Total time gained  : {0}\n",
+                        new TimeSpan(0, chestsWithTE * 10, 0).FormattedShortTimeString());
+                    sb.Append("\n");
+                }
 
                 if (chestsWithExperience > 0)
                 {
-                    sb.AppendFormat("Chests that granted experience: {0}\n", chestsWithExperience);
-                    sb.AppendFormat(" - Total experience: {0}\n", experienceTotal);
-                    sb.AppendFormat(" - Average experience: {0:f2}\n", (double)experienceTotal / chestsWithExperience);
+                    sb.AppendFormat("Chests that granted experience : {0}\n", chestsWithExperience);
+                    sb.AppendFormat(" - Total experience   : {0}\n", experienceTotal);
+                    sb.AppendFormat(" - Average experience : {0:f2}\n", (double)experienceTotal / chestsWithExperience);
                     sb.Append("\n");
                 }
 
                 if (chestsWithCruor > 0)
                 {
-                    sb.AppendFormat("Chests that granted Cruor: {0}\n", chestsWithCruor);
-                    sb.AppendFormat(" - Total Cruor: {0}\n", cruorTotal);
-                    sb.AppendFormat(" - Average Cruor: {0:f2}\n", (double)cruorTotal / chestsWithCruor);
-                    sb.Append("\n");
-                }
-
-                if (chestsWithTE > 0)
-                {
-                    sb.AppendFormat("Chests that granted Time Extensions: {0}\n", chestsWithTE);
-                    sb.AppendFormat(" - Total time gained: {0}\n",
-                        new TimeSpan(0, chestsWithTE*10, 0).FormattedShortTimeString());
+                    sb.AppendFormat("Chests that granted Cruor : {0}\n", chestsWithCruor);
+                    sb.AppendFormat(" - Total Cruor        : {0}\n", cruorTotal);
+                    sb.AppendFormat(" - Average Cruor      : {0:f2}\n", (double)cruorTotal / chestsWithCruor);
                 }
 
                 sb.Append("\n\n");
             }
-        }
-
-        private void ProcessLights(KPDatabaseDataSet dataSet, MobFilter mobFilter,
-            ref StringBuilder sb, List<StringMods> strModList)
-        {
-            string tmpStr = "Lights";
-
-            strModList.Add(new StringMods
-            {
-                Start = sb.Length,
-                Length = tmpStr.Length,
-                Bold = true,
-                Color = Color.Red
-            });
-            sb.Append(tmpStr + "\n\n");
-
-            var allBattles = from b in dataSet.Battles
-                             where mobFilter.CheckFilterBattle(b) == true ||
-                                   (b.IsEnemyIDNull() == false &&
-                                    (EntityType)b.CombatantsRowByEnemyCombatantRelation.CombatantType == EntityType.TreasureChest)
-                             select b;
-
-            Regex colorLight  = new Regex("(?<light>(?<color>pearlescent|azure|ruby|amber|ebon|golden|silver) light)");
-
-            foreach (var batt in allBattles)
-            {
-                var loot = batt.GetLootRows();
-
-                bool hasLight = loot.Any(l => colorLight.Match(l.ItemsRow.ItemName).Success == true);
-            }
-
-            var lightRewards = from b in allBattles
-                               let loot = b.GetLootRows()
-                               let light = loot.FirstOrDefault(l => colorLight.Match(l.ItemsRow.ItemName).Success == true)
-                               where light != null
-                               group b by colorLight.Match(light.ItemsRow.ItemName).Groups["color"].Value;
-
-
-            foreach (var light in lightRewards)
-            {
-                sb.AppendFormat("{0,-18}: {1,6}\n",
-                    light.Key, light.Count());
-            }
-
-            sb.Append("\n\n");
-
         }
 
         #endregion
@@ -601,9 +655,9 @@ namespace WaywardGamers.KParser.Plugin
 
             categoryCombo.Items.Clear();
             categoryCombo.Items.Add(Resources.PublicResources.All);
+            categoryCombo.Items.Add("Lights");
             categoryCombo.Items.Add("Mobs");
             categoryCombo.Items.Add("Chests");
-            categoryCombo.Items.Add("Lights");
             categoryCombo.SelectedIndex = 0;
 
             UpdateMobList();
