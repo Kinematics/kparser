@@ -53,7 +53,7 @@ namespace WaywardGamers.KParser
         private static readonly string drainType   = @"(?<draintype>(H|M|T)P)";
         private static readonly string drainStat   = @"(?<drainstat>STR|DEX|AGI|VIT|INT|MND|CHR)";
 
-        private static readonly string colorLight  = @"(?<light>(?<color>pearlescent|azure|ruby|amber|ebon|gold|silver) light)";
+        private static readonly string colorLight  = @"(?<light>(?<color>pearlescent|azure|ruby|amber|ebon|golden|silver) light)";
 
         private static readonly string remainder   = @"(?<remainder>.*)";
         #endregion
