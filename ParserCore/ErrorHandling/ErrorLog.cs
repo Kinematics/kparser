@@ -108,7 +108,7 @@ namespace WaywardGamers.KParser
                 }
 				catch (Exception)
 				{
-					MessageBox.Show("Error writing log.");
+                    Debug.WriteLine("Error writing log:\n"+message);
 				}
 			}
 		}
@@ -136,7 +136,7 @@ namespace WaywardGamers.KParser
             }
             catch (Exception)
             {
-                MessageBox.Show("Error writing log.");
+                Debug.WriteLine("Error writing log:\n" + message);
             }
         }
 
@@ -164,7 +164,7 @@ namespace WaywardGamers.KParser
             }
             catch (Exception)
             {
-                MessageBox.Show("Error writing log.");
+                Debug.WriteLine("Error writing log:\n" + message + "\n" + e.StackTrace);
             }
         }
 
@@ -243,8 +243,8 @@ namespace WaywardGamers.KParser
 			}
 			catch (Exception)
 			{
-				MessageBox.Show("Error writing log.");
-			}
+                Debug.WriteLine("Error writing log:\n" + message + "\n" + e.StackTrace);
+            }
 		}
 
         /// <summary>
@@ -378,7 +378,8 @@ namespace WaywardGamers.KParser
 				}
 				catch (Exception)
 				{
-				}
+                    Debug.WriteLine("Error trimming log file.");
+                }
 			}
 		}
 		#endregion
