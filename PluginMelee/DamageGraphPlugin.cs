@@ -729,6 +729,7 @@ namespace WaywardGamers.KParser.Plugin
             DateTime startTime, DateTime endTime)
         {
             double[] playerSequenceDamage = new double[xAxisSize];
+            int index = 0;
 
             foreach (var action in attackSet.AnyAction)
             {
@@ -737,7 +738,12 @@ namespace WaywardGamers.KParser.Plugin
                 if (seconds < 0)
                     seconds = 0;
 
-                playerSequenceDamage[seconds / xAxisScale] += action.Amount + action.SecondAmount;
+                index = seconds / xAxisScale;
+
+                playerSequenceDamage[index] += action.Amount;
+
+                if ((HarmType)action.SecondHarmType != HarmType.None)
+                    playerSequenceDamage[index] += action.SecondAmount;
             }
 
             return playerSequenceDamage;
@@ -823,13 +829,24 @@ namespace WaywardGamers.KParser.Plugin
             if (flagNoUpdate == false)
                 HandleDataset(null);
 
-            buffsCombo.Enabled = !(playersCombo.SelectedItem.ToString() == lsAll);
-            if (buffsCombo.Enabled)
-                FillBuffsCombo();
-            else
-                buffsCombo.Items.Clear();
+            try
+            {
+                buffsCombo.Enabled = !(playersCombo.SelectedItem.ToString() == lsAll);
+                if (buffsCombo.Enabled)
+                {
+                    //flagNoUpdate = true;
+                    FillBuffsCombo();
+                }
+                else
+                {
+                    buffsCombo.Items.Clear();
+                }
 
-            flagNoUpdate = false;
+            }
+            finally
+            {
+                flagNoUpdate = false;
+            }
         }
 
         protected void buffsCombo_SelectedIndexChanged(object sender, EventArgs e)
