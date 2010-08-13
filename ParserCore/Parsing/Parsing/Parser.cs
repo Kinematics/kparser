@@ -3236,8 +3236,8 @@ namespace WaywardGamers.KParser.Parsing
             // Deal with possible Failed actions first
             if (msgCombatDetails.SuccessLevel == SuccessType.Failed)
             {
-                // Special: Raises are given the same parse code as certain failed actions.
-                // Check for them first.
+                // Special: Raises and Tractors are given the same parse code as
+                // certain failed actions.  Check for them first.
                 combatMatch = ParseExpressions.CastSpellOn.Match(currentMessageText);
                 if (combatMatch.Success == true)
                 {
@@ -3254,6 +3254,15 @@ namespace WaywardGamers.KParser.Parsing
                         target.HarmType = HarmType.None;
                         msgCombatDetails.InteractionType = InteractionType.Aid;
                         msgCombatDetails.AidType = AidType.Recovery;
+                        msgCombatDetails.HarmType = HarmType.None;
+                        msgCombatDetails.FailedActionType = FailedActionType.None;
+                    }
+                    else if (msgCombatDetails.ActionName == Resources.ParsedStrings.Tractor)
+                    {
+                        target.AidType = AidType.Enhance;
+                        target.HarmType = HarmType.None;
+                        msgCombatDetails.InteractionType = InteractionType.Aid;
+                        msgCombatDetails.AidType = AidType.Enhance;
                         msgCombatDetails.HarmType = HarmType.None;
                         msgCombatDetails.FailedActionType = FailedActionType.None;
                     }
