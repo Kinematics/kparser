@@ -45,7 +45,7 @@ namespace WaywardGamers.KParser
         private static readonly string money       = @"((?<number>\d{1,5}?) gil)";
         private static readonly string cruor       = @"((?<number>\d{1,5}?) cruor)";
         private static readonly string spell       = @"(?<spell>\w+((: (Ichi|Ni|San))|(((('s |. |-)\w+( [A-Z]\w+)?)|(( \w+(?<! (on|III|II|IV|VI|V))){1,2}))?( (III|II|IV|VI|V))?))?)";
-        private static readonly string ability     = @"(?<ability>\w+((: \w+)|(-\w+)( \w+)?|('s \w+)|( \w+)( \w+)?| of the \w+)?( \w+'\w{2,})?)";
+        private static readonly string ability     = @"(?<ability>\w+((: \w+)|((-|,)\w+)( \w+)?|('s \w+)|( \w+)( \w+)?|( of the \w+))?( \w+'\w{2,})?)";
         private static readonly string effect      = @"(?<effect>\w+( \w+(\.)?){0,2})";
         private static readonly string skillchain  = @"(?<skillchain>\w+)";
         
