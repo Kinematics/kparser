@@ -1272,4 +1272,7 @@
   <data name="Cruor" xml:space="preserve">
     <value>Cruor</value>
   </data>
+  <data name="Tractor" xml:space="preserve">
+    <value>Tractor</value>
+  </data>
 </root>
