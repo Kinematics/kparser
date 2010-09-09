@@ -1,5 +1,15 @@
 KParser Change Log
 
+
+1.5.11 (September 9, 2010)
+* Updated memloc.  New address is 0x00582958.
++ Add new JAs, spells and weaponskills where appropriate.
+- Fix parsing of 10,000 Needles.
+- Fix parsing of Tractor.
+- Fix Damage Graph totals that involve additional effects.
+
+
+
 1.5.10 (July 28, 2010)
 - Fix bad parsing of golden lights.
 - Fix missing time extension info in Abyssea plugin.
