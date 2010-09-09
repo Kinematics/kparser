@@ -1140,7 +1140,7 @@
   <data name="ResistRegex" xml:space="preserve">
     <value>^Resist!</value>
   </data>
-  <data name="Cura" xml:space="preserve">
+  <data name="Cura1" xml:space="preserve">
     <value>Cura</value>
   </data>
   <data name="Curaga1" xml:space="preserve">
@@ -1274,5 +1274,56 @@
   </data>
   <data name="Tractor" xml:space="preserve">
     <value>Tractor</value>
+  </data>
+  <data name="Ballad1" xml:space="preserve">
+    <value>Mage's Ballad</value>
+  </data>
+  <data name="Ballad2" xml:space="preserve">
+    <value>Mage's Ballad II</value>
+  </data>
+  <data name="Ballad3" xml:space="preserve">
+    <value>Mage's Ballad III</value>
+  </data>
+  <data name="BlitzerRoll" xml:space="preserve">
+    <value>Blitzer's Roll</value>
+  </data>
+  <data name="BolterRoll" xml:space="preserve">
+    <value>Bolter's Roll</value>
+  </data>
+  <data name="CasterRoll" xml:space="preserve">
+    <value>Caster's Roll</value>
+  </data>
+  <data name="CourserRoll" xml:space="preserve">
+    <value>Courser's Roll</value>
+  </data>
+  <data name="Cura2" xml:space="preserve">
+    <value>Cura II</value>
+  </data>
+  <data name="DivineCaress" xml:space="preserve">
+    <value>Divine Caress</value>
+  </data>
+  <data name="EarthenArmor" xml:space="preserve">
+    <value>Earthen Armor</value>
+  </data>
+  <data name="Efflux" xml:space="preserve">
+    <value>Efflux</value>
+  </data>
+  <data name="FeatherStep" xml:space="preserve">
+    <value>Feather Step</value>
+  </data>
+  <data name="Saboteur" xml:space="preserve">
+    <value>Saboteur</value>
+  </data>
+  <data name="SoulJump" xml:space="preserve">
+    <value>Soul Jump</value>
+  </data>
+  <data name="Spur" xml:space="preserve">
+    <value>Spur</value>
+  </data>
+  <data name="Tenuto" xml:space="preserve">
+    <value>Tenuto</value>
+  </data>
+  <data name="TidalRoar" xml:space="preserve">
+    <value>Tidal Roar</value>
   </data>
 </root>
