@@ -17,7 +17,7 @@
       <Value Profile="(Default)">Ram</Value>
     </Setting>
     <Setting Name="MemoryOffset" Type="System.UInt32" Scope="User">
-      <Value Profile="(Default)">5777368</Value>
+      <Value Profile="(Default)">5777752</Value>
     </Setting>
     <Setting Name="FFXILogDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\Program Files\PlayOnline\SquareEnix\FINAL FANTASY XI\TEMP</Value>
