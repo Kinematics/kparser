@@ -223,11 +223,12 @@ namespace WaywardGamers.KParser
         internal static readonly Regex RangedMiss   = new Regex(string.Format("^{0} use(s)? Ranged Attack, but miss(es)? {1}\\.$", name, target));
         internal static readonly Regex RangedMiss2  = new Regex(string.Format("^{0}'(s)? ranged attack misses\\.$", name));
         internal static readonly Regex Blink        = new Regex(string.Format("^{0} of {1}'s shadows absorb(s)? the damage and disappear(s)?\\.$", number, target));
-        internal static readonly Regex Parry        = new Regex(string.Format("^{0} parr(y|ies) {1}'(s)? attack with (his|her|its) weapon\\.$", target, name));
+        internal static readonly Regex Parry        = new Regex(string.Format("^{0} parr(y|ies) {1}'s? attack with (his|her|its) weapon\\.$", target, name));
         internal static readonly Regex Anticipate   = new Regex(string.Format("^{0} anticipate(s)? {1}'(s)? attack\\.$", target, name));
         internal static readonly Regex Anticipate2  = new Regex(string.Format("^{0} anticipate(s)? the attack\\.$", target));
         internal static readonly Regex Evade        = new Regex(string.Format("^{0} evade(s)?( the attack)?\\.$", target));
-        internal static readonly Regex Counter      = new Regex(string.Format("^{0}'(s)? attack is countered by {1}\\. {2} takes {3} point(s)? of damage\\.$",
+        internal static readonly Regex CounterAttempt = new Regex(string.Format("^{0} attempts to counter {1}'s? attack, but misses\\.$", name, target));
+        internal static readonly Regex Counter = new Regex(string.Format("^{0}'(s)? attack is countered by {1}\\. {2} takes {3} point(s)? of damage\\.$",
             target, name, repeatname, damage));
         internal static readonly Regex CounterShadow   = new Regex(string.Format("^{0}'(s)? attack is countered by {1}\\. {2} of {3}'(s)? shadows absorbs the damage and disappears\\.$",
             target, name, number, repeatname));
