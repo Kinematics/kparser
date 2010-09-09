@@ -314,6 +314,7 @@ namespace WaywardGamers.KParser
                     Resources.ParsedStrings.NamasArrow,
                     Resources.ParsedStrings.Trueflight,
                     Resources.ParsedStrings.RefulgentArrow,
+                    Resources.ParsedStrings.JishnusRadiance,
                     // Axes
                     Resources.ParsedStrings.RagingAxe,
                     Resources.ParsedStrings.SmashAxe,
@@ -327,6 +328,7 @@ namespace WaywardGamers.KParser
                     Resources.ParsedStrings.Onslaught,
                     Resources.ParsedStrings.PrimalRend,
                     Resources.ParsedStrings.BoraAxe,
+                    Resources.ParsedStrings.Cloudsplitter,
                     // Clubs
                     Resources.ParsedStrings.ShiningStrike,
                     Resources.ParsedStrings.SeraphStrike,
@@ -341,6 +343,7 @@ namespace WaywardGamers.KParser
                     Resources.ParsedStrings.Randgrith,
                     Resources.ParsedStrings.MysticBoon,
                     Resources.ParsedStrings.FlashNova,
+                    Resources.ParsedStrings.Dagan,
                     // Daggers
                     Resources.ParsedStrings.WaspSting,
                     Resources.ParsedStrings.GustSlash,
@@ -355,6 +358,7 @@ namespace WaywardGamers.KParser
                     Resources.ParsedStrings.MordantRime,
                     Resources.ParsedStrings.PyrrhicKleos,
                     Resources.ParsedStrings.AeolianEdge,
+                    Resources.ParsedStrings.RudrasStorm,
                     // Great Axes
                     Resources.ParsedStrings.ShieldBreak,
                     Resources.ParsedStrings.IronTempest,
@@ -368,6 +372,7 @@ namespace WaywardGamers.KParser
                     Resources.ParsedStrings.MetatronTorment,
                     Resources.ParsedStrings.KingsJustice,
                     Resources.ParsedStrings.FellCleave,
+                    Resources.ParsedStrings.UkkosFury,
                     // Great Katana
                     Resources.ParsedStrings.TachiEnpi,
                     Resources.ParsedStrings.TachiHobaku,
@@ -381,6 +386,7 @@ namespace WaywardGamers.KParser
                     Resources.ParsedStrings.TachiKaiten,
                     Resources.ParsedStrings.TachiRana,
                     Resources.ParsedStrings.TachiAgeha,
+                    Resources.ParsedStrings.TachiFudo,
                     // Great Swords
                     Resources.ParsedStrings.HardSlash,
                     Resources.ParsedStrings.PowerSlash,
@@ -393,6 +399,7 @@ namespace WaywardGamers.KParser
                     Resources.ParsedStrings.GroundStrike,
                     Resources.ParsedStrings.Scourge,
                     Resources.ParsedStrings.HerculeanSlash,
+                    Resources.ParsedStrings.Torcleaver,
                     // Hand-to-Hand
                     Resources.ParsedStrings.Combo,
                     Resources.ParsedStrings.ShoulderTackle,
@@ -407,6 +414,7 @@ namespace WaywardGamers.KParser
                     Resources.ParsedStrings.AsceticsFury,
                     Resources.ParsedStrings.StringingPummel,
                     Resources.ParsedStrings.TornadoKick,
+                    Resources.ParsedStrings.VictorySmite,
                     // Katana
                     Resources.ParsedStrings.BladeJin,
                     Resources.ParsedStrings.BladeRetsu,
@@ -431,6 +439,7 @@ namespace WaywardGamers.KParser
                     Resources.ParsedStrings.Coronach,
                     Resources.ParsedStrings.LeadenSalute,
                     Resources.ParsedStrings.NumbingShot,
+                    Resources.ParsedStrings.Wildfire,
                     // Polearms
                     Resources.ParsedStrings.DoubleThrust,
                     Resources.ParsedStrings.ThunderThrust,
@@ -444,6 +453,7 @@ namespace WaywardGamers.KParser
                     Resources.ParsedStrings.Geirskogul,
                     Resources.ParsedStrings.Drakesbane,
                     Resources.ParsedStrings.SonicThrust,
+                    Resources.ParsedStrings.CamlannsTorment,
                     // Scythes
                     Resources.ParsedStrings.Slice,
                     Resources.ParsedStrings.DarkHarvest,
@@ -457,6 +467,7 @@ namespace WaywardGamers.KParser
                     Resources.ParsedStrings.Catastrophe,
                     Resources.ParsedStrings.Insurgency,
                     Resources.ParsedStrings.InfernalScythe,
+                    Resources.ParsedStrings.Quietus,
                     // Staves
                     Resources.ParsedStrings.HeavySwing,
                     Resources.ParsedStrings.RockCrusher,
@@ -472,6 +483,7 @@ namespace WaywardGamers.KParser
                     Resources.ParsedStrings.GarlandOfBliss,
                     Resources.ParsedStrings.Omniscience,
                     Resources.ParsedStrings.Cataclysm,
+                    Resources.ParsedStrings.Myrkr,
                     // Swords
                     Resources.ParsedStrings.FastBlade,
                     Resources.ParsedStrings.FlatBlade,
@@ -489,6 +501,7 @@ namespace WaywardGamers.KParser
                     Resources.ParsedStrings.Atonement,
                     Resources.ParsedStrings.Expiacion,
                     Resources.ParsedStrings.SanguineBlade,
+                    Resources.ParsedStrings.ChantDuCynge,
                     // Automaton
                     Resources.ParsedStrings.Slapstick,
                     Resources.ParsedStrings.Arcuballista,
