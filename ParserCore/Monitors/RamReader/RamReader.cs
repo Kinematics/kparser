@@ -795,7 +795,7 @@ namespace WaywardGamers.KParser.Monitoring
                 // FindString function.
                 // From there, determine the start of the array of chat log messages.
                 // Use that address in Section 2.
-                //FindString("gunbuster");
+                //FindString("c8,00,00,ff5020ff");
                 // EG: memory offset of 0x02a8fcc0 + index of 0x2d0 == 
                 // chat log start address of 0x02A8FF90
 
@@ -804,7 +804,7 @@ namespace WaywardGamers.KParser.Monitoring
 
                 // Locate a pointer to the start of the chat log messages. (0x02A8FF90)
                 // The location of that pointer is used in Section 3.
-                //FindAddress(0x06268768);
+                //FindAddress(0x054DB678);
                 // Use calculated pointerLocation.
                 // EG: Scan Address 0x0488f000 + Index j (989) * 4 -
                 //     Base address 0x01e00000 = Pointer location 0x02a8ff74
@@ -859,10 +859,12 @@ namespace WaywardGamers.KParser.Monitoring
                 // Base address after update  on 2009-11-09: 0x005801d8
                 // Base address after update  on 2010-03-22: 0x00581518
                 // Base address after update  on 2010-06-21: 0x005827d8
+                // Base address after update  on 2010-09-08: 0x00582958
 
 
-                // stop break point
-                //int i = 0;
+                // An easier way to find the new memloc.  Start at the
+                // most recently known memloc and proceed forward.
+                CycleStartPoint(0x005827d8);
             }
             finally
             {
@@ -909,7 +911,7 @@ namespace WaywardGamers.KParser.Monitoring
                     if (j >= 0)
                     {
                         // If it is, write out the offset that we're using.
-                        Debug.WriteLine(string.Format("Offset = 0x{0:x8}, Index j = {1}", scanMemoryOffset, j));
+                        Debug.WriteLine(string.Format("Offset = 0x{0:x8}, Index j = {1} (0x{1:x4})", scanMemoryOffset, j));
 
                         // Examine byteString and prevByteString to locate the start of the
                         // chat log (prevByteString in case the log overlaps two memory
@@ -941,7 +943,8 @@ namespace WaywardGamers.KParser.Monitoring
         [Conditional("DEBUG")]
         private void FindAddress(uint address)
         {
-            uint absoluteAddress = address + (uint)pol.FFXIBaseAddress.ToInt32();
+            uint absoluteAddress = address;
+            //absoluteAddress = address + (uint)pol.FFXIBaseAddress.ToInt32();
 
             uint scanMemoryOffset = 0;
             MemScanAddressStruct scanStruct = new MemScanAddressStruct();
@@ -1006,6 +1009,79 @@ namespace WaywardGamers.KParser.Monitoring
             {
             }
         }
+
+
+        [Conditional("DEBUG")]
+        private void CycleStartPoint(uint startAddress)
+        {
+            // Start with the previous known base address.
+            
+            // Scan up to 2k addresses from that point
+
+            List<ChatLine> chatData = new List<ChatLine>();
+
+            for (uint i = 0; i < 32000; i++)
+            {
+                try
+                {
+                    chatData.Clear();
+
+                    uint checkAddress = startAddress + i * 4;
+
+                    // initialMemoryOffset is the offset to the address that contains the
+                    // first pointer in the hierarchy of FFXI's chat log data structures.
+                    // It is an offset from the base address that FFXIMain.dll is loaded at.
+                    // This is a pointer to a data structure we want to read.
+                    IntPtr rootAddress = Pointers.IncrementPointer(pol.FFXIBaseAddress, checkAddress);
+
+                    //Dereference that pointer to get our next address.
+                    IntPtr firstControlStructureLocation = Pointers.FollowPointer(pol.Process.Handle, rootAddress);
+
+                    if (firstControlStructureLocation == IntPtr.Zero)
+                    {
+                        continue;
+                    }
+
+                    // The dataStructurePointer points to a structure that contains
+                    // the address to the chat log info in its second (uint) field.
+                    chatLogControl = ReadControlStructure(firstControlStructureLocation);
+
+                    if (chatLogControl.ChatLogInfoPtr == IntPtr.Zero)
+                    {
+                        continue;
+                    }
+
+                    // We then want to look at the (supposed) log support
+                    // structure at that second address.
+
+                    ChatLogDetails examineDetails = ReadChatLogDetails(chatLogControl.ChatLogInfoPtr);
+
+                    if (examineDetails.ChatLogInfo.PtrToCurrentChatLog == IntPtr.Zero)
+                        continue;
+
+                    if ((examineDetails.ChatLogInfo.ChatLogBytes > 32000) ||
+                        (examineDetails.ChatLogInfo.ChatLogBytes < 0))
+                        continue;
+
+                    byte[][] scanChatLines = ReadChatLinesAsByteArrays(examineDetails.ChatLogInfo.PtrToCurrentChatLog,
+                            examineDetails.ChatLogInfo.FinalOffset, examineDetails.ChatLogInfo.NumberOfLines);
+
+                    foreach (var newLine in scanChatLines)
+                    {
+                        if (newLine != null)
+                            chatData.Add(new ChatLine(newLine));
+                    }
+
+
+                    uint j = i;
+                }
+                catch
+                {
+                }
+            }
+        }
+
+
         #endregion
     }
 }
