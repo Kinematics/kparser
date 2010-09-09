@@ -578,7 +578,7 @@ namespace WaywardGamers.KParser.Plugin
         /// </summary>
         private void InitializeRollNames()
         {
-            rollNames = new string[20] {
+            rollNames = new string[24] {
                 Resources.ParsedStrings.CorRoll,
                 Resources.ParsedStrings.NinRoll,
                 Resources.ParsedStrings.RngRoll,
@@ -598,7 +598,11 @@ namespace WaywardGamers.KParser.Plugin
                 Resources.ParsedStrings.PldRoll,
                 Resources.ParsedStrings.BlmRoll,
                 Resources.ParsedStrings.DncRoll,
-                Resources.ParsedStrings.SchRoll
+                Resources.ParsedStrings.SchRoll,
+                Resources.ParsedStrings.BolterRoll,
+                Resources.ParsedStrings.CasterRoll,
+                Resources.ParsedStrings.BlitzerRoll,
+                Resources.ParsedStrings.CourserRoll,
             };
         }
 
@@ -1027,6 +1031,21 @@ namespace WaywardGamers.KParser.Plugin
             hasValuesWithJobInParty[19] = false;
             hasValuesWithoutJobInParty[19] = false;
 
+            //Resources.ParsedStrings.BolterRoll
+            hasValuesWithJobInParty[20] = false;
+            hasValuesWithoutJobInParty[20] = false;
+
+            //Resources.ParsedStrings.CasterRoll
+            hasValuesWithJobInParty[21] = false;
+            hasValuesWithoutJobInParty[21] = false;
+
+            //Resources.ParsedStrings.BlitzerRoll
+            hasValuesWithJobInParty[22] = false;
+            hasValuesWithoutJobInParty[22] = false;
+
+            //Resources.ParsedStrings.CourserRoll
+            hasValuesWithJobInParty[23] = false;
+            hasValuesWithoutJobInParty[23] = false;
 
         }
 
