@@ -82,7 +82,8 @@ namespace WaywardGamers.KParser.Plugin
         string lsDivineWaltz2;
         string lsHealingBreeze;
         string lsChakra;
-        string lsCura;
+        string lsCura1;
+        string lsCura2;
         string lsCuraga1;
         string lsCuraga2;
         string lsCuraga3;
@@ -461,7 +462,8 @@ namespace WaywardGamers.KParser.Plugin
                         numCuraga = healLU[lsHealingBreeze].GroupBy(a => a.Timestamp).Count() +
                             healLU[lsDivineWaltz1].GroupBy(a => a.Timestamp).Count() +
                             healLU[lsDivineWaltz2].GroupBy(a => a.Timestamp).Count() +
-                            healLU[lsCura].GroupBy(a => a.Timestamp).Count() +
+                            healLU[lsCura1].GroupBy(a => a.Timestamp).Count() +
+                            healLU[lsCura2].GroupBy(a => a.Timestamp).Count() +
                             healLU[lsCuraga1].GroupBy(a => a.Timestamp).Count() +
                             healLU[lsCuraga2].GroupBy(a => a.Timestamp).Count() +
                             healLU[lsCuraga3].GroupBy(a => a.Timestamp).Count() +
@@ -538,7 +540,8 @@ namespace WaywardGamers.KParser.Plugin
                             totalMP += healLU[lsWildCarrot].Count() * 37;
                             totalMP += healLU[lsMagicFruit].Count() * 72;
                             totalMP += healLU[lsHealingBreeze].Count() * 55;
-                            totalMP += healLU[lsCura].Count() * 30;
+                            totalMP += healLU[lsCura1].Count() * 30;
+                            totalMP += healLU[lsCura2].Count() * 60;
                             totalMP += healLU[lsCuraga1].GroupBy(a => a.Timestamp).Count() * 60;
                             totalMP += healLU[lsCuraga2].GroupBy(a => a.Timestamp).Count() * 120;
                             totalMP += healLU[lsCuraga3].GroupBy(a => a.Timestamp).Count() * 180;
@@ -661,7 +664,8 @@ namespace WaywardGamers.KParser.Plugin
                         avgC6 = healLU[lsCure6].Average(a => (int?)a.Amount) ?? 0.0;
 
 
-                        avgCg = healLU[lsCura].GroupBy(a => a.Timestamp)
+                        avgCg = healLU[lsCura1].GroupBy(a => a.Timestamp)
+                            .Concat(healLU[lsCura2].GroupBy(a => a.Timestamp))
                             .Concat(healLU[lsCuraga1].GroupBy(a => a.Timestamp))
                             .Concat(healLU[lsCuraga2].GroupBy(a => a.Timestamp))
                             .Concat(healLU[lsCuraga3].GroupBy(a => a.Timestamp))
@@ -1083,7 +1087,8 @@ namespace WaywardGamers.KParser.Plugin
             lsHealingBreeze = Resources.ParsedStrings.HealingBreeze;
             lsCuragaREString = Resources.ParsedStrings.CuragaRegex;
             lsChakra = Resources.ParsedStrings.Chakra;
-            lsCura = Resources.ParsedStrings.Cura;
+            lsCura1 = Resources.ParsedStrings.Cura1;
+            lsCura2 = Resources.ParsedStrings.Cura2;
             lsCuraga1 = Resources.ParsedStrings.Curaga1;
             lsCuraga2 = Resources.ParsedStrings.Curaga2;
             lsCuraga3 = Resources.ParsedStrings.Curaga3;
