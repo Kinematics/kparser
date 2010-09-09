@@ -1326,4 +1326,46 @@
   <data name="TidalRoar" xml:space="preserve">
     <value>Tidal Roar</value>
   </data>
+  <data name="BladeHi" xml:space="preserve">
+    <value>Blade: Hi</value>
+  </data>
+  <data name="CamlannsTorment" xml:space="preserve">
+    <value>Camlann's Torment</value>
+  </data>
+  <data name="ChantDuCynge" xml:space="preserve">
+    <value>Chant du Cynge</value>
+  </data>
+  <data name="Cloudsplitter" xml:space="preserve">
+    <value>Cloudsplitter</value>
+  </data>
+  <data name="Dagan" xml:space="preserve">
+    <value>Dagan</value>
+  </data>
+  <data name="JishnusRadiance" xml:space="preserve">
+    <value>Jishnu's Radiance</value>
+  </data>
+  <data name="Myrkr" xml:space="preserve">
+    <value>Myrkr</value>
+  </data>
+  <data name="Quietus" xml:space="preserve">
+    <value>Quietus</value>
+  </data>
+  <data name="RudrasStorm" xml:space="preserve">
+    <value>Rudra's Storm</value>
+  </data>
+  <data name="TachiFudo" xml:space="preserve">
+    <value>Tachi: Fudo</value>
+  </data>
+  <data name="Torcleaver" xml:space="preserve">
+    <value>Torcleaver</value>
+  </data>
+  <data name="UkkosFury" xml:space="preserve">
+    <value>Ukko's Fury</value>
+  </data>
+  <data name="VictorySmite" xml:space="preserve">
+    <value>Victory Smite</value>
+  </data>
+  <data name="Wildfire" xml:space="preserve">
+    <value>Wildfire</value>
+  </data>
 </root>
