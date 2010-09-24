@@ -47,14 +47,14 @@ namespace WaywardGamers.KParser
             @"(?<eventSeq>[0-9a-f]{8}),(?<uniqSeq>[0-9a-f]{8}),(?<strLen>[0-9a-f]{4}),(?<unk1>[0-9a-f]{2})," +
             @"(?<unk2>[0-9a-f]{2}),(?<msgCat>[0-9a-f]{2}),(?<unk3>[0-9a-f]{2})," +
             @"((\x1e\x01)+(\x81\x40)?(\x1e\x01)*)?" +
-            @"(?<tsPlugin>((\x1e(\x3f|\xfa|\xfc)\[)|(\x1e.)|(\[))(?<time>\d{2}:\d{2}:\d{2})\] (\x1e\x01)?)?" +
+            @"(?<tsPlugin>((\x1e(\x3f|\xfa|\xfc)\[)|(\x1e.)|(\[))(?<time>\d{2}:\d{2}:\d{2})\s?(?<ampm>\w{2})?\] (\x1e\x01)?)?" +
             @"(?<remainder>.+)$");
 
         static Regex msgLineBreakdownOfFilteredChat = new Regex(
             @"^(?<msgCode>[0-9a-f]{2}),(?<xCode1>[0-9a-f]{2}),(?<xCode2>[0-9a-f]{2}),(?<msgColor>[0-9a-f]{8})," +
             @"(?<eventSeq>[0-9a-f]{8}),(?<uniqSeq>[0-9a-f]{8}),(?<strLen>[0-9a-f]{4}),(?<unk1>[0-9a-f]{2})," +
             @"(?<unk2>[0-9a-f]{2}),(?<msgCat>[0-9a-f]{2}),(?<unk3>[0-9a-f]{2})," +
-            @"(?<tsPlugin>\[?(?<time>\d{1,2}:\d{2}:\d{2})\] )?" +
+            @"(?<tsPlugin>\[?(?<time>\d{1,2}:\d{2}:\d{2})\s?(?<ampm>\w{2})?\] )?" +
             @"(?<remainder>.+)$");
 
         // The initial [ of the Windower Timestamp plugin may get lost in text corruption.
@@ -129,9 +129,22 @@ namespace WaywardGamers.KParser
                 {
                     DateTime baseDate = originalChatLine.Timestamp.ToLocalTime().Date;
                     TimeSpan pluginTime;
+
                     if (TimeSpan.TryParse(msgLineMatch.Groups["time"].Value, out pluginTime))
                     {
+                        bool addPM = false;
+
+                        if (msgLineMatch.Groups["ampm"].Success == true)
+                        {
+                            if (string.Compare(msgLineMatch.Groups["ampm"].Value, "PM", true) == 0)
+                                addPM = true;
+                        }
+
                         baseDate += pluginTime;
+
+                        if (addPM == true)
+                            baseDate.AddHours(12);
+
                         originalChatLine.Timestamp = baseDate.ToUniversalTime();
                     }
                 }
