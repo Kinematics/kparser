@@ -31,7 +31,7 @@ namespace WaywardGamers.KParser.Plugin
 
         ToolStripButton editCustomMobFilter = new ToolStripButton();
 
-        Regex colorLight = new Regex("(?<light>(?<color>pearlescent|azure|ruby|amber|ebon|golden|silver) light)");
+        Regex colorLight = new Regex("(?<light>(?<color>pearlescent|azure|ruby|amber|ebon|golden|silvery) light)");
 
         // Localizable strings
         string lsCruor;
