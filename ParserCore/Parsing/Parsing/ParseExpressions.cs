@@ -53,7 +53,7 @@ namespace WaywardGamers.KParser
         private static readonly string drainType   = @"(?<draintype>(H|M|T)P)";
         private static readonly string drainStat   = @"(?<drainstat>STR|DEX|AGI|VIT|INT|MND|CHR)";
 
-        private static readonly string colorLight  = @"(?<light>(?<color>pearlescent|azure|ruby|amber|ebon|golden|silver) light)";
+        private static readonly string colorLight  = @"(?<light>(?<color>pearlescent|azure|ruby|amber|ebon|golden|silvery) light)";
 
         private static readonly string remainder   = @"(?<remainder>.*)";
         #endregion
@@ -304,7 +304,7 @@ namespace WaywardGamers.KParser
             drainType    = @"(?<draintype>(H|M|T)P)";
             drainStat    = @"(?<drainstat>STR|DEX|AGI|VIT|INT|MND|CHR)";
 
-            colorLight   = @"(?<color>pearlescent|azure|ruby|amber|ebon|gold|silver)";
+            colorLight   = @"(?<color>pearlescent|azure|ruby|amber|ebon|golden|silvery)";
 
             remainder    = @"(?<remainder>.*)";
             #endregion
@@ -510,7 +510,7 @@ namespace WaywardGamers.KParser
             drainType    = @"(?<draintype>(H|M|T)P)";
             drainStat    = @"(?<drainstat>STR|DEX|AGI|VIT|INT|MND|CHR)";
 
-            colorLight = @"(?<color>pearlescent|azure|ruby|amber|ebon|gold|silver)";
+            colorLight = @"(?<color>pearlescent|azure|ruby|amber|ebon|golden|silvery)";
 
             remainder = @"(?<remainder>.*)";
             #endregion
@@ -713,7 +713,7 @@ namespace WaywardGamers.KParser
             drainType    = @"(?<draintype>(H|M|T)P)";
             drainStat    = @"(?<drainstat>STR|DEX|AGI|VIT|INT|MND|CHR)";
 
-            colorLight = @"(?<color>pearlescent|azure|ruby|amber|ebon|gold|silver)";
+            colorLight = @"(?<color>pearlescent|azure|ruby|amber|ebon|golden|silvery)";
 
             remainder = @"(?<remainder>.*)";
             #endregion
