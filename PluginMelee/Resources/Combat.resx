@@ -568,19 +568,19 @@
     <value>{0,-17}{1,6:f2}{2,9:f2}{3,9:f2}{4,9:f2}{5,9:f2}{6,9:f2}{7,9:f2}{8,10:f2}</value>
   </data>
   <data name="RecoveryPluginFormatCuring" xml:space="preserve">
-    <value>{0,-17}{1,9}{2,12}{3,7}{4,6}{5,6}{6,6}{7,6}{8,6}{9,9}{10,7}{11,7}{12,7}</value>
+    <value>{0,-17}{1,9}{2,12}{3,7}{4,6}{5,6}{6,6}{7,6}{8,6}{9,9}{10,7}{11,7}{12,7}{13,7}</value>
   </data>
   <data name="RecoveryPluginFormatRecovery" xml:space="preserve">
-    <value>{0,-17}{1,9}{2,13}{3,11}{4,9}{5,11}{6,11}</value>
+    <value>{0,-17}{1,9}{2,13}{3,11}{4,9}{5,11}{6,11}{7,11}</value>
   </data>
   <data name="RecoveryPluginHeaderAvgCuring" xml:space="preserve">
     <value>Player           Cure 1   Cure 2   Cure 3   Cure 4   Cure 5   Cure 6   Curaga   Ability</value>
   </data>
   <data name="RecoveryPluginHeaderCuring" xml:space="preserve">
-    <value>Player           Cured (Sp)  Cured (Ab)  C.1s  C.2s  C.3s  C.4s  C.5s  C.6s  Curagas  Rg.1s  Rg.2s  Rg.3s</value>
+    <value>Player           Cured (Sp)  Cured (Ab)  C.1s  C.2s  C.3s  C.4s  C.5s  C.6s  Curagas  Rg.1s  Rg.2s  Rg.3s  Rg.4s</value>
   </data>
   <data name="RecoveryPluginHeaderRecovery" xml:space="preserve">
-    <value>Player           Dmg Taken   HP Drained   HP Cured   #Regen   #Regen 2   #Regen 3</value>
+    <value>Player           Dmg Taken   HP Drained   HP Cured   #Regen   #Regen 2   #Regen 3   #Regen 4</value>
   </data>
   <data name="RecoveryPluginTabName" xml:space="preserve">
     <value>Recovery</value>

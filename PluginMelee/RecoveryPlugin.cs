@@ -62,6 +62,7 @@ namespace WaywardGamers.KParser.Plugin
         string lsRegen1;
         string lsRegen2;
         string lsRegen3;
+        string lsRegen4;
         string lsCure1;
         string lsCure2;
         string lsCure3;
@@ -72,6 +73,7 @@ namespace WaywardGamers.KParser.Plugin
         string lsCWaltz2;
         string lsCWaltz3;
         string lsCWaltz4;
+        string lsCWaltz5;
         string lsHealingBreath1;
         string lsHealingBreath2;
         string lsHealingBreath3;
@@ -250,43 +252,48 @@ namespace WaywardGamers.KParser.Plugin
                              orderby c.CombatantType, c.CombatantName
                               let targetInteractions = c.GetInteractionsRowsByTargetCombatantRelation().Where(a => mobFilter.CheckFilterMobBattle(a))
                               let actorInteractions = c.GetInteractionsRowsByActorCombatantRelation().Where(a => mobFilter.CheckFilterMobBattle(a))
-                              select new
+                             select new
                              {
                                  Player = c.CombatantNameOrJobName,
                                  PrimeDmgTaken = from dm in targetInteractions
-                                                 where ((dm.HarmType == (byte)HarmType.Damage) ||
-                                                        (dm.HarmType == (byte)HarmType.Drain))
+                                                 where (((HarmType)dm.HarmType == HarmType.Damage) ||
+                                                        ((HarmType)dm.HarmType == HarmType.Drain))
                                                  select dm.Amount,
                                  SecondDmgTaken = from dm in targetInteractions
-                                                  where ((dm.SecondHarmType == (byte)HarmType.Damage) ||
-                                                         (dm.SecondHarmType == (byte)HarmType.Drain))
+                                                  where (((HarmType)dm.SecondHarmType == HarmType.Damage) ||
+                                                         ((HarmType)dm.SecondHarmType == HarmType.Drain))
                                                   select dm.SecondAmount,
                                  PrimeDrain = from dr in actorInteractions
-                                              where (dr.HarmType == (byte)HarmType.Drain) &&
+                                              where ((HarmType)dr.HarmType == HarmType.Drain) &&
                                                     mobFilter.CheckFilterMobBattle(dr)
                                               select dr.Amount,
                                  SecondDrain = from dr in actorInteractions
-                                               where ((dr.SecondHarmType == (byte)HarmType.Drain) ||
-                                                      (dr.SecondAidType == (byte)AidType.Recovery))
+                                               where (((HarmType)dr.SecondHarmType == HarmType.Drain) ||
+                                                      ((AidType)dr.SecondAidType == AidType.Recovery))
                                                select dr.SecondAmount,
                                  Cured = from cr in targetInteractions
-                                         where ((cr.AidType == (byte)AidType.Recovery) &&
-                                                (cr.RecoveryType == (byte)RecoveryType.RecoverHP))
+                                         where (((AidType)cr.AidType == AidType.Recovery) &&
+                                                ((RecoveryType)cr.RecoveryType == RecoveryType.RecoverHP))
                                          select cr.Amount,
                                  Regen1 = from cr in targetInteractions
-                                          where ((cr.AidType == (byte)AidType.Enhance) &&
+                                          where (((AidType)cr.AidType == AidType.Enhance) &&
                                                  (cr.IsActionIDNull() == false) &&
                                                  (cr.ActionsRow.ActionName == lsRegen1))
                                           select cr,
                                  Regen2 = from cr in targetInteractions
-                                          where ((cr.AidType == (byte)AidType.Enhance) &&
+                                          where (((AidType)cr.AidType == AidType.Enhance) &&
                                                  (cr.IsActionIDNull() == false) &&
                                                  (cr.ActionsRow.ActionName == lsRegen2))
                                           select cr,
                                  Regen3 = from cr in targetInteractions
-                                          where ((cr.AidType == (byte)AidType.Enhance) &&
+                                          where (((AidType)cr.AidType == AidType.Enhance) &&
                                                  (cr.IsActionIDNull() == false) &&
                                                  (cr.ActionsRow.ActionName == lsRegen3))
+                                          select cr,
+                                 Regen4 = from cr in targetInteractions
+                                          where (((AidType)cr.AidType == AidType.Enhance) &&
+                                                 (cr.IsActionIDNull() == false) &&
+                                                 (cr.ActionsRow.ActionName == lsRegen4))
                                           select cr,
                              };
 
@@ -297,6 +304,7 @@ namespace WaywardGamers.KParser.Plugin
             int numR1 = 0;
             int numR2 = 0;
             int numR3 = 0;
+            int numR4 = 0;
 
             int ttlDmgTaken = 0;
             int ttlDrainAmt = 0;
@@ -304,6 +312,7 @@ namespace WaywardGamers.KParser.Plugin
             int ttlNumR1 = 0;
             int ttlNumR2 = 0;
             int ttlNumR3 = 0;
+            int ttlNumR4 = 0;
 
             bool placeHeader = false;
 
@@ -317,8 +326,9 @@ namespace WaywardGamers.KParser.Plugin
                     numR1 = player.Regen1.Count();
                     numR2 = player.Regen2.Count();
                     numR3 = player.Regen3.Count();
+                    numR4 = player.Regen4.Count();
 
-                    if ((dmgTaken + drainAmt + healAmt + numR1 + numR2 + numR3) > 0)
+                    if ((dmgTaken + drainAmt + healAmt + numR1 + numR2 + numR3 + numR4) > 0)
                     {
                         if (placeHeader == false)
                         {
@@ -350,6 +360,7 @@ namespace WaywardGamers.KParser.Plugin
                         ttlNumR1 += numR1;
                         ttlNumR2 += numR2;
                         ttlNumR3 += numR3;
+                        ttlNumR4 += numR4;
 
                         sb.AppendFormat(lsFormatRecovery,
                             player.Player,
@@ -358,7 +369,8 @@ namespace WaywardGamers.KParser.Plugin
                             healAmt,
                             numR1,
                             numR2,
-                            numR3);
+                            numR3,
+                            numR4);
 
                         sb.Append("\n");
                     }
@@ -373,7 +385,8 @@ namespace WaywardGamers.KParser.Plugin
                         ttlHealAmt,
                         ttlNumR1,
                         ttlNumR2,
-                        ttlNumR3);
+                        ttlNumR3,
+                        ttlNumR4);
 
                     strModList.Add(new StringMods
                     {
@@ -420,6 +433,7 @@ namespace WaywardGamers.KParser.Plugin
             int numRegen1 = 0;
             int numRegen2 = 0;
             int numRegen3 = 0;
+            int numRegen4 = 0;
 
             double avgC1 = 0;
             double avgC2 = 0;
@@ -458,7 +472,8 @@ namespace WaywardGamers.KParser.Plugin
                             healLU[lsMagicFruit].Count();
                         numCure5 = healLU[lsCure5].Count() +
                             healLU[lsCWaltz4].Count();
-                        numCure6 = healLU[lsCure6].Count();
+                        numCure6 = healLU[lsCure6].Count() +
+                            healLU[lsCWaltz5].Count();
                         numCuraga = healLU[lsHealingBreeze].GroupBy(a => a.Timestamp).Count() +
                             healLU[lsDivineWaltz1].GroupBy(a => a.Timestamp).Count() +
                             healLU[lsDivineWaltz2].GroupBy(a => a.Timestamp).Count() +
@@ -471,6 +486,7 @@ namespace WaywardGamers.KParser.Plugin
                         numRegen1 = healLU[lsRegen1].Count();
                         numRegen2 = healLU[lsRegen2].Count();
                         numRegen3 = healLU[lsRegen3].Count();
+                        numRegen4 = healLU[lsRegen4].Count();
 
                         var cures = healer.Healing.Where(a => (AidType)a.AidType == AidType.Recovery &&
                             (RecoveryType)a.RecoveryType == RecoveryType.RecoverHP);
@@ -483,7 +499,7 @@ namespace WaywardGamers.KParser.Plugin
 
                         if ((cureSpell + cureAbil +
                             numCure1 + numCure2 + numCure3 + numCure4 + numCure5 + numCure6 +
-                            numRegen1 + numRegen2 + numRegen3 + numCuraga) > 0)
+                            numRegen1 + numRegen2 + numRegen3 + numRegen4 + numCuraga) > 0)
                         {
                             if (placeHeader == false)
                             {
@@ -522,7 +538,8 @@ namespace WaywardGamers.KParser.Plugin
                                 numCuraga,
                                 numRegen1,
                                 numRegen2,
-                                numRegen3);
+                                numRegen3,
+                                numRegen4);
 
                             sb.Append("\n");
 
@@ -551,6 +568,7 @@ namespace WaywardGamers.KParser.Plugin
                             regenCost += numRegen1 * 15;
                             regenCost += numRegen2 * 36;
                             regenCost += numRegen3 * 64;
+                            regenCost += numRegen4 * 92;
 
                             totalMP += regenCost;
 
@@ -559,6 +577,7 @@ namespace WaywardGamers.KParser.Plugin
                             totalTP += healLU[lsCWaltz2].Count() * 35;
                             totalTP += healLU[lsCWaltz3].Count() * 50;
                             totalTP += healLU[lsCWaltz4].Count() * 65;
+                            totalTP += healLU[lsCWaltz5].Count() * 80;
                             totalTP += healLU[lsDivineWaltz1].Count() * 40;
                             totalTP += healLU[lsDivineWaltz2].Count() * 80;
 
@@ -577,7 +596,8 @@ namespace WaywardGamers.KParser.Plugin
                                 int curesWithRegen = cureSpell +
                                     numRegen1 * 125 +
                                     numRegen2 * 240 +
-                                    numRegen3 * 400;
+                                    numRegen3 * 400 +
+                                    numRegen4 * 640;
 
                                 mpCureRegEff = (float)curesWithRegen / totalMP;
                             }
@@ -1066,6 +1086,7 @@ namespace WaywardGamers.KParser.Plugin
             lsRegen1 = Resources.ParsedStrings.Regen1;
             lsRegen2 = Resources.ParsedStrings.Regen2;
             lsRegen3 = Resources.ParsedStrings.Regen3;
+            lsRegen4 = Resources.ParsedStrings.Regen4;
             lsCure1 = Resources.ParsedStrings.Cure1;
             lsCure2 = Resources.ParsedStrings.Cure2;
             lsCure3 = Resources.ParsedStrings.Cure3;
@@ -1076,6 +1097,7 @@ namespace WaywardGamers.KParser.Plugin
             lsCWaltz2 = Resources.ParsedStrings.CuringWaltz2;
             lsCWaltz3 = Resources.ParsedStrings.CuringWaltz3;
             lsCWaltz4 = Resources.ParsedStrings.CuringWaltz4;
+            lsCWaltz5 = Resources.ParsedStrings.CuringWaltz5;
             lsHealingBreath1 = Resources.ParsedStrings.HealingBreath1;
             lsHealingBreath2 = Resources.ParsedStrings.HealingBreath2;
             lsHealingBreath3 = Resources.ParsedStrings.HealingBreath3;
