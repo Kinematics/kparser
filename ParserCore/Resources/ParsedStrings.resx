@@ -1368,4 +1368,73 @@
   <data name="Wildfire" xml:space="preserve">
     <value>Wildfire</value>
   </data>
+  <data name="Adloquium" xml:space="preserve">
+    <value>Adloquium</value>
+  </data>
+  <data name="AlliesRoll" xml:space="preserve">
+    <value>Allies' Roll</value>
+  </data>
+  <data name="ArcaneCrest" xml:space="preserve">
+    <value>Arcane Crest</value>
+  </data>
+  <data name="BloodRage" xml:space="preserve">
+    <value>Blood Rage</value>
+  </data>
+  <data name="BountyShot" xml:space="preserve">
+    <value>Bounty Shot</value>
+  </data>
+  <data name="Conspirator" xml:space="preserve">
+    <value>Conspirator</value>
+  </data>
+  <data name="CuringWaltz5" xml:space="preserve">
+    <value>Curing Waltz V</value>
+  </data>
+  <data name="DiamondStorm" xml:space="preserve">
+    <value>Diamond Storm</value>
+  </data>
+  <data name="DragonBreaker" xml:space="preserve">
+    <value>Dragon Breaker</value>
+  </data>
+  <data name="EnmityDouse" xml:space="preserve">
+    <value>Enmity Douse</value>
+  </data>
+  <data name="FleetWind" xml:space="preserve">
+    <value>Fleet Wind</value>
+  </data>
+  <data name="Hamanoha" xml:space="preserve">
+    <value>Hamanoha</value>
+  </data>
+  <data name="Impetus" xml:space="preserve">
+    <value>Impetus</value>
+  </data>
+  <data name="InfernoHowl" xml:space="preserve">
+    <value>Inferno Howl</value>
+  </data>
+  <data name="ManaCede" xml:space="preserve">
+    <value>Mana Cede</value>
+  </data>
+  <data name="Minuet5" xml:space="preserve">
+    <value>Valor Minuet V</value>
+  </data>
+  <data name="Regen4" xml:space="preserve">
+    <value>Regen IV</value>
+  </data>
+  <data name="RestoringBreath" xml:space="preserve">
+    <value>Restoring Breath</value>
+  </data>
+  <data name="Sepulcher" xml:space="preserve">
+    <value>Sepulcher</value>
+  </data>
+  <data name="SmitingBreath" xml:space="preserve">
+    <value>Smiting Breath</value>
+  </data>
+  <data name="StrikingFlourish" xml:space="preserve">
+    <value>Striking Flourish</value>
+  </data>
+  <data name="TacticianRoll" xml:space="preserve">
+    <value>Tactician's Roll</value>
+  </data>
+  <data name="TripleShot" xml:space="preserve">
+    <value>Triple Shot</value>
+  </data>
 </root>
