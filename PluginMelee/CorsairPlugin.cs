@@ -23,10 +23,10 @@ namespace WaywardGamers.KParser.Plugin
 
         // Roll data
         string[] rollNames;
-        bool[] hasValuesWithJobInParty = new bool[20];
-        bool[] hasValuesWithoutJobInParty = new bool[20];
-        int[,] valuesWithJobInParty = new int[20, 12];
-        int[,] valuesWithoutJobInParty = new int[20, 12];
+        bool[] hasValuesWithJobInParty = new bool[26];
+        bool[] hasValuesWithoutJobInParty = new bool[26];
+        int[,] valuesWithJobInParty = new int[26, 12];
+        int[,] valuesWithoutJobInParty = new int[26, 12];
 
         // Localized strings
 
@@ -578,7 +578,7 @@ namespace WaywardGamers.KParser.Plugin
         /// </summary>
         private void InitializeRollNames()
         {
-            rollNames = new string[24] {
+            rollNames = new string[26] {
                 Resources.ParsedStrings.CorRoll,
                 Resources.ParsedStrings.NinRoll,
                 Resources.ParsedStrings.RngRoll,
@@ -603,6 +603,8 @@ namespace WaywardGamers.KParser.Plugin
                 Resources.ParsedStrings.CasterRoll,
                 Resources.ParsedStrings.BlitzerRoll,
                 Resources.ParsedStrings.CourserRoll,
+                Resources.ParsedStrings.TacticianRoll,
+                Resources.ParsedStrings.AlliesRoll,
             };
         }
 
@@ -1046,6 +1048,14 @@ namespace WaywardGamers.KParser.Plugin
             //Resources.ParsedStrings.CourserRoll
             hasValuesWithJobInParty[23] = false;
             hasValuesWithoutJobInParty[23] = false;
+
+            //Resources.ParsedStrings.TacticianRoll
+            hasValuesWithJobInParty[24] = false;
+            hasValuesWithoutJobInParty[24] = false;
+
+            //Resources.ParsedStrings.AlliesRoll
+            hasValuesWithJobInParty[25] = false;
+            hasValuesWithoutJobInParty[25] = false;
 
         }
 
