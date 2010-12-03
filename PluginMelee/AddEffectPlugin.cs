@@ -229,14 +229,16 @@ namespace WaywardGamers.KParser.Plugin
                                 Name = c.CombatantName,
                                 DisplayName = c.CombatantNameOrJobName,
                                 Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                        where ((ActionType)n.ActionType == ActionType.Melee &&
+                                        where (n.IsBattleIDNull() == false &&
+                                               (ActionType)n.ActionType == ActionType.Melee &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain)) &&
                                                (DefenseType)n.DefenseType == DefenseType.None &&
                                                mobFilter.CheckFilterMobTarget(n) == true
                                         select n,
                                 Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                        where ((ActionType)n.ActionType == ActionType.Ranged &&
+                                        where (n.IsBattleIDNull() == false && 
+                                               (ActionType)n.ActionType == ActionType.Ranged &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain)) &&
                                                (DefenseType)n.DefenseType == DefenseType.None &&
