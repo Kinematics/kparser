@@ -1,5 +1,13 @@
 KParser Change Log
 
+1.5.13 (February 16, 2011)
+* Updated memloc.  New address is 0x005839C8.
+
+
+1.5.12 (December ??, 2010)
+* Updated memloc.  New address is 0x00583948.
+- Fixed Silvery light detection.
+
 
 1.5.11 (September 9, 2010)
 * Updated memloc.  New address is 0x00582958.
