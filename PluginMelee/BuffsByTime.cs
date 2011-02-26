@@ -18,6 +18,7 @@ namespace WaywardGamers.KParser.Plugin
         #region Member Variables
         bool processAccuracy;
         bool processAttack;
+        bool processCritRate;
         bool processHaste;
 
         ToolStripLabel catLabel = new ToolStripLabel();
@@ -54,6 +55,9 @@ namespace WaywardGamers.KParser.Plugin
         string lsAttackHeader;
         string lsAccuracy;
         string lsAccuracyHeader;
+        string lsCritRate;
+        string lsCritRateHeader;
+        string lsCritRateFormat;
         string lsHaste;
         string lsHasteHeader;
         #endregion
@@ -203,6 +207,9 @@ namespace WaywardGamers.KParser.Plugin
 
             if (processAttack)
                 ProcessAttack(dataSet, intervalSets, playerList, ref sb, strModList);
+
+            if (processCritRate)
+                ProcessCritRate(dataSet, intervalSets, playerList, ref sb, strModList);
 
             if (processHaste)
                 ProcessHaste(dataSet, intervalSets, playerList, ref sb, strModList);
@@ -979,6 +986,189 @@ namespace WaywardGamers.KParser.Plugin
             sb.Append("\n\n");
         }
 
+        private void ProcessCritRate(KPDatabaseDataSet dataSet,
+            List<PlayerTimeIntervalSets> intervalSets, List<string> playerList,
+            ref StringBuilder sb, List<StringMods> strModList)
+        {
+            MobFilter mobFilter;
+            if (customMobSelection)
+                mobFilter = MobXPHandler.Instance.CustomMobFilter;
+            else
+                mobFilter = mobsCombo.CBGetMobFilter(exclude0XPMobs);
+
+            int mobCount = mobFilter.Count;
+
+            if (mobCount == 0)
+                return;
+
+            var attackSet = from c in dataSet.Combatants
+                            where (playerList.Contains(c.CombatantName) &&
+                                   RegexUtility.ExcludedPlayer.Match(c.PlayerInfo).Success == false)
+                            select new AttackGroup
+                            {
+                                Name = c.CombatantName,
+                                DisplayName = c.CombatantNameOrJobName,
+                                Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                        where ((ActionType)n.ActionType == ActionType.Melee &&
+                                               ((HarmType)n.HarmType == HarmType.Damage ||
+                                                (HarmType)n.HarmType == HarmType.Drain)) &&
+                                               mobFilter.CheckFilterMobTarget(n) == true
+                                        select n,
+                                WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                         where ((ActionType)n.ActionType == ActionType.Weaponskill &&
+                                               ((HarmType)n.HarmType == HarmType.Damage ||
+                                                (HarmType)n.HarmType == HarmType.Drain) &&
+                                                n.Preparing == false) &&
+                                               mobFilter.CheckFilterMobTarget(n) == true
+                                         select n,
+                            };
+
+            strModList.Add(new StringMods
+            {
+                Start = sb.Length,
+                Length = lsCritRate.Length,
+                Bold = true,
+                Color = Color.Red
+            });
+            sb.Append(lsCritRate + "\n");
+
+
+            foreach (var playerInterval in intervalSets)
+            {
+                if (playerInterval.TimeIntervalSets.Count > 0)
+                {
+                    var playerActions = attackSet.FirstOrDefault(a => a.Name == playerInterval.PlayerName);
+
+                    if ((playerActions != null) &&
+                        ((playerActions.Melee.Count() > 0) || (playerActions.WSkill.Count() > 0)) &&
+                        (playerInterval.TimeIntervalSets.Any(s =>
+                        CollectTimeIntervals.CritBuffNames.Contains(s.SetName))))
+                    {
+                        sb.Append("\n");
+
+                        strModList.AddModsAndAppendLineToSB(sb, playerActions.DisplayName,
+                            new StringMods { Bold = true, Color = Color.Blue });
+
+                        strModList.AddModsAndAppendLineToSB(sb, lsCritRateHeader,
+                            new StringMods { Bold = true, Underline = true });
+
+
+                        foreach (var intervalSet in playerInterval.TimeIntervalSets)
+                        {
+                            if (CollectTimeIntervals.CritBuffNames.Contains(intervalSet.SetName))
+                            {
+                                if (intervalSet.TimeIntervals.Count > 0)
+                                {
+                                    var mInSet = from n in playerActions.Melee
+                                                 where intervalSet.Contains(n.Timestamp)
+                                                 select n;
+
+                                    var mNotInSet = from n in playerActions.Melee
+                                                    where intervalSet.Contains(n.Timestamp) == false
+                                                    select n;
+
+                                    var wInSet = from n in playerActions.WSkill
+                                                 where intervalSet.Contains(n.Timestamp)
+                                                 select n;
+
+                                    var wNotInSet = from n in playerActions.WSkill
+                                                    where intervalSet.Contains(n.Timestamp) == false
+                                                    select n;
+
+
+                                    var mInHit = mInSet.Where(a => (DefenseType)a.DefenseType == DefenseType.None);
+                                    var mNisHit = mNotInSet.Where(a => (DefenseType)a.DefenseType == DefenseType.None);
+
+                                    var mInCrit = mInHit.Where(a => (DamageModifier)a.DamageModifier == DamageModifier.Critical);
+                                    var mNisCrit = mNisHit.Where(a => (DamageModifier)a.DamageModifier == DamageModifier.Critical);
+
+
+                                    int mInCritCount = mInCrit.Count();
+                                    int mInNonCritCount = mInHit.Count() - mInCritCount;
+
+                                    int mNisCritCount = mNisCrit.Count();
+                                    int mNisNonCritCount = mNisHit.Count() - mNisCritCount;
+
+                                    double mInCritRate = 0;
+                                    double mNisCritRate = 0;
+
+                                    if (mInHit.Count() > 0)
+                                        mInCritRate = (double)mInCritCount / mInHit.Count();
+
+                                    if (mNisHit.Count() > 0)
+                                        mNisCritRate = (double)mNisCritCount / mNisHit.Count();
+
+                                    double mAvgInCrit = 0;
+                                    double mAvgNisCrit = 0;
+
+                                    if (mInCrit.Count() > 0)
+                                        mAvgInCrit = mInCrit.Average(a => a.Amount);
+
+                                    if (mNisCrit.Count() > 0)
+                                        mAvgNisCrit = mNisCrit.Average(a => a.Amount);
+
+
+                                    double avgInWS = 0;
+                                    double avgNisWS = 0;
+
+                                    if (wInSet.Count() > 0)
+                                        avgInWS = wInSet.Average(a => a.Amount);
+
+                                    if (wNotInSet.Count() > 0)
+                                        avgNisWS = wNotInSet.Average(a => a.Amount);
+
+
+                                    int tInCount = mInSet.Count() + wInSet.Count();
+                                    int tNisCount = mNotInSet.Count() + wNotInSet.Count();
+
+                                    int tCount = tInCount + tNisCount;
+
+                                    double tInRate = 0;
+                                    double tNisRate = 0;
+
+                                    if (tCount > 0)
+                                    {
+                                        tInRate = (double)tInCount / (tCount);
+                                        tNisRate = (double)tNisCount / (tCount);
+                                    }
+
+                                    if (tCount > 0)
+                                    {
+                                        string plusString = string.Format("+{0,20}", intervalSet.SetName);
+                                        string minusString = string.Format("-{0,20}", intervalSet.SetName);
+
+                                        string inCritNonCrit = string.Format("{0}/{1}", mInCritCount, mInNonCritCount);
+                                        string nisCritNonCrit = string.Format("{0}/{1}", mNisCritCount, mNisNonCritCount);
+
+                                        sb.AppendFormat(lsCritRateFormat,
+                                            plusString,
+                                            inCritNonCrit,
+                                            mInCritRate,
+                                            mAvgInCrit,
+                                            avgInWS,
+                                            tInRate
+                                        );
+                                        sb.Append("\n");
+
+                                        sb.AppendFormat(lsCritRateFormat,
+                                            minusString,
+                                            nisCritNonCrit,
+                                            mNisCritRate,
+                                            mAvgNisCrit,
+                                            avgNisWS,
+                                            tNisRate
+                                        );
+                                        sb.Append("\n");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            sb.Append("\n\n");
+        }
         #endregion
 
         #region Event Handlers
@@ -991,7 +1181,8 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     processAccuracy = ((sentBy.SelectedIndex == 0) || (sentBy.SelectedIndex == 1));
                     processAttack = ((sentBy.SelectedIndex == 0) || (sentBy.SelectedIndex == 2));
-                    processHaste = ((sentBy.SelectedIndex == 0) || (sentBy.SelectedIndex == 3));
+                    processCritRate = ((sentBy.SelectedIndex == 0) || (sentBy.SelectedIndex == 3));
+                    processHaste = ((sentBy.SelectedIndex == 0) || (sentBy.SelectedIndex == 4));
                     HandleDataset(null);
                 }
 
@@ -1125,10 +1316,12 @@ namespace WaywardGamers.KParser.Plugin
             categoryCombo.Items.Add(Resources.PublicResources.All);
             categoryCombo.Items.Add("Accuracy");
             categoryCombo.Items.Add("Attack");
+            categoryCombo.Items.Add("Crit Rate");
             categoryCombo.Items.Add("Haste");
             categoryCombo.SelectedIndex = 0;
             processAccuracy = true;
             processAttack = true;
+            processCritRate = true;
             processHaste = true;
 
             optionsMenu.Text = Resources.PublicResources.Options;
@@ -1163,6 +1356,9 @@ namespace WaywardGamers.KParser.Plugin
             lsAccuracyHeader = Resources.Combat.BuffsByTimePluginAccuracyHeader;
             lsAttack = Resources.Combat.BuffsByTimePluginAttack;
             lsAttackHeader = Resources.Combat.BuffsByTimePluginAttackHeader;
+            lsCritRate = "Crit Rate";
+            lsCritRateHeader = "Buff                      Crit/Non-crit       Crit%     Avg Crit     Avg WS     Buff (In)Active%";
+            lsCritRateFormat = "{0,21}   {1,15}   {2,9:p2}   {3,10:f2}   {4,8:f2}   {5,18:p2}";
             lsHaste = Resources.Combat.BuffsByTimePluginHaste;
             lsHasteHeader = Resources.Combat.BuffsByTimePluginHasteHeader;
         }
