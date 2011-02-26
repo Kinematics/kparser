@@ -327,7 +327,8 @@ namespace WaywardGamers.KParser.Utility
                     Resources.ParsedStrings.Dia1,
                     Resources.ParsedStrings.Dia2,
                     Resources.ParsedStrings.Dia3,
-                    Resources.ParsedStrings.Footwork
+                    Resources.ParsedStrings.Footwork,
+                    Resources.ParsedStrings.Impetus
                 };
             }
         }
@@ -363,6 +364,9 @@ namespace WaywardGamers.KParser.Utility
                 {
                     Resources.ParsedStrings.Restraint,
                     Resources.ParsedStrings.ThfRoll,
+                    Resources.ParsedStrings.Impetus,
+                    Resources.ParsedStrings.Innin,
+                    Resources.ParsedStrings.Focus
                 };
             }
         }
@@ -477,6 +481,8 @@ namespace WaywardGamers.KParser.Utility
             CompileFixedLengthBuffs(Resources.ParsedStrings.AnimatingWail, TimeSpan.FromMinutes(5),
                 playerList, playerIntervals, dataSet);
             CompileFixedLengthBuffs(Resources.ParsedStrings.Restraint, TimeSpan.FromMinutes(5),
+                playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Impetus, TimeSpan.FromMinutes(3),
                 playerList, playerIntervals, dataSet);
 
 
