@@ -441,6 +441,65 @@ namespace WaywardGamers.KParser
 
             return formattedTimeSpan;
         }
+
+        /// <summary>
+        /// Given a list of StringMods and supporting info, fill in the extra detail
+        /// required of the StringMods object and add it to the list, while also
+        /// appending the text to the stringbuilder.
+        /// </summary>
+        /// <param name="smList">List of StringMods.  Object that this extension method is tied to.</param>
+        /// <param name="sb">The StringBuilder that the text is added to.</param>
+        /// <param name="text">The text to be added/modified.</param>
+        /// <param name="mods">The base parameter mods passed in (bold/underline/color).</param>
+        /// <returns>Returns the completed StringMods object.</returns>
+        public static StringMods AddModsAndAppendToSB(this List<StringMods> smList,
+            StringBuilder sb, string text, StringMods mods)
+        {
+            if (sb == null)
+                throw new ArgumentNullException("sb");
+            if (mods == null)
+                throw new ArgumentNullException("mods");
+            if (string.IsNullOrEmpty(text))
+                return mods;
+
+            mods.Start = sb.Length;
+            mods.Length = text.Length;
+            sb.Append(text);
+
+            smList.Add(mods);
+
+            return mods;
+        }
+
+        /// <summary>
+        /// Given a list of StringMods and supporting info, fill in the extra detail
+        /// required of the StringMods object and add it to the list, while also
+        /// appending the text (with newline) to the stringbuilder.
+        /// </summary>
+        /// <param name="smList">List of StringMods.  Object that this extension method is tied to.</param>
+        /// <param name="sb">The StringBuilder that the text is added to.</param>
+        /// <param name="text">The text to be added/modified.</param>
+        /// <param name="mods">The base parameter mods passed in (bold/underline/color).</param>
+        /// <returns>Returns the completed StringMods object.</returns>
+        public static StringMods AddModsAndAppendLineToSB(this List<StringMods> smList,
+            StringBuilder sb, string text, StringMods mods)
+        {
+            if (sb == null)
+                throw new ArgumentNullException("sb");
+            if (mods == null)
+                throw new ArgumentNullException("mods");
+            if (string.IsNullOrEmpty(text))
+                return mods;
+
+            mods.Start = sb.Length;
+            mods.Length = text.Length;
+            sb.Append(text + "\n");
+
+            smList.Add(mods);
+
+            return mods;
+        }
+
     }
 
 
