@@ -568,7 +568,7 @@ namespace WaywardGamers.KParser.Plugin
                             regenCost += numRegen1 * 15;
                             regenCost += numRegen2 * 36;
                             regenCost += numRegen3 * 64;
-                            regenCost += numRegen4 * 92;
+                            regenCost += numRegen4 * 82;
 
                             totalMP += regenCost;
 
@@ -597,7 +597,7 @@ namespace WaywardGamers.KParser.Plugin
                                     numRegen1 * 125 +
                                     numRegen2 * 240 +
                                     numRegen3 * 400 +
-                                    numRegen4 * 640;
+                                    numRegen4 * 600;
 
                                 mpCureRegEff = (float)curesWithRegen / totalMP;
                             }
