@@ -413,14 +413,14 @@ namespace WaywardGamers.KParser.Plugin
 
                                         sb.AppendFormat("+{0,20}", intervalSet.SetName);
 
-                                        sb.AppendFormat("{0,14}  {1,8:p2}  {2,8:p2}  {3,11}  {4,7:p2}  {5,17:p2}\n",
-                                            string.Format("{0}/{1}", mHitCount, mMissCount), mHitRate, inCritRate,
+                                        sb.AppendFormat("{0,14}  {1,8:p2}  {2,11}  {3,7:p2}  {4,17:p2}\n",
+                                            string.Format("{0}/{1}", mHitCount, mMissCount), mHitRate,
                                             string.Format("{0}/{1}", rHitCount, rMissCount), rHitRate, inSetRate);
 
                                         sb.AppendFormat("-{0,20}", intervalSet.SetName);
 
-                                        sb.AppendFormat("{0,14}  {1,8:p2}  {2,8:p2}  {3,11}  {4,7:p2}  {5,17:p2}\n",
-                                            string.Format("{0}/{1}", mNisHitCount, mNisMissCount), mNisHitRate, ninCritRate,
+                                        sb.AppendFormat("{0,14}  {1,8:p2}  {2,11}  {3,7:p2}  {4,17:p2}\n",
+                                            string.Format("{0}/{1}", mNisHitCount, mNisMissCount), mNisHitRate,
                                             string.Format("{0}/{1}", rNisHitCount, rNisMissCount), rNisHitRate, notInSetRate);
                                     }
                                 }
@@ -1356,9 +1356,9 @@ namespace WaywardGamers.KParser.Plugin
             lsAccuracyHeader = Resources.Combat.BuffsByTimePluginAccuracyHeader;
             lsAttack = Resources.Combat.BuffsByTimePluginAttack;
             lsAttackHeader = Resources.Combat.BuffsByTimePluginAttackHeader;
-            lsCritRate = "Crit Rate";
-            lsCritRateHeader = "Buff                      Crit/Non-crit       Crit%     Avg Crit     Avg WS     Buff (In)Active%";
-            lsCritRateFormat = "{0,21}   {1,15}   {2,9:p2}   {3,10:f2}   {4,8:f2}   {5,18:p2}";
+            lsCritRate = Resources.Combat.BuffsByTimePluginCritRateTitle;
+            lsCritRateHeader = Resources.Combat.BuffsByTimePluginCritRateHeader;
+            lsCritRateFormat = Resources.Combat.BuffsByTimePluginCritRateFormat;
             lsHaste = Resources.Combat.BuffsByTimePluginHaste;
             lsHasteHeader = Resources.Combat.BuffsByTimePluginHasteHeader;
         }
