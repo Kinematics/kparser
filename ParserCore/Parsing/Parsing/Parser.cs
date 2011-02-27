@@ -2479,6 +2479,21 @@ namespace WaywardGamers.KParser.Parsing
                 }
             }
 
+            if (combatMatch.Success == false)
+            {
+                combatMatch = ParseExpressions.AdditionalTH.Match(currentMessageText);
+                if (combatMatch.Success == true)
+                {
+                    target = combatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
+                    if (target != null)
+                    {
+                        target.SecondaryHarmType = HarmType.TreasureHunter;
+                        // Enter the new TH level on the mob
+                        target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
+                    }
+                }
+            }
+
 
             // Handle entity settings on additional targets
             if (combatMatch.Success == true)
