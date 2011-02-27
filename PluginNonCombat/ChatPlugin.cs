@@ -331,15 +331,24 @@ namespace WaywardGamers.KParser.Plugin
                     string translatedText = Translator.TranslateText(lineToTranslate,
                         "", translateToLanguage);
 
-                    // Alternative: Force assumption of Japanese text as original
-                    //string translatedText = Translator.TranslateText(lineToTranslate,
-                    //    "ja", System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName);
+                    if (string.IsNullOrEmpty(translatedText))
+                    {
+                        Logger.Instance.Log("Translation failure",
+                            string.Format("From lang: {0}\nTo lang: {1}\nText: {2}\n",
+                            "unspecified", translateToLanguage, lineToTranslate));
+                    }
 
-                    Size tTextSize = TextRenderer.MeasureText(translatedText, translationText.Font);
-                    translationText.Width = tTextSize.Width + 3;
+                    //if (translatedText == lineToTranslate)
+                    //{
+                    //    translationText.Text = string.Empty;
+                    //}
+                    //else
+                    //{
+                        Size tTextSize = TextRenderer.MeasureText(translatedText, translationText.Font);
+                        translationText.Width = tTextSize.Width + 3;
 
-                    translationText.Text = translatedText;
-
+                        translationText.Text = translatedText;
+                    //}
                 }
                 finally
                 {
