@@ -922,6 +922,19 @@ namespace WaywardGamers.KParser.Plugin
                         var critHits = succHits.Where(h => (DamageModifier)h.DamageModifier == DamageModifier.Critical);
                         var nonCritHits = succHits.Where(h => (DamageModifier)h.DamageModifier == DamageModifier.None);
 
+                        mainAcc.MHits += succHits.Count();
+                        mainAcc.MMiss += player.Melee.Count(b => (DefenseType)b.DefenseType != DefenseType.None);
+
+                        mainAcc.MZeroDmgHits = nonCritHits.Count(h => h.Amount == 0);
+                        mainAcc.MZeroDmgCritHits = critHits.Count(h => h.Amount == 0);
+
+                        mainAcc.MEvaded = player.Melee.Count(b => (DefenseType)b.DefenseType == DefenseType.Evasion);
+                        mainAcc.MNonEvaded = player.Melee.Count(b => (DefenseType)b.DefenseType != DefenseType.Evasion);
+
+                        mainAcc.MCritHits += critHits.Count();
+                        mainAcc.MCritDmg += critHits.Sum(h => h.Amount);
+
+
                         if ((mainAcc.MHits == 0) && (nonCritHits.Count() > 0))
                         {
                             mainAcc.MHi = nonCritHits.First().Amount;
@@ -955,12 +968,6 @@ namespace WaywardGamers.KParser.Plugin
                             if (max > mainAcc.MCritHi)
                                 mainAcc.MCritHi = max;
                         }
-
-                        mainAcc.MHits += succHits.Count();
-                        mainAcc.MMiss += player.Melee.Count(b => (DefenseType)b.DefenseType != DefenseType.None);
-
-                        mainAcc.MCritHits += critHits.Count();
-                        mainAcc.MCritDmg += critHits.Sum(h => h.Amount);
                     }
                     #endregion
 
@@ -973,6 +980,19 @@ namespace WaywardGamers.KParser.Plugin
                         var succHits = player.Range.Where(h => (DefenseType)h.DefenseType == DefenseType.None);
                         var critHits = succHits.Where(h => (DamageModifier)h.DamageModifier == DamageModifier.Critical);
                         var nonCritHits = succHits.Where(h => (DamageModifier)h.DamageModifier == DamageModifier.None);
+
+
+                        mainAcc.RHits += succHits.Count();
+                        mainAcc.RMiss += player.Range.Count(b => (DefenseType)b.DefenseType != DefenseType.None);
+
+                        mainAcc.RZeroDmgHits = nonCritHits.Count(h => h.Amount == 0);
+                        mainAcc.RZeroDmgCritHits = critHits.Count(h => h.Amount == 0);
+
+                        mainAcc.REvaded = player.Range.Count(b => (DefenseType)b.DefenseType == DefenseType.Evasion);
+                        mainAcc.RNonEvaded = player.Range.Count(b => (DefenseType)b.DefenseType != DefenseType.Evasion);
+
+                        mainAcc.RCritHits += critHits.Count();
+                        mainAcc.RCritDmg += critHits.Sum(h => h.Amount);
 
                         if ((mainAcc.RHits == 0) && (nonCritHits.Count() > 0))
                         {
@@ -1007,12 +1027,6 @@ namespace WaywardGamers.KParser.Plugin
                             if (max > mainAcc.RCritHi)
                                 mainAcc.RCritHi = max;
                         }
-
-                        mainAcc.RHits += succHits.Count();
-                        mainAcc.RMiss += player.Range.Count(b => (DefenseType)b.DefenseType != DefenseType.None);
-
-                        mainAcc.RCritHits += critHits.Count();
-                        mainAcc.RCritDmg += critHits.Sum(h => h.Amount);
                     }
                     #endregion
 
@@ -1448,8 +1462,11 @@ namespace WaywardGamers.KParser.Plugin
                           (player.MHits > player.MCritHits) ? (double)(player.TMDmg - player.MCritDmg) / (player.MHits - player.MCritHits) : 0,
                           player.MCritHits,
                           string.Format("{0}/{1}", player.MCritLow, player.MCritHi),
-                          (player.MCritHits > 0) ? (double)player.MCritDmg / player.MCritHits : 0,
-                          (player.MHits > 0) ? (double)player.MCritHits / player.MHits : 0);
+                          ((player.MCritHits - player.MZeroDmgCritHits) > 0) ? (double)player.MCritDmg / (player.MCritHits - player.MZeroDmgCritHits) : 0,
+                          (player.MHits > 0) ? (double)player.MCritHits / player.MHits : 0,
+                          (double)player.MNonEvaded / (player.MNonEvaded + player.MEvaded),
+                          (player.MHits > player.MCritHits) ? (double)(player.TMDmg - player.MCritDmg) / (player.MHits - player.MCritHits - player.MZeroDmgHits) : 0
+                          );
                         sb.Append("\n");
                     }
                 }
@@ -1498,8 +1515,11 @@ namespace WaywardGamers.KParser.Plugin
                           (player.RHits > player.RCritHits) ? (double)(player.TRDmg - player.RCritDmg) / (player.RHits - player.RCritHits) : 0,
                           player.RCritHits,
                           string.Format("{0}/{1}", player.RCritLow, player.RCritHi),
-                          (player.RCritHits > 0) ? (double)player.RCritDmg / player.RCritHits : 0,
-                          (player.RHits > 0) ? (double)player.RCritHits / player.RHits : 0);
+                          ((player.RCritHits - player.RZeroDmgCritHits) > 0) ? (double)player.RCritDmg / (player.RCritHits - player.RZeroDmgCritHits) : 0,
+                          (player.RHits > 0) ? (double)player.RCritHits / player.RHits : 0,
+                          (double)player.RNonEvaded / (player.RNonEvaded + player.REvaded),
+                          (player.RHits > player.RCritHits) ? (double)(player.TRDmg - player.RCritDmg) / (player.RHits - player.RCritHits - player.RZeroDmgHits) : 0
+                          );
                         sb.Append("\n");
                     }
                 }
