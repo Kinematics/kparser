@@ -1888,7 +1888,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0,-17}{1,10}{2,10:p2}{3,11}{4,10:p2}{5,10}{6,9:f2}{7,7}{8,10}{9,8:f2}{10,10:p2}.
+        ///   Looks up a localized string similar to {0,-17}{1,10}{2,10:p2}{3,11}{4,10:p2}{11,10:p2}{5,10}{6,9:f2}{12,9:f2}{7,7}{8,10}{9,10:f2}{10,10:p2}.
         /// </summary>
         internal static string OffensePluginFormatMelee {
             get {
@@ -1915,7 +1915,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0,-17}{1,10}{2,10:p2}{3,11}{4,10:p2}{5,10}{6,9:f2}{7,7}{8,10}{9,8:f2}{10,10:p2}.
+        ///   Looks up a localized string similar to {0,-17}{1,10}{2,10:p2}{3,11}{4,10:p2}{11,10:p2}{5,10}{6,9:f2}{12,9:f2}{7,7}{8,10}{9,10:f2}{10,10:p2}.
         /// </summary>
         internal static string OffensePluginFormatRanged {
             get {
@@ -1969,7 +1969,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Player            Melee Dmg   Melee %   Hit/Miss   M.Acc %  M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%.
+        ///   Looks up a localized string similar to Player            Melee Dmg   Melee %   Hit/Miss    M.HR %   M.Acc %  M.Low/Hi  M+0.Avg  M-0.Avg  #Crit  C.Low/Hi   C-0.Avg     Crit%.
         /// </summary>
         internal static string OffensePluginHeaderMelee {
             get {
@@ -1996,7 +1996,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Player            Range Dmg   Range %   Hit/Miss   R.Acc %  R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%.
+        ///   Looks up a localized string similar to Player            Range Dmg   Range %   Hit/Miss    R.HR %   R.Acc %  R.Low/Hi  R+0.Avg  R-0.Avg  #Crit  C.Low/Hi   C-0.Avg     Crit%.
         /// </summary>
         internal static string OffensePluginHeaderRanged {
             get {

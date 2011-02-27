@@ -400,6 +400,10 @@ namespace WaywardGamers.KParser.Plugin
         internal int TSCDmg { get; set; }
         internal int MHits { get; set; }
         internal int MMiss { get; set; }
+        internal int MEvaded { get; set; }
+        internal int MNonEvaded { get; set; }
+        internal int MZeroDmgHits { get; set; }
+        internal int MZeroDmgCritHits { get; set; }
         internal int MNonCritDmg { get; set; }
         internal int MLow { get; set; }
         internal int MHi { get; set; }
@@ -409,6 +413,10 @@ namespace WaywardGamers.KParser.Plugin
         internal int MCritHi { get; set; }
         internal int RHits { get; set; }
         internal int RMiss { get; set; }
+        internal int REvaded { get; set; }
+        internal int RNonEvaded { get; set; }
+        internal int RZeroDmgHits { get; set; }
+        internal int RZeroDmgCritHits { get; set; }
         internal int RNonCritDmg { get; set; }
         internal int RLow { get; set; }
         internal int RHi { get; set; }
