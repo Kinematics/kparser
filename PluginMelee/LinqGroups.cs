@@ -333,6 +333,7 @@ namespace WaywardGamers.KParser.Plugin
         internal string DisplayName { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> IRows1 { get; set; }
         internal IEnumerable<KPDatabaseDataSet.InteractionsRow> IRows2 { get; set; }
+        internal IEnumerable<KPDatabaseDataSet.InteractionsRow> IRows3 { get; set; }
     }
 
     internal class Debuffs
