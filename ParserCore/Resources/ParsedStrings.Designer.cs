@@ -241,11 +241,29 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ascetic&apos;s Gambir.
+        /// </summary>
+        public static string AsceticGambir {
+            get {
+                return ResourceManager.GetString("AsceticGambir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ascetic&apos;s Fury.
         /// </summary>
         public static string AsceticsFury {
             get {
                 return ResourceManager.GetString("AsceticsFury", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ascetic&apos;s Tonic.
+        /// </summary>
+        public static string AsceticTonic {
+            get {
+                return ResourceManager.GetString("AsceticTonic", resourceCulture);
             }
         }
         
@@ -777,6 +795,24 @@ namespace WaywardGamers.KParser.Resources {
         public static string Chakra {
             get {
                 return ResourceManager.GetString("Chakra", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Champion&apos;s Gambir.
+        /// </summary>
+        public static string ChampionGambir {
+            get {
+                return ResourceManager.GetString("ChampionGambir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Champion&apos;s Tonic.
+        /// </summary>
+        public static string ChampionTonic {
+            get {
+                return ResourceManager.GetString("ChampionTonic", resourceCulture);
             }
         }
         
@@ -3459,6 +3495,24 @@ namespace WaywardGamers.KParser.Resources {
         public static string Spur {
             get {
                 return ResourceManager.GetString("Spur", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stalwart&apos;s Gambir.
+        /// </summary>
+        public static string StalwartGambir {
+            get {
+                return ResourceManager.GetString("StalwartGambir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stalwart&apos;s Tonic.
+        /// </summary>
+        public static string StalwartTonic {
+            get {
+                return ResourceManager.GetString("StalwartTonic", resourceCulture);
             }
         }
         
