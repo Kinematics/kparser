@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using WaywardGamers.KParser.Database;
 using WaywardGamers.KParser.Utility;
@@ -248,7 +249,13 @@ namespace WaywardGamers.KParser.Plugin
                                 where c.IsActionIDNull() == false
                                 select c.ActionsRow.ActionName;
 
-                var allBuffs = targetBuffs.Concat(selfBuffs).Distinct()
+                var itemBuffs = from b in playerBuffs
+                                from c in b.IRows3
+                                where c.IsItemIDNull() == false &&
+                                      c.ItemsRow.ItemName.StartsWith("bottle of")
+                                select ShortItemName(c.ItemsRow.ItemName);
+
+                var allBuffs = targetBuffs.Concat(selfBuffs).Concat(itemBuffs).Distinct()
                     .Where(b => CollectTimeIntervals.TrackedBuffNames.Contains(b))
                     .OrderBy(b => b);
 
@@ -259,6 +266,37 @@ namespace WaywardGamers.KParser.Plugin
 
                 buffsCombo.CBSelectIndex(0);
             }
+        }
+
+        private string ShortItemName(string fullItemName)
+        {
+            Regex bottleRegex = new Regex(Resources.ParsedStrings.BottleOf);
+
+            Match bottleMatch = bottleRegex.Match(fullItemName);
+
+            if (bottleMatch.Success == false)
+                return fullItemName;
+
+            var shortName = bottleMatch.Groups["sName"].Value;
+
+            var shortArr = shortName.ToCharArray();
+
+            shortArr[0] = shortArr[0].ToString().ToUpper().ToCharArray()[0];
+
+            int indexOfSpace = shortName.IndexOf(' ');
+
+            if ((indexOfSpace > 0) && (indexOfSpace < (shortName.Length - 1)))
+            {
+                int indexOfSecondWord = indexOfSpace + 1;
+
+                shortArr[indexOfSecondWord] = 
+                    shortArr[indexOfSecondWord].ToString().ToUpper().ToCharArray()[0];
+            }
+
+            string newShortName = new string(shortArr);
+
+            return newShortName;
+
         }
 
         /// <summary>
@@ -793,7 +831,14 @@ namespace WaywardGamers.KParser.Plugin
                                        where (n.IsBattleIDNull() == false &&
                                               n.IsTargetIDNull() == true &&
                                               (AidType)n.AidType == AidType.Enhance)
+                                       select n,
+                              IRows3 = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                       where (n.IsBattleIDNull() == false &&
+                                              (AidType)n.AidType == AidType.Item &&
+                                              n.IsItemIDNull() == false &&
+                                              n.ItemsRow.ItemName.StartsWith("bottle of"))
                                        select n
+
                           };
 
             return buffSet;
