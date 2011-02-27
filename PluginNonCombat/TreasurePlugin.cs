@@ -583,6 +583,56 @@ namespace WaywardGamers.KParser.Plugin
             }
 
             #region LINQ
+
+            var lootByMobTH = from c in dataSet.Combatants
+                              where ((EntityType)c.CombatantType == EntityType.Mob)
+                              orderby c.CombatantName
+                              select new
+                              {
+                                  Name = c.CombatantName,
+                                  TH = from b in c.GetBattlesRowsByEnemyCombatantRelation()
+                                       where b.Killed == true &&
+                                            (excludedPlayerInfo == false ||
+                                             b.IsKillerIDNull() == true ||
+                                             RegexUtility.ExcludedPlayer.Match(b.CombatantsRowByBattleKillerRelation.PlayerInfo).Success == false)
+                                       let THRows = from i in b.GetInteractionsRows()
+                                                    where (HarmType)i.SecondHarmType == HarmType.TreasureHunter
+                                                    select i
+                                       let THNum = THRows.Count() == 0 ? 0 : THRows.Max(t => t.SecondAmount)
+                                       group b by THNum into THBattles
+                                       select new
+                                       {
+                                           THLevel = THBattles.Key,
+                                           Battles = from bs in THBattles
+                                                     select new
+                                                     {
+                                                         Battle = bs,
+                                                         DropsPerBattle = bs.GetLootRows()
+                                                                            .Where(a => excludeItemsRegex.Match(a.ItemsRow.ItemName).Success == false)
+                                                     },
+                                           Gil = THBattles.Sum(b =>
+                                               b.GetLootRows().Where(l =>
+                                                   l.ItemsRow.ItemName == lsGil).Sum(m => m.GilDropped)),
+                                           Cruor = THBattles.Sum(b =>
+                                               b.GetLootRows().Where(l =>
+                                                   l.ItemsRow.ItemName == lsCruor).Sum(m => m.GilDropped)),
+                                           Loot = from t in THBattles
+                                                  from lr in t.GetLootRows()
+                                                  where excludeItemsRegex.Match(lr.ItemsRow.ItemName).Success == false
+                                                  group lr by lr.ItemsRow.ItemName into li
+                                                  orderby li.Key
+                                                  select new
+                                                  {
+                                                      LootName = li.Key,
+                                                      LootDrops = li
+                                                  }
+                                       }
+
+                              };
+
+            #endregion
+
+            #region old LINQ
             var lootByMob = from c in dataSet.Combatants
                             where ((EntityType)c.CombatantType == EntityType.Mob)
                             orderby c.CombatantName
@@ -598,7 +648,10 @@ namespace WaywardGamers.KParser.Plugin
                                           {
                                               Battle = b,
                                               DropsPerBattle = b.GetLootRows()
-                                                .Where(a => excludeItemsRegex.Match(a.ItemsRow.ItemName).Success == false)
+                                                .Where(a => excludeItemsRegex.Match(a.ItemsRow.ItemName).Success == false),
+                                              TH = from i in b.GetInteractionsRows()
+                                                   where (HarmType)i.SecondHarmType == HarmType.TreasureHunter
+                                                   select i
                                           },
                                 Loot = from l in dataSet.Loot
                                        where ((l.IsBattleIDNull() == false) &&
@@ -620,7 +673,7 @@ namespace WaywardGamers.KParser.Plugin
                                       where ((l.IsBattleIDNull() == false) &&
                                              (l.BattlesRow.CombatantsRowByEnemyCombatantRelation == c) &&
                                              (l.ItemsRow.ItemName == lsCruor))
-                                      select l
+                                      select l,
                             };
 
             var lootByChest = from c in dataSet.Combatants
@@ -674,97 +727,87 @@ namespace WaywardGamers.KParser.Plugin
             int maxDrops;
 
             string tmpString;
+            string thString;
 
-            foreach (var mob in lootByMob)
+            foreach (var mobTH in lootByMobTH)
             {
-                int mobKillCount = mob.Battles.Count();
-
-                if (mobKillCount > 0)
+                foreach (var th in mobTH.TH.OrderBy(t => t.THLevel))
                 {
+                    int thBattleCount = th.Battles.Count();
+                    if (thBattleCount == 0)
+                        continue;
+
+                    if (th.THLevel == 0)
+                        thString = "TH ??";
+                    else
+                        thString = string.Format("TH {0}", th.THLevel);
+
+                    tmpString = string.Format("{0} (Killed {1} times with {2})",
+                        mobTH.Name, thBattleCount, thString);
+
                     sb.Append("\n");
-                    tmpString = string.Format(lsTimesKilledFormat, mob.Name, mobKillCount);
-                    strModList.Add(new StringMods
+                    strModList.AddModsAndAppendLineToSB(sb, tmpString,
+                        new StringMods { Bold = true });
+
+
+                    totalGil = th.Gil;
+                    totalCruor = th.Cruor;
+                    avgGil = (double)totalGil / thBattleCount;
+                    avgCruor = (double)totalCruor / thBattleCount;
+
+
+                    if (totalGil > 0)
                     {
-                        Start = sb.Length,
-                        Length = tmpString.Length,
-                        Bold = true,
-                        Color = Color.Black
-                    });
-                    sb.Append(tmpString);
-                    sb.Append("\n");
+                        sb.AppendFormat(lsDropGilFormat,
+                            totalGil, lsGil, avgGil);
+                        sb.Append("\n");
+                    }
 
-                    totalGil = 0;
-                    avgGil = 0;
-                    totalCruor = 0;
-                    avgCruor = 0;
-
-                    if (mob.Loot != null)
+                    if (totalCruor > 0)
                     {
-                        if (mob.Gil.Count() > 0)
+                        sb.AppendFormat(lsDropGilFormat,
+                            totalCruor, lsCruor, avgCruor);
+                        sb.Append("\n");
+                    }
+
+
+                    if (th.Loot.Count() == 0)
+                    {
+                        sb.Append("       " + lsNoDrops + "\n");
+                    }
+                    else
+                    {
+                        totalDrops = th.Loot.Sum(a => a.LootDrops.Count());
+
+                        // Non-gil loot
+                        foreach (var loot in th.Loot)
                         {
-                            // Gil among loot dropped
-                            totalGil = mob.Gil.Sum(l => l.GilDropped);
+                            avgLoot = 0;
 
-                            if (mobKillCount > 0)
-                                avgGil = (double)totalGil / mobKillCount;
+                            lootDropCount = loot.LootDrops.Count();
 
-                            sb.AppendFormat(lsDropGilFormat,
-                                totalGil, lsGil, avgGil);
+                            avgLoot = (double)lootDropCount / thBattleCount;
+
+                            maxDrops = th.Battles.Max(a =>
+                                a.DropsPerBattle.Count(b =>
+                                    b.ItemsRow.ItemName == loot.LootName));
+
+                            anyDropped = th.Battles.Count(a =>
+                                a.DropsPerBattle.Any(b =>
+                                     b.ItemsRow.ItemName == loot.LootName));
+
+                            dropRate = (double)anyDropped / thBattleCount;
+
+                            percentDrop = totalDrops > 0 ? (double)lootDropCount / totalDrops : 0;
+
+                            sb.AppendFormat(lsDropItemFormat,
+                                loot.LootDrops.Count(),
+                                loot.LootName,
+                                maxDrops,
+                                avgLoot,
+                                dropRate,
+                                percentDrop);
                             sb.Append("\n");
-                        }
-
-                        if (mob.Cruor.Count() > 0)
-                        {
-                            // Gil among loot dropped
-                            totalCruor = mob.Cruor.Sum(l => l.GilDropped);
-
-                            if (mobKillCount > 0)
-                                avgCruor = (double)totalCruor / mobKillCount;
-
-                            sb.AppendFormat(lsDropGilFormat,
-                                totalCruor, lsCruor, avgCruor);
-                            sb.Append("\n");
-                        }
-
-                        if (mob.Loot.Count() == 0)
-                        {
-                            sb.Append("       " + lsNoDrops + "\n");
-                        }
-                        else
-                        {
-                            totalDrops = mob.Loot.Sum(a => a.LootDrops.Count());
-
-                            // Non-gil loot
-                            foreach (var loot in mob.Loot)
-                            {
-                                avgLoot = 0;
-
-                                lootDropCount = loot.LootDrops.Count();
-
-                                if (mobKillCount > 0)
-                                    avgLoot = (double)lootDropCount / mobKillCount;
-
-                                maxDrops = mob.Battles.Max(a =>
-                                    a.DropsPerBattle.Count(b =>
-                                        b.ItemsRow.ItemName == loot.LootName));
-
-                                anyDropped = mob.Battles.Count(a =>
-                                    a.DropsPerBattle.Any(b =>
-                                         b.ItemsRow.ItemName == loot.LootName));
-
-                                dropRate = (double)anyDropped / mobKillCount;
-
-                                percentDrop = totalDrops > 0 ? (double)lootDropCount / totalDrops : 0;
-
-                                sb.AppendFormat(lsDropItemFormat,
-                                    loot.LootDrops.Count(),
-                                    loot.LootName,
-                                    maxDrops,
-                                    avgLoot,
-                                    dropRate,
-                                    percentDrop);
-                                sb.Append("\n");
-                            }
                         }
                     }
 
@@ -777,7 +820,7 @@ namespace WaywardGamers.KParser.Plugin
 
                         for (int i = 0; i < 11; i++)
                         {
-                            dropCount[i] = mob.Battles.Count(b => b.DropsPerBattle.Count() == i);
+                            dropCount[i] = th.Battles.Count(b => b.DropsPerBattle.Count() == i);
                             totalDropCount += dropCount[i];
                             if (dropCount[i] > 0)
                                 maxDropCount = i;
@@ -800,7 +843,7 @@ namespace WaywardGamers.KParser.Plugin
                         #region Group drops per kill
                         Dictionary<string, int> strDict = new Dictionary<string, int>();
 
-                        foreach (var battle in mob.Battles)
+                        foreach (var battle in th.Battles)
                         {
                             List<string> strList = new List<string>();
 
@@ -866,8 +909,10 @@ namespace WaywardGamers.KParser.Plugin
                         }
                         #endregion
                     }
+
                 }
             }
+
 
             if (lootByChest.Count() > 0)
             {
