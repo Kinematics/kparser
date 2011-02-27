@@ -628,6 +628,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ^bottle of (?&lt;sName&gt;.*).
+        /// </summary>
+        public static string BottleOf {
+            get {
+                return ResourceManager.GetString("BottleOf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Bounty Shot.
         /// </summary>
         public static string BountyShot {

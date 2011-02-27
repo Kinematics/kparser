@@ -1455,4 +1455,7 @@
   <data name="StalwartTonic" xml:space="preserve">
     <value>Stalwart's Tonic</value>
   </data>
+  <data name="BottleOf" xml:space="preserve">
+    <value>^bottle of (?&lt;sName&gt;.*)</value>
+  </data>
 </root>
