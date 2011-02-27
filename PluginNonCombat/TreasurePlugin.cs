@@ -630,51 +630,6 @@ namespace WaywardGamers.KParser.Plugin
 
                               };
 
-            #endregion
-
-            #region old LINQ
-            var lootByMob = from c in dataSet.Combatants
-                            where ((EntityType)c.CombatantType == EntityType.Mob)
-                            orderby c.CombatantName
-                            select new
-                            {
-                                Name = c.CombatantName,
-                                Battles = from b in c.GetBattlesRowsByEnemyCombatantRelation()
-                                          where b.Killed == true &&
-                                            (excludedPlayerInfo == false ||
-                                             b.IsKillerIDNull() == true ||
-                                             RegexUtility.ExcludedPlayer.Match(b.CombatantsRowByBattleKillerRelation.PlayerInfo).Success == false)
-                                          select new
-                                          {
-                                              Battle = b,
-                                              DropsPerBattle = b.GetLootRows()
-                                                .Where(a => excludeItemsRegex.Match(a.ItemsRow.ItemName).Success == false),
-                                              TH = from i in b.GetInteractionsRows()
-                                                   where (HarmType)i.SecondHarmType == HarmType.TreasureHunter
-                                                   select i
-                                          },
-                                Loot = from l in dataSet.Loot
-                                       where ((l.IsBattleIDNull() == false) &&
-                                              (l.BattlesRow.CombatantsRowByEnemyCombatantRelation == c) &&
-                                              (excludeItemsRegex.Match(l.ItemsRow.ItemName).Success == false))
-                                       group l by l.ItemsRow.ItemName into li
-                                       orderby li.Key
-                                       select new
-                                       {
-                                           LootName = li.Key,
-                                           LootDrops = li
-                                       },
-                                Gil = from l in dataSet.Loot
-                                      where ((l.IsBattleIDNull() == false) &&
-                                             (l.BattlesRow.CombatantsRowByEnemyCombatantRelation == c) &&
-                                             (l.ItemsRow.ItemName == lsGil))
-                                      select l,
-                                Cruor = from l in dataSet.Loot
-                                      where ((l.IsBattleIDNull() == false) &&
-                                             (l.BattlesRow.CombatantsRowByEnemyCombatantRelation == c) &&
-                                             (l.ItemsRow.ItemName == lsCruor))
-                                      select l,
-                            };
 
             var lootByChest = from c in dataSet.Combatants
                               where ((EntityType)c.CombatantType == EntityType.TreasureChest)
