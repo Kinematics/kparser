@@ -251,6 +251,13 @@ namespace WaywardGamers.KParser
         internal static readonly Regex Defeat   = new Regex(string.Format("^{0} defeats {1}\\.$", name, target));
         internal static readonly Regex Dies     = new Regex(string.Format("^{0} falls to the ground\\.$", target));
         #endregion
+
+        #region Staggers
+        internal static readonly Regex Stagger        = new Regex("^Your attack staggers the fiend!$");
+        internal static readonly Regex StaggerAbility = new Regex("^The fiend is unable to use special attacks.$");
+        internal static readonly Regex StaggerMagic   = new Regex("^The fiend is unable to cast magic.$");
+        internal static readonly Regex StaggerStun    = new Regex("^The fiend is frozen in its tracks.$");
+        #endregion
     }
 
     public class RegexUtility
