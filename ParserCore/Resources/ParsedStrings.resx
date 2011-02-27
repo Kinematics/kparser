@@ -1437,4 +1437,22 @@
   <data name="TripleShot" xml:space="preserve">
     <value>Triple Shot</value>
   </data>
+  <data name="AsceticGambir" xml:space="preserve">
+    <value>Ascetic's Gambir</value>
+  </data>
+  <data name="AsceticTonic" xml:space="preserve">
+    <value>Ascetic's Tonic</value>
+  </data>
+  <data name="ChampionGambir" xml:space="preserve">
+    <value>Champion's Gambir</value>
+  </data>
+  <data name="ChampionTonic" xml:space="preserve">
+    <value>Champion's Tonic</value>
+  </data>
+  <data name="StalwartGambir" xml:space="preserve">
+    <value>Stalwart's Gambir</value>
+  </data>
+  <data name="StalwartTonic" xml:space="preserve">
+    <value>Stalwart's Tonic</value>
+  </data>
 </root>
