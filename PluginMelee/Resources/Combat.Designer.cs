@@ -142,7 +142,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Buff                     M.Hit/Miss     MHit%   M.Crit%   R.Hit/Miss    RHit%   Buff (In)Active%.
+        ///   Looks up a localized string similar to Buff                     M.Hit/Miss     MHit%   R.Hit/Miss    RHit%   Buff (In)Active%.
         /// </summary>
         internal static string BuffsByTimePluginAccuracyHeader {
             get {
@@ -165,6 +165,33 @@ namespace WaywardGamers.KParser.Resources {
         internal static string BuffsByTimePluginAttackHeader {
             get {
                 return ResourceManager.GetString("BuffsByTimePluginAttackHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,21}   {1,15}   {2,9:p2}   {3,10:f2}   {4,8:f2}   {5,18:p2}.
+        /// </summary>
+        internal static string BuffsByTimePluginCritRateFormat {
+            get {
+                return ResourceManager.GetString("BuffsByTimePluginCritRateFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buff                      Crit/Non-crit       Crit%     Avg Crit     Avg WS     Buff (In)Active%.
+        /// </summary>
+        internal static string BuffsByTimePluginCritRateHeader {
+            get {
+                return ResourceManager.GetString("BuffsByTimePluginCritRateHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crit Rate.
+        /// </summary>
+        internal static string BuffsByTimePluginCritRateTitle {
+            get {
+                return ResourceManager.GetString("BuffsByTimePluginCritRateTitle", resourceCulture);
             }
         }
         

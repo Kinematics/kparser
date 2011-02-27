@@ -919,7 +919,7 @@
     <value>Accuracy</value>
   </data>
   <data name="BuffsByTimePluginAccuracyHeader" xml:space="preserve">
-    <value>Buff                     M.Hit/Miss     MHit%   M.Crit%   R.Hit/Miss    RHit%   Buff (In)Active%</value>
+    <value>Buff                     M.Hit/Miss     MHit%   R.Hit/Miss    RHit%   Buff (In)Active%</value>
   </data>
   <data name="BuffsByTimePluginAttack" xml:space="preserve">
     <value>Attack</value>
@@ -1025,5 +1025,14 @@
   </data>
   <data name="RecoveryPluginTitleStatusCuring" xml:space="preserve">
     <value>Status Curing</value>
+  </data>
+  <data name="BuffsByTimePluginCritRateFormat" xml:space="preserve">
+    <value>{0,21}   {1,15}   {2,9:p2}   {3,10:f2}   {4,8:f2}   {5,18:p2}</value>
+  </data>
+  <data name="BuffsByTimePluginCritRateHeader" xml:space="preserve">
+    <value>Buff                      Crit/Non-crit       Crit%     Avg Crit     Avg WS     Buff (In)Active%</value>
+  </data>
+  <data name="BuffsByTimePluginCritRateTitle" xml:space="preserve">
+    <value>Crit Rate</value>
   </data>
 </root>
