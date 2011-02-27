@@ -305,24 +305,12 @@ namespace WaywardGamers.KParser.Plugin
                             CollectTimeIntervals.AccuracyBuffNames.Contains(s.SetName))))
                     {
                         sb.Append("\n");
-                        strModList.Add(new StringMods
-                        {
-                            Start = sb.Length,
-                            Length = playerActions.DisplayName.Length,
-                            Bold = true,
-                            Color = Color.Blue
-                        });
-                        sb.Append(playerActions.DisplayName + "\n");
 
-                        strModList.Add(new StringMods
-                        {
-                            Start = sb.Length,
-                            Length = lsAccuracyHeader.Length,
-                            Bold = true,
-                            Underline = true
-                        });
-                        sb.Append(lsAccuracyHeader + "\n");
+                        strModList.AddModsAndAppendLineToSB(sb, playerActions.DisplayName,
+                            new StringMods { Bold = true, Color = Color.Blue });
 
+                        strModList.AddModsAndAppendLineToSB(sb, lsAccuracyHeader,
+                            new StringMods { Bold = true, Underline = true });
 
                         foreach (var intervalSet in playerInterval.TimeIntervalSets)
                         {
