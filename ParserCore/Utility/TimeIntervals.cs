@@ -299,7 +299,9 @@ namespace WaywardGamers.KParser.Utility
                     Resources.ParsedStrings.Yonin,
                     Resources.ParsedStrings.Innin,
                     Resources.ParsedStrings.Madrigal1,
-                    Resources.ParsedStrings.Madrigal2
+                    Resources.ParsedStrings.Madrigal2,
+                    Resources.ParsedStrings.StalwartTonic,
+                    Resources.ParsedStrings.StalwartGambir
                 };
             }
         }
@@ -328,7 +330,9 @@ namespace WaywardGamers.KParser.Utility
                     Resources.ParsedStrings.Dia2,
                     Resources.ParsedStrings.Dia3,
                     Resources.ParsedStrings.Footwork,
-                    Resources.ParsedStrings.Impetus
+                    Resources.ParsedStrings.Impetus,
+                    Resources.ParsedStrings.StalwartTonic,
+                    Resources.ParsedStrings.StalwartGambir
                 };
             }
         }
@@ -366,7 +370,9 @@ namespace WaywardGamers.KParser.Utility
                     Resources.ParsedStrings.ThfRoll,
                     Resources.ParsedStrings.Impetus,
                     Resources.ParsedStrings.Innin,
-                    Resources.ParsedStrings.Focus
+                    Resources.ParsedStrings.Focus,
+                    Resources.ParsedStrings.ChampionTonic,
+                    Resources.ParsedStrings.ChampionGambir
                 };
             }
         }
@@ -484,6 +490,18 @@ namespace WaywardGamers.KParser.Utility
                 playerList, playerIntervals, dataSet);
             CompileFixedLengthBuffs(Resources.ParsedStrings.Impetus, TimeSpan.FromMinutes(3),
                 playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.StalwartTonic, TimeSpan.FromMinutes(5),
+                playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.StalwartGambir, TimeSpan.FromMinutes(5),
+                playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.AsceticTonic, TimeSpan.FromMinutes(5),
+                playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.AsceticGambir, TimeSpan.FromMinutes(5),
+                playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.ChampionTonic, TimeSpan.FromSeconds(30),
+                playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.ChampionGambir, TimeSpan.FromSeconds(30),
+                playerList, playerIntervals, dataSet);
 
 
             CompileStanceBuffs(Resources.ParsedStrings.Hasso, Resources.ParsedStrings.Seigan,
@@ -579,36 +597,81 @@ namespace WaywardGamers.KParser.Utility
 
             var action = dataSet.Actions.FirstOrDefault(a => a.ActionName == buffName);
 
-            if (action == null)
-                return;
-
-            var actions = action.GetInteractionsRows();
-
-            var buffsByTarget = from i in actions
-                                where i.IsActorIDNull() == false &&
-                                      i.Preparing == false
-                                let targetName = (i.IsTargetIDNull() == true) ?
-                                    i.CombatantsRowByActorCombatantRelation.CombatantName :
-                                    i.CombatantsRowByTargetCombatantRelation.CombatantName
-                                where playerList.Contains(targetName)
-                                group i by targetName;
-
-            if (buffsByTarget != null)
+            if (action != null)
             {
-                foreach (var targetBuffs in buffsByTarget)
+                var actions = action.GetInteractionsRows();
+
+                var buffsByTarget = from i in actions
+                                    where i.IsActorIDNull() == false &&
+                                          i.Preparing == false
+                                    let targetName = (i.IsTargetIDNull() == true) ?
+                                        i.CombatantsRowByActorCombatantRelation.CombatantName :
+                                        i.CombatantsRowByTargetCombatantRelation.CombatantName
+                                    where playerList.Contains(targetName)
+                                    group i by targetName;
+
+                if (buffsByTarget != null)
                 {
-                    // Should be faster than a full count, as it should succeed if anything exists.
-                    if (targetBuffs.Any(a => a.InteractionID > 0))
+                    foreach (var targetBuffs in buffsByTarget)
                     {
-                        var playerIntervalSet = playerIntervals.First(s => s.PlayerName == targetBuffs.Key);
-                        TimeIntervalSet intervalSet = new TimeIntervalSet(buffName);
-
-                        foreach (var buff in targetBuffs)
+                        // Should be faster than a full count, as it should succeed if anything exists.
+                        if (targetBuffs.Any(a => a.InteractionID > 0))
                         {
-                            intervalSet.Add(new TimeInterval(buff.Timestamp, duration));
-                        }
+                            var playerIntervalSet = playerIntervals.First(s => s.PlayerName == targetBuffs.Key);
+                            TimeIntervalSet intervalSet = new TimeIntervalSet(buffName);
 
-                        playerIntervalSet.AddIntervalSet(intervalSet);
+                            foreach (var buff in targetBuffs)
+                            {
+                                intervalSet.Add(new TimeInterval(buff.Timestamp, duration));
+                            }
+
+                            playerIntervalSet.AddIntervalSet(intervalSet);
+                        }
+                    }
+                }
+
+                return;
+            }
+
+            // If no JA actions match the buff, try for item usage
+
+            string itemBuffName = string.Format("bottle of {0}", buffName.ToLower());
+            var item = dataSet.Items.FirstOrDefault(a => a.ItemName == itemBuffName);
+
+            if (item != null)
+            {
+                var itemActions = item.GetInteractionsRows();
+
+                if ((itemActions != null) && (itemActions.Count() > 0))
+                {
+
+                    var buffsByTarget = from i in itemActions
+                                        where i.IsActorIDNull() == false &&
+                                              i.Preparing == false
+                                        let targetName = (i.IsTargetIDNull() == true) ?
+                                            i.CombatantsRowByActorCombatantRelation.CombatantName :
+                                            i.CombatantsRowByTargetCombatantRelation.CombatantName
+                                        where playerList.Contains(targetName)
+                                        group i by targetName;
+
+                    if (buffsByTarget != null)
+                    {
+                        foreach (var targetBuffs in buffsByTarget)
+                        {
+                            // Should be faster than a full count, as it should succeed if anything exists.
+                            if (targetBuffs.Any(a => a.InteractionID > 0))
+                            {
+                                var playerIntervalSet = playerIntervals.First(s => s.PlayerName == targetBuffs.Key);
+                                TimeIntervalSet intervalSet = new TimeIntervalSet(buffName);
+
+                                foreach (var buff in targetBuffs)
+                                {
+                                    intervalSet.Add(new TimeInterval(buff.Timestamp, duration));
+                                }
+
+                                playerIntervalSet.AddIntervalSet(intervalSet);
+                            }
+                        }
                     }
                 }
             }
