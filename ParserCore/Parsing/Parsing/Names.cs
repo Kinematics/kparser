@@ -428,6 +428,7 @@ namespace WaywardGamers.KParser
                     Resources.ParsedStrings.BladeMetsu,
                     Resources.ParsedStrings.BladeKamu,
                     Resources.ParsedStrings.BladeYu,
+                    Resources.ParsedStrings.BladeHi,
                     // Marksmanship
                     Resources.ParsedStrings.HotShot,
                     Resources.ParsedStrings.SplitShot,
