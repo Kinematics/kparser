@@ -1,12 +1,20 @@
 KParser Change Log
 
-1.5.13 (February 16, 2011)
-* Updated memloc.  New address is 0x005839C8.
-
-
-1.5.12 (December ??, 2010)
-* Updated memloc.  New address is 0x00583948.
+1.5.12 (February 27, 2011)
+* Updated memloc after Feb 14 patch.  New address is 0x005839C8.
 - Fixed Silvery light detection.
++ Added parsing of Treasure Hunter effects, and reporting on the Loot page.
++ Added reporting on critical hit rates in Buffs By Time page.
++ Added Stalwart's/Champion's drinks to the Buffs By Time page.
++ Added Stalwart's/Champion's drinks to Damage Graph display (individual buffs per player).
++ Differentiate between hit rate (HR) and accuracy (Acc) on Offense page (melee and ranged subgroups).  Hit rate is how many times you hit vs how many times you did not hit, and includes factors such as parries and counters.  Accuracy is how many times the opponent evaded vs how many times they did not, and should most closely track expected accuracy vs evasion formulas.
++ Add an additional average that excludes 0-damage hits.  M+0.Avg is average across all hits, M-0.Avg is average across all non-0 hits.
+* Same as for normal melee hit averages, crits now exclude 0-damage hits.  Due to space considerations I'm not listing the average that includes 0-damage hits at this time.
+~ Note: For the moment, these additions make the melee and ranged rows extend past the preferred window width (less than 1024 px).  I'll consider breaking the sections apart later.  I'll add the 0-damage crit average at that time as well.
+
+
+1.5.* (unreleased)
+* Updated memloc after Dec 6 patch.  New address is 0x00583948.
 
 
 1.5.11 (September 9, 2010)
@@ -15,7 +23,6 @@ KParser Change Log
 - Fix parsing of 10,000 Needles.
 - Fix parsing of Tractor.
 - Fix Damage Graph totals that involve additional effects.
-
 
 
 1.5.10 (July 28, 2010)
