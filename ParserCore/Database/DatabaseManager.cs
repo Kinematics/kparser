@@ -92,6 +92,8 @@ namespace WaywardGamers.KParser
 
         public event ReaderStatusHandler ReparseProgressChanged;
 
+        private int maxRecordLogChatLineLength = 320;
+
         // Allow global access to the value set in the main window.
         bool showJobInsteadOfName;
 
@@ -419,7 +421,12 @@ namespace WaywardGamers.KParser
             {
                 try
                 {
-                    var logRow = localDB.RecordLog.AddRecordLogRow(chatLine.Timestamp, chatLine.ChatText, false);
+                    string chatText = chatLine.ChatText;
+
+                    if (chatText.Length > maxRecordLogChatLineLength)
+                        chatText = chatLine.ChatText.Substring(0, 320);
+
+                    var logRow = localDB.RecordLog.AddRecordLogRow(chatLine.Timestamp, chatText, false);
                     chatLine.RecordLogID = logRow.RecordLogID;
                 }
                 finally
