@@ -1,8 +1,13 @@
 KParser Change Log
 
+1.5.12a (May 5, 2011)
+- Fix threshold flaw in Extra Attacks plugin.
+
+
 1.5.12 (February 27, 2011)
 * Updated memloc after Feb 14 patch.  New address is 0x005839C8.
 - Fixed Silvery light detection.
+- Fixed Blade: Hi not showing up in weaponskill damage.
 + Added parsing of Treasure Hunter effects, and reporting on the Loot page.
 + Added reporting on critical hit rates in Buffs By Time page.
 + Added Stalwart's/Champion's drinks to the Buffs By Time page.
