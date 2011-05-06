@@ -1339,7 +1339,7 @@ namespace WaywardGamers.KParser.Plugin
 
                         timestampedAttackGroups = combatant.SimpleMelee.
                             GroupAdjacentByTimeDiffLimit<KPDatabaseDataSet.InteractionsRow, DateTime>(
-                            i => i.Timestamp, TimeSpan.FromSeconds(1.5));
+                            i => i.Timestamp, TimeSpan.FromSeconds(1.625));
                     //}
 
 
