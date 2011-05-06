@@ -1307,14 +1307,62 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     // fill in buckets of count of .5 second intervals in the timespan list.
                     var tsList = GetTimespanList(combatant.SimpleMelee);
+
+                    if (defaultAttacksPerRound == 0)
+                    {
+                        attacksPerRound = ScanAttacksPerRound(tsList);
+                    }
+                    else
+                    {
+                        attacksPerRound = defaultAttacksPerRound;
+                    }
+
                     int[] bucketCounts = FillBuckets(tsList);
 
                     // determine the timespans that indicate a division between rounds vs
                     // double attacks
-                    List<TimeSpan> valleyTimepoints = AnalyzeBuckets(bucketCounts);
+                    List<TimeSpan> valleyTimepoints = GetValleys(bucketCounts);
 
-                    // experimental
-                    if ((valleyTimepoints.Count > 0))
+                    var peaks = GetPeaks(bucketCounts);
+
+                    if (peaks.Count > 0)
+                    {
+                        // 1 peak = no multiattack
+                        // 3 peaks = some multiattack (low peak for close
+                        // hits, mid peak for end of multihit round and
+                        // start of next, high peak for diff betwen two
+                        // non-multi rounds.
+
+                        double percHighPeak = GetPercentageHitsWithHighPeak(bucketCounts, peaks.Last());
+
+                        // Get the highest peak that has at least 20% instance coverage
+                        int highPeak = GetHighPeakWithAtLeastXPercent(bucketCounts, peaks, 0.20);
+
+                        // Convert peak back to a time limit, and drop 1.5 sample intervals
+                        // to mark the upper limit.
+                        TimeSpan peakTimeLimit = TimeSpan.FromSeconds(highPeak * 0.5 - 0.75);
+
+                        // If we have a 2-hit-per-round base, add 1 s as nominal extra time per round
+                        if (attacksPerRound == 2)
+                        {
+                            peakTimeLimit = peakTimeLimit.Add(TimeSpan.FromSeconds(1.0));
+                        }
+
+                        // Group everything within peakTimeLimit time range, but stop grouping
+                        // if we go over 2 seconds between attacks (with a little allowance for
+                        // sampling delay).
+                        timestampedAttackGroups = combatant.SimpleMelee
+                            .GroupAdjacentByTimeLimit<KPDatabaseDataSet.InteractionsRow, DateTime>
+                                (i => i.Timestamp, peakTimeLimit, TimeSpan.FromSeconds(2.1));
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
+
+                    // previous code-- turn off for testing
+                    if ((valleyTimepoints.Count > 0) && (false))
                     {
                         // new rounds start on intervals higher than the first valley
                         List<int> tsIndexes = new List<int>();
@@ -1340,35 +1388,11 @@ namespace WaywardGamers.KParser.Plugin
                         timestampedAttackGroups = combatant.SimpleMelee.
                             GroupAdjacentByTimeDiffLimit<KPDatabaseDataSet.InteractionsRow, DateTime>(
                             i => i.Timestamp, TimeSpan.FromSeconds(1.625));
-                    //}
+                    }
 
 
-                    // As long as we get any distinctive valley profile, use the first one as
-                    // the separator between non-DA and DA attacks.
-                    //if ((valleyTimepoints.Count > 0))
-                    //{
-                        // Lazy grouping for attacks within the timespan
-                        // specified by the first valley marker.
-                        //timestampedAttackGroups = combatant.SimpleMelee.
-                        //    GroupAdjacentByTimeLimit<KPDatabaseDataSet.InteractionsRow, DateTime>(
-                        //    i => i.Timestamp, valleyTimepoints.First());
-
-                        // auto-determine # of attacks per round?
-                        if (defaultAttacksPerRound == 0)
-                        {
-                            // At least 20% of attacks must be 1 per round to consider 1/round as the base
-                            int threshhold = timestampedAttackGroups.Count() / 5;
-
-                            if (timestampedAttackGroups.Count(t => t.Count() == 1) > threshhold)
-                                attacksPerRound = 1;
-                            else
-                                attacksPerRound = 2;
-                        }
-                        else
-                        {
-                            attacksPerRound = defaultAttacksPerRound;
-                        }
-
+                    if (timestampedAttackGroups != null)
+                    {
                         var playerKills = from b in dataSet.Battles
                                           where b.IsKillerIDNull() == false &&
                                                 b.CombatantsRowByBattleKillerRelation == combatant.Combatant
@@ -1376,7 +1400,8 @@ namespace WaywardGamers.KParser.Plugin
 
 
                         // Run the calculations for this combatant and add it to the list.
-                        attackCalcs.Add(RunCalculations(combatant.DisplayName, timestampedAttackGroups, attacksPerRound, playerKills));
+                        attackCalcs.Add(RunCalculations(combatant.DisplayName,
+                            timestampedAttackGroups, attacksPerRound, playerKills));
 
                         if (showDetails)
                             AddDetailsForOutput(ref sbDetails,
@@ -1407,7 +1432,7 @@ namespace WaywardGamers.KParser.Plugin
                         // specified by the first valley marker.
                         timestampedAttackGroups = combatant.SimpleRanged.
                             GroupAdjacentByTimeLimit<KPDatabaseDataSet.InteractionsRow, DateTime>(
-                            i => i.Timestamp, rangedValley);
+                            i => i.Timestamp, rangedValley, TimeSpan.FromSeconds(2));
 
                         // For ranged, default attacks per round is always 1
                         attacksPerRound = 1;
@@ -1441,18 +1466,56 @@ namespace WaywardGamers.KParser.Plugin
 
         }
 
+        private int ScanAttacksPerRound(List<TimeSpan> tsList)
+        {
+            TimeSpan adjacentThreshhold = TimeSpan.FromSeconds(1.65);
+
+            TimeSpan[] tsArray = tsList.ToArray();
+
+            int countAdjWithinThresh = 0;
+
+            for (int i = 1; i < tsArray.Length - 1; i++)
+            {
+                if ((tsArray[i] < adjacentThreshhold) ||
+                    (tsArray[i-1] < adjacentThreshhold) ||
+                    (tsArray[i+1] < adjacentThreshhold))
+                {
+                    countAdjWithinThresh++;
+                }
+            }
+
+            double percentThreshhold = (double) countAdjWithinThresh / tsArray.Length;
+
+            if (percentThreshhold > 0.9)
+                return 2;
+            else
+                return 1;
+        }
+
         private List<TimeSpan> GetTimespanList(IEnumerable<KPDatabaseDataSet.InteractionsRow> simpleMelee)
         {
             List<TimeSpan> tsList = new List<TimeSpan>();
 
-            DateTime prev = simpleMelee.First().Timestamp;
+            var prev = simpleMelee.FirstOrDefault(m => m.IsTargetIDNull() == false);
 
-            var skipFirst = simpleMelee.Skip(1);
+            if (prev == null)
+                return tsList;
 
-            foreach (var meleeAction in skipFirst)
+            foreach (var meleeAction in simpleMelee)
             {
-                tsList.Add(meleeAction.Timestamp - prev);
-                prev = meleeAction.Timestamp;
+                // Have to be able to identify target
+                if (meleeAction.IsTargetIDNull())
+                    continue;
+
+                // Skip the initial selection
+                if (meleeAction == prev)
+                    continue;
+
+                // If we changed mobs, don't add the timestamp difference
+                if (meleeAction.TargetID == prev.TargetID)
+                    tsList.Add(meleeAction.Timestamp - prev.Timestamp);
+
+                prev = meleeAction;
             }
 
             return tsList;
@@ -1468,7 +1531,7 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var interval in attackIntervals)
             {
-                bucket = (int)Math.Floor(interval.TotalSeconds * 2);
+                bucket = (int)Math.Round(interval.TotalSeconds * 2, 0);
 
                 // Ignore intervals greater than 25 seconds
                 if (bucket < bucketList.Length)
@@ -1478,7 +1541,196 @@ namespace WaywardGamers.KParser.Plugin
             return bucketList;
         }
 
-        private List<TimeSpan> AnalyzeBuckets(int[] bucketCounts)
+
+        private List<int> GetPeaks(int[] bucketCounts)
+        {
+            List<int> peaks = new List<int>();
+
+            int totalCount = bucketCounts.Sum();
+
+            double threshhold = 0.04;  // 4% of all attacks to lift a bucket above valley status
+
+            int threshholdCount = (int)(threshhold * totalCount);
+
+            for (int i = 1; i < bucketCounts.Length; i++)
+            {
+                if (bucketCounts[i] < threshholdCount)
+                    continue;
+
+                // p = prior
+                // q = following
+                int pDex = i - 1;
+                int qDex = i + 1;
+
+                if (pDex < 0)
+                    pDex = 0;
+
+                if (qDex >= bucketCounts.Length)
+                    qDex = bucketCounts.Length - 1;
+
+                // x = one after following, in case of ties
+                int xDex = qDex + 1;
+                if (xDex >= bucketCounts.Length)
+                    xDex = bucketCounts.Length - 1;
+
+                int pCount = bucketCounts[pDex];
+                int qCount = bucketCounts[qDex];
+
+                // Cover for older parses with 1 second resolution
+                if ((pCount == 0) && (qCount == 0))
+                {
+                    pDex = i - 2;
+                    qDex = i + 2;
+                    xDex = i + 4;
+
+                    if (pDex < 0)
+                        pDex = 0;
+
+                    if (qDex >= bucketCounts.Length)
+                        qDex = bucketCounts.Length - 1;
+
+                    if (xDex >= bucketCounts.Length)
+                        xDex = bucketCounts.Length - 1;
+                    
+                    pCount = bucketCounts[pDex];
+                    qCount = bucketCounts[qDex];
+                }
+
+
+                int xCount = bucketCounts[xDex];
+
+                // If we find a peak, add it
+                if ((bucketCounts[i] > pCount) &&
+                    (bucketCounts[i] > qCount))
+                {
+                    peaks.Add(i);
+                    continue;
+                }
+
+                // If we have two equal frequencies that
+                // are together a peak, add the first one
+                if ((bucketCounts[i] > pCount) &&
+                    (bucketCounts[i] == qCount) &&
+                    (qCount > xCount))
+                {
+                    peaks.Add(i);
+                    continue;
+                }
+            }
+
+            return peaks;
+        }
+
+        private int GetHighPeakWithAtLeastXPercent(int[] bucketCounts, List<int> peaks, double minPercent)
+        {
+            if ((peaks == null) ||
+                (peaks.Count == 0))
+                throw new ArgumentNullException("peaks");
+
+            int totalCount = bucketCounts.Sum();
+
+            foreach (int peak in peaks.Reverse<int>())
+            {
+                int peakCount = GetPeakCount(bucketCounts, peak);
+                double peakCountPercent = (double) peakCount / totalCount;
+
+                if (peakCountPercent >= minPercent)
+                    return peak;
+            }
+
+            return peaks.Last();
+        }
+
+        private int GetPeakCount(int[] bucketCounts, int peak)
+        {
+            int totalAtPeak = bucketCounts[peak];
+
+            int pDex = peak - 1;
+            int qDex = peak + 1;
+
+            if (pDex < 0)
+            {
+                totalAtPeak += bucketCounts[qDex];
+                return totalAtPeak;
+            }
+
+            if (qDex >= bucketCounts.Length)
+            {
+                totalAtPeak += bucketCounts[pDex];
+                return totalAtPeak;
+            }
+
+            if ((bucketCounts[pDex] == 0) &&
+                (bucketCounts[qDex] == 0))
+            {
+                pDex = peak - 2;
+                qDex = peak + 2;
+
+                if (pDex < 0)
+                {
+                    totalAtPeak += bucketCounts[qDex];
+                    return totalAtPeak;
+                }
+
+                if (qDex >= bucketCounts.Length)
+                {
+                    totalAtPeak += bucketCounts[pDex];
+                    return totalAtPeak;
+                }
+            }
+
+            totalAtPeak += bucketCounts[pDex] + bucketCounts[qDex];
+
+            return totalAtPeak;
+        }
+
+
+        private double GetPercentageHitsWithHighPeak(int[] bucketCounts, int peak)
+        {
+            int totalCount = bucketCounts.Sum();
+
+            int totalAtPeak = bucketCounts[peak];
+
+            int pDex = peak - 1;
+            int qDex = peak + 1;
+
+            if (pDex < 0)
+            {
+                totalAtPeak += bucketCounts[qDex];
+                return (double)totalAtPeak / totalCount;
+            }
+
+            if (qDex >= bucketCounts.Length)
+            {
+                totalAtPeak += bucketCounts[pDex];
+                return (double)totalAtPeak / totalCount;
+            }
+
+            if ((bucketCounts[pDex] == 0) &&
+                (bucketCounts[qDex] == 0))
+            {
+                pDex = peak - 2;
+                qDex = peak + 2;
+
+                if (pDex < 0)
+                {
+                    totalAtPeak += bucketCounts[qDex];
+                    return (double)totalAtPeak / totalCount;
+                }
+
+                if (qDex >= bucketCounts.Length)
+                {
+                    totalAtPeak += bucketCounts[pDex];
+                    return (double)totalAtPeak / totalCount;
+                }
+            }
+
+            totalAtPeak += bucketCounts[pDex] + bucketCounts[qDex];
+            return (double)totalAtPeak / totalCount;
+
+        }
+
+        private List<TimeSpan> GetValleys(int[] bucketCounts)
         {
             List<int> peaks = new List<int>();
             List<int> valleys = new List<int>();
