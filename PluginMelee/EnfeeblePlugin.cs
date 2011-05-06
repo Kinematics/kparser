@@ -478,9 +478,9 @@ namespace WaywardGamers.KParser.Plugin
                         avgRemainingFight = TimeSpan.FromMilliseconds(
                             totalRemainingFight.TotalMilliseconds / count);
 
-                        totalDurationString = totalRemainingFight.FormattedShortTimeString(true);
+                        totalDurationString = totalRemainingFight.FormattedShortTimeSpanString(true);
 
-                        avgDurationString = avgRemainingFight.FormattedShortTimeString(false);
+                        avgDurationString = avgRemainingFight.FormattedShortTimeSpanString(false);
 
                         sb.AppendFormat(lsDurationsFormat,
                             count,
@@ -747,9 +747,9 @@ namespace WaywardGamers.KParser.Plugin
                 avgTPMovesPerMinute = 60 / timePerTPMove.TotalSeconds;
 
 
-            string subFightsLengthString = sumFightLengths.FormattedShortTimeString(true);
+            string subFightsLengthString = sumFightLengths.FormattedShortTimeSpanString(true);
 
-            string timePerTPMoveString = timePerTPMove.FormattedShortTimeString(true);
+            string timePerTPMoveString = timePerTPMove.FormattedShortTimeSpanString(true);
 
             if (countMoves > 0)
             {

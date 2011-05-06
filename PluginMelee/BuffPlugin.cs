@@ -202,9 +202,9 @@ namespace WaywardGamers.KParser.Plugin
                             }
 
                             sb.AppendFormat(lsIntervalsFormat,
-                                minInterval.FormattedShortTimeString(),
-                                maxInterval.FormattedShortTimeString(),
-                                avgInterval.FormattedShortTimeString());
+                                minInterval.FormattedShortTimeSpanString(),
+                                maxInterval.FormattedShortTimeSpanString(),
+                                avgInterval.FormattedShortTimeSpanString());
                         }
 
                         sb.Append("\n");
@@ -246,9 +246,9 @@ namespace WaywardGamers.KParser.Plugin
                                 }
 
                                 sb.AppendFormat(lsIntervalsFormat,
-                                    minInterval.FormattedShortTimeString(),
-                                    maxInterval.FormattedShortTimeString(),
-                                    avgInterval.FormattedShortTimeString());
+                                    minInterval.FormattedShortTimeSpanString(),
+                                    maxInterval.FormattedShortTimeSpanString(),
+                                    avgInterval.FormattedShortTimeSpanString());
                             }
 
                             sb.Append("\n");
@@ -387,9 +387,9 @@ namespace WaywardGamers.KParser.Plugin
                                 }
 
                                 sb.AppendFormat(lsIntervalsFormat,
-                                    minInterval.FormattedShortTimeString(),
-                                    maxInterval.FormattedShortTimeString(),
-                                    avgInterval.FormattedShortTimeString());
+                                    minInterval.FormattedShortTimeSpanString(),
+                                    maxInterval.FormattedShortTimeSpanString(),
+                                    avgInterval.FormattedShortTimeSpanString());
                             }
 
                             sb.Append("\n");
@@ -433,9 +433,9 @@ namespace WaywardGamers.KParser.Plugin
                             }
 
                             sb.AppendFormat(lsIntervalsFormat,
-                                minInterval.FormattedShortTimeString(),
-                                maxInterval.FormattedShortTimeString(),
-                                avgInterval.FormattedShortTimeString());
+                                minInterval.FormattedShortTimeSpanString(),
+                                maxInterval.FormattedShortTimeSpanString(),
+                                avgInterval.FormattedShortTimeSpanString());
                         }
 
                         sb.Append("\n");

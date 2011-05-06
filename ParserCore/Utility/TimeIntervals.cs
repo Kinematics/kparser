@@ -939,7 +939,7 @@ namespace WaywardGamers.KParser.Utility
 
                         var groupOrderedTargetRolls = target.
                             GroupAdjacentByTimeLimit<KPDatabaseDataSet.InteractionsRow, DateTime>(
-                            i => i.Timestamp, TimeSpan.FromSeconds(45));
+                            i => i.Timestamp, TimeSpan.FromSeconds(45), TimeSpan.FromSeconds(45));
 
                         var playerIntervalSet = playerIntervals.First(s => s.PlayerName == target.Key);
                         TimeIntervalSet intervalSet = new TimeIntervalSet(rollBuffName);

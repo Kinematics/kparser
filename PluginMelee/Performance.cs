@@ -363,7 +363,7 @@ namespace WaywardGamers.KParser.Plugin
 
             numBattles = mobFilter.Count;
 
-            sb.AppendFormat(lsOverallFormat, numBattles, totalFightsLength.FormattedShortTimeString(false));
+            sb.AppendFormat(lsOverallFormat, numBattles, totalFightsLength.FormattedShortTimeSpanString(false));
 
             sb.Append("\n\n\n");
         }
@@ -479,8 +479,8 @@ namespace WaywardGamers.KParser.Plugin
                     }
 
                     sb.AppendFormat(lsParticipateTimeFormat, player.DisplayName,
-                        playerTimeFighting.FormattedShortTimeString(false),
-                        playerFightLengths.FormattedShortTimeString(false),
+                        playerTimeFighting.FormattedShortTimeSpanString(false),
+                        playerFightLengths.FormattedShortTimeSpanString(false),
                         FormatSeconds(avgCombatTimePerFight),
                         percentFightsLength,
                         percentOverallTime);
