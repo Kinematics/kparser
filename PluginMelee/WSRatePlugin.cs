@@ -975,7 +975,7 @@ namespace WaywardGamers.KParser.Plugin
                     sb.AppendFormat(lsWSFormat,
                             player.Name,
                             player.WSCount,
-                            player.WSInterval.FormattedShortTimeString());
+                            player.WSInterval.FormattedShortTimeSpanString());
 
                     sb.Append("\n");
                 }

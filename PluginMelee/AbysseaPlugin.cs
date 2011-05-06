@@ -533,7 +533,7 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     sb.AppendFormat("Chests that granted Time Extensions : {0}\n", chestsWithTE);
                     sb.AppendFormat(" - Total time gained  : {0}\n",
-                        new TimeSpan(0, chestsWithTE * 10, 0).FormattedShortTimeString());
+                        new TimeSpan(0, chestsWithTE * 10, 0).FormattedShortTimeSpanString());
                     sb.Append("\n");
                 }
 

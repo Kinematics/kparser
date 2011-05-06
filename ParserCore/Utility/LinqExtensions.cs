@@ -152,7 +152,8 @@ namespace WaywardGamers.KParser
         public static IEnumerable<IGrouping<TKey, TSource>> GroupAdjacentByTimeLimit<TSource, TKey>(
             this IEnumerable<TSource> source,
             Func<TSource, DateTime> keySelector,
-            TimeSpan adjacentTime) where TKey : IComparable<DateTime>
+            TimeSpan groupingTime,
+            TimeSpan adjacentLimit) where TKey : IComparable<DateTime>
         {
             DateTime first = default(DateTime);
             DateTime last = default(DateTime);
@@ -164,17 +165,18 @@ namespace WaywardGamers.KParser
                 DateTime k = keySelector(s);
                 if (haveLast)
                 {
-                    if (!((k - first) <= adjacentTime))
+                    if (((k - first) <= groupingTime) &&
+                        ((k - last) <= adjacentLimit))
+                    {
+                        list.Add(s);
+                        last = k;
+                    }
+                    else
                     {
                         yield return (IGrouping<TKey, TSource>)(new GroupOfAdjacent<TSource, DateTime>(list, first));
                         list = new List<TSource>();
                         list.Add(s);
                         first = k;
-                        last = k;
-                    }
-                    else
-                    {
-                        list.Add(s);
                         last = k;
                     }
                 }
@@ -403,9 +405,9 @@ namespace WaywardGamers.KParser
         /// </summary>
         /// <param name="timeSpan"></param>
         /// <returns></returns>
-        public static string FormattedShortTimeString(this TimeSpan timeSpan)
+        public static string FormattedShortTimeSpanString(this TimeSpan timeSpan)
         {
-            return timeSpan.FormattedShortTimeString(false);
+            return timeSpan.FormattedShortTimeSpanString(false);
         }
 
         /// <summary>
@@ -415,7 +417,7 @@ namespace WaywardGamers.KParser
         /// <param name="timeSpan"></param>
         /// <param name="forceIncludeHours"></param>
         /// <returns></returns>
-        public static string FormattedShortTimeString(this TimeSpan timeSpan, bool forceIncludeHours)
+        public static string FormattedShortTimeSpanString(this TimeSpan timeSpan, bool forceIncludeHours)
         {
             if (timeSpan == null)
                 return default(string);
