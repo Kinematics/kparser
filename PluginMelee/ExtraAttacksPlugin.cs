@@ -1319,10 +1319,6 @@ namespace WaywardGamers.KParser.Plugin
 
                     int[] bucketCounts = FillBuckets(tsList);
 
-                    // determine the timespans that indicate a division between rounds vs
-                    // double attacks
-                    List<TimeSpan> valleyTimepoints = GetValleys(bucketCounts);
-
                     var peaks = GetPeaks(bucketCounts);
 
                     if (peaks.Count > 0)
@@ -1333,10 +1329,8 @@ namespace WaywardGamers.KParser.Plugin
                         // start of next, high peak for diff betwen two
                         // non-multi rounds.
 
-                        double percHighPeak = GetPercentageHitsWithHighPeak(bucketCounts, peaks.Last());
-
                         // Get the highest peak that has at least 20% instance coverage
-                        int highPeak = GetHighPeakWithAtLeastXPercent(bucketCounts, peaks, 0.20);
+                        int highPeak = GetHighPeakWithAtLeastXPercent(bucketCounts, peaks, 0.120);
 
                         // Convert peak back to a time limit, and drop 1.5 sample intervals
                         // to mark the upper limit.
@@ -1361,33 +1355,40 @@ namespace WaywardGamers.KParser.Plugin
                     }
 
 
-                    // previous code-- turn off for testing
-                    if ((valleyTimepoints.Count > 0) && (false))
+                    if (false)
                     {
-                        // new rounds start on intervals higher than the first valley
-                        List<int> tsIndexes = new List<int>();
-                        TimeSpan valley = valleyTimepoints.First();
+                        // determine the timespans that indicate a division between rounds vs
+                        // double attacks
+                        List<TimeSpan> valleyTimepoints = GetValleys(bucketCounts);
 
-                        List<KPDatabaseDataSet.InteractionsRow> startRoundMelee =
-                            new List<KPDatabaseDataSet.InteractionsRow>();
-
-                        startRoundMelee.Add(combatant.SimpleMelee.First());
-
-                        for (int i = 1; i < tsList.Count; i++)
+                        // previous code-- turn off for testing
+                        if (valleyTimepoints.Count > 0)
                         {
-                            if (tsList[i] > valley)
+                            // new rounds start on intervals higher than the first valley
+                            List<int> tsIndexes = new List<int>();
+                            TimeSpan valley = valleyTimepoints.First();
+
+                            List<KPDatabaseDataSet.InteractionsRow> startRoundMelee =
+                                new List<KPDatabaseDataSet.InteractionsRow>();
+
+                            startRoundMelee.Add(combatant.SimpleMelee.First());
+
+                            for (int i = 1; i < tsList.Count; i++)
                             {
-                                startRoundMelee.Add(combatant.SimpleMelee.ElementAt(i + 1));
+                                if (tsList[i] > valley)
+                                {
+                                    startRoundMelee.Add(combatant.SimpleMelee.ElementAt(i + 1));
+                                }
                             }
+
+                            var startTSList = GetTimespanList(startRoundMelee);
+
+                            TimeSpan hMean = startTSList.GetHarmonicMean() - TimeSpan.FromSeconds(.75);
+
+                            timestampedAttackGroups = combatant.SimpleMelee.
+                                GroupAdjacentByTimeDiffLimit<KPDatabaseDataSet.InteractionsRow, DateTime>(
+                                i => i.Timestamp, TimeSpan.FromSeconds(1.625));
                         }
-
-                        var startTSList = GetTimespanList(startRoundMelee);
-
-                        TimeSpan hMean = startTSList.GetHarmonicMean() - TimeSpan.FromSeconds(.75);
-
-                        timestampedAttackGroups = combatant.SimpleMelee.
-                            GroupAdjacentByTimeDiffLimit<KPDatabaseDataSet.InteractionsRow, DateTime>(
-                            i => i.Timestamp, TimeSpan.FromSeconds(1.625));
                     }
 
 
@@ -1405,7 +1406,8 @@ namespace WaywardGamers.KParser.Plugin
 
                         if (showDetails)
                             AddDetailsForOutput(ref sbDetails,
-                                combatant.DisplayName, bucketCounts, timestampedAttackGroups, valleyTimepoints);
+                                combatant.DisplayName, bucketCounts, timestampedAttackGroups, null);
+                                //combatant.DisplayName, bucketCounts, timestampedAttackGroups, valleyTimepoints);
                     }
                 }
 
