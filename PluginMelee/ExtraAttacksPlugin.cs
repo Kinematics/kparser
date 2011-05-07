@@ -2101,9 +2101,33 @@ namespace WaywardGamers.KParser.Plugin
             {
                 count = round.Count();
 
-                sbDetails.Append(string.Format("  {0} -- {1} {2}\n", round.Key.ToLocalTime(), count,
-                    count > 1 ? lsAttacks : lsAttack));
+                sbDetails.Append(string.Format("  {0} -- {1} {2,-8}  {3}\n", round.Key.ToLocalTime(), count,
+                    count == 1 ? lsAttack : lsAttacks, RoundDamageList(round)));
             }
+        }
+
+        private string RoundDamageList(IGrouping<DateTime, KPDatabaseDataSet.InteractionsRow> round)
+        {
+            StringBuilder damageList = new StringBuilder();
+
+            foreach (var att in round)
+            {
+                if ((DefenseType)att.DefenseType == DefenseType.None)
+                {
+                    if ((DamageModifier)att.DamageModifier == DamageModifier.Critical)
+                        damageList.AppendFormat("{0,4}c", att.Amount);
+                    else
+                        damageList.AppendFormat("{0,4} ", att.Amount);
+                }
+                else
+                {
+                    damageList.Append("   m ");
+                }
+
+                damageList.Append("  ");
+            }
+
+            return damageList.ToString();
         }
 
         #endregion
