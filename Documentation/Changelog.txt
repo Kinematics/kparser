@@ -1,7 +1,8 @@
 KParser Change Log
 
-1.5.12a (May 5, 2011)
-- Fix threshold flaw in Extra Attacks plugin.
+1.5.13 (May 5, 2011)
+* Updated memloc after May 9 patch.  New address is 0x00584E68.
+* Revise grouping algorithm in Extra Attacks plugin.
 
 
 1.5.12 (February 27, 2011)
