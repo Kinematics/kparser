@@ -1029,7 +1029,7 @@ namespace WaywardGamers.KParser.Monitoring
                 {
                     chatData.Clear();
 
-                    uint checkAddress = startAddress + i * 4;
+                    uint checkAddress = startAddress + i * 0x10;
 
                     // initialMemoryOffset is the offset to the address that contains the
                     // first pointer in the hierarchy of FFXI's chat log data structures.
