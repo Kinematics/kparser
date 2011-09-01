@@ -216,6 +216,7 @@ namespace WaywardGamers.KParser
         Guard,
         Resist,
         Intimidate,
+        Absorb
     }
 
     public enum MobDifficulty : byte
