@@ -862,12 +862,12 @@ namespace WaywardGamers.KParser.Monitoring
                 // Base address after update  on 2010-09-08: 0x00582958
                 // Base address after update  on 2010-12-06: 0x00583948
                 // Base address after update  on 2011-02-14: 0x005839C8
-
+                // Base address after update  on 2011-07-12: 0x005856D8
                 
 
                 // An easier way to find the new memloc.  Start at the
                 // most recently known memloc and proceed forward.
-                CycleStartPoint(0x005839C8);
+                CycleStartPoint(0x005856D8);
             }
             finally
             {
@@ -1019,11 +1019,12 @@ namespace WaywardGamers.KParser.Monitoring
         {
             // Start with the previous known base address.
             
-            // Scan up to 2k addresses from that point
+            // Scan up to 8k addresses from that point.
+            // The largest jump in addresses in the past has been about 2k.
 
             List<ChatLine> chatData = new List<ChatLine>();
 
-            for (uint i = 0; i < 32000; i++)
+            for (uint i = 0; i < 8000; i++)
             {
                 try
                 {
