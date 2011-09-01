@@ -2275,7 +2275,7 @@ namespace WaywardGamers.KParser.Plugin
                     .OrderBy(p => p.CType).ThenBy(p => p.Name))
                 {
                     evaPool = player.MHits + player.RHits + player.DefCounter +
-                        player.Abilities.Sum(a => a.AHit) + player.DefAnticipate +
+                        player.Abilities.Sum(a => a.AHit + a.AMiss) + player.DefAnticipate +
                         player.DefShadow + player.DefParry + player.DefEvasion;
 
                     parrPool = player.MHits + player.DefCounter +
