@@ -13,7 +13,7 @@ KParser Change Log
 + Added reporting on critical hit rates in Buffs By Time page.
 + Added Stalwart's/Champion's drinks to the Buffs By Time page.
 + Added Stalwart's/Champion's drinks to Damage Graph display (individual buffs per player).
-+ Differentiate between hit rate (HR) and accuracy (Acc) on Offense page (melee and ranged subgroups).  Hit rate is how many times you hit vs how many times you did not hit, and includes factors such as parries and counters.  Accuracy is how many times the opponent evaded vs how many times they did not, and should most closely track expected accuracy vs evasion formulas.
++ Differentiate between hit rate (HR) and accuracy (Acc) on Offense page (melee and ranged subgroups).  Hit rate is how many times you hit vs how many times you did not hit, and includes factors such as parries, counters and intimidations, etc.  Accuracy is how many times the opponent evaded vs how many times they did not, and should most closely track expected accuracy vs evasion formulas.
 + Add an additional average that excludes 0-damage hits.  M+0.Avg is average across all hits, M-0.Avg is average across all non-0 hits.
 * Same as for normal melee hit averages, crits now exclude 0-damage hits.  Due to space considerations I'm not listing the average that includes 0-damage hits at this time.
 ~ Note: For the moment, these additions make the melee and ranged rows extend past the preferred window width (less than 1024 px).  I'll consider breaking the sections apart later.  I'll add the 0-damage crit average at that time as well.
