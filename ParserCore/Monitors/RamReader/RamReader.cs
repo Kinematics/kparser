@@ -863,6 +863,7 @@ namespace WaywardGamers.KParser.Monitoring
                 // Base address after update  on 2010-12-06: 0x00583948
                 // Base address after update  on 2011-02-14: 0x005839C8
                 // Base address after update  on 2011-07-12: 0x005856D8
+                // Base address after update  on 2011-09-19: 0x005858d8
                 
 
                 // An easier way to find the new memloc.  Start at the
