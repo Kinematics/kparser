@@ -1,5 +1,9 @@
 KParser Change Log
 
+1.5.14 (September 19, 2011)
+* Updated memloc after Sept 19 patch.  New address is 0x005858d8.
+
+
 1.5.13 (May 5, 2011)
 * Updated memloc after May 9 patch.  New address is 0x00584E68.
 * Revise grouping algorithm in Extra Attacks plugin.
