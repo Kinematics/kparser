@@ -13,7 +13,8 @@ namespace WaywardGamers.KParser
         public static readonly HashSet<string> Avatars = new HashSet<string>()
         {
             "Carbuncle", "Fenrir", "Diabolos",
-            "Ifrit", "Shiva", "Garuda", "Titan", "Ramuh", "Leviathan"
+            "Ifrit", "Shiva", "Garuda", "Titan", "Ramuh", "Leviathan",
+            "Alexandar", "Odin", "Cait Sith", "Atomos"
         };
 
         /// <summary>
