@@ -291,6 +291,12 @@
   <data name="saveReportMenuItem.Text" xml:space="preserve">
     <value>Save Report...</value>
   </data>
+  <data name="closeParseFileToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>262, 22</value>
+  </data>
+  <data name="closeParseFileToolStripMenuItem.Text" xml:space="preserve">
+    <value>Close Parse File</value>
+  </data>
   <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
     <value>259, 6</value>
   </data>
@@ -1115,6 +1121,12 @@
     <value>closeAllTabsToolStripMenuItem</value>
   </data>
   <data name="&gt;&gt;closeAllTabsToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;closeParseFileToolStripMenuItem.Name" xml:space="preserve">
+    <value>closeParseFileToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;closeParseFileToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">

@@ -87,6 +87,7 @@ namespace WaywardGamers.KParser
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowsToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.closeAllTabsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.closeParseFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip.SuspendLayout();
             this.tabContextMenuStrip.SuspendLayout();
             this.mainMenuStrip.SuspendLayout();
@@ -177,6 +178,7 @@ namespace WaywardGamers.KParser
             this.importToolStripMenuItem,
             this.saveCurrentDataAsMenuItem,
             this.saveReportMenuItem,
+            this.closeParseFileToolStripMenuItem,
             this.toolStripSeparator2,
             this.splitParseToolStripMenuItem,
             this.joinParsesToolStripMenuItem,
@@ -481,6 +483,12 @@ namespace WaywardGamers.KParser
             resources.ApplyResources(this.closeAllTabsToolStripMenuItem, "closeAllTabsToolStripMenuItem");
             this.closeAllTabsToolStripMenuItem.Click += new System.EventHandler(this.closeAllTabsToolStripMenuItem_Click);
             // 
+            // closeParseFileToolStripMenuItem
+            // 
+            this.closeParseFileToolStripMenuItem.Name = "closeParseFileToolStripMenuItem";
+            resources.ApplyResources(this.closeParseFileToolStripMenuItem, "closeParseFileToolStripMenuItem");
+            this.closeParseFileToolStripMenuItem.Click += new System.EventHandler(this.closeParseFileToolStripMenuItem_Click);
+            // 
             // ParserWindow
             // 
             resources.ApplyResources(this, "$this");
@@ -561,5 +569,6 @@ namespace WaywardGamers.KParser
         private System.Windows.Forms.ToolStripMenuItem japaneseParsingToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem splitParseToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem joinParsesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem closeParseFileToolStripMenuItem;
     }
 }

@@ -278,4 +278,12 @@ namespace WaywardGamers.KParser
         Other
     }
     #endregion
+
+    #region Misc flags
+    public enum ProfilingFlag
+    {
+        NoProfiling = 0,
+        RunProfiling
+    }
+    #endregion
 }
