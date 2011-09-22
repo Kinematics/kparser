@@ -481,7 +481,7 @@
     <value>{0,-17}{1,9}{2,8}{3,10:f2}{4,11}{5,8}{6,10:f2}{7,10}{8,9}{9,9:f2}</value>
   </data>
   <data name="OffensePluginFormatOtherPhysical" xml:space="preserve">
-    <value>{0,-17}{1,7}{2,13}{3,11}{4,8:f2}{5,10}{6,14}{7,12}{8,9:f2}</value>
+    <value>{0,-17}{1,7}{2,11}{3,11}{4,10:f2}{5,10}{6,12}{7,12}{8,11:f2}</value>
   </data>
   <data name="OffensePluginFormatRanged" xml:space="preserve">
     <value>{0,-17}{1,10}{2,10:p2}{3,11}{4,10:p2}{11,10:p2}{5,10}{6,9:f2}{12,9:f2}{7,7}{8,10}{9,10:f2}{10,10:p2}</value>
@@ -508,7 +508,7 @@
     <value>Player            M.AE Dmg  # M.AE  M.AE Avg   R.AE Dmg  # R.AE  R.AE Avg   Spk.Dmg  # Spike  Spk.Avg</value>
   </data>
   <data name="OffensePluginHeaderOtherPhysical" xml:space="preserve">
-    <value>Player            CA.Dmg  CA.Hit/Miss  CA.Low/Hi  CA.Avg   Ret.Dmg  Ret.Hit/Miss  Ret.Low/Hi  Ret.Avg</value>
+    <value>Player            CA.Dmg  CA.Hits-0  CA.Low/Hi  CA-0.Avg   Ret.Dmg  Ret.Hits-0  Ret.Low/Hi  Ret-0.Avg</value>
   </data>
   <data name="OffensePluginHeaderRanged" xml:space="preserve">
     <value>Player            Range Dmg   Range %   Hit/Miss    R.HR %   R.Acc %  R.Low/Hi  R+0.Avg  R-0.Avg  #Crit  C.Low/Hi   C-0.Avg     Crit%</value>
