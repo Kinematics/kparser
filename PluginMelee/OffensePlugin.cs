@@ -640,7 +640,8 @@ namespace WaywardGamers.KParser.Plugin
                     #region Other Physical
                     if (player.Counter.Count() > 0)
                     {
-                        var succHits = player.Counter.Where(h => (DefenseType)h.DefenseType == DefenseType.None);
+                        var succHits = player.Counter.Where(h => (DefenseType)h.DefenseType == DefenseType.None
+                            && h.Amount > 0);
 
                         if ((mainAcc.CAHits == 0) && (succHits.Count() > 0))
                         {
@@ -670,7 +671,8 @@ namespace WaywardGamers.KParser.Plugin
 
                     if (player.Retaliate.Count() > 0)
                     {
-                        var succHits = player.Retaliate.Where(h => (DefenseType)h.DefenseType == DefenseType.None);
+                        var succHits = player.Retaliate.Where(h => (DefenseType)h.DefenseType == DefenseType.None
+                            && h.Amount > 0);
 
                         if ((mainAcc.RTHits == 0) && (succHits.Count() > 0))
                         {
@@ -1836,11 +1838,11 @@ namespace WaywardGamers.KParser.Plugin
                         sb.AppendFormat(lsOtherPhysicalFormat,
                             player.DisplayName,
                             player.CADmg,
-                            string.Concat(player.CAHits, "/", player.CAMiss),
+                            player.CAHits,
                             string.Concat(player.CALow, "/", player.CAHi),
                             player.CAHits > 0 ? (double)player.CADmg / player.CAHits : 0,
                             player.RTDmg,
-                            string.Concat(player.RTHits, "/", player.RTMiss),
+                            player.RTHits,
                             string.Concat(player.RTLow, "/", player.RTHi),
                             player.RTHits > 0 ? (double)player.RTDmg / player.RTHits : 0);
                         sb.Append("\n");
