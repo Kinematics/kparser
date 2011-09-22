@@ -393,7 +393,20 @@ namespace WaywardGamers.KParser.Parsing
                     return;
                 }
 
-                // If a pet is attacking a player, that player must be charmed.
+                // If a pet is attacking a player, it's more likely that
+                // the pet is actually a mob (eg: Odin the avatar vs 
+                // Odin the NM).  Confirm with the supposedActorType
+                // for the message code.
+                if ((combatDetails.ActorEntityType == EntityType.Pet) &&
+                    (target.EntityType == EntityType.Player) &&
+                    (supposedActorType == EntityType.Mob))
+                {
+                    combatDetails.ActorEntityType = EntityType.Mob;
+                    return;
+                }
+
+                // Otherwise, if a pet is attacking a player, that player
+                // must be charmed.
                 if ((combatDetails.ActorEntityType == EntityType.Pet) &&
                     (target.EntityType == EntityType.Player))
                 {
@@ -428,7 +441,6 @@ namespace WaywardGamers.KParser.Parsing
                     target.EntityType = EntityType.Mob;
                     return;
                 }
-
             }
 
             if (combatDetails.InteractionType == InteractionType.Death)
