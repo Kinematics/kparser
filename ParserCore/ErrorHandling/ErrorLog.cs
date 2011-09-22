@@ -45,8 +45,8 @@ namespace WaywardGamers.KParser
 		private Logger()
 		{
             programSettings = new WaywardGamers.KParser.Properties.Settings();
-            FileInfo assemInfo = new FileInfo(Assembly.GetExecutingAssembly().Location);
-            logFileName = Path.Combine(assemInfo.DirectoryName, "error.log");
+            //FileInfo assemInfo = new FileInfo(Assembly.GetExecutingAssembly().Location);
+            logFileName = Path.Combine(Application.UserAppDataPath, "error.log");
 			breakString = "---------------------------------------------------------------";
 
             TrimLogFile();
