@@ -234,13 +234,21 @@ namespace WaywardGamers.KParser
                     Resources.ParsedStrings.PldRoll,
                     Resources.ParsedStrings.BlmRoll,
                     Resources.ParsedStrings.DncRoll,
-                    Resources.ParsedStrings.SchRoll
+                    Resources.ParsedStrings.SchRoll,
+                    Resources.ParsedStrings.BolterRoll,
+                    Resources.ParsedStrings.CasterRoll,
+                    Resources.ParsedStrings.CourserRoll,
+                    Resources.ParsedStrings.BlitzerRoll,
+                    Resources.ParsedStrings.TacticianRoll,
+                    Resources.ParsedStrings.AlliesRoll
+
                 };
         }
 
         /// <summary>
         /// Self-Use JAs are JAs that never have any additional information about
-        /// their effect after use.  EG: Paladinguy uses Sentinel.
+        /// their effect after use.  EG: Paladinguy uses Sentinel. As opposed to
+        /// Warriorguy uses Berserk.  Warriorguy's attack is enhanced.
         /// These JA uses can never have additional chat text lines attached to them.
         /// Add to this list as JAs are verified.
         /// </summary>
