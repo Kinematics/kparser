@@ -1458,4 +1458,61 @@
   <data name="BottleOf" xml:space="preserve">
     <value>^bottle of (?&lt;sName&gt;.*)</value>
   </data>
+  <data name="Bully" xml:space="preserve">
+    <value>Bully</value>
+  </data>
+  <data name="CompanionRoll" xml:space="preserve">
+    <value>Companion's Roll</value>
+  </data>
+  <data name="Cooldown" xml:space="preserve">
+    <value>Cooldown</value>
+  </data>
+  <data name="DecoyShot" xml:space="preserve">
+    <value>Decoy Shot</value>
+  </data>
+  <data name="Hagakure" xml:space="preserve">
+    <value>Hagakure</value>
+  </data>
+  <data name="Issekigan" xml:space="preserve">
+    <value>Issekigan</value>
+  </data>
+  <data name="Manawell" xml:space="preserve">
+    <value>Manawell</value>
+  </data>
+  <data name="Marcato" xml:space="preserve">
+    <value>Marcato</value>
+  </data>
+  <data name="MiserRoll" xml:space="preserve">
+    <value>Miser's Roll</value>
+  </data>
+  <data name="Palisade" xml:space="preserve">
+    <value>Palisade</value>
+  </data>
+  <data name="RunWild" xml:space="preserve">
+    <value>Run Wild</value>
+  </data>
+  <data name="Sacrosanctity" xml:space="preserve">
+    <value>Sacrosanctity</value>
+  </data>
+  <data name="ScarletDelirium" xml:space="preserve">
+    <value>Scarlet Delirium</value>
+  </data>
+  <data name="ShockSquall" xml:space="preserve">
+    <value>Shock Squall</value>
+  </data>
+  <data name="SoothingRuby" xml:space="preserve">
+    <value>Soothing Ruby</value>
+  </data>
+  <data name="Spontaneity" xml:space="preserve">
+    <value>Spontaneity</value>
+  </data>
+  <data name="SteadyWing" xml:space="preserve">
+    <value>Steady Wing</value>
+  </data>
+  <data name="TernaryFlourish" xml:space="preserve">
+    <value>Ternary Flourish</value>
+  </data>
+  <data name="UnbridledKnowledge" xml:space="preserve">
+    <value>Unbridled Knowledge</value>
+  </data>
 </root>
