@@ -240,8 +240,9 @@ namespace WaywardGamers.KParser
                     Resources.ParsedStrings.CourserRoll,
                     Resources.ParsedStrings.BlitzerRoll,
                     Resources.ParsedStrings.TacticianRoll,
-                    Resources.ParsedStrings.AlliesRoll
-
+                    Resources.ParsedStrings.AlliesRoll,
+                    Resources.ParsedStrings.MiserRoll,
+                    Resources.ParsedStrings.CompanionRoll
                 };
         }
 
