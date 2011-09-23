@@ -262,6 +262,7 @@ namespace WaywardGamers.KParser
                     Resources.ParsedStrings.ElementalSeal,
                     Resources.ParsedStrings.Counterstance,
                     Resources.ParsedStrings.Footwork,
+                    Resources.ParsedStrings.Impetus,
                     Resources.ParsedStrings.FormlessStrikes,
                     Resources.ParsedStrings.AfflatusMisery,
                     Resources.ParsedStrings.AfflatusSolace,
