@@ -234,30 +234,31 @@ namespace WaywardGamers.KParser.Plugin
                                ((EntityType)c.CombatantType == EntityType.Fellow) ||
                                ((EntityType)c.CombatantType == EntityType.Skillchain))
                         orderby c.CombatantType, c.CombatantName
+                        let actorActions = c.GetInteractionsRowsByActorCombatantRelation()
                         select new AttackGroup
                         {
                             Name = c.CombatantName,
                             ComType = (EntityType)c.CombatantType,
-                            Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                            Melee = from n in actorActions
                                     where ((ActionType)n.ActionType == ActionType.Melee &&
                                            ((HarmType)n.HarmType == HarmType.Damage ||
                                             (HarmType)n.HarmType == HarmType.Drain)) &&
                                            mobFilter.CheckFilterMobTarget(n)
                                     select n,
-                            Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                            Range = from n in actorActions
                                     where ((ActionType)n.ActionType == ActionType.Ranged &&
                                            ((HarmType)n.HarmType == HarmType.Damage ||
                                             (HarmType)n.HarmType == HarmType.Drain)) &&
                                            mobFilter.CheckFilterMobTarget(n)
                                     select n,
-                            Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                            Spell = from n in actorActions
                                     where ((ActionType)n.ActionType == ActionType.Spell &&
                                            ((HarmType)n.HarmType == HarmType.Damage ||
                                             (HarmType)n.HarmType == HarmType.Drain) &&
                                             n.Preparing == false) &&
                                            mobFilter.CheckFilterMobTarget(n)
                                     select n,
-                            Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                            Ability = from n in actorActions
                                       where ((ActionType)n.ActionType == ActionType.Ability &&
                                            ((HarmType)n.HarmType == HarmType.Damage ||
                                             (HarmType)n.HarmType == HarmType.Drain ||
@@ -265,28 +266,28 @@ namespace WaywardGamers.KParser.Plugin
                                             n.Preparing == false) &&
                                              mobFilter.CheckFilterMobTarget(n)
                                       select n,
-                            WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                            WSkill = from n in actorActions
                                      where ((ActionType)n.ActionType == ActionType.Weaponskill &&
                                            ((HarmType)n.HarmType == HarmType.Damage ||
                                             (HarmType)n.HarmType == HarmType.Drain) &&
                                             n.Preparing == false) &&
                                             mobFilter.CheckFilterMobTarget(n)
                                      select n,
-                            SC = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                            SC = from n in actorActions
                                  where ((ActionType)n.ActionType == ActionType.Skillchain &&
                                            ((HarmType)n.HarmType == HarmType.Damage ||
                                             (HarmType)n.HarmType == HarmType.Drain)) &&
                                         mobFilter.CheckFilterMobTarget(n)
                                  select n,
-                            Counter = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                            Counter = from n in actorActions
                                       where (ActionType)n.ActionType == ActionType.Counterattack &&
                                              mobFilter.CheckFilterMobTarget(n)
                                       select n,
-                            Retaliate = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                            Retaliate = from n in actorActions
                                         where (ActionType)n.ActionType == ActionType.Retaliation &&
                                                mobFilter.CheckFilterMobTarget(n)
                                         select n,
-                            Spikes = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                            Spikes = from n in actorActions
                                      where (ActionType)n.ActionType == ActionType.Spikes &&
                                             mobFilter.CheckFilterMobTarget(n)
                                      select n
@@ -311,7 +312,7 @@ namespace WaywardGamers.KParser.Plugin
                 if (player.ComType == EntityType.Skillchain)
                 {
                     #region SC
-                    if (player.SC.Count() > 0)
+                    if (player.SC.Any())
                     {
                         if (mainAcc.SCNum == 0)
                         {
@@ -336,28 +337,28 @@ namespace WaywardGamers.KParser.Plugin
                 else
                 {
                     #region Melee
-                    if (player.Melee.Count() > 0)
+                    if (player.Melee.Any())
                     {
-                        mainAcc.TDmg += player.MeleeDmg;
-                        mainAcc.TMDmg += player.MeleeDmg;
+                        mainAcc.TDmg += player.MeleeDmg - player.AbsorbedMeleeDmg;
+                        mainAcc.TMDmg += player.MeleeDmg - player.AbsorbedMeleeDmg;
 
                         var succHits = player.Melee.Where(h => (DefenseType)h.DefenseType == DefenseType.None);
                         var critHits = succHits.Where(h => (DamageModifier)h.DamageModifier == DamageModifier.Critical);
                         var nonCritHits = succHits.Where(h => (DamageModifier)h.DamageModifier == DamageModifier.None);
 
-                        if ((mainAcc.MHits == 0) && (nonCritHits.Count() > 0))
+                        if ((mainAcc.MHits == 0) && (nonCritHits.Any()))
                         {
                             mainAcc.MHi = nonCritHits.First().Amount;
                             mainAcc.MLow = mainAcc.MHi;
                         }
 
-                        if ((mainAcc.MCritHits == 0) && (critHits.Count() > 0))
+                        if ((mainAcc.MCritHits == 0) && (critHits.Any()))
                         {
                             mainAcc.MCritHi = critHits.First().Amount;
                             mainAcc.MCritLow = mainAcc.MCritHi;
                         }
 
-                        if (nonCritHits.Count() > 0)
+                        if (nonCritHits.Any())
                         {
                             min = nonCritHits.Min(h => h.Amount);
                             max = nonCritHits.Max(h => h.Amount);
@@ -368,7 +369,7 @@ namespace WaywardGamers.KParser.Plugin
                                 mainAcc.MHi = max;
                         }
 
-                        if (critHits.Count() > 0)
+                        if (critHits.Any())
                         {
                             min = critHits.Min(h => h.Amount);
                             max = critHits.Max(h => h.Amount);
@@ -385,10 +386,11 @@ namespace WaywardGamers.KParser.Plugin
                         mainAcc.MCritHits += critHits.Count();
                         mainAcc.MCritDmg += critHits.Sum(h => h.Amount);
                     }
+
                     #endregion
 
                     #region Range
-                    if (player.Range.Count() > 0)
+                    if (player.Range.Any())
                     {
                         mainAcc.TDmg += player.RangeDmg;
                         mainAcc.TRDmg += player.RangeDmg;
@@ -397,19 +399,19 @@ namespace WaywardGamers.KParser.Plugin
                         var critHits = succHits.Where(h => (DamageModifier)h.DamageModifier == DamageModifier.Critical);
                         var nonCritHits = succHits.Where(h => (DamageModifier)h.DamageModifier == DamageModifier.None);
 
-                        if ((mainAcc.RHits == 0) && (nonCritHits.Count() > 0))
+                        if ((mainAcc.RHits == 0) && (nonCritHits.Any()))
                         {
                             mainAcc.RHi = nonCritHits.First().Amount;
                             mainAcc.RLow = mainAcc.RHi;
                         }
 
-                        if ((mainAcc.RCritHits == 0) && (critHits.Count() > 0))
+                        if ((mainAcc.RCritHits == 0) && (critHits.Any()))
                         {
                             mainAcc.RCritHi = critHits.First().Amount;
                             mainAcc.RCritLow = mainAcc.RCritHi;
                         }
 
-                        if (nonCritHits.Count() > 0)
+                        if (nonCritHits.Any())
                         {
                             min = nonCritHits.Min(h => h.Amount);
                             max = nonCritHits.Max(h => h.Amount);
@@ -420,7 +422,7 @@ namespace WaywardGamers.KParser.Plugin
                                 mainAcc.RHi = max;
                         }
 
-                        if (critHits.Count() > 0)
+                        if (critHits.Any())
                         {
                             min = critHits.Min(h => h.Amount);
                             max = critHits.Max(h => h.Amount);
@@ -440,7 +442,7 @@ namespace WaywardGamers.KParser.Plugin
                     #endregion
 
                     #region Ability
-                    if (player.Ability.Count() > 0)
+                    if (player.Ability.Any())
                     {
                         mainAcc.TDmg += player.AbilityDmg;
                         mainAcc.TADmg += player.AbilityDmg;
@@ -464,13 +466,13 @@ namespace WaywardGamers.KParser.Plugin
                             var succAbil = abil.Where(a => (DefenseType)a.DefenseType == DefenseType.None);
                             var missAbil = abil.Where(a => (DefenseType)a.DefenseType != DefenseType.None);
 
-                            if ((abilAcc.AHit == 0) && (succAbil.Count() > 0))
+                            if ((abilAcc.AHit == 0) && (succAbil.Any()))
                             {
                                 abilAcc.AHi = succAbil.First().Amount;
                                 abilAcc.ALow = abilAcc.AHi;
                             }
 
-                            if (succAbil.Count() > 0)
+                            if (succAbil.Any())
                             {
                                 min = succAbil.Min(a => a.Amount);
                                 max = succAbil.Max(a => a.Amount);
@@ -489,7 +491,7 @@ namespace WaywardGamers.KParser.Plugin
                     #endregion
 
                     #region Weaponskills
-                    if (player.WSkill.Count() > 0)
+                    if (player.WSkill.Any())
                     {
                         mainAcc.TDmg += player.WSkillDmg;
                         mainAcc.TWDmg += player.WSkillDmg;
@@ -512,13 +514,13 @@ namespace WaywardGamers.KParser.Plugin
                             var succWS = wskill.Where(a => (DefenseType)a.DefenseType == DefenseType.None);
                             var missWS = wskill.Where(a => (DefenseType)a.DefenseType != DefenseType.None);
 
-                            if ((wskillAcc.WHit == 0) && (succWS.Count() > 0))
+                            if ((wskillAcc.WHit == 0) && (succWS.Any()))
                             {
                                 wskillAcc.WHi = succWS.First().Amount;
                                 wskillAcc.WLow = wskillAcc.WHi;
                             }
 
-                            if (succWS.Count() > 0)
+                            if (succWS.Any())
                             {
                                 min = succWS.Min(a => a.Amount);
                                 max = succWS.Max(a => a.Amount);
@@ -537,7 +539,7 @@ namespace WaywardGamers.KParser.Plugin
                     #endregion
 
                     #region Spells
-                    if (player.Spell.Count() > 0)
+                    if (player.Spell.Any())
                     {
                         mainAcc.TDmg += player.SpellDmg;
                         mainAcc.TSDmg += player.SpellDmg;
@@ -562,19 +564,19 @@ namespace WaywardGamers.KParser.Plugin
                             var nonMBSpell = succSpell.Where(a => (DamageModifier)a.DamageModifier == DamageModifier.None);
                             var mbSpell = succSpell.Where(a => (DamageModifier)a.DamageModifier == DamageModifier.MagicBurst);
 
-                            if ((spellAcc.SNum == 0) && (nonMBSpell.Count() > 0))
+                            if ((spellAcc.SNum == 0) && (nonMBSpell.Any()))
                             {
                                 spellAcc.SHi = nonMBSpell.First().Amount;
                                 spellAcc.SLow = spellAcc.SHi;
                             }
 
-                            if ((spellAcc.SNumMB == 0) && (mbSpell.Count() > 0))
+                            if ((spellAcc.SNumMB == 0) && (mbSpell.Any()))
                             {
                                 spellAcc.SMBHi = mbSpell.First().Amount;
                                 spellAcc.SMBLow = spellAcc.SMBHi;
                             }
 
-                            if (nonMBSpell.Count() > 0)
+                            if (nonMBSpell.Any())
                             {
                                 min = nonMBSpell.Min(a => a.Amount);
                                 max = nonMBSpell.Max(a => a.Amount);
@@ -585,7 +587,7 @@ namespace WaywardGamers.KParser.Plugin
                                     spellAcc.SHi = max;
                             }
 
-                            if (mbSpell.Count() > 0)
+                            if (mbSpell.Any())
                             {
                                 min = mbSpell.Min(a => a.Amount);
                                 max = mbSpell.Max(a => a.Amount);
@@ -606,7 +608,7 @@ namespace WaywardGamers.KParser.Plugin
                     #endregion
 
                     #region Other Magic
-                    if (player.MeleeEffect.Count() > 0)
+                    if (player.MeleeEffect.Any())
                     {
                         int dmg = player.MeleeEffect.Sum(a => a.SecondAmount);
 
@@ -616,7 +618,7 @@ namespace WaywardGamers.KParser.Plugin
                         mainAcc.TDmg += dmg;
                     }
 
-                    if (player.RangeEffect.Count() > 0)
+                    if (player.RangeEffect.Any())
                     {
                         int dmg = player.RangeEffect.Sum(a => a.SecondAmount);
 
@@ -626,7 +628,7 @@ namespace WaywardGamers.KParser.Plugin
                         mainAcc.TDmg += dmg;
                     }
 
-                    if (player.Spikes.Count() > 0)
+                    if (player.Spikes.Any())
                     {
                         int dmg = player.Spikes.Sum(a => a.Amount);
 
@@ -638,18 +640,18 @@ namespace WaywardGamers.KParser.Plugin
                     #endregion
 
                     #region Other Physical
-                    if (player.Counter.Count() > 0)
+                    if (player.Counter.Any())
                     {
                         var succHits = player.Counter.Where(h => (DefenseType)h.DefenseType == DefenseType.None
                             && h.Amount > 0);
 
-                        if ((mainAcc.CAHits == 0) && (succHits.Count() > 0))
+                        if ((mainAcc.CAHits == 0) && (succHits.Any()))
                         {
                             mainAcc.CAHi = succHits.First().Amount;
                             mainAcc.CALow = mainAcc.CAHi;
                         }
 
-                        if (succHits.Count() > 0)
+                        if (succHits.Any())
                         {
                             min = succHits.Min(h => h.Amount);
                             max = succHits.Max(h => h.Amount);
@@ -669,18 +671,18 @@ namespace WaywardGamers.KParser.Plugin
                         mainAcc.TODmg += dmg;
                     }
 
-                    if (player.Retaliate.Count() > 0)
+                    if (player.Retaliate.Any())
                     {
                         var succHits = player.Retaliate.Where(h => (DefenseType)h.DefenseType == DefenseType.None
                             && h.Amount > 0);
 
-                        if ((mainAcc.RTHits == 0) && (succHits.Count() > 0))
+                        if ((mainAcc.RTHits == 0) && (succHits.Any()))
                         {
                             mainAcc.RTHi = succHits.First().Amount;
                             mainAcc.RTLow = mainAcc.RTHi;
                         }
 
-                        if (succHits.Count() > 0)
+                        if (succHits.Any())
                         {
                             min = succHits.Min(h => h.Amount);
                             max = succHits.Max(h => h.Amount);
@@ -812,32 +814,31 @@ namespace WaywardGamers.KParser.Plugin
                                    ((EntityType)c.CombatantType == EntityType.Fellow) ||
                                    ((EntityType)c.CombatantType == EntityType.Skillchain))
                             orderby c.CombatantType, c.CombatantName
+                            let actorActions = c.GetInteractionsRowsByActorCombatantRelation()
+                                    .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                             select new AttackGroup
                             {
                                 Name = c.CombatantName,
                                 DisplayName = c.CombatantNameOrJobName,
                                 ComType = (EntityType)c.CombatantType,
-                                Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                                   .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
+                                Melee = from n in actorActions
                                         where ((ActionType)n.ActionType == ActionType.Melee &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain))
+                                                (HarmType)n.HarmType == HarmType.Drain) ||
+                                                (HarmType)n.HarmType == HarmType.Heal)
                                         select n,
-                                Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                                   .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
+                                Range = from n in actorActions
                                         where ((ActionType)n.ActionType == ActionType.Ranged &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain))
                                         select n,
-                                Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                                   .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
+                                Spell = from n in actorActions
                                         where ((ActionType)n.ActionType == ActionType.Spell &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
                                                 n.Preparing == false)
                                         select n,
-                                Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                                     .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
+                                Ability = from n in actorActions
                                           where ((ActionType)n.ActionType == ActionType.Ability &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain ||
@@ -845,28 +846,23 @@ namespace WaywardGamers.KParser.Plugin
                                                 n.Preparing == false)
                                           select n,
                                 WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                                    .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
                                          where ((ActionType)n.ActionType == ActionType.Weaponskill &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain) &&
                                                 n.Preparing == false)
                                          select n,
-                                SC = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                                .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
+                                SC = from n in actorActions
                                      where ((ActionType)n.ActionType == ActionType.Skillchain &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain))
                                      select n,
-                                Counter = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                                     .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
+                                Counter = from n in actorActions
                                           where (ActionType)n.ActionType == ActionType.Counterattack
                                           select n,
-                                Retaliate = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                                       .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
+                                Retaliate = from n in actorActions
                                             where (ActionType)n.ActionType == ActionType.Retaliation
                                             select n,
-                                Spikes = from n in c.GetInteractionsRowsByActorCombatantRelation()
-                                                    .Where(r => (newRowsOnly == false) || (r.RowState == DataRowState.Added))
+                                Spikes = from n in actorActions
                                          where (ActionType)n.ActionType == ActionType.Spikes
                                          select n
                             };
@@ -890,7 +886,7 @@ namespace WaywardGamers.KParser.Plugin
                 if (player.ComType == EntityType.Skillchain)
                 {
                     #region SC
-                    if (player.SC.Count() > 0)
+                    if (player.SC.Any())
                     {
                         if (mainAcc.SCNum == 0)
                         {
@@ -915,7 +911,7 @@ namespace WaywardGamers.KParser.Plugin
                 else
                 {
                     #region Melee
-                    if (player.Melee.Count() > 0)
+                    if (player.Melee.Any())
                     {
                         mainAcc.TDmg += player.MeleeDmg;
                         mainAcc.TMDmg += player.MeleeDmg;
@@ -937,19 +933,19 @@ namespace WaywardGamers.KParser.Plugin
                         mainAcc.MCritDmg += critHits.Sum(h => h.Amount);
 
 
-                        if ((mainAcc.MHits == 0) && (nonCritHits.Count() > 0))
+                        if ((mainAcc.MHits == 0) && (nonCritHits.Any()))
                         {
                             mainAcc.MHi = nonCritHits.First().Amount;
                             mainAcc.MLow = mainAcc.MHi;
                         }
 
-                        if ((mainAcc.MCritHits == 0) && (critHits.Count() > 0))
+                        if ((mainAcc.MCritHits == 0) && (critHits.Any()))
                         {
                             mainAcc.MCritHi = critHits.First().Amount;
                             mainAcc.MCritLow = mainAcc.MCritHi;
                         }
 
-                        if (nonCritHits.Count() > 0)
+                        if (nonCritHits.Any())
                         {
                             min = nonCritHits.Min(h => h.Amount);
                             max = nonCritHits.Max(h => h.Amount);
@@ -960,7 +956,7 @@ namespace WaywardGamers.KParser.Plugin
                                 mainAcc.MHi = max;
                         }
 
-                        if (critHits.Count() > 0)
+                        if (critHits.Any())
                         {
                             min = critHits.Min(h => h.Amount);
                             max = critHits.Max(h => h.Amount);
@@ -974,7 +970,7 @@ namespace WaywardGamers.KParser.Plugin
                     #endregion
 
                     #region Range
-                    if (player.Range.Count() > 0)
+                    if (player.Range.Any())
                     {
                         mainAcc.TDmg += player.RangeDmg;
                         mainAcc.TRDmg += player.RangeDmg;
@@ -996,19 +992,19 @@ namespace WaywardGamers.KParser.Plugin
                         mainAcc.RCritHits += critHits.Count();
                         mainAcc.RCritDmg += critHits.Sum(h => h.Amount);
 
-                        if ((mainAcc.RHits == 0) && (nonCritHits.Count() > 0))
+                        if ((mainAcc.RHits == 0) && (nonCritHits.Any()))
                         {
                             mainAcc.RHi = nonCritHits.First().Amount;
                             mainAcc.RLow = mainAcc.RHi;
                         }
 
-                        if ((mainAcc.RCritHits == 0) && (critHits.Count() > 0))
+                        if ((mainAcc.RCritHits == 0) && (critHits.Any()))
                         {
                             mainAcc.RCritHi = critHits.First().Amount;
                             mainAcc.RCritLow = mainAcc.RCritHi;
                         }
 
-                        if (nonCritHits.Count() > 0)
+                        if (nonCritHits.Any())
                         {
                             min = nonCritHits.Min(h => h.Amount);
                             max = nonCritHits.Max(h => h.Amount);
@@ -1019,7 +1015,7 @@ namespace WaywardGamers.KParser.Plugin
                                 mainAcc.RHi = max;
                         }
 
-                        if (critHits.Count() > 0)
+                        if (critHits.Any())
                         {
                             min = critHits.Min(h => h.Amount);
                             max = critHits.Max(h => h.Amount);
@@ -1033,7 +1029,7 @@ namespace WaywardGamers.KParser.Plugin
                     #endregion
 
                     #region Ability
-                    if (player.Ability.Count() > 0)
+                    if (player.Ability.Any())
                     {
                         mainAcc.TDmg += player.AbilityDmg;
                         mainAcc.TADmg += player.AbilityDmg;
@@ -1057,13 +1053,13 @@ namespace WaywardGamers.KParser.Plugin
                             var succAbil = abil.Where(a => (DefenseType)a.DefenseType == DefenseType.None);
                             var missAbil = abil.Where(a => (DefenseType)a.DefenseType != DefenseType.None);
 
-                            if ((abilAcc.AHit == 0) && (succAbil.Count() > 0))
+                            if ((abilAcc.AHit == 0) && (succAbil.Any()))
                             {
                                 abilAcc.AHi = succAbil.First().Amount;
                                 abilAcc.ALow = abilAcc.AHi;
                             }
 
-                            if (succAbil.Count() > 0)
+                            if (succAbil.Any())
                             {
                                 min = succAbil.Min(a => a.Amount);
                                 max = succAbil.Max(a => a.Amount);
@@ -1082,7 +1078,7 @@ namespace WaywardGamers.KParser.Plugin
                     #endregion
 
                     #region Weaponskills
-                    if (player.WSkill.Count() > 0)
+                    if (player.WSkill.Any())
                     {
                         mainAcc.TDmg += player.WSkillDmg;
                         mainAcc.TWDmg += player.WSkillDmg;
@@ -1105,13 +1101,13 @@ namespace WaywardGamers.KParser.Plugin
                             var succWS = wskill.Where(a => (DefenseType)a.DefenseType == DefenseType.None);
                             var missWS = wskill.Where(a => (DefenseType)a.DefenseType != DefenseType.None);
 
-                            if ((wskillAcc.WHit == 0) && (succWS.Count() > 0))
+                            if ((wskillAcc.WHit == 0) && (succWS.Any()))
                             {
                                 wskillAcc.WHi = succWS.First().Amount;
                                 wskillAcc.WLow = wskillAcc.WHi;
                             }
 
-                            if (succWS.Count() > 0)
+                            if (succWS.Any())
                             {
                                 min = succWS.Min(a => a.Amount);
                                 max = succWS.Max(a => a.Amount);
@@ -1130,7 +1126,7 @@ namespace WaywardGamers.KParser.Plugin
                     #endregion
 
                     #region Spells
-                    if (player.Spell.Count() > 0)
+                    if (player.Spell.Any())
                     {
                         mainAcc.TDmg += player.SpellDmg;
                         mainAcc.TSDmg += player.SpellDmg;
@@ -1155,19 +1151,19 @@ namespace WaywardGamers.KParser.Plugin
                             var nonMBSpell = succSpell.Where(a => (DamageModifier)a.DamageModifier == DamageModifier.None);
                             var mbSpell = succSpell.Where(a => (DamageModifier)a.DamageModifier == DamageModifier.MagicBurst);
 
-                            if ((spellAcc.SNum == 0) && (nonMBSpell.Count() > 0))
+                            if ((spellAcc.SNum == 0) && (nonMBSpell.Any()))
                             {
                                 spellAcc.SHi = nonMBSpell.First().Amount;
                                 spellAcc.SLow = spellAcc.SHi;
                             }
 
-                            if ((spellAcc.SNumMB == 0) && (mbSpell.Count() > 0))
+                            if ((spellAcc.SNumMB == 0) && (mbSpell.Any()))
                             {
                                 spellAcc.SMBHi = mbSpell.First().Amount;
                                 spellAcc.SMBLow = spellAcc.SMBHi;
                             }
 
-                            if (nonMBSpell.Count() > 0)
+                            if (nonMBSpell.Any())
                             {
                                 min = nonMBSpell.Min(a => a.Amount);
                                 max = nonMBSpell.Max(a => a.Amount);
@@ -1178,7 +1174,7 @@ namespace WaywardGamers.KParser.Plugin
                                     spellAcc.SHi = max;
                             }
 
-                            if (mbSpell.Count() > 0)
+                            if (mbSpell.Any())
                             {
                                 min = mbSpell.Min(a => a.Amount);
                                 max = mbSpell.Max(a => a.Amount);
@@ -1199,7 +1195,7 @@ namespace WaywardGamers.KParser.Plugin
                     #endregion
 
                     #region Other Magic
-                    if (player.MeleeEffect.Count() > 0)
+                    if (player.MeleeEffect.Any())
                     {
                         int dmg = player.MeleeEffect.Sum(a => a.SecondAmount);
 
@@ -1209,7 +1205,7 @@ namespace WaywardGamers.KParser.Plugin
                         mainAcc.TDmg += dmg;
                     }
 
-                    if (player.RangeEffect.Count() > 0)
+                    if (player.RangeEffect.Any())
                     {
                         int dmg = player.RangeEffect.Sum(a => a.SecondAmount);
 
@@ -1219,7 +1215,7 @@ namespace WaywardGamers.KParser.Plugin
                         mainAcc.TDmg += dmg;
                     }
 
-                    if (player.Spikes.Count() > 0)
+                    if (player.Spikes.Any())
                     {
                         int dmg = player.Spikes.Sum(a => a.Amount);
 
@@ -1231,17 +1227,17 @@ namespace WaywardGamers.KParser.Plugin
                     #endregion
 
                     #region Other Physical
-                    if (player.Counter.Count() > 0)
+                    if (player.Counter.Any())
                     {
                         var succHits = player.Counter.Where(h => (DefenseType)h.DefenseType == DefenseType.None);
 
-                        if ((mainAcc.CAHits == 0) && (succHits.Count() > 0))
+                        if ((mainAcc.CAHits == 0) && (succHits.Any()))
                         {
                             mainAcc.CAHi = succHits.First().Amount;
                             mainAcc.CALow = mainAcc.CAHi;
                         }
 
-                        if (succHits.Count() > 0)
+                        if (succHits.Any())
                         {
                             min = succHits.Min(h => h.Amount);
                             max = succHits.Max(h => h.Amount);
@@ -1261,17 +1257,17 @@ namespace WaywardGamers.KParser.Plugin
                         mainAcc.TODmg += dmg;
                     }
 
-                    if (player.Retaliate.Count() > 0)
+                    if (player.Retaliate.Any())
                     {
                         var succHits = player.Retaliate.Where(h => (DefenseType)h.DefenseType == DefenseType.None);
 
-                        if ((mainAcc.RTHits == 0) && (succHits.Count() > 0))
+                        if ((mainAcc.RTHits == 0) && (succHits.Any()))
                         {
                             mainAcc.RTHi = succHits.First().Amount;
                             mainAcc.RTLow = mainAcc.RTHi;
                         }
 
-                        if (succHits.Count() > 0)
+                        if (succHits.Any())
                         {
                             min = succHits.Min(h => h.Amount);
                             max = succHits.Max(h => h.Amount);
@@ -1883,7 +1879,7 @@ namespace WaywardGamers.KParser.Plugin
                 var tail = playersPlusPets.Skip(5);
 
                 // in a linear format for pasting into game
-                while (head.Count() > 0)
+                while (head.Any())
                 {
                     string prefix = "";
 
