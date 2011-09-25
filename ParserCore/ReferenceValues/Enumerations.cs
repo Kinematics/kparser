@@ -122,6 +122,7 @@ namespace WaywardGamers.KParser
         Aspir,
         Dispel,
         TreasureHunter,
+        Heal
     }
 
     public enum AidType : byte
