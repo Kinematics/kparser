@@ -304,7 +304,7 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (meleeCount > 0)
                 {
-                    if (meleeByAE.Count() > 0)
+                    if (meleeByAE.Any())
                     {
                         strModList.Add(new StringMods
                         {
@@ -342,10 +342,10 @@ namespace WaywardGamers.KParser.Plugin
                     }
                 }
 
-                if (player.Range.Count() > 0)
+                if (player.Range.Any())
                 {
 
-                    if (rangeByAE.Count() > 0)
+                    if (rangeByAE.Any())
                     {
                         strModList.Add(new StringMods
                         {

@@ -284,7 +284,7 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var mob in mobSet)
             {
-                if (mob.Battles.Count() > 0)
+                if (mob.Battles.Any())
                 {
                     foreach (var mobBattle in mob.Battles)
                     {
@@ -334,7 +334,7 @@ namespace WaywardGamers.KParser.Plugin
                             avgMobFightTime = 0;
 
                             var killedMobs = mobBattle.Where(m => m.Killed == true);
-                            if (killedMobs.Count() > 0)
+                            if (killedMobs.Any())
                             {
                                 ttlMobFightTime = killedMobs.Sum(m => m.FightLength().TotalSeconds);
                                 avgMobFightTime = ttlMobFightTime / mobCount;
@@ -365,7 +365,7 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var chest in chestSet)
             {
-                if (chest.Battles.Count() > 0)
+                if (chest.Battles.Any())
                 {
                     foreach (var openChest in chest.Battles)
                     {

@@ -522,7 +522,7 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var player in attackSet)
             {
-                if (player.AnyAction.Count() > 0)
+                if (player.AnyAction.Any())
                 {
                     playerTimeFighting = playerCombatTime[player.Name];
 

@@ -174,7 +174,7 @@ namespace WaywardGamers.KParser.Plugin
                                 where (HarmType)i.HarmType == HarmType.Enfeeble
                                 select i;
 
-                if (enfeebles.Count() > 0)
+                if (enfeebles.Any())
                 {
                     HandleDataset(null);
                 }
@@ -532,7 +532,7 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var mob in paralyzeSet)
             {
-                if (mob.Enfeebled.Count() > 0)
+                if (mob.Enfeebled.Any())
                 {
                     totalMobsParalyzed++;
                     totalParalyzed += mob.Paralyzed.Count();
@@ -635,7 +635,7 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var mob in slowSet)
             {
-                if (mob.Enfeebled.Count() > 0)
+                if (mob.Enfeebled.Any())
                 {
                     totalMobsSlowed++;
                 }

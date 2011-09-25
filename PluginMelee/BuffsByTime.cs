@@ -147,7 +147,7 @@ namespace WaywardGamers.KParser.Plugin
                                        where (AidType)i.AidType == AidType.Enhance
                                        select i;
 
-                    if (enhancements.Count() > 0)
+                    if (enhancements.Any())
                     {
                         HandleDataset(null);
                     }
@@ -300,7 +300,7 @@ namespace WaywardGamers.KParser.Plugin
                     var playerActions = attackSet.FirstOrDefault(a => a.Name == playerInterval.PlayerName);
 
                     if ((playerActions != null) &&
-                        ((playerActions.Melee.Count() > 0) || (playerActions.Range.Count() > 0)) &&
+                        ((playerActions.Melee.Any()) || (playerActions.Range.Any())) &&
                         (playerInterval.TimeIntervalSets.Any(s =>
                             CollectTimeIntervals.AccuracyBuffNames.Contains(s.SetName))))
                     {
@@ -387,13 +387,13 @@ namespace WaywardGamers.KParser.Plugin
                                         var inSetHits = mInSet.Where(a => (DefenseType)a.DefenseType == DefenseType.None);
                                         var outSetHits = mNotInSet.Where(a => (DefenseType)a.DefenseType == DefenseType.None);
 
-                                        if (inSetHits.Count() > 0)
+                                        if (inSetHits.Any())
                                         {
                                             inCritRate = (double) inSetHits.Count(c => (DamageModifier)c.DamageModifier == DamageModifier.Critical) /
                                                 inSetHits.Count();
                                         }
 
-                                        if (outSetHits.Count() > 0)
+                                        if (outSetHits.Any())
                                         {
                                             ninCritRate = (double)outSetHits.Count(c => (DamageModifier)c.DamageModifier == DamageModifier.Critical) /
                                                 outSetHits.Count();
@@ -560,7 +560,7 @@ namespace WaywardGamers.KParser.Plugin
                     var playerActions = attackSet.FirstOrDefault(a => a.Name == playerInterval.PlayerName);
 
                     if ((playerActions != null) &&
-                        ((playerActions.Melee.Count() > 0) || (playerActions.Range.Count() > 0)) &&
+                        ((playerActions.Melee.Any()) || (playerActions.Range.Any())) &&
                         (playerInterval.TimeIntervalSets.Any(s =>
                         CollectTimeIntervals.AttackBuffNames.Contains(s.SetName))))
                     {
@@ -886,7 +886,7 @@ namespace WaywardGamers.KParser.Plugin
                     var playerActions = attackSet.FirstOrDefault(a => a.Name == playerInterval.PlayerName);
 
                     if ((playerActions != null) &&
-                        ((playerActions.Melee.Count() > 0) || (playerActions.WSkill.Count() > 0)) &&
+                        ((playerActions.Melee.Any()) || (playerActions.WSkill.Any())) &&
                         (playerInterval.TimeIntervalSets.Any(s =>
                         CollectTimeIntervals.HasteBuffNames.Contains(s.SetName))))
                     {
@@ -1028,7 +1028,7 @@ namespace WaywardGamers.KParser.Plugin
                     var playerActions = attackSet.FirstOrDefault(a => a.Name == playerInterval.PlayerName);
 
                     if ((playerActions != null) &&
-                        ((playerActions.Melee.Count() > 0) || (playerActions.WSkill.Count() > 0)) &&
+                        ((playerActions.Melee.Any()) || (playerActions.WSkill.Any())) &&
                         (playerInterval.TimeIntervalSets.Any(s =>
                         CollectTimeIntervals.CritBuffNames.Contains(s.SetName))))
                     {
@@ -1080,29 +1080,29 @@ namespace WaywardGamers.KParser.Plugin
                                     double mInCritRate = 0;
                                     double mNisCritRate = 0;
 
-                                    if (mInHit.Count() > 0)
+                                    if (mInHit.Any())
                                         mInCritRate = (double)mInCritCount / mInHit.Count();
 
-                                    if (mNisHit.Count() > 0)
+                                    if (mNisHit.Any())
                                         mNisCritRate = (double)mNisCritCount / mNisHit.Count();
 
                                     double mAvgInCrit = 0;
                                     double mAvgNisCrit = 0;
 
-                                    if (mInCrit.Count() > 0)
+                                    if (mInCrit.Any())
                                         mAvgInCrit = mInCrit.Average(a => a.Amount);
 
-                                    if (mNisCrit.Count() > 0)
+                                    if (mNisCrit.Any())
                                         mAvgNisCrit = mNisCrit.Average(a => a.Amount);
 
 
                                     double avgInWS = 0;
                                     double avgNisWS = 0;
 
-                                    if (wInSet.Count() > 0)
+                                    if (wInSet.Any())
                                         avgInWS = wInSet.Average(a => a.Amount);
 
-                                    if (wNotInSet.Count() > 0)
+                                    if (wNotInSet.Any())
                                         avgNisWS = wNotInSet.Average(a => a.Amount);
 
 

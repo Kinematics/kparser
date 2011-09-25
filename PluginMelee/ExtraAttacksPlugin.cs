@@ -502,7 +502,7 @@ namespace WaywardGamers.KParser.Plugin
         //            var attacksPerRoundThreshold = attacksPerRoundGroups
         //                .Where(m => m.Count() > attackCalc.Rounds / 4);
 
-        //            if (attacksPerRoundThreshold.Count() > 0)
+        //            if (attacksPerRoundThreshold.Any())
         //            {
         //                attackCalc.AttacksPerRound = attacksPerRoundThreshold.Min(m => m.Key);
         //                if (attackCalc.AttacksPerRound > 2)
@@ -541,7 +541,7 @@ namespace WaywardGamers.KParser.Plugin
         //            var damageActions = killerActions.Where(n => (HarmType)n.HarmType == HarmType.Damage ||
         //                                    (HarmType)n.HarmType == HarmType.Drain);
 
-        //            if (damageActions.Count() > 0)
+        //            if (damageActions.Any())
         //            {
         //                var lastAction = damageActions.Last();
 
@@ -625,7 +625,7 @@ namespace WaywardGamers.KParser.Plugin
         //            .Where(r => r.Count() > attackCalc.RAttacksPerRound);
 
         //        // Ranged counts
-        //        if (roundsWithExtraRAttacks.Count() > 0)
+        //        if (roundsWithExtraRAttacks.Any())
         //        {
         //            attackCalc.RRoundsWithExtraAttacks = roundsWithExtraRAttacks.Count();
         //            attackCalc.RPlus1Rounds = roundsWithExtraRAttacks.Count(
@@ -638,7 +638,7 @@ namespace WaywardGamers.KParser.Plugin
 
 
         //        // Melee counts
-        //        if (roundsWithExtraAttacks.Count() > 0)
+        //        if (roundsWithExtraAttacks.Any())
         //        {
         //            attackCalc.RoundsWithExtraAttacks = roundsWithExtraAttacks.Count();
 
@@ -831,7 +831,7 @@ namespace WaywardGamers.KParser.Plugin
         //        sb.Append("\n\n\n");
         //        sb.Append(lsSectionUncorrectedDetails);
         //        sb.Append("\n\n");
-        //        foreach (var attacker in attacksMade.Where(a => a.MeleeRounds.Count() > 0))
+        //        foreach (var attacker in attacksMade.Where(a => a.MeleeRounds.Any()))
         //        {
         //            sb.AppendLine(attacker.Name);
 
@@ -843,7 +843,7 @@ namespace WaywardGamers.KParser.Plugin
         //            sb.AppendLine();
         //        }
 
-        //        foreach (var attacker in attacksMade.Where(a => a.RangedRounds.Count() > 0))
+        //        foreach (var attacker in attacksMade.Where(a => a.RangedRounds.Any()))
         //        {
         //            sb.AppendLine(attacker.Name);
 
@@ -1411,7 +1411,7 @@ namespace WaywardGamers.KParser.Plugin
                     }
                 }
 
-                if (combatant.SimpleRanged.Count() > 0)
+                if (combatant.SimpleRanged.Any())
                 {
                     // fill in buckets of count of .5 second intervals in the timespan list.
                     int[] bucketCounts = FillBuckets(GetTimespanList(combatant.SimpleRanged));
@@ -1841,7 +1841,7 @@ namespace WaywardGamers.KParser.Plugin
 
 
             // if there are any 
-            if ((laterValleys.Count() > 0) && (peaks.Count > 0))
+            if ((laterValleys.Any()) && (peaks.Count > 0))
             {
                 // Find center point of each valley
                 int start;
@@ -1931,7 +1931,7 @@ namespace WaywardGamers.KParser.Plugin
                     i.CombatantsRowByActorCombatantRelation == battle.CombatantsRowByBattleKillerRelation &&
                     (HarmType)i.HarmType == HarmType.Damage);
 
-                if (actions.Count() > 0)
+                if (actions.Any())
                 {
                     var finalAction = actions.Last();
 
@@ -2033,7 +2033,7 @@ namespace WaywardGamers.KParser.Plugin
                     i.CombatantsRowByActorCombatantRelation == battle.CombatantsRowByBattleKillerRelation &&
                     (HarmType)i.HarmType == HarmType.Damage);
 
-                if (actions.Count() > 0)
+                if (actions.Any())
                 {
                     var finalAction = actions.Last();
 

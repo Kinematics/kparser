@@ -316,7 +316,7 @@ namespace WaywardGamers.KParser.Plugin
 
             bool placeHeader = false;
 
-            if (playerData.Count() > 0)
+            if (playerData.Any())
             {
                 foreach (var player in playerData)
                 {
@@ -446,7 +446,7 @@ namespace WaywardGamers.KParser.Plugin
 
             bool placeHeader = false;
 
-            if (uberHealing.Count() > 0)
+            if (uberHealing.Any())
             {
                 if (displayCures == true)
                 {
@@ -769,7 +769,7 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var player in statusHealing)
             {
-                if (player.StatusRemovals.Count() > 0)
+                if (player.StatusRemovals.Any())
                 {
                     if (placeHeader == false)
                     {
@@ -860,7 +860,7 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var player in statusHealing)
             {
-                if (player.StatusRemovals.Count() > 0)
+                if (player.StatusRemovals.Any())
                 {
                     if (placeHeader == false)
                     {

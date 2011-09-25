@@ -162,7 +162,7 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var player in itemUsage)
             {
-                if (player.Items.Count() > 0)
+                if (player.Items.Any())
                 {
                     strModList.Add(new StringMods
                     {

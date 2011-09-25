@@ -124,7 +124,7 @@ namespace WaywardGamers.KParser.Plugin
                                 where (HarmType)i.HarmType == HarmType.Enfeeble
                                 select i;
 
-                if (enfeebles.Count() > 0)
+                if (enfeebles.Any())
                 {
                     HandleDataset(null);
                 }
@@ -236,7 +236,7 @@ namespace WaywardGamers.KParser.Plugin
                                                               orderby btn.Key
                                                               select new DebuffTargets
                                                               {
-                                                                  TargetName = (btn.Count() > 0) ? btn.First().CombatantsRowByTargetCombatantRelation.CombatantNameOrJobName : btn.Key,
+                                                                  TargetName = (btn.Any()) ? btn.First().CombatantsRowByTargetCombatantRelation.CombatantNameOrJobName : btn.Key,
                                                                   DebuffData = btn.OrderBy(i => i.Timestamp)
                                                               }
                                           }

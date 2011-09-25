@@ -536,7 +536,7 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var player in attackSet)
             {
-                if (player.AnyAction.Count() > 0)
+                if (player.AnyAction.Any())
                 {
                     double[] playerDamage = GetIndividualSequenceDamage(player, startTime, endTime);
                     string label = player.DisplayName;
@@ -570,7 +570,7 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var player in attackSet)
             {
-                if (player.AnyAction.Count() > 0)
+                if (player.AnyAction.Any())
                 {
                     double[] playerDamage = GetIndividualSequenceDamage(player, startTime, endTime);
                     string label = player.DisplayName;
@@ -668,7 +668,7 @@ namespace WaywardGamers.KParser.Plugin
 
             var validMinTimes = minBattleTimes.Where(t => t != default(DateTime));
 
-            if (validMinTimes.Count() > 0)
+            if (validMinTimes.Any())
                 startTime = validMinTimes.Min();
 
 
@@ -680,7 +680,7 @@ namespace WaywardGamers.KParser.Plugin
 
             var validMaxTimes = maxTimes.Where(t => t != default(DateTime));
 
-            if (validMaxTimes.Count() > 0)
+            if (validMaxTimes.Any())
                 endTime = validMaxTimes.Max();
 
             // Verify we ended up with actual valid times.

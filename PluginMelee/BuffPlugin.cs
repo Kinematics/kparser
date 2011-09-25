@@ -57,7 +57,7 @@ namespace WaywardGamers.KParser.Plugin
                                        where (AidType)i.AidType == AidType.Enhance
                                        select i;
 
-                    if (enhancements.Count() > 0)
+                    if (enhancements.Any())
                     {
                         HandleDataset(null);
                     }
@@ -164,12 +164,12 @@ namespace WaywardGamers.KParser.Plugin
                     firstEntryShown = false;
                     buffName = buff.BuffName;
 
-                    if ((buff.SelfTargeted.Count() > 0) || (buff.BuffTargets.Count() > 0))
+                    if ((buff.SelfTargeted.Any()) || (buff.BuffTargets.Any()))
                     {
                         sb.AppendFormat("{0,-20}", buffName);
                     }
 
-                    if (buff.SelfTargeted.Count() > 0)
+                    if (buff.SelfTargeted.Any())
                     {
                         sb.AppendFormat("{0,-20}", lsSelf);
                         firstEntryShown = true;
@@ -210,7 +210,7 @@ namespace WaywardGamers.KParser.Plugin
                         sb.Append("\n");
                     }
                     
-                    if (buff.BuffTargets.Count() > 0)
+                    if (buff.BuffTargets.Any())
                     {
                         foreach (var target in buff.BuffTargets)
                         {
@@ -291,7 +291,7 @@ namespace WaywardGamers.KParser.Plugin
                                                       orderby btn.Key
                                                       select new
                                                       {
-                                                          CasterName = (btn.Count() > 0) ? btn.First().CombatantsRowByActorCombatantRelation.CombatantNameOrJobName : btn.Key,
+                                                          CasterName = (btn.Any()) ? btn.First().CombatantsRowByActorCombatantRelation.CombatantNameOrJobName : btn.Key,
                                                           Buffs = btn.OrderBy(i => i.Timestamp)
                                                       },
                                     },
@@ -350,7 +350,7 @@ namespace WaywardGamers.KParser.Plugin
                 sb.Append(lsBuffRecHeader);
                 sb.Append("\n");
 
-                if (player.Buffs.Count() > 0)
+                if (player.Buffs.Any())
                 {
                     foreach (var buff in player.Buffs)
                     {
@@ -397,7 +397,7 @@ namespace WaywardGamers.KParser.Plugin
                     }
                 }
 
-                if (player.SelfBuffs.Count() > 0)
+                if (player.SelfBuffs.Any())
                 {
                     foreach (var buff in player.SelfBuffs)
                     {

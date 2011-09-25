@@ -339,7 +339,7 @@ namespace WaywardGamers.KParser.Plugin
                     iRows = iRows.Concat(b);
                 }
 
-                if (iRows.Count() > 0)
+                if (iRows.Any())
                 {
                     DateTime initialTime = iRows.First().Timestamp - TimeSpan.FromSeconds(70);
                     DateTime endTime = iRows.Last().Timestamp;
@@ -426,7 +426,7 @@ namespace WaywardGamers.KParser.Plugin
                          a.ActionsRow.ActionName == lsParsedTrickAttack||
                          a.ActionsRow.ActionName == lsParsedHide));
 
-                if (sataActions.Count() > 0)
+                if (sataActions.Any())
                 {
                     List<KPDatabaseDataSet.InteractionsRow> sataWeaponskills = new List<KPDatabaseDataSet.InteractionsRow>();
 
@@ -439,7 +439,7 @@ namespace WaywardGamers.KParser.Plugin
                         ((DamageModifier)m.DamageModifier == DamageModifier.None));
 
                     double avgNonCrit = 0;
-                    if (avgNonCritSet.Count() > 0)
+                    if (avgNonCritSet.Any())
                     {
                         // Limit the average calculation to the first 200 hits
                         var avgNonCritSubset = avgNonCritSet.Take(200);
@@ -449,7 +449,7 @@ namespace WaywardGamers.KParser.Plugin
                     double critThreshold = avgNonCrit * 4;
                     double nonCritThreshold = avgNonCrit * 2.75;
 
-                    while (sataActions.Count() > 0)
+                    while (sataActions.Any())
                     {
                         var firstAction = sataActions.First();
                         sataActions = sataActions.Skip(1);
@@ -545,7 +545,7 @@ namespace WaywardGamers.KParser.Plugin
                             var nearWS = player.WSkill.Where(m => m.Timestamp >= firstAction.Timestamp.AddSeconds(-4) &&
                                 m.Timestamp <= firstAction.Timestamp.AddSeconds(4));
 
-                            if (nearWS.Count() > 0)
+                            if (nearWS.Any())
                             {
                                 sataEvent.ActionType = ActionType.Weaponskill;
                                 sataEvent.SATASuccess = true;
@@ -623,7 +623,7 @@ namespace WaywardGamers.KParser.Plugin
                             sataEvent.DamageAmount = sataDamage.Amount;
 
 
-                            while (sataActions.Count() > 0)
+                            while (sataActions.Any())
                             {
                                 var nextAction = sataActions.First();
 
@@ -697,7 +697,7 @@ namespace WaywardGamers.KParser.Plugin
 
             string dataLine;
 
-            if (SATAList.Count() > 0)
+            if (SATAList.Any())
             {
                 AppendText("  " + title + "\n", Color.Blue, true, false);
 
@@ -730,9 +730,9 @@ namespace WaywardGamers.KParser.Plugin
 
                 int totalDmg = totalMeleeDmg + totalWSDmg;
 
-                double avgMeleeDmg = meleeDmgList.Count() > 0 ?
+                double avgMeleeDmg = meleeDmgList.Any() ?
                     (double)totalMeleeDmg / meleeDmgList.Count() : 0;
-                double avgWSDmg = wsDmgList.Count() > 0 ?
+                double avgWSDmg = wsDmgList.Any() ?
                     (double)totalWSDmg / wsDmgList.Count() : 0;
 
                 // Only successful
@@ -745,7 +745,7 @@ namespace WaywardGamers.KParser.Plugin
 
                 int totalSDmg = totalSMeleeDmg + totalWSDmg;
 
-                double avgSMeleeDmg = smeleeDmgList.Count() > 0 ?
+                double avgSMeleeDmg = smeleeDmgList.Any() ?
                     (double)totalSMeleeDmg / smeleeDmgList.Count() : 0;
 
 

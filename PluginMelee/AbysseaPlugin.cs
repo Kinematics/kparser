@@ -410,7 +410,7 @@ namespace WaywardGamers.KParser.Plugin
 
                 sb.AppendFormat("Number of mobs that dropped Cruor : {0}\n", cruorBattles.Count());
 
-                if (cruorBattles.Count() > 0)
+                if (cruorBattles.Any())
                 {
                     int totalCruor = cruorBattles.Sum(b =>
                         b.GetLootRows().First(l => l.ItemsRow.ItemName == lsCruor).GilDropped);
@@ -444,7 +444,7 @@ namespace WaywardGamers.KParser.Plugin
                                 select b;
 
             var droppedChests = from b in selectBattles
-                                where b.GetLootRows().Count() > 0 &&
+                                where b.GetLootRows().Any() &&
                                       b.GetLootRows().Any(l => l.ItemsRow.ItemName == lsTreasureChest)
                                 select b;
 
@@ -486,11 +486,11 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         var chestLoot = chestBattle.GetLootRows();
 
-                        if (chestLoot.Count() > 0)
+                        if (chestLoot.Any())
                         {
                             var cruorLoot = chestLoot.Where(l => l.ItemsRow.ItemName == lsCruor);
 
-                            if ((cruorLoot != null) && (cruorLoot.Count() > 0))
+                            if ((cruorLoot != null) && (cruorLoot.Any()))
                             {
                                 chestsWithCruor++;
                                 cruorTotal += cruorLoot.Sum(l => l.GilDropped);
@@ -498,7 +498,7 @@ namespace WaywardGamers.KParser.Plugin
 
                             var teLoot = chestLoot.Where(l => l.ItemsRow.ItemName == lsTimeExtension);
 
-                            if ((teLoot != null) && (teLoot.Count() > 0))
+                            if ((teLoot != null) && (teLoot.Any()))
                             {
                                 chestsWithTE++;
                             }
