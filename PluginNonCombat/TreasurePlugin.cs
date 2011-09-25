@@ -454,7 +454,7 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var item in dataSet.Items)
             {
-                if ((item.GetLootRows().Count() > 0) &&
+                if ((item.GetLootRows().Any()) &&
                     specialItems.Match(item.ItemName).Success == false)
                 {
                     sb.AppendFormat(dropListFormat, item.GetLootRows().Count(), item.ItemName);
@@ -476,7 +476,7 @@ namespace WaywardGamers.KParser.Plugin
                                };
 
 
-            if (lootByPlayer.Count() > 0)
+            if (lootByPlayer.Any())
             {
                 sb.Append("\n\n");
                 strModList.Add(new StringMods
@@ -869,7 +869,7 @@ namespace WaywardGamers.KParser.Plugin
             }
 
 
-            if (lootByChest.Count() > 0)
+            if (lootByChest.Any())
             {
                 sb.Append("\n\n");
                 strModList.Add(new StringMods
@@ -906,7 +906,7 @@ namespace WaywardGamers.KParser.Plugin
 
                 if (chest.Loot != null)
                 {
-                    if (chest.Gil.Count() > 0)
+                    if (chest.Gil.Any())
                     {
                         // Gil among loot dropped
                         totalGil = chest.Gil.Sum(l => l.GilDropped);
@@ -919,7 +919,7 @@ namespace WaywardGamers.KParser.Plugin
                         sb.Append("\n");
                     }
 
-                    if (chest.Cruor.Count() > 0)
+                    if (chest.Cruor.Any())
                     {
                         // Cruor among loot dropped
                         totalCruor = chest.Cruor.Sum(l => l.GilDropped);
@@ -1018,7 +1018,7 @@ namespace WaywardGamers.KParser.Plugin
                                                  }
                                 };
 
-            var stealByPlayerActive = stealByPlayer.Where(s => s.StolenFrom.Count() > 0);
+            var stealByPlayerActive = stealByPlayer.Where(s => s.StolenFrom.Any());
 
             foreach (var player in stealByPlayerActive)
             {
@@ -1039,14 +1039,14 @@ namespace WaywardGamers.KParser.Plugin
                     }
 
 
-                    if ((stoleFrom.FailedSteal != null) && (stoleFrom.FailedSteal.Count() > 0))
+                    if ((stoleFrom.FailedSteal != null) && (stoleFrom.FailedSteal.Any()))
                     {
                         string s = string.Format("    Failed to Steal {0} time{1}\n",
                             stoleFrom.FailedSteal.Count(), stoleFrom.FailedSteal.Count() > 1 ? "s" : "");
                         AppendText(s);
                     }
 
-                    if ((stoleFrom.FailedMug != null) && (stoleFrom.FailedMug.Count() > 0))
+                    if ((stoleFrom.FailedMug != null) && (stoleFrom.FailedMug.Any()))
                     {
                         string s = string.Format("    Failed to Mug {0} time{1}\n",
                             stoleFrom.FailedMug.Count(), stoleFrom.FailedMug.Count() > 1 ? "s" : "");

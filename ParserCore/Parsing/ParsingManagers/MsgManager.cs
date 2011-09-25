@@ -413,7 +413,7 @@ namespace WaywardGamers.KParser.Parsing
                     );
 
 
-                if ((eCodeBlock != null) && (eCodeBlock.Count() > 0))
+                if ((eCodeBlock != null) && (eCodeBlock.Any()))
                 {
                     // Check for exact (non-0) ecodes 
                     msg = eCodeBlock.LastOrDefault(m =>
@@ -520,7 +520,7 @@ namespace WaywardGamers.KParser.Parsing
                       )
                     );
 
-                if ((eCodeBlock != null) && (eCodeBlock.Count() > 0))
+                if ((eCodeBlock != null) && (eCodeBlock.Any()))
                 {
                     // Check for exact (non-0) ecodes 
                     msg = eCodeBlock.LastOrDefault(m =>
@@ -754,7 +754,7 @@ namespace WaywardGamers.KParser.Parsing
                          m.EventDetails.CombatDetails.Targets[0].EffectName == string.Empty);
                 }
 
-                if ((eCodeBlock != null) && (eCodeBlock.Count() > 0))
+                if ((eCodeBlock != null) && (eCodeBlock.Any()))
                 {
                     // Check for exact ecodes
                     msg = eCodeBlock.LastOrDefault(m =>
@@ -856,7 +856,7 @@ namespace WaywardGamers.KParser.Parsing
                      m.EventDetails.CombatDetails.Targets.Count == 1 &&
                      m.EventDetails.CombatDetails.Targets[0].DefenseType == DefenseType.None);
 
-                if ((eCodeBlock != null) && (eCodeBlock.Count() > 0))
+                if ((eCodeBlock != null) && (eCodeBlock.Any()))
                 {
                     Match targetMatch = ParseExpressions.TargetTakesDamage.Match(messageLine.TextOutput);
                     if (targetMatch.Success)

@@ -206,7 +206,7 @@ namespace WaywardGamers.KParser.Plugin
 
             foreach (var player in rollSet)
             {
-                if (player.Ability.Count() > 0)
+                if (player.Ability.Any())
                 {
                     strModList.Add(new StringMods
                     {

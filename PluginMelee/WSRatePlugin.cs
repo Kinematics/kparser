@@ -311,7 +311,7 @@ namespace WaywardGamers.KParser.Plugin
                     iRows = iRows.Concat(b);
                 }
 
-                if (iRows.Count() > 0)
+                if (iRows.Any())
                 {
                     DateTime initialTime = iRows.First().Timestamp - TimeSpan.FromSeconds(70);
                     DateTime endTime = iRows.Last().Timestamp;
@@ -447,7 +447,7 @@ namespace WaywardGamers.KParser.Plugin
                            where tpRegex.Match(e.Message).Success == true
                            select e;
 
-            var selfPlayer = attackSet.Where(a => a.WSkill.Count() > 0).Where(a =>
+            var selfPlayer = attackSet.Where(a => a.WSkill.Any()).Where(a =>
                 a.WSkill.Any(w => (ActorPlayerType)w.ActorType == ActorPlayerType.Self));
 
             foreach (var player in selfPlayer.OrderBy(a => a.Name))
@@ -841,14 +841,14 @@ namespace WaywardGamers.KParser.Plugin
 
 
                 // Absorb-TP stuff
-                if (player.Spell.Count() > 0)
+                if (player.Spell.Any())
                 {
                     wsAgg.SCast = player.Spell.Count();
                     wsAgg.SFail = player.Spell.Count(s => (FailedActionType)s.FailedActionType != FailedActionType.None);
 
                     var successfulCast = player.Spell.Where(s => (FailedActionType)s.FailedActionType == FailedActionType.None);
 
-                    if (successfulCast.Count() > 0)
+                    if (successfulCast.Any())
                     {
                         wsAgg.STotal = successfulCast.Sum(s => s.Amount);
 

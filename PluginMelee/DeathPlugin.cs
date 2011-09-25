@@ -261,7 +261,7 @@ namespace WaywardGamers.KParser.Plugin
                     iRows = iRows.Concat(b);
                 }
 
-                if (iRows.Count() > 0)
+                if (iRows.Any())
                 {
                     DateTime initialTime = iRows.First().Timestamp - TimeSpan.FromSeconds(70);
                     DateTime endTime = iRows.Last().Timestamp;

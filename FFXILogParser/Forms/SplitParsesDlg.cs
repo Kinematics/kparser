@@ -269,7 +269,7 @@ namespace WaywardGamers.KParser.Forms
             var battleTimes = from b in dbAccess.Database.Battles
                               let actions = b.GetInteractionsRows()
                               where b.DefaultBattle == false &&
-                                    actions.Count() > 0
+                                    actions.Any()
                               orderby b.BattleID
                               select new
                               {

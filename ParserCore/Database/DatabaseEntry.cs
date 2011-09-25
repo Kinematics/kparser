@@ -110,13 +110,13 @@ namespace WaywardGamers.KParser.Database
                     {
                         var recordRows = localDB.RecordLog.Where(t => t.Timestamp == msgLine.Timestamp);
 
-                        if (recordRows.Count() > 0)
+                        if (recordRows.Any())
                             recordRows = recordRows.Where(t => t.MessageText == msgLine.OriginalText);
 
-                        if (recordRows.Count() > 0)
+                        if (recordRows.Any())
                             recordRows = recordRows.Where(t => t.ParseSuccessful == false);
 
-                        if (recordRows.Count() > 0)
+                        if (recordRows.Any())
                             recordRows.First().ParseSuccessful = true;
                     }
                 }
@@ -284,7 +284,7 @@ namespace WaywardGamers.KParser.Database
                                    orderby b.EndTime
                                    select b;
 
-                if (chestBattles.Count() > 0)
+                if (chestBattles.Any())
                 {
                     useThisBattle = chestBattles.First();
                 }
@@ -404,7 +404,7 @@ namespace WaywardGamers.KParser.Database
                             b.EndTime > message.Timestamp.AddSeconds(-10) &&
                             b.GetLootRows().Any(l => l.ItemsRow == chestRow) == false);
 
-                        if (recentBattles.Count() > 0)
+                        if (recentBattles.Any())
                             firstNonChestBattle = recentBattles.Last();
                     }
 
@@ -447,7 +447,7 @@ namespace WaywardGamers.KParser.Database
                     KPDatabaseDataSet.BattlesRow lastBattle = null;
 
                     // If any battles, get the last one.
-                    if ((targetBattles != null) && (targetBattles.Count() > 0))
+                    if ((targetBattles != null) && (targetBattles.Any()))
                     {
                         lastBattle = targetBattles.OrderBy(b => b.EndTime).Last();
                     }
@@ -475,7 +475,7 @@ namespace WaywardGamers.KParser.Database
                                 b.IsEnemyIDNull() == true &&
                                 b.EndTime > message.Timestamp.AddSeconds(-30));
 
-                        if ((recentNonTargetBattles != null) && (recentNonTargetBattles.Count() > 0))
+                        if ((recentNonTargetBattles != null) && (recentNonTargetBattles.Any()))
                         {
                             lastBattle = recentNonTargetBattles.Last();
                             lastBattle.EnemyID = targetCombatant.CombatantID;
@@ -525,7 +525,7 @@ namespace WaywardGamers.KParser.Database
                         b.GetLootRows().Count() == 0 &&
                         b.EndTime.AddSeconds(10) > message.Timestamp);
 
-                    if (validPyxis.Count() > 0)
+                    if (validPyxis.Any())
                     {
                         sourceBattle = validPyxis.First();
                     }
@@ -628,7 +628,7 @@ namespace WaywardGamers.KParser.Database
                                     b.GetLootRows().Count() == 0 &&
                                     b.EndTime.AddSeconds(15) > message.Timestamp);
 
-                                if (validPyxis.Count() > 0)
+                                if (validPyxis.Any())
                                 {
                                     cruorSourceBattle = validPyxis.First();
                                 }
@@ -704,7 +704,7 @@ namespace WaywardGamers.KParser.Database
                                 b.GetLootRows().Count() == 0 &&
                                 b.EndTime.AddSeconds(15) > message.Timestamp);
 
-                            if (validPyxis.Count() > 0)
+                            if (validPyxis.Any())
                             {
                                 sourceBattle = validPyxis.First();
                             }
@@ -960,7 +960,7 @@ namespace WaywardGamers.KParser.Database
                                 b.Killed == true &&
                                 b.EndTime >= (message.Timestamp.AddSeconds(-4)));
 
-                            if (recentKills.Count() > 0)
+                            if (recentKills.Any())
                             {
                                 battle = recentKills.LastOrDefault(b =>
                                     b.CombatantsRowByEnemyCombatantRelation.CombatantName == target.Name);
@@ -1109,7 +1109,7 @@ namespace WaywardGamers.KParser.Database
                                        (FailedActionType)i.FailedActionType == FailedActionType.None);
 
                             //if (mobBattle.Value.GetInteractionsRows().Any(i => (ActorPlayerType)i.ActorType == ActorPlayerType.Other))
-                            if (sameActorRows.Count() > 0)
+                            if (sameActorRows.Any())
                             {
                                 battle = mobBattle.Value;
 

@@ -338,7 +338,7 @@ namespace WaywardGamers.KParser.Plugin
                 {
                     AppendText(player.Name + "\n", Color.Red, true, false);
 
-                    if ((player.Melee.Count() > 0) &&
+                    if ((player.Melee.Any()) &&
                         (player.Melee.Any(n => (DamageModifier)n.DamageModifier != DamageModifier.Critical)))
                     {
                         AppendText(lsMelee + "\n", Color.Blue, true, false);
@@ -351,7 +351,7 @@ namespace WaywardGamers.KParser.Plugin
                         ShowFrequency(meleeFreq);
                     }
 
-                    if ((player.Melee.Count() > 0) &&
+                    if ((player.Melee.Any()) &&
                         (player.Melee.Any(n => (DamageModifier)n.DamageModifier == DamageModifier.Critical)))
                     {
                         AppendText(lsMeleeCrits + "\n", Color.Blue, true, false);
@@ -366,14 +366,14 @@ namespace WaywardGamers.KParser.Plugin
 
                     if (showDetails == true)
                     {
-                        if (player.Melee.Count() > 0)
+                        if (player.Melee.Any())
                         {
                             AppendText(lsFullMelee + "\n", Color.Blue, true, false);
                             ShowFullDetailedDamage(player.Melee);
                         }
                     }
 
-                    if ((player.Melee.Count() > 0) &&
+                    if ((player.Melee.Any()) &&
                         (player.Melee.Any(n => (HarmType)n.SecondHarmType == HarmType.Damage ||
                             (HarmType)n.SecondHarmType == HarmType.Drain)))
                     {
@@ -389,7 +389,7 @@ namespace WaywardGamers.KParser.Plugin
                         ShowFrequency(meleeFreq);
                     }
 
-                    if ((player.Range.Count() > 0) &&
+                    if ((player.Range.Any()) &&
                         (player.Range.Any(n => (DamageModifier)n.DamageModifier != DamageModifier.Critical)))
                     {
                         AppendText(lsRanged + "\n", Color.Blue, true, false);
@@ -402,7 +402,7 @@ namespace WaywardGamers.KParser.Plugin
                         ShowFrequency(rangeFreq);
                     }
 
-                    if ((player.Range.Count() > 0) &&
+                    if ((player.Range.Any()) &&
                         (player.Range.Any(n => (DamageModifier)n.DamageModifier == DamageModifier.Critical)))
                     {
                         AppendText(lsRangedCrits + "\n", Color.Blue, true, false);
@@ -417,7 +417,7 @@ namespace WaywardGamers.KParser.Plugin
 
                     if (showDetails == true)
                     {
-                        if (player.Range.Count() > 0)
+                        if (player.Range.Any())
                         {
                             AppendText(lsFullRanged + "\n", Color.Blue, true, false);
                             ShowFullDetailedDamage(player.Range);
@@ -425,7 +425,7 @@ namespace WaywardGamers.KParser.Plugin
                     }
 
 
-                    if ((player.Range.Count() > 0) &&
+                    if ((player.Range.Any()) &&
                         (player.Range.Any(n => (HarmType)n.SecondHarmType == HarmType.Damage ||
                             (HarmType)n.SecondHarmType == HarmType.Drain)))
                     {
@@ -441,7 +441,7 @@ namespace WaywardGamers.KParser.Plugin
                         ShowFrequency(rangeFreq);
                     }
 
-                    if ((player.Spell.Count() > 0) &&
+                    if ((player.Spell.Any()) &&
                         (player.Spell.Any(n => (DamageModifier)n.DamageModifier != DamageModifier.MagicBurst)))
                     {
                         AppendText(lsSpells + "\n", Color.Blue, true, false);
@@ -463,7 +463,7 @@ namespace WaywardGamers.KParser.Plugin
                         }
                     }
 
-                    if ((player.Spell.Count() > 0) &&
+                    if ((player.Spell.Any()) &&
                         (player.Spell.Any(n => (DamageModifier)n.DamageModifier == DamageModifier.MagicBurst)))
                     {
                         AppendText(lsMagicBursts + "\n", Color.Blue, true, false);
@@ -485,7 +485,7 @@ namespace WaywardGamers.KParser.Plugin
                         }
                     }
 
-                    if (player.Ability.Count() > 0)
+                    if (player.Ability.Any())
                     {
                         AppendText(lsAbility + "\n", Color.Blue, true, false);
 
@@ -505,7 +505,7 @@ namespace WaywardGamers.KParser.Plugin
                         }
                     }
 
-                    if (player.WSkill.Count() > 0)
+                    if (player.WSkill.Any())
                     {
                         AppendText(lsWeaponskills + "\n", Color.Blue, true, false);
 
@@ -525,7 +525,7 @@ namespace WaywardGamers.KParser.Plugin
                         }
                     }
 
-                    if (player.Spikes.Count() > 0)
+                    if (player.Spikes.Any())
                     {
                         AppendText(lsSpikes + "\n", Color.Blue, true, false);
                         if (showDetails == true)

@@ -642,7 +642,7 @@ namespace WaywardGamers.KParser.Utility
             {
                 var itemActions = item.GetInteractionsRows();
 
-                if ((itemActions != null) && (itemActions.Count() > 0))
+                if ((itemActions != null) && (itemActions.Any()))
                 {
 
                     var buffsByTarget = from i in itemActions
@@ -754,7 +754,7 @@ namespace WaywardGamers.KParser.Utility
 
                         var usingBuffs = targetBuffs.Skip(0);
 
-                        while (usingBuffs.Count() > 0)
+                        while (usingBuffs.Any())
                         {
                             var buff = usingBuffs.First();
 
@@ -844,7 +844,7 @@ namespace WaywardGamers.KParser.Utility
             {
                 foreach (var target in songsByTarget)
                 {
-                    if (target.Count() > 0)
+                    if (target.Any())
                     {
                         var playerIntervalSet = playerIntervals.First(s => s.PlayerName == target.Key);
 
@@ -934,7 +934,7 @@ namespace WaywardGamers.KParser.Utility
             {
                 foreach (var target in rollsByTarget)
                 {
-                    if (target.Count() > 0)
+                    if (target.Any())
                     {
 
                         var groupOrderedTargetRolls = target.
@@ -1032,7 +1032,7 @@ namespace WaywardGamers.KParser.Utility
             TimeIntervalSet intervalSet = new TimeIntervalSet(debuffName);
             DateTime prevDebuffUseTime;
 
-            if ((debuffsByBattle != null) && (debuffsByBattle.Count() > 0))
+            if ((debuffsByBattle != null) && (debuffsByBattle.Any()))
             {
                 foreach (var battleSet in debuffsByBattle)
                 {
