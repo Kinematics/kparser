@@ -1,5 +1,16 @@
 KParser Change Log
 
+1.6.0
+- Fixed Chant du Cygne's name so that it's properly classified as a weaponskill.
++ Updated Corsair rolls list.
+* Improved entity classification.
++ Added parsing of absorbed damage.
++ Added or corrected processing and displaying of data in the following tabs to account for absorbed damage:
+  Offense, Offense Details, Defense Details, Damage Graph, WS Rates, Thief.
+~ Defense has not been updated yet; still working out how I want to implement it.
++ Added preliminary "Defense Buffs by Time" tab (Def. by Time), to complement the "Buffs by Time" tab.
+
+
 1.5.14 (September 19, 2011)
 * Updated memloc after Sept 19 patch.  New address is 0x005858d8.
 
