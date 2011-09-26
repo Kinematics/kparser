@@ -36,7 +36,7 @@ namespace WaywardGamers.KParser.Forms
             string applicationDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             readmePath = Path.Combine(applicationDirectory, "readme.txt");
             changeLogPath = Path.Combine(applicationDirectory, "changelog.txt");
-            errorLogPath = Path.Combine(applicationDirectory, "error.log");
+            errorLogPath = Path.Combine(Application.UserAppDataPath, "error.log");
 
             errorLog.Enabled = File.Exists(errorLogPath);
         }
