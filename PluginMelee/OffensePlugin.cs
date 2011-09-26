@@ -857,7 +857,7 @@ namespace WaywardGamers.KParser.Plugin
                                                 (HarmType)n.HarmType == HarmType.Unknown) &&
                                                 n.Preparing == false)
                                           select n,
-                                WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
+                                WSkill = from n in actorActions
                                          where ((ActionType)n.ActionType == ActionType.Weaponskill &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain ||
