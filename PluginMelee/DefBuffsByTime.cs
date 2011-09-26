@@ -565,13 +565,15 @@ namespace WaywardGamers.KParser.Plugin
                     if ((playerActions != null) &&
                         ((playerActions.Melee.Any()) || (playerActions.Range.Any())) &&
                         (playerInterval.TimeIntervalSets.Any(s =>
-                        CollectTimeIntervals.AttackBuffNames.Contains(s.SetName))))
+                        CollectTimeIntervals.AttackDefBuffNames.Contains(s.SetName) ||
+                        CollectTimeIntervals.OtherDefBuffNames.Contains(s.SetName))))
                     {
                         playerHeader = false;
 
                         foreach (var intervalSet in playerInterval.TimeIntervalSets)
                         {
-                            if (CollectTimeIntervals.AttackDefBuffNames.Contains(intervalSet.SetName))
+                            if (CollectTimeIntervals.AttackDefBuffNames.Contains(intervalSet.SetName) ||
+                                CollectTimeIntervals.OtherDefBuffNames.Contains(intervalSet.SetName))
                             {
                                 if (intervalSet.TimeIntervals.Count > 0)
                                 {

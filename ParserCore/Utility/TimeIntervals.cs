@@ -456,6 +456,22 @@ namespace WaywardGamers.KParser.Utility
         }
 
         /// <summary>
+        /// Get the list of spells/ability buffs that are tracked, but don't
+        /// affect accuracy/attack/haste.
+        /// </summary>
+        public static List<string> OtherDefBuffNames
+        {
+            get
+            {
+                return new List<string>()
+                {
+                    Resources.ParsedStrings.Reprisal,
+                    Resources.ParsedStrings.Palisade,
+                };
+            }
+        }
+
+        /// <summary>
         /// Get a list of all tracked spells/abilities.
         /// </summary>
         public static List<string> TrackedOffenseBuffNames
@@ -480,7 +496,8 @@ namespace WaywardGamers.KParser.Utility
             get
             {
                 return AccuracyDefBuffNames.Concat(
-                       AttackDefBuffNames)
+                       AttackDefBuffNames.Concat(
+                       OtherDefBuffNames))
                     .ToList<string>();
             }
         }
@@ -549,6 +566,10 @@ namespace WaywardGamers.KParser.Utility
             CompileFixedLengthBuffs(Resources.ParsedStrings.Rampart, TimeSpan.FromSeconds(30),
                 playerList, playerIntervals, dataSet);
             CompileFixedLengthBuffs(Resources.ParsedStrings.Sentinel, TimeSpan.FromSeconds(30),
+                playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Reprisal, TimeSpan.FromMinutes(1),
+                playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Palisade, TimeSpan.FromMinutes(1),
                 playerList, playerIntervals, dataSet);
             CompileFixedLengthBuffs(Resources.ParsedStrings.LastResort, TimeSpan.FromSeconds(30),
                 playerList, playerIntervals, dataSet);
