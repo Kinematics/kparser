@@ -23,10 +23,10 @@ namespace WaywardGamers.KParser.Plugin
 
         // Roll data
         string[] rollNames;
-        bool[] hasValuesWithJobInParty = new bool[26];
-        bool[] hasValuesWithoutJobInParty = new bool[26];
-        int[,] valuesWithJobInParty = new int[26, 12];
-        int[,] valuesWithoutJobInParty = new int[26, 12];
+        bool[] hasValuesWithJobInParty = new bool[28];
+        bool[] hasValuesWithoutJobInParty = new bool[28];
+        int[,] valuesWithJobInParty = new int[28, 12];
+        int[,] valuesWithoutJobInParty = new int[28, 12];
 
         // Localized strings
 
