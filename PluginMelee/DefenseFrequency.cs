@@ -252,62 +252,77 @@ namespace WaywardGamers.KParser.Plugin
                                 Melee = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Melee &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None)) &&
+                                                (HarmType)n.HarmType == HarmType.Drain ||
+                                                (HarmType)n.HarmType == HarmType.Heal) &&
+                                               ((DefenseType)n.DefenseType == DefenseType.None ||
+                                                (DefenseType)n.DefenseType == DefenseType.Absorb)) &&
                                                mobFilter.CheckFilterMobActor(n) == true
                                         select n,
                                 Range = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Ranged &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None)) &&
+                                                (HarmType)n.HarmType == HarmType.Drain ||
+                                                (HarmType)n.HarmType == HarmType.Heal) &&
+                                               ((DefenseType)n.DefenseType == DefenseType.None ||
+                                                (DefenseType)n.DefenseType == DefenseType.Absorb)) &&
                                                mobFilter.CheckFilterMobActor(n) == true
                                         select n,
                                 Spell = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Spell &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
+                                                (HarmType)n.HarmType == HarmType.Drain ||
+                                                (HarmType)n.HarmType == HarmType.Heal) &&
                                                 n.Preparing == false &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None)) &&
+                                               ((DefenseType)n.DefenseType == DefenseType.None ||
+                                                (DefenseType)n.DefenseType == DefenseType.Absorb)) &&
                                                mobFilter.CheckFilterMobActor(n) == true
                                         select n,
                                 Ability = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                           where ((ActionType)n.ActionType == ActionType.Ability &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain ||
-                                                (HarmType)n.HarmType == HarmType.Unknown) &&
+                                                (HarmType)n.HarmType == HarmType.Unknown ||
+                                                (HarmType)n.HarmType == HarmType.Heal) &&
                                                 n.Preparing == false &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None)) &&
+                                               ((DefenseType)n.DefenseType == DefenseType.None ||
+                                                (DefenseType)n.DefenseType == DefenseType.Absorb)) &&
                                                mobFilter.CheckFilterMobActor(n) == true
                                           select n,
                                 WSkill = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                          where ((ActionType)n.ActionType == ActionType.Weaponskill &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
+                                                (HarmType)n.HarmType == HarmType.Drain ||
+                                                (HarmType)n.HarmType == HarmType.Heal) &&
                                                 n.Preparing == false &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None)) &&
+                                               ((DefenseType)n.DefenseType == DefenseType.None ||
+                                                (DefenseType)n.DefenseType == DefenseType.Absorb)) &&
                                                mobFilter.CheckFilterMobActor(n) == true
                                          select n,
                                 SC = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                      where ((ActionType)n.ActionType == ActionType.Skillchain &&
                                             ((HarmType)n.HarmType == HarmType.Damage ||
-                                             (HarmType)n.HarmType == HarmType.Drain) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None)) &&
-                                               mobFilter.CheckFilterMobActor(n) == true
+                                             (HarmType)n.HarmType == HarmType.Drain ||
+                                             (HarmType)n.HarmType == HarmType.Heal) &&
+                                            ((DefenseType)n.DefenseType == DefenseType.None ||
+                                             (DefenseType)n.DefenseType == DefenseType.Absorb)) &&
+                                            mobFilter.CheckFilterMobActor(n) == true
                                      select n,
                                 Counter = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                           where (ActionType)n.ActionType == ActionType.Counterattack &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None) &&
+                                               ((DefenseType)n.DefenseType == DefenseType.None ||
+                                                (DefenseType)n.DefenseType == DefenseType.Absorb) &&
                                                mobFilter.CheckFilterMobActor(n) == true
                                           select n,
                                 Retaliate = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                             where (ActionType)n.ActionType == ActionType.Retaliation &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None) &&
+                                               ((DefenseType)n.DefenseType == DefenseType.None ||
+                                                (DefenseType)n.DefenseType == DefenseType.Absorb) &&
                                                mobFilter.CheckFilterMobActor(n) == true
                                             select n,
                                 Spikes = from n in c.GetInteractionsRowsByTargetCombatantRelation()
                                          where (ActionType)n.ActionType == ActionType.Spikes &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None) &&
+                                               ((DefenseType)n.DefenseType == DefenseType.None ||
+                                                (DefenseType)n.DefenseType == DefenseType.Absorb) &&
                                                mobFilter.CheckFilterMobActor(n) == true
                                          select n
                             };
@@ -569,7 +584,7 @@ namespace WaywardGamers.KParser.Plugin
                     strBuilder.Append(" ");
 
 
-                strBuilder.AppendFormat("   {0,4}: {1,4}\n", freq.Key, freq.Count());
+                strBuilder.AppendFormat("   {0,6}: {1,4}\n", freq.Key, freq.Count());
             }
 
             AppendText(strBuilder.ToString());
@@ -590,7 +605,7 @@ namespace WaywardGamers.KParser.Plugin
                 if (count % 10 == 0)
                     strBuilder.Append("   ");
 
-                strBuilder.AppendFormat(" {0,4}", row.Amount);
+                strBuilder.AppendFormat(" {0,6}", row.Amount);
 
                 if (count % 10 == 9)
                     strBuilder.Append("\n");
@@ -668,7 +683,7 @@ namespace WaywardGamers.KParser.Plugin
                 if (count % 10 == 0)
                     strBuilder.Append("   ");
 
-                strBuilder.AppendFormat(" {0,4}", row.SecondAmount);
+                strBuilder.AppendFormat(" {0,6}", row.SecondAmount);
 
                 if (count % 10 == 9)
                     strBuilder.Append("\n");
