@@ -334,22 +334,28 @@ namespace WaywardGamers.KParser.Plugin
                                 Melee = from q in ca
                                         where ((ActionType)q.ActionType == ActionType.Melee &&
                                                ((HarmType)q.HarmType == HarmType.Damage ||
-                                                (HarmType)q.HarmType == HarmType.Drain) &&
-                                               ((DefenseType)q.DefenseType == DefenseType.None))
+                                                (HarmType)q.HarmType == HarmType.Drain ||
+                                                (HarmType)q.HarmType == HarmType.Heal) &&
+                                               ((DefenseType)q.DefenseType == DefenseType.None ||
+                                                (DefenseType)q.DefenseType == DefenseType.Absorb))
                                         orderby q.Timestamp
                                         select q,
                                 Range = from q in ca
                                         where ((ActionType)q.ActionType == ActionType.Ranged &&
                                                ((HarmType)q.HarmType == HarmType.Damage ||
-                                                (HarmType)q.HarmType == HarmType.Drain) &&
-                                               ((DefenseType)q.DefenseType == DefenseType.None))
+                                                (HarmType)q.HarmType == HarmType.Drain ||
+                                                (HarmType)q.HarmType == HarmType.Heal) &&
+                                               ((DefenseType)q.DefenseType == DefenseType.None ||
+                                                (DefenseType)q.DefenseType == DefenseType.Absorb))
                                         orderby q.Timestamp
                                         select q,
                                 Retaliate = from q in ca
                                             where ((ActionType)q.ActionType == ActionType.Retaliation &&
                                                    ((HarmType)q.HarmType == HarmType.Damage ||
-                                                    (HarmType)q.HarmType == HarmType.Drain) &&
-                                                   ((DefenseType)q.DefenseType == DefenseType.None))
+                                                    (HarmType)q.HarmType == HarmType.Drain ||
+                                                    (HarmType)q.HarmType == HarmType.Heal) &&
+                                                   ((DefenseType)q.DefenseType == DefenseType.None ||
+                                                (DefenseType)q.DefenseType == DefenseType.Absorb))
                                             orderby q.Timestamp
                                             select q,
                                 Ability = from q in ca
@@ -360,7 +366,8 @@ namespace WaywardGamers.KParser.Plugin
                                 WSkill = from q in ca
                                          where ((ActionType)q.ActionType == ActionType.Weaponskill &&
                                                ((HarmType)q.HarmType == HarmType.Damage ||
-                                                (HarmType)q.HarmType == HarmType.Drain) &&
+                                                (HarmType)q.HarmType == HarmType.Drain ||
+                                                (HarmType)q.HarmType == HarmType.Heal) &&
                                                 q.Preparing == false)
                                          orderby q.Timestamp
                                          select q,
@@ -386,20 +393,26 @@ namespace WaywardGamers.KParser.Plugin
                                 Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Melee &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
+                                                (HarmType)n.HarmType == HarmType.Drain ||
+                                                (HarmType)n.HarmType == HarmType.Heal) &&
+                                               ((DefenseType)n.DefenseType == DefenseType.None ||
+                                                (DefenseType)n.DefenseType == DefenseType.Absorb))
                                         select n,
                                 Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Ranged &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
+                                                (HarmType)n.HarmType == HarmType.Drain ||
+                                                (HarmType)n.HarmType == HarmType.Heal) &&
+                                               ((DefenseType)n.DefenseType == DefenseType.None ||
+                                                (DefenseType)n.DefenseType == DefenseType.Absorb))
                                         select n,
                                 Retaliate = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                             where ((ActionType)n.ActionType == ActionType.Retaliation &&
                                                    ((HarmType)n.HarmType == HarmType.Damage ||
-                                                    (HarmType)n.HarmType == HarmType.Drain) &&
-                                                   ((DefenseType)n.DefenseType == DefenseType.None))
+                                                    (HarmType)n.HarmType == HarmType.Drain ||
+                                                    (HarmType)n.HarmType == HarmType.Heal) &&
+                                                   ((DefenseType)n.DefenseType == DefenseType.None ||
+                                                (DefenseType)n.DefenseType == DefenseType.Absorb))
                                             select n,
                                 Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                           where ((ActionType)n.ActionType == ActionType.Ability &&
@@ -409,7 +422,8 @@ namespace WaywardGamers.KParser.Plugin
                                 WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                          where ((ActionType)n.ActionType == ActionType.Weaponskill &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
+                                                (HarmType)n.HarmType == HarmType.Drain ||
+                                                (HarmType)n.HarmType == HarmType.Heal) &&
                                                 n.Preparing == false)
                                          select n,
                                 Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
