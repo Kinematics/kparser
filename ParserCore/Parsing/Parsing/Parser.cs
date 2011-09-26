@@ -1310,14 +1310,24 @@ namespace WaywardGamers.KParser.Parsing
                         combatMatch = ParseExpressions.UseAbility.Match(currentMessageText);
                         if (combatMatch.Success == true)
                         {
-                            msgCombatDetails.ActionType = ActionType.Ability;
                             msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
                             msgCombatDetails.ActionName = combatMatch.Groups[ParseFields.Ability].Value;
-                            message.SetParseSuccess(true);
 
                             if ((msgCombatDetails.ActionName == Resources.ParsedStrings.Steal) ||
                                 (msgCombatDetails.ActionName == Resources.ParsedStrings.Mug))
                                 message.EventDetails.EventMessageType = EventMessageType.Steal;
+
+                            if (JobAbilities.Weaponskills.Contains(msgCombatDetails.ActionName))
+                            {
+                                msgCombatDetails.ActionType = ActionType.Weaponskill;
+                                msgCombatDetails.InteractionType = InteractionType.Harm;
+                            }
+                            else
+                            {
+                                msgCombatDetails.ActionType = ActionType.Ability;
+                            }
+
+                            message.SetParseSuccess(true);
 
                             return;
                         }
@@ -1330,9 +1340,29 @@ namespace WaywardGamers.KParser.Parsing
                             if (combatMatch.Success == true)
                             {
                                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
-                                target.Amount = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
-                                target.AidType = msgCombatDetails.AidType;
-                                target.RecoveryType = RecoveryType.RecoverHP;
+
+                                if ((msgCombatDetails.ActionType == ActionType.Weaponskill) ||
+                                    (msgCombatDetails.ActorEntityType == EntityType.Player && target.EntityType == EntityType.Mob) ||
+                                    (msgCombatDetails.ActorEntityType == EntityType.Pet && target.EntityType == EntityType.Mob) ||
+                                    (msgCombatDetails.ActorEntityType == EntityType.Mob && target.EntityType == EntityType.Player))
+                                {
+                                    msgCombatDetails.InteractionType = InteractionType.Harm;
+                                    msgCombatDetails.HarmType = HarmType.Heal;
+                                    msgCombatDetails.AidType = AidType.None;
+
+                                    target.Amount = (0 - int.Parse(combatMatch.Groups[ParseFields.Number].Value));
+
+                                    target.HarmType = msgCombatDetails.HarmType;
+                                    target.AidType = msgCombatDetails.AidType;
+                                    target.DefenseType = DefenseType.Absorb;
+                                }
+                                else
+                                {
+                                    target.Amount = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
+                                    target.AidType = msgCombatDetails.AidType;
+                                    target.RecoveryType = RecoveryType.RecoverHP;
+                                }
+
                                 message.SetParseSuccess(true);
                                 return;
                             }
@@ -1450,6 +1480,58 @@ namespace WaywardGamers.KParser.Parsing
                                 message.SetParseSuccess(true);
                                 return;
                             }
+
+                            // Check for "Cover!"
+                            Match coverMatch = ParseExpressions.Cover.Match(currentMessageText);
+                            if (coverMatch.Success == true)
+                            {
+                                currentMessageText = coverMatch.Groups[ParseFields.Remainder].Value;
+                                msgCombatDetails.FlagCover = true;
+                            }
+
+                            combatMatch = ParseExpressions.AbsorbHit.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                msgCombatDetails.InteractionType = InteractionType.Harm;
+                                msgCombatDetails.ActionType = ActionType.Melee;
+                                msgCombatDetails.HarmType = HarmType.Heal;
+                                msgCombatDetails.AidType = AidType.None;
+
+                                msgCombatDetails.ActorName = combatMatch.Groups[ParseFields.Fullname].Value;
+
+                                target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
+
+                                if (msgCombatDetails.FlagCover == true)
+                                {
+                                    if (target.SecondaryAction == string.Empty)
+                                        target.SecondaryAction = "Cover";
+                                }
+
+                                message.SetParseSuccess(true);
+                                return;
+                            }
+
+                            combatMatch = ParseExpressions.AbsorbDmg.Match(currentMessageText);
+                            if (combatMatch.Success == true)
+                            {
+                                msgCombatDetails.InteractionType = InteractionType.Harm;
+                                msgCombatDetails.HarmType = HarmType.Heal;
+                                msgCombatDetails.AidType = AidType.None;
+
+                                target = msgCombatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
+                                if (target != null)
+                                {
+                                    target.Amount = (0 - int.Parse(combatMatch.Groups[ParseFields.Damage].Value));
+
+                                    target.HarmType = msgCombatDetails.HarmType;
+                                    target.AidType = msgCombatDetails.AidType;
+                                    target.DefenseType = DefenseType.Absorb;
+                                }
+
+                                message.SetParseSuccess(true);
+                                return;
+                            }
+
                             break;
                         case AidType.Enhance:
                             // Corsair rolls
@@ -2183,7 +2265,7 @@ namespace WaywardGamers.KParser.Parsing
             string currentMessageText = message.CurrentMessageText;
             TargetDetails target = null;
 
-            // Check for Cover!
+            // Check for "Cover!"
             Match coverMatch = ParseExpressions.Cover.Match(currentMessageText);
             if (coverMatch.Success == true)
             {
