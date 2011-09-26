@@ -1302,10 +1302,10 @@ namespace WaywardGamers.KParser.Plugin
 
             categoryCombo.Items.Clear();
             categoryCombo.Items.Add(Resources.PublicResources.All);
-            categoryCombo.Items.Add("Accuracy");
-            categoryCombo.Items.Add("Attack");
-            categoryCombo.Items.Add("Crit Rate");
-            categoryCombo.Items.Add("Haste");
+            categoryCombo.Items.Add(Resources.PublicResources.Accuracy);
+            categoryCombo.Items.Add(Resources.PublicResources.Attack);
+            categoryCombo.Items.Add(Resources.PublicResources.CritRate);
+            categoryCombo.Items.Add(Resources.PublicResources.Haste);
             categoryCombo.SelectedIndex = 0;
             processAccuracy = true;
             processAttack = true;
