@@ -216,6 +216,9 @@ namespace WaywardGamers.KParser
         internal static readonly Regex Spikes            = new Regex(string.Format("{0}'s? spikes deal {1} points? of damage to {2}\\.", name, damage, target));
         internal static readonly Regex DreadSpikes       = new Regex(string.Format("{0}'s? spikes drain {1} HP from {2}\\.", name, damage, target));
         internal static readonly Regex Skillchain        = new Regex(string.Format("^Skillchain: {0}\\.$", skillchain));
+
+        internal static readonly Regex AbsorbHit = new Regex(string.Format("^{0} hits? {1}\\.$", name, target));
+        internal static readonly Regex AbsorbDmg = new Regex(string.Format("^{0} recovers {1} hit points!$", target, damage));
         #endregion
 
         #region Combat defenses
