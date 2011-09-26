@@ -84,6 +84,9 @@
     <Compile Include="DeathPlugin.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="DefBuffsByTime.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Resources\Combat.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

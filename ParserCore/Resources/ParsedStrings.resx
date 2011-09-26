@@ -1515,4 +1515,46 @@
   <data name="UnbridledKnowledge" xml:space="preserve">
     <value>Unbridled Knowledge</value>
   </data>
+  <data name="Dodge" xml:space="preserve">
+    <value>Dodge</value>
+  </data>
+  <data name="Mambo1" xml:space="preserve">
+    <value>Sheepfoe Mambo</value>
+  </data>
+  <data name="Mambo2" xml:space="preserve">
+    <value>Dragonfoe Mambo</value>
+  </data>
+  <data name="Minne1" xml:space="preserve">
+    <value>Knight's Minne</value>
+  </data>
+  <data name="Minne2" xml:space="preserve">
+    <value>Knight's Minne II</value>
+  </data>
+  <data name="Minne3" xml:space="preserve">
+    <value>Knight's Minne III</value>
+  </data>
+  <data name="Minne4" xml:space="preserve">
+    <value>Knight's Minne IV</value>
+  </data>
+  <data name="Minne5" xml:space="preserve">
+    <value>Knight's Minne V</value>
+  </data>
+  <data name="Protect1" xml:space="preserve">
+    <value>Protect</value>
+  </data>
+  <data name="Protect2" xml:space="preserve">
+    <value>Protect II</value>
+  </data>
+  <data name="Protect3" xml:space="preserve">
+    <value>Protect III</value>
+  </data>
+  <data name="Protect4" xml:space="preserve">
+    <value>Protect IV</value>
+  </data>
+  <data name="Protect5" xml:space="preserve">
+    <value>Protect V</value>
+  </data>
+  <data name="Rampart" xml:space="preserve">
+    <value>Rampart</value>
+  </data>
 </root>
