@@ -256,7 +256,7 @@ namespace WaywardGamers.KParser.Plugin
                                 select ShortItemName(c.ItemsRow.ItemName);
 
                 var allBuffs = targetBuffs.Concat(selfBuffs).Concat(itemBuffs).Distinct()
-                    .Where(b => CollectTimeIntervals.TrackedBuffNames.Contains(b))
+                    .Where(b => CollectTimeIntervals.TrackedOffenseBuffNames.Contains(b))
                     .OrderBy(b => b);
 
                 buffStrings.AddRange(allBuffs);

@@ -1420,6 +1420,15 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dodge.
+        /// </summary>
+        public static string Dodge {
+            get {
+                return ResourceManager.GetString("Dodge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Double Shot.
         /// </summary>
         public static string DoubleShot {
@@ -2338,6 +2347,24 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sheepfoe Mambo.
+        /// </summary>
+        public static string Mambo1 {
+            get {
+                return ResourceManager.GetString("Mambo1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dragonfoe Mambo.
+        /// </summary>
+        public static string Mambo2 {
+            get {
+                return ResourceManager.GetString("Mambo2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Mana Cede.
         /// </summary>
         public static string ManaCede {
@@ -2469,6 +2496,51 @@ namespace WaywardGamers.KParser.Resources {
         public static string MijinGakure {
             get {
                 return ResourceManager.GetString("MijinGakure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Knight&apos;s Minne.
+        /// </summary>
+        public static string Minne1 {
+            get {
+                return ResourceManager.GetString("Minne1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Knight&apos;s Minne II.
+        /// </summary>
+        public static string Minne2 {
+            get {
+                return ResourceManager.GetString("Minne2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Knight&apos;s Minne III.
+        /// </summary>
+        public static string Minne3 {
+            get {
+                return ResourceManager.GetString("Minne3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Knight&apos;s Minne IV.
+        /// </summary>
+        public static string Minne4 {
+            get {
+                return ResourceManager.GetString("Minne4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Knight&apos;s Minne V.
+        /// </summary>
+        public static string Minne5 {
+            get {
+                return ResourceManager.GetString("Minne5", resourceCulture);
             }
         }
         
@@ -2869,6 +2941,51 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Protect.
+        /// </summary>
+        public static string Protect1 {
+            get {
+                return ResourceManager.GetString("Protect1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Protect II.
+        /// </summary>
+        public static string Protect2 {
+            get {
+                return ResourceManager.GetString("Protect2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Protect III.
+        /// </summary>
+        public static string Protect3 {
+            get {
+                return ResourceManager.GetString("Protect3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Protect IV.
+        /// </summary>
+        public static string Protect4 {
+            get {
+                return ResourceManager.GetString("Protect4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Protect V.
+        /// </summary>
+        public static string Protect5 {
+            get {
+                return ResourceManager.GetString("Protect5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Puppet Roll.
         /// </summary>
         public static string PupRoll {
@@ -2955,6 +3072,15 @@ namespace WaywardGamers.KParser.Resources {
         public static string Rampage {
             get {
                 return ResourceManager.GetString("Rampage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rampart.
+        /// </summary>
+        public static string Rampart {
+            get {
+                return ResourceManager.GetString("Rampart", resourceCulture);
             }
         }
         

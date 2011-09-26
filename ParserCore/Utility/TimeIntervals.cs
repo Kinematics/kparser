@@ -307,6 +307,26 @@ namespace WaywardGamers.KParser.Utility
         }
 
         /// <summary>
+        /// Get the list of spells/ability buffs that affect accuracy.
+        /// </summary>
+        public static List<string> AccuracyDefBuffNames
+        {
+            get
+            {
+                return new List<string>()
+                {
+                    Resources.ParsedStrings.Mambo1,
+                    Resources.ParsedStrings.Mambo2,
+                    Resources.ParsedStrings.NinRoll,
+                    Resources.ParsedStrings.Dodge,
+                    Resources.ParsedStrings.Yonin,
+                    Resources.ParsedStrings.Innin,
+                    Resources.ParsedStrings.Aggressor,
+                };
+            }
+        }
+
+        /// <summary>
         /// Get the list of spells/ability buffs that affect attack.
         /// </summary>
         public static List<string> AttackBuffNames
@@ -333,6 +353,32 @@ namespace WaywardGamers.KParser.Utility
                     Resources.ParsedStrings.Impetus,
                     Resources.ParsedStrings.StalwartTonic,
                     Resources.ParsedStrings.StalwartGambir
+                };
+            }
+        }
+
+        /// <summary>
+        /// Get the list of spells/ability buffs that affect attack.
+        /// </summary>
+        public static List<string> AttackDefBuffNames
+        {
+            get
+            {
+                return new List<string>()
+                {
+                    Resources.ParsedStrings.Minne1,
+                    Resources.ParsedStrings.Minne2,
+                    Resources.ParsedStrings.Minne3,
+                    Resources.ParsedStrings.Minne4,
+                    Resources.ParsedStrings.Minne5,
+                    Resources.ParsedStrings.Defender,
+                    Resources.ParsedStrings.Rampart,
+                    Resources.ParsedStrings.Sentinel,
+                    Resources.ParsedStrings.Protect1,
+                    Resources.ParsedStrings.Protect2,
+                    Resources.ParsedStrings.Protect3,
+                    Resources.ParsedStrings.Protect4,
+                    Resources.ParsedStrings.Protect5,
                 };
             }
         }
@@ -412,7 +458,7 @@ namespace WaywardGamers.KParser.Utility
         /// <summary>
         /// Get a list of all tracked spells/abilities.
         /// </summary>
-        public static List<string> TrackedBuffNames
+        public static List<string> TrackedOffenseBuffNames
         {
             get
             {
@@ -426,6 +472,18 @@ namespace WaywardGamers.KParser.Utility
             }
         }
 
+        /// <summary>
+        /// Get a list of all tracked spells/abilities.
+        /// </summary>
+        public static List<string> TrackedDefenseBuffNames
+        {
+            get
+            {
+                return AccuracyDefBuffNames.Concat(
+                       AttackDefBuffNames)
+                    .ToList<string>();
+            }
+        }
         #endregion
 
         #region Get Time-based info collected
@@ -460,7 +518,19 @@ namespace WaywardGamers.KParser.Utility
             string anySongRegex = Resources.ParsedStrings.AnySong;
             string anyRollRegex = Resources.ParsedStrings.PhantomRoll;
 
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Protect1, TimeSpan.FromMinutes(30),
+                playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Protect2, TimeSpan.FromMinutes(30),
+                playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Protect3, TimeSpan.FromMinutes(30),
+                playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Protect4, TimeSpan.FromMinutes(30),
+                playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Protect5, TimeSpan.FromMinutes(30),
+                playerList, playerIntervals, dataSet);
             CompileFixedLengthBuffs(Resources.ParsedStrings.Focus, TimeSpan.FromMinutes(2), 
+                playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Dodge, TimeSpan.FromMinutes(2),
                 playerList, playerIntervals, dataSet);
             CompileFixedLengthBuffs(Resources.ParsedStrings.Aggressor, TimeSpan.FromMinutes(3),
                 playerList, playerIntervals, dataSet);
@@ -475,6 +545,10 @@ namespace WaywardGamers.KParser.Utility
             CompileFixedLengthBuffs(Resources.ParsedStrings.Defender, TimeSpan.FromMinutes(3),
                 playerList, playerIntervals, dataSet);
             CompileFixedLengthBuffs(Resources.ParsedStrings.Warcry, TimeSpan.FromSeconds(30),
+                playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Rampart, TimeSpan.FromSeconds(30),
+                playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.Sentinel, TimeSpan.FromSeconds(30),
                 playerList, playerIntervals, dataSet);
             CompileFixedLengthBuffs(Resources.ParsedStrings.LastResort, TimeSpan.FromSeconds(30),
                 playerList, playerIntervals, dataSet);
@@ -498,9 +572,9 @@ namespace WaywardGamers.KParser.Utility
                 playerList, playerIntervals, dataSet);
             CompileFixedLengthBuffs(Resources.ParsedStrings.AsceticGambir, TimeSpan.FromMinutes(5),
                 playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs(Resources.ParsedStrings.ChampionTonic, TimeSpan.FromSeconds(30),
+            CompileFixedLengthBuffs(Resources.ParsedStrings.ChampionTonic, TimeSpan.FromSeconds(60),
                 playerList, playerIntervals, dataSet);
-            CompileFixedLengthBuffs(Resources.ParsedStrings.ChampionGambir, TimeSpan.FromSeconds(30),
+            CompileFixedLengthBuffs(Resources.ParsedStrings.ChampionGambir, TimeSpan.FromSeconds(60),
                 playerList, playerIntervals, dataSet);
 
 
@@ -536,6 +610,20 @@ namespace WaywardGamers.KParser.Utility
                 playerList, playerIntervals, dataSet);
             CompileSongBuffs(Resources.ParsedStrings.March2, anySongRegex, TimeSpan.FromSeconds(144),
                 playerList, playerIntervals, dataSet);
+            CompileSongBuffs(Resources.ParsedStrings.Mambo1, anySongRegex, TimeSpan.FromSeconds(144),
+                playerList, playerIntervals, dataSet);
+            CompileSongBuffs(Resources.ParsedStrings.Mambo2, anySongRegex, TimeSpan.FromSeconds(144),
+                playerList, playerIntervals, dataSet);
+            CompileSongBuffs(Resources.ParsedStrings.Minne1, anySongRegex, TimeSpan.FromSeconds(144),
+                playerList, playerIntervals, dataSet);
+            CompileSongBuffs(Resources.ParsedStrings.Minne2, anySongRegex, TimeSpan.FromSeconds(144),
+                playerList, playerIntervals, dataSet);
+            CompileSongBuffs(Resources.ParsedStrings.Minne3, anySongRegex, TimeSpan.FromSeconds(144),
+                playerList, playerIntervals, dataSet);
+            CompileSongBuffs(Resources.ParsedStrings.Minne4, anySongRegex, TimeSpan.FromSeconds(144),
+                playerList, playerIntervals, dataSet);
+            CompileSongBuffs(Resources.ParsedStrings.Minne5, anySongRegex, TimeSpan.FromSeconds(144),
+                playerList, playerIntervals, dataSet);
 
 
             CompileRollBuffs(Resources.ParsedStrings.RngRoll, anyRollRegex, TimeSpan.FromMinutes(5),
@@ -549,6 +637,8 @@ namespace WaywardGamers.KParser.Utility
             CompileRollBuffs(Resources.ParsedStrings.WarRoll, anyRollRegex, TimeSpan.FromMinutes(5),
                 playerList, playerIntervals, dataSet);
             CompileRollBuffs(Resources.ParsedStrings.ThfRoll, anyRollRegex, TimeSpan.FromMinutes(5),
+                playerList, playerIntervals, dataSet);
+            CompileRollBuffs(Resources.ParsedStrings.NinRoll, anyRollRegex, TimeSpan.FromMinutes(5),
                 playerList, playerIntervals, dataSet);
 
 
