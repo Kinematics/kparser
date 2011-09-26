@@ -48,6 +48,7 @@ namespace WaywardGamers.KParser.Plugin
 
         string lsSummaryTitle;
         string lsMeleeTitle;
+        string lsMeleeCritTitle;
         string lsRangeTitle;
         string lsSpellTitle;
         string lsAbilityTitle;
@@ -61,6 +62,7 @@ namespace WaywardGamers.KParser.Plugin
 
         string lsSummaryHeader;
         string lsMeleeHeader;
+        string lsMeleeCritHeader;
         string lsRangeHeader;
         string lsSpellHeader;
         string lsAbilityHeader;
@@ -73,6 +75,7 @@ namespace WaywardGamers.KParser.Plugin
 
         string lsSummaryFormat;
         string lsMeleeFormat;
+        string lsMeleeCritFormat;
         string lsRangeFormat;
         string lsSpellFormat;
         string lsAbilityFormat;
@@ -761,36 +764,42 @@ namespace WaywardGamers.KParser.Plugin
                                 Melee = from q in ca
                                         where ((ActionType)q.ActionType == ActionType.Melee &&
                                                ((HarmType)q.HarmType == HarmType.Damage ||
-                                                (HarmType)q.HarmType == HarmType.Drain))
+                                                (HarmType)q.HarmType == HarmType.Drain ||
+                                                (HarmType)q.HarmType == HarmType.Heal))
                                         select q,
                                 Range = from q in ca
                                         where ((ActionType)q.ActionType == ActionType.Ranged &&
                                                ((HarmType)q.HarmType == HarmType.Damage ||
-                                                (HarmType)q.HarmType == HarmType.Drain))
+                                                (HarmType)q.HarmType == HarmType.Drain ||
+                                                (HarmType)q.HarmType == HarmType.Heal))
                                         select q,
                                 Spell = from q in ca
                                         where ((ActionType)q.ActionType == ActionType.Spell &&
                                                ((HarmType)q.HarmType == HarmType.Damage ||
-                                                (HarmType)q.HarmType == HarmType.Drain) &&
+                                                (HarmType)q.HarmType == HarmType.Drain ||
+                                                (HarmType)q.HarmType == HarmType.Heal) &&
                                                 q.Preparing == false)
                                         select q,
                                 Ability = from q in ca
                                           where ((ActionType)q.ActionType == ActionType.Ability &&
                                                ((HarmType)q.HarmType == HarmType.Damage ||
                                                 (HarmType)q.HarmType == HarmType.Drain ||
+                                                (HarmType)q.HarmType == HarmType.Heal ||
                                                 (HarmType)q.HarmType == HarmType.Unknown) &&
                                                 q.Preparing == false)
                                           select q,
                                 WSkill = from q in ca
                                          where ((ActionType)q.ActionType == ActionType.Weaponskill &&
                                                ((HarmType)q.HarmType == HarmType.Damage ||
-                                                (HarmType)q.HarmType == HarmType.Drain) &&
+                                                (HarmType)q.HarmType == HarmType.Drain ||
+                                                (HarmType)q.HarmType == HarmType.Heal) &&
                                                 q.Preparing == false)
                                          select q,
                                 SC = from q in ca
                                      where ((ActionType)q.ActionType == ActionType.Skillchain &&
                                                ((HarmType)q.HarmType == HarmType.Damage ||
-                                                (HarmType)q.HarmType == HarmType.Drain))
+                                                (HarmType)q.HarmType == HarmType.Drain ||
+                                                (HarmType)q.HarmType == HarmType.Heal))
                                      select q,
                                 Counter = from q in ca
                                           where (ActionType)q.ActionType == ActionType.Counterattack
@@ -824,37 +833,42 @@ namespace WaywardGamers.KParser.Plugin
                                 Melee = from n in actorActions
                                         where ((ActionType)n.ActionType == ActionType.Melee &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) ||
-                                                (HarmType)n.HarmType == HarmType.Heal)
+                                                (HarmType)n.HarmType == HarmType.Drain ||
+                                                (HarmType)n.HarmType == HarmType.Heal))
                                         select n,
                                 Range = from n in actorActions
                                         where ((ActionType)n.ActionType == ActionType.Ranged &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain))
+                                                (HarmType)n.HarmType == HarmType.Drain ||
+                                                (HarmType)n.HarmType == HarmType.Heal))
                                         select n,
                                 Spell = from n in actorActions
                                         where ((ActionType)n.ActionType == ActionType.Spell &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
+                                                (HarmType)n.HarmType == HarmType.Drain ||
+                                                (HarmType)n.HarmType == HarmType.Heal) &&
                                                 n.Preparing == false)
                                         select n,
                                 Ability = from n in actorActions
                                           where ((ActionType)n.ActionType == ActionType.Ability &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain ||
+                                                (HarmType)n.HarmType == HarmType.Heal ||
                                                 (HarmType)n.HarmType == HarmType.Unknown) &&
                                                 n.Preparing == false)
                                           select n,
                                 WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                          where ((ActionType)n.ActionType == ActionType.Weaponskill &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
+                                                (HarmType)n.HarmType == HarmType.Drain ||
+                                                (HarmType)n.HarmType == HarmType.Heal) &&
                                                 n.Preparing == false)
                                          select n,
                                 SC = from n in actorActions
                                      where ((ActionType)n.ActionType == ActionType.Skillchain &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain))
+                                                (HarmType)n.HarmType == HarmType.Drain ||
+                                                (HarmType)n.HarmType == HarmType.Heal))
                                      select n,
                                 Counter = from n in actorActions
                                           where (ActionType)n.ActionType == ActionType.Counterattack
@@ -869,7 +883,7 @@ namespace WaywardGamers.KParser.Plugin
             }
             #endregion
 
-            if ((attackSet == null) || (attackSet.Count() == 0))
+            if ((attackSet == null) || (!attackSet.Any()))
                 return;
 
             int min, max;
@@ -894,8 +908,11 @@ namespace WaywardGamers.KParser.Plugin
                             mainAcc.SCLow = player.SC.First().Amount;
                         }
 
-                        mainAcc.TDmg += player.SCDmg;
-                        mainAcc.TSCDmg += player.SCDmg;
+                        mainAcc.TDmg += player.SCDmg + player.AbsorbedSCDmg;
+                        mainAcc.SCDmg += player.SCDmg;
+                        mainAcc.TSCDmg += player.SCDmg + player.AbsorbedSCDmg;
+                        mainAcc.TAbsSCDmg += player.AbsorbedSCDmg;
+                        mainAcc.TAbsDmg += mainAcc.TAbsSCDmg;
                         mainAcc.SCNum += player.SC.Count();
 
                         min = player.SC.Min(sc => sc.Amount);
@@ -913,58 +930,110 @@ namespace WaywardGamers.KParser.Plugin
                     #region Melee
                     if (player.Melee.Any())
                     {
-                        mainAcc.TDmg += player.MeleeDmg;
-                        mainAcc.TMDmg += player.MeleeDmg;
+                        var groupHits = from m in player.Melee
+                                     group m by (DefenseType)m.DefenseType;
 
-                        var succHits = player.Melee.Where(h => (DefenseType)h.DefenseType == DefenseType.None);
-                        var critHits = succHits.Where(h => (DamageModifier)h.DamageModifier == DamageModifier.Critical);
-                        var nonCritHits = succHits.Where(h => (DamageModifier)h.DamageModifier == DamageModifier.None);
-
-                        mainAcc.MHits += succHits.Count();
-                        mainAcc.MMiss += player.Melee.Count(b => (DefenseType)b.DefenseType != DefenseType.None);
-
-                        mainAcc.MZeroDmgHits = nonCritHits.Count(h => h.Amount == 0);
-                        mainAcc.MZeroDmgCritHits = critHits.Count(h => h.Amount == 0);
-
-                        mainAcc.MEvaded = player.Melee.Count(b => (DefenseType)b.DefenseType == DefenseType.Evasion);
-                        mainAcc.MNonEvaded = player.Melee.Count(b => (DefenseType)b.DefenseType != DefenseType.Evasion);
-
-                        mainAcc.MCritHits += critHits.Count();
-                        mainAcc.MCritDmg += critHits.Sum(h => h.Amount);
-
-
-                        if ((mainAcc.MHits == 0) && (nonCritHits.Any()))
+                        foreach (var hitType in groupHits)
                         {
-                            mainAcc.MHi = nonCritHits.First().Amount;
-                            mainAcc.MLow = mainAcc.MHi;
-                        }
+                            switch (hitType.Key)
+                            {
+                                case DefenseType.None:
+                                    var groupCrits = from m in hitType
+                                                     group m by (DamageModifier)m.DamageModifier;
 
-                        if ((mainAcc.MCritHits == 0) && (critHits.Any()))
-                        {
-                            mainAcc.MCritHi = critHits.First().Amount;
-                            mainAcc.MCritLow = mainAcc.MCritHi;
-                        }
+                                    int count;
+                                    int meleeDmg;
+                                    int zeroCount;
 
-                        if (nonCritHits.Any())
-                        {
-                            min = nonCritHits.Min(h => h.Amount);
-                            max = nonCritHits.Max(h => h.Amount);
+                                    foreach (var critType in groupCrits)
+                                    {
+                                        switch (critType.Key)
+                                        {
+                                            case DamageModifier.Critical:
+                                                count = critType.Count();
+                                                mainAcc.MHits += count;
+                                                mainAcc.MCritHits += count;
+                                                mainAcc.MNonEvaded += count;
 
-                            if (min < mainAcc.MLow)
-                                mainAcc.MLow = min;
-                            if (max > mainAcc.MHi)
-                                mainAcc.MHi = max;
-                        }
+                                                int critDmg = critType.Sum(m => m.Amount);
 
-                        if (critHits.Any())
-                        {
-                            min = critHits.Min(h => h.Amount);
-                            max = critHits.Max(h => h.Amount);
+                                                mainAcc.MDmg += critDmg;
+                                                mainAcc.TDmg += critDmg;
+                                                mainAcc.TMDmg += critDmg;
+                                                mainAcc.MCritDmg += critDmg;
 
-                            if (min < mainAcc.MCritLow)
-                                mainAcc.MCritLow = min;
-                            if (max > mainAcc.MCritHi)
-                                mainAcc.MCritHi = max;
+                                                min = critType.First().Amount;
+                                                max = min;
+                                                zeroCount = 0;
+
+                                                foreach (var crit in critType)
+                                                {
+                                                    if (crit.Amount < min)
+                                                        min = crit.Amount;
+                                                    if (crit.Amount > max)
+                                                        max = crit.Amount;
+                                                    if (crit.Amount == 0)
+                                                        zeroCount++;
+                                                }
+
+                                                mainAcc.MCritLow = min;
+                                                mainAcc.MCritHi = max;
+                                                mainAcc.MZeroDmgCritHits = zeroCount;
+
+                                                break;
+                                            case DamageModifier.None:
+                                                count = critType.Count();
+                                                mainAcc.MHits += count;
+                                                mainAcc.MNonEvaded += count;
+
+                                                meleeDmg = critType.Sum(m => m.Amount);
+                                                mainAcc.MDmg += meleeDmg;
+                                                mainAcc.TDmg += meleeDmg;
+                                                mainAcc.TMDmg += meleeDmg;
+
+                                                min = critType.First().Amount;
+                                                max = min;
+                                                zeroCount = 0;
+
+                                                foreach (var nonCrit in critType)
+                                                {
+                                                    if (nonCrit.Amount < min)
+                                                        min = nonCrit.Amount;
+                                                    if (nonCrit.Amount > max)
+                                                        max = nonCrit.Amount;
+                                                    if (nonCrit.Amount == 0)
+                                                        zeroCount++;
+                                                }
+
+                                                mainAcc.MLow = min;
+                                                mainAcc.MHi = max;
+                                                mainAcc.MZeroDmgHits = zeroCount;
+
+                                                break;
+                                        }
+                                    }
+
+                                    break;
+                                case DefenseType.Absorb:
+                                    mainAcc.MAbsHits += hitType.Count();
+
+                                    int absMDamage = hitType.Sum(m => m.Amount);
+
+                                    mainAcc.TAbsMDmg += absMDamage;
+                                    mainAcc.TAbsDmg += absMDamage;
+                                    mainAcc.TDmg += absMDamage;
+                                    mainAcc.TMDmg += absMDamage;
+
+                                    break;
+                                case DefenseType.Evasion:
+                                    mainAcc.MMiss += hitType.Count();
+                                    mainAcc.MEvaded += hitType.Count();
+                                    break;
+                                default:
+                                    mainAcc.MMiss += hitType.Count();
+                                    mainAcc.MNonEvaded += hitType.Count();
+                                    break;
+                            }
                         }
                     }
                     #endregion
@@ -972,68 +1041,118 @@ namespace WaywardGamers.KParser.Plugin
                     #region Range
                     if (player.Range.Any())
                     {
-                        mainAcc.TDmg += player.RangeDmg;
-                        mainAcc.TRDmg += player.RangeDmg;
+                        var groupHits = from r in player.Range
+                                        group r by (DefenseType)r.DefenseType;
 
-                        var succHits = player.Range.Where(h => (DefenseType)h.DefenseType == DefenseType.None);
-                        var critHits = succHits.Where(h => (DamageModifier)h.DamageModifier == DamageModifier.Critical);
-                        var nonCritHits = succHits.Where(h => (DamageModifier)h.DamageModifier == DamageModifier.None);
-
-
-                        mainAcc.RHits += succHits.Count();
-                        mainAcc.RMiss += player.Range.Count(b => (DefenseType)b.DefenseType != DefenseType.None);
-
-                        mainAcc.RZeroDmgHits = nonCritHits.Count(h => h.Amount == 0);
-                        mainAcc.RZeroDmgCritHits = critHits.Count(h => h.Amount == 0);
-
-                        mainAcc.REvaded = player.Range.Count(b => (DefenseType)b.DefenseType == DefenseType.Evasion);
-                        mainAcc.RNonEvaded = player.Range.Count(b => (DefenseType)b.DefenseType != DefenseType.Evasion);
-
-                        mainAcc.RCritHits += critHits.Count();
-                        mainAcc.RCritDmg += critHits.Sum(h => h.Amount);
-
-                        if ((mainAcc.RHits == 0) && (nonCritHits.Any()))
+                        foreach (var hitType in groupHits)
                         {
-                            mainAcc.RHi = nonCritHits.First().Amount;
-                            mainAcc.RLow = mainAcc.RHi;
-                        }
+                            switch (hitType.Key)
+                            {
+                                case DefenseType.None:
+                                    var groupCrits = from r in hitType
+                                                     group r by (DamageModifier)r.DamageModifier;
 
-                        if ((mainAcc.RCritHits == 0) && (critHits.Any()))
-                        {
-                            mainAcc.RCritHi = critHits.First().Amount;
-                            mainAcc.RCritLow = mainAcc.RCritHi;
-                        }
+                                    int count;
+                                    int rangeDmg;
+                                    int zeroCount;
 
-                        if (nonCritHits.Any())
-                        {
-                            min = nonCritHits.Min(h => h.Amount);
-                            max = nonCritHits.Max(h => h.Amount);
+                                    foreach (var critType in groupCrits)
+                                    {
+                                        switch (critType.Key)
+                                        {
+                                            case DamageModifier.Critical:
+                                                count = critType.Count();
+                                                mainAcc.RHits += count;
+                                                mainAcc.RCritHits += count;
+                                                mainAcc.RNonEvaded += count;
 
-                            if (min < mainAcc.RLow)
-                                mainAcc.RLow = min;
-                            if (max > mainAcc.RHi)
-                                mainAcc.RHi = max;
-                        }
+                                                int critDmg = critType.Sum(r => r.Amount);
 
-                        if (critHits.Any())
-                        {
-                            min = critHits.Min(h => h.Amount);
-                            max = critHits.Max(h => h.Amount);
+                                                mainAcc.RDmg += critDmg;
+                                                mainAcc.TDmg += critDmg;
+                                                mainAcc.TRDmg += critDmg;
+                                                mainAcc.RCritDmg += critDmg;
 
-                            if (min < mainAcc.RCritLow)
-                                mainAcc.RCritLow = min;
-                            if (max > mainAcc.RCritHi)
-                                mainAcc.RCritHi = max;
+                                                min = critType.First().Amount;
+                                                max = min;
+                                                zeroCount = 0;
+
+                                                foreach (var crit in critType)
+                                                {
+                                                    if (crit.Amount < min)
+                                                        min = crit.Amount;
+                                                    if (crit.Amount > max)
+                                                        max = crit.Amount;
+                                                    if (crit.Amount == 0)
+                                                        zeroCount++;
+                                                }
+
+                                                mainAcc.RCritLow = min;
+                                                mainAcc.RCritHi = max;
+                                                mainAcc.RZeroDmgCritHits = zeroCount;
+
+                                                break;
+                                            case DamageModifier.None:
+                                                count = critType.Count();
+                                                mainAcc.RHits += count;
+                                                mainAcc.RNonEvaded += count;
+
+                                                rangeDmg = critType.Sum(r => r.Amount);
+                                                mainAcc.RDmg += rangeDmg;
+                                                mainAcc.TDmg += rangeDmg;
+                                                mainAcc.TRDmg += rangeDmg;
+
+                                                min = critType.First().Amount;
+                                                max = min;
+                                                zeroCount = 0;
+
+                                                foreach (var nonCrit in critType)
+                                                {
+                                                    if (nonCrit.Amount < min)
+                                                        min = nonCrit.Amount;
+                                                    if (nonCrit.Amount > max)
+                                                        max = nonCrit.Amount;
+                                                    if (nonCrit.Amount == 0)
+                                                        zeroCount++;
+                                                }
+
+                                                mainAcc.RLow = min;
+                                                mainAcc.RHi = max;
+                                                mainAcc.RZeroDmgHits = zeroCount;
+
+                                                break;
+                                        }
+                                    }
+
+                                    break;
+                                case DefenseType.Absorb:
+                                    mainAcc.RAbsHits += hitType.Count();
+
+                                    int absRDamage = hitType.Sum(r => r.Amount);
+
+                                    mainAcc.TAbsRDmg += absRDamage;
+                                    mainAcc.TAbsDmg += absRDamage;
+                                    mainAcc.TDmg += absRDamage;
+                                    mainAcc.TRDmg += absRDamage;
+
+                                    break;
+                                case DefenseType.Evasion:
+                                    mainAcc.RMiss += hitType.Count();
+                                    mainAcc.REvaded += hitType.Count();
+                                    break;
+                                default:
+                                    mainAcc.RMiss += hitType.Count();
+                                    mainAcc.RNonEvaded += hitType.Count();
+                                    break;
+                            }
                         }
                     }
                     #endregion
 
                     #region Ability
+
                     if (player.Ability.Any())
                     {
-                        mainAcc.TDmg += player.AbilityDmg;
-                        mainAcc.TADmg += player.AbilityDmg;
-
                         var abils = player.Ability.Where(a => a.IsActionIDNull() == false)
                             .GroupBy(a => a.ActionsRow.ActionName);
 
@@ -1050,95 +1169,148 @@ namespace WaywardGamers.KParser.Plugin
                                 mainAcc.Abilities.Add(abilAcc);
                             }
 
-                            var succAbil = abil.Where(a => (DefenseType)a.DefenseType == DefenseType.None);
-                            var missAbil = abil.Where(a => (DefenseType)a.DefenseType != DefenseType.None);
 
-                            if ((abilAcc.AHit == 0) && (succAbil.Any()))
+                            var groupHits = from a in abil
+                                            group a by (DefenseType)a.DefenseType;
+
+                            foreach (var hitType in groupHits)
                             {
-                                abilAcc.AHi = succAbil.First().Amount;
-                                abilAcc.ALow = abilAcc.AHi;
+                                switch (hitType.Key)
+                                {
+                                    case DefenseType.None:
+                                        abilAcc.AHit += hitType.Count();
+
+                                        int abilDamage = hitType.Sum(a => a.Amount);
+
+                                        abilAcc.ADmg += abilDamage;
+                                        mainAcc.TDmg += abilDamage;
+                                        mainAcc.TADmg += abilDamage;
+                                        mainAcc.ADmg += abilDamage;
+
+                                        min = hitType.First().Amount;
+                                        max = min;
+
+                                        foreach (var dmg in hitType)
+                                        {
+                                            if (dmg.Amount < min)
+                                                min = dmg.Amount;
+                                            if (dmg.Amount > max)
+                                                max = dmg.Amount;
+                                        }
+
+                                        abilAcc.ALow = min;
+                                        abilAcc.AHi = max; 
+                                        
+                                        break;
+                                    case DefenseType.Absorb:
+                                        abilAcc.AAbsHit += hitType.Count();
+
+                                        int absADamage = hitType.Sum(a => a.Amount);
+
+                                        abilAcc.AAbsDmg += absADamage;
+                                        mainAcc.TAbsADmg += absADamage;
+                                        mainAcc.TAbsDmg += absADamage;
+                                        mainAcc.TDmg += absADamage;
+                                        mainAcc.TADmg += absADamage;
+
+                                        break;
+                                    default:
+                                        abilAcc.AMiss += hitType.Count();
+                                        break;
+                                }
                             }
-
-                            if (succAbil.Any())
-                            {
-                                min = succAbil.Min(a => a.Amount);
-                                max = succAbil.Max(a => a.Amount);
-
-                                if (min < abilAcc.ALow)
-                                    abilAcc.ALow = min;
-                                if (max > abilAcc.AHi)
-                                    abilAcc.AHi = max;
-                            }
-
-                            abilAcc.AHit += succAbil.Count();
-                            abilAcc.AMiss += missAbil.Count();
-                            abilAcc.ADmg += succAbil.Sum(a => a.Amount);
                         }
                     }
                     #endregion
 
                     #region Weaponskills
+
                     if (player.WSkill.Any())
                     {
-                        mainAcc.TDmg += player.WSkillDmg;
-                        mainAcc.TWDmg += player.WSkillDmg;
-
-                        var wskills = player.WSkill.GroupBy(a => a.ActionsRow.ActionName);
+                        var wskills = player.WSkill.Where(w => w.IsActionIDNull() == false)
+                            .GroupBy(a => a.ActionsRow.ActionName);
 
                         foreach (var wskill in wskills)
                         {
                             string wskillName = wskill.Key;
 
-                            WSAccum wskillAcc = mainAcc.Weaponskills.FirstOrDefault(
-                                a => a.WName == wskillName);
+                            WSAccum wsAccum = mainAcc.Weaponskills.FirstOrDefault(
+                                w => w.WName == wskillName);
 
-                            if (wskillAcc == null)
+                            if (wsAccum == null)
                             {
-                                wskillAcc = new WSAccum { WName = wskillName };
-                                mainAcc.Weaponskills.Add(wskillAcc);
+                                wsAccum = new WSAccum { WName = wskillName };
+                                mainAcc.Weaponskills.Add(wsAccum);
                             }
 
-                            var succWS = wskill.Where(a => (DefenseType)a.DefenseType == DefenseType.None);
-                            var missWS = wskill.Where(a => (DefenseType)a.DefenseType != DefenseType.None);
+                            var groupHits = from w in wskill
+                                            group w by (DefenseType)w.DefenseType;
 
-                            if ((wskillAcc.WHit == 0) && (succWS.Any()))
+                            foreach (var hitType in groupHits)
                             {
-                                wskillAcc.WHi = succWS.First().Amount;
-                                wskillAcc.WLow = wskillAcc.WHi;
+                                switch (hitType.Key)
+                                {
+                                    case DefenseType.None:
+                                        wsAccum.WHit += hitType.Count();
+
+                                        int wsDamage = hitType.Sum(a => a.Amount);
+
+                                        wsAccum.WDmg += wsDamage;
+                                        mainAcc.TDmg += wsDamage;
+                                        mainAcc.TWDmg += wsDamage;
+                                        mainAcc.WDmg += wsDamage;
+
+                                        min = hitType.First().Amount;
+                                        max = min;
+
+                                        foreach (var dmg in hitType)
+                                        {
+                                            if (dmg.Amount < min)
+                                                min = dmg.Amount;
+                                            if (dmg.Amount > max)
+                                                max = dmg.Amount;
+                                        }
+
+                                        wsAccum.WLow = min;
+                                        wsAccum.WHi = max; 
+                                        
+                                        break;
+                                    case DefenseType.Absorb:
+                                        wsAccum.WAbsHit += hitType.Count();
+
+                                        int absWDamage = hitType.Sum(a => a.Amount);
+
+                                        wsAccum.WAbsDmg += absWDamage;
+                                        mainAcc.TAbsWDmg += absWDamage;
+                                        mainAcc.TAbsDmg += absWDamage;
+                                        mainAcc.TDmg += absWDamage;
+                                        mainAcc.TWDmg += absWDamage;
+
+                                        break;
+                                    default:
+                                        wsAccum.WMiss += hitType.Count();
+                                        break;
+                                }
                             }
-
-                            if (succWS.Any())
-                            {
-                                min = succWS.Min(a => a.Amount);
-                                max = succWS.Max(a => a.Amount);
-
-                                if (min < wskillAcc.WLow)
-                                    wskillAcc.WLow = min;
-                                if (max > wskillAcc.WHi)
-                                    wskillAcc.WHi = max;
-                            }
-
-                            wskillAcc.WHit += succWS.Count();
-                            wskillAcc.WMiss += missWS.Count();
-                            wskillAcc.WDmg += succWS.Sum(a => a.Amount);
                         }
                     }
+
                     #endregion
 
                     #region Spells
+
+
                     if (player.Spell.Any())
                     {
-                        mainAcc.TDmg += player.SpellDmg;
-                        mainAcc.TSDmg += player.SpellDmg;
-
-                        var spells = player.Spell.GroupBy(a => a.ActionsRow.ActionName);
+                        var spells = player.Spell.Where(a => a.IsActionIDNull() == false)
+                            .GroupBy(a => a.ActionsRow.ActionName);
 
                         foreach (var spell in spells)
                         {
                             string spellName = spell.Key;
 
                             SpellAccum spellAcc = mainAcc.Spells.FirstOrDefault(
-                                a => a.SName == spellName);
+                                s => s.SName == spellName);
 
                             if (spellAcc == null)
                             {
@@ -1146,50 +1318,101 @@ namespace WaywardGamers.KParser.Plugin
                                 mainAcc.Spells.Add(spellAcc);
                             }
 
-                            var succSpell = spell.Where(a => (DefenseType)a.DefenseType == DefenseType.None);
-                            var failSpell = spell.Where(a => (DefenseType)a.DefenseType == DefenseType.Resist);
-                            var nonMBSpell = succSpell.Where(a => (DamageModifier)a.DamageModifier == DamageModifier.None);
-                            var mbSpell = succSpell.Where(a => (DamageModifier)a.DamageModifier == DamageModifier.MagicBurst);
 
-                            if ((spellAcc.SNum == 0) && (nonMBSpell.Any()))
+                            var groupSpells = from a in spell
+                                            group a by (DefenseType)a.DefenseType;
+
+                            foreach (var resType in groupSpells)
                             {
-                                spellAcc.SHi = nonMBSpell.First().Amount;
-                                spellAcc.SLow = spellAcc.SHi;
+                                switch (resType.Key)
+                                {
+                                    case DefenseType.None:
+                                        var groupMBs = from m in resType
+                                                         group m by (DamageModifier)m.DamageModifier;
+
+                                        int count;
+                                        int spellDamage;
+
+                                        foreach (var mbType in groupMBs)
+                                        {
+                                            switch (mbType.Key)
+                                            {
+                                                case DamageModifier.MagicBurst:
+                                                    count = mbType.Count();
+                                                    spellAcc.SNumMB += count;
+                                                    spellAcc.SNum += count;
+
+                                                    int mbDmg = mbType.Sum(m => m.Amount);
+
+                                                    spellAcc.SDmg += mbDmg;
+                                                    spellAcc.SMBDmg += mbDmg;
+                                                    mainAcc.TDmg += mbDmg;
+                                                    mainAcc.TSDmg += mbDmg;
+                                                    mainAcc.SDmg += mbDmg;
+
+                                                    min = mbType.First().Amount;
+                                                    max = min;
+
+                                                    foreach (var mb in mbType)
+                                                    {
+                                                        if (mb.Amount < min)
+                                                            min = mb.Amount;
+                                                        if (mb.Amount > max)
+                                                            max = mb.Amount;
+                                                    }
+
+                                                    spellAcc.SMBLow = min;
+                                                    spellAcc.SMBHi = max;
+
+                                                    break;
+                                                case DamageModifier.None:
+                                                    spellAcc.SNum += resType.Count();
+
+                                                    spellDamage = mbType.Sum(m => m.Amount);
+
+                                                    spellAcc.SDmg += spellDamage;
+                                                    mainAcc.TDmg += spellDamage;
+                                                    mainAcc.TSDmg += spellDamage;
+                                                    mainAcc.SDmg += spellDamage;
+
+                                                    min = mbType.First().Amount;
+                                                    max = min;
+
+                                                    foreach (var nonMB in mbType)
+                                                    {
+                                                        if (nonMB.Amount < min)
+                                                            min = nonMB.Amount;
+                                                        if (nonMB.Amount > max)
+                                                            max = nonMB.Amount;
+                                                    }
+
+                                                    spellAcc.SLow = min;
+                                                    spellAcc.SHi = max;
+
+                                                    break;
+                                            }
+                                        }
+
+                                        break;
+                                    case DefenseType.Absorb:
+                                        spellAcc.SAbsNum += resType.Count();
+
+                                        int absSDamage = resType.Sum(a => a.Amount);
+
+                                        spellAcc.SAbsDmg += absSDamage;
+                                        mainAcc.TAbsSDmg += absSDamage;
+                                        mainAcc.TAbsDmg += absSDamage;
+                                        mainAcc.TDmg += absSDamage;
+                                        mainAcc.TSDmg += absSDamage;
+
+                                        break;
+                                    case DefenseType.Resist:
+                                        spellAcc.SFail += resType.Count();
+                                        break;
+                                    default:
+                                        break;
+                                }
                             }
-
-                            if ((spellAcc.SNumMB == 0) && (mbSpell.Any()))
-                            {
-                                spellAcc.SMBHi = mbSpell.First().Amount;
-                                spellAcc.SMBLow = spellAcc.SMBHi;
-                            }
-
-                            if (nonMBSpell.Any())
-                            {
-                                min = nonMBSpell.Min(a => a.Amount);
-                                max = nonMBSpell.Max(a => a.Amount);
-
-                                if (min < spellAcc.SLow)
-                                    spellAcc.SLow = min;
-                                if (max > spellAcc.SHi)
-                                    spellAcc.SHi = max;
-                            }
-
-                            if (mbSpell.Any())
-                            {
-                                min = mbSpell.Min(a => a.Amount);
-                                max = mbSpell.Max(a => a.Amount);
-
-                                if (min < spellAcc.SMBLow)
-                                    spellAcc.SMBLow = min;
-                                if (max > spellAcc.SMBHi)
-                                    spellAcc.SMBHi = max;
-                            }
-
-                            spellAcc.SNum += succSpell.Count();
-                            spellAcc.SFail += failSpell.Count();
-                            spellAcc.SNumMB += mbSpell.Count();
-                            spellAcc.SDmg += succSpell.Sum(a => a.Amount);
-                            spellAcc.SMBDmg += mbSpell.Sum(a => a.Amount);
                         }
                     }
                     #endregion
@@ -1354,7 +1577,7 @@ namespace WaywardGamers.KParser.Plugin
         {
             totalDamage = dataAccum.Sum(p => p.TDmg);
 
-            if (totalDamage > 0)
+            if (totalDamage != 0)
             {
                 strModList.Add(new StringMods
                 {
@@ -1378,7 +1601,7 @@ namespace WaywardGamers.KParser.Plugin
 
                 foreach (var player in dataAccum.OrderBy(p => p.CType).ThenBy(p => p.Name))
                 {
-                    if (player.TDmg > 0)
+                    if (player.TDmg != 0)
                     {
                         sb.AppendFormat(lsSummaryFormat,
                             player.DisplayName,
@@ -1389,7 +1612,8 @@ namespace WaywardGamers.KParser.Plugin
                             player.TADmg,
                             player.TWDmg,
                             player.TSDmg,
-                            player.TODmg);
+                            player.TODmg,
+                            player.TAbsDmg);
                         sb.Append("\n");
                     }
                 }
@@ -1404,7 +1628,8 @@ namespace WaywardGamers.KParser.Plugin
                         dataAccum.Sum(p => p.TADmg),
                         dataAccum.Sum(p => p.TWDmg),
                         dataAccum.Sum(p => p.TSDmg),
-                        dataAccum.Sum(p => p.TODmg));
+                        dataAccum.Sum(p => p.TODmg),
+                        dataAccum.Sum(p => p.TAbsDmg));
 
                 strModList.Add(new StringMods
                 {
@@ -1452,18 +1677,58 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         sb.AppendFormat(lsMeleeFormat,
                           player.DisplayName,
+                          player.MDmg,
+                          player.TAbsMDmg,
                           player.TMDmg,
-                          (player.TDmg > 0) ? (double)player.TMDmg / player.TDmg : 0,
+                          (player.TDmg != 0) ? (double)player.TMDmg / player.TDmg : 0,
                           string.Format("{0}/{1}", player.MHits, player.MMiss),
                           (double)player.MHits / (player.MHits + player.MMiss),
+                          (double)player.MNonEvaded / (player.MNonEvaded + player.MEvaded),
                           string.Format("{0}/{1}", player.MLow, player.MHi),
-                          (player.MHits > player.MCritHits) ? (double)(player.TMDmg - player.MCritDmg) / (player.MHits - player.MCritHits) : 0,
+                          (player.MHits > player.MCritHits) ? (double)(player.MDmg - player.MCritDmg) / (player.MHits - player.MCritHits) : 0,
+                          (player.MHits > player.MCritHits) ? (double)(player.MDmg - player.MCritDmg) / (player.MHits - player.MCritHits - player.MZeroDmgHits) : 0,
                           player.MCritHits,
                           string.Format("{0}/{1}", player.MCritLow, player.MCritHi),
                           ((player.MCritHits - player.MZeroDmgCritHits) > 0) ? (double)player.MCritDmg / (player.MCritHits - player.MZeroDmgCritHits) : 0,
-                          (player.MHits > 0) ? (double)player.MCritHits / player.MHits : 0,
-                          (double)player.MNonEvaded / (player.MNonEvaded + player.MEvaded),
-                          (player.MHits > player.MCritHits) ? (double)(player.TMDmg - player.MCritDmg) / (player.MHits - player.MCritHits - player.MZeroDmgHits) : 0
+                          (player.MHits > 0) ? (double)player.MCritHits / player.MHits : 0
+                          );
+                        sb.Append("\n");
+                    }
+                }
+
+                sb.Append("\n\n");
+
+
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = lsMeleeCritTitle.Length,
+                    Bold = true,
+                    Color = Color.Red
+                });
+                sb.Append(lsMeleeCritTitle + "\n");
+
+                strModList.Add(new StringMods
+                {
+                    Start = sb.Length,
+                    Length = lsMeleeCritHeader.Length,
+                    Bold = true,
+                    Underline = true,
+                    Color = Color.Black
+                });
+                sb.Append(lsMeleeCritHeader + "\n");
+
+
+                foreach (var player in dataAccum.OrderBy(p => p.CType).ThenBy(p => p.Name))
+                {
+                    if ((player.MHits + player.MMiss) > 0)
+                    {
+                        sb.AppendFormat(lsMeleeCritFormat,
+                          player.DisplayName,
+                          player.MCritHits,
+                          string.Format("{0}/{1}", player.MCritLow, player.MCritHi),
+                          ((player.MCritHits - player.MZeroDmgCritHits) > 0) ? (double)player.MCritDmg / (player.MCritHits - player.MZeroDmgCritHits) : 0,
+                          (player.MHits > 0) ? (double)player.MCritHits / player.MHits : 0
                           );
                         sb.Append("\n");
                     }
@@ -1557,6 +1822,8 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         sb.AppendFormat(lsWeaponskillFormat,
                              player.DisplayName,
+                             player.WDmg,
+                             player.TAbsWDmg,
                              player.TWDmg,
                              (player.TDmg > 0) ? (double)player.TWDmg / player.TDmg : 0,
                              string.Format("{0}/{1}", player.Weaponskills.Sum(w => w.WHit), player.Weaponskills.Sum(w => w.WMiss)),
@@ -1570,7 +1837,9 @@ namespace WaywardGamers.KParser.Plugin
                             sb.AppendFormat(lsWeaponskillFormat,
                                  string.Concat(" - ", wskill.WName),
                                  wskill.WDmg,
-                                 (player.TWDmg > 0) ? (double)wskill.WDmg / player.TWDmg : 0,
+                                 wskill.WAbsDmg,
+                                 wskill.WDmg + wskill.WAbsDmg,
+                                 (player.TWDmg > 0) ? (double)wskill.WDmg / player.WDmg : 0,
                                  string.Format("{0}/{1}", wskill.WHit, wskill.WMiss),
                                  (wskill.WHit + wskill.WMiss) > 0 ? (double)wskill.WHit / (wskill.WHit + wskill.WMiss) : 0,
                                  string.Format("{0}/{1}", wskill.WLow, wskill.WHi),
@@ -1615,14 +1884,16 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         sb.AppendFormat(lsAbilityFormat,
                              player.DisplayName,
+                             player.ADmg,
+                             player.TAbsADmg,
                              player.TADmg,
-                             (player.TDmg > 0) ? (double)player.TADmg / player.TDmg : 0,
+                             (player.TDmg != 0) ? (double)player.TADmg / player.TDmg : 0,
                              string.Format("{0}/{1}", player.Abilities.Sum(w => w.AHit), player.Abilities.Sum(w => w.AMiss)),
                              (double)player.Abilities.Sum(w => w.AHit) / player.Abilities.Sum(w => w.AHit + w.AMiss),
                              player.Abilities.Sum(a => a.AHit) > 0 ?
                                 string.Format("{0}/{1}", player.Abilities.Where(a => a.AHit > 0).Min(w => w.ALow), player.Abilities.Max(w => w.AHi)) :
                                 string.Format("{0}/{1}", 0, 0),
-                             player.Abilities.Any(w => w.AHit > 0) ? (double)player.TADmg / player.Abilities.Sum(w => w.AHit) : 0);
+                             player.Abilities.Any(w => w.AHit > 0) ? (double)player.ADmg / player.Abilities.Sum(w => w.AHit) : 0);
                         sb.Append("\n");
 
                         foreach (var abil in player.Abilities.OrderBy(w => w.AName))
@@ -1630,7 +1901,9 @@ namespace WaywardGamers.KParser.Plugin
                             sb.AppendFormat(lsAbilityFormat,
                                  string.Concat(" - ", abil.AName),
                                  abil.ADmg,
-                                 (player.TADmg > 0) ? (double)abil.ADmg / player.TADmg : 0,
+                                 abil.AAbsDmg,
+                                 abil.ADmg + abil.AAbsDmg,
+                                 (player.TADmg > 0) ? (double)abil.ADmg / player.ADmg : 0,
                                  string.Format("{0}/{1}", abil.AHit, abil.AMiss),
                                  (abil.AHit + abil.AMiss) > 0 ? (double)abil.AHit / (abil.AHit + abil.AMiss) : 0,
                                  string.Format("{0}/{1}", abil.ALow, abil.AHi),
@@ -1676,8 +1949,10 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         sb.AppendFormat(lsSpellFormat,
                              player.DisplayName,
+                             player.SDmg,
+                             player.TAbsSDmg,
                              player.TSDmg,
-                             (player.TDmg > 0) ? (double)player.TSDmg / player.TDmg : 0,
+                             (player.TDmg != 0) ? (double)player.TSDmg / player.TDmg : 0,
                              player.Spells.Sum(s => s.SNum),
                              player.Spells.Sum(s => s.SFail),
                              string.Format("{0}/{1}", player.Spells.Min(w => w.SLow), player.Spells.Max(w => w.SHi)),
@@ -1696,7 +1971,9 @@ namespace WaywardGamers.KParser.Plugin
                             sb.AppendFormat(lsSpellFormat,
                                  string.Concat(" - ", spell.SName),
                                  spell.SDmg,
-                                 (player.TSDmg > 0) ? (double)spell.SDmg / player.TSDmg : 0,
+                                 spell.SAbsDmg,
+                                 spell.SDmg + spell.SAbsDmg,
+                                 (player.TSDmg != 0) ? (double)(spell.SDmg + spell.SAbsDmg) / player.TSDmg : 0,
                                  spell.SNum,
                                  spell.SFail,
                                  string.Format("{0}/{1}", spell.SLow, spell.SHi),
@@ -1745,6 +2022,8 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         sb.AppendFormat(lsSkillchainFormat,
                              player.Name,
+                             player.SCDmg,
+                             player.TAbsSCDmg,
                              player.TSCDmg,
                              player.SCNum,
                              string.Format("{0}/{1}", player.SCLow, player.SCHi),
@@ -2095,6 +2374,7 @@ namespace WaywardGamers.KParser.Plugin
 
             lsSummaryTitle = Resources.Combat.OffensePluginTitleSummary;
             lsMeleeTitle = Resources.Combat.OffensePluginTitleMelee;
+            lsMeleeCritTitle = Resources.Combat.OffensePluginTitleMeleeCrit;
             lsRangeTitle = Resources.Combat.OffensePluginTitleRanged;
             lsSpellTitle = Resources.Combat.OffensePluginTitleSpell;
             lsAbilityTitle = Resources.Combat.OffensePluginTitleAbility;
@@ -2108,6 +2388,7 @@ namespace WaywardGamers.KParser.Plugin
 
             lsSummaryHeader = Resources.Combat.OffensePluginHeaderSummary;
             lsMeleeHeader = Resources.Combat.OffensePluginHeaderMelee;
+            lsMeleeCritHeader = Resources.Combat.OffensePluginHeaderMeleeCrit;
             lsRangeHeader = Resources.Combat.OffensePluginHeaderRanged;
             lsSpellHeader = Resources.Combat.OffensePluginHeaderSpell;
             lsAbilityHeader = Resources.Combat.OffensePluginHeaderAbility;
@@ -2120,6 +2401,7 @@ namespace WaywardGamers.KParser.Plugin
 
             lsSummaryFormat = Resources.Combat.OffensePluginFormatSummary;
             lsMeleeFormat = Resources.Combat.OffensePluginFormatMelee;
+            lsMeleeCritFormat = Resources.Combat.OffensePluginFormatMeleeCrit;
             lsRangeFormat = Resources.Combat.OffensePluginFormatRanged;
             lsSpellFormat = Resources.Combat.OffensePluginFormatSpell;
             lsAbilityFormat = Resources.Combat.OffensePluginFormatAbility;

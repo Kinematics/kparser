@@ -472,10 +472,10 @@
     <value>Weaponskills</value>
   </data>
   <data name="OffensePluginFormatAbility" xml:space="preserve">
-    <value>{0,-23}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}</value>
+    <value>{0,-23}{1,10}{2,11}{3,10}{4,11:p2}{5,10}{6,11:p2}{7,12}{8,9:f2}</value>
   </data>
   <data name="OffensePluginFormatMelee" xml:space="preserve">
-    <value>{0,-17}{1,10}{2,10:p2}{3,11}{4,10:p2}{11,10:p2}{5,10}{6,9:f2}{12,9:f2}{7,7}{8,10}{9,10:f2}{10,10:p2}</value>
+    <value>{0,-17}{1,10}{2,11}{3,10}{4,10:p2}{5,11}{6,10:p2}{7,10:p2}{8,10}{8,9:f2}{10,9:f2}</value>
   </data>
   <data name="OffensePluginFormatOtherMagical" xml:space="preserve">
     <value>{0,-17}{1,9}{2,8}{3,10:f2}{4,11}{5,8}{6,10:f2}{7,10}{8,9}{9,9:f2}</value>
@@ -487,22 +487,22 @@
     <value>{0,-17}{1,10}{2,10:p2}{3,11}{4,10:p2}{11,10:p2}{5,10}{6,9:f2}{12,9:f2}{7,7}{8,10}{9,10:f2}{10,10:p2}</value>
   </data>
   <data name="OffensePluginFormatSkillchain" xml:space="preserve">
-    <value>{0,-20}{1,6}{2,6}{3,11}{4,8:f2}</value>
+    <value>{0,-20}{1,6}{2,11}{3,10}{4,7}{5,11}{6,8:f2}</value>
   </data>
   <data name="OffensePluginFormatSpell" xml:space="preserve">
-    <value>{0,-23}{1,10}{2,10:p2}{3,9}{4,7}{5,10}{6,10:f2}{7,9}{8,11}{9,9:f2}</value>
+    <value>{0,-23}{1,10}{2,11}{3,10}{4,10:p2}{5,9}{6,7}{7,10}{8,10:f2}{9,9}</value>
   </data>
   <data name="OffensePluginFormatSummary" xml:space="preserve">
-    <value>{0,-20}{1,10}{2,11:p2}{3,12}{4,12}{5,12}{6,12}{7,12}{8,11}</value>
+    <value>{0,-20}{1,10}{2,11:p2}{3,12}{4,12}{5,12}{6,12}{7,12}{8,11}{9,15}</value>
   </data>
   <data name="OffensePluginFormatWeaponskill" xml:space="preserve">
-    <value>{0,-23}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}</value>
+    <value>{0,-23}{1,10}{2,11}{3,10}{4,11:p2}{5,10}{6,11:p2}{7,12}{8,9:f2}</value>
   </data>
   <data name="OffensePluginHeaderAbility" xml:space="preserve">
-    <value>Player                  Abil. Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg</value>
+    <value>Player                  Abil. Dmg  Abs'd.Dmg   Net Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg</value>
   </data>
   <data name="OffensePluginHeaderMelee" xml:space="preserve">
-    <value>Player            Melee Dmg   Melee %   Hit/Miss    M.HR %   M.Acc %  M.Low/Hi  M+0.Avg  M-0.Avg  #Crit  C.Low/Hi   C-0.Avg     Crit%</value>
+    <value>Player            Melee Dmg  Abs'd.Dmg   Net Dmg   Melee %   Hit/Miss    M.HR %   M.Acc %  M.Low/Hi  M+0.Avg  M-0.Avg</value>
   </data>
   <data name="OffensePluginHeaderOtherMagical" xml:space="preserve">
     <value>Player            M.AE Dmg  # M.AE  M.AE Avg   R.AE Dmg  # R.AE  R.AE Avg   Spk.Dmg  # Spike  Spk.Avg</value>
@@ -514,16 +514,16 @@
     <value>Player            Range Dmg   Range %   Hit/Miss    R.HR %   R.Acc %  R.Low/Hi  R+0.Avg  R-0.Avg  #Crit  C.Low/Hi   C-0.Avg     Crit%</value>
   </data>
   <data name="OffensePluginHeaderSkillchain" xml:space="preserve">
-    <value>Skillchain          SC Dmg  # SC  SC.Low/Hi  SC.Avg</value>
+    <value>Skillchain          SC Dmg  Abs'd.Dmg   Net Dmg   # SC  SC.Low/Hi  SC.Avg</value>
   </data>
   <data name="OffensePluginHeaderSpell" xml:space="preserve">
-    <value>Player                  Spell Dmg   Spell %  #Spells  #Fail  S.Low/Hi     S.Avg  #MBurst  MB.Low/Hi   MB.Avg</value>
+    <value>Player                  Spell Dmg  Abs'd.Dmg   Net Dmg   Spell %  #Spells  #Fail  S.Low/Hi     S.Avg  #MBurst</value>
   </data>
   <data name="OffensePluginHeaderSummary" xml:space="preserve">
-    <value>Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg</value>
+    <value>Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg   Absorbed Dmg</value>
   </data>
   <data name="OffensePluginHeaderWeaponskill" xml:space="preserve">
-    <value>Player                 WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg</value>
+    <value>Player                 WSkill Dmg  Abs'd.Dmg   Net Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg</value>
   </data>
   <data name="OffensePluginTabName" xml:space="preserve">
     <value>Offense</value>
@@ -1034,5 +1034,14 @@
   </data>
   <data name="BuffsByTimePluginCritRateTitle" xml:space="preserve">
     <value>Crit Rate</value>
+  </data>
+  <data name="OffensePluginFormatMeleeCrit" xml:space="preserve">
+    <value>{0,-17}{1,10}{2,10}{3,10:f2}{4,10:p2}</value>
+  </data>
+  <data name="OffensePluginHeaderMeleeCrit" xml:space="preserve">
+    <value>Player                #Crit  C.Low/Hi   C-0.Avg     Crit%</value>
+  </data>
+  <data name="OffensePluginTitleMeleeCrit" xml:space="preserve">
+    <value>Melee Crit Damage</value>
   </data>
 </root>
