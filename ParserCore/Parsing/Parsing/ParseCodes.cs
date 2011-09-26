@@ -1086,7 +1086,7 @@ namespace WaywardGamers.KParser
             targetEntityTypeLookup[0x9f] = EntityType.Unknown; //
             targetEntityTypeLookup[0xa0] = EntityType.Unknown; //
             targetEntityTypeLookup[0xa1] = EntityType.Unknown; //
-            targetEntityTypeLookup[0xa2] = EntityType.Player; // <am> cures
+            targetEntityTypeLookup[0xa2] = EntityType.Unknown; // <am> cures <?>
             targetEntityTypeLookup[0xa3] = EntityType.Mob; // <am> hits
             targetEntityTypeLookup[0xa4] = EntityType.Mob; // <am> misses
             targetEntityTypeLookup[0xa5] = EntityType.Player; // <mob> casts on <am>
