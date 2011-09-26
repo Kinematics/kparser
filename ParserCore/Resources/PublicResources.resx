@@ -117,17 +117,26 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Accuracy" xml:space="preserve">
+    <value>Accuracy</value>
+  </data>
   <data name="AdminPrivilegeNeeded" xml:space="preserve">
     <value>This program needs to be run with Administrative privileges in order to function properly if reading from RAM.</value>
   </data>
   <data name="All" xml:space="preserve">
     <value>All</value>
   </data>
+  <data name="Attack" xml:space="preserve">
+    <value>Attack</value>
+  </data>
   <data name="BuffsLabel" xml:space="preserve">
     <value>Buffs</value>
   </data>
   <data name="CategoryLabel" xml:space="preserve">
     <value>Category:</value>
+  </data>
+  <data name="CritRate" xml:space="preserve">
+    <value>Crit Rate</value>
   </data>
   <data name="CustomMobSelection" xml:space="preserve">
     <value>Custom Mob Selection</value>
@@ -152,6 +161,9 @@
   </data>
   <data name="GroupMobs" xml:space="preserve">
     <value>Group Mobs</value>
+  </data>
+  <data name="Haste" xml:space="preserve">
+    <value>Haste</value>
   </data>
   <data name="MobsLabel" xml:space="preserve">
     <value>Mobs:</value>
