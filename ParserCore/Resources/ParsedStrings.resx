@@ -1557,4 +1557,7 @@
   <data name="Rampart" xml:space="preserve">
     <value>Rampart</value>
   </data>
+  <data name="Reprisal" xml:space="preserve">
+    <value>Reprisal</value>
+  </data>
 </root>
