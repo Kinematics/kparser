@@ -362,7 +362,8 @@ namespace WaywardGamers.KParser.Plugin
                                 Melee = from q in ca
                                         where ((ActionType)q.ActionType == ActionType.Melee &&
                                                ((HarmType)q.HarmType == HarmType.Damage ||
-                                                (HarmType)q.HarmType == HarmType.Drain))
+                                                (HarmType)q.HarmType == HarmType.Drain ||
+                                                (HarmType)q.HarmType == HarmType.Heal))
                                         orderby q.Timestamp
                                         select q,
                                 Ability = from q in ca
@@ -373,7 +374,8 @@ namespace WaywardGamers.KParser.Plugin
                                 WSkill = from q in ca
                                          where ((ActionType)q.ActionType == ActionType.Weaponskill &&
                                                ((HarmType)q.HarmType == HarmType.Damage ||
-                                                (HarmType)q.HarmType == HarmType.Drain) &&
+                                                (HarmType)q.HarmType == HarmType.Drain ||
+                                                (HarmType)q.HarmType == HarmType.Heal) &&
                                                 q.Preparing == false)
                                          orderby q.Timestamp
                                          select q,
@@ -391,8 +393,10 @@ namespace WaywardGamers.KParser.Plugin
                                 Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Melee &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
-                                               ((DefenseType)n.DefenseType == DefenseType.None))
+                                                (HarmType)n.HarmType == HarmType.Drain ||
+                                                (HarmType)n.HarmType == HarmType.Heal) &&
+                                               ((DefenseType)n.DefenseType == DefenseType.None ||
+                                                (DefenseType)n.DefenseType == DefenseType.Absorb))
                                         select n,
                                 Ability = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                           where ((ActionType)n.ActionType == ActionType.Ability &&
@@ -402,7 +406,8 @@ namespace WaywardGamers.KParser.Plugin
                                 WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                          where ((ActionType)n.ActionType == ActionType.Weaponskill &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
+                                                (HarmType)n.HarmType == HarmType.Drain ||
+                                                (HarmType)n.HarmType == HarmType.Heal) &&
                                                 n.Preparing == false)
                                          select n,
                             };
