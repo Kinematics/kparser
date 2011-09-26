@@ -428,25 +428,29 @@ namespace WaywardGamers.KParser.Plugin
                                 AnyAction = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                                        .Where(a => a.IsBattleIDNull() == false)
                                             where ((HarmType)n.HarmType == HarmType.Damage ||
-                                                    (HarmType)n.HarmType == HarmType.Drain) &&
+                                                    (HarmType)n.HarmType == HarmType.Drain ||
+                                                    (HarmType)n.HarmType == HarmType.Heal) &&
                                                    mobFilter.CheckFilterMobTarget(n) == true
                                             select n,
                                 Melee = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Melee &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain)) &&
+                                                (HarmType)n.HarmType == HarmType.Drain ||
+                                                (HarmType)n.HarmType == HarmType.Heal)) &&
                                                mobFilter.CheckFilterMobTarget(n) == true
                                         select n,
                                 Range = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Ranged &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain)) &&
+                                                (HarmType)n.HarmType == HarmType.Drain ||
+                                                (HarmType)n.HarmType == HarmType.Heal)) &&
                                                mobFilter.CheckFilterMobTarget(n) == true
                                         select n,
                                 Spell = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                         where ((ActionType)n.ActionType == ActionType.Spell &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
+                                                (HarmType)n.HarmType == HarmType.Drain ||
+                                                (HarmType)n.HarmType == HarmType.Heal) &&
                                                 n.Preparing == false) &&
                                                mobFilter.CheckFilterMobTarget(n) == true
                                         select n,
@@ -454,14 +458,16 @@ namespace WaywardGamers.KParser.Plugin
                                           where ((ActionType)n.ActionType == ActionType.Ability &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
                                                 (HarmType)n.HarmType == HarmType.Drain ||
-                                                (HarmType)n.HarmType == HarmType.Unknown) &&
+                                                (HarmType)n.HarmType == HarmType.Unknown ||
+                                                (HarmType)n.HarmType == HarmType.Heal) &&
                                                 n.Preparing == false) &&
                                                mobFilter.CheckFilterMobTarget(n) == true
                                           select n,
                                 WSkill = from n in c.GetInteractionsRowsByActorCombatantRelation()
                                          where ((ActionType)n.ActionType == ActionType.Weaponskill &&
                                                ((HarmType)n.HarmType == HarmType.Damage ||
-                                                (HarmType)n.HarmType == HarmType.Drain) &&
+                                                (HarmType)n.HarmType == HarmType.Drain ||
+                                                (HarmType)n.HarmType == HarmType.Heal) &&
                                                 n.Preparing == false) &&
                                                mobFilter.CheckFilterMobTarget(n) == true
                                          select n,
