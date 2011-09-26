@@ -49,7 +49,17 @@ namespace WaywardGamers.KParser.Plugin
         {
             get
             {
-                return Melee.Sum(d => d.Amount);
+                return Melee.Where(m => (DefenseType)m.DefenseType != DefenseType.Absorb)
+                    .Sum(d => d.Amount);
+            }
+        }
+
+        internal int AbsorbedMeleeDmg
+        {
+            get
+            {
+                return Melee.Where(m => (DefenseType)m.DefenseType == DefenseType.Absorb)
+                    .Sum(d => d.Amount);
             }
         }
 
@@ -75,7 +85,17 @@ namespace WaywardGamers.KParser.Plugin
         {
             get
             {
-                return Range.Sum(d => d.Amount);
+                return Range.Where(m => (DefenseType)m.DefenseType != DefenseType.Absorb)
+                    .Sum(d => d.Amount);
+            }
+        }
+
+        internal int AbsorbedRangeDmg
+        {
+            get
+            {
+                return Range.Where(m => (DefenseType)m.DefenseType == DefenseType.Absorb)
+                    .Sum(d => d.Amount);
             }
         }
 
@@ -101,7 +121,17 @@ namespace WaywardGamers.KParser.Plugin
         {
             get
             {
-                return Spell.Sum(d => d.Amount);
+                return Spell.Where(m => (DefenseType)m.DefenseType != DefenseType.Absorb)
+                    .Sum(d => d.Amount);
+            }
+        }
+
+        internal int AbsorbedSpellDmg
+        {
+            get
+            {
+                return Spell.Where(m => (DefenseType)m.DefenseType == DefenseType.Absorb)
+                    .Sum(d => d.Amount);
             }
         }
 
@@ -109,7 +139,17 @@ namespace WaywardGamers.KParser.Plugin
         {
             get
             {
-                return Ability.Sum(d => d.Amount);
+                return Ability.Where(m => (DefenseType)m.DefenseType != DefenseType.Absorb)
+                    .Sum(d => d.Amount);
+            }
+        }
+
+        internal int AbsorbedAbilityDmg
+        {
+            get
+            {
+                return Ability.Where(m => (DefenseType)m.DefenseType == DefenseType.Absorb)
+                    .Sum(d => d.Amount);
             }
         }
 
@@ -117,7 +157,17 @@ namespace WaywardGamers.KParser.Plugin
         {
             get
             {
-                return WSkill.Sum(d => d.Amount);
+                return WSkill.Where(m => (DefenseType)m.DefenseType != DefenseType.Absorb)
+                    .Sum(d => d.Amount);
+            }
+        }
+
+        internal int AbsorbedWSkillDmg
+        {
+            get
+            {
+                return WSkill.Where(m => (DefenseType)m.DefenseType == DefenseType.Absorb)
+                    .Sum(d => d.Amount);
             }
         }
 
@@ -125,7 +175,17 @@ namespace WaywardGamers.KParser.Plugin
         {
             get
             {
-                return SC.Sum(d => d.Amount);
+                return SC.Where(m => (DefenseType)m.DefenseType != DefenseType.Absorb)
+                    .Sum(d => d.Amount);
+            }
+        }
+
+        internal int AbsorbedSCDmg
+        {
+            get
+            {
+                return SC.Where(m => (DefenseType)m.DefenseType == DefenseType.Absorb)
+                    .Sum(d => d.Amount);
             }
         }
 
@@ -133,7 +193,17 @@ namespace WaywardGamers.KParser.Plugin
         {
             get
             {
-                return Counter.Sum(d => d.Amount);
+                return Counter.Where(m => (DefenseType)m.DefenseType != DefenseType.Absorb)
+                    .Sum(d => d.Amount);
+            }
+        }
+
+        internal int AbsorbedCounterDmg
+        {
+            get
+            {
+                return Counter.Where(m => (DefenseType)m.DefenseType == DefenseType.Absorb)
+                    .Sum(d => d.Amount);
             }
         }
 
@@ -141,7 +211,17 @@ namespace WaywardGamers.KParser.Plugin
         {
             get
             {
-                return Retaliate.Sum(d => d.Amount);
+                return Retaliate.Where(m => (DefenseType)m.DefenseType != DefenseType.Absorb)
+                    .Sum(d => d.Amount);
+            }
+        }
+
+        internal int AbsorbedRetaliateDmg
+        {
+            get
+            {
+                return Retaliate.Where(m => (DefenseType)m.DefenseType == DefenseType.Absorb)
+                    .Sum(d => d.Amount);
             }
         }
 
@@ -149,7 +229,17 @@ namespace WaywardGamers.KParser.Plugin
         {
             get
             {
-                return Spikes.Sum(d => d.Amount);
+                return Spikes.Where(m => (DefenseType)m.DefenseType != DefenseType.Absorb)
+                    .Sum(d => d.Amount);
+            }
+        }
+
+        internal int AbsorbedSpikesDmg
+        {
+            get
+            {
+                return Spikes.Where(m => (DefenseType)m.DefenseType == DefenseType.Absorb)
+                    .Sum(d => d.Amount);
             }
         }
 
@@ -398,7 +488,19 @@ namespace WaywardGamers.KParser.Plugin
         internal int TSDmg { get; set; }
         internal int TODmg { get; set; }
         internal int TSCDmg { get; set; }
+
+        internal int TAbsDmg { get; set; }
+        internal int TAbsMDmg { get; set; }
+        internal int TAbsRDmg { get; set; }
+        internal int TAbsADmg { get; set; }
+        internal int TAbsWDmg { get; set; }
+        internal int TAbsSDmg { get; set; }
+        internal int TAbsODmg { get; set; }
+        internal int TAbsSCDmg { get; set; }
+        
+        internal int MDmg { get; set; }
         internal int MHits { get; set; }
+        internal int MAbsHits { get; set; }
         internal int MMiss { get; set; }
         internal int MEvaded { get; set; }
         internal int MNonEvaded { get; set; }
@@ -411,7 +513,9 @@ namespace WaywardGamers.KParser.Plugin
         internal int MCritDmg { get; set; }
         internal int MCritLow { get; set; }
         internal int MCritHi { get; set; }
+        internal int RDmg { get; set; }
         internal int RHits { get; set; }
+        internal int RAbsHits { get; set; }
         internal int RMiss { get; set; }
         internal int REvaded { get; set; }
         internal int RNonEvaded { get; set; }
@@ -427,6 +531,10 @@ namespace WaywardGamers.KParser.Plugin
         internal int SCNum { get; set; }
         internal int SCLow { get; set; }
         internal int SCHi { get; set; }
+        internal int ADmg { get; set; }
+        internal int WDmg { get; set; }
+        internal int SDmg { get; set; }
+        internal int SCDmg { get; set; }
         internal int MAEDmg { get; set; }
         internal int MAENum { get; set; }
         internal int RAEDmg { get; set; }
@@ -467,6 +575,8 @@ namespace WaywardGamers.KParser.Plugin
         internal int AMiss { get; set; }
         internal int ALow { get; set; }
         internal int AHi { get; set; }
+        internal int AAbsDmg { get; set; }
+        internal int AAbsHit { get; set; }
     }
 
     class WSAccum
@@ -478,6 +588,8 @@ namespace WaywardGamers.KParser.Plugin
         internal int WMiss { get; set; }
         internal int WLow { get; set; }
         internal int WHi { get; set; }
+        internal int WAbsDmg { get; set; }
+        internal int WAbsHit { get; set; }
     }
 
     class SpellAccum
@@ -493,6 +605,8 @@ namespace WaywardGamers.KParser.Plugin
         internal int SMBDmg { get; set; }
         internal int SMBLow { get; set; }
         internal int SMBHi { get; set; }
+        internal int SAbsDmg { get; set; }
+        internal int SAbsNum { get; set; }
     }
     #endregion
 
