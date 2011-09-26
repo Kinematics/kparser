@@ -1879,7 +1879,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0,-23}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}.
+        ///   Looks up a localized string similar to {0,-23}{1,10}{2,11}{3,10}{4,11:p2}{5,10}{6,11:p2}{7,12}{8,9:f2}.
         /// </summary>
         internal static string OffensePluginFormatAbility {
             get {
@@ -1888,11 +1888,20 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0,-17}{1,10}{2,10:p2}{3,11}{4,10:p2}{11,10:p2}{5,10}{6,9:f2}{12,9:f2}{7,7}{8,10}{9,10:f2}{10,10:p2}.
+        ///   Looks up a localized string similar to {0,-17}{1,10}{2,11}{3,10}{4,10:p2}{5,11}{6,10:p2}{7,10:p2}{8,10}{8,9:f2}{10,9:f2}.
         /// </summary>
         internal static string OffensePluginFormatMelee {
             get {
                 return ResourceManager.GetString("OffensePluginFormatMelee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0,-17}{1,10}{2,10}{3,10:f2}{4,10:p2}.
+        /// </summary>
+        internal static string OffensePluginFormatMeleeCrit {
+            get {
+                return ResourceManager.GetString("OffensePluginFormatMeleeCrit", resourceCulture);
             }
         }
         
@@ -1924,7 +1933,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0,-20}{1,6}{2,6}{3,11}{4,8:f2}.
+        ///   Looks up a localized string similar to {0,-20}{1,6}{2,11}{3,10}{4,7}{5,11}{6,8:f2}.
         /// </summary>
         internal static string OffensePluginFormatSkillchain {
             get {
@@ -1933,7 +1942,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0,-23}{1,10}{2,10:p2}{3,9}{4,7}{5,10}{6,10:f2}{7,9}{8,11}{9,9:f2}.
+        ///   Looks up a localized string similar to {0,-23}{1,10}{2,11}{3,10}{4,10:p2}{5,9}{6,7}{7,10}{8,10:f2}{9,9}.
         /// </summary>
         internal static string OffensePluginFormatSpell {
             get {
@@ -1942,7 +1951,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0,-20}{1,10}{2,11:p2}{3,12}{4,12}{5,12}{6,12}{7,12}{8,11}.
+        ///   Looks up a localized string similar to {0,-20}{1,10}{2,11:p2}{3,12}{4,12}{5,12}{6,12}{7,12}{8,11}{9,15}.
         /// </summary>
         internal static string OffensePluginFormatSummary {
             get {
@@ -1951,7 +1960,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0,-23}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}.
+        ///   Looks up a localized string similar to {0,-23}{1,10}{2,11}{3,10}{4,11:p2}{5,10}{6,11:p2}{7,12}{8,9:f2}.
         /// </summary>
         internal static string OffensePluginFormatWeaponskill {
             get {
@@ -1960,7 +1969,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Player                  Abil. Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg.
+        ///   Looks up a localized string similar to Player                  Abil. Dmg  Abs&apos;d.Dmg   Net Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg.
         /// </summary>
         internal static string OffensePluginHeaderAbility {
             get {
@@ -1969,11 +1978,20 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Player            Melee Dmg   Melee %   Hit/Miss    M.HR %   M.Acc %  M.Low/Hi  M+0.Avg  M-0.Avg  #Crit  C.Low/Hi   C-0.Avg     Crit%.
+        ///   Looks up a localized string similar to Player            Melee Dmg  Abs&apos;d.Dmg   Net Dmg   Melee %   Hit/Miss    M.HR %   M.Acc %  M.Low/Hi  M+0.Avg  M-0.Avg.
         /// </summary>
         internal static string OffensePluginHeaderMelee {
             get {
                 return ResourceManager.GetString("OffensePluginHeaderMelee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player                #Crit  C.Low/Hi   C-0.Avg     Crit%.
+        /// </summary>
+        internal static string OffensePluginHeaderMeleeCrit {
+            get {
+                return ResourceManager.GetString("OffensePluginHeaderMeleeCrit", resourceCulture);
             }
         }
         
@@ -2005,7 +2023,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Skillchain          SC Dmg  # SC  SC.Low/Hi  SC.Avg.
+        ///   Looks up a localized string similar to Skillchain          SC Dmg  Abs&apos;d.Dmg   Net Dmg   # SC  SC.Low/Hi  SC.Avg.
         /// </summary>
         internal static string OffensePluginHeaderSkillchain {
             get {
@@ -2014,7 +2032,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Player                  Spell Dmg   Spell %  #Spells  #Fail  S.Low/Hi     S.Avg  #MBurst  MB.Low/Hi   MB.Avg.
+        ///   Looks up a localized string similar to Player                  Spell Dmg  Abs&apos;d.Dmg   Net Dmg   Spell %  #Spells  #Fail  S.Low/Hi     S.Avg  #MBurst.
         /// </summary>
         internal static string OffensePluginHeaderSpell {
             get {
@@ -2023,7 +2041,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg.
+        ///   Looks up a localized string similar to Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg   Absorbed Dmg.
         /// </summary>
         internal static string OffensePluginHeaderSummary {
             get {
@@ -2032,7 +2050,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Player                 WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg.
+        ///   Looks up a localized string similar to Player                 WSkill Dmg  Abs&apos;d.Dmg   Net Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg.
         /// </summary>
         internal static string OffensePluginHeaderWeaponskill {
             get {
@@ -2064,6 +2082,15 @@ namespace WaywardGamers.KParser.Resources {
         internal static string OffensePluginTitleMelee {
             get {
                 return ResourceManager.GetString("OffensePluginTitleMelee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Melee Crit Damage.
+        /// </summary>
+        internal static string OffensePluginTitleMeleeCrit {
+            get {
+                return ResourceManager.GetString("OffensePluginTitleMeleeCrit", resourceCulture);
             }
         }
         
