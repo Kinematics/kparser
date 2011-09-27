@@ -904,9 +904,25 @@ namespace WaywardGamers.KParser.Plugin
                     {
                         if (mainAcc.SCNum == 0)
                         {
-                            mainAcc.SCHi = player.SC.First().Amount;
-                            mainAcc.SCLow = player.SC.First().Amount;
+                            min = player.SC.First().Amount;
+                            max = min;
                         }
+                        else
+                        {
+                            min = mainAcc.SCLow;
+                            max = mainAcc.SCHi;
+                        }
+
+                        foreach (var dmg in player.SC)
+                        {
+                            if (dmg.Amount < min)
+                                min = dmg.Amount;
+                            if (dmg.Amount > max)
+                                max = dmg.Amount;
+                        }
+
+                        mainAcc.SCLow = min;
+                        mainAcc.SCHi = max;
 
                         mainAcc.TDmg += player.SCDmg + player.AbsorbedSCDmg;
                         mainAcc.SCDmg += player.SCDmg;
@@ -915,13 +931,6 @@ namespace WaywardGamers.KParser.Plugin
                         mainAcc.TAbsDmg += mainAcc.TAbsSCDmg;
                         mainAcc.SCNum += player.SC.Count();
 
-                        min = player.SC.Min(sc => sc.Amount);
-                        max = player.SC.Max(sc => sc.Amount);
-
-                        if (min < mainAcc.SCLow)
-                            mainAcc.SCLow = min;
-                        if (max > mainAcc.SCHi)
-                            mainAcc.SCHi = max;
                     }
                     #endregion
                 }
@@ -950,20 +959,17 @@ namespace WaywardGamers.KParser.Plugin
                                         switch (critType.Key)
                                         {
                                             case DamageModifier.Critical:
-                                                count = critType.Count();
-                                                mainAcc.MHits += count;
-                                                mainAcc.MCritHits += count;
-                                                mainAcc.MNonEvaded += count;
+                                                if (mainAcc.MCritHits == 0)
+                                                {
+                                                    min = critType.First().Amount;
+                                                    max = min;
+                                                }
+                                                else
+                                                {
+                                                    min = mainAcc.MCritLow;
+                                                    max = mainAcc.MCritHi;
+                                                }
 
-                                                int critDmg = critType.Sum(m => m.Amount);
-
-                                                mainAcc.MDmg += critDmg;
-                                                mainAcc.TDmg += critDmg;
-                                                mainAcc.TMDmg += critDmg;
-                                                mainAcc.MCritDmg += critDmg;
-
-                                                min = critType.First().Amount;
-                                                max = min;
                                                 zeroCount = 0;
 
                                                 foreach (var crit in critType)
@@ -978,10 +984,51 @@ namespace WaywardGamers.KParser.Plugin
 
                                                 mainAcc.MCritLow = min;
                                                 mainAcc.MCritHi = max;
-                                                mainAcc.MZeroDmgCritHits = zeroCount;
+                                                mainAcc.MZeroDmgCritHits += zeroCount;
+
+
+                                                count = critType.Count();
+                                                mainAcc.MHits += count;
+                                                mainAcc.MCritHits += count;
+                                                mainAcc.MNonEvaded += count;
+
+                                                int critDmg = critType.Sum(m => m.Amount);
+
+                                                mainAcc.MDmg += critDmg;
+                                                mainAcc.TDmg += critDmg;
+                                                mainAcc.TMDmg += critDmg;
+                                                mainAcc.MCritDmg += critDmg;
 
                                                 break;
                                             case DamageModifier.None:
+                                                if (mainAcc.MHits == 0)
+                                                {
+                                                    min = critType.First().Amount;
+                                                    max = min;
+                                                }
+                                                else
+                                                {
+                                                    min = mainAcc.MLow;
+                                                    max = mainAcc.MHi;
+                                                }
+
+                                                zeroCount = 0;
+
+                                                foreach (var hit in critType)
+                                                {
+                                                    if (hit.Amount < min)
+                                                        min = hit.Amount;
+                                                    if (hit.Amount > max)
+                                                        max = hit.Amount;
+                                                    if (hit.Amount == 0)
+                                                        zeroCount++;
+                                                }
+
+                                                mainAcc.MCritLow = min;
+                                                mainAcc.MCritHi = max;
+                                                mainAcc.MZeroDmgHits += zeroCount;
+
+                                                
                                                 count = critType.Count();
                                                 mainAcc.MHits += count;
                                                 mainAcc.MNonEvaded += count;
@@ -990,24 +1037,6 @@ namespace WaywardGamers.KParser.Plugin
                                                 mainAcc.MDmg += meleeDmg;
                                                 mainAcc.TDmg += meleeDmg;
                                                 mainAcc.TMDmg += meleeDmg;
-
-                                                min = critType.First().Amount;
-                                                max = min;
-                                                zeroCount = 0;
-
-                                                foreach (var nonCrit in critType)
-                                                {
-                                                    if (nonCrit.Amount < min)
-                                                        min = nonCrit.Amount;
-                                                    if (nonCrit.Amount > max)
-                                                        max = nonCrit.Amount;
-                                                    if (nonCrit.Amount == 0)
-                                                        zeroCount++;
-                                                }
-
-                                                mainAcc.MLow = min;
-                                                mainAcc.MHi = max;
-                                                mainAcc.MZeroDmgHits = zeroCount;
 
                                                 break;
                                         }
@@ -1061,20 +1090,17 @@ namespace WaywardGamers.KParser.Plugin
                                         switch (critType.Key)
                                         {
                                             case DamageModifier.Critical:
-                                                count = critType.Count();
-                                                mainAcc.RHits += count;
-                                                mainAcc.RCritHits += count;
-                                                mainAcc.RNonEvaded += count;
+                                                if (mainAcc.RCritHits == 0)
+                                                {
+                                                    min = critType.First().Amount;
+                                                    max = min;
+                                                }
+                                                else
+                                                {
+                                                    min = mainAcc.RCritLow;
+                                                    max = mainAcc.RCritHi;
+                                                }
 
-                                                int critDmg = critType.Sum(r => r.Amount);
-
-                                                mainAcc.RDmg += critDmg;
-                                                mainAcc.TDmg += critDmg;
-                                                mainAcc.TRDmg += critDmg;
-                                                mainAcc.RCritDmg += critDmg;
-
-                                                min = critType.First().Amount;
-                                                max = min;
                                                 zeroCount = 0;
 
                                                 foreach (var crit in critType)
@@ -1089,10 +1115,51 @@ namespace WaywardGamers.KParser.Plugin
 
                                                 mainAcc.RCritLow = min;
                                                 mainAcc.RCritHi = max;
-                                                mainAcc.RZeroDmgCritHits = zeroCount;
+                                                mainAcc.RZeroDmgCritHits += zeroCount;
+
+                                                
+                                                count = critType.Count();
+                                                mainAcc.RHits += count;
+                                                mainAcc.RCritHits += count;
+                                                mainAcc.RNonEvaded += count;
+
+                                                int critDmg = critType.Sum(r => r.Amount);
+
+                                                mainAcc.RDmg += critDmg;
+                                                mainAcc.TDmg += critDmg;
+                                                mainAcc.TRDmg += critDmg;
+                                                mainAcc.RCritDmg += critDmg;
 
                                                 break;
                                             case DamageModifier.None:
+                                                if (mainAcc.RHits == 0)
+                                                {
+                                                    min = critType.First().Amount;
+                                                    max = min;
+                                                }
+                                                else
+                                                {
+                                                    min = mainAcc.RLow;
+                                                    max = mainAcc.RHi;
+                                                }
+
+                                                zeroCount = 0;
+
+                                                foreach (var hit in critType)
+                                                {
+                                                    if (hit.Amount < min)
+                                                        min = hit.Amount;
+                                                    if (hit.Amount > max)
+                                                        max = hit.Amount;
+                                                    if (hit.Amount == 0)
+                                                        zeroCount++;
+                                                }
+
+                                                mainAcc.RCritLow = min;
+                                                mainAcc.RCritHi = max;
+                                                mainAcc.RZeroDmgHits += zeroCount; 
+                                                
+                                                
                                                 count = critType.Count();
                                                 mainAcc.RHits += count;
                                                 mainAcc.RNonEvaded += count;
@@ -1101,24 +1168,6 @@ namespace WaywardGamers.KParser.Plugin
                                                 mainAcc.RDmg += rangeDmg;
                                                 mainAcc.TDmg += rangeDmg;
                                                 mainAcc.TRDmg += rangeDmg;
-
-                                                min = critType.First().Amount;
-                                                max = min;
-                                                zeroCount = 0;
-
-                                                foreach (var nonCrit in critType)
-                                                {
-                                                    if (nonCrit.Amount < min)
-                                                        min = nonCrit.Amount;
-                                                    if (nonCrit.Amount > max)
-                                                        max = nonCrit.Amount;
-                                                    if (nonCrit.Amount == 0)
-                                                        zeroCount++;
-                                                }
-
-                                                mainAcc.RLow = min;
-                                                mainAcc.RHi = max;
-                                                mainAcc.RZeroDmgHits = zeroCount;
 
                                                 break;
                                         }
@@ -1178,17 +1227,16 @@ namespace WaywardGamers.KParser.Plugin
                                 switch (hitType.Key)
                                 {
                                     case DefenseType.None:
-                                        abilAcc.AHit += hitType.Count();
-
-                                        int abilDamage = hitType.Sum(a => a.Amount);
-
-                                        abilAcc.ADmg += abilDamage;
-                                        mainAcc.TDmg += abilDamage;
-                                        mainAcc.TADmg += abilDamage;
-                                        mainAcc.ADmg += abilDamage;
-
-                                        min = hitType.First().Amount;
-                                        max = min;
+                                        if (abilAcc.AHit == 0)
+                                        {
+                                            min = hitType.First().Amount;
+                                            max = min;
+                                        }
+                                        else
+                                        {
+                                            min = abilAcc.ALow;
+                                            max = abilAcc.AHi;
+                                        }
 
                                         foreach (var dmg in hitType)
                                         {
@@ -1199,8 +1247,17 @@ namespace WaywardGamers.KParser.Plugin
                                         }
 
                                         abilAcc.ALow = min;
-                                        abilAcc.AHi = max; 
-                                        
+                                        abilAcc.AHi = max;
+
+                                        abilAcc.AHit += hitType.Count();
+
+                                        int abilDamage = hitType.Sum(a => a.Amount);
+
+                                        abilAcc.ADmg += abilDamage;
+                                        mainAcc.TDmg += abilDamage;
+                                        mainAcc.TADmg += abilDamage;
+                                        mainAcc.ADmg += abilDamage;
+
                                         break;
                                     case DefenseType.Absorb:
                                         abilAcc.AAbsHit += hitType.Count();
@@ -1251,17 +1308,16 @@ namespace WaywardGamers.KParser.Plugin
                                 switch (hitType.Key)
                                 {
                                     case DefenseType.None:
-                                        wsAccum.WHit += hitType.Count();
-
-                                        int wsDamage = hitType.Sum(a => a.Amount);
-
-                                        wsAccum.WDmg += wsDamage;
-                                        mainAcc.TDmg += wsDamage;
-                                        mainAcc.TWDmg += wsDamage;
-                                        mainAcc.WDmg += wsDamage;
-
-                                        min = hitType.First().Amount;
-                                        max = min;
+                                        if (wsAccum.WHit == 0)
+                                        {
+                                            min = hitType.First().Amount;
+                                            max = min;
+                                        }
+                                        else
+                                        {
+                                            min = wsAccum.WLow;
+                                            max = wsAccum.WHi;
+                                        }
 
                                         foreach (var dmg in hitType)
                                         {
@@ -1273,7 +1329,16 @@ namespace WaywardGamers.KParser.Plugin
 
                                         wsAccum.WLow = min;
                                         wsAccum.WHi = max; 
-                                        
+
+                                        wsAccum.WHit += hitType.Count();
+
+                                        int wsDamage = hitType.Sum(a => a.Amount);
+
+                                        wsAccum.WDmg += wsDamage;
+                                        mainAcc.TDmg += wsDamage;
+                                        mainAcc.TWDmg += wsDamage;
+                                        mainAcc.WDmg += wsDamage;
+
                                         break;
                                     case DefenseType.Absorb:
                                         wsAccum.WAbsHit += hitType.Count();
@@ -1338,20 +1403,16 @@ namespace WaywardGamers.KParser.Plugin
                                             switch (mbType.Key)
                                             {
                                                 case DamageModifier.MagicBurst:
-                                                    count = mbType.Count();
-                                                    spellAcc.SNumMB += count;
-                                                    spellAcc.SNum += count;
-
-                                                    int mbDmg = mbType.Sum(m => m.Amount);
-
-                                                    spellAcc.SDmg += mbDmg;
-                                                    spellAcc.SMBDmg += mbDmg;
-                                                    mainAcc.TDmg += mbDmg;
-                                                    mainAcc.TSDmg += mbDmg;
-                                                    mainAcc.SDmg += mbDmg;
-
-                                                    min = mbType.First().Amount;
-                                                    max = min;
+                                                    if (spellAcc.SNumMB == 0)
+                                                    {
+                                                        min = mbType.First().Amount;
+                                                        max = min;
+                                                    }
+                                                    else
+                                                    {
+                                                        min = spellAcc.SMBLow;
+                                                        max = spellAcc.SMBHi;
+                                                    }
 
                                                     foreach (var mb in mbType)
                                                     {
@@ -1364,19 +1425,31 @@ namespace WaywardGamers.KParser.Plugin
                                                     spellAcc.SMBLow = min;
                                                     spellAcc.SMBHi = max;
 
+
+                                                    count = mbType.Count();
+                                                    spellAcc.SNumMB += count;
+                                                    spellAcc.SNum += count;
+
+                                                    int mbDmg = mbType.Sum(m => m.Amount);
+
+                                                    spellAcc.SDmg += mbDmg;
+                                                    spellAcc.SMBDmg += mbDmg;
+                                                    mainAcc.TDmg += mbDmg;
+                                                    mainAcc.TSDmg += mbDmg;
+                                                    mainAcc.SDmg += mbDmg;
+
                                                     break;
                                                 case DamageModifier.None:
-                                                    spellAcc.SNum += resType.Count();
-
-                                                    spellDamage = mbType.Sum(m => m.Amount);
-
-                                                    spellAcc.SDmg += spellDamage;
-                                                    mainAcc.TDmg += spellDamage;
-                                                    mainAcc.TSDmg += spellDamage;
-                                                    mainAcc.SDmg += spellDamage;
-
-                                                    min = mbType.First().Amount;
-                                                    max = min;
+                                                    if (spellAcc.SNum == 0)
+                                                    {
+                                                        min = mbType.First().Amount;
+                                                        max = min;
+                                                    }
+                                                    else
+                                                    {
+                                                        min = spellAcc.SLow;
+                                                        max = spellAcc.SHi;
+                                                    }
 
                                                     foreach (var nonMB in mbType)
                                                     {
@@ -1388,6 +1461,16 @@ namespace WaywardGamers.KParser.Plugin
 
                                                     spellAcc.SLow = min;
                                                     spellAcc.SHi = max;
+
+
+                                                    spellAcc.SNum += resType.Count();
+
+                                                    spellDamage = mbType.Sum(m => m.Amount);
+
+                                                    spellAcc.SDmg += spellDamage;
+                                                    mainAcc.TDmg += spellDamage;
+                                                    mainAcc.TSDmg += spellDamage;
+                                                    mainAcc.SDmg += spellDamage;
 
                                                     break;
                                             }
