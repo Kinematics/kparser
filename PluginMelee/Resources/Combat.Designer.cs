@@ -1888,7 +1888,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0,-17}{1,10}{2,11}{3,10}{4,10:p2}{5,11}{6,10:p2}{7,10:p2}{8,10}{8,9:f2}{10,9:f2}.
+        ///   Looks up a localized string similar to {0,-17}{1,10}{2,11}{3,10}{4,10:p2}{5,11}{6,10:p2}{7,10:p2}{8,10}{9,9:f2}{10,9:f2}.
         /// </summary>
         internal static string OffensePluginFormatMelee {
             get {
