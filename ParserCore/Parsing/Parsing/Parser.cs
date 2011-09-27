@@ -1341,9 +1341,8 @@ namespace WaywardGamers.KParser.Parsing
                             {
                                 target = msgCombatDetails.AddTarget(combatMatch.Groups[ParseFields.Fulltarget].Value);
 
+                                // Account for absorb effects.
                                 if ((msgCombatDetails.ActionType == ActionType.Weaponskill) ||
-                                    (msgCombatDetails.ActorEntityType == EntityType.Player && target.EntityType == EntityType.Mob) ||
-                                    (msgCombatDetails.ActorEntityType == EntityType.Pet && target.EntityType == EntityType.Mob) ||
                                     (msgCombatDetails.ActorEntityType == EntityType.Mob && target.EntityType == EntityType.Player))
                                 {
                                     msgCombatDetails.InteractionType = InteractionType.Harm;
@@ -1355,6 +1354,63 @@ namespace WaywardGamers.KParser.Parsing
                                     target.HarmType = msgCombatDetails.HarmType;
                                     target.AidType = msgCombatDetails.AidType;
                                     target.DefenseType = DefenseType.Absorb;
+                                }
+                                else if ((msgCombatDetails.ActorEntityType == EntityType.Player && target.EntityType == EntityType.Mob) ||
+                                         (msgCombatDetails.ActorEntityType == EntityType.Pet && target.EntityType == EntityType.Mob))
+                                {
+                                    // If an AOE action by a player or pet includes pets and/or players,
+                                    // and also hits a target that appears to be a mob, it's almost certain
+                                    // that that mob is actually an NPC.
+                                    if (msgCombatDetails.Targets.Any(t => t.EntityType == EntityType.Pet ||
+                                        t.EntityType == EntityType.Player))
+                                    {
+                                        target.EntityType = EntityType.NPC;
+                                        target.Amount = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
+                                        target.AidType = msgCombatDetails.AidType;
+                                        target.RecoveryType = RecoveryType.RecoverHP;
+                                    }
+                                    else
+                                    {
+                                        msgCombatDetails.InteractionType = InteractionType.Harm;
+                                        msgCombatDetails.HarmType = HarmType.Heal;
+                                        msgCombatDetails.AidType = AidType.None;
+
+                                        target.Amount = (0 - int.Parse(combatMatch.Groups[ParseFields.Number].Value));
+
+                                        target.HarmType = msgCombatDetails.HarmType;
+                                        target.AidType = msgCombatDetails.AidType;
+                                        target.DefenseType = DefenseType.Absorb;
+                                    }
+                                }
+                                else if ((msgCombatDetails.ActorEntityType == EntityType.Player ||
+                                          msgCombatDetails.ActorEntityType == EntityType.Pet) &&
+                                         (target.EntityType == EntityType.Player ||
+                                          target.EntityType == EntityType.Pet))
+                                {
+                                    // If actor/target is usual player/pet, check for any previous
+                                    // targets that were categorized as a mob (non-deterministic order of
+                                    // targets).  If they exist, change them to NPCs and put them back
+                                    // on standard recovery values.
+                                    if (msgCombatDetails.Targets.Any(t => t.EntityType == EntityType.Mob))
+                                    {
+                                        msgCombatDetails.InteractionType = InteractionType.Aid;
+                                        msgCombatDetails.HarmType = HarmType.None;
+                                        msgCombatDetails.AidType = AidType.Recovery;
+
+                                        foreach (var prevTarget in
+                                            msgCombatDetails.Targets.Where(t => t.EntityType == EntityType.Mob))
+                                        {
+                                            prevTarget.EntityType = EntityType.NPC;
+                                            prevTarget.HarmType = msgCombatDetails.HarmType;
+                                            prevTarget.AidType = msgCombatDetails.AidType;
+                                            prevTarget.DefenseType = DefenseType.None;
+                                            prevTarget.RecoveryType = RecoveryType.RecoverHP;
+                                        }
+                                    }
+
+                                    target.Amount = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
+                                    target.AidType = msgCombatDetails.AidType;
+                                    target.RecoveryType = RecoveryType.RecoverHP;
                                 }
                                 else
                                 {
