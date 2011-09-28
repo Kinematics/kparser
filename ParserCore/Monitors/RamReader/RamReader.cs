@@ -737,14 +737,16 @@ namespace WaywardGamers.KParser.Monitoring
 
             if (dataStructurePointer == IntPtr.Zero)
             {
-                throw new InvalidOperationException("Error dereferencing memloc pointer.");
+                throw new InvalidOperationException(
+                    string.Format("Error dereferencing memloc pointer 0x({0:x8}).", rootAddress));
             }
 
             chatLogControl = ReadControlStructure(dataStructurePointer);
 
             if (chatLogControl.ChatLogInfoPtr == IntPtr.Zero)
             {
-                throw new InvalidOperationException("Control structure chat info pointer is zero.");
+                throw new InvalidOperationException(
+                    string.Format("Control structure chat info pointer is zero.  dataStructurePointer: 0x{0:x8}", dataStructurePointer));
             }
 
             return new ChatLogLocationInfo(dataStructurePointer, chatLogControl.ChatLogInfoPtr);
