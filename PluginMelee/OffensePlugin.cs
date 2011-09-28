@@ -1364,7 +1364,6 @@ namespace WaywardGamers.KParser.Plugin
 
                     #region Spells
 
-
                     if (player.Spell.Any())
                     {
                         var spells = player.Spell.Where(a => a.IsActionIDNull() == false)
