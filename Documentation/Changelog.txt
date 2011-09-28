@@ -1,5 +1,11 @@
 KParser Change Log
 
+1.6.1
+- Fix: Wrong values displayed for M+0.Avg damage.
+- Fix: Min/max values in Offense tab not calculated properly during live parsing.
+- Fix: Pets using JAs to do AOE cures that hit NPCs ended up being classified as absorbs due to the NPCs being classifed as mobs.
+
+
 1.6.0 (September 25, 2011)
 - Fixed Chant du Cygne's name so that it's properly classified as a weaponskill.
 + Updated Corsair rolls list.
