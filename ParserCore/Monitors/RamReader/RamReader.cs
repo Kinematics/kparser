@@ -738,7 +738,8 @@ namespace WaywardGamers.KParser.Monitoring
             if (dataStructurePointer == IntPtr.Zero)
             {
                 throw new InvalidOperationException(
-                    string.Format("Error dereferencing memloc pointer 0x({0:x8}).", rootAddress));
+                    string.Format("Error dereferencing memloc pointer 0x{0:X8} (memloc: 0x{1:X8}).",
+                    rootAddress, initialMemoryOffset));
             }
 
             chatLogControl = ReadControlStructure(dataStructurePointer);
@@ -746,7 +747,7 @@ namespace WaywardGamers.KParser.Monitoring
             if (chatLogControl.ChatLogInfoPtr == IntPtr.Zero)
             {
                 throw new InvalidOperationException(
-                    string.Format("Control structure chat info pointer is zero.  dataStructurePointer: 0x{0:x8}", dataStructurePointer));
+                    string.Format("Control structure chat info pointer is zero.  dataStructurePointer: 0x{0:X8}", dataStructurePointer));
             }
 
             return new ChatLogLocationInfo(dataStructurePointer, chatLogControl.ChatLogInfoPtr);
@@ -865,12 +866,12 @@ namespace WaywardGamers.KParser.Monitoring
                 // Base address after update  on 2010-12-06: 0x00583948
                 // Base address after update  on 2011-02-14: 0x005839C8
                 // Base address after update  on 2011-07-12: 0x005856D8
-                // Base address after update  on 2011-09-19: 0x005858d8
+                // Base address after update  on 2011-09-19: 0x005858D8
                 
 
                 // An easier way to find the new memloc.  Start at the
                 // most recently known memloc and proceed forward.
-                CycleStartPoint(0x005856D8);
+                CycleStartPoint(0x005858D8);
             }
             finally
             {
