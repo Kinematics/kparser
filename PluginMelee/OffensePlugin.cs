@@ -1024,8 +1024,8 @@ namespace WaywardGamers.KParser.Plugin
                                                         zeroCount++;
                                                 }
 
-                                                mainAcc.MCritLow = min;
-                                                mainAcc.MCritHi = max;
+                                                mainAcc.MLow = min;
+                                                mainAcc.MHi = max;
                                                 mainAcc.MZeroDmgHits += zeroCount;
 
                                                 
