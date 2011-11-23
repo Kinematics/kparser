@@ -1,6 +1,11 @@
 KParser Change Log
 
-1.6.1
+1.6.2 (November 23, 2011)
+- Min/max crit values were incorrectly overwritten by non-crit min/max values.
++ Added experimental code for signature location as a fallback for explicit memlocs.
+
+
+1.6.1 (September 27, 2011)
 - Fix: Wrong values displayed for M+0.Avg damage.
 - Fix: Min/max values in Offense tab not calculated properly during live parsing.
 - Fix: Pets using JAs to do AOE cures that hit NPCs ended up being classified as absorbs due to the NPCs being classifed as mobs.
