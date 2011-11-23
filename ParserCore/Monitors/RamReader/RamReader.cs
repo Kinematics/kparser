@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using WaywardGamers.KParser.Monitoring.Memory;
@@ -1165,6 +1166,24 @@ namespace WaywardGamers.KParser.Monitoring
                     return new IntPtr(rootAddress);
                 }
             }
+
+            // Signature search failed.  Log the first 0x200 values in the array.
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("\n");
+            for (int i = 0; i < 64; i++)
+            {
+                sb.AppendFormat("{0,3:X}: ", i * 8);
+
+                for (int j = 0; j < 8; j++)
+                {
+                    sb.AppendFormat("{0,12:X}", sigBlockRead[i*8+j]);
+                }
+                sb.Append("\n");
+            }
+
+            Logger.Instance.Log("Sig Tracking", sb.ToString());
 
             return IntPtr.Zero;
         }
