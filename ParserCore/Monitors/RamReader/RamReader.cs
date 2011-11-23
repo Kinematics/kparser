@@ -1122,6 +1122,7 @@ namespace WaywardGamers.KParser.Monitoring
 
         #endregion
 
+        #region Signature scanning
         private ChatLogLocationInfo LocateChatLogViaSignature()
         {
             IntPtr sigPtr = LocateSigRoot();
@@ -1250,9 +1251,7 @@ namespace WaywardGamers.KParser.Monitoring
 
             return (address > 0);
         }
-
-
-
+        #endregion
 
     }
 }
