@@ -231,7 +231,31 @@ namespace WaywardGamers.KParser.Monitoring
                     {
                         if (needToLogin)
                         {
-                            chatLogLocation = LocateChatLog();
+                            try
+                            {
+                                chatLogLocation = LocateChatLog();
+                            }
+                            catch (Exception e)
+                            {
+                                try
+                                {
+                                    chatLogLocation = LocateChatLogViaSignature();
+                                }
+                                catch (Exception e2)
+                                {
+                                    Logger.Instance.Log(e);
+                                    chatLogLocation = null;
+                                    throw e2;
+                                }
+
+                                if (chatLogLocation == null)
+                                {
+                                    throw;
+                                }
+                            }
+
+
+                            //chatLogLocation = LocateChatLog();
                             needToLogin = false;
                         }
                         
@@ -732,6 +756,11 @@ namespace WaywardGamers.KParser.Monitoring
             // This is a pointer to a data structure we want to read.
             IntPtr rootAddress = Pointers.IncrementPointer(pol.FFXIBaseAddress, initialMemoryOffset);
 
+            return LocateChatLog(rootAddress);
+        }
+
+        private ChatLogLocationInfo LocateChatLog(IntPtr rootAddress)
+        {
             //Dereference that pointer to get our next address.
             IntPtr dataStructurePointer = Pointers.FollowPointer(pol.Process.Handle, rootAddress);
 
@@ -1091,5 +1120,120 @@ namespace WaywardGamers.KParser.Monitoring
 
 
         #endregion
+
+        private ChatLogLocationInfo LocateChatLogViaSignature()
+        {
+            IntPtr sigPtr = LocateSigRoot();
+
+            if (sigPtr == IntPtr.Zero)
+                return null;
+
+            // Sig pointer is the memory value of a structure where the second int is the location
+            // usually considered the 'memloc'.
+
+            return LocateChatLog(Pointers.IncrementPointer(sigPtr, 4));
+        }
+
+        private IntPtr LocateSigRoot()
+        {
+            // Expected location: 0x16733C
+            //
+            // Start at 0x167000 and read a block of 0x4000 bytes.
+
+            uint sigStartSearch = 0x167000;
+            IntPtr sigBlockAddress = Pointers.IncrementPointer(pol.FFXIBaseAddress, sigStartSearch);
+            int[] sigBlockRead = new int[0x4000];
+            byte[] byteBuffer = new byte[sigBlockRead.Length * 4];
+
+            using (ProcessMemoryReading pmr =
+                new ProcessMemoryReading(pol.Process.Handle, sigBlockAddress, (uint)byteBuffer.Length))
+            {
+                if (pmr.ReadBufferPtr == IntPtr.Zero)
+                    throw new InvalidOperationException("Error reading sig memory.");
+
+                Marshal.Copy(pmr.ReadBufferPtr, byteBuffer, 0, byteBuffer.Length);
+            }
+
+            Buffer.BlockCopy(byteBuffer, 0, sigBlockRead, 0, byteBuffer.Length);
+
+            int rootAddress = 0;
+
+            for (int i = 0; i < sigBlockRead.Length; i++)
+            {
+                if (MatchSignature(sigBlockRead, i, out rootAddress))
+                {
+                    return new IntPtr(rootAddress);
+                }
+            }
+
+            return IntPtr.Zero;
+        }
+
+        /*
+            10FF016A
+            5F9C05C7
+            [int32]
+            D8B0000
+            [our address]
+            1074C985
+            16A118B
+            5C712FF
+            [repeat our address]
+            0
+         * */
+
+        // Use -1 for an 'any' value
+        // Use -2 for the address we're trying to find
+
+        private readonly int[] signature = new int[10] {
+                0x10FF016A,
+                0x5F9C05C7,
+                -1,
+                0xD8B0000,
+                -2,
+                0x1074C985,
+                0x16A118B,
+                0x5C712FF,
+                -2,
+                0
+        };
+
+
+        private bool MatchSignature(int[] sample, int sampleOffset, out int address)
+        {
+            if (sample == null)
+                throw new ArgumentNullException("sample");
+
+            address = 0;
+
+            if ((sampleOffset + signature.Length) > sample.Length)
+                return false;
+
+
+            for (int i = 0; i < signature.Length; i++)
+            {
+                if (signature[i] == -1)
+                    continue;
+
+                if (signature[i] == -2)
+                {
+                    if (address == 0)
+                        address = sample[i + sampleOffset];
+                    else if (address != sample[i + sampleOffset])
+                        return false;
+
+                    continue;
+                }
+
+                if (signature[i] != sample[i + sampleOffset])
+                    return false;
+            }
+
+            return (address > 0);
+        }
+
+
+
+
     }
 }
