@@ -2284,7 +2284,7 @@ namespace WaywardGamers.KParser.Plugin
 
                     countPool = player.MHits + player.DefCounter + player.DefAnticipate;
 
-                    intimPool = (evaPool - player.RHits) + player.Spells.Sum(s => s.SNum);
+                    intimPool = (evaPool - player.RHits) + player.DefIntimidate + player.Spells.Sum(s => s.SNum);
 
                     sb.AppendFormat(lsPassiveDefensesFormat,
                          player.DisplayName,
