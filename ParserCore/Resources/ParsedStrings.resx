@@ -1560,4 +1560,46 @@
   <data name="Reprisal" xml:space="preserve">
     <value>Reprisal</value>
   </data>
+  <data name="ApexArrow" xml:space="preserve">
+    <value>Apex Arrow</value>
+  </data>
+  <data name="BladeShun" xml:space="preserve">
+    <value>Blade: Shun</value>
+  </data>
+  <data name="Entropy" xml:space="preserve">
+    <value>Entropy</value>
+  </data>
+  <data name="Exenterator" xml:space="preserve">
+    <value>Exenterator</value>
+  </data>
+  <data name="LastStand" xml:space="preserve">
+    <value>Last Stand</value>
+  </data>
+  <data name="Realmrazer" xml:space="preserve">
+    <value>Realmrazer</value>
+  </data>
+  <data name="Requiescat" xml:space="preserve">
+    <value>Requiescat</value>
+  </data>
+  <data name="Resolution" xml:space="preserve">
+    <value>Resolution</value>
+  </data>
+  <data name="Ruinator" xml:space="preserve">
+    <value>Ruinator</value>
+  </data>
+  <data name="Shattersoul" xml:space="preserve">
+    <value>Shattersoul</value>
+  </data>
+  <data name="ShijinSpiral" xml:space="preserve">
+    <value>Shijin Spiral</value>
+  </data>
+  <data name="Stardiver" xml:space="preserve">
+    <value>Stardiver</value>
+  </data>
+  <data name="TachiShoha" xml:space="preserve">
+    <value>Tachi: Shoha</value>
+  </data>
+  <data name="Upheaval" xml:space="preserve">
+    <value>Upheaval</value>
+  </data>
 </root>
