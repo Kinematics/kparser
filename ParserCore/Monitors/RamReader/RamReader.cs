@@ -1164,34 +1164,59 @@ namespace WaywardGamers.KParser.Monitoring
             {
                 if (MatchSignature(sigBlockRead, i, out rootAddress))
                 {
+                    // Signature search failed.  Log the first 0x400 values in the array.
+
+                    //StringBuilder sb = new StringBuilder();
+
+                    //sb.Append("\n");
+                    //for (int k = 0; k < 128; k++)
+                    //{
+                    //    sb.AppendFormat("{0,3:X}: ", k * 8);
+
+                    //    for (int l = 0; l < 8; l++)
+                    //    {
+                    //        sb.AppendFormat("{0,12:X}", sigBlockRead[k * 8 + l]);
+                    //    }
+                    //    sb.Append("\n");
+                    //}
+
+                    //Logger.Instance.Log("Sig Tracking", sb.ToString());
+
+                    
                     return new IntPtr(rootAddress);
                 }
             }
 
-            // Signature search failed.  Log the first 0x200 values in the array.
+            
+            Properties.Settings appSettings = new WaywardGamers.KParser.Properties.Settings();
 
-            StringBuilder sb = new StringBuilder();
-
-            sb.Append("\n");
-            for (int i = 0; i < 64; i++)
+            if (appSettings.DebugMode)
             {
-                sb.AppendFormat("{0,3:X}: ", i * 8);
+                // Signature search failed.  Log the first 0x400 values in the array.
 
-                for (int j = 0; j < 8; j++)
-                {
-                    sb.AppendFormat("{0,12:X}", sigBlockRead[i*8+j]);
-                }
+                StringBuilder sb = new StringBuilder();
+
                 sb.Append("\n");
-            }
+                for (int i = 0; i < 128; i++)
+                {
+                    sb.AppendFormat("{0,3:X}: ", i * 8);
 
-            Logger.Instance.Log("Sig Tracking", sb.ToString());
+                    for (int j = 0; j < 8; j++)
+                    {
+                        sb.AppendFormat("{0,12:X}", sigBlockRead[i * 8 + j]);
+                    }
+                    sb.Append("\n");
+                }
+
+                Logger.Instance.Log("Sig Tracking", sb.ToString());
+            }
 
             return IntPtr.Zero;
         }
 
         /*
             10FF016A
-            5F9C05C7
+            [int32]
             [int32]
             D8B0000
             [our address]
@@ -1207,7 +1232,7 @@ namespace WaywardGamers.KParser.Monitoring
 
         private readonly int[] signature = new int[10] {
                 0x10FF016A,
-                0x5F9C05C7,
+                -1,
                 -1,
                 0xD8B0000,
                 -2,
