@@ -1,5 +1,11 @@
 KParser Change Log
 
+1.6.3 (January 2, 2012)
+- Fix denominator calculation for intimidation percentages.
++ Add new merit weaponskill names to names listing to allow proper categorization as weaponskills.
+* Update signature based on test server attempts.
+
+
 1.6.2 (November 23, 2011)
 - Min/max crit values were incorrectly overwritten by non-crit min/max values.
 + Added experimental code for signature location as a fallback for explicit memlocs.
