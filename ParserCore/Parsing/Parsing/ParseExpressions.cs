@@ -200,6 +200,7 @@ namespace WaywardGamers.KParser
         internal static readonly Regex AdditionalTP     = new Regex(string.Format("^Additional effect: {0} TP drained from {1}\\.$", damage, target));
         internal static readonly Regex AdditionalHeal   = new Regex(string.Format("^Additional effect: {0} recovers {1} HP\\.$", target, damage));
         internal static readonly Regex AdditionalTH     = new Regex(string.Format("^Additional effect: {0}'s Treasure Hunter effectiveness increases to {1}\\.$", target, number));
+        internal static readonly Regex AdditionalTH2    = new Regex(string.Format("^Additional effect: Treasure Hunter effectiveness against {0} increases to {1}\\.$", target, number));
         #endregion
 
         #region Combat damage
