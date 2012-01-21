@@ -2630,6 +2630,20 @@ namespace WaywardGamers.KParser.Parsing
                         target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
                     }
                 }
+                else
+                {
+                    combatMatch = ParseExpressions.AdditionalTH2.Match(currentMessageText);
+                    if (combatMatch.Success == true)
+                    {
+                        target = combatDetails.Targets.Find(t => t.Name == combatMatch.Groups[ParseFields.Target].Value);
+                        if (target != null)
+                        {
+                            target.SecondaryHarmType = HarmType.TreasureHunter;
+                            // Enter the new TH level on the mob
+                            target.SecondaryAmount = int.Parse(combatMatch.Groups[ParseFields.Number].Value);
+                        }
+                    }
+                }
             }
 
 
