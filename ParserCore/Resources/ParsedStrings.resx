@@ -1602,4 +1602,10 @@
   <data name="Upheaval" xml:space="preserve">
     <value>Upheaval</value>
   </data>
+  <data name="ArmorShatterer" xml:space="preserve">
+    <value>Armor Shatterer</value>
+  </data>
+  <data name="StringShredder" xml:space="preserve">
+    <value>String Shredder</value>
+  </data>
 </root>

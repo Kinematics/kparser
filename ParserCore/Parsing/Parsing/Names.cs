@@ -538,7 +538,9 @@ namespace WaywardGamers.KParser
                     Resources.ParsedStrings.CannibalBlade,
                     Resources.ParsedStrings.ArmorPiercer,
                     Resources.ParsedStrings.BoneCrusher,
-                    Resources.ParsedStrings.MagicMortar
+                    Resources.ParsedStrings.MagicMortar,
+                    Resources.ParsedStrings.StringShredder,
+                    Resources.ParsedStrings.ArmorShatterer
                 };
 
         }
