@@ -1,9 +1,19 @@
 KParser Change Log
 
+
+1.6.4 (November 9, 2012)
+- Fix parsing of treasure hunter additional effect messages.
+- Fix top-end automaton weaponskills to register as weaponskills instead of abilities.
+* Add Blood Rage to tracked crit rate buffs.
+* Modify Extra Attacks plugin to allow custom mob selection.  Details shows rounds by battle.
++ Add notation to mark rounds with a TH proc in the Extra Attacks details.
+
+
 1.6.3 (January 2, 2012)
 - Fix denominator calculation for intimidation percentages.
 + Add new merit weaponskill names to names listing to allow proper categorization as weaponskills.
 * Update signature based on test server attempts.
+* Memloc update: 0x00587A60
 
 
 1.6.2 (November 23, 2011)
