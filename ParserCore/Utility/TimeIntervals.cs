@@ -412,7 +412,7 @@ namespace WaywardGamers.KParser.Utility
             {
                 return new List<string>()
                 {
-                    Resources.ParsedStrings.Restraint,
+                    Resources.ParsedStrings.BloodRage,
                     Resources.ParsedStrings.ThfRoll,
                     Resources.ParsedStrings.Impetus,
                     Resources.ParsedStrings.Innin,
@@ -562,6 +562,8 @@ namespace WaywardGamers.KParser.Utility
             CompileFixedLengthBuffs(Resources.ParsedStrings.Defender, TimeSpan.FromMinutes(3),
                 playerList, playerIntervals, dataSet);
             CompileFixedLengthBuffs(Resources.ParsedStrings.Warcry, TimeSpan.FromSeconds(30),
+                playerList, playerIntervals, dataSet);
+            CompileFixedLengthBuffs(Resources.ParsedStrings.BloodRage, TimeSpan.FromSeconds(30),
                 playerList, playerIntervals, dataSet);
             CompileFixedLengthBuffs(Resources.ParsedStrings.Rampart, TimeSpan.FromSeconds(30),
                 playerList, playerIntervals, dataSet);
@@ -899,6 +901,8 @@ namespace WaywardGamers.KParser.Utility
         /// Compile a list of durations for song buffs.  Songs stack up to 2 deep
         /// per bard, but otherwise overwrite previous song uses.  A third song by
         /// the same bard ends the duration of each checked song.
+        /// ~~ Note: this is no longer the case with Daurdubla, but no practical
+        /// way to manage tracking that.
         /// </summary>
         /// <param name="songBuffName">The song being checked for.</param>
         /// <param name="anySongRegex">A regex to match any song.</param>
