@@ -7,6 +7,7 @@ using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using WaywardGamers.KParser;
+using WaywardGamers.KParser.Database;
 using WaywardGamers.KParser.Utility;
 
 namespace WaywardGamers.KParser.Plugin
@@ -16,12 +17,18 @@ namespace WaywardGamers.KParser.Plugin
         #region Member Variables
         bool flagNoUpdate;
         bool showDetails = false;
+        bool customMobSelection = false;
+
         ToolStripLabel playersLabel = new ToolStripLabel();
         ToolStripComboBox playersCombo = new ToolStripComboBox();
         ToolStripLabel attLabel = new ToolStripLabel();
         ToolStripComboBox attacksCombo = new ToolStripComboBox();
         ToolStripDropDownButton optionsMenu = new ToolStripDropDownButton();
         ToolStripMenuItem showDetailOption = new ToolStripMenuItem();
+
+        ToolStripMenuItem customMobSelectionOption = new ToolStripMenuItem();
+
+        ToolStripButton editCustomMobFilter = new ToolStripButton();
 
         // Localized strings
 
@@ -85,14 +92,23 @@ namespace WaywardGamers.KParser.Plugin
             showDetailOption.Checked = false;
             showDetailOption.Click += new EventHandler(showDetailOption_Click);
 
+            customMobSelectionOption.CheckOnClick = true;
+            customMobSelectionOption.Checked = false;
+            customMobSelectionOption.Click += new EventHandler(customMobSelection_Click);
+
             optionsMenu.DisplayStyle = ToolStripItemDisplayStyle.Text;
             optionsMenu.DropDownItems.Add(showDetailOption);
+            optionsMenu.DropDownItems.Add(customMobSelectionOption);
+
+            editCustomMobFilter.Enabled = false;
+            editCustomMobFilter.Click += new EventHandler(editCustomMobFilter_Click);
 
             toolStrip.Items.Add(playersLabel);
             toolStrip.Items.Add(playersCombo);
             toolStrip.Items.Add(attLabel);
             toolStrip.Items.Add(attacksCombo);
             toolStrip.Items.Add(optionsMenu);
+            toolStrip.Items.Add(editCustomMobFilter);
 
         }
         #endregion
@@ -1245,6 +1261,15 @@ namespace WaywardGamers.KParser.Plugin
         {
             ResetTextBox();
 
+            MobFilter mobFilter = null;
+            if (customMobSelection)
+            {
+                mobFilter = MobXPHandler.Instance.CustomMobFilter;
+
+                if (mobFilter.Count == 0)
+                    return;
+            }
+
             string playerFilter = playersCombo.CBSelectedItem();
             List<string> playersList = new List<string>();
 
@@ -1287,10 +1312,14 @@ namespace WaywardGamers.KParser.Plugin
                                        Name = c.CombatantName,
                                        DisplayName = c.CombatantNameOrJobName,
                                        SimpleMelee = from ma in actions
-                                                     where (ActionType)ma.ActionType == ActionType.Melee
+                                                     where (ActionType)ma.ActionType == ActionType.Melee &&
+                                                           (mobFilter == null ||
+                                                            mobFilter.CheckFilterMobTarget(ma) == true)
                                                      select ma,
                                        SimpleRanged = from ma in actions
-                                                      where (ActionType)ma.ActionType == ActionType.Ranged
+                                                      where (ActionType)ma.ActionType == ActionType.Ranged &&
+                                                            (mobFilter == null ||
+                                                             mobFilter.CheckFilterMobTarget(ma) == true)
                                                       select ma,
                                    };
 
@@ -2099,12 +2128,30 @@ namespace WaywardGamers.KParser.Plugin
 
             int count;
 
-            foreach (var round in timestampedAttackGroups)
-            {
-                count = round.Count();
+            var tsMobGroups = timestampedAttackGroups.GroupBy(g => g.First().BattlesRow);
 
-                sbDetails.Append(string.Format("  {0} -- {1} {2,-8}  {3}\n", round.Key.ToLocalTime(), count,
-                    count == 1 ? lsAttack : lsAttacks, RoundDamageList(round)));
+            foreach (var battle in tsMobGroups)
+            {
+                sbDetails.Append(string.Format("\nBattle # {0}\n", battle.Key.BattleID));
+
+                //foreach (var round in timestampedAttackGroups)
+                foreach (var round in battle)
+                {
+                    count = round.Count();
+
+                    int thProc = 0;
+                    var thHit = round.FirstOrDefault(h => (HarmType)h.SecondHarmType == HarmType.TreasureHunter);
+
+                    if (thHit != null)
+                        thProc = thHit.SecondAmount;
+
+                    sbDetails.Append(string.Format("  {0} -- {1} {2,-8}  {3,-45}    {4}\n",
+                        round.Key.ToLocalTime(),
+                        count,
+                        count == 1 ? lsAttack : lsAttacks,
+                        RoundDamageList(round),
+                        thProc > 0 ? string.Format("[TH] {0}", thProc) : ""));
+                }
             }
         }
 
@@ -2164,6 +2211,49 @@ namespace WaywardGamers.KParser.Plugin
 
             flagNoUpdate = false;
         }
+
+
+        protected void customMobSelection_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem sentBy = sender as ToolStripMenuItem;
+            if (sentBy == null)
+                return;
+
+            customMobSelection = sentBy.Checked;
+
+            editCustomMobFilter.Enabled = customMobSelection;
+
+            if (flagNoUpdate == false)
+            {
+                try
+                {
+                    HandleDataset(null);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Instance.Log(ex);
+                }
+            }
+
+            flagNoUpdate = false;
+        }
+        
+        protected void editCustomMobFilter_Click(object sender, EventArgs e)
+        {
+            MobXPHandler.Instance.ShowCustomMobFilter();
+        }
+
+        protected override void OnCustomMobFilterChanged()
+        {
+            try
+            {
+                HandleDataset(null);
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Log(ex);
+            }
+        }
         #endregion
 
         #region Localization Overrides
@@ -2181,6 +2271,9 @@ namespace WaywardGamers.KParser.Plugin
 
             optionsMenu.Text = Resources.PublicResources.Options;
             showDetailOption.Text = Resources.PublicResources.ShowDetail;
+
+            customMobSelectionOption.Text = Resources.PublicResources.CustomMobSelection;
+            editCustomMobFilter.Text = Resources.PublicResources.EditMobFilter;
 
             UpdatePlayerList();
             playersCombo.SelectedIndex = 0;
