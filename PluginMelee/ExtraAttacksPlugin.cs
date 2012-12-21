@@ -2130,20 +2130,41 @@ namespace WaywardGamers.KParser.Plugin
 
             var tsMobGroups = timestampedAttackGroups.GroupBy(g => g.First().BattlesRow);
 
+            Dictionary<int, int> roundsPerProc = new Dictionary<int, int>(20);
+            Dictionary<int, int> procCounts = new Dictionary<int, int>(20);
+
+            for (int i = 0; i < 20; i++)
+            {
+                roundsPerProc[i] = 0;
+                procCounts[i] = 0;
+            }
+
+            int roundNum;
+            int lastProcNum;
+
             foreach (var battle in tsMobGroups)
             {
                 sbDetails.Append(string.Format("\nBattle # {0}\n", battle.Key.BattleID));
+                roundNum = 0;
+                lastProcNum = 0;
 
                 //foreach (var round in timestampedAttackGroups)
                 foreach (var round in battle)
                 {
+                    roundNum++;
                     count = round.Count();
 
                     int thProc = 0;
                     var thHit = round.FirstOrDefault(h => (HarmType)h.SecondHarmType == HarmType.TreasureHunter);
 
                     if (thHit != null)
+                    {
                         thProc = thHit.SecondAmount;
+                        lastProcNum = thProc;
+                        procCounts[thHit.SecondAmount]++;
+                        roundsPerProc[thHit.SecondAmount] += roundNum;
+                        roundNum = 0;
+                    }
 
                     sbDetails.Append(string.Format("  {0} -- {1} {2,-8}  {3,-45}    {4}\n",
                         round.Key.ToLocalTime(),
@@ -2152,7 +2173,49 @@ namespace WaywardGamers.KParser.Plugin
                         RoundDamageList(round),
                         thProc > 0 ? string.Format("[TH] {0}", thProc) : ""));
                 }
+
+                if (lastProcNum > 0)
+                {
+                    roundsPerProc[lastProcNum + 1] += roundNum;
+                }
+                else
+                {
+                    roundsPerProc[0] += roundNum;
+                }
+
             }
+
+            if (procCounts.Any(t => t.Key > 0 && t.Value > 0))
+            {
+                sbDetails.Append("\n\nTH Procs\n\n");
+
+                sbDetails.Append("TH Level -- Total Rounds\n");
+
+                sbDetails.Append(string.Format("      {0,2} -- {1}\n\n",
+                                    0,
+                                    roundsPerProc[0]));
+
+                
+                sbDetails.Append("TH Level -- Average Rounds (Number of Procs)\n");
+
+                for (int i = 1; i < 20; i++)
+                {
+                    if (roundsPerProc[i] > 0)
+                    {
+                        double avgRoundsPerProc = 0;
+                        if (procCounts[i] > 0)
+                            avgRoundsPerProc = (double)roundsPerProc[i] / procCounts[i];
+
+                        sbDetails.Append(string.Format("      {0,2} -- {1,5:f2} ({2} / {3})\n",
+                            i,
+                            avgRoundsPerProc,
+                            roundsPerProc[i],
+                            procCounts[i]));
+                    }
+                }
+
+            }
+
         }
 
         private string RoundDamageList(IGrouping<DateTime, KPDatabaseDataSet.InteractionsRow> round)
