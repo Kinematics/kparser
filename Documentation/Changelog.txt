@@ -1,6 +1,9 @@
 KParser Change Log
 
 
+1.6.5 (December 20, 2012)
+- Fix bug in counterattacks rewriting spell damage, such that the damage is attributed to a counter, and no spell is recorded.
+
 1.6.4 (November 9, 2012)
 - Fix parsing of treasure hunter additional effect messages.
 - Fix top-end automaton weaponskills to register as weaponskills instead of abilities.
