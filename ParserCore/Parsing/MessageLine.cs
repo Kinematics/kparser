@@ -26,7 +26,7 @@ namespace WaywardGamers.KParser
 	/// 00 - delimiter
 	/// 01 - delimiter
 	/// ## - message category [00 = system, 01 = chat, 02 = action]
-	/// 00 - delimiter
+	/// 00 - delimiter [GM flag?]
 	/// 0x1E+0x01 - end codes marker
     /// 0x1E+0x01 - begin text marker
     /// "text string"
