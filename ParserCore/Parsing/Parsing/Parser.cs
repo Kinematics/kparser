@@ -303,7 +303,9 @@ namespace WaywardGamers.KParser.Parsing
             if (shortDmgMatch.Success)
             {
                 Match damageMatch = ParseExpressions.TargetTakesDamage.Match(messageLine.TextOutput);
-                if (damageMatch.Success)
+                // Counterattacks don't count when finding "target takes damage" matches.
+                Match counterMatch = ParseExpressions.Counter.Match(messageLine.TextOutput);
+                if ((damageMatch.Success == true) && (counterMatch.Success == false))
                 {
                     targetName = damageMatch.Groups[ParseFields.Target].Value;
                     msg = MsgManager.Instance.FindMatchingSpellCastOrAbilityUseForDamage(messageLine,
