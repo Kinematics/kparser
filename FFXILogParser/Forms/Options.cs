@@ -58,17 +58,23 @@ namespace WaywardGamers.KParser
         {
             get
             {
-                if (dataSourceLogs.Checked == true)
+                if (dataSourceLogs.Checked)
                     return DataSource.Log;
-                else
+                else if (dataSourceRam.Checked)
                     return DataSource.Ram;
+                else if (dataSourcePackets.Checked)
+                    return DataSource.Packet;
+                else
+                    return DataSource.Log;
             }
             protected set
             {
                 if (value == DataSource.Ram)
                     dataSourceRam.Checked = true;
-                else
+                else if (value == DataSource.Log)
                     dataSourceLogs.Checked = true;
+                else if (value == DataSource.Packet)
+                    dataSourcePackets.Checked = true;
             }
         }
 
@@ -127,10 +133,15 @@ namespace WaywardGamers.KParser
             SetEnabledFields();
         }
 
-        private void dataSourceLogs_CheckedChanged(object sender, EventArgs e)
+        private void dataSource_CheckedChanged(object sender, EventArgs e)
         {
             // Adjust the fields that are to be enabled based on this setting.
-            SetEnabledFields();
+            var radio = sender as RadioButton;
+            if (radio != null)
+            {
+                if (radio.Checked)
+                    SetEnabledFields();
+            }
         }
 
         private void getLogDirectory_Click(object sender, EventArgs e)
@@ -310,7 +321,9 @@ namespace WaywardGamers.KParser
             memoryLabel.Enabled = dataSourceRam.Checked;
             memoryOffsetAddress.Enabled = dataSourceRam.Checked;
             editMemoryAddress.Enabled = dataSourceRam.Checked;
-            specifyPID.Enabled = dataSourceRam.Checked;
+
+            // If reading from RAM via either method, allow the process to be specified.
+            specifyPID.Enabled = (dataSourceRam.Checked || dataSourcePackets.Checked);
         }
         #endregion
     }
