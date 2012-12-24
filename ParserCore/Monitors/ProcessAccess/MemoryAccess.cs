@@ -195,7 +195,14 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         #endregion
 
         #region Constructor / Destructor
-
+        /// <summary>
+        /// Constructor that uses a default starting offset of 0.
+        /// Provides a pointer to a buffer containing the memory read from the specified process.
+        /// This buffer is released when the object is destroyed.
+        /// </summary>
+        /// <param name="processHandle">The process to read from.</param>
+        /// <param name="address">The base address to read from, within the process.</param>
+        /// <param name="nBytesToRead">How many bytes to read, starting at the base address.</param>
         internal ProcessMemoryReading(IntPtr processHandle, IntPtr address, uint nBytesToRead)
         {
             try
@@ -209,6 +216,15 @@ namespace WaywardGamers.KParser.Monitoring.Memory
             }
         }
 
+        /// <summary>
+        /// Constructor that allows a specific starting offset value.
+        /// Provides a pointer to a buffer containing the memory read from the specified process.
+        /// This buffer is released when the object is destroyed.
+        /// </summary>
+        /// <param name="processHandle">The process to read from.</param>
+        /// <param name="address">The base address to read from, within the process.</param>
+        /// <param name="startingOffset">An offset from the base address to start reading from.</param>
+        /// <param name="nBytesToRead">How many bytes to read, starting at the base address.</param>
         internal ProcessMemoryReading(IntPtr processHandle, IntPtr address, uint startingOffset, uint nBytesToRead)
         {
             try
@@ -230,16 +246,15 @@ namespace WaywardGamers.KParser.Monitoring.Memory
 
         #region Private Functions
         /// <summary>
-        /// Wrapper to read process memory with error handling.
+        /// Wrapper to read process memory, with error handling.
         /// </summary>
         /// <param name="processHandle">See above.</param>
         /// <param name="address">See above.  Note that this is platform-specific,
-        /// so an x64 OS will have a 64 bit pointer.</param>
+        /// so an x64 OS (if this is compiled to AnyCPU) will have a 64 bit pointer.</param>
         /// <param name="nBytesToRead">See above.</param>
-        /// <returns>Returns a pointer to a global memory buffer.
+        /// <returns>Returns a pointer to a global memory buffer containing the raw data that was read.
         /// Returns IntPtr.Zero if an error occured in the kernel call.
-        /// Throws an exception if nBytesToRead overflows an int value.
-        /// Call DoneReadingProcessMemory to release the memory.</returns>
+        /// Throws an exception if nBytesToRead overflows an int value.</returns>
         private IntPtr ReadProcessMemory(IntPtr processHandle, IntPtr address, uint startingOffset, uint nBytesToRead)
         {
             // This will throw an exception on overflow conversion.
