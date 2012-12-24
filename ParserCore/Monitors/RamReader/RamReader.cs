@@ -818,7 +818,8 @@ namespace WaywardGamers.KParser.Monitoring
 
                 // Note: Automatically disables LocateChatLog in FindFFXIProcess().
 
-                if (FindFFXIProcess() == false)
+                pol = ProcessAccess.GetFFXIProcess(0, null);
+                if (pol == null)
                     return;
 
                 // Section 1
