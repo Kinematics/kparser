@@ -8,6 +8,9 @@ namespace WaywardGamers.KParser.Monitoring.Memory
 {
     #region Custom classes for marshalling data
 
+    /// <summary>
+    /// Class for maintaining references to the process being monitored.
+    /// </summary>
     internal class POL
     {
         internal Process Process { get; private set; }
@@ -20,6 +23,9 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         }
     }
 
+    /// <summary>
+    /// Class for maintaining reference pointers to the chat log text as stored in memory.
+    /// </summary>
     internal class ChatLogLocationInfo
     {
         internal IntPtr ChatLogControlAddress { get; private set; }
@@ -32,6 +38,9 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         }
     }
 
+    /// <summary>
+    /// The memory structure used for referencing the chat log meta-information.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal struct ChatLogControlStruct
     {
@@ -56,7 +65,9 @@ namespace WaywardGamers.KParser.Monitoring.Memory
 
     }
 
-
+    /// <summary>
+    /// The memory structure for referencing the chat log information.
+    /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     internal struct ChatLogInfoStruct
     {
@@ -94,6 +105,10 @@ namespace WaywardGamers.KParser.Monitoring.Memory
         internal short FinalOffset;
     }
 
+    /// <summary>
+    /// A wrapper class for the chat log information structure, used so that
+    /// equality comparisons can be made.
+    /// </summary>
     internal class ChatLogDetails
     {
         readonly internal ChatLogInfoStruct ChatLogInfo;
