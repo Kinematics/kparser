@@ -182,7 +182,8 @@ namespace WaywardGamers.KParser.Monitoring
                 abortMonitorThread.Reset();
                 bool needToLogin = true;
 
-                if (FindFFXIProcess() == false)
+                pol = ProcessAccess.GetFFXIProcess(polPID, abortMonitorThread);
+                if (pol == null)
                 {
                     OnReaderStatusChanged(new ReaderStatusEventArgs()
                     {
@@ -218,7 +219,8 @@ namespace WaywardGamers.KParser.Monitoring
                     // If polProcess is ever lost (player disconnects), block on trying to reacquire it.
                     if (pol == null)
                     {
-                        if (FindFFXIProcess() == false)
+                        pol = ProcessAccess.GetFFXIProcess(polPID, abortMonitorThread);
+                        if (pol == null)
                         {
                             // End here if the FindFFXIProcess returns false,
                             // as that means the monitor thread has been aborted.
@@ -667,83 +669,7 @@ namespace WaywardGamers.KParser.Monitoring
 
         #endregion
 
-        #region Process Location Methods
-        /// <summary>
-        /// This function searches the processes on the computer system
-        /// to locate FFXI.  It stores the process information when found.
-        /// </summary>
-        /// <returns>Returns true if process was found,
-        /// false if monitoring was aborted before it was found.</returns>
-        private bool FindFFXIProcess()
-        {
-            // Keep going as long as we're still attempting to monitor
-            while (!abortMonitorThread.WaitOne(0))
-            {
-                try
-                {
-                    Trace.WriteLine(Thread.CurrentThread.Name + ": Attempting to connect to Final Fantasy.");
-
-                    Process[] polProcesses;
-
-                    // If we're given a specific process to connect to, try for that.
-                    if (polPID != 0)
-                    {
-                        polProcesses = new Process[1];
-                        polProcesses[0] = Process.GetProcessById(polPID);
-                    }
-                    else
-                    {
-                        // If we're not given a specific process, scan all processes for POL.
-                        polProcesses = Process.GetProcessesByName("pol");
-                    }
-
-
-                    // If we've found any POL processes, examine them for the proper module.
-                    if (polProcesses != null)
-                    {
-                        foreach (Process process in polProcesses)
-                        {
-                            foreach (ProcessModule module in process.Modules)
-                            {
-                                if (string.Compare(module.ModuleName, "ffximain.dll", true) == 0)
-                                {
-                                    Trace.WriteLine(string.Format("Module: {0}  Base Address: 0x{1:X8}", module.ModuleName, (uint)module.BaseAddress));
-
-                                    pol = new POL(process, module.BaseAddress);
-                                    process.Exited += new EventHandler(PolExited);
-
-                                    // And end the search since we found what we wanted.
-                                    return true;
-                                }
-                            }
-                        }
-
-                        if (polPID != 0)
-                            throw new InvalidOperationException("Specified process ID is not a POL process.");
-                    }
-                }
-                catch (ArgumentException e)
-                {
-                    System.Windows.Forms.MessageBox.Show(e.Message,
-                        "Process not found", System.Windows.Forms.MessageBoxButtons.OK);
-                }
-                catch (InvalidOperationException e)
-                {
-                    System.Windows.Forms.MessageBox.Show(e.Message,
-                        Resources.PublicResources.Error, System.Windows.Forms.MessageBoxButtons.OK);
-                }
-                catch (Exception e)
-                {
-                    Logger.Instance.Log("Memory access", String.Format(Thread.CurrentThread.Name + ": ERROR: An exception occured while trying to connect to Final Fantasy.  Message = {0}", e.Message));
-                }
-
-                // Wait before trying again.
-                System.Threading.Thread.Sleep(5000);
-            }
-
-            return false;
-        }
-
+        #region Process Information Location Methods
         /// <summary>
         /// This function digs into the FFXI address space to locate the
         /// address of where the chat log data is stored.  This info is
