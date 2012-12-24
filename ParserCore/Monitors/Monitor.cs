@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using WaywardGamers.KParser.Interface;
 using WaywardGamers.KParser.Parsing;
 
@@ -160,6 +162,9 @@ namespace WaywardGamers.KParser.Monitoring
                 case DataSource.Ram:
                     currentReader = RamReader.Instance;
                     break;
+                case DataSource.Packet:
+                    currentReader = PacketReader.Instance;
+                    break;
                 case DataSource.Database:
                     currentReader = DatabaseReader.Instance;
                     break;
@@ -205,6 +210,9 @@ namespace WaywardGamers.KParser.Monitoring
                     break;
                 case DataSource.Ram:
                     currentReader = RamReader.Instance;
+                    break;
+                case DataSource.Packet:
+                    currentReader = PacketReader.Instance;
                     break;
                 case DataSource.Database:
                     currentReader = DatabaseReader.Instance;
@@ -396,6 +404,77 @@ namespace WaywardGamers.KParser.Monitoring
                 {
                     MsgManager.Instance.EndSession();
                     throw;
+                }
+            }
+            catch (Exception)
+            {
+                ReaderStatusListener(currentReader, new ReaderStatusEventArgs(0, 0, false, true));
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Import data from another database (reparse, DVS, DirectParse, etc)
+        /// </summary>
+        /// <param name="inFilename1">The name of the first database file to import.</param>
+        /// <param name="inFilename2">The name of the second database file to import.</param>
+        /// <param name="outputFileName">The name of the new database.</param>
+        /// <param name="importSource">The type of database to import.</param>
+        public void JoinAll(List<string> inFilenames, string outputFileName, ImportSourceType importSource)
+        {
+            try
+            {
+                if (currentReader.IsRunning == true)
+                    throw new InvalidOperationException(string.Format(
+                        "{0} is already running", currentReader.GetType().Name));
+
+                if (inFilenames.Count < 2)
+                    throw new ArgumentOutOfRangeException("inFilenames",
+                        "At least two files must be selected for joining.");
+
+                if (importSource != ImportSourceType.KParser)
+                    throw new ArgumentOutOfRangeException("importSource",
+                        "Can only perform joins on KParser parses.");
+
+
+                currentReader = DatabaseReader.Instance;
+
+                DatabaseManager.Instance.CreateDatabase(outputFileName);
+                System.Threading.Thread.Sleep(100);
+
+                IDBReader dbReader = KParserReadingManager.Instance;
+                IDBReader dbReader2 = new KParserReadingManager();
+
+                var mainParse = inFilenames.First();
+                var otherParses = inFilenames.Skip(1);
+
+                dbReader.OpenDatabase(mainParse);
+
+                if (dbReader.DatabaseParseVersion.CompareTo("1.3") < 0)
+                    throw new InvalidOperationException("Reparse to upgrade timestamps first.");
+
+                foreach (var parse in otherParses)
+                {
+                    try
+                    {
+                        dbReader2.OpenDatabase(parse);
+
+                        try
+                        {
+                            MsgManager.Instance.StartNewSession();
+
+                            currentReader.Join(importSource, dbReader, dbReader2);
+                        }
+                        catch (Exception)
+                        {
+                            MsgManager.Instance.EndSession();
+                            throw;
+                        }
+                    }
+                    finally
+                    {
+                        dbReader2.CloseDatabase();
+                    }
                 }
             }
             catch (Exception)
