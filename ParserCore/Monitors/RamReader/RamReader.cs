@@ -67,7 +67,7 @@ namespace WaywardGamers.KParser.Monitoring
         uint sizeOfChatLogInfoStruct;
         uint sizeOfChatLogControlStruct;
 
-        bool abortMonitorThread;
+        ManualResetEvent abortMonitorThread = new ManualResetEvent(false);
         #endregion
 
         #region Interface Control Methods and Properties
@@ -152,7 +152,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// </summary>
         internal void Abort()
         {
-            abortMonitorThread = true;
+            abortMonitorThread.Set();
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace WaywardGamers.KParser.Monitoring
         {
             try
             {
-                abortMonitorThread = false;
+                abortMonitorThread.Reset();
                 bool needToLogin = true;
 
                 if (FindFFXIProcess() == false)
@@ -187,7 +187,7 @@ namespace WaywardGamers.KParser.Monitoring
                     OnReaderStatusChanged(new ReaderStatusEventArgs()
                     {
                         Active = true,
-                        DataSourceType = DataSource.Ram,
+                        DataSourceType = this.ParseModeType,
                         StatusMessage = "Failed to find FFXI"
                     });
 
@@ -213,7 +213,7 @@ namespace WaywardGamers.KParser.Monitoring
                 byte[][] linesToProcessBytes;
 
                 // Loop until notified to stop or the FFXI process exits.
-                while (abortMonitorThread == false)
+                while (!abortMonitorThread.WaitOne(0))
                 {
                     // If polProcess is ever lost (player disconnects), block on trying to reacquire it.
                     if (pol == null)
@@ -677,7 +677,7 @@ namespace WaywardGamers.KParser.Monitoring
         private bool FindFFXIProcess()
         {
             // Keep going as long as we're still attempting to monitor
-            while (abortMonitorThread == false)
+            while (!abortMonitorThread.WaitOne(0))
             {
                 try
                 {
