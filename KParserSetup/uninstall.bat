@@ -1,0 +1,2 @@
+Start Msiexec /x {B754035B-2B0B-4E0A-94C6-5DD4C388DE7E}
+Exit

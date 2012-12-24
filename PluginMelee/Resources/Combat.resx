@@ -1,0 +1,1047 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BuffPluginBuffsReceivedCategory" xml:space="preserve">
+    <value>Buffs Received</value>
+  </data>
+  <data name="BuffPluginBuffsUsedCategory" xml:space="preserve">
+    <value>Buffs Used</value>
+  </data>
+  <data name="BuffPluginIntervalsFormat" xml:space="preserve">
+    <value>{0,15}{1,15}{2,15}</value>
+  </data>
+  <data name="BuffPluginNumTimesFormat" xml:space="preserve">
+    <value>{0,7}</value>
+  </data>
+  <data name="BuffPluginReceivedHeader" xml:space="preserve">
+    <value>Buff                Used by             # Times   Min Interval   Max Interval   Avg Interval</value>
+  </data>
+  <data name="BuffPluginSelf" xml:space="preserve">
+    <value>Self</value>
+  </data>
+  <data name="BuffPluginTabName" xml:space="preserve">
+    <value>Buffs</value>
+  </data>
+  <data name="BuffPluginUsedHeader" xml:space="preserve">
+    <value>Buff                Used on             # Times   Min Interval   Max Interval   Avg Interval</value>
+  </data>
+  <data name="DebuffPluginDebuffHeader" xml:space="preserve">
+    <value>Debuff                # Times   # Successful   # No Effect   % Successful</value>
+  </data>
+  <data name="DebuffPluginDebuffMobsCategory" xml:space="preserve">
+    <value>Debuff Mobs</value>
+  </data>
+  <data name="DebuffPluginDebuffPlayersCategory" xml:space="preserve">
+    <value>Debuff Players</value>
+  </data>
+  <data name="DebuffPluginDebuffWithTargetsHeader" xml:space="preserve">
+    <value>Debuff              Target              # Times   # Successful   # No Effect   % Successful</value>
+  </data>
+  <data name="DebuffPluginMobDebuffFormat" xml:space="preserve">
+    <value>{0,7:d}{1,15:d}{2,14:d}{3,15:p2}</value>
+  </data>
+  <data name="DebuffPluginPlayerDebuffFormat" xml:space="preserve">
+    <value>{0,9:d}{1,15:d}{2,14:d}{3,15:p2}</value>
+  </data>
+  <data name="DebuffPluginTabName" xml:space="preserve">
+    <value>Debuffs</value>
+  </data>
+  <data name="DefenseFreqPluginAbility" xml:space="preserve">
+    <value>  Ability</value>
+  </data>
+  <data name="DefenseFreqPluginMagicBursts" xml:space="preserve">
+    <value>  Magic Bursts</value>
+  </data>
+  <data name="DefenseFreqPluginMelee" xml:space="preserve">
+    <value>  Melee</value>
+  </data>
+  <data name="DefenseFreqPluginMeleeAE" xml:space="preserve">
+    <value>  Melee Additional Effects</value>
+  </data>
+  <data name="DefenseFreqPluginMeleeCrits" xml:space="preserve">
+    <value>  Melee Crits</value>
+  </data>
+  <data name="DefenseFreqPluginRange" xml:space="preserve">
+    <value>  Range</value>
+  </data>
+  <data name="DefenseFreqPluginRangeAE" xml:space="preserve">
+    <value>  Range Additional Effects</value>
+  </data>
+  <data name="DefenseFreqPluginRangeCrits" xml:space="preserve">
+    <value>  Range Crits</value>
+  </data>
+  <data name="DefenseFreqPluginSpells" xml:space="preserve">
+    <value>  Spells</value>
+  </data>
+  <data name="DefenseFreqPluginSpikes" xml:space="preserve">
+    <value>  Spikes</value>
+  </data>
+  <data name="DefenseFreqPluginTabName" xml:space="preserve">
+    <value>Defense Details</value>
+  </data>
+  <data name="DefenseFreqPluginWeaponskill" xml:space="preserve">
+    <value>  Weaponskills</value>
+  </data>
+  <data name="DefensePluginCategoryDamageTaken" xml:space="preserve">
+    <value>Damage Taken</value>
+  </data>
+  <data name="DefensePluginCategoryDefenses" xml:space="preserve">
+    <value>Defenses</value>
+  </data>
+  <data name="DefensePluginCategoryUtsusemi" xml:space="preserve">
+    <value>Utsusemi</value>
+  </data>
+  <data name="DefensePluginFormatAbility" xml:space="preserve">
+    <value>{0,-23}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}</value>
+  </data>
+  <data name="DefensePluginFormatActiveDefense" xml:space="preserve">
+    <value>{0,-18}{1,7}{2,10:p2}{3,13}{4,14:p2}{5,15}{6,15:p2}</value>
+  </data>
+  <data name="DefensePluginFormatMelee" xml:space="preserve">
+    <value>{0,-18}{1,10}{2,10:p2}{3,11}{5,11}{6,9:f2}{7,7}{8,10}{9,8:f2}{10,10:p2}</value>
+  </data>
+  <data name="DefensePluginFormatOtherMagical" xml:space="preserve">
+    <value>{0,-18}{1,9}{2,8}{3,10:f2}{4,11}{5,8}{6,10:f2}{7,10}{8,9}{9,9:f2}</value>
+  </data>
+  <data name="DefensePluginFormatOtherPhysical" xml:space="preserve">
+    <value>{0,-18}{1,7}{2,13}{3,11}{4,8:f2}{5,10}{6,14}{7,12}{8,9:f2}</value>
+  </data>
+  <data name="DefensePluginFormatPassiveDefense" xml:space="preserve">
+    <value>{0,-18}{1,8}{2,11:p2}{3,8}{4,9:p2}{5,10}{6,11:p2}{7,13}{8,14:p2}</value>
+  </data>
+  <data name="DefensePluginFormatRanged" xml:space="preserve">
+    <value>{0,-18}{1,10}{2,10:p2}{3,11}{5,11}{6,9:f2}{7,7}{8,10}{9,8:f2}{10,10:p2}</value>
+  </data>
+  <data name="DefensePluginFormatShadowUse" xml:space="preserve">
+    <value>{0,-18}{1,13}{2,16}{3,18}{4,14:p2}{5,17:p2}</value>
+  </data>
+  <data name="DefensePluginFormatSkillchain" xml:space="preserve">
+    <value>{0,-20}{1,6}{2,6}{3,11}{4,8:f2}</value>
+  </data>
+  <data name="DefensePluginFormatSpells" xml:space="preserve">
+    <value>{0,-23}{1,10}{2,10:p2}{3,9}{4,7}{5,10}{6,10:f2}{7,9}{8,11}{9,9:f2}</value>
+  </data>
+  <data name="DefensePluginFormatSummary" xml:space="preserve">
+    <value>{0,-18}{1,10}{2,11:p2}{3,12}{4,12}{5,12}{6,12}{7,12}{8,11}</value>
+  </data>
+  <data name="DefensePluginFormatUtsuCasting" xml:space="preserve">
+    <value>{0,-18}{1,11}{2,16}{3,12}{4,14}{5,22:f0}</value>
+  </data>
+  <data name="DefensePluginFormatWeaponskill" xml:space="preserve">
+    <value>{0,-23}{1,10}{2,11:p2}{3,10}{4,11:p2}{5,12}{6,9:f2}</value>
+  </data>
+  <data name="DefensePluginHeaderAbility" xml:space="preserve">
+    <value>Player                  Abil. Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg</value>
+  </data>
+  <data name="DefensePluginHeaderActiveDefense" xml:space="preserve">
+    <value>Player             Shadow  Shadow %   Anticipate  Anticipate %   Retaliations  Retaliation %</value>
+  </data>
+  <data name="DefensePluginHeaderMelee" xml:space="preserve">
+    <value>Player             Melee Dmg   Melee %   Hit/Miss   M.Low/Hi    M.Avg  #Crit  C.Low/Hi   C.Avg     Crit%</value>
+  </data>
+  <data name="DefensePluginHeaderOtherMagical" xml:space="preserve">
+    <value>Player             M.AE Dmg  # M.AE  M.AE Avg   R.AE Dmg  # R.AE  R.AE Avg   Spk.Dmg  # Spike  Spk.Avg</value>
+  </data>
+  <data name="DefensePluginHeaderOtherPhysical" xml:space="preserve">
+    <value>Player             CA.Dmg  CA.Hit/Miss  CA.Low/Hi  CA.Avg   Ret.Dmg  Ret.Hit/Miss  Ret.Low/Hi  Ret.Avg</value>
+  </data>
+  <data name="DefensePluginHeaderPassiveDefense" xml:space="preserve">
+    <value>Player             Evasion  Evasion %   Parry  Parry %   Counter  Counter %   Intimidate  Intimidate %</value>
+  </data>
+  <data name="DefensePluginHeaderRanged" xml:space="preserve">
+    <value>Player             Range Dmg   Range %   Hit/Miss   R.Low/Hi    R.Avg  #Crit  C.Low/Hi   C.Avg     Crit%</value>
+  </data>
+  <data name="DefensePluginHeaderShadowUse" xml:space="preserve">
+    <value>Player             Shadows Used    Shadows Cast  Shadows Cast(Nin)   Efficiency  Efficiency (Nin)</value>
+  </data>
+  <data name="DefensePluginHeaderSkillchain" xml:space="preserve">
+    <value>Skillchain          SC Dmg  # SC  SC.Low/Hi  SC.Avg</value>
+  </data>
+  <data name="DefensePluginHeaderSpells" xml:space="preserve">
+    <value>Player                  Spell Dmg   Spell %  #Spells  #Fail  S.Low/Hi     S.Avg  #MBurst  MB.Low/Hi   MB.Avg</value>
+  </data>
+  <data name="DefensePluginHeaderSummary" xml:space="preserve">
+    <value>Player             Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg</value>
+  </data>
+  <data name="DefensePluginHeaderUtsuCasting" xml:space="preserve">
+    <value>Player             :Ichi Cast  :Ichi Finished    :Ni Cast  :Ni Finished    Casting Time (est.)</value>
+  </data>
+  <data name="DefensePluginHeaderWeaponskill" xml:space="preserve">
+    <value>Player                  WSkill Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg</value>
+  </data>
+  <data name="DefensePluginTabName" xml:space="preserve">
+    <value>Defense</value>
+  </data>
+  <data name="DefensePluginTitleAbility" xml:space="preserve">
+    <value>Ability Damage Taken</value>
+  </data>
+  <data name="DefensePluginTitleActiveDefenses" xml:space="preserve">
+    <value>Active Defenses</value>
+  </data>
+  <data name="DefensePluginTitleMelee" xml:space="preserve">
+    <value>Melee Damage Taken</value>
+  </data>
+  <data name="DefensePluginTitleOtherMagical" xml:space="preserve">
+    <value>Other Magical Damage Taken  (Additional Effects and Spikes)</value>
+  </data>
+  <data name="DefensePluginTitleOtherPhysical" xml:space="preserve">
+    <value>Other Physical Damage Taken  (Counterattacks and Retaliations)</value>
+  </data>
+  <data name="DefensePluginTitlePassiveDefenses" xml:space="preserve">
+    <value>Passive Defenses</value>
+  </data>
+  <data name="DefensePluginTitleRanged" xml:space="preserve">
+    <value>Ranged Damage Taken</value>
+  </data>
+  <data name="DefensePluginTitleShadowUse" xml:space="preserve">
+    <value>Shadow Use</value>
+  </data>
+  <data name="DefensePluginTitleSkillchain" xml:space="preserve">
+    <value>Skillchain Damage Taken</value>
+  </data>
+  <data name="DefensePluginTitleSpell" xml:space="preserve">
+    <value>Spell Damage Taken</value>
+  </data>
+  <data name="DefensePluginTitleSummary" xml:space="preserve">
+    <value>Damage Taken Summary</value>
+  </data>
+  <data name="DefensePluginTitleUtsuCasting" xml:space="preserve">
+    <value>Utsusemi Casting</value>
+  </data>
+  <data name="DefensePluginTitleWeaponskill" xml:space="preserve">
+    <value>Weaponskill Damage Taken</value>
+  </data>
+  <data name="DPMPluginBattleFormat" xml:space="preserve">
+    <value>{0,-20}{1,12}{2,12}{3,11}</value>
+  </data>
+  <data name="DPMPluginBattleHeader" xml:space="preserve">
+    <value>Mob                  Fight Start   Fight End   Duration</value>
+  </data>
+  <data name="DPMPluginCumulatePerMinute" xml:space="preserve">
+    <value>Cumulative Damage Per Minute</value>
+  </data>
+  <data name="DPMPluginDamageInFirstMinute" xml:space="preserve">
+    <value>Damage in the first minute</value>
+  </data>
+  <data name="DPMPluginDamageInLastMinute" xml:space="preserve">
+    <value>Damage in the last minute</value>
+  </data>
+  <data name="DPMPluginDamageInPrevMinute" xml:space="preserve">
+    <value>Damage in the previous minute</value>
+  </data>
+  <data name="DPMPluginDataFormat" xml:space="preserve">
+    <value>{0,-20}{1,11}{2,12:f2}{3,12:f2}{4,12:f2}{5,11:f2}{6,9:f2}{7,12:f2}{8,12:f2}</value>
+  </data>
+  <data name="DPMPluginDataHeader" xml:space="preserve">
+    <value>Player               Start Time   Melee DPM   Range DPM   Magic DPM   Abil DPM   WS DPM   Other DPM   Total DPM</value>
+  </data>
+  <data name="DPMPluginOnlySingleMobs" xml:space="preserve">
+    <value>Can only process single mobs at this time.</value>
+  </data>
+  <data name="DPMPluginSummaryTitle" xml:space="preserve">
+    <value>Fight Summary</value>
+  </data>
+  <data name="DPMPluginTabName" xml:space="preserve">
+    <value>Damage/Minute</value>
+  </data>
+  <data name="FightsPluginFightFormat" xml:space="preserve">
+    <value>{0,-10}{1,-24}{2,-10}{3,-20}{4,10}{5,11}{6,15}{7,6}{8,8}</value>
+  </data>
+  <data name="FightsPluginFightHeader" xml:space="preserve">
+    <value>Fight #   Enemy                   Killed?   Killed By           Start Time   End Time   Fight Length   Exp   Chain</value>
+  </data>
+  <data name="FightsPluginTabName" xml:space="preserve">
+    <value>Fights</value>
+  </data>
+  <data name="FightsPluginUnknownEnemy" xml:space="preserve">
+    <value>-Unknown-</value>
+  </data>
+  <data name="ExtraAttPluginBaseAttNumLabel" xml:space="preserve">
+    <value>Base # of Attacks:</value>
+  </data>
+  <data name="ExtraAttPluginCategory1" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="ExtraAttPluginCategory2" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="ExtraAttPluginCategoryAuto" xml:space="preserve">
+    <value>Auto</value>
+  </data>
+  <data name="ExtraAttPluginFormatMain1" xml:space="preserve">
+    <value>{0,-20}{1,16}{2,18}{3,17}{4,19}</value>
+  </data>
+  <data name="ExtraAttPluginFormatMain2" xml:space="preserve">
+    <value>{0,-20}{2,12}{3,14}{4,14}{5,14}{6,16}</value>
+  </data>
+  <data name="ExtraAttPluginFormatMain3" xml:space="preserve">
+    <value>{0,-20}{1,21}{2,17:p2}{3,24}{4,24}</value>
+  </data>
+  <data name="ExtraAttPluginHeaderMain1" xml:space="preserve">
+    <value>Player               # Melee Attacks    # Melee Rounds    Attacks/Round    # Extra Attacks</value>
+  </data>
+  <data name="ExtraAttPluginHeaderMain2" xml:space="preserve">
+    <value>Player               # +1 Rounds   # +2 Rounds   # +3 Rounds   # +4 Rounds    # &gt;+4 Rounds</value>
+  </data>
+  <data name="ExtraAttPluginHeaderMain3" xml:space="preserve">
+    <value>Player               # MultiAttack Rounds    MultiAttack %     Kills w/Min Attacks    Kills w/&lt;Min Attacks</value>
+  </data>
+  <data name="ExtraAttPluginMainSectionTitle" xml:space="preserve">
+    <value>Melee Data</value>
+  </data>
+  <data name="ExtraAttPluginRestrictedWarning" xml:space="preserve">
+    <value>Restricted while a parse is running.</value>
+  </data>
+  <data name="ExtraAttPluginSectionKicksFormat" xml:space="preserve">
+    <value>{0,-20}{1,10}{2,20}{3,20:p2}</value>
+  </data>
+  <data name="ExtraAttPluginSectionKicksHeader" xml:space="preserve">
+    <value>Player               Footwork?    # Rounds w/Kicks    Kick Attack Rate</value>
+  </data>
+  <data name="ExtraAttPluginSectionKicksTitle" xml:space="preserve">
+    <value>Multi-attacks per round (Kicks):</value>
+  </data>
+  <data name="ExtraAttPluginSectionMultiAttacksFormat" xml:space="preserve">
+    <value>{0,-20}{1,17}{2,11:p2}{3,12:p2}{4,21}{5,11:p2}{6,12:p2}</value>
+  </data>
+  <data name="ExtraAttPluginSectionMultiAttacksHeader" xml:space="preserve">
+    <value>Player               # Double Attacks    DA Rate    Perc. DA     # Triple Attacks    TA Rate    Perc. TA</value>
+  </data>
+  <data name="ExtraAttPluginSectionMultiAttacksTitle" xml:space="preserve">
+    <value>Multi-attacks per attack (2x/3x):</value>
+  </data>
+  <data name="ExtraAttPluginSectionTreatAs" xml:space="preserve">
+    <value>Treat As:</value>
+  </data>
+  <data name="ExtraAttPluginSectionZanshinFormat" xml:space="preserve">
+    <value>{0,-20}{1,23}{2,23}{3,21:p2}</value>
+  </data>
+  <data name="ExtraAttPluginSectionZanshinHeader" xml:space="preserve">
+    <value>Player               # Missed First Attacks    # DA w/Missed First   Possible Zanshin %</value>
+  </data>
+  <data name="ExtraAttPluginSectionZanshinTitle" xml:space="preserve">
+    <value>Multi-attacks per attack (Zanshin):</value>
+  </data>
+  <data name="ExtraAttPluginTabName" xml:space="preserve">
+    <value>Extra Attacks</value>
+  </data>
+  <data name="ExtraAttPluginUncorrectedDetails" xml:space="preserve">
+    <value>Uncorrected Details</value>
+  </data>
+  <data name="OffenseFreqTabName" xml:space="preserve">
+    <value>Offense Detail</value>
+  </data>
+  <data name="OffensePluginCategoryAbility" xml:space="preserve">
+    <value>Abilities</value>
+  </data>
+  <data name="OffensePluginCategoryMelee" xml:space="preserve">
+    <value>Melee</value>
+  </data>
+  <data name="OffensePluginCategoryOther" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="OffensePluginCategoryRanged" xml:space="preserve">
+    <value>Ranged</value>
+  </data>
+  <data name="OffensePluginCategorySkillchain" xml:space="preserve">
+    <value>Skillchains</value>
+  </data>
+  <data name="OffensePluginCategorySpell" xml:space="preserve">
+    <value>Spells</value>
+  </data>
+  <data name="OffensePluginCategorySummary" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="OffensePluginCategoryWeaponskill" xml:space="preserve">
+    <value>Weaponskills</value>
+  </data>
+  <data name="OffensePluginFormatAbility" xml:space="preserve">
+    <value>{0,-23}{1,10}{2,11}{3,10}{4,11:p2}{5,10}{6,11:p2}{7,12}{8,9:f2}</value>
+  </data>
+  <data name="OffensePluginFormatMelee" xml:space="preserve">
+    <value>{0,-17}{1,10}{2,11}{3,10}{4,10:p2}{5,11}{6,10:p2}{7,10:p2}{8,10}{9,9:f2}{10,9:f2}</value>
+  </data>
+  <data name="OffensePluginFormatOtherMagical" xml:space="preserve">
+    <value>{0,-17}{1,9}{2,8}{3,10:f2}{4,11}{5,8}{6,10:f2}{7,10}{8,9}{9,9:f2}</value>
+  </data>
+  <data name="OffensePluginFormatOtherPhysical" xml:space="preserve">
+    <value>{0,-17}{1,7}{2,11}{3,11}{4,10:f2}{5,10}{6,12}{7,12}{8,11:f2}</value>
+  </data>
+  <data name="OffensePluginFormatRanged" xml:space="preserve">
+    <value>{0,-17}{1,10}{2,10:p2}{3,11}{4,10:p2}{11,10:p2}{5,10}{6,9:f2}{12,9:f2}{7,7}{8,10}{9,10:f2}{10,10:p2}</value>
+  </data>
+  <data name="OffensePluginFormatSkillchain" xml:space="preserve">
+    <value>{0,-20}{1,6}{2,11}{3,10}{4,7}{5,11}{6,8:f2}</value>
+  </data>
+  <data name="OffensePluginFormatSpell" xml:space="preserve">
+    <value>{0,-23}{1,10}{2,11}{3,10}{4,10:p2}{5,9}{6,7}{7,10}{8,10:f2}{9,9}</value>
+  </data>
+  <data name="OffensePluginFormatSummary" xml:space="preserve">
+    <value>{0,-20}{1,10}{2,11:p2}{3,12}{4,12}{5,12}{6,12}{7,12}{8,11}{9,15}</value>
+  </data>
+  <data name="OffensePluginFormatWeaponskill" xml:space="preserve">
+    <value>{0,-23}{1,10}{2,11}{3,10}{4,11:p2}{5,10}{6,11:p2}{7,12}{8,9:f2}</value>
+  </data>
+  <data name="OffensePluginHeaderAbility" xml:space="preserve">
+    <value>Player                  Abil. Dmg  Abs'd.Dmg   Net Dmg    Abil. %  Hit/Miss    A.Acc %    A.Low/Hi    A.Avg</value>
+  </data>
+  <data name="OffensePluginHeaderMelee" xml:space="preserve">
+    <value>Player            Melee Dmg  Abs'd.Dmg   Net Dmg   Melee %   Hit/Miss    M.HR %   M.Acc %  M.Low/Hi  M+0.Avg  M-0.Avg</value>
+  </data>
+  <data name="OffensePluginHeaderOtherMagical" xml:space="preserve">
+    <value>Player            M.AE Dmg  # M.AE  M.AE Avg   R.AE Dmg  # R.AE  R.AE Avg   Spk.Dmg  # Spike  Spk.Avg</value>
+  </data>
+  <data name="OffensePluginHeaderOtherPhysical" xml:space="preserve">
+    <value>Player            CA.Dmg  CA.Hits-0  CA.Low/Hi  CA-0.Avg   Ret.Dmg  Ret.Hits-0  Ret.Low/Hi  Ret-0.Avg</value>
+  </data>
+  <data name="OffensePluginHeaderRanged" xml:space="preserve">
+    <value>Player            Range Dmg   Range %   Hit/Miss    R.HR %   R.Acc %  R.Low/Hi  R+0.Avg  R-0.Avg  #Crit  C.Low/Hi   C-0.Avg     Crit%</value>
+  </data>
+  <data name="OffensePluginHeaderSkillchain" xml:space="preserve">
+    <value>Skillchain          SC Dmg  Abs'd.Dmg   Net Dmg   # SC  SC.Low/Hi  SC.Avg</value>
+  </data>
+  <data name="OffensePluginHeaderSpell" xml:space="preserve">
+    <value>Player                  Spell Dmg  Abs'd.Dmg   Net Dmg   Spell %  #Spells  #Fail  S.Low/Hi     S.Avg  #MBurst</value>
+  </data>
+  <data name="OffensePluginHeaderSummary" xml:space="preserve">
+    <value>Player               Total Dmg   Damage %   Melee Dmg   Range Dmg   Abil. Dmg  WSkill Dmg   Spell Dmg  Other Dmg   Absorbed Dmg</value>
+  </data>
+  <data name="OffensePluginHeaderWeaponskill" xml:space="preserve">
+    <value>Player                 WSkill Dmg  Abs'd.Dmg   Net Dmg   WSkill %  Hit/Miss   WS.Acc %   WS.Low/Hi   WS.Avg</value>
+  </data>
+  <data name="OffensePluginTabName" xml:space="preserve">
+    <value>Offense</value>
+  </data>
+  <data name="OffensePluginTitleAbility" xml:space="preserve">
+    <value>Ability Damage</value>
+  </data>
+  <data name="OffensePluginTitleMelee" xml:space="preserve">
+    <value>Melee Damage</value>
+  </data>
+  <data name="OffensePluginTitleOtherMagical" xml:space="preserve">
+    <value>Other Magical Damage  (Additional Effects and Spikes)</value>
+  </data>
+  <data name="OffensePluginTitleOtherPhysical" xml:space="preserve">
+    <value>Other Physical Damage  (Counterattacks and Retaliations)</value>
+  </data>
+  <data name="OffensePluginTitleRanged" xml:space="preserve">
+    <value>Ranged Damage</value>
+  </data>
+  <data name="OffensePluginTitleSkillchain" xml:space="preserve">
+    <value>Skillchain Damage</value>
+  </data>
+  <data name="OffensePluginTitleSpell" xml:space="preserve">
+    <value>Spell Damage</value>
+  </data>
+  <data name="OffensePluginTitleSummary" xml:space="preserve">
+    <value>Damage Summary</value>
+  </data>
+  <data name="OffensePluginTitleWeaponskill" xml:space="preserve">
+    <value>Weaponskill Damage</value>
+  </data>
+  <data name="RecoveryPluginCategoryAvgCuring" xml:space="preserve">
+    <value>Average Curing</value>
+  </data>
+  <data name="RecoveryPluginCategoryCuring" xml:space="preserve">
+    <value>Curing</value>
+  </data>
+  <data name="RecoveryPluginCategoryRecovery" xml:space="preserve">
+    <value>Recovery</value>
+  </data>
+  <data name="RecoveryPluginFormatAvgCuring" xml:space="preserve">
+    <value>{0,-17}{1,6:f2}{2,9:f2}{3,9:f2}{4,9:f2}{5,9:f2}{6,9:f2}{7,9:f2}{8,10:f2}</value>
+  </data>
+  <data name="RecoveryPluginFormatCuring" xml:space="preserve">
+    <value>{0,-17}{1,9}{2,12}{3,7}{4,6}{5,6}{6,6}{7,6}{8,6}{9,9}{10,7}{11,7}{12,7}{13,7}</value>
+  </data>
+  <data name="RecoveryPluginFormatRecovery" xml:space="preserve">
+    <value>{0,-17}{1,9}{2,13}{3,11}{4,9}{5,11}{6,11}{7,11}</value>
+  </data>
+  <data name="RecoveryPluginHeaderAvgCuring" xml:space="preserve">
+    <value>Player           Cure 1   Cure 2   Cure 3   Cure 4   Cure 5   Cure 6   Curaga   Ability</value>
+  </data>
+  <data name="RecoveryPluginHeaderCuring" xml:space="preserve">
+    <value>Player           Cured (Sp)  Cured (Ab)  C.1s  C.2s  C.3s  C.4s  C.5s  C.6s  Curagas  Rg.1s  Rg.2s  Rg.3s  Rg.4s</value>
+  </data>
+  <data name="RecoveryPluginHeaderRecovery" xml:space="preserve">
+    <value>Player           Dmg Taken   HP Drained   HP Cured   #Regen   #Regen 2   #Regen 3   #Regen 4</value>
+  </data>
+  <data name="RecoveryPluginTabName" xml:space="preserve">
+    <value>Recovery</value>
+  </data>
+  <data name="RecoveryPluginTitleAvgCuring" xml:space="preserve">
+    <value>Average Curing (Whm spells or equivalent)</value>
+  </data>
+  <data name="RecoveryPluginTitleCuring" xml:space="preserve">
+    <value>Curing (Whm spells or equivalent)</value>
+  </data>
+  <data name="RecoveryPluginTitleRecovery" xml:space="preserve">
+    <value>Damage Recovery</value>
+  </data>
+  <data name="ThiefPluginAndHide" xml:space="preserve">
+    <value>+Hide</value>
+  </data>
+  <data name="ThiefPluginEventTypeFailed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="ThiefPluginEventTypeWeaponskill" xml:space="preserve">
+    <value>Weaponskill</value>
+  </data>
+  <data name="ThiefPluginFormatDataLineLong" xml:space="preserve">
+    <value>    {0,-15}{1,15}{2,10}{3,10}</value>
+  </data>
+  <data name="ThiefPluginFormatDataLineShort" xml:space="preserve">
+    <value>    {0,-15}</value>
+  </data>
+  <data name="ThiefPluginFormatSummary1" xml:space="preserve">
+    <value>    {0,-20}{1,10}{2,20}</value>
+  </data>
+  <data name="ThiefPluginFormatSummary2" xml:space="preserve">
+    <value>    {0,-20}{1,30}</value>
+  </data>
+  <data name="ThiefPluginFormatSummary3" xml:space="preserve">
+    <value>    {0,30}{1,20}</value>
+  </data>
+  <data name="ThiefPluginFormatSummaryP" xml:space="preserve">
+    <value>    {0,-20}{1,10}{2,20:f2}</value>
+  </data>
+  <data name="ThiefPluginLabelAverage" xml:space="preserve">
+    <value>Average</value>
+  </data>
+  <data name="ThiefPluginLabelCount" xml:space="preserve">
+    <value>Count</value>
+  </data>
+  <data name="ThiefPluginLabelMelee" xml:space="preserve">
+    <value>Melee:</value>
+  </data>
+  <data name="ThiefPluginLabelSuccessCount" xml:space="preserve">
+    <value>Success Count:</value>
+  </data>
+  <data name="ThiefPluginLabelSuccessfulMelee" xml:space="preserve">
+    <value>Successful Melee:</value>
+  </data>
+  <data name="ThiefPluginLabelSuccessfulTotal" xml:space="preserve">
+    <value>Successful Total:</value>
+  </data>
+  <data name="ThiefPluginLabelTotal" xml:space="preserve">
+    <value>Total:</value>
+  </data>
+  <data name="ThiefPluginLabelWeaponskills" xml:space="preserve">
+    <value>Weaponskills:</value>
+  </data>
+  <data name="ThiefPluginMiss" xml:space="preserve">
+    <value>Miss</value>
+  </data>
+  <data name="ThiefPluginSneakAndTrick" xml:space="preserve">
+    <value>Sneak Attack &amp; Trick Attack</value>
+  </data>
+  <data name="ThiefPluginSneakAttack" xml:space="preserve">
+    <value>Sneak Attack</value>
+  </data>
+  <data name="ThiefPluginSoloWS" xml:space="preserve">
+    <value>Solo Weaponskills</value>
+  </data>
+  <data name="ThiefPluginTabName" xml:space="preserve">
+    <value>Thief</value>
+  </data>
+  <data name="ThiefPluginTrickAttack" xml:space="preserve">
+    <value>Trick Attack</value>
+  </data>
+  <data name="EnfeeblePluginCategoryAttackSpeed" xml:space="preserve">
+    <value>Attack Speed</value>
+  </data>
+  <data name="EnfeeblePluginCategoryDurations" xml:space="preserve">
+    <value>Enfeeble Durations</value>
+  </data>
+  <data name="EnfeeblePluginCategoryParalyze" xml:space="preserve">
+    <value>Paralyze</value>
+  </data>
+  <data name="EnfeeblePluginCategoryTPMoves" xml:space="preserve">
+    <value>TP Moves</value>
+  </data>
+  <data name="EnfeeblePluginFormatDurations" xml:space="preserve">
+    <value>{0,12:d}{1,19}{2,17}</value>
+  </data>
+  <data name="EnfeeblePluginFormatParalyze" xml:space="preserve">
+    <value>{0,8:d}{1,21}{2,21}{3,29}{4,17:p2}</value>
+  </data>
+  <data name="EnfeeblePluginFormatSpeed" xml:space="preserve">
+    <value>{0,8:d}{1,16}{2,18}{3,13}{4,18:f2}{5,13}{6,18:f2}</value>
+  </data>
+  <data name="EnfeeblePluginFormatTPMoves" xml:space="preserve">
+    <value>{0,7:d}{1,16}{2,14}{3,20}{4,25:f1}</value>
+  </data>
+  <data name="EnfeeblePluginHeaderDurations" xml:space="preserve">
+    <value>Debuff               #Successful     Total Duration     Avg Duration</value>
+  </data>
+  <data name="EnfeeblePluginHeaderParalyze" xml:space="preserve">
+    <value># Fights      # Paralyze Cast    # Times Paralyzed    Max # Paralyzable Actions    Paralyze Rate</value>
+  </data>
+  <data name="EnfeeblePluginHeaderSpeed1" xml:space="preserve">
+    <value>                                              (Slow)       (Slow)            (Normal)     (Normal)</value>
+  </data>
+  <data name="EnfeeblePluginHeaderSpeed2" xml:space="preserve">
+    <value># Fights    # Slows Cast     # Mobs Slowed    # Actions    Attacks/Minute    # Actions    Attacks/Minute</value>
+  </data>
+  <data name="EnfeeblePluginHeaderTPMoves" xml:space="preserve">
+    <value># Moves      Total Time      # Fights    Avg Time/TP Move      Avg TP Moves/Minute</value>
+  </data>
+  <data name="EnfeeblePluginTabName" xml:space="preserve">
+    <value>Enfeebling</value>
+  </data>
+  <data name="EnfeeblePluginTitleDurations" xml:space="preserve">
+    <value>Enfeeble Durations</value>
+  </data>
+  <data name="EnfeeblePluginTitleParalyze" xml:space="preserve">
+    <value>Paralyzed Actions</value>
+  </data>
+  <data name="EnfeeblePluginTitleSpeed" xml:space="preserve">
+    <value>Slowed Actions</value>
+  </data>
+  <data name="EnfeeblePluginTitleTPMoves" xml:space="preserve">
+    <value>TP Moves</value>
+  </data>
+  <data name="WSRatePluginDetailsFormat" xml:space="preserve">
+    <value>{0,10}  :  {1,10}</value>
+  </data>
+  <data name="WSRatePluginDetailsMHeader" xml:space="preserve">
+    <value>     Melee      Frequency</value>
+  </data>
+  <data name="WSRatePluginMainFormat" xml:space="preserve">
+    <value>{0,-20}{1,13}{2,10}{3,13}{4,11}{5,11}{6,9:f2}{7,9:f2}{8,9}{9,7}</value>
+  </data>
+  <data name="WSRatePluginMainHeader" xml:space="preserve">
+    <value>Player               # Melee Hits   # Retal.   # WSkills   Min Hits   Max Hits     Mean   Median   Mode</value>
+  </data>
+  <data name="WSRatePluginTabName" xml:space="preserve">
+    <value>WS Rates</value>
+  </data>
+  <data name="WSRatePluginTitle" xml:space="preserve">
+    <value>Weaponskill/TP Rates</value>
+  </data>
+  <data name="PerformancePluginDPSFormat" xml:space="preserve">
+    <value>{0,-17}{1,12:f2}{2,13:f2}{3,11:f2}{4,13:f2}{5,13:f2}{6,13:f2}</value>
+  </data>
+  <data name="PerformancePluginDPSHeader" xml:space="preserve">
+    <value>Player              Melee DPS   Ranged DPS     WS DPS    Magic DPS    Other DPS    Total DPS</value>
+  </data>
+  <data name="PerformancePluginDPSTitle" xml:space="preserve">
+    <value>Damage Per Second</value>
+  </data>
+  <data name="PerformancePluginOverallFormat" xml:space="preserve">
+    <value>{0,-18}{1,21}</value>
+  </data>
+  <data name="PerformancePluginOverallHeader" xml:space="preserve">
+    <value>Total # Fights      Total Fights Length</value>
+  </data>
+  <data name="PerformancePluginOverallTitle" xml:space="preserve">
+    <value>Overall</value>
+  </data>
+  <data name="PerformancePluginParticipateFightsFormat" xml:space="preserve">
+    <value>{0,-17}{1,16}{2,18:p2}</value>
+  </data>
+  <data name="PerformancePluginParticipateFightsHeader" xml:space="preserve">
+    <value>Player           Number of fights   % Participation</value>
+  </data>
+  <data name="PerformancePluginParticipateTimeFormat" xml:space="preserve">
+    <value>{0,-17}{1,19}{2,22:p2}{3,17}{4,17:p2}{5,17:p2}</value>
+  </data>
+  <data name="PerformancePluginParticipateTimeHeader" xml:space="preserve">
+    <value>Player           Total time fighting   Total fight lengths   Avg Time/Fight   % Fights' Time   % Overall Time</value>
+  </data>
+  <data name="PerformancePluginParticipateTitle" xml:space="preserve">
+    <value>Player Participation (Offensive)</value>
+  </data>
+  <data name="PerformancePluginTabName" xml:space="preserve">
+    <value>Performance</value>
+  </data>
+  <data name="DefenseFreqPluginFullMelee" xml:space="preserve">
+    <value>Full Melee Sequence</value>
+  </data>
+  <data name="DefenseFreqPluginFullRange" xml:space="preserve">
+    <value>Full Range Sequence</value>
+  </data>
+  <data name="ExtraAttPluginSectionZanshinAccFormat" xml:space="preserve">
+    <value>{0,-17}{1,30:p2}{2,31:p2}</value>
+  </data>
+  <data name="ExtraAttPluginSectionZanshinAccHeader" xml:space="preserve">
+    <value>Player               Acc. Rate of First Attacks    Acc. Rate of Second Attacks</value>
+  </data>
+  <data name="ExtraAttPluginAttack" xml:space="preserve">
+    <value>Attack</value>
+  </data>
+  <data name="ExtraAttPluginAttacks" xml:space="preserve">
+    <value>Attacks</value>
+  </data>
+  <data name="ExtraAttPluginBucketsHeader" xml:space="preserve">
+    <value>Buckets (Attack intervals at 0.5 sec resolution):</value>
+  </data>
+  <data name="OffenseFreqPluginCounters" xml:space="preserve">
+    <value>  Counters</value>
+  </data>
+  <data name="OffenseFreqPluginRetaliations" xml:space="preserve">
+    <value>  Retaliations</value>
+  </data>
+  <data name="CorsairPluginTabName" xml:space="preserve">
+    <value>Corsair</value>
+  </data>
+  <data name="CorsairPluginAllRolls" xml:space="preserve">
+    <value>All Rolls</value>
+  </data>
+  <data name="CorsairPluginAverageFormat" xml:space="preserve">
+    <value>Average:    {0,8:f2}</value>
+  </data>
+  <data name="CorsairPluginDoubleUpFrequency" xml:space="preserve">
+    <value>Frequency of first Double-Up per initial roll</value>
+  </data>
+  <data name="CorsairPluginFrequency" xml:space="preserve">
+    <value>Frequency:</value>
+  </data>
+  <data name="CorsairPluginFullRollHeader" xml:space="preserve">
+    <value>                   1       2       3       4       5       6       7       8       9      10      11    Bust</value>
+  </data>
+  <data name="CorsairPluginLongFloatFormat" xml:space="preserve">
+    <value>Percentage: {0,8:f2}{1,8:f2}{2,8:f2}{3,8:f2}{4,8:f2}{5,8:f2}{6,8:f2}{7,8:f2}{8,8:f2}{9,8:f2}{10,8:f2}{11,8:f2}</value>
+  </data>
+  <data name="CorsairPluginLongFrequencyFormat" xml:space="preserve">
+    <value>Frequency:  {0,8:d}{1,8:d}{2,8:d}{3,8:d}{4,8:d}{5,8:d}{6,8:d}{7,8:d}{8,8:d}{9,8:d}{10,8:d}{11,8:d}</value>
+  </data>
+  <data name="CorsairPluginRollFrequency" xml:space="preserve">
+    <value>Roll Frequency</value>
+  </data>
+  <data name="CorsairPluginShortFormat" xml:space="preserve">
+    <value>{0,-11} {1,8:d}{2,8:d}{3,8:d}{4,8:d}{5,8:d}{6,8:d}</value>
+  </data>
+  <data name="CorsairPluginShortPercentageFormat" xml:space="preserve">
+    <value>Percentage: {0,8:f2}{1,8:f2}{2,8:f2}{3,8:f2}{4,8:f2}{5,8:f2}</value>
+  </data>
+  <data name="CorsairPluginSingleRollInitialHeader" xml:space="preserve">
+    <value>Initial            1       2       3       4       5       6</value>
+  </data>
+  <data name="CorsairPluginSingleRollValueHeader" xml:space="preserve">
+    <value>Value:             1       2       3       4       5       6</value>
+  </data>
+  <data name="CorsairPluginTotals" xml:space="preserve">
+    <value>Totals</value>
+  </data>
+  <data name="WSRatePluginAbsorbTitle" xml:space="preserve">
+    <value>Absorb-TP</value>
+  </data>
+  <data name="WSRatePluginDetailsRHeader" xml:space="preserve">
+    <value>     Range      Frequency</value>
+  </data>
+  <data name="WSRatePluginDetailsTitle" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="WSRatePluginMeleeTitle" xml:space="preserve">
+    <value>Melee</value>
+  </data>
+  <data name="WSRatePluginPhysicalFormat" xml:space="preserve">
+    <value>{0,-20}{1,13}{2,7}{3,7}{4,9:f2}{5,10}{6,8}</value>
+  </data>
+  <data name="WSRatePluginPhysicalHeader" xml:space="preserve">
+    <value>Player                 Total Hits    Min    Max     Mean    Median    Mode</value>
+  </data>
+  <data name="WSRatePluginRangeTitle" xml:space="preserve">
+    <value>Ranged</value>
+  </data>
+  <data name="WSRatePluginSpellFormat" xml:space="preserve">
+    <value>{0,-20}{1,13}{2,11}{3,12}{4,7}{5,7}{6,9:f2}{7,19:f2}</value>
+  </data>
+  <data name="WSRatePluginSpellHeader" xml:space="preserve">
+    <value>Player                    # Casts   # Failed    Total TP    Min    Max     Mean    Mean w/Failures</value>
+  </data>
+  <data name="WSRatePluginTotalWSs" xml:space="preserve">
+    <value>Total Weaponskills</value>
+  </data>
+  <data name="WSRatePluginWSFormat" xml:space="preserve">
+    <value>{0,-20}{1,13}{2,16}</value>
+  </data>
+  <data name="WSRatePluginWSHeader" xml:space="preserve">
+    <value>Player               Weaponskills    Avg Interval</value>
+  </data>
+  <data name="DeathPluginDetailsFormat" xml:space="preserve">
+    <value>{0,-20}{1,14}{2,26}</value>
+  </data>
+  <data name="DeathPluginDetailsHeader" xml:space="preserve">
+    <value>Player               Time of Death                 Killed By</value>
+  </data>
+  <data name="DeathPluginDetailsTitle" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="DeathPluginSummaryFormat" xml:space="preserve">
+    <value>{0,-20}{1,9}</value>
+  </data>
+  <data name="DeathPluginSummaryHeader" xml:space="preserve">
+    <value>Player               # Deaths</value>
+  </data>
+  <data name="DeathPluginSummaryTitle" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="DeathPluginTabName" xml:space="preserve">
+    <value>Deaths</value>
+  </data>
+  <data name="DeathPluginTitle" xml:space="preserve">
+    <value>Player Deaths</value>
+  </data>
+  <data name="DeathPluginUnknown" xml:space="preserve">
+    <value>-Unknown-</value>
+  </data>
+  <data name="CorsairPluginAvgBonusAsMainFormat" xml:space="preserve">
+    <value>As Cor Main      {0,16:f2}{1,23:f2}</value>
+  </data>
+  <data name="CorsairPluginAvgBonusAsSubFormat" xml:space="preserve">
+    <value>As Cor Sub       {0,16:f2}{1,23:f2}</value>
+  </data>
+  <data name="CorsairPluginAvgBonusHeader" xml:space="preserve">
+    <value>Average Bonus      With Job Bonus      Without Job Bonus</value>
+  </data>
+  <data name="OffensePluginCopySummary" xml:space="preserve">
+    <value>Copy Summary</value>
+  </data>
+  <data name="BuffsByTimePluginAccuracy" xml:space="preserve">
+    <value>Accuracy</value>
+  </data>
+  <data name="BuffsByTimePluginAccuracyHeader" xml:space="preserve">
+    <value>Buff                     M.Hit/Miss     MHit%   R.Hit/Miss    RHit%   Buff (In)Active%</value>
+  </data>
+  <data name="BuffsByTimePluginAttack" xml:space="preserve">
+    <value>Attack</value>
+  </data>
+  <data name="BuffsByTimePluginAttackHeader" xml:space="preserve">
+    <value>Buff                      Type      Min/Max    Average   Cr.Min/Max     Cr.Avg     Buff (In)Active%</value>
+  </data>
+  <data name="BuffsByTimePluginHaste" xml:space="preserve">
+    <value>Haste</value>
+  </data>
+  <data name="BuffsByTimePluginHasteHeader" xml:space="preserve">
+    <value>Buff                    Melee w/Buff   Melee wo/Buff    % w/Buff    WS w/Buff   WS wo/Buff   % w/Buff</value>
+  </data>
+  <data name="BuffsByTimePluginTabName" xml:space="preserve">
+    <value>Buffs by Time</value>
+  </data>
+  <data name="DamageGraphPluginIndividualDamageOption" xml:space="preserve">
+    <value>Show Individual Damage</value>
+  </data>
+  <data name="DamageGraphPluginCumulativeDamage" xml:space="preserve">
+    <value>Cumulative damage</value>
+  </data>
+  <data name="DamageGraphPluginCumulativeDamageOption" xml:space="preserve">
+    <value>Show Cumulative Damage</value>
+  </data>
+  <data name="DamageGraphPluginGraphTitle" xml:space="preserve">
+    <value>Damage over Time</value>
+  </data>
+  <data name="DamageGraphPluginGraphTitleCumulative" xml:space="preserve">
+    <value>Cumulative Damage over Time</value>
+  </data>
+  <data name="DamageGraphPluginSequenceDamage" xml:space="preserve">
+    <value>Sequence damage</value>
+  </data>
+  <data name="DamageGraphPluginTabName" xml:space="preserve">
+    <value>Damage Graph</value>
+  </data>
+  <data name="DamageGraphPluginXAxisTitle" xml:space="preserve">
+    <value>Time (Seconds)</value>
+  </data>
+  <data name="DamageGraphPluginYAxisTitle" xml:space="preserve">
+    <value>Damage</value>
+  </data>
+  <data name="ExtraAttPluginFormatRanged1" xml:space="preserve">
+    <value>{0,-20}{1,16}{2,18}{3,17}{4,19}</value>
+  </data>
+  <data name="ExtraAttPluginFormatRanged2" xml:space="preserve">
+    <value>{0,-20}{1,12}{2,16}</value>
+  </data>
+  <data name="ExtraAttPluginFormatRanged3" xml:space="preserve">
+    <value>{0,-20}{1,21}{2,17:p2}{3,24}</value>
+  </data>
+  <data name="ExtraAttPluginHeaderRanged1" xml:space="preserve">
+    <value>Player               # Range Attacks    # Range Rounds    Attacks/Round    # Extra Attacks</value>
+  </data>
+  <data name="ExtraAttPluginHeaderRanged2" xml:space="preserve">
+    <value>Player               # +1 Rounds    # &gt;+1 Rounds</value>
+  </data>
+  <data name="ExtraAttPluginHeaderRanged3" xml:space="preserve">
+    <value>Player               # MultiAttack Rounds    MultiAttack %     Kills w/Min Attacks</value>
+  </data>
+  <data name="ExtraAttPluginRangedSectionTitle" xml:space="preserve">
+    <value>Ranged Data</value>
+  </data>
+  <data name="DefensePluginAbilityUsage" xml:space="preserve">
+    <value>Ability Usage</value>
+  </data>
+  <data name="DefensePluginAbilityUsageFormat1" xml:space="preserve">
+    <value>{0,-20}   {1,14}</value>
+  </data>
+  <data name="DefensePluginAbilityUsageFormat2" xml:space="preserve">
+    <value>{0}/{1}</value>
+  </data>
+  <data name="DefensePluginAbilityUsageHeader" xml:space="preserve">
+    <value>Ability                 Used/Prepared</value>
+  </data>
+  <data name="RecoveryPluginCategoryStatusCured" xml:space="preserve">
+    <value>Statuses Cured</value>
+  </data>
+  <data name="RecoveryPluginCategoryStatusCuring" xml:space="preserve">
+    <value>Status Curing</value>
+  </data>
+  <data name="RecoveryPluginFormatCuringCost" xml:space="preserve">
+    <value>{0,-20}{1,8}{2,11:f2}{3,18:f2}{4,12}{5,14:f2}</value>
+  </data>
+  <data name="RecoveryPluginFormatStatusCures" xml:space="preserve">
+    <value>{0,-20}{1,13}{2,16}</value>
+  </data>
+  <data name="RecoveryPluginFormatStatusCuresSub" xml:space="preserve">
+    <value> - {0,-17} {1,12}</value>
+  </data>
+  <data name="RecoveryPluginHeaderCuringCost" xml:space="preserve">
+    <value>Player              MP Spent   Cure Eff.   Cure+Regen Eff.   TP Spent   TP Cure Eff.</value>
+  </data>
+  <data name="RecoveryPluginHeaderStatusCuring" xml:space="preserve">
+    <value>Status               # Times Cast     # No Effect</value>
+  </data>
+  <data name="RecoveryPluginTitleCuringCost" xml:space="preserve">
+    <value>Curing Costs and Efficiency (estimated)</value>
+  </data>
+  <data name="RecoveryPluginTitleStatusCured" xml:space="preserve">
+    <value>Statuses Cured</value>
+  </data>
+  <data name="RecoveryPluginTitleStatusCuring" xml:space="preserve">
+    <value>Status Curing</value>
+  </data>
+  <data name="BuffsByTimePluginCritRateFormat" xml:space="preserve">
+    <value>{0,21}   {1,15}   {2,9:p2}   {3,10:f2}   {4,8:f2}   {5,18:p2}</value>
+  </data>
+  <data name="BuffsByTimePluginCritRateHeader" xml:space="preserve">
+    <value>Buff                      Crit/Non-crit       Crit%     Avg Crit     Avg WS     Buff (In)Active%</value>
+  </data>
+  <data name="BuffsByTimePluginCritRateTitle" xml:space="preserve">
+    <value>Crit Rate</value>
+  </data>
+  <data name="OffensePluginFormatMeleeCrit" xml:space="preserve">
+    <value>{0,-17}{1,10}{2,10}{3,10:f2}{4,10:p2}</value>
+  </data>
+  <data name="OffensePluginHeaderMeleeCrit" xml:space="preserve">
+    <value>Player                #Crit  C.Low/Hi   C-0.Avg     Crit%</value>
+  </data>
+  <data name="OffensePluginTitleMeleeCrit" xml:space="preserve">
+    <value>Melee Crit Damage</value>
+  </data>
+</root>

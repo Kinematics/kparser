@@ -1,0 +1,408 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ChatPluginCategoryLabel" xml:space="preserve">
+    <value>Chat Type:</value>
+  </data>
+  <data name="ChatPluginChatTypeArena" xml:space="preserve">
+    <value>Arena</value>
+  </data>
+  <data name="ChatPluginChatTypeEcho" xml:space="preserve">
+    <value>Echo</value>
+  </data>
+  <data name="ChatPluginChatTypeEmote" xml:space="preserve">
+    <value>Emote</value>
+  </data>
+  <data name="ChatPluginChatTypeLinkshell" xml:space="preserve">
+    <value>Linkshell</value>
+  </data>
+  <data name="ChatPluginChatTypeNPC" xml:space="preserve">
+    <value>NPC</value>
+  </data>
+  <data name="ChatPluginChatTypeParty" xml:space="preserve">
+    <value>Party</value>
+  </data>
+  <data name="ChatPluginChatTypeSay" xml:space="preserve">
+    <value>Say</value>
+  </data>
+  <data name="ChatPluginChatTypeShout" xml:space="preserve">
+    <value>Shout</value>
+  </data>
+  <data name="ChatPluginChatTypeTell" xml:space="preserve">
+    <value>Tell</value>
+  </data>
+  <data name="ChatPluginSpeakerLabel" xml:space="preserve">
+    <value>Speaker:</value>
+  </data>
+  <data name="ChatPluginTabName" xml:space="preserve">
+    <value>Chat</value>
+  </data>
+  <data name="ExcludedPlayerOption" xml:space="preserve">
+    <value>Don't Count 'exclude'd Player Kills</value>
+  </data>
+  <data name="ExperiencePluginAverageFightLength" xml:space="preserve">
+    <value>Avg Fight Length</value>
+  </data>
+  <data name="ExperiencePluginAverageTimePerFight" xml:space="preserve">
+    <value>Avg Time/Fight</value>
+  </data>
+  <data name="ExperiencePluginChainFormat" xml:space="preserve">
+    <value>{0,-5}{1,8}{2,11}{3,9:F2}</value>
+  </data>
+  <data name="ExperiencePluginChainHeader" xml:space="preserve">
+    <value>Chain   Count   Total XP   Avg XP</value>
+  </data>
+  <data name="ExperiencePluginDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="ExperiencePluginEndTime" xml:space="preserve">
+    <value>End Time</value>
+  </data>
+  <data name="ExperiencePluginExperienceChains" xml:space="preserve">
+    <value>Experience Chains</value>
+  </data>
+  <data name="ExperiencePluginExperienceRates" xml:space="preserve">
+    <value>Experience Rates</value>
+  </data>
+  <data name="ExperiencePluginHighestChain" xml:space="preserve">
+    <value>Highest Chain</value>
+  </data>
+  <data name="ExperiencePluginMobListing" xml:space="preserve">
+    <value>Mob Listing</value>
+  </data>
+  <data name="ExperiencePluginMobListingHeader" xml:space="preserve">
+    <value>Mob                        Base XP   Number   Avg Fight Time</value>
+  </data>
+  <data name="ExperiencePluginNumberOfFights" xml:space="preserve">
+    <value>Number of Fights</value>
+  </data>
+  <data name="ExperiencePluginPartyDuration" xml:space="preserve">
+    <value>Party Duration</value>
+  </data>
+  <data name="ExperiencePluginStartTime" xml:space="preserve">
+    <value>Start Time</value>
+  </data>
+  <data name="ExperiencePluginTabName" xml:space="preserve">
+    <value>Experience</value>
+  </data>
+  <data name="ExperiencePluginTotalExperience" xml:space="preserve">
+    <value>Total Experience</value>
+  </data>
+  <data name="ExperiencePluginTotalFightTime" xml:space="preserve">
+    <value>Total Fight Time</value>
+  </data>
+  <data name="ExperiencePluginXPListFormatDec" xml:space="preserve">
+    <value>{0,-16} : {1:F2}</value>
+  </data>
+  <data name="ExperiencePluginXPListFormatNum" xml:space="preserve">
+    <value>{0,-16} : {1}</value>
+  </data>
+  <data name="ExperiencePluginXPListFormatSec" xml:space="preserve">
+    <value>{0,-16} : {1:F2} seconds</value>
+  </data>
+  <data name="ExperiencePluginXPListFormatTime" xml:space="preserve">
+    <value>{0,-16} : {1:d}:{2:d2}:{3:d2}</value>
+  </data>
+  <data name="ExperiencePluginXPPerFight" xml:space="preserve">
+    <value>XP/Fight</value>
+  </data>
+  <data name="ExperiencePluginXPPerHour" xml:space="preserve">
+    <value>XP/Hour</value>
+  </data>
+  <data name="ExperiencePluginXPPerMinute" xml:space="preserve">
+    <value>XP/Minute</value>
+  </data>
+  <data name="ItemsPluginGeneralHeader" xml:space="preserve">
+    <value>Item                                  Used</value>
+  </data>
+  <data name="ItemsPluginPlayerLabel" xml:space="preserve">
+    <value>Player:</value>
+  </data>
+  <data name="ItemsPluginShowDetail" xml:space="preserve">
+    <value>Show Detail</value>
+  </data>
+  <data name="ItemsPluginTabName" xml:space="preserve">
+    <value>Items</value>
+  </data>
+  <data name="PlayerInfoPluginNoInfo" xml:space="preserve">
+    <value>-No Information-</value>
+  </data>
+  <data name="PlayerInfoPluginTabName" xml:space="preserve">
+    <value>Player Info</value>
+  </data>
+  <data name="TreasurePluginCellDrops" xml:space="preserve">
+    <value>Cell Drops</value>
+  </data>
+  <data name="TreasurePluginDistribution" xml:space="preserve">
+    <value>Distribution</value>
+  </data>
+  <data name="TreasurePluginDropGilFormat" xml:space="preserve">
+    <value>{0,9} {1,-28} [Average:   {2,8:f2}]</value>
+  </data>
+  <data name="TreasurePluginDropItemFormat" xml:space="preserve">
+    <value>{0,9} {1,-28} [Max #: {2}]  [Items/Kill: {3,6:f3}]  [Drop Rate: {4,8:p2}]  [% of Drops: {5,8:p2}]</value>
+  </data>
+  <data name="TreasurePluginDroppedItemNTimesFormat" xml:space="preserve">
+    <value>Dropped {0,2} items {1,5} times ({2,8:p2})</value>
+  </data>
+  <data name="TreasurePluginDropRateFormat" xml:space="preserve">
+    <value>{0,9} [{1,8:p2}] -- {2}</value>
+  </data>
+  <data name="TreasurePluginDropRates" xml:space="preserve">
+    <value>Drop Rates</value>
+  </data>
+  <data name="TreasurePluginItemDrops" xml:space="preserve">
+    <value>Item Drops</value>
+  </data>
+  <data name="TreasurePluginLootTypeDropRates" xml:space="preserve">
+    <value>Drop Rates</value>
+  </data>
+  <data name="TreasurePluginLootTypeHELM" xml:space="preserve">
+    <value>HELM/Chocobo</value>
+  </data>
+  <data name="TreasurePluginLootTypeMenu" xml:space="preserve">
+    <value>Loot Type</value>
+  </data>
+  <data name="TreasurePluginLootTypeSalvage" xml:space="preserve">
+    <value>Salvage</value>
+  </data>
+  <data name="TreasurePluginLootTypeStealing" xml:space="preserve">
+    <value>Stealing</value>
+  </data>
+  <data name="TreasurePluginLootTypeSummary" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="TreasurePluginNoDrops" xml:space="preserve">
+    <value>No drops.</value>
+  </data>
+  <data name="TreasurePluginNothing" xml:space="preserve">
+    <value>Nothing</value>
+  </data>
+  <data name="TreasurePluginNumberOfTimesDropped" xml:space="preserve">
+    <value>Number of times each group of items dropped.</value>
+  </data>
+  <data name="TreasurePluginOpenedNTimesFormat" xml:space="preserve">
+    <value>{0} (Opened {1} times)</value>
+  </data>
+  <data name="TreasurePluginOptionExcludeCrystals" xml:space="preserve">
+    <value>Exclude Crystals and Seals</value>
+  </data>
+  <data name="TreasurePluginOptionGroupMobs" xml:space="preserve">
+    <value>Show Group Details</value>
+  </data>
+  <data name="TreasurePluginTabName" xml:space="preserve">
+    <value>Loot</value>
+  </data>
+  <data name="TreasurePluginTimesKilledFormat" xml:space="preserve">
+    <value>{0} (Killed {1} times)</value>
+  </data>
+  <data name="TreasurePluginTreasureChests" xml:space="preserve">
+    <value>Treasure Chests</value>
+  </data>
+  <data name="TreasurePluginChocoDiggingFail" xml:space="preserve">
+    <value>You dig and you dig, but find nothing.</value>
+  </data>
+  <data name="TreasurePluginChocoDiggingFormat" xml:space="preserve">
+    <value>^Obtained: {0}\.$</value>
+  </data>
+  <data name="TreasurePluginHarvestFail" xml:space="preserve">
+    <value>You are unable to harvest anything.</value>
+  </data>
+  <data name="TreasurePluginHarvestToolBreak" xml:space="preserve">
+    <value>Your sickle breaks!</value>
+  </data>
+  <data name="TreasurePluginHELMBreaks" xml:space="preserve">
+    <value>Breaks:</value>
+  </data>
+  <data name="TreasurePluginHELMDigging" xml:space="preserve">
+    <value>Chocobo Digging:</value>
+  </data>
+  <data name="TreasurePluginHELMHarvesting" xml:space="preserve">
+    <value>Harvesting:</value>
+  </data>
+  <data name="TreasurePluginHELMLogging" xml:space="preserve">
+    <value>Logging:</value>
+  </data>
+  <data name="TreasurePluginHELMLongLineFormat" xml:space="preserve">
+    <value>  {0,-34} {1,5}  [{2,8:p2}]</value>
+  </data>
+  <data name="TreasurePluginHELMMining" xml:space="preserve">
+    <value>Mining/Excavation:</value>
+  </data>
+  <data name="TreasurePluginHELMNothing" xml:space="preserve">
+    <value>Nothing</value>
+  </data>
+  <data name="TreasurePluginHELMShortLineFormat" xml:space="preserve">
+    <value>  {0,-34} {1,5}</value>
+  </data>
+  <data name="TreasurePluginHELMTotalItems" xml:space="preserve">
+    <value>Total Items:</value>
+  </data>
+  <data name="TreasurePluginHELMTotalTries" xml:space="preserve">
+    <value>Total Tries:</value>
+  </data>
+  <data name="TreasurePluginLoggingFail" xml:space="preserve">
+    <value>You are unable to log anything.</value>
+  </data>
+  <data name="TreasurePluginLoggingToolBreak" xml:space="preserve">
+    <value>Your hatchet breaks!</value>
+  </data>
+  <data name="TreasurePluginMiningFail" xml:space="preserve">
+    <value>You are unable to dig up anything.</value>
+  </data>
+  <data name="TreasurePluginMiningToolBreak" xml:space="preserve">
+    <value>Your pickaxe breaks!</value>
+  </data>
+  <data name="TreasurePluginRegexHarvestBreak" xml:space="preserve">
+    <value>sickle breaks( in the process)?(\.|!)$</value>
+  </data>
+  <data name="TreasurePluginRegexHarvestFormat" xml:space="preserve">
+    <value>You (successfully )?harvest {0}(, but your sickle breaks( in the process)?)?(.|!)$</value>
+  </data>
+  <data name="TreasurePluginRegexItem" xml:space="preserve">
+    <value>((a|an|the) )?(?&lt;item&gt;\w+( \w+)*)</value>
+  </data>
+  <data name="TreasurePluginRegexItemReference" xml:space="preserve">
+    <value>item</value>
+  </data>
+  <data name="TreasurePluginRegexLoggingBreak" xml:space="preserve">
+    <value>hatchet breaks( in the process)?(\.|!)$</value>
+  </data>
+  <data name="TreasurePluginRegexLoggingFormat" xml:space="preserve">
+    <value>You (successfully )?cut off {0}(, but your hatchet breaks( in the process)?)?(.|!)$</value>
+  </data>
+  <data name="TreasurePluginRegexMiningBreak" xml:space="preserve">
+    <value>pickaxe breaks( in the process)?(\.|!)$</value>
+  </data>
+  <data name="TreasurePluginRegexMiningFormat" xml:space="preserve">
+    <value>You (successfully )?dig up {0}(, but your pickaxe breaks( in the process)?)?(.|!)$</value>
+  </data>
+  <data name="TreasurePluginChocoDiggingFWE" xml:space="preserve">
+    <value>It appears your chocobo found this item with ease.</value>
+  </data>
+  <data name="TreasurePluginHELMFoundWithEase" xml:space="preserve">
+    <value>Found With Ease:</value>
+  </data>
+  <data name="TreasurePluginHELMNormalDigs" xml:space="preserve">
+    <value>Normal Digs:</value>
+  </data>
+  <data name="ChatPluginTranslate" xml:space="preserve">
+    <value>Translate</value>
+  </data>
+</root>

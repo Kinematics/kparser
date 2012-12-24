@@ -1,0 +1,393 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{626318E4-447D-4BD7-BC3A-294A8E37B07F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WaywardGamers.KParser</RootNamespace>
+    <AssemblyName>WaywardGamers.KParser.ParserCore</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.SqlServerCe, Version=3.5.1.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="ZedGraph, Version=5.1.5.28844, Culture=neutral, PublicKeyToken=02a83cbd123fcd60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ZedGraph.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Database\AccessToTheDatabase.cs" />
+    <Compile Include="Database\DatabaseEntry.cs" />
+    <Compile Include="Database\KParserReadingManager.cs" />
+    <Compile Include="Database\DirectParseReadingManager.cs" />
+    <Compile Include="Database\MobXPHandler.cs" />
+    <Compile Include="Interface\BaseGraphPluginControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Interface\BaseGraphPluginControl.Designer.cs">
+      <DependentUpon>BaseGraphPluginControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interface\CustomMobSelectionDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Interface\CustomMobSelectionDlg.Designer.cs">
+      <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interface\PluginTemplate.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Monad\BaseMonadClasses.cs" />
+    <Compile Include="Monad\Lexer.cs" />
+    <Compile Include="Monad\Scanner.cs" />
+    <Compile Include="Monitors\PacketReader\PacketReader.cs" />
+    <Compile Include="Monitors\ProcessAccess\ProcessAccess.cs" />
+    <Compile Include="Parsing\InternalTesting.cs" />
+    <Compile Include="Monad\MonadParser.cs" />
+    <Compile Include="Monad\Parser.cs" />
+    <Compile Include="ReferenceValues\PlayerInfo.cs" />
+    <Compile Include="DPDatabaseImportV1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DPDatabaseImportV1.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="ErrorHandling\ErrorLog.cs" />
+    <Compile Include="ErrorHandling\KAppException.cs" />
+    <Compile Include="Interface\IDBReader.cs" />
+    <Compile Include="Interface\IReader.cs" />
+    <Compile Include="Interface\BasePluginControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Interface\BasePluginControl.Designer.cs">
+      <DependentUpon>BasePluginControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interface\IPlugin.cs" />
+    <Compile Include="Parsing\ParsingManagers\EntityManager.cs" />
+    <Compile Include="Parsing\ParsingManagers\MsgManager.cs" />
+    <Compile Include="Monitors\LogReader\LogReaderWorker.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Resources\CoreResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CoreResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\ParsedStrings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ParsedStrings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\PublicResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PublicResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Utility\GoogleTranslate.cs" />
+    <Compile Include="Utility\MathUtil.cs" />
+    <Compile Include="Utility\PluginUtilities.cs" />
+    <Compile Include="Utility\RTFStringMods.cs" />
+    <Compile Include="KPDatabaseDataSet.cs">
+      <DependentUpon>KPDatabaseDataSet.xsd</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="KPDatabaseDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>KPDatabaseDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Database\DatabaseManager.cs" />
+    <Compile Include="KPDatabaseReadOnly.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>KPDatabaseReadOnly.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Parsing\ChatLine.cs" />
+    <Compile Include="Parsing\MessageDetail\LootDetails.cs" />
+    <Compile Include="Parsing\MessageDetail\ActionDetails.cs" />
+    <Compile Include="Parsing\MessageDetail\ChatDetails.cs" />
+    <Compile Include="Parsing\MessageDetail\CombatDetails.cs" />
+    <Compile Include="Parsing\MessageDetail\ExperienceDetails.cs" />
+    <Compile Include="Parsing\MessageDetail\SystemDetails.cs" />
+    <Compile Include="Parsing\MessageDetail\TargetDetails.cs" />
+    <Compile Include="Parsing\MessageLine.cs" />
+    <Compile Include="Parsing\Parsing\ClassifyEntity.cs" />
+    <Compile Include="Parsing\Parsing\ParseCodes.cs" />
+    <Compile Include="Parsing\Message.cs" />
+    <Compile Include="Parsing\Parsing\Parser.cs" />
+    <Compile Include="Monitors\AbstractReader.cs" />
+    <Compile Include="Monitors\DatabaseReader\DatabaseReader.cs" />
+    <Compile Include="Monitors\LogReader\LogReader.cs" />
+    <Compile Include="Monitors\Monitor.cs" />
+    <Compile Include="Monitors\ProcessAccess\POLStructures.cs" />
+    <Compile Include="Monitors\ProcessAccess\MemoryAccess.cs" />
+    <Compile Include="Monitors\RamReader\RamReader.cs" />
+    <Compile Include="Monitors\RamReader\SelectPOLProcess.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Monitors\RamReader\SelectPOLProcess.Designer.cs">
+      <DependentUpon>SelectPOLProcess.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="ReferenceValues\Enumerations.cs" />
+    <Compile Include="Utility\LinqExtensions.cs" />
+    <Compile Include="ReferenceValues\Magic.cs" />
+    <Compile Include="Parsing\Parsing\Names.cs" />
+    <Compile Include="Parsing\Parsing\ParseExpressions.cs" />
+    <Compile Include="Utility\RTFConverter.cs" />
+    <Compile Include="Utility\EventHandlingDelegates.cs" />
+    <Compile Include="Utility\ExcelExport.cs" />
+    <Compile Include="Utility\RegionProfiler.cs" />
+    <Compile Include="Utility\TimeIntervals.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="DPDatabaseImportV1.xsc">
+      <DependentUpon>DPDatabaseImportV1.xsd</DependentUpon>
+    </None>
+    <None Include="DPDatabaseImportV1.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DPDatabaseImportV1.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="DPDatabaseImportV1.xss">
+      <DependentUpon>DPDatabaseImportV1.xsd</DependentUpon>
+    </None>
+    <None Include="KPDatabaseDataSet.xsc">
+      <DependentUpon>KPDatabaseDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="KPDatabaseDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>KPDatabaseDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="KPDatabaseDataSet.xss">
+      <DependentUpon>KPDatabaseDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="KPDatabaseReadOnly.xsc">
+      <DependentUpon>KPDatabaseReadOnly.xsd</DependentUpon>
+    </None>
+    <None Include="KPDatabaseReadOnly.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>KPDatabaseReadOnly.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="KPDatabaseReadOnly.xss">
+      <DependentUpon>KPDatabaseReadOnly.xsd</DependentUpon>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.SQL.Server.Compact.3.5">
+      <Visible>False</Visible>
+      <ProductName>SQL Server Compact 3.5 SP2</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Interface\BaseGraphPluginControl.resx">
+      <DependentUpon>BaseGraphPluginControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interface\BasePluginControl.resx">
+      <DependentUpon>BasePluginControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interface\CustomMobSelectionDlg.de.resx">
+      <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interface\CustomMobSelectionDlg.fr.resx">
+      <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interface\CustomMobSelectionDlg.ja.resx">
+      <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interface\CustomMobSelectionDlg.resx">
+      <DependentUpon>CustomMobSelectionDlg.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="KPDatabase.sdf">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.de.resx">
+      <DependentUpon>SelectPOLProcess.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.fr.resx">
+      <DependentUpon>SelectPOLProcess.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.ja.resx">
+      <DependentUpon>SelectPOLProcess.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.resx">
+      <DependentUpon>SelectPOLProcess.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\CoreResources.de.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\CoreResources.fr.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\CoreResources.ja.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\CoreResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CoreResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\ParsedStrings.de.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\ParsedStrings.fr.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\ParsedStrings.ja.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\ParsedStrings.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ParsedStrings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\PublicResources.de.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\PublicResources.fr.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\PublicResources.ja.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\PublicResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>PublicResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
