@@ -19,6 +19,7 @@ namespace WaywardGamers.KParser
         Log,
         Ram,
         Database,
+        Packet,
     }
 
     public enum ImportSourceType
