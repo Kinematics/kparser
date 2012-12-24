@@ -18,13 +18,23 @@ namespace WaywardGamers.KParser.Monitoring
         /// <param name="polPID">Optional process ID.  Set to 0 to find the first
         /// instance of FFXI on the computer.</param>
         /// <param name="_abort">A resettable event that can be set to indicate
-        /// that the attempt to monitor is being aborted.</param>
+        /// that the attempt to monitor is being aborted.
+        /// Passing a null will cause this to loop forever until the process is found.
+        /// Only do so if calling from debuggable code, never from production code.</param>
         /// <returns>Returns a POL object containing the process information needed,
         /// or null if no process was found and the request was aborted.</returns>
         internal static POL GetFFXIProcess(int polPID, ManualResetEvent _abort)
         {
+#if DEBUG
+            
+#else
+            if (_abort == null)
+                throw new ArgumentNullException("_abort");
+#endif
+
+
             // Keep going as long as we're still attempting to monitor
-            while (!_abort.WaitOne(0))
+            while ((_abort == null) || (!_abort.WaitOne(0)))
             {
                 try
                 {
