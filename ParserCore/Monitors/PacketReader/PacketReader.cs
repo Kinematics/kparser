@@ -44,7 +44,6 @@ namespace WaywardGamers.KParser.Monitoring
         ManualResetEvent abortMonitorThread = new ManualResetEvent(false);
         #endregion
 
-
         #region Interface Control Methods and Properties
 
         /// <summary>
@@ -157,7 +156,6 @@ namespace WaywardGamers.KParser.Monitoring
 
         #endregion
 
-
         #region Monitor RAM
         /// <summary>
         /// This function is run as a thread to read ram and raise events when new
@@ -189,9 +187,20 @@ namespace WaywardGamers.KParser.Monitoring
                 pol.Process.Exited += new EventHandler(PolExited);
             }
 
-            while (!abortMonitorThread.WaitOne(0))
+            // Wait for packets published from Windower.
+            using (var ctx = new ZMQ.Context(1))
             {
-                // Monitor packets.
+                using (Socket subscriber = ctx.Socket(SocketType.SUB))
+                {
+                    subscriber.Connect("tcp://localhost:43350");
+                    subscriber.Subscribe(pol.Process.Id.ToString(), Encoding.Unicode);
+
+                    while (!abortMonitorThread.WaitOne(0))
+                    {
+                        string address = subscriber.Recv(Encoding.Unicode);
+                        string contents = subscriber.Recv(Encoding.Unicode);
+                    }
+                }
             }
         }
         #endregion
