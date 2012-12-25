@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using WaywardGamers.KParser.Monitoring.Memory;
 using WaywardGamers.KParser.Interface;
+using ZMQ;
 
 namespace WaywardGamers.KParser.Monitoring
 {
@@ -103,7 +104,7 @@ namespace WaywardGamers.KParser.Monitoring
                 readerThread.Name = "Packet Monitor Thread";
                 readerThread.Start();
             }
-            catch (Exception)
+            catch (System.Exception)
             {
                 IsRunning = false;
                 throw;
