@@ -7,27 +7,46 @@ using System.Diagnostics;
 
 namespace WaywardGamers.KParser.Monitoring.Packet
 {
+    public enum RawPacketStringType
+    {
+        HexEncode,
+        Base64Encode
+    }
+
     public class RawPacket
     {
+        #region Class Variables
         byte[] packetBytes;
 
         int bitPointer = 0;
         int bytePointer = 0;
+        #endregion
 
         #region Constructors
+        /// <summary>
+        /// Constructor, given the original byte stream array.
+        /// </summary>
+        /// <param name="packetBytes"></param>
         public RawPacket(byte[] packetBytes)
         {
             this.packetBytes = packetBytes;
         }
 
-        public RawPacket(string packetString, bool isBase64)
+        /// <summary>
+        /// Constructor, given a string representing the original byte stream array.
+        /// </summary>
+        /// <param name="packetString">The string representing the packet.</param>
+        /// <param name="stringType">Set to the type of formatting used to encode
+        /// the data as a string: Base64Encode that will decode directly to the
+        /// original byte array, or HexEncode of the original bytes.</param>
+        public RawPacket(string packetString, RawPacketStringType stringType)
         {
             // If in base64, assume it's the full raw byte array data.
-            if (isBase64)
+            if (stringType == RawPacketStringType.Base64Encode)
             {
                 this.packetBytes = System.Convert.FromBase64String(packetString);
             }
-            else
+            else if (stringType == RawPacketStringType.HexEncode)
             {
                 // If we're simply given an arbitrary string, it can be presented as something like:
                 // 28 18 79 10 2A D3 E6 05 00 01 44 18 DD 1A 0C 00 00 00 40 54
@@ -56,6 +75,12 @@ namespace WaywardGamers.KParser.Monitoring.Packet
         #endregion
 
         #region Private methods
+        /// <summary>
+        /// Function to increment the bit pointer in the pattern used
+        /// in the original bitstream.  Bits are added from least to
+        /// most significant, and then carried over to the next byte
+        /// in the array.
+        /// </summary>
         private void IncrementBit()
         {
             bitPointer++;
@@ -64,6 +89,16 @@ namespace WaywardGamers.KParser.Monitoring.Packet
                 bitPointer = 0;
                 bytePointer++;
             }
+        }
+
+        /// <summary>
+        /// Reset pointers to the start of the packet.  Set to private until there's
+        /// an actual use case for it.
+        /// </summary>
+        private void Reset()
+        {
+            bitPointer = 0;
+            bytePointer = 0;
         }
 
         internal void ReportStatus()
@@ -75,7 +110,11 @@ namespace WaywardGamers.KParser.Monitoring.Packet
 
 
         #region Public methods
-
+        /// <summary>
+        /// Reads bits from the packet data and stores them in a byte.
+        /// </summary>
+        /// <param name="bits">The number of bits to read.  Max: 8</param>
+        /// <returns>Returns a byte containing the requested bits.</returns>
         public byte ReadByte(int bits)
         {
             if (bits > 8)
@@ -100,6 +139,11 @@ namespace WaywardGamers.KParser.Monitoring.Packet
             return value;
         }
 
+        /// <summary>
+        /// Reads bits from the packet data and stores them in a short integer.
+        /// </summary>
+        /// <param name="bits">The number of bits to read.  Max: 16</param>
+        /// <returns>Returns a short containing the requested bits.</returns>
         public short ReadShort(int bits)
         {
             if ((bits < 1) || (bits > 16))
@@ -122,6 +166,11 @@ namespace WaywardGamers.KParser.Monitoring.Packet
             return BitConverter.ToInt16(bytes, 0);
         }
 
+        /// <summary>
+        /// Reads bits from the packet data and stores them in an int.
+        /// </summary>
+        /// <param name="bits">The number of bits to read.  Max: 32</param>
+        /// <returns>Returns an int containing the requested bits.</returns>
         public int ReadInt(int bits)
         {
             if ((bits < 1) || (bits > 32))
@@ -157,7 +206,8 @@ namespace WaywardGamers.KParser.Monitoring.Packet
         }
 
         /// <summary>
-        /// Quick check for a bool bit.
+        /// Reads a single bit from the byte stream and returns the bool
+        /// value of the bit.
         /// </summary>
         /// <returns></returns>
         public bool ReadBool()
@@ -166,7 +216,7 @@ namespace WaywardGamers.KParser.Monitoring.Packet
         }
 
         /// <summary>
-        /// Shortcut read for reading a full byte.
+        /// Shortcut for reading a full byte.
         /// </summary>
         /// <param name="value">Value read will be returned in this variable.</param>
         public byte ReadByte()
@@ -175,7 +225,7 @@ namespace WaywardGamers.KParser.Monitoring.Packet
         }
 
         /// <summary>
-        /// Shortcut read for reading a full int16.
+        /// Shortcut for reading a full int16.
         /// </summary>
         /// <param name="value">Value read will be returned in this variable.</param>
         public short ReadShort()
@@ -184,21 +234,12 @@ namespace WaywardGamers.KParser.Monitoring.Packet
         }
 
         /// <summary>
-        /// Shortcut read for reading a full int32.
+        /// Shortcut for reading a full int32.
         /// </summary>
         /// <param name="value">Value read will be returned in this variable.</param>
         public int ReadInt()
         {
             return ReadInt(32);
-        }
-
-        /// <summary>
-        /// Reset pointers to the start of the packet.
-        /// </summary>
-        public void Reset()
-        {
-            bitPointer = 0;
-            bytePointer = 0;
         }
 
         #endregion
