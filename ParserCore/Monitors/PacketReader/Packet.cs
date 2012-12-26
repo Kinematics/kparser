@@ -119,6 +119,8 @@ namespace WaywardGamers.KParser.Monitoring.Packet
             Param = rawPacket.ReadInt(17);
             Message = rawPacket.ReadInt(10);
 
+            Unknown2 = rawPacket.ReadInt(32);
+
             HasAdditionalEffect = rawPacket.ReadBool();
             if (HasAdditionalEffect)
             {
@@ -139,7 +141,6 @@ namespace WaywardGamers.KParser.Monitoring.Packet
                 SpikeEffect = null;
             }
 
-            Unknown2 = rawPacket.ReadInt(32);
 
         }
 
