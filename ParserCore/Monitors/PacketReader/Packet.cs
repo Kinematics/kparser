@@ -17,9 +17,9 @@ namespace WaywardGamers.KParser.Monitoring.Packet
             ReadRawPacket();
         }
 
-        public Packet(string packetString, bool isBase64)
+        public Packet(string packetString, RawPacketStringType stringType)
         {
-            this.rawPacket = new RawPacket(packetString, isBase64);
+            this.rawPacket = new RawPacket(packetString, stringType);
             ReadRawPacket();
         }
         #endregion
