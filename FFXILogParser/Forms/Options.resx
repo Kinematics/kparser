@@ -138,6 +138,9 @@
   <data name="dataSourcePackets.Text" xml:space="preserve">
     <value>Packet reading</value>
   </data>
+  <data name="dataSourcePackets.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
   <data name="&gt;&gt;dataSourcePackets.Name" xml:space="preserve">
     <value>dataSourcePackets</value>
   </data>
@@ -160,7 +163,7 @@
     <value>167, 17</value>
   </data>
   <data name="specifyPID.TabIndex" type="System.Int32, mscorlib">
-    <value>8</value>
+    <value>10</value>
   </data>
   <data name="specifyPID.Text" xml:space="preserve">
     <value>Specify process when starting</value>
@@ -193,7 +196,7 @@
     <value>35, 23</value>
   </data>
   <data name="editMemoryAddress.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
+    <value>8</value>
   </data>
   <data name="editMemoryAddress.Text" xml:space="preserve">
     <value>Edit</value>
@@ -220,7 +223,7 @@
     <value>128, 17</value>
   </data>
   <data name="readExistingLogs.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
+    <value>4</value>
   </data>
   <data name="readExistingLogs.Text" xml:space="preserve">
     <value>Read existing log files</value>
@@ -247,7 +250,7 @@
     <value>279, 20</value>
   </data>
   <data name="memoryOffsetAddress.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
+    <value>7</value>
   </data>
   <data name="&gt;&gt;memoryOffsetAddress.Name" xml:space="preserve">
     <value>memoryOffsetAddress</value>
@@ -295,7 +298,7 @@
     <value>184, 13</value>
   </data>
   <data name="memoryLabel.TabIndex" type="System.Int32, mscorlib">
-    <value>7</value>
+    <value>6</value>
   </data>
   <data name="memoryLabel.Text" xml:space="preserve">
     <value>Memory offset address (hexadecimal):</value>
@@ -322,7 +325,7 @@
     <value>92, 13</value>
   </data>
   <data name="directoryLabel.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
+    <value>1</value>
   </data>
   <data name="directoryLabel.Text" xml:space="preserve">
     <value>FFXI log directory:</value>
@@ -376,7 +379,7 @@
     <value>106, 17</value>
   </data>
   <data name="dataSourceRam.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
+    <value>5</value>
   </data>
   <data name="dataSourceRam.Text" xml:space="preserve">
     <value>Chat Log in RAM</value>
@@ -454,7 +457,7 @@
     <value>75, 23</value>
   </data>
   <data name="ok.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
+    <value>2</value>
   </data>
   <data name="ok.Text" xml:space="preserve">
     <value>OK</value>
@@ -481,7 +484,7 @@
     <value>75, 23</value>
   </data>
   <data name="cancel.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
+    <value>3</value>
   </data>
   <data name="cancel.Text" xml:space="preserve">
     <value>Cancel</value>
@@ -568,7 +571,7 @@
     <value>152, 13</value>
   </data>
   <data name="label1.TabIndex" type="System.Int32, mscorlib">
-    <value>10</value>
+    <value>3</value>
   </data>
   <data name="label1.Text" xml:space="preserve">
     <value>Number of Recent Files to List:</value>
@@ -592,7 +595,7 @@
     <value>115, 20</value>
   </data>
   <data name="numberOfRecentFilesUpDown.TabIndex" type="System.Int32, mscorlib">
-    <value>9</value>
+    <value>4</value>
   </data>
   <data name="&gt;&gt;numberOfRecentFilesUpDown.Name" xml:space="preserve">
     <value>numberOfRecentFilesUpDown</value>
@@ -616,7 +619,7 @@
     <value>302, 20</value>
   </data>
   <data name="defaultSaveDirectory.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
+    <value>1</value>
   </data>
   <data name="&gt;&gt;defaultSaveDirectory.Name" xml:space="preserve">
     <value>defaultSaveDirectory</value>
@@ -640,7 +643,7 @@
     <value>114, 13</value>
   </data>
   <data name="saveDirectoryLabel.TabIndex" type="System.Int32, mscorlib">
-    <value>8</value>
+    <value>0</value>
   </data>
   <data name="saveDirectoryLabel.Text" xml:space="preserve">
     <value>Default Save Directory</value>
@@ -667,7 +670,7 @@
     <value>25, 23</value>
   </data>
   <data name="getSaveDirectory.TabIndex" type="System.Int32, mscorlib">
-    <value>7</value>
+    <value>2</value>
   </data>
   <data name="getSaveDirectory.Text" xml:space="preserve">
     <value>...</value>
@@ -691,7 +694,7 @@
     <value>358, 137</value>
   </data>
   <data name="otherGroup.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
+    <value>1</value>
   </data>
   <data name="otherGroup.Text" xml:space="preserve">
     <value>Other</value>

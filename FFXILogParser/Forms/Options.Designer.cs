@@ -248,9 +248,9 @@ namespace WaywardGamers.KParser
             this.Name = "Options";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.Load += new System.EventHandler(this.Options_Load);
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Options_FormClosed);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Options_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Options_FormClosed);
+            this.Load += new System.EventHandler(this.Options_Load);
             this.dataSourceGroup.ResumeLayout(false);
             this.dataSourceGroup.PerformLayout();
             this.otherGroup.ResumeLayout(false);
