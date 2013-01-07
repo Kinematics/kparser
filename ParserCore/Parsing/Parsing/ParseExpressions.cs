@@ -70,6 +70,7 @@ namespace WaywardGamers.KParser
         internal static readonly Regex ChatTellFrom  = new Regex(string.Format("^{0}>> (.+)$", playername));
         internal static readonly Regex ChatTellTo    = new Regex(string.Format("^>>{0} (.+)$", playername));
         internal static readonly Regex ChatShout     = new Regex(string.Format("^{0} : (.+)$", playername));
+        internal static readonly Regex ChatYell      = new Regex(string.Format("^{0}\\[\\w+\\]: (.+)$", playername));
         internal static readonly Regex ChatLinkshell = new Regex(string.Format("^<{0}> (.+)$", playername));
         internal static readonly Regex ChatEmote     = new Regex(string.Format("^{0}('s)? (.+)$", playername));
         internal static readonly Regex ChatNPC       = new Regex(string.Format("^{0} : (.+)$", npcName));

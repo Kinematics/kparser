@@ -133,7 +133,7 @@ namespace WaywardGamers.KParser.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Shout.
+        ///   Looks up a localized string similar to Shout/Yell.
         /// </summary>
         internal static string ChatPluginChatTypeShout {
             get {

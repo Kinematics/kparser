@@ -117,7 +117,8 @@ namespace WaywardGamers.KParser.Plugin
             string player = speakerCombo.CBSelectedItem();
 
             var filteredChat = dataSet.ChatMessages.Where(m =>
-                chatFilter == ChatMessageType.Unknown || chatFilter == (ChatMessageType)m.ChatType);
+                chatFilter == ChatMessageType.Unknown || chatFilter == (ChatMessageType)m.ChatType ||
+                (chatFilter == ChatMessageType.Shout && (ChatMessageType)m.ChatType == ChatMessageType.Yell));
 
             if (player != Resources.PublicResources.All)
             {
@@ -149,6 +150,7 @@ namespace WaywardGamers.KParser.Plugin
                         chatColor = Color.Gray;
                         break;
                     case ChatMessageType.Shout:
+                    case ChatMessageType.Yell:
                         chatColor = Color.Orange;
                         break;
                     case ChatMessageType.Tell:

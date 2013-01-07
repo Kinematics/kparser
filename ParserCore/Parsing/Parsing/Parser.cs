@@ -687,6 +687,10 @@ namespace WaywardGamers.KParser.Parsing
                 case 0x8e: // <npc> shout
                     message.ChatDetails.ChatMessageType = ChatMessageType.Shout;
                     break;
+                case 0x03: // <me> Yell (??)
+                case 0x0b: // Others Yell
+                    message.ChatDetails.ChatMessageType = ChatMessageType.Yell;
+                    break;
                 case 0x04: // <me> tell
                 case 0x0c: // Others tell
                     message.ChatDetails.ChatMessageType = ChatMessageType.Tell;
@@ -703,10 +707,6 @@ namespace WaywardGamers.KParser.Parsing
                 case 0x0f: // Others emote
                     message.ChatDetails.ChatMessageType = ChatMessageType.Emote;
                     break;
-                // The following codes fit into the above pattern, but
-                // I haven't encountered the specific code values.
-                case 0x03: // <me>?
-                case 0x0b: // Others?
                 default:
                     message.ChatDetails.ChatMessageType = ChatMessageType.Unknown;
                     break;
@@ -717,7 +717,7 @@ namespace WaywardGamers.KParser.Parsing
             {
                 case 0x01: // <me> say
                 case 0x02: // <me> shout
-                case 0x03: // <me> ?
+                case 0x03: // <me> yell
                 case 0x04: // <me> tell
                 case 0x05: // <me> party
                 case 0x06: // <me> linkshell
@@ -726,7 +726,7 @@ namespace WaywardGamers.KParser.Parsing
                     break;
                 case 0x09: // Others say
                 case 0x0a: // Others shout
-                case 0x0b: // Others ?
+                case 0x0b: // Others yell
                 case 0x0c: // Others tell
                 case 0x0d: // Others party
                 case 0x0e: // Others linkshell
@@ -759,6 +759,9 @@ namespace WaywardGamers.KParser.Parsing
                     break;
                 case ChatMessageType.Linkshell:
                     chatName = ParseExpressions.ChatLinkshell.Match(message.CurrentMessageText);
+                    break;
+                case ChatMessageType.Yell:
+                    chatName = ParseExpressions.ChatYell.Match(message.CurrentMessageText);
                     break;
                 case ChatMessageType.Shout:
                     if (message.ChatDetails.ChatSpeakerType == SpeakerType.NPC)

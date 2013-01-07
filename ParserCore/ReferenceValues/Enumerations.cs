@@ -69,6 +69,7 @@ namespace WaywardGamers.KParser
         NPC,
         Arena,
         Echo,
+        Yell,
     }
 
     public enum EventMessageType : byte
