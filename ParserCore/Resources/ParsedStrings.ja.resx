@@ -1,0 +1,1077 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ArchingArrow" xml:space="preserve">
+    <value>アーチングアロー</value>
+  </data>
+  <data name="ArmorBreak" xml:space="preserve">
+    <value>アーマーブレイク</value>
+  </data>
+  <data name="AsuranFists" xml:space="preserve">
+    <value>夢想阿修羅拳</value>
+  </data>
+  <data name="AvalancheAxe" xml:space="preserve">
+    <value>アバランチアクス</value>
+  </data>
+  <data name="BackhandBlow" xml:space="preserve">
+    <value>バックハンドブロー</value>
+  </data>
+  <data name="BlackHalo" xml:space="preserve">
+    <value>ブラックヘイロー</value>
+  </data>
+  <data name="BladeChi" xml:space="preserve">
+    <value>地</value>
+  </data>
+  <data name="BladeEi" xml:space="preserve">
+    <value>煟</value>
+  </data>
+  <data name="BladeJin" xml:space="preserve">
+    <value>迅</value>
+  </data>
+  <data name="BladeKu" xml:space="preserve">
+    <value>空</value>
+  </data>
+  <data name="BladeMetsu" xml:space="preserve">
+    <value>生者必滅</value>
+  </data>
+  <data name="BladeRetsu" xml:space="preserve">
+    <value>烈</value>
+  </data>
+  <data name="BladeRin" xml:space="preserve">
+    <value>臨</value>
+  </data>
+  <data name="BladeTeki" xml:space="preserve">
+    <value>滴</value>
+  </data>
+  <data name="BladeTen" xml:space="preserve">
+    <value>天</value>
+  </data>
+  <data name="BladeTo" xml:space="preserve">
+    <value>凍</value>
+  </data>
+  <data name="BlastArrow" xml:space="preserve">
+    <value>ブラストアロー</value>
+  </data>
+  <data name="BlastShot" xml:space="preserve">
+    <value>ブラストショット</value>
+  </data>
+  <data name="Brainshaker" xml:space="preserve">
+    <value>ブレインシェイカー</value>
+  </data>
+  <data name="BurningBlade" xml:space="preserve">
+    <value>バーニングブレード</value>
+  </data>
+  <data name="Calamity" xml:space="preserve">
+    <value>カラミティ</value>
+  </data>
+  <data name="Catastrophe" xml:space="preserve">
+    <value>カタストロフィ</value>
+  </data>
+  <data name="CircleBlade" xml:space="preserve">
+    <value>サークルブレード</value>
+  </data>
+  <data name="Combo" xml:space="preserve">
+    <value>コンボ</value>
+  </data>
+  <data name="Coronach" xml:space="preserve">
+    <value>カラナック</value>
+  </data>
+  <data name="CrescentMoon" xml:space="preserve">
+    <value>クレセントムーン</value>
+  </data>
+  <data name="CrossReaper" xml:space="preserve">
+    <value>クロスリーパー</value>
+  </data>
+  <data name="Cyclone" xml:space="preserve">
+    <value>サイクロン</value>
+  </data>
+  <data name="DancingEdge" xml:space="preserve">
+    <value>ダンシングエッジ</value>
+  </data>
+  <data name="DarkHarvest" xml:space="preserve">
+    <value>ダークハーベスト</value>
+  </data>
+  <data name="Decimation" xml:space="preserve">
+    <value>デシメーション</value>
+  </data>
+  <data name="Detonator" xml:space="preserve">
+    <value>デトネーター</value>
+  </data>
+  <data name="DoubleThrust" xml:space="preserve">
+    <value>ダブルスラスト</value>
+  </data>
+  <data name="DragonKick" xml:space="preserve">
+    <value>双竜脚</value>
+  </data>
+  <data name="DullingArrow" xml:space="preserve">
+    <value>ダリングアロー</value>
+  </data>
+  <data name="EarthCrusher" xml:space="preserve">
+    <value>アースクラッシャー</value>
+  </data>
+  <data name="EmpyrealArrow" xml:space="preserve">
+    <value>エンピリアルアロー</value>
+  </data>
+  <data name="EnergyDrain" xml:space="preserve">
+    <value>エナジードレイン</value>
+  </data>
+  <data name="EnergySteal" xml:space="preserve">
+    <value>エナジースティール</value>
+  </data>
+  <data name="Evisceration" xml:space="preserve">
+    <value>エヴィサレーション</value>
+  </data>
+  <data name="FastBlade" xml:space="preserve">
+    <value>ファストブレード</value>
+  </data>
+  <data name="FinalHeaven" xml:space="preserve">
+    <value>ファイナルヘヴン</value>
+  </data>
+  <data name="FlamingArrow" xml:space="preserve">
+    <value>フレイミングアロー</value>
+  </data>
+  <data name="FlatBlade" xml:space="preserve">
+    <value>フラットブレード</value>
+  </data>
+  <data name="Freezebite" xml:space="preserve">
+    <value>フリーズバイト</value>
+  </data>
+  <data name="Frostbite" xml:space="preserve">
+    <value>フロストバイト</value>
+  </data>
+  <data name="FullBreak" xml:space="preserve">
+    <value>フルブレイク</value>
+  </data>
+  <data name="FullSwing" xml:space="preserve">
+    <value>フルスイング</value>
+  </data>
+  <data name="GaleAxe" xml:space="preserve">
+    <value>ラファールアクス</value>
+  </data>
+  <data name="GateOfTartarus" xml:space="preserve">
+    <value>タルタロスゲート</value>
+  </data>
+  <data name="Geirskogul" xml:space="preserve">
+    <value>ゲイルスコグル</value>
+  </data>
+  <data name="GroundStrike" xml:space="preserve">
+    <value>グラウンドストライク</value>
+  </data>
+  <data name="Guillotine" xml:space="preserve">
+    <value>ギロティン</value>
+  </data>
+  <data name="GustSlash" xml:space="preserve">
+    <value>ガストスラッシュ</value>
+  </data>
+  <data name="HardSlash" xml:space="preserve">
+    <value>ハードスラッシュ</value>
+  </data>
+  <data name="HeavyShot" xml:space="preserve">
+    <value>ヘヴィショット</value>
+  </data>
+  <data name="HeavySwing" xml:space="preserve">
+    <value>ヘヴィスイング</value>
+  </data>
+  <data name="HexaStrike" xml:space="preserve">
+    <value>ヘキサストライク</value>
+  </data>
+  <data name="HotShot" xml:space="preserve">
+    <value>ホットショット</value>
+  </data>
+  <data name="HowlingFist" xml:space="preserve">
+    <value>空鳴拳</value>
+  </data>
+  <data name="ImpulseDrive" xml:space="preserve">
+    <value>インパルスドライヴ</value>
+  </data>
+  <data name="IronTempest" xml:space="preserve">
+    <value>アイアンテンペスト</value>
+  </data>
+  <data name="Judgment" xml:space="preserve">
+    <value>ジャッジメント</value>
+  </data>
+  <data name="KeenEdge" xml:space="preserve">
+    <value>キーンエッジ</value>
+  </data>
+  <data name="KnightsOfRound" xml:space="preserve">
+    <value>ナイツオブラウンド</value>
+  </data>
+  <data name="LegSweep" xml:space="preserve">
+    <value>足払い</value>
+  </data>
+  <data name="MercyStroke" xml:space="preserve">
+    <value>マーシーストローク</value>
+  </data>
+  <data name="MetatronTorment" xml:space="preserve">
+    <value>メタトロントーメント</value>
+  </data>
+  <data name="MistralAxe" xml:space="preserve">
+    <value>ミストラルアクス</value>
+  </data>
+  <data name="Moonlight" xml:space="preserve">
+    <value>ムーンライト</value>
+  </data>
+  <data name="NamasArrow" xml:space="preserve">
+    <value>南無八幡</value>
+  </data>
+  <data name="NightmareScythe" xml:space="preserve">
+    <value>ナイトメアサイス</value>
+  </data>
+  <data name="OneInchPunch" xml:space="preserve">
+    <value>短勁</value>
+  </data>
+  <data name="Onslaught" xml:space="preserve">
+    <value>オンスロート</value>
+  </data>
+  <data name="PentaThrust" xml:space="preserve">
+    <value>ペンタスラスト</value>
+  </data>
+  <data name="PiercingArrow" xml:space="preserve">
+    <value>ピアシングアロー</value>
+  </data>
+  <data name="PowerSlash" xml:space="preserve">
+    <value>パワースラッシュ</value>
+  </data>
+  <data name="RagingAxe" xml:space="preserve">
+    <value>レイジングアクス</value>
+  </data>
+  <data name="RagingFists" xml:space="preserve">
+    <value>乱撃</value>
+  </data>
+  <data name="RagingRush" xml:space="preserve">
+    <value>レイジングラッシュ</value>
+  </data>
+  <data name="RaidenThrust" xml:space="preserve">
+    <value>ライデンスラスト</value>
+  </data>
+  <data name="Rampage" xml:space="preserve">
+    <value>ランページ</value>
+  </data>
+  <data name="Randgrith" xml:space="preserve">
+    <value>ランドグリース</value>
+  </data>
+  <data name="RedLotusBlade" xml:space="preserve">
+    <value>レッドロータス</value>
+  </data>
+  <data name="Retribution" xml:space="preserve">
+    <value>レトリビューション</value>
+  </data>
+  <data name="RockCrusher" xml:space="preserve">
+    <value>ロッククラッシャー</value>
+  </data>
+  <data name="SavageBlade" xml:space="preserve">
+    <value>サベッジブレード</value>
+  </data>
+  <data name="Scourge" xml:space="preserve">
+    <value>スカージ</value>
+  </data>
+  <data name="SeraphBlade" xml:space="preserve">
+    <value>セラフブレード</value>
+  </data>
+  <data name="SeraphStrike" xml:space="preserve">
+    <value>セラフストライク</value>
+  </data>
+  <data name="ShadowOfDeath" xml:space="preserve">
+    <value>シャドーオブデス</value>
+  </data>
+  <data name="Shadowstitch" xml:space="preserve">
+    <value>シャドーステッチ</value>
+  </data>
+  <data name="SharkBite" xml:space="preserve">
+    <value>シャークバイト</value>
+  </data>
+  <data name="ShellCrusher" xml:space="preserve">
+    <value>シェルクラッシャー</value>
+  </data>
+  <data name="ShieldBreak" xml:space="preserve">
+    <value>シールドブレイク</value>
+  </data>
+  <data name="ShiningBlade" xml:space="preserve">
+    <value>シャインブレード</value>
+  </data>
+  <data name="ShiningStrike" xml:space="preserve">
+    <value>シャインストライク</value>
+  </data>
+  <data name="Shockwave" xml:space="preserve">
+    <value>ショックウェーブ</value>
+  </data>
+  <data name="ShoulderTackle" xml:space="preserve">
+    <value>タックル</value>
+  </data>
+  <data name="SickleMoon" xml:space="preserve">
+    <value>シックルムーン</value>
+  </data>
+  <data name="Sidewinder" xml:space="preserve">
+    <value>サイドワインダー</value>
+  </data>
+  <data name="Skewer" xml:space="preserve">
+    <value>スキュアー</value>
+  </data>
+  <data name="Skullbreaker" xml:space="preserve">
+    <value>スカルブレイカー</value>
+  </data>
+  <data name="Slice" xml:space="preserve">
+    <value>スライス</value>
+  </data>
+  <data name="SlugShot" xml:space="preserve">
+    <value>スラッグショット</value>
+  </data>
+  <data name="SmashAxe" xml:space="preserve">
+    <value>スマッシュ</value>
+  </data>
+  <data name="SniperShot" xml:space="preserve">
+    <value>スナイパーショット</value>
+  </data>
+  <data name="SpinningAttack" xml:space="preserve">
+    <value>スピンアタック</value>
+  </data>
+  <data name="SpinningAxe" xml:space="preserve">
+    <value>スピニングアクス</value>
+  </data>
+  <data name="SpinningScythe" xml:space="preserve">
+    <value>スピニングサイス</value>
+  </data>
+  <data name="SpinningSlash" xml:space="preserve">
+    <value>スピンスラッシュ</value>
+  </data>
+  <data name="SpiralHell" xml:space="preserve">
+    <value>スパイラルヘル</value>
+  </data>
+  <data name="SpiritsWithin" xml:space="preserve">
+    <value>スピリッツウィズイン</value>
+  </data>
+  <data name="SpiritTaker" xml:space="preserve">
+    <value>スピリットテーカー</value>
+  </data>
+  <data name="SplitShot" xml:space="preserve">
+    <value>スプリットショット</value>
+  </data>
+  <data name="Starburst" xml:space="preserve">
+    <value>スターバースト</value>
+  </data>
+  <data name="Starlight" xml:space="preserve">
+    <value>スターライト</value>
+  </data>
+  <data name="SteelCyclone" xml:space="preserve">
+    <value>スチールサイクロン</value>
+  </data>
+  <data name="Sturmwind" xml:space="preserve">
+    <value>シュトルムヴィント</value>
+  </data>
+  <data name="Sunburst" xml:space="preserve">
+    <value>サンバースト</value>
+  </data>
+  <data name="SwiftBlade" xml:space="preserve">
+    <value>スウィフトブレード</value>
+  </data>
+  <data name="TachiEnpi" xml:space="preserve">
+    <value>壱之太刀・燕飛</value>
+  </data>
+  <data name="TachiGekko" xml:space="preserve">
+    <value>八之太刀・月光</value>
+  </data>
+  <data name="TachiGoten" xml:space="preserve">
+    <value>参之太刀・轟天</value>
+  </data>
+  <data name="TachiHobaku" xml:space="preserve">
+    <value>弐之太刀・鋒縛</value>
+  </data>
+  <data name="TachiJinpu" xml:space="preserve">
+    <value>五之太刀・陣風</value>
+  </data>
+  <data name="TachiKagero" xml:space="preserve">
+    <value>四之太刀・陽炎</value>
+  </data>
+  <data name="TachiKaiten" xml:space="preserve">
+    <value>零之太刀・回天</value>
+  </data>
+  <data name="TachiKasha" xml:space="preserve">
+    <value>九之太刀・花車</value>
+  </data>
+  <data name="TachiKoki" xml:space="preserve">
+    <value>六之太刀・光輝</value>
+  </data>
+  <data name="TachiYukikaze" xml:space="preserve">
+    <value>七之太刀・雪風</value>
+  </data>
+  <data name="ThunderThrust" xml:space="preserve">
+    <value>サンダースラスト</value>
+  </data>
+  <data name="TrueStrike" xml:space="preserve">
+    <value>トゥルーストライク</value>
+  </data>
+  <data name="ViperBite" xml:space="preserve">
+    <value>バイパーバイト</value>
+  </data>
+  <data name="VorpalBlade" xml:space="preserve">
+    <value>ボーパルブレード</value>
+  </data>
+  <data name="VorpalScythe" xml:space="preserve">
+    <value>ボーパルサイス</value>
+  </data>
+  <data name="VorpalThrust" xml:space="preserve">
+    <value>ボーパルスラスト</value>
+  </data>
+  <data name="WaspSting" xml:space="preserve">
+    <value>ワスプスティング</value>
+  </data>
+  <data name="WeaponBreak" xml:space="preserve">
+    <value>ウェポンブレイク</value>
+  </data>
+  <data name="WheelingThrust" xml:space="preserve">
+    <value>大車輪</value>
+  </data>
+  <data name="Accession" xml:space="preserve">
+    <value>女神降臨の章</value>
+  </data>
+  <data name="Aggressor" xml:space="preserve">
+    <value>アグレッサー</value>
+  </data>
+  <data name="Alacrity" xml:space="preserve">
+    <value>疾風迅雷の章</value>
+  </data>
+  <data name="Berserk" xml:space="preserve">
+    <value>バーサク</value>
+  </data>
+  <data name="BlmRoll" xml:space="preserve">
+    <value>ウィザーズロール</value>
+  </data>
+  <data name="BluRoll" xml:space="preserve">
+    <value>メガスズロール</value>
+  </data>
+  <data name="BoxStep" xml:space="preserve">
+    <value>ボックスステップ</value>
+  </data>
+  <data name="BrdRoll" xml:space="preserve">
+    <value>コーラルロール</value>
+  </data>
+  <data name="BstRoll" xml:space="preserve">
+    <value>ビーストロール</value>
+  </data>
+  <data name="Celerity" xml:space="preserve">
+    <value>電光矓火の章</value>
+  </data>
+  <data name="Chakra" xml:space="preserve">
+    <value>チャクラ</value>
+  </data>
+  <data name="Charm" xml:space="preserve">
+    <value>あやつる</value>
+  </data>
+  <data name="CorRoll" xml:space="preserve">
+    <value>コルセアズロール</value>
+  </data>
+  <data name="Cover" xml:space="preserve">
+    <value>かばう</value>
+  </data>
+  <data name="CuringWaltz1" xml:space="preserve">
+    <value>ケアルワルツ</value>
+  </data>
+  <data name="CuringWaltz2" xml:space="preserve">
+    <value>ケアルワルツII</value>
+  </data>
+  <data name="CuringWaltz3" xml:space="preserve">
+    <value>ケアルワルツIII</value>
+  </data>
+  <data name="CuringWaltz4" xml:space="preserve">
+    <value>ケアルワルツIV</value>
+  </data>
+  <data name="DarkArts" xml:space="preserve">
+    <value>黒のグリモア</value>
+  </data>
+  <data name="DarkShot" xml:space="preserve">
+    <value>ダークショット</value>
+  </data>
+  <data name="Defender" xml:space="preserve">
+    <value>ディフェンダー</value>
+  </data>
+  <data name="DiabolicEye" xml:space="preserve">
+    <value>ディアボリクアイ</value>
+  </data>
+  <data name="DivineWaltz" xml:space="preserve">
+    <value>ディバインワルツ</value>
+  </data>
+  <data name="DncRoll" xml:space="preserve">
+    <value>ダンサーロール</value>
+  </data>
+  <data name="DrgRoll" xml:space="preserve">
+    <value>ドラケンロール</value>
+  </data>
+  <data name="DrkRoll" xml:space="preserve">
+    <value>カオスロール</value>
+  </data>
+  <data name="Ebullience" xml:space="preserve">
+    <value>気炎万丈の章</value>
+  </data>
+  <data name="Feint" xml:space="preserve">
+    <value>フェイント</value>
+  </data>
+  <data name="Focus" xml:space="preserve">
+    <value>集中</value>
+  </data>
+  <data name="Fold" xml:space="preserve">
+    <value>フォールド</value>
+  </data>
+  <data name="Hasso" xml:space="preserve">
+    <value>八双</value>
+  </data>
+  <data name="HealingWaltz" xml:space="preserve">
+    <value>ヒーリングワルツ</value>
+  </data>
+  <data name="Hide" xml:space="preserve">
+    <value>かくれる</value>
+  </data>
+  <data name="LastResort" xml:space="preserve">
+    <value>ラストリゾート</value>
+  </data>
+  <data name="LightArts" xml:space="preserve">
+    <value>白のグリモア</value>
+  </data>
+  <data name="LightShot" xml:space="preserve">
+    <value>ライトショット</value>
+  </data>
+  <data name="Manifestation" xml:space="preserve">
+    <value>精霊光来の章</value>
+  </data>
+  <data name="MnkRoll" xml:space="preserve">
+    <value>モンクスロール</value>
+  </data>
+  <data name="Mug" xml:space="preserve">
+    <value>かすめとる</value>
+  </data>
+  <data name="NinRoll" xml:space="preserve">
+    <value>ニンジャロール</value>
+  </data>
+  <data name="Parsimony" xml:space="preserve">
+    <value>勤倹小心の章</value>
+  </data>
+  <data name="Penury" xml:space="preserve">
+    <value>簡素清貧の章</value>
+  </data>
+  <data name="PldRoll" xml:space="preserve">
+    <value>ガランツロール</value>
+  </data>
+  <data name="PupRoll" xml:space="preserve">
+    <value>パペットロール</value>
+  </data>
+  <data name="Quickstep" xml:space="preserve">
+    <value>クイックステップ</value>
+  </data>
+  <data name="Rapture" xml:space="preserve">
+    <value>意気昂然の章</value>
+  </data>
+  <data name="RdmRoll" xml:space="preserve">
+    <value>ワーロックスロール</value>
+  </data>
+  <data name="RngRoll" xml:space="preserve">
+    <value>ハンターズロール</value>
+  </data>
+  <data name="SamRoll" xml:space="preserve">
+    <value>サムライロール</value>
+  </data>
+  <data name="SchRoll" xml:space="preserve">
+    <value>スカラーロール</value>
+  </data>
+  <data name="Seigan" xml:space="preserve">
+    <value>星眼</value>
+  </data>
+  <data name="Sharpshot" xml:space="preserve">
+    <value>狙い撃ち</value>
+  </data>
+  <data name="SmnRoll" xml:space="preserve">
+    <value>エボカーズロール</value>
+  </data>
+  <data name="SneakAttack" xml:space="preserve">
+    <value>不意打ち</value>
+  </data>
+  <data name="Souleater" xml:space="preserve">
+    <value>暗黒</value>
+  </data>
+  <data name="Steal" xml:space="preserve">
+    <value>ぬすむ</value>
+  </data>
+  <data name="ThfRoll" xml:space="preserve">
+    <value>ローグズロール</value>
+  </data>
+  <data name="TrickAttack" xml:space="preserve">
+    <value>だまし討ち</value>
+  </data>
+  <data name="ViolentFlourish" xml:space="preserve">
+    <value>V.フラリッシュ</value>
+  </data>
+  <data name="Warcry" xml:space="preserve">
+    <value>ウォークライ</value>
+  </data>
+  <data name="WarRoll" xml:space="preserve">
+    <value>ファイターズロール</value>
+  </data>
+  <data name="WhmRoll" xml:space="preserve">
+    <value>ヒーラーズロール</value>
+  </data>
+  <data name="AbsorbRegex" xml:space="preserve">
+    <value>^アブゾ</value>
+  </data>
+  <data name="AnyRoll" xml:space="preserve">
+    <value>ロール$</value>
+  </data>
+  <data name="Bio1" xml:space="preserve">
+    <value>バイオ</value>
+  </data>
+  <data name="Bio2" xml:space="preserve">
+    <value>バイオII</value>
+  </data>
+  <data name="Bio3" xml:space="preserve">
+    <value>バイオIII</value>
+  </data>
+  <data name="CuragaRegex" xml:space="preserve">
+    <value>(ケアルラ|ケアルガ([IV]+)?)</value>
+  </data>
+  <data name="Cure1" xml:space="preserve">
+    <value>ケアル</value>
+  </data>
+  <data name="Cure2" xml:space="preserve">
+    <value>ケアルII</value>
+  </data>
+  <data name="Cure3" xml:space="preserve">
+    <value>ケアルIII</value>
+  </data>
+  <data name="Cure4" xml:space="preserve">
+    <value>ケアルIV</value>
+  </data>
+  <data name="Cure5" xml:space="preserve">
+    <value>ケアルV</value>
+  </data>
+  <data name="Dia1" xml:space="preserve">
+    <value>ディア</value>
+  </data>
+  <data name="Dia2" xml:space="preserve">
+    <value>ディアII</value>
+  </data>
+  <data name="Dia3" xml:space="preserve">
+    <value>ディアIII</value>
+  </data>
+  <data name="Dispel" xml:space="preserve">
+    <value>ディスペル</value>
+  </data>
+  <data name="Erase" xml:space="preserve">
+    <value>イレース</value>
+  </data>
+  <data name="Haste" xml:space="preserve">
+    <value>ヘイスト</value>
+  </data>
+  <data name="HojoRegex" xml:space="preserve">
+    <value>捕縄の術:(壱|弐)</value>
+  </data>
+  <data name="JubakuRegex" xml:space="preserve">
+    <value>呪縛の術:(壱|弐)</value>
+  </data>
+  <data name="ParalyzeRegex" xml:space="preserve">
+    <value>パライズ(II)?</value>
+  </data>
+  <data name="Raise" xml:space="preserve">
+    <value>レイズ</value>
+  </data>
+  <data name="Regen1" xml:space="preserve">
+    <value>リジェネ</value>
+  </data>
+  <data name="Regen2" xml:space="preserve">
+    <value>リジェネII</value>
+  </data>
+  <data name="Regen3" xml:space="preserve">
+    <value>リジェネIII</value>
+  </data>
+  <data name="SlowRegex" xml:space="preserve">
+    <value>スロウ(II)?</value>
+  </data>
+  <data name="UtsuIchi" xml:space="preserve">
+    <value>空蝉の術:壱</value>
+  </data>
+  <data name="UtsuNi" xml:space="preserve">
+    <value>空蝉の術:弐</value>
+  </data>
+  <data name="AfflatusMisery" xml:space="preserve">
+    <value>ハートオブミゼリ</value>
+  </data>
+  <data name="AfflatusSolace" xml:space="preserve">
+    <value>ハートオブソラス</value>
+  </data>
+  <data name="Altruism" xml:space="preserve">
+    <value>不惜身命の章</value>
+  </data>
+  <data name="Enlightenment" xml:space="preserve">
+    <value>大悟徹底</value>
+  </data>
+  <data name="Equanimity" xml:space="preserve">
+    <value>無憂無風の章</value>
+  </data>
+  <data name="Focalization" xml:space="preserve">
+    <value>一心精進の章</value>
+  </data>
+  <data name="Innin" xml:space="preserve">
+    <value>陰忍</value>
+  </data>
+  <data name="Tranquility" xml:space="preserve">
+    <value>天衣無縫の章</value>
+  </data>
+  <data name="Yonin" xml:space="preserve">
+    <value>陽忍</value>
+  </data>
+  <data name="AnySamba" xml:space="preserve">
+    <value>サンバ</value>
+  </data>
+  <data name="AsceticsFury" xml:space="preserve">
+    <value>アスケーテンツォルン</value>
+  </data>
+  <data name="Atonement" xml:space="preserve">
+    <value>ロイエ</value>
+  </data>
+  <data name="BladeKamu" xml:space="preserve">
+    <value>カムハブリ</value>
+  </data>
+  <data name="DeathBlossom" xml:space="preserve">
+    <value>ロズレーファタール</value>
+  </data>
+  <data name="Drakesbane" xml:space="preserve">
+    <value>雲蒸竜変</value>
+  </data>
+  <data name="Expiacion" xml:space="preserve">
+    <value>エクスピアシオン</value>
+  </data>
+  <data name="GarlandOfBliss" xml:space="preserve">
+    <value>ガーランドオブブリス</value>
+  </data>
+  <data name="Insurgency" xml:space="preserve">
+    <value>インサージェンシー</value>
+  </data>
+  <data name="KingsJustice" xml:space="preserve">
+    <value>キングズジャスティス</value>
+  </data>
+  <data name="LeadenSalute" xml:space="preserve">
+    <value>レデンサリュート</value>
+  </data>
+  <data name="MandalicStab" xml:space="preserve">
+    <value>マンダリクスタッブ</value>
+  </data>
+  <data name="MordantRime" xml:space="preserve">
+    <value>モーダントライム</value>
+  </data>
+  <data name="MysticBoon" xml:space="preserve">
+    <value>ミスティックブーン</value>
+  </data>
+  <data name="Omniscience" xml:space="preserve">
+    <value>オムニシエンス</value>
+  </data>
+  <data name="PrimalRend" xml:space="preserve">
+    <value>プライマルレンド</value>
+  </data>
+  <data name="PyrrhicKleos" xml:space="preserve">
+    <value>ピリッククレオス</value>
+  </data>
+  <data name="StringingPummel" xml:space="preserve">
+    <value>連環六合圏</value>
+  </data>
+  <data name="TachiRana" xml:space="preserve">
+    <value>十之太刀・乱鴉</value>
+  </data>
+  <data name="Trueflight" xml:space="preserve">
+    <value>トゥルーフライト</value>
+  </data>
+  <data name="Vidohunir" xml:space="preserve">
+    <value>ヴィゾフニル</value>
+  </data>
+  <data name="AstralFlow" xml:space="preserve">
+    <value>アストラルフロウ</value>
+  </data>
+  <data name="AzureLore" xml:space="preserve">
+    <value>アジュールロー</value>
+  </data>
+  <data name="Barrage" xml:space="preserve">
+    <value>乱れ撃ち</value>
+  </data>
+  <data name="Benediction" xml:space="preserve">
+    <value>女神の祝福</value>
+  </data>
+  <data name="BloodWeapon" xml:space="preserve">
+    <value>ブラッドウェポン</value>
+  </data>
+  <data name="BurstAffinity" xml:space="preserve">
+    <value>ブルーバースト</value>
+  </data>
+  <data name="Camouflage" xml:space="preserve">
+    <value>カモフラージュ</value>
+  </data>
+  <data name="ChainAffinity" xml:space="preserve">
+    <value>ブルーチェーン</value>
+  </data>
+  <data name="Chainspell" xml:space="preserve">
+    <value>連続魔</value>
+  </data>
+  <data name="Composure" xml:space="preserve">
+    <value>コンポージャー</value>
+  </data>
+  <data name="Convert" xml:space="preserve">
+    <value>コンバート</value>
+  </data>
+  <data name="Counterstance" xml:space="preserve">
+    <value>かまえる</value>
+  </data>
+  <data name="DesperateFlourish" xml:space="preserve">
+    <value>D.フラリッシュ</value>
+  </data>
+  <data name="DivineSeal" xml:space="preserve">
+    <value>女神の印</value>
+  </data>
+  <data name="EagleEyeShot" xml:space="preserve">
+    <value>イーグルアイ</value>
+  </data>
+  <data name="ElementalSeal" xml:space="preserve">
+    <value>精霊の印</value>
+  </data>
+  <data name="Familiar" xml:space="preserve">
+    <value>使い魔</value>
+  </data>
+  <data name="Fealty" xml:space="preserve">
+    <value>フィールティ</value>
+  </data>
+  <data name="Footwork" xml:space="preserve">
+    <value>猫足立ち</value>
+  </data>
+  <data name="FormlessStrikes" xml:space="preserve">
+    <value>無想無念</value>
+  </data>
+  <data name="HundredFists" xml:space="preserve">
+    <value>百烈拳</value>
+  </data>
+  <data name="Invincible" xml:space="preserve">
+    <value>インビンシブル</value>
+  </data>
+  <data name="Manafont" xml:space="preserve">
+    <value>魔力の泉</value>
+  </data>
+  <data name="Meditate" xml:space="preserve">
+    <value>黙想</value>
+  </data>
+  <data name="MeikyoShisui" xml:space="preserve">
+    <value>明鏡止水</value>
+  </data>
+  <data name="MightyStrikes" xml:space="preserve">
+    <value>マイティストライク</value>
+  </data>
+  <data name="MijinGakure" xml:space="preserve">
+    <value>微塵がくれ</value>
+  </data>
+  <data name="Overdrive" xml:space="preserve">
+    <value>オーバードライヴ</value>
+  </data>
+  <data name="PerfectDodge" xml:space="preserve">
+    <value>絶対回避</value>
+  </data>
+  <data name="Pianissimo" xml:space="preserve">
+    <value>ピアニッシモ</value>
+  </data>
+  <data name="Sekkanoki" xml:space="preserve">
+    <value>石火之機</value>
+  </data>
+  <data name="Sentinel" xml:space="preserve">
+    <value>センチネル</value>
+  </data>
+  <data name="SnakeEye" xml:space="preserve">
+    <value>スネークアイ</value>
+  </data>
+  <data name="SoulVoice" xml:space="preserve">
+    <value>ソウルボイス</value>
+  </data>
+  <data name="SpiritSurge" xml:space="preserve">
+    <value>竜剣</value>
+  </data>
+  <data name="Sublimation" xml:space="preserve">
+    <value>机上演習</value>
+  </data>
+  <data name="TabulaRasa" xml:space="preserve">
+    <value>連環計</value>
+  </data>
+  <data name="ThirdEye" xml:space="preserve">
+    <value>心眼</value>
+  </data>
+  <data name="Trance" xml:space="preserve">
+    <value>トランス</value>
+  </data>
+  <data name="WildCard" xml:space="preserve">
+    <value>ワイルドカード</value>
+  </data>
+  <data name="AnySong" xml:space="preserve">
+    <value>メヌエット|マドリガル|マーチ|マンボ|プレリュード|バラード|ピーアン|ミンネ|カロル</value>
+  </data>
+  <data name="BioRegex" xml:space="preserve">
+    <value>バイオ(II+)?</value>
+  </data>
+  <data name="DiaRegex" xml:space="preserve">
+    <value>ディア(II+)?</value>
+  </data>
+  <data name="ElegyRegex" xml:space="preserve">
+    <value>(戦場|修羅|地獄)のエレジー</value>
+  </data>
+  <data name="HealingBreath1" xml:space="preserve">
+    <value>ヒールブレス</value>
+  </data>
+  <data name="HealingBreath2" xml:space="preserve">
+    <value>ヒールブレスII</value>
+  </data>
+  <data name="HealingBreath3" xml:space="preserve">
+    <value>ヒールブレスIII</value>
+  </data>
+  <data name="HealingBreeze" xml:space="preserve">
+    <value>いやしの風</value>
+  </data>
+  <data name="Madrigal1" xml:space="preserve">
+    <value>剣闘士のマドリガル</value>
+  </data>
+  <data name="Madrigal2" xml:space="preserve">
+    <value>剣豪のマドリガル</value>
+  </data>
+  <data name="MagicFinale" xml:space="preserve">
+    <value>魔法のフィナーレ</value>
+  </data>
+  <data name="MagicFruit" xml:space="preserve">
+    <value>マジックフルーツ</value>
+  </data>
+  <data name="Minuet1" xml:space="preserve">
+    <value>猛者のメヌエット</value>
+  </data>
+  <data name="Minuet2" xml:space="preserve">
+    <value>猛者のメヌエットII</value>
+  </data>
+  <data name="Minuet3" xml:space="preserve">
+    <value>猛者のメヌエットIII</value>
+  </data>
+  <data name="Minuet4" xml:space="preserve">
+    <value>猛者のメヌエットIV</value>
+  </data>
+  <data name="Pollen" xml:space="preserve">
+    <value>花粉</value>
+  </data>
+  <data name="Prelude1" xml:space="preserve">
+    <value>狩人のプレリュード</value>
+  </data>
+  <data name="Prelude2" xml:space="preserve">
+    <value>弓師のプレリュード</value>
+  </data>
+  <data name="WildCarrot" xml:space="preserve">
+    <value>ワイルドカロット</value>
+  </data>
+</root>

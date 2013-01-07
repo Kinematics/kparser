@@ -1,0 +1,608 @@
+KParser Change Log
+
+
+1.6.5 (December 20, 2012)
+- Fix bug in counterattacks rewriting spell damage, such that the damage is attributed to a counter, and no spell is recorded.
+
+1.6.4 (November 9, 2012)
+- Fix parsing of treasure hunter additional effect messages.
+- Fix top-end automaton weaponskills to register as weaponskills instead of abilities.
+* Add Blood Rage to tracked crit rate buffs.
+* Modify Extra Attacks plugin to allow custom mob selection.  Details shows rounds by battle.
++ Add notation to mark rounds with a TH proc in the Extra Attacks details.
+
+
+1.6.3 (January 2, 2012)
+- Fix denominator calculation for intimidation percentages.
++ Add new merit weaponskill names to names listing to allow proper categorization as weaponskills.
+* Update signature based on test server attempts.
+* Memloc update: 0x00587A60
+
+
+1.6.2 (November 23, 2011)
+- Min/max crit values were incorrectly overwritten by non-crit min/max values.
++ Added experimental code for signature location as a fallback for explicit memlocs.
+
+
+1.6.1 (September 27, 2011)
+- Fix: Wrong values displayed for M+0.Avg damage.
+- Fix: Min/max values in Offense tab not calculated properly during live parsing.
+- Fix: Pets using JAs to do AOE cures that hit NPCs ended up being classified as absorbs due to the NPCs being classifed as mobs.
+
+
+1.6.0 (September 25, 2011)
+- Fixed Chant du Cygne's name so that it's properly classified as a weaponskill.
++ Updated Corsair rolls list.
+* Improved entity classification.
++ Added parsing of absorbed damage.
++ Added or corrected processing and displaying of data in the following tabs to account for absorbed damage:
+  Offense, Offense Details, Defense Details, Damage Graph, WS Rates, Thief.
+~ Defense has not been updated yet; still working out how I want to implement it.
+~ Ranged attacks on Offense tab not adjusted yet since I don't have a parse sample to confirm.
++ Added preliminary "Defense Buffs by Time" tab (Def. by Time), to complement the "Buffs by Time" tab.
+* Changed location of error.log file to be placed in the user's app data path (a more correct location for a file that's being written to).
+
+
+1.5.14 (September 19, 2011)
+* Updated memloc after Sept 19 patch.  New address is 0x005858d8.
+
+
+1.5.13 (May 5, 2011)
+* Updated memloc after May 9 patch.  New address is 0x00584E68.
+* Revise grouping algorithm in Extra Attacks plugin.
+
+
+1.5.12 (February 27, 2011)
+* Updated memloc after Feb 14 patch.  New address is 0x005839C8.
+- Fixed Silvery light detection.
+- Fixed Blade: Hi not showing up in weaponskill damage.
++ Added parsing of Treasure Hunter effects, and reporting on the Loot page.
++ Added reporting on critical hit rates in Buffs By Time page.
++ Added Stalwart's/Champion's drinks to the Buffs By Time page.
++ Added Stalwart's/Champion's drinks to Damage Graph display (individual buffs per player).
++ Differentiate between hit rate (HR) and accuracy (Acc) on Offense page (melee and ranged subgroups).  Hit rate is how many times you hit vs how many times you did not hit, and includes factors such as parries, counters and intimidations, etc.  Accuracy is how many times the opponent evaded vs how many times they did not, and should most closely track expected accuracy vs evasion formulas.
++ Add an additional average that excludes 0-damage hits.  M+0.Avg is average across all hits, M-0.Avg is average across all non-0 hits.
+* Same as for normal melee hit averages, crits now exclude 0-damage hits.  Due to space considerations I'm not listing the average that includes 0-damage hits at this time.
+~ Note: For the moment, these additions make the melee and ranged rows extend past the preferred window width (less than 1024 px).  I'll consider breaking the sections apart later.  I'll add the 0-damage crit average at that time as well.
+
+
+1.5.* (unreleased)
+* Updated memloc after Dec 6 patch.  New address is 0x00583948.
+
+
+1.5.11 (September 9, 2010)
+* Updated memloc.  New address is 0x00582958.
++ Add new JAs, spells and weaponskills where appropriate.
+- Fix parsing of 10,000 Needles.
+- Fix parsing of Tractor.
+- Fix Damage Graph totals that involve additional effects.
+
+
+1.5.10 (July 28, 2010)
+- Fix bad parsing of golden lights.
+- Fix missing time extension info in Abyssea plugin.
+* Reorganize and refine Abyssea plugin.
+
+
+1.5.9 (July 24, 2010)
+* Remove legacy support for older parses that used 1 second sample intervals, when trying to calculate Extra Attacks.  This caused problems with newer parses that had smaller sample sizes.
+* Adjust methodology for detecting rounds in Extra Attacks plugin.
+* Detailed listing of weaponskill damage by TP is only shown when Show Details is checked.
+* Improve display of various tabs.
++ Add new blu spells: Animating Wail (haste tracking on Buffs By Time/Damage Graph) and Plenilune Embrace (Recovery).
++ Add Cure VI to Recovery tab.
++ Add min/max weaponskill damage to data shown by TP under WS Rates tab.
++ Added parsing of Cruor, and display in the Loot tab.  Have to reparse older parses to get this data from them.
++ Add parsing of chest drops from Abyssea mobs.
++ Add parsing of Cruor and Experience gained from chests.  Display in Loot and Experience tabs.
++ Add parsing of Time Extensions from chests.
++ Add parsing of aura lights.
++ Add Abyssea plugin tab to consolidate Abyssea run results.
+
+
+1.5.8 (June 21, 2010)
+* Improve processing speed of Buffs By Time plugin.
++ Add new weaponskill, spell, and JA names.
+* New memloc value: 0x005827D8
+
+
+1.5.7 (June 15, 2010)
++ Addition of MP/TP efficiency calculations to Recovery tab.
+* Improve processing speed of Recovery plugin. (~5x faster)
++ Add average time between weaponskills to WS Rates tab.
+- Fix bug in parsing Shinsoku's additional effect: drain TP messaging.
+- Fix bug in calculating MP spent on curagas.
+- Weaponskill frequency by TP return should show frequency per weaponskill, rather than frequency per all weaponskills.  Corrected.
+* Improve processing speed of WS Rates plugin. (~8x faster)
+* Refueling added to haste buffs in Buffs by Time, as well as included in Damage Graph.
+- Fix issue of Fighter's Roll not being properly tabulated for Damage Graph.
+- Fix bug when viewing Deaths plugin with a subset of mobs.
+
+
+1.5.6 (May 26, 2010)
++ Add Hunter's Roll to accuracy buff section of Buffs by Time plugin.
++ Add Samurai Roll to tracked buffs on Damage Graph.
++ Put pets back in damage graph.
+* Change option from 'collective' to 'individual' in Damage Graph, to make purpose of option clearer.
+- Fix duration of Dia II for Buffs by Time.  Should be 2 minutes.
+- Fix issue of mobs not being properly copied/identified in certain fallback circumstances.  Should remove issue of mobs being listed in the Deaths tab.
+- Fix bug in parsing status removal messages.  Older parses will need to be reparsed.
+- Fix bug where Benediction didn't allow for multiple targets being hit.  This fixes certain instances of charmed players and/or mobs that shouldn't exist.
+- Fix bug in Damage Graph that occasionally caused an index out of bounds error.
++ Add ability usage counting to the Defense tab.  This allows you to see how many times the mob(s) used TP moves, even if the moves were absorbed by shadows or stunned and thus not reported in the Damage Taken section, or if the moves did no damage at all (self-cast buffs, etc).  Also useful for getting a count of moves that hit multiple targets which make it difficult to get a count from the damage section.  Note that the code is not optimized, and will slow down processing on this tab a bit.
+- Fix parsing of Sub-zero Smash spell.
+* Status removal spells are no longer listed on the Buffs page.  They've been moved to the Recovery tab.
+* Increase spacing on Killed By column of Deaths plugin for longer mob names.
+- Fix bug of Defense tab not reporting all damage taken.
++ Add reporting of estimated MP and TP spent on curing.
+
+
+1.5.5 (May 05, 2010)
+* Improve correctness of event handling.
+* Improve speed of parsing (minor) and reparsing (significant).
+- Fix bug of out of memory conditions in the Damage Graph plugin when a parse has numerous players and covers a very long period of time (ie: months or more).  This restricts the resolution of the data.  1 second resolution is possible for up to one week's worth of time.  More than that gets scaled down.
++ Additional feature in the Damage Graph plugin.  If a single player is selected, you can access a list of all the buffs that they received.  For any buff selected, the graph will show the time periods when that particular buff was active on the player vs not having the buff.  Mob selection can be done as normal with this.
+
+
+1.5.4 (April 28, 2010)
++ Add crit rate to accuracy section of Buffs by Time.
+- Fix bug in counting min attack kill shots in ranged Extra Attacks.
+
+
+1.5.3 (April 25, 2010)
++ Added reporting of multi-attack rates for ranged weapons in Extra Attacks plugin, for new magian weapons.
+* Change default options for Damage Graph plugin to Individual/Cumulative. I believe that will be more useful for most people.
+- Fix minor bug when filtering counters in Defense plugin.
+- Fix minor bug in WSRates plugin.
+- Fix parsing of interruptions of ranged attacks by moving.
+
+
+1.5.2 (April 13, 2010)
+- Clean up synchronization methodologies.
+- Several additional improvements in message handling to avoid entity mismatches.
+- Fix Copy Summary on Offense tab to use display names.
+- Fix AOE damage association bug.
+- Fix issue with tallying followup rolls on the Corsair plugin.
+- Don't display buffs/debuffs that aren't relevant to the currently selected battle(s) in Buffs by Time plugin.
++ New plugin for reviewing rates that Additional Effect status procs.
++ New graph plugin type.
++ New graph plugin (Damage Graph) to show damage progression over time.
+
+~ For the Damage Graph plugin, there are four basic modes of view:
+~ If you set "Show Collective Damage", it displays the total damage of all players over the time spread.  If it's not checked, it will show each individual player's damage as a separate line.  If you set "Show Cumulative Damage", it displays the total accumulated damage over time, either for all players or each individually.  If it's not checked it displays the 'instantaneous' damage at each time interval, where the resolution is per second.
+~ The data can be filtered by mob as usual (primary use is likely to analyze performance over a long NM-type fight), as well as isolated by player.
+~ The graph can be manipulated in various ways.  For example, drawing a box around an area of interest causes it to zoom in on the selected area. Right-clicking on the graph can give you various options such as resetting a zoomed graph back to the original state, saving the graph as an image, or seeing the x/y values under the mouse cursor.
+
+
+1.5.1.1 (March 28, 2010)
+- Fix bug in TP return determination.
+
+
+1.5.1 (March 23, 2010)
+- Fix for a bug in combining messages in a reparse of a parse comprised of multiple continued parses from multiple sessions.
+- Bug fix: mob names can have ' followed by one letter (eg: Fe'e).
+- Fix bug in custom mob selection dialog that caused a crash when changing between different sized mob lists.
+- Fix bug in parsing Mk.IV puppet name.
++ Add ability to extract a portion of a parse into a new parse file.  'Split Parse' on File menu.
++ Add ability to join multiple parses together.  'Join Parses' on File menu.
++ Add selection for a quick summary of damage percentage share in the Offense tab that can be copied to be pasted in to the game.
++ Add functionality to WS Rates plugin to process /echo'd TP data for weaponskills.
+  Syntax for echo is "/echo KParser: TP return = <tp>", or "/echo KParser: <tp> WS TP", or "/echo KParser: <tp> TP".  "KParser" may be abbreviated as "KP".  There's a bit of flexibility in the spacing, but try to stick with the above syntax if you want the TP info handled.
+* Updated with new memloc.  New memloc is 0x00581518.
+
+
+1.5.0 (February 22, 2010)
++ Added ability to actively translate text in the chat window to the currently specified UI language.  Uses Google Translate APIs, so must be online to work.
+
+Use:
+
+On the chat plugin is a button labelled 'Translate'.  When pressed, clicking on text in the chat window itself will translate that line of text to the current UI language and display it in a text box to the right of the button.  If there is not enough room to show the full text box, a drop-down arrow will show up at the end of the toolbar; clicking that will show the text box and translated text.
+
+The translation uses Google's Translate APIs.  You must be online for it to work.  Translation only occurs when the Translate button is pressed, and only a line at a time so you can isolate exactly what you want translated, and of course can choose not to use it if you wish.  This is the only feature of KParser which sends any data outside of the local machine.
+
+
+
+1.4.17 (February 21, 2010)
++ Add average bonus value calculations to Corsair plugin.
+
+
+1.4.16 (February 21, 2010)
+- Fixed minor bugs in Corsair roll parsing.
++ Added new plugin (Corsair) for Corsair roll results.
+* Rewrite of WS Rates plugin to include ranged attacks and Absorb-TP.  Removed harmonic mean.
+- Fixed a bug in storing entries on player deaths.
++ Added new plugin (Deaths) to display player deaths.  Requires reparsing older parses due to above bug fix.
+
+
+1.4.15 (February 19, 2010)
+- Fix bug of missed actor name on some missed abilities, causing bogus battle entries.
+- Fix bug of bogus fight creation related to entity classification.
+- AOE effects targetting multiple mobs of the same name fixed to better handle the multiple targets.
+* Add additional conditions when excluding player actions outside of party to filter out kills by players outside party.
+* Improve handling of AOE debuff target matching.
+* Improve update time on text box updates to reduce flicker.  Partially complete.
+- Fix formatting bug in status string.
+- Fix icon size in Win7 taskbar.
+
+
+1.4.14 (February 6, 2010)
+- Fix minor bugs in entities and outside-party kills to avoid data being incorrectly attributed.
+
+
+1.4.13 (January 27, 2010)
+* Translation work.
+- Fix bug in retaliation reporting in Offense Details.
+
+
+1.4.12 (January 15, 2010)
+- Fix typo in chocobo digging string check.
++ "found with ease" messages in choco digging now counted by loot plugin.
++ Add in support code to allow switching between languages for parsing (FFXI client parsing, not UI).  Actual parsing not implemented yet.
++ Updated Offense Details tab to report counters and retaliations.
+* Update French interface text.
+
+
+1.4.11 (January 3, 2010)
+* Change reparsing to auto-detect older parses.  As such, remove extra menu command to reparse with timestamp upgrade, as that will happen automatically.
+* Misc minor code cleanup.
+- Fix a number of message association and entity management bugs, primarily for alliance and multi-alliance fights.
+
+
+1.4.10 (December 27, 2009)
+- Fix bug in Buffs By Time plugin.
++ Add Dread Spikes parsing.
+* Revise handling of message linking.  Should generally be more accurate now, and fixes issue of -ga spells being improperly attributed.
+
+
+1.4.9 (December 19, 2009)
+- Fix bug in analysis of Enfeebling tab.
+- Fix bug in parsing new ranged attack damage messages vs certain mobs.
+
+
+1.4.8 (December 16, 2009)
++ Buffs by Time plugin.  This plugin tracks certain particular buffs and sees how combat varies with and without the buffs.  They are divided into Accuracy-affecting buffs and Attack-affecting buffs.  Special notes:
+~ Souleater and Hasso are included in both Accuracy and Attack, since they affect both.
+~ Hasso is cancelled by Seigan; Innin and Yonin cancel each other; Dia is cancelled by equal or higher level Bio.
+~ All forms of Dia are assumed to last 1 minute.  IE: Dia III is assumed to have 2 merits.
+~ Songs and rolls are stacked/tracked 2 deep by the same brd/cor.  More than that within the duration limit push earlier ones off.
+~ Songs are assumed to last 2:24 (ie: get the bonus of a +2 instrument).
+~ Rolls are assumed to last 5:00 (ie: no consideration of Winning Streak merit is made).
+~ Sambas are assumed to last 2:00 (ie: bonus from AF head is assumed).
+~ Individual tiers of cor rolls are not accounted for.  Multiple Double-Ups to raise the value aren't separated out in reporting.
+~ Different weaponskills are not separated out in the Attack section.  There was too much information building up to fit that in.  May go back and rework that if it's really desired.
+~ Combinations of buffs are not accounted for.  The combinatorial effect of combining various mixes of Minuet + Berserk + Hasso + Warcry + etc was just too much to deal with, so each buff is simply tracked on its own.
+~ The only debuff that is tracked is Dia.  Other debuffs have to deal with partial resist issues, etc, and can't be tracked reliably.
+~ Potential additions: Various 'Break' weaponskills.
+- Fix issue of No Effect buffs causing incorrect entity determination.
+- Fix issue of players not being classified correctly in large fights, and of NMs with player-like names not being classified correctly.
+
+
+1.4.7 (December 10, 2009)
+- Fixed incorrect timestamps when parsing from log files.
+* Changed line count check from int to byte.  Should fix problem of failure to parse.
+
+
+1.4.6 (December 2, 2009)
+- Fix issue with filtering out 0 XP mobs when 'All' mobs were selected.
+- Fix issue in selecting certain subsets of mob groups.
+* Rewrote backend code for Extra Attacks plugin.  Now *much* faster (30k attack test parse for Zanshin took 75 seconds before; now takes 370 ms), and I believe more accurate in determining the separation between multiattack rounds.
+- Fix display bug in Performance tab that was the result of improper rounding of time values.
+- Check for item names that exceed the database size limit.
+- Fix potential deadlock in database code.
++ Provided more status feedback if Debug Mode is on.
+- Fix problem of losing track of chat log in RAM if player changes characters.
+
+
+1.4.5.1 (November 9, 2009)
+* Updated full list of new ranged attack messages.
+
+
+1.4.5 (November 9, 2009)
+* Made changes in analyzing fight deaths.  If an 'other' entity (non-self/party/alliance) kills a mob, the program firsts checks to see if that entity had any other actions against the battle in question.  If not, then it enters it as a separate fight instead of ending the current fight.
+ The purpose of this is to fix the issue of someone outside your party killing a mob and it ending your current fight, showing up in the mob listings as (for example) two mobs killed, each with half the normal health, one for 0 xp and the other for normal xp.  This causes problems in segregating test data by mob level.
+ The requirement for the 'other' entity to have performed a visible action in the current fight is to not erronously create fake fights due to pets (avatars/puppets/etc) getting the killing blow, since all pets are classified as 'other' entities.  If your filters prevent you seeing such actions, you may end up with misleading fight data.
++ Offense and Defense Details plugins now show an integrated sequence of melee and ranged hits (crits and non-crits) when Show Details is selected.
+- Fix bug in displaying Raw Data when switching between all and unparsed.
+- Improve handling of identification of Notorious Monsters as mobs rather than charmed players, and the consequant occasional mis-identification of players as charmed mobs.
++ Add parsing of new "sweet spot" message for ranged attacks.  Still missing the third possible ranged attack message.
+* Updated default memloc to new value: 0x005801d8
+
+
+1.4.4 (November 4, 2009)
+- Fix minor threading bug in Performance plugin.
++ Added ability set a display name for players.  With this, photoshopping screenshots should no longer be necessary.
+ Usage: If player info text starts with text enclosed in square brackets (eg: [war/nin]), then that string will be used in place of the player's name if the option to do so is set in the Edit menu (and can thus be quickly toggled on and off).  An asterisk will be prepended to the text to indicate that it is user-defined.  Text more than 15 characters long will be truncated to avoid spacing issues compared to real names.
+ Examples:  The war/nin (as used above) would thus have the name of "*war/nin".  Other players might be shown as "*Relic sam" or "*Spoony bard".
+ This does not change the names listed in the player selection drop-downs on various tabs.  This also does not change the names listed in the Salvage subsection of the Loot tab.
+ When the database structure is upgraded, this feature will move to its own field instead of being a fudge in part of the player info field.
+* Changed Unparsed Data plugin to Raw Data plugin, with the option to either show only unparsed lines (what was shown before), or all lines logged.
+  NOTE: Be aware that loading all raw data can take a long time for a large parse.  You should generally Not change the type while in the middle of a parse.
+
+
+1.4.3 (November 2, 2009)
+- Fix (?) issue regarding presence of SQLCE.
+- Fix issue with needing administrative rights to run in Vista and Windows 7.
+- Fix bug in parsing 'no effect' enfeebles.
+- Fix bug in parsing use of Feather Tickle by blue mage mobs.
+- Fix bug in parsing certain ability names.
+- Fix bug in error logging.
+- Fix bug in handling the Recent Files list.
+* Compact long file names in the Recent Files list.  Added tooltips for full path.
++ Started to revise Damage/Minute plugin, ended up creating an entirely new one: Performance.  D/M will be deprecated.
+~~ Note: the calculations to reach DPM (or DPS) are done differently in the two plugins, and probably will not match.  I believe the new version is more accurate.
+
+
+1.4.2 (September 1, 2009)
++ Added Weaponskill/TP Rate plugin.
+
+
+1.4.1 (August 31, 2009)
++ Added an installer project for KParser.  Zip file now contains the installer.
+>> Installer will attempt to download and install prerequisites for you if they are not already instead (IE: .NET 3.5 and SQLCE 3.5).
+* Converted all string literals in the program UI to resource elements, and set up the basis for allowing localization of the program into French, German and Japanese.
+*** This is NOT an enablement of parsing foreign language versions of FFXI.  This is for the UI ONLY.  Parsing will be added at a future date.  The UI can be updated progressively with translations; parsing needs to be pretty much complete from the start to be useful.
++ Added a recent files menu.  Default is 4 items listed.  Can adjust options to list up to 10.
++ Added access to certain files from the About window.
+
+
+1.4.0 (August 08, 2009)
+* Update default memloc to 0x0057DA98.
+* Changed SQLCE reference to explicitly use/require SQLCE 3.5/SP1.  Check the readme.txt file for where to find the intallation version if you need it.
+* Reverted some of the RAM code from the last version since some of the information I thought was there was wrong.
+* Modified RAM reading code to better track original raw data to avoid certain types of data corruption for people with, eg, JP locale OSes.
+- Fix timestamps reported in the Chat tab.
+- Fix timestamps reported in the Unparsed Data tab.
++ Add menu item to close all tabs.
+* Clean up handling of tracking tabs.
+- Fix bug of not properly tracking certain JA enfeebles.
++ Echo messages that start with "KP:" or "KParser:" (case insensitive) will be saved as chat messages of type 'echo'.  They will not be removed if you save a copy of the database without chat information.
+* Adjusted window title to show currently open database file.  Status text info simplified.
+* Revised custom mob selection dialog to use a list box instead of a checked list box.  Also shows the number of selected mobs now.
+
+
+1.3.9 (May 28, 2009)
+* Significant rewrite of RAM monitoring code for simplified detection and better handling of message tracking.
+* Link detection and handling is added to the tabs' text boxes.  This means that if a URL shows up in the Chat tab (must start with http://), you can click on it to open the link in a browser window.
+* Adjust parsing to allow 5-digit numbers, for instances of over 10,000 damage being done.
+* Start adjusting code to better handle different OS locales.
+- On Items tab, details view, times were not being converted to local timezone.  Corrected.
+- Fix typo that caused counters to be listed as retaliations.
+- Bug fix: The Thief plugin occasionally had a null reference when checking weaponskill usage.
+- Bug fix: Self-cast AOE buffs weren't showing everyone who was affected by the spell in the Buffs tab.
+
+
+1.3.8 (April 24, 2009)
+* Update the default memloc after the patch on April 22.
+- Fix issue where missed ranged attacks were not getting added to an associated battle properly.  This meant that all display filters other than 'All' always reported 100% ranged accuracy.  Older data will need to be reparsed to get correct values.
+
+
+1.3.7 (April 8, 2009)
+- Fix parsing of Violent Flourish's damage+stun effect.
+- Damage+debuff effects (Violent Flourish, stun kukri, etc) should now get reported properly in the Debuff tab.
+- Fix same bug as in 1.3.6 (eg: blindna failed to take effect) for alliance members as well as party members.
+* Update memloc location for April 8 update.
++ Add Enfeebling plugin tab (experimental, and has known problems; suggest only using for research at this time).
+
+
+1.3.6 (March 30, 2009)
+- Bug fix: Failed enhancements (eg: blindna failed to take effect) were incorrectly parsed and ended up causing a false CharmedPlayer to show up in the logs, and thus in the fight lists.  Reparsing is necessary to get corrected data.
+- Bug fix: Crash bug due to empty battle data when changing selected mob.
+* Fights tab now shows fights where you received XP, but were not in range to see what was killed.
+* Fights tab shows the chain number for each battle.
+- Fix issues in creating new battle entries in situations where the mob was killed but not named (ie: outside of range of seeing what was killed).
+- Fix issue of corrected base XP value (after removing chain multiplier) being applied to fights of chain 0.  The full spread of proper xp value should now show up.
+
+
+1.3.5 (March 27, 2009)
+- Fix annoying problem of losing preferences when updating the parser.  Old settings are now carried over when using a new version of the program.
+- Fix multiple redraws when Group flag is changed.
+* Custom mob filter shows fight number to match the dropdown listing.
+- Dancer Steps and Flourishes are properly categorized as Enfeebles rather than ordinary damaging abilities.
+
+
+1.3.4 (March 19, 2009)
+- Fix bug in combo box selection/update with the DPM plugin.
+
+
+1.3.3 (March 18, 2009)
++ Add new methodology to provide custom filtering of mobs for most plugins.
+
+
+1.3.2.1 (March 16, 2009)
+- Fix major bottleneck in message insertion in the database.  Should speed up back end processing by a factor of about 10.
+
+
+1.3.2 (March 16, 2009)
+- Fix bug that terminated long reparse sessions prematurely.
+- Fix Thief plugin analysis code for better accuracy.
+
+
+1.3.1 (March 16, 2009)
++ Add function to reparse older parses and update their timestamp information.
++ Fixed reparsing function to carry over user-edited player information.
+- Using 'Save As' and trying to overwrite an existing file works now.
+
+
+1.3.0 (March 16, 2009)
+* Major refactoring of core elements for piping messages through the program.
+* Rewrite of Offense and Defense tab accumulators.  Old accumulators had some issues, new ones should be significantly faster.
+- Fix issue with charmed players not being reported properly.  General bug fix on resolving entity types.
+- General bug fixing of architecture issues.
+
+
+
+1.2.3 (Feb 21, 2009)
+* Adjust name list and name parsing for more puppet names.
+
+
+1.2.2 (Feb 15, 2009)
+- Work around problem of the Windower Timestamp plugin causing chat text to get corrupted (and thus prevent parsing) if the user has Japanese as their primary system language.
+- Misc bug fixes and cleanup.
+
+
+1.2.1.1 (Feb 6, 2009)
+- Fix menu handler for editing player information.
+
+
+1.2.1 (Feb 5, 2009)
+- Fix bug of crash if there are DLLs in the program directory that don't belong to KParser.
+- Fix error in parry/counter/intimidation rate calculations.
++ Allow 'Copy' of current tab in various formats.
+- Add Curing Waltz IV to the Cure V category of cures.
+- Patch to fix Retaliation counts on Defense page.  Credit: Valyana of Ramuh <valyanaa@gmail.com>
+* Revert to previously open files if a re-parse was cancelled.
+* Slight revision to handling the initial breakdown of text lines.
+- Fix finding successful HELM results that also had a tool break in Loot tab.
++ Added the date to the list of info shown on the Experience tab.
+- Fix issue of full database updates being sent to plugins when they are expecting only change sets (causes issues in accumulations).
+
+
+
+1.2.0 (Dec 30, 2008)
++ Implement testing framework.
++ Begin implementing unit tests.
+- Fix bad chat text for moogle job change.
+* Change which settings file the default save directory is stored in.
+- Fix bug of the default parse always using the CommonApps directory instead of the specified default directory.
+- Misc bug fixes uncovered by the testing framework.
+* Show players in Player Info plugin even when no information has been entered for them.
+* Complete rewrite of thread flow for plugins.  This changes the API, so upgrading version to 1.2.*.  Should fix all thread deadlocking issues.
+* Complete rewrite of Defense tab for better and more accurate detail.
+
+
+---------------------------------------
+
+1.1.7 (Dec 8, 2008)
++ Patch: Addition of Salvage Cell listing option in Loot tab.  Credit: Valyana of Ramuh
+* Patch: Show window title when selecting multiple POL processes.  Credit: Valyana of Ramuh
+* Redid display of update progress while reparsing or importing files.
+- Fix risk of process reentry deadlocks in plugins.
+* New base address for RAM reading (12/8/2008 patch): 0x0057A2C8
+
+
+1.1.6.2 (Nov 11, 2008)
+* Update import code for importing DirectParse files to account for changes in the database structure.
+* Add new DirectParse file extension to file selection box.
+
+
+1.1.6.1
+* Patch fix for HELM logging filter results.
+
+
+1.1.6 (Oct 26, 2008)
+* Adjusted output layout of Loot page.
++ Added option to filter mobs killed by certain players when counting killed mobs in Loot tab.
++ Added option to filter mobs killed by certain players when counting killed mobs in Experience tab.
+- Fix retaliation mob filter check in Defense tab.
+- Fix reporting of intimidation defense events in Defense tab.
+- Disable Group Mobs option in Defense Details tab while a parse is active (the option is ignored while a parse is active anyway).
+
+
+1.1.5 (Sept 26, 2008)
+- Fix misspelled "Frostbite" and "Freezebite" so that they show up as Weaponskills properly.
++ Add percentage of number of drops per mob to loot distribution reporting.
++ Add option to show loot groupings.
+* Adjust Thief SATA threshold.
+
+
+1.1.4 (Sept 22, 2008)
++ New plugin: Items.  Shows details of items used, and when.
+- Fix possible null reference when reading RAM.
+- Fix possible invalid key reference when using a Dictionary in the Extra Attacks plugin.
++ Add framework for exporting data to Excel.
+
+
+1.1.3
+- Fix issue in parsing from log files where the same log file may be parsed multiple times.
++ If parsing from log files and the Windower Timestamp plugin is in use, KParser will now use that time to mark messages that get parsed for better database accuracy.
+* Default first entry of mob list in DPM plugin is now "None".
+* Consolidate smaller non-combat plugin DLLs into a single DLL.
+
+
+1.1.2 (Sept 19, 2008)
+- Make sure text windows are read-only.
+- Fix issue with updates running twice when a parse is opened.
+- Significant speed improvement fixes for the Buffs plugin.
+- Significant speed improvement fixes for the Extra Attacks plugin.
+* Major rewrite of the Extra Attacks plugin.
+
+
+1.1.1 (Sept 16, 2008)
+- Fix issues with mob filtering in the Thief plugin.
+- Improved SATA damage lookup mechanism in Thief plugin.
++ Add new plugin for analyzing Extra Attacks (Double/Triple/Kick Attacks and multi-attack weapons).  Experimental.  Recommend only using it for post-parse analysis (a large parse can take 20 seconds to process); do not leave it open while parsing.  Best results from parses with minimal lag.
++ Add new plugin for Damage per Minute calculations.  Experimental.  Note that this shows damage -rates-, not necessarily actual damage done.
+
+
+1.1.0 (Sept 14, 2008)
++ Allow setting default save directory.
+ -- NOTE: The default directory in the Common Application Path now ends in 1.1.  Earlier version of KParser would have had a default path ending in 1.0.  Your existing parses should be in that sister directory.  You may move them to your preferred directory if you wish.
+- Fix bug where buffs were not being credited to appropriate battles, preventing proper filtering.
+ -- NOTE: To get this corrected in older parses, you'll need to run them through the Upgrade/Reparse mechanism.
+- Fix so that Exclude 0 XP Mobs option in Offense tab works properly.  Extended this filter to all tabs.
++ Added mob filtering to Recovery tab.
+* Adjust battle acredidation in the case of actions that occur immediately after a mob's death that may simply be out-of-order messaging.
+* Rewrite of base class for plugins to somewhat simplify coding (though more work needed for customization of controls) and lend uniformity to code.
+- Various display bugs fixed.
+
+
+---------------------------------------
+
+1.0.13.1
+- Fix issue of error on empty list in Thief plugin.
+
+
+1.0.13
++ Add new weaponskill names.
+- Bug fixes for Chat and OffenseDetails plugin.
+- Adjust crit threshold calculation for Thief plugin.
++ Add solo weaponskill data to Thief plugin.
+
+
+1.0.12
+* Revamp of Thief plugin to fix various issues and better handling of locating SATA hits, plus expanded summary.
+- Fix issue in Buffs plugin to deal with duplicate buff entries relating to self-buffs.  Rewrote so that all self-buffs were marked as Self, and not targetting <playername>.
+* Updated memloc value.
+
+
+1.0.11 (Sept 1, 2008)
+- Fix issue where a Puppetmaster Overloading would reclassify the player as a mob, effectively removing them from further parse display.
+- Fix parser to parse Hide events.
++ Add Thief plugin for tracking SATA/Hide damage.  Very expensive to process, so minimal set allowed during parsing.  Implemented at the request of Melphina.
+
+
+1.0.10.1
+- Fix crash bug in player info dialog.
+
+ 
+1.0.10 (Aug 28, 2008)
++ Added ability to save a copy of the database stripped of all chat information (excluding arena/HELM messages) for privacy when sharing database files.
++ Implemented initial report function, allowing user to save current plugin text window to a text file.
++ Added option to allow specifying the particular POL process to monitor when parsing starts.
+* Revamped handling of data in the Offense tab to improve speed (~40% load improvement, even more during parsing).  Will update other high-cost tabs in similar ways over time.
+* Added melee and ranged Additional Effects and Spikes damage to details reports.
+
+
+1.0.9 (Aug 27, 2008)
++ Added dialog to allow access to database field to store small bits of info (100 characters of data) about combatants.  This field will probably be expanded when the database is next modified.
++ Addition of Offense and Defense detail/frequency plugins.  Note that these are processor-intensive when run on the full dataset, so the filtering is automatically set to single-battle only while parsing is active.
++ For Frequency plugins, a '+' denotes a mode value (occurs most frequently in sample set, may occur multiple times) and a '^' denotes a median value (frequency of occurances above and below the given sample is roughly equal).
+* Plugin menu is sorted by name.
+- Fixed issue of -ga spell damage not showing proper totals.
+
+
+1.0.8 (Aug 22, 2008)
+- Misc fixes for exception handling and null references for stability.
+- Fix issues in Options dialog error handling.
++ Add additional Puppet weaponskills.
+- Fix parsing of missed Puppet ranged attacks.
+- Fix issue of parsing item use improperly.
++ Show failed spells in spell damage section.
+* Better parsing of damage abilities vs debuffs.
+- Fix so that broken synths don't show up in the loot tables as 'lost' items.
+- Updated Debuff section to allow proper filtering by mob.
++ Added parsing of HELM/Choco diggin activities in the Loot plugin.
+
+Thanks to Eryvinim for suggesting and putting together the basics of parsing mining from the chat log.  I've reimplimented it in the Loot plugin for all HELM activities.  The next time the database changes, I'll add in the function to parse HELM and synthing such that items are stored in the appropriate tables.
+
+
