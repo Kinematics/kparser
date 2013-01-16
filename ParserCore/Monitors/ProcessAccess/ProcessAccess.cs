@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
-using WaywardGamers.KParser.Monitoring.Memory;
 
 namespace WaywardGamers.KParser.Monitoring
 {
