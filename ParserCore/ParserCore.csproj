@@ -205,10 +205,10 @@
     <Compile Include="Monitors\ProcessAccess\POLStructures.cs" />
     <Compile Include="Monitors\ProcessAccess\MemoryAccess.cs" />
     <Compile Include="Monitors\RamReader\RamReader.cs" />
-    <Compile Include="Monitors\RamReader\SelectPOLProcess.cs">
+    <Compile Include="Monitors\ProcessAccess\SelectPOLProcess.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Monitors\RamReader\SelectPOLProcess.Designer.cs">
+    <Compile Include="Monitors\ProcessAccess\SelectPOLProcess.Designer.cs">
       <DependentUpon>SelectPOLProcess.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -322,19 +322,19 @@
     </EmbeddedResource>
     <EmbeddedResource Include="KPDatabase.sdf">
     </EmbeddedResource>
-    <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.de.resx">
+    <EmbeddedResource Include="Monitors\ProcessAccess\SelectPOLProcess.de.resx">
       <DependentUpon>SelectPOLProcess.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.fr.resx">
+    <EmbeddedResource Include="Monitors\ProcessAccess\SelectPOLProcess.fr.resx">
       <DependentUpon>SelectPOLProcess.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.ja.resx">
+    <EmbeddedResource Include="Monitors\ProcessAccess\SelectPOLProcess.ja.resx">
       <DependentUpon>SelectPOLProcess.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Monitors\RamReader\SelectPOLProcess.resx">
+    <EmbeddedResource Include="Monitors\ProcessAccess\SelectPOLProcess.resx">
       <DependentUpon>SelectPOLProcess.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
