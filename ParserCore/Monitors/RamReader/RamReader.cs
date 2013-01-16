@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using WaywardGamers.KParser.Monitoring.Memory;
-using WaywardGamers.KParser.Interface;
 
 namespace WaywardGamers.KParser.Monitoring
 {

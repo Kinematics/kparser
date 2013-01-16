@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using WaywardGamers.KParser.Monitoring.Memory;
 using WaywardGamers.KParser.Monitoring.Packet;
 using WaywardGamers.KParser.Interface;
 using ZMQ;
