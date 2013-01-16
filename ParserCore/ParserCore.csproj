@@ -202,7 +202,7 @@
     <Compile Include="Monitors\DatabaseReader\DatabaseReader.cs" />
     <Compile Include="Monitors\LogReader\LogReader.cs" />
     <Compile Include="Monitors\Monitor.cs" />
-    <Compile Include="Monitors\ProcessAccess\POLStructures.cs" />
+    <Compile Include="Monitors\RamReader\POLStructures.cs" />
     <Compile Include="Monitors\ProcessAccess\MemoryAccess.cs" />
     <Compile Include="Monitors\RamReader\RamReader.cs" />
     <Compile Include="Monitors\ProcessAccess\SelectPOLProcess.cs">
