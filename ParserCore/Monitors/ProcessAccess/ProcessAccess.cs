@@ -25,9 +25,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// or null if no process was found and the request was aborted.</returns>
         internal static POL GetFFXIProcess(int polPID, ManualResetEvent _abort)
         {
-#if DEBUG
-            
-#else
+#if !DEBUG
             if (_abort == null)
                 throw new ArgumentNullException("_abort");
 #endif
@@ -86,7 +84,7 @@ namespace WaywardGamers.KParser.Monitoring
                 }
                 catch (Exception e)
                 {
-                    Logger.Instance.Log("Memory access", String.Format(Thread.CurrentThread.Name + ": ERROR: An exception occured while trying to connect to Final Fantasy.  Message = {0}", e.Message));
+                    Logger.Instance.Log("Process access", String.Format(Thread.CurrentThread.Name + ": ERROR: An exception occured while trying to connect to Final Fantasy.  Message = {0}", e.Message));
                 }
 
                 // Wait before trying again.
