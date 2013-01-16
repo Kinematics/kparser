@@ -9,21 +9,6 @@ namespace WaywardGamers.KParser.Monitoring.Memory
     #region Custom classes for marshalling data
 
     /// <summary>
-    /// Class for maintaining references to the process being monitored.
-    /// </summary>
-    internal class POL
-    {
-        internal Process Process { get; private set; }
-        internal IntPtr FFXIBaseAddress { get; private set; }
-
-        internal POL(Process process, IntPtr address)
-        {
-            Process = process;
-            FFXIBaseAddress = address;
-        }
-    }
-
-    /// <summary>
     /// Class for maintaining reference pointers to the chat log text as stored in memory.
     /// </summary>
     internal class ChatLogLocationInfo

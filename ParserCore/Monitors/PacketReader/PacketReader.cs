@@ -164,7 +164,7 @@ namespace WaywardGamers.KParser.Monitoring
         /// </summary>
         internal void Monitor()
         {
-            pol = ProcessAccess.GetFFXIProcess(polPID, abortMonitorThread);
+            pol = POL.GetFFXIProcess(polPID, abortMonitorThread);
             if (pol == null)
             {
                 OnReaderStatusChanged(new ReaderStatusEventArgs()

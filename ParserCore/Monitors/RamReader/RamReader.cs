@@ -182,7 +182,7 @@ namespace WaywardGamers.KParser.Monitoring
                 abortMonitorThread.Reset();
                 bool needToLogin = true;
 
-                pol = ProcessAccess.GetFFXIProcess(polPID, abortMonitorThread);
+                pol = POL.GetFFXIProcess(polPID, abortMonitorThread);
                 if (pol == null)
                 {
                     OnReaderStatusChanged(new ReaderStatusEventArgs()
@@ -219,7 +219,7 @@ namespace WaywardGamers.KParser.Monitoring
                     // If polProcess is ever lost (player disconnects), block on trying to reacquire it.
                     if (pol == null)
                     {
-                        pol = ProcessAccess.GetFFXIProcess(polPID, abortMonitorThread);
+                        pol = POL.GetFFXIProcess(polPID, abortMonitorThread);
                         if (pol == null)
                         {
                             // End here if the FindFFXIProcess returns false,
@@ -744,7 +744,7 @@ namespace WaywardGamers.KParser.Monitoring
 
                 // Note: Automatically disables LocateChatLog in FindFFXIProcess().
 
-                pol = ProcessAccess.GetFFXIProcess(0, null);
+                pol = POL.GetFFXIProcess(0, null);
                 if (pol == null)
                     return;
 
